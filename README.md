@@ -29,6 +29,7 @@ For normal use, you do not need to install anything or run a local server.
 - import and export PGN with variations and comments
 - write a lesson note
 - save and reopen lessons as files
+- use Local AI Lesson Chat for the active guided review row when running the local helper server
 
 ## Recent Improvements
 
@@ -193,6 +194,38 @@ http://127.0.0.1:8000/
 ```
 
 Do not open `index.html` directly over `file://`. The Stockfish worker and asset loading are intended to run from an HTTP server.
+
+## Local AI Lesson Chat
+
+Local AI Lesson Chat is for localhost use only. The browser calls a local Node/Express helper at:
+
+```text
+http://localhost:3001
+```
+
+The OpenAI API key stays on the helper server and is read from `OPENAI_API_KEY`. Do not put the key in frontend JavaScript and do not commit `.env`.
+
+Prerequisite: install Node.js so `node` and `npm` are available in PowerShell.
+
+Install the helper dependencies:
+
+```powershell
+npm install
+```
+
+Set the API key in PowerShell:
+
+```powershell
+setx OPENAI_API_KEY "your_api_key_here"
+```
+
+Close and reopen PowerShell, start the normal app server, then start the AI helper in a second terminal:
+
+```powershell
+npm run ai-server
+```
+
+Open the app on localhost, use Guided Review, select one row, and open Local AI Lesson Chat. The AI request sends only the active row plus optional already-available Stockfish/tablebase summary text for that row.
 
 ## Update GitHub
 

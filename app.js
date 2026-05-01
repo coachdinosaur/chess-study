@@ -2606,6 +2606,50 @@ function loadGuidedReviewFenToBoard(fen) {
   }
 }
 
+function guidedReviewAnalysisContext(fen) {
+  const rowFen = normalizeFenForTablebase(fen);
+  const currentFen = normalizeFenForTablebase(state.analysis.currentFen);
+  if (!rowFen || !currentFen || rowFen !== currentFen) {
+    return {};
+  }
+
+  const parsed = parseFenLike(rowFen);
+  const tablebaseResult = currentTablebaseResultForDisplay();
+  const tablebaseLines = tablebaseResult?.moves?.length
+    ? tablebaseResult.moves
+      .filter((entry) => entry.line || entry.san)
+      .map((entry) => `TB ${entry.index}: ${entry.line || entry.san} (${entry.evalLabel || entry.resultLabel || 'Tablebase'})`)
+    : [];
+  const engineLines = hasVisibleEnginePvLines()
+    ? state.engine.pvLines
+      .filter((entry) => entry.line)
+      .map((entry) => `PV ${entry.index}: ${entry.line} (${entry.evalLabel || 'no eval'}, depth ${entry.depth ?? 'unknown'})`)
+    : [];
+  const stockfishBestMove = state.engine.bestMove
+    ? (uciMovesToSan(rowFen, [state.engine.bestMove])[0] || state.engine.bestMove)
+    : '';
+  const stockfishSummary = !tablebaseResult && (engineLines.length || stockfishBestMove)
+    ? [
+        state.engine.summary,
+        stockfishBestMove ? `Best move: ${stockfishBestMove}` : '',
+        ...engineLines,
+      ].filter(Boolean).join(' | ')
+    : '';
+  const tablebaseSummary = tablebaseResult
+    ? [
+        tablebaseResult.summary,
+        ...tablebaseLines,
+      ].filter(Boolean).join(' | ')
+    : '';
+
+  return {
+    side_to_move: parsed.ok ? parsed.meta.activeColor : '',
+    best_move: tablebaseResult?.moves?.[0]?.line || tablebaseResult?.moves?.[0]?.san || stockfishBestMove,
+    stockfish_summary: stockfishSummary,
+    tablebase_summary: tablebaseSummary,
+  };
+}
+
 function initializeGuidedReviewController() {
   guidedReviewController = createGuidedReviewController({
     host: dom.guidedReviewPanel,
@@ -2616,6 +2660,7 @@ function initializeGuidedReviewController() {
       updateTitle: updateGuidedReviewTitle,
       downloadText: downloadTextFile,
       setStatus: syncLessonFileStatus,
+      getAnalysisContext: guidedReviewAnalysisContext,
     },
   });
 }
