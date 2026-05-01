@@ -1,4 +1,5 @@
 import { Chess, DEFAULT_POSITION, parsePgn, validateFen } from './vendor/chess.js';
+import { normalizeEditableText } from './text-normalization.mjs';
 
 const ROOT_NODE_ID = 'root';
 const APP_SITE_NAME = 'Chess Lesson Study Board';
@@ -6,12 +7,12 @@ const DEFAULT_RESULT = '*';
 
 function normalizeCommentText(value) {
   return typeof value === 'string'
-    ? value.replace(/\r\n?/g, '\n')
+    ? normalizeEditableText(value).replace(/\r\n?/g, '\n')
     : '';
 }
 
 function normalizeHeaderText(value) {
-  return String(value ?? '').trim();
+  return normalizeEditableText(value).trim();
 }
 
 function sanitizeCommentForPgn(comment) {
@@ -38,7 +39,7 @@ function mergeCommentText(existing, addition) {
 }
 
 function escapeHeaderValue(value) {
-  return String(value ?? '')
+  return normalizeEditableText(value)
     .replace(/\\/g, '\\\\')
     .replace(/"/g, '\\"');
 }

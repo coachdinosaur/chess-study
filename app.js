@@ -1,6 +1,7 @@
 import { Chess, DEFAULT_POSITION, validateFen } from './vendor/chess.js';
 import { buildPgnFromLessonTree, parsePgnToLessonTree } from './pgn.mjs';
 import { createGuidedReviewController } from './guided-review.mjs';
+import { normalizeEditableText } from './text-normalization.mjs';
 
 const STORAGE_KEY = 'setup-analysis-draft-v1';
 const COLOR_THEME_STORAGE_KEY = 'color-theme-v1';
@@ -139,6 +140,7 @@ const dom = {
   lessonFileStatus: document.getElementById('lessonFileStatus'),
   heroBanner: document.getElementById('heroBanner'),
   controlPaneScroll: document.querySelector('.control-pane-scroll'),
+  guidedReviewAnalysisPanel: document.getElementById('guidedReviewAnalysisPanel'),
   guidedReviewPanel: document.getElementById('guidedReviewPanel'),
   notationSection: document.querySelector('.lesson-notation'),
   notationSummary: document.getElementById('notationSummary'),
@@ -274,6 +276,29 @@ function escapeHtml(value) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+function normalizeTextControlValue(control) {
+  const originalValue = String(control?.value ?? '');
+  const normalizedValue = normalizeEditableText(originalValue);
+  if (!control || normalizedValue === originalValue) {
+    return normalizedValue;
+  }
+
+  const selectionStart = control.selectionStart;
+  const selectionEnd = control.selectionEnd;
+  control.value = normalizedValue;
+  if (
+    document.activeElement === control
+    && typeof control.setSelectionRange === 'function'
+    && Number.isInteger(selectionStart)
+    && Number.isInteger(selectionEnd)
+  ) {
+    const nextStart = Math.min(selectionStart, normalizedValue.length);
+    const nextEnd = Math.min(selectionEnd, normalizedValue.length);
+    control.setSelectionRange(nextStart, nextEnd);
+  }
+  return normalizedValue;
 }
 
 function cloneMeta(meta) {
@@ -1058,14 +1083,14 @@ function normalizeAnnotationArrows(value) {
 
 function normalizeNoteState(value) {
   return {
-    text: typeof value?.text === 'string' ? value.text : '',
+    text: typeof value?.text === 'string' ? normalizeEditableText(value.text) : '',
     expanded: Boolean(value?.expanded),
   };
 }
 
 function normalizeAnalysisComment(value) {
   return typeof value === 'string'
-    ? value.replace(/\r\n?/g, '\n')
+    ? normalizeEditableText(value).replace(/\r\n?/g, '\n')
     : '';
 }
 
@@ -1098,6 +1123,7 @@ function cloneAnalysisNodes(nodes) {
       {
         ...node,
         children: Array.isArray(node?.children) ? [...node.children] : [],
+        comment: normalizeAnalysisComment(node?.comment),
       },
     ]),
   );
@@ -1684,7 +1710,7 @@ function handleFullscreenError() {
 function buildLessonPayload() {
   return {
     version: LESSON_FILE_VERSION,
-    title: state.title,
+    title: normalizeEditableText(state.title),
     setupFen: state.setupFen,
     analysisTargetDepth: currentAnalysisTargetDepth(),
     boardOrientation: state.boardOrientation,
@@ -2346,7 +2372,7 @@ function validateAndNormalizeLessonPayload(payload) {
   const currentNodeId = String(payload.currentNodeId || rootId).trim() || rootId;
 
   return {
-    title: typeof payload.title === 'string' ? payload.title : DEFAULT_TITLE,
+    title: typeof payload.title === 'string' ? normalizeEditableText(payload.title) : DEFAULT_TITLE,
     analysisTargetDepth: normalizeAnalysisTargetDepth(payload.analysisTargetDepth),
     boardOrientation: payload.boardOrientation === 'black' ? 'black' : 'white',
     activeTab: [TAB_SETUP, TAB_ANALYSIS, TAB_PGN].includes(payload.activeTab) ? payload.activeTab : TAB_PGN,
@@ -2368,7 +2394,7 @@ function persistDraft() {
 }
 
 function applyLessonState(lessonState) {
-  state.title = lessonState.title;
+  state.title = normalizeEditableText(lessonState.title);
   state.analysisTargetDepth = normalizeAnalysisTargetDepth(lessonState.analysisTargetDepth);
   state.boardOrientation = lessonState.boardOrientation;
   state.activeTab = lessonState.activeTab;
@@ -2408,7 +2434,7 @@ function hydrateDraft() {
       return;
     }
 
-    const title = typeof draft?.title === 'string' ? draft.title : DEFAULT_TITLE;
+    const title = typeof draft?.title === 'string' ? normalizeEditableText(draft.title) : DEFAULT_TITLE;
     const analysisTargetDepth = normalizeAnalysisTargetDepth(draft?.analysisTargetDepth);
     const boardOrientation = draft?.boardOrientation === 'black' ? 'black' : 'white';
     const activeTab = [TAB_SETUP, TAB_ANALYSIS, TAB_PGN].includes(draft?.activeTab) ? draft.activeTab : TAB_PGN;
@@ -2453,7 +2479,11 @@ function hydrateDraft() {
 }
 
 function downloadTextFile(fileName, text, mimeType) {
-  const blob = new Blob([text], { type: mimeType });
+  const normalizedText = normalizeEditableText(text);
+  const blobText = String(mimeType || '').toLowerCase().includes('text/csv') && !normalizedText.startsWith('\ufeff')
+    ? `\ufeff${normalizedText}`
+    : normalizedText;
+  const blob = new Blob([blobText], { type: mimeType });
   const url = window.URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
@@ -2502,7 +2532,7 @@ function buildLessonStateFromImportedPgn(importedPgn) {
   );
 
   return {
-    title: typeof importedPgn?.title === 'string' ? importedPgn.title : DEFAULT_TITLE,
+    title: typeof importedPgn?.title === 'string' ? normalizeEditableText(importedPgn.title) : DEFAULT_TITLE,
     analysisTargetDepth: currentAnalysisTargetDepth(),
     boardOrientation: state.boardOrientation,
     activeTab: TAB_PGN,
@@ -2520,7 +2550,7 @@ function buildLessonStateFromImportedPgn(importedPgn) {
 function savePgnFile() {
   const fileName = `${slugifyLessonTitle(state.title)}.pgn`;
   const pgnText = buildPgnFromLessonTree({
-    title: state.title,
+    title: normalizeEditableText(state.title),
     setupFen: state.setupFen,
     rootId: state.analysis.rootId,
     nodes: state.analysis.nodes,
@@ -2546,6 +2576,7 @@ async function openPgnFile(file) {
 
 function renderGuidedReviewVisibility() {
   const active = Boolean(state.guidedReview.active);
+  renderGuidedReviewAnalysisPanel();
   if (dom.guidedReviewPanel) {
     dom.guidedReviewPanel.hidden = !active;
   }
@@ -2565,7 +2596,7 @@ function setGuidedReviewActive(active) {
 }
 
 function updateGuidedReviewTitle(title) {
-  state.title = String(title || '');
+  state.title = normalizeEditableText(title || '');
   if (dom.titleInput) {
     dom.titleInput.value = state.title;
   }
@@ -3362,6 +3393,59 @@ function renderPvLineListMarkup() {
         </div>
       `).join('')}
     </div>
+  `;
+}
+
+function renderGuidedReviewAnalysisPanel() {
+  if (!dom.guidedReviewAnalysisPanel) {
+    return;
+  }
+
+  const hasBoard = Boolean(state.analysis.game);
+  const shouldShow = Boolean(
+    state.guidedReview.active
+    && hasBoard
+    && !state.practice.active
+    && state.pvLinesVisible
+    && (
+      state.tablebase.probing
+      || state.engine.loading
+      || state.engine.stopping
+      || state.engine.analyzing
+      || hasVisibleAnalysisLines()
+    ),
+  );
+
+  dom.guidedReviewAnalysisPanel.hidden = !shouldShow;
+  if (!shouldShow) {
+    dom.guidedReviewAnalysisPanel.innerHTML = '';
+    return;
+  }
+
+  const title = tablebaseDisplayActive() ? 'Tablebase moves' : 'Engine lines';
+  const copy = tablebaseDisplayActive()
+    ? 'Solved continuations for the current row position.'
+    : 'Top 3 candidate lines for the current row position.';
+
+  dom.guidedReviewAnalysisPanel.innerHTML = `
+    <article class="lesson-section guided-review-analysis-card">
+      <div class="lesson-section-header">
+        <div>
+          <h3 class="lesson-section-title">${escapeHtml(title)}</h3>
+          <p class="section-copy">${escapeHtml(copy)}</p>
+        </div>
+      </div>
+      ${renderAnalysisStatusGridMarkup()}
+      <div class="stack-grid">
+        <div class="banner ${analysisStatusBannerKind(hasBoard)}">
+          <div>
+            <strong>${escapeHtml(analysisStatusBannerTitle(hasBoard))}</strong>
+            <div>${escapeHtml(analysisStatusSummary())}</div>
+          </div>
+        </div>
+        ${renderPvLineListMarkup()}
+      </div>
+    </article>
   `;
 }
 
@@ -5326,6 +5410,7 @@ function renderAnalysisPanel() {
     </article>
     ${renderPracticeToolSection()}
   `;
+  renderGuidedReviewAnalysisPanel();
 }
 
 function renderPgnPanel() {
@@ -5885,7 +5970,7 @@ function handleDocumentInput(event) {
     return;
   }
   if (event.target === dom.titleInput) {
-    state.title = dom.titleInput.value;
+    state.title = normalizeTextControlValue(dom.titleInput);
     dom.boardTitleDisplay.textContent = state.title.trim() || 'Untitled position';
     schedulePersist();
     return;
@@ -5898,14 +5983,14 @@ function handleDocumentInput(event) {
     return;
   }
   if (event.target?.id === 'notationNoteInput') {
-    state.note.text = event.target.value;
+    state.note.text = normalizeTextControlValue(event.target);
     schedulePersist();
     return;
   }
   if (event.target?.id === 'notationCommentInput') {
     const currentNode = getCurrentAnalysisNode() || getAnalysisNode(state.analysis.rootId);
     if (currentNode) {
-      currentNode.comment = normalizeAnalysisComment(event.target.value);
+      currentNode.comment = normalizeAnalysisComment(normalizeTextControlValue(event.target));
       schedulePersist();
     }
     return;

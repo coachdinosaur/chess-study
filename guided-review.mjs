@@ -1,13 +1,12 @@
+import { normalizeEditableText } from './text-normalization.mjs';
+
 const REVIEW_STORAGE_PREFIX = 'guided-lesson-row-review-v1';
 const LAST_SESSION_STORAGE_KEY = `${REVIEW_STORAGE_PREFIX}:last-session`;
-const AI_CHAT_STORAGE_SUFFIX = ':ai-chat';
-const AI_CHAT_ENDPOINT = 'http://localhost:3001/api/lesson-chat';
-const AI_SERVER_OFFLINE_MESSAGE = 'Local AI server is not running. Start it with npm run ai-server.';
 
 const FIELD_ALIASES = Object.freeze({
   title: ['title', 'lesson_title', 'name'],
   fen: ['fen'],
-  difficulty: ['difficulty', 'level'],
+  difficulty: ['level_tier', 'difficulty', 'level'],
   goalType: ['goal_type', 'goal', 'objective'],
   lessonText: ['lesson_text', 'text', 'description'],
   status: ['status', 'review_status'],
@@ -16,7 +15,7 @@ const FIELD_ALIASES = Object.freeze({
 const FIELD_CANONICAL_HEADERS = Object.freeze({
   title: 'title',
   fen: 'fen',
-  difficulty: 'difficulty',
+  difficulty: 'level_tier',
   goalType: 'goal_type',
   lessonText: 'lesson_text',
   status: 'status',
@@ -33,68 +32,6 @@ const FIELD_LABELS = Object.freeze({
 
 const REQUIRED_FIELDS = Object.freeze(['fen', 'lessonText']);
 const EDITOR_FIELDS = Object.freeze(['title', 'fen', 'difficulty', 'goalType', 'lessonText', 'status']);
-const AI_RESPONSE_FIELDS = Object.freeze([
-  'assistant_message',
-  'suggested_title',
-  'suggested_lesson_text',
-  'suggested_difficulty',
-  'suggested_goal_type',
-  'notes',
-  'chess_concerns',
-  'csv_warnings',
-]);
-const AI_SUGGESTION_FIELDS = Object.freeze([
-  'suggested_title',
-  'suggested_lesson_text',
-  'suggested_difficulty',
-  'suggested_goal_type',
-  'notes',
-  'chess_concerns',
-  'csv_warnings',
-]);
-const AI_APPLY_FIELD_MAP = Object.freeze({
-  title: ['title', 'suggested_title'],
-  lessonText: ['lessonText', 'suggested_lesson_text'],
-  difficulty: ['difficulty', 'suggested_difficulty'],
-  goalType: ['goalType', 'suggested_goal_type'],
-});
-const AI_QUICK_ACTIONS = Object.freeze([
-  {
-    key: 'check',
-    label: 'Check Current Lesson',
-    message: 'Check the current lesson for clarity, chess accuracy, and CSV safety. Suggest changes if needed.',
-  },
-  {
-    key: 'improve',
-    label: 'Improve Current Lesson',
-    message: 'Improve the current lesson text, but keep it as one continuous paragraph with no blank lines.',
-  },
-  {
-    key: 'beginner',
-    label: 'Make More Beginner-Friendly',
-    message: 'Make the current lesson more beginner-friendly while preserving the chess idea.',
-  },
-  {
-    key: 'intermediate',
-    label: 'Make More Intermediate',
-    message: 'Make the current lesson more suitable for an intermediate player while keeping it concise and accurate.',
-  },
-  {
-    key: 'csv',
-    label: 'Clean for CSV',
-    message: 'Clean the lesson_text for CSV by removing paragraph breaks and blank lines. Do not deeply rewrite unless necessary.',
-  },
-  {
-    key: 'logic',
-    label: 'Check Chess Logic',
-    message: 'Check the chess logic of this row against any available Stockfish or tablebase information. Be cautious where analysis is missing.',
-  },
-  {
-    key: 'shorten',
-    label: 'Shorten Lesson Text',
-    message: 'Shorten the current lesson_text while preserving the key chess idea, notation, and CSV safety.',
-  },
-]);
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -107,6 +44,30 @@ function escapeHtml(value) {
 
 function escapeAttribute(value) {
   return escapeHtml(value).replace(/\r?\n/g, '&#10;');
+}
+
+function normalizeTextControlValue(control) {
+  const originalValue = String(control?.value ?? '');
+  const normalizedValue = normalizeEditableText(originalValue);
+  if (!control || normalizedValue === originalValue) {
+    return normalizedValue;
+  }
+
+  const selectionStart = control.selectionStart;
+  const selectionEnd = control.selectionEnd;
+  control.value = normalizedValue;
+  if (
+    document.activeElement === control
+    && typeof control.setSelectionRange === 'function'
+    && Number.isInteger(selectionStart)
+    && Number.isInteger(selectionEnd)
+  ) {
+    control.setSelectionRange(
+      Math.min(selectionStart, normalizedValue.length),
+      Math.min(selectionEnd, normalizedValue.length),
+    );
+  }
+  return normalizedValue;
 }
 
 function normalizeHeader(value) {
@@ -209,14 +170,14 @@ function normalizeTableRows(rawRows) {
 
   const maxWidth = Math.max(...rows.map((row) => Array.isArray(row) ? row.length : 0), 0);
   const headers = Array.from({ length: maxWidth }, (_, index) => {
-    const original = String(rows[0]?.[index] ?? '').replace(/^\ufeff/, '').trim();
+    const original = normalizeEditableText(rows[0]?.[index]).replace(/^\ufeff/, '').trim();
     return original || `column_${index + 1}`;
   });
 
   const dataRows = rows
     .slice(1)
     .filter((row) => !isBlankRow(row))
-    .map((row) => Array.from({ length: headers.length }, (_, index) => String(row?.[index] ?? '')));
+    .map((row) => Array.from({ length: headers.length }, (_, index) => normalizeEditableText(row?.[index])));
 
   if (!dataRows.length) {
     throw new Error('The file does not contain any lesson rows.');
@@ -295,7 +256,7 @@ function parseCsvRows(text) {
 }
 
 function serializeCsvCell(value) {
-  const text = String(value ?? '');
+  const text = normalizeEditableText(value);
   const escaped = text.replace(/"/g, '""');
   return /[",\r\n]/.test(text) ? `"${escaped}"` : escaped;
 }
@@ -308,7 +269,7 @@ function serializeCsv(headers, rows) {
 }
 
 function lessonTextIssue(value) {
-  const text = String(value ?? '');
+  const text = normalizeEditableText(value);
   if (!text) {
     return '';
   }
@@ -325,7 +286,7 @@ function lessonTextIssue(value) {
 }
 
 function cleanLessonTextForCsv(value) {
-  return String(value ?? '')
+  return normalizeEditableText(value)
     .replace(/\r\n/g, '\n')
     .replace(/\r/g, '\n')
     .replace(/[ \t]*\n+[ \t]*/g, ' ')
@@ -374,8 +335,10 @@ function buildColumnMap(headers) {
   const normalizedHeaders = headers.map(normalizeHeader);
   const map = {};
   Object.entries(FIELD_ALIASES).forEach(([field, aliases]) => {
-    const aliasSet = new Set(aliases.map(normalizeHeader));
-    const columnIndex = normalizedHeaders.findIndex((header) => aliasSet.has(header));
+    const columnIndex = aliases
+      .map(normalizeHeader)
+      .map((alias) => normalizedHeaders.findIndex((header) => header === alias))
+      .find((index) => index >= 0);
     if (columnIndex >= 0) {
       map[field] = columnIndex;
     }
@@ -456,109 +419,7 @@ function bannerMarkup(message, kind = 'warning') {
 }
 
 function rowStatusLabel(value) {
-  return String(value || 'unsaved').trim() || 'unsaved';
-}
-
-function normalizeAiMessage(entry) {
-  if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
-    return null;
-  }
-  const role = entry.role === 'assistant' ? 'assistant' : 'user';
-  const content = String(entry.content ?? '').trim();
-  if (!content) {
-    return null;
-  }
-  return {
-    role,
-    content,
-    createdAt: String(entry.createdAt || ''),
-  };
-}
-
-function createEmptyAiChat() {
-  return {
-    messages: [],
-    suggestion: null,
-    loading: false,
-    error: '',
-    previousResponseId: '',
-  };
-}
-
-function normalizeAiSuggestion(payload) {
-  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
-    return null;
-  }
-  const suggestion = {};
-  AI_SUGGESTION_FIELDS.forEach((field) => {
-    suggestion[field] = String(payload[field] ?? '');
-  });
-  return AI_SUGGESTION_FIELDS.some((field) => suggestion[field].trim()) ? suggestion : null;
-}
-
-function normalizeAiChat(value) {
-  const chat = createEmptyAiChat();
-  if (!value || typeof value !== 'object' || Array.isArray(value)) {
-    return chat;
-  }
-  chat.messages = Array.isArray(value.messages)
-    ? value.messages.map(normalizeAiMessage).filter(Boolean).slice(-40)
-    : [];
-  chat.suggestion = normalizeAiSuggestion(value.suggestion);
-  chat.error = String(value.error || '');
-  chat.previousResponseId = String(value.previousResponseId || '');
-  return chat;
-}
-
-function normalizeAiResponsePayload(payload) {
-  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
-    throw new Error('Invalid AI response format.');
-  }
-  const normalized = {};
-  AI_RESPONSE_FIELDS.forEach((field) => {
-    if (typeof payload[field] !== 'string') {
-      throw new Error('Invalid AI response format.');
-    }
-    normalized[field] = payload[field];
-  });
-  normalized.previous_response_id = String(payload.previous_response_id || '');
-  return normalized;
-}
-
-function aiSuggestionHasAnyEditableField(suggestion) {
-  return Boolean(
-    suggestion?.suggested_title?.trim()
-    || suggestion?.suggested_lesson_text?.trim()
-    || suggestion?.suggested_difficulty?.trim()
-    || suggestion?.suggested_goal_type?.trim()
-  );
-}
-
-function formatAiTimestamp(value) {
-  if (!value) {
-    return '';
-  }
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return '';
-  }
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-}
-
-async function readErrorMessage(response) {
-  try {
-    const payload = await response.json();
-    if (payload?.error) {
-      return String(payload.error);
-    }
-  } catch {}
-  try {
-    const text = await response.text();
-    if (text) {
-      return text;
-    }
-  } catch {}
-  return `AI request failed (${response.status}).`;
+  return normalizeEditableText(value || 'unsaved').trim() || 'unsaved';
 }
 
 export function createGuidedReviewController({ host, fileInput, callbacks = {} } = {}) {
@@ -578,11 +439,6 @@ export function createGuidedReviewController({ host, fileInput, callbacks = {} }
     messageKind: 'warning',
     fenError: '',
     lastSession: null,
-    ai: {
-      expanded: true,
-      includeAnalysis: true,
-      chats: {},
-    },
   };
 
   function rowCount() {
@@ -601,66 +457,10 @@ export function createGuidedReviewController({ host, fileInput, callbacks = {} }
     return Boolean(currentDraft());
   }
 
-  function aiChatStorageKey() {
-    return state.storageKey ? `${state.storageKey}${AI_CHAT_STORAGE_SUFFIX}` : '';
-  }
-
-  function currentAiChat() {
-    const key = String(state.activeIndex);
-    if (!state.ai.chats[key]) {
-      state.ai.chats[key] = createEmptyAiChat();
-    }
-    return state.ai.chats[key];
-  }
-
-  function saveAiChatProgress() {
-    const key = aiChatStorageKey();
-    if (!key) {
-      return;
-    }
-    const chats = {};
-    Object.entries(state.ai.chats).forEach(([rowKey, chat]) => {
-      const normalized = normalizeAiChat(chat);
-      chats[rowKey] = {
-        messages: normalized.messages,
-        suggestion: normalized.suggestion,
-        previousResponseId: normalized.previousResponseId,
-      };
-    });
-    writeJsonStorage(key, {
-      fileName: state.sourceFileName,
-      headerSignature: state.headerSignature,
-      includeAnalysis: state.ai.includeAnalysis,
-      chats,
-      savedAt: new Date().toISOString(),
-    });
-  }
-
-  function restoreAiChatProgress() {
-    const key = aiChatStorageKey();
-    if (!key) {
-      state.ai.chats = {};
-      return;
-    }
-    const payload = parseJsonStorage(key);
-    if (!payload || payload.headerSignature !== state.headerSignature) {
-      state.ai.chats = {};
-      return;
-    }
-    state.ai.includeAnalysis = payload.includeAnalysis !== false;
-    const chats = {};
-    if (payload.chats && typeof payload.chats === 'object' && !Array.isArray(payload.chats)) {
-      Object.entries(payload.chats).forEach(([rowKey, chat]) => {
-        chats[String(rowKey)] = normalizeAiChat(chat);
-      });
-    }
-    state.ai.chats = chats;
-  }
-
   function setDraftField(field, value) {
     const key = String(state.activeIndex);
     const draft = state.drafts[key] || {};
-    draft[field] = String(value ?? '');
+    draft[field] = normalizeEditableText(value);
     state.drafts[key] = draft;
   }
 
@@ -673,13 +473,13 @@ export function createGuidedReviewController({ host, fileInput, callbacks = {} }
     if (!Number.isInteger(columnIndex)) {
       return '';
     }
-    return String(state.rows[rowIndex]?.[columnIndex] ?? '');
+    return normalizeEditableText(state.rows[rowIndex]?.[columnIndex]);
   }
 
   function getFieldValue(rowIndex, field) {
     const draft = state.drafts[String(rowIndex)];
     if (draft && Object.prototype.hasOwnProperty.call(draft, field)) {
-      return String(draft[field] ?? '');
+      return normalizeEditableText(draft[field]);
     }
     return getSavedFieldValue(rowIndex, field);
   }
@@ -688,7 +488,7 @@ export function createGuidedReviewController({ host, fileInput, callbacks = {} }
     const values = {};
     EDITOR_FIELDS.forEach((field) => {
       const input = state.host?.querySelector(`[data-guided-field="${field}"]`);
-      values[field] = input ? String(input.value ?? '') : getFieldValue(state.activeIndex, field);
+      values[field] = input ? normalizeTextControlValue(input) : getFieldValue(state.activeIndex, field);
     });
     return values;
   }
@@ -724,7 +524,6 @@ export function createGuidedReviewController({ host, fileInput, callbacks = {} }
       activeIndex: state.activeIndex,
       savedAt: payload.savedAt,
     });
-    saveAiChatProgress();
   }
 
   function restoreReviewProgress() {
@@ -734,16 +533,23 @@ export function createGuidedReviewController({ host, fileInput, callbacks = {} }
     }
     const payload = parseJsonStorage(state.storageKey);
     if (!payload || payload.headerSignature !== state.headerSignature) {
-      restoreAiChatProgress();
       return;
     }
     if (Number.isFinite(payload.activeIndex)) {
       state.activeIndex = Math.min(Math.max(0, Math.trunc(payload.activeIndex)), Math.max(0, rowCount() - 1));
     }
     if (payload.drafts && typeof payload.drafts === 'object' && !Array.isArray(payload.drafts)) {
-      state.drafts = payload.drafts;
+      state.drafts = Object.fromEntries(
+        Object.entries(payload.drafts)
+          .filter((entry) => entry[1] && typeof entry[1] === 'object' && !Array.isArray(entry[1]))
+          .map(([rowKey, draft]) => [
+            String(rowKey),
+            Object.fromEntries(
+              Object.entries(draft).map(([field, value]) => [field, normalizeEditableText(value)]),
+            ),
+          ]),
+      );
     }
-    restoreAiChatProgress();
   }
 
   function closeGuidedReviewMode() {
@@ -777,7 +583,6 @@ export function createGuidedReviewController({ host, fileInput, callbacks = {} }
       state.storageKey = buildStorageKey(state.sourceFileName, state.headerSignature);
       state.activeIndex = 0;
       state.drafts = {};
-      state.ai.chats = {};
       state.fenError = '';
       state.message = `Imported ${state.rows.length} row${state.rows.length === 1 ? '' : 's'} from ${state.sourceFileName}.`;
       state.messageKind = 'success';
@@ -920,276 +725,6 @@ export function createGuidedReviewController({ host, fileInput, callbacks = {} }
     renderCurrentLessonRow();
   }
 
-  function buildAiRequestPayload(userMessage, chatHistory, values) {
-    const analysisContext = state.ai.includeAnalysis
-      ? (callbacks.getAnalysisContext?.(values.fen) || {})
-      : {};
-    return {
-      row_number: state.activeIndex + 1,
-      title: values.title,
-      fen: values.fen,
-      difficulty: values.difficulty,
-      goal_type: values.goalType,
-      lesson_text: values.lessonText,
-      status: values.status,
-      side_to_move: analysisContext.side_to_move || '',
-      best_move: analysisContext.best_move || '',
-      stockfish_summary: analysisContext.stockfish_summary || '',
-      tablebase_summary: analysisContext.tablebase_summary || '',
-      user_message: userMessage,
-      chat_history: chatHistory,
-      previous_response_id: currentAiChat().previousResponseId || '',
-    };
-  }
-
-  async function sendAiMessage(preparedMessage = '') {
-    if (!hasRows()) {
-      state.message = 'Import a lesson file before using Local AI Lesson Chat.';
-      state.messageKind = 'danger';
-      renderCurrentLessonRow();
-      return;
-    }
-
-    const chat = currentAiChat();
-    const input = state.host?.querySelector('#guidedAiChatInput');
-    const userMessage = String(preparedMessage || input?.value || '').trim();
-    if (!userMessage) {
-      chat.error = 'Enter a chat message before sending.';
-      saveAiChatProgress();
-      renderCurrentLessonRow();
-      return;
-    }
-
-    const values = currentFormValues();
-    const chatHistory = chat.messages
-      .filter((entry) => entry.role === 'user' || entry.role === 'assistant')
-      .map((entry) => ({ role: entry.role, content: entry.content }))
-      .slice(-12);
-
-    chat.messages.push({
-      role: 'user',
-      content: userMessage,
-      createdAt: new Date().toISOString(),
-    });
-    chat.loading = true;
-    chat.error = '';
-    chat.suggestion = null;
-    if (input && !preparedMessage) {
-      input.value = '';
-    }
-    saveAiChatProgress();
-    renderCurrentLessonRow();
-
-    try {
-      const response = await window.fetch(AI_CHAT_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(buildAiRequestPayload(userMessage, chatHistory, values)),
-      });
-
-      if (!response.ok) {
-        throw new Error(await readErrorMessage(response));
-      }
-
-      const payload = normalizeAiResponsePayload(await response.json());
-      chat.messages.push({
-        role: 'assistant',
-        content: payload.assistant_message,
-        createdAt: new Date().toISOString(),
-      });
-      chat.suggestion = normalizeAiSuggestion(payload);
-      chat.previousResponseId = payload.previous_response_id || chat.previousResponseId || '';
-      chat.error = '';
-    } catch (error) {
-      chat.error = error instanceof TypeError
-        ? AI_SERVER_OFFLINE_MESSAGE
-        : (error?.message || 'Local AI Lesson Chat failed.');
-    } finally {
-      chat.loading = false;
-      saveAiChatProgress();
-      renderCurrentLessonRow();
-    }
-  }
-
-  function clearCurrentAiChat() {
-    state.ai.chats[String(state.activeIndex)] = createEmptyAiChat();
-    saveAiChatProgress();
-    renderCurrentLessonRow();
-  }
-
-  function applySuggestionField(field, value) {
-    const normalizedValue = field === 'lessonText'
-      ? cleanLessonTextForCsv(value)
-      : String(value ?? '').trim();
-    if (!normalizedValue) {
-      return false;
-    }
-    const input = state.host?.querySelector(`[data-guided-field="${field}"]`);
-    if (input) {
-      input.value = normalizedValue;
-    }
-    setDraftField(field, normalizedValue);
-    if (field === 'lessonText') {
-      updateLessonTextWarning(normalizedValue);
-    }
-    return true;
-  }
-
-  function applyAiSuggestion(kind) {
-    const chat = currentAiChat();
-    const suggestion = chat.suggestion;
-    if (!suggestion) {
-      return;
-    }
-
-    const fieldsToApply = kind === 'all'
-      ? Object.keys(AI_APPLY_FIELD_MAP)
-      : [kind].filter((field) => Object.prototype.hasOwnProperty.call(AI_APPLY_FIELD_MAP, field));
-    const applied = fieldsToApply.filter((field) => {
-      const [draftField, suggestionField] = AI_APPLY_FIELD_MAP[field];
-      return applySuggestionField(draftField, suggestion[suggestionField]);
-    });
-
-    if (!applied.length) {
-      chat.error = 'This suggestion has no value for that field.';
-      saveAiChatProgress();
-      renderCurrentLessonRow();
-      return;
-    }
-
-    chat.suggestion = null;
-    chat.error = '';
-    state.message = `Applied AI suggestion to row ${state.activeIndex + 1}. Save the row to keep it in the export.`;
-    state.messageKind = 'success';
-    saveReviewProgress();
-    renderCurrentLessonRow();
-  }
-
-  function rejectAiSuggestion() {
-    const chat = currentAiChat();
-    chat.suggestion = null;
-    chat.error = '';
-    saveAiChatProgress();
-    renderCurrentLessonRow();
-  }
-
-  function renderAiSuggestionField(label, value) {
-    const text = String(value || '').trim();
-    if (!text) {
-      return '';
-    }
-    return `
-      <div class="guided-ai-suggestion-field">
-        <span class="guided-ai-suggestion-label">${escapeHtml(label)}</span>
-        <div class="guided-ai-suggestion-text">${escapeHtml(text)}</div>
-      </div>
-    `;
-  }
-
-  function renderAiSuggestionMarkup(chat) {
-    const suggestion = chat.suggestion;
-    if (!suggestion) {
-      return '';
-    }
-    const editable = aiSuggestionHasAnyEditableField(suggestion);
-    return `
-      <div class="guided-ai-suggestion">
-        <div class="guided-ai-suggestion-head">
-          <h4 class="lesson-subtitle">Suggestion Preview</h4>
-          <button type="button" class="action-button danger guided-review-small-button" data-action="guided-ai-reject">Reject Suggestion</button>
-        </div>
-        <div class="guided-ai-suggestion-grid">
-          ${renderAiSuggestionField('Suggested Title', suggestion.suggested_title)}
-          ${renderAiSuggestionField('Suggested Lesson Text', suggestion.suggested_lesson_text)}
-          ${renderAiSuggestionField('Suggested Difficulty', suggestion.suggested_difficulty)}
-          ${renderAiSuggestionField('Suggested Goal Type', suggestion.suggested_goal_type)}
-          ${renderAiSuggestionField('Notes', suggestion.notes)}
-          ${renderAiSuggestionField('Chess Concerns', suggestion.chess_concerns)}
-          ${renderAiSuggestionField('CSV Warnings', suggestion.csv_warnings)}
-        </div>
-        ${editable ? `
-          <div class="action-row action-row-compact guided-ai-apply-row">
-            <button type="button" class="action-button tonal guided-review-small-button" data-action="guided-ai-apply" data-apply="title">Apply Title Only</button>
-            <button type="button" class="action-button tonal guided-review-small-button" data-action="guided-ai-apply" data-apply="lessonText">Apply Lesson Text Only</button>
-            <button type="button" class="action-button tonal guided-review-small-button" data-action="guided-ai-apply" data-apply="difficulty">Apply Difficulty Only</button>
-            <button type="button" class="action-button tonal guided-review-small-button" data-action="guided-ai-apply" data-apply="goalType">Apply Goal Type Only</button>
-            <button type="button" class="action-button primary guided-review-small-button" data-action="guided-ai-apply" data-apply="all">Apply All Suggested Changes</button>
-          </div>
-        ` : ''}
-      </div>
-    `;
-  }
-
-  function renderAiChatPanel() {
-    const chat = currentAiChat();
-    const rowNumber = state.activeIndex + 1;
-    const quickActions = AI_QUICK_ACTIONS.map((action) => `
-      <button
-        type="button"
-        class="action-button tonal guided-review-small-button"
-        data-action="guided-ai-quick"
-        data-prompt="${escapeAttribute(action.message)}"
-        ${chat.loading ? 'disabled' : ''}
-      >${escapeHtml(action.label)}</button>
-    `).join('');
-    const messageMarkup = chat.messages.length
-      ? chat.messages.map((message) => {
-          const time = formatAiTimestamp(message.createdAt);
-          return `
-            <div class="guided-ai-message is-${message.role}">
-              <div class="guided-ai-message-meta">${escapeHtml(message.role === 'assistant' ? 'AI' : 'You')}${time ? ` &middot; ${escapeHtml(time)}` : ''}</div>
-              <div class="guided-ai-message-body">${escapeHtml(message.content)}</div>
-            </div>
-          `;
-        }).join('')
-      : '<p class="muted-copy guided-ai-empty">No messages for this row yet.</p>';
-
-    return `
-      <article class="lesson-section guided-ai-chat">
-        <div class="lesson-section-header">
-          <div>
-            <h3 class="lesson-section-title">Local AI Lesson Chat</h3>
-            <p class="section-copy">Row ${rowNumber} only</p>
-          </div>
-          <button type="button" class="action-button tonal" data-action="guided-ai-toggle">${state.ai.expanded ? 'Hide' : 'Open'}</button>
-        </div>
-
-        ${state.ai.expanded ? `
-          ${chat.error ? bannerMarkup(chat.error, 'danger') : ''}
-          <div class="action-row action-row-compact guided-ai-quick-actions">
-            ${quickActions}
-          </div>
-          <div class="guided-ai-message-list" aria-live="polite">
-            ${messageMarkup}
-            ${chat.loading ? `
-              <div class="guided-ai-message is-assistant is-loading">
-                <div class="guided-ai-message-meta">AI</div>
-                <div class="guided-ai-message-body">Thinking...</div>
-              </div>
-            ` : ''}
-          </div>
-          ${renderAiSuggestionMarkup(chat)}
-          <div class="guided-ai-compose">
-            <label class="field-label" for="guidedAiChatInput">Message</label>
-            <textarea id="guidedAiChatInput" class="field-textarea guided-ai-input" ${chat.loading ? 'disabled' : ''}></textarea>
-            <div class="guided-ai-compose-footer">
-              <label class="checkbox-chip guided-ai-checkbox">
-                <input type="checkbox" data-guided-ai-input="include-analysis" ${state.ai.includeAnalysis ? 'checked' : ''}>
-                <span>Include Stockfish/Tablebase Info</span>
-              </label>
-              <div class="action-row action-row-compact">
-                <button type="button" class="action-button tonal" data-action="guided-ai-clear" ${chat.loading ? 'disabled' : ''}>Clear Chat</button>
-                <button type="button" class="action-button primary" data-action="guided-ai-send" ${chat.loading ? 'disabled' : ''}>Send</button>
-              </div>
-            </div>
-          </div>
-        ` : ''}
-      </article>
-    `;
-  }
-
   function renderRowNavigator() {
     return `
       <article class="lesson-section guided-review-row-nav">
@@ -1323,7 +858,6 @@ export function createGuidedReviewController({ host, fileInput, callbacks = {} }
             <button type="button" class="action-button" data-action="guided-import-file">Import Different File</button>
           </div>
         </article>
-        ${renderAiChatPanel()}
         ${renderRowNavigator()}
       </section>
     `;
@@ -1332,18 +866,12 @@ export function createGuidedReviewController({ host, fileInput, callbacks = {} }
   function handleInput(event) {
     const field = event.target?.dataset?.guidedField;
     if (field && EDITOR_FIELDS.includes(field)) {
-      setDraftField(field, event.target.value);
+      const value = normalizeTextControlValue(event.target);
+      setDraftField(field, value);
       if (field === 'lessonText') {
-        updateLessonTextWarning(event.target.value);
+        updateLessonTextWarning(value);
       }
       saveReviewProgress();
-      return true;
-    }
-
-    const aiInput = event.target?.dataset?.guidedAiInput;
-    if (aiInput === 'include-analysis') {
-      state.ai.includeAnalysis = Boolean(event.target.checked);
-      saveAiChatProgress();
       return true;
     }
 
@@ -1398,26 +926,6 @@ export function createGuidedReviewController({ host, fileInput, callbacks = {} }
         }
         break;
       }
-      case 'guided-ai-toggle':
-        state.ai.expanded = !state.ai.expanded;
-        saveAiChatProgress();
-        renderCurrentLessonRow();
-        break;
-      case 'guided-ai-send':
-        void sendAiMessage();
-        break;
-      case 'guided-ai-quick':
-        void sendAiMessage(actionEl.dataset.prompt || '');
-        break;
-      case 'guided-ai-clear':
-        clearCurrentAiChat();
-        break;
-      case 'guided-ai-apply':
-        applyAiSuggestion(actionEl.dataset.apply || '');
-        break;
-      case 'guided-ai-reject':
-        rejectAiSuggestion();
-        break;
       case 'guided-export':
         exportUpdatedLessons();
         break;
