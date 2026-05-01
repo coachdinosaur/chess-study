@@ -124,6 +124,7 @@
               <div id="lessonActionsMenu" class="lesson-overflow-menu" role="menu" aria-labelledby="lessonActionsButton" hidden>
                 <button id="openLessonButton" type="button" class="lesson-overflow-item" data-action="open-lesson" role="menuitem">Open lesson</button>
                 <button id="saveLessonButton" type="button" class="lesson-overflow-item" data-action="save-lesson" role="menuitem">Save lesson</button>
+                <button id="guidedReviewButton" type="button" class="lesson-overflow-item" data-action="open-guided-review" role="menuitem">Guided Review</button>
                 <button id="importPgnButton" type="button" class="lesson-overflow-item" data-action="import-pgn" role="menuitem">Import PGN</button>
                 <button id="exportPgnButton" type="button" class="lesson-overflow-item" data-action="export-pgn" role="menuitem">Export PGN</button>
                 <button id="copyFenButton" type="button" class="lesson-overflow-item" data-action="copy-fen" role="menuitem">Copy FEN</button>
@@ -164,11 +165,14 @@
           <p id="lessonFileStatus" class="lesson-file-status" aria-live="polite"></p>
           <input id="lessonFileInput" type="file" accept=".json,.lesson.json,application/json" hidden>
           <input id="pgnFileInput" type="file" accept=".pgn,.txt,text/plain,application/x-chess-pgn" hidden>
+          <input id="guidedReviewFileInput" type="file" accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" hidden>
           <span id="engineReadyLabel" class="sr-only">Stockfish idle</span>
           <div id="heroBanner" class="hero-banner recording-hidden" aria-hidden="true"></div>
         </section>
 
         <div class="control-pane-scroll">
+          <section id="guidedReviewPanel" class="guided-review-panel" aria-label="Guided lesson row review" hidden></section>
+
           <section class="lesson-notation" aria-label="Lesson notation">
             <p id="notationSummary" class="sr-only" aria-live="polite">Play moves from the board to build the lesson tree.</p>
             <div id="notationPanel" class="notation-panel"></div>
@@ -235,6 +239,7 @@
     </div>
   </div>
 
+  <script src="./vendor/xlsx.full.min.js"></script>
   <script type="module" src="./app.js"></script>
 </body>
 </html>

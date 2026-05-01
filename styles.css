@@ -1772,6 +1772,192 @@ code {
   color: var(--banner-danger-text);
 }
 
+.guided-review-panel {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.guided-review-panel[hidden] {
+  display: none;
+}
+
+.guided-review-panel-inner {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.guided-review-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.guided-review-status-pill,
+.guided-review-draft-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--chip-border);
+  background: var(--chip-bg);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.guided-review-status-pill.is-done {
+  border-color: var(--banner-success-border);
+  background: var(--banner-success-bg);
+  color: var(--banner-success-text);
+}
+
+.guided-review-status-pill.is-needs-review {
+  border-color: var(--banner-warning-border);
+  background: var(--banner-warning-bg);
+  color: var(--banner-warning-text);
+}
+
+.guided-review-draft-pill {
+  border-color: var(--focus-border);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.guided-review-editor-grid {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.guided-review-two-col {
+  align-items: start;
+}
+
+.guided-review-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.guided-review-small-button {
+  min-height: 2.2rem;
+  padding: 0.42rem 0.7rem;
+  font-size: 0.82rem;
+}
+
+.guided-review-fen-input {
+  min-height: 4.5rem;
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: 0.9rem;
+}
+
+.guided-review-textarea {
+  min-height: 13rem;
+}
+
+.guided-review-inline-warning {
+  min-height: 1.15rem;
+  margin: 0;
+  color: var(--banner-warning-text);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.guided-review-inline-warning:empty {
+  display: none;
+}
+
+.guided-review-actions {
+  padding-top: 0.2rem;
+}
+
+.guided-review-row-nav {
+  min-height: 0;
+}
+
+.guided-review-row-list {
+  display: grid;
+  gap: 0.45rem;
+  max-height: 22rem;
+  overflow: auto;
+  padding-right: 0.25rem;
+}
+
+.guided-review-row-item {
+  display: grid;
+  grid-template-columns: 2.4rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.48rem 0.6rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--control-border);
+  background: var(--control-bg);
+  color: var(--text);
+  text-align: left;
+  transition: border-color var(--ease), background-color var(--ease), box-shadow var(--ease);
+}
+
+.guided-review-row-item:hover,
+.guided-review-row-item:focus-visible {
+  outline: none;
+  border-color: var(--focus-border);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.guided-review-row-item.is-current {
+  border-color: var(--tab-active-border);
+  background: var(--accent-soft);
+}
+
+.guided-review-row-item.is-done {
+  border-color: var(--banner-success-border);
+}
+
+.guided-review-row-item.is-needs-review {
+  border-color: var(--banner-warning-border);
+}
+
+.guided-review-row-item.has-unsaved-draft .guided-review-row-number {
+  border-color: var(--focus-border);
+  color: var(--accent-strong);
+}
+
+.guided-review-row-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+  border-radius: 0.65rem;
+  border: 1px solid var(--move-index-border);
+  background: var(--move-index-bg);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.guided-review-row-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 750;
+}
+
+.guided-review-row-status {
+  max-width: 9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
 .status-grid {
   display: grid;
   gap: 0;

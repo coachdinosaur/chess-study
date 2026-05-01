@@ -1,5 +1,6 @@
 import { Chess, DEFAULT_POSITION, validateFen } from './vendor/chess.js';
 import { buildPgnFromLessonTree, parsePgnToLessonTree } from './pgn.mjs';
+import { createGuidedReviewController } from './guided-review.mjs';
 
 const STORAGE_KEY = 'setup-analysis-draft-v1';
 const COLOR_THEME_STORAGE_KEY = 'color-theme-v1';
@@ -123,6 +124,7 @@ const dom = {
   lessonActionsMenu: document.getElementById('lessonActionsMenu'),
   openLessonButton: document.getElementById('openLessonButton'),
   saveLessonButton: document.getElementById('saveLessonButton'),
+  guidedReviewButton: document.getElementById('guidedReviewButton'),
   importPgnButton: document.getElementById('importPgnButton'),
   exportPgnButton: document.getElementById('exportPgnButton'),
   togglePgnCommentsMenuButton: document.getElementById('togglePgnCommentsMenuButton'),
@@ -133,9 +135,12 @@ const dom = {
   colorThemeItems: Array.from(document.querySelectorAll('[data-action="set-color-theme"]')),
   lessonFileInput: document.getElementById('lessonFileInput'),
   pgnFileInput: document.getElementById('pgnFileInput'),
+  guidedReviewFileInput: document.getElementById('guidedReviewFileInput'),
   lessonFileStatus: document.getElementById('lessonFileStatus'),
   heroBanner: document.getElementById('heroBanner'),
   controlPaneScroll: document.querySelector('.control-pane-scroll'),
+  guidedReviewPanel: document.getElementById('guidedReviewPanel'),
+  notationSection: document.querySelector('.lesson-notation'),
   notationSummary: document.getElementById('notationSummary'),
   notationPanel: document.getElementById('notationPanel'),
   notationStartButton: document.getElementById('notationStartButton'),
@@ -188,6 +193,9 @@ const state = {
   practice: createEmptyPracticeState(),
   pgnCommentsVisible: true,
   toolsExpanded: false,
+  guidedReview: {
+    active: false,
+  },
   pvLinesVisible: true,
   lessonFileStatus: '',
   engine: {
@@ -244,6 +252,8 @@ const state = {
   persistTimer: null,
   boardDragHoverSquare: null,
 };
+
+let guidedReviewController = null;
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
@@ -1695,6 +1705,7 @@ function buildDraftPayload() {
   return {
     ...buildLessonPayload(),
     practiceKindPreference: state.practicePreferenceKind,
+    guidedReviewActive: state.guidedReview.active,
   };
 }
 
@@ -2389,9 +2400,11 @@ function hydrateDraft() {
   }
   try {
     const draft = JSON.parse(raw);
+    const guidedReviewActive = Boolean(draft?.guidedReviewActive);
     state.practicePreferenceKind = normalizePracticeKind(draft?.practiceKindPreference);
     if (draft && typeof draft === 'object' && !Array.isArray(draft) && draft.nodes && draft.rootId) {
       applyLessonState(validateAndNormalizeLessonPayload(draft));
+      state.guidedReview.active = guidedReviewActive;
       return;
     }
 
@@ -2433,6 +2446,7 @@ function hydrateDraft() {
       annotations: normalizeAnnotationState(draft?.annotations),
       note: normalizeNoteState(draft?.note),
     });
+    state.guidedReview.active = guidedReviewActive;
   } catch (error) {
     console.warn('Unable to restore draft.', error);
   }
@@ -2528,6 +2542,82 @@ async function openPgnFile(file) {
   renderAll();
   schedulePersist();
   syncLessonFileStatus(`Imported ${file.name}.`);
+}
+
+function renderGuidedReviewVisibility() {
+  const active = Boolean(state.guidedReview.active);
+  if (dom.guidedReviewPanel) {
+    dom.guidedReviewPanel.hidden = !active;
+  }
+  if (dom.notationSection) {
+    dom.notationSection.hidden = active;
+  }
+  renderWorkspaceTools();
+}
+
+function setGuidedReviewActive(active) {
+  state.guidedReview.active = Boolean(active);
+  if (state.guidedReview.active) {
+    state.activeTab = TAB_PGN;
+  }
+  renderGuidedReviewVisibility();
+  schedulePersist();
+}
+
+function updateGuidedReviewTitle(title) {
+  state.title = String(title || '');
+  if (dom.titleInput) {
+    dom.titleInput.value = state.title;
+  }
+  if (dom.boardTitleDisplay) {
+    dom.boardTitleDisplay.textContent = state.title.trim() || 'Untitled position';
+  }
+  schedulePersist();
+}
+
+function loadGuidedReviewFenToBoard(fen) {
+  const normalizedFen = String(fen || '').trim().replace(/\s+/g, ' ');
+  if (!normalizedFen) {
+    return { ok: false, error: 'This row has no FEN value.' };
+  }
+
+  const validation = validateFen(normalizedFen);
+  if (!validation.ok) {
+    return { ok: false, error: validation.error || 'FEN is invalid.' };
+  }
+
+  try {
+    const game = new Chess(normalizedFen);
+    const parsed = parseFenLike(game.fen());
+    if (!parsed.ok) {
+      return { ok: false, error: parsed.error };
+    }
+    state.activeTab = TAB_PGN;
+    commitSetupState(parsed.pieces, parsed.meta, { syncFenInput: true, resetAnalysis: true });
+    renderBoard();
+    renderHeaderMeta();
+    renderHeroBanner();
+    renderAnalysisPanel();
+    renderPgnPanel();
+    renderPromotionModal();
+    return { ok: true, fen: state.setupFen };
+  } catch (error) {
+    return { ok: false, error: error?.message || 'Unable to load that FEN.' };
+  }
+}
+
+function initializeGuidedReviewController() {
+  guidedReviewController = createGuidedReviewController({
+    host: dom.guidedReviewPanel,
+    fileInput: dom.guidedReviewFileInput,
+    callbacks: {
+      setActive: setGuidedReviewActive,
+      loadFenToBoard: loadGuidedReviewFenToBoard,
+      updateTitle: updateGuidedReviewTitle,
+      downloadText: downloadTextFile,
+      setStatus: syncLessonFileStatus,
+    },
+  });
 }
 
 function commitSetupState(pieces, meta, options = {}) {
@@ -5274,7 +5364,7 @@ function renderWorkspaceTools() {
   if (!dom.workspaceTools) {
     return;
   }
-  dom.workspaceTools.hidden = !state.toolsExpanded;
+  dom.workspaceTools.hidden = state.guidedReview.active || !state.toolsExpanded;
 }
 
 function renderAll() {
@@ -5287,6 +5377,7 @@ function renderAll() {
   renderPgnPanel();
   renderTabs();
   renderWorkspaceTools();
+  renderGuidedReviewVisibility();
   syncLessonVisibilityMenuState();
   syncFullscreenMenuState();
   renderPromotionModal();
@@ -5572,6 +5663,9 @@ function handleDocumentClick(event) {
   if (!actionEl) {
     return;
   }
+  if (guidedReviewController?.handleAction(actionEl)) {
+    return;
+  }
   const { action } = actionEl.dataset;
   switch (action) {
     case 'toggle-lesson-actions':
@@ -5708,6 +5802,10 @@ function handleDocumentClick(event) {
       closeLessonActionsMenu();
       saveLessonFile();
       break;
+    case 'open-guided-review':
+      closeLessonActionsMenu();
+      guidedReviewController?.openGuidedReviewMode();
+      break;
     case 'import-pgn':
       closeLessonActionsMenu();
       if (dom.pgnFileInput) {
@@ -5738,6 +5836,9 @@ function handleDocumentClick(event) {
 }
 
 function handleDocumentInput(event) {
+  if (dom.guidedReviewPanel?.contains(event.target) && guidedReviewController?.handleInput(event)) {
+    return;
+  }
   if (event.target === dom.titleInput) {
     state.title = dom.titleInput.value;
     dom.boardTitleDisplay.textContent = state.title.trim() || 'Untitled position';
@@ -5770,6 +5871,18 @@ function handleDocumentInput(event) {
 }
 
 function handleDocumentChange(event) {
+  if (event.target === dom.guidedReviewFileInput) {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+    Promise.resolve(guidedReviewController?.importLessonRows(file)).finally(() => {
+      if (dom.guidedReviewFileInput) {
+        dom.guidedReviewFileInput.value = '';
+      }
+    });
+    return;
+  }
   if (event.target === dom.lessonFileInput) {
     const file = event.target.files?.[0];
     if (!file) {
@@ -5914,6 +6027,7 @@ function bindEvents() {
   document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
   document.addEventListener('webkitfullscreenerror', handleFullscreenError);
   window.addEventListener('beforeunload', () => {
+    guidedReviewController?.saveReviewProgress();
     persistDraft();
     terminateEngineWorker();
   });
@@ -5928,5 +6042,9 @@ initializeColorTheme();
 initializeDefaultSetup();
 hydrateDraft();
 syncAnalysisGameFromTree();
+initializeGuidedReviewController();
 bindEvents();
 renderAll();
+if (state.guidedReview.active) {
+  guidedReviewController?.openGuidedReviewMode();
+}
