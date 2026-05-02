@@ -156,6 +156,7 @@
   --annotation-accent-rgb: 24, 102, 56;
   --annotation-paint: rgba(var(--annotation-accent-rgb), 0.78);
   --annotation-ring: rgba(var(--annotation-accent-rgb), 0.96);
+  --annotation-star: rgba(var(--annotation-accent-rgb), 0.96);
   --annotation-arrow: rgba(var(--annotation-accent-rgb), 0.96);
   --modal-scrim: rgba(12, 18, 28, 0.46);
   --modal-border: rgba(193, 203, 220, 0.7);
@@ -311,6 +312,7 @@
   --annotation-accent-rgb: 38, 128, 74;
   --annotation-paint: rgba(var(--annotation-accent-rgb), 0.72);
   --annotation-ring: rgba(var(--annotation-accent-rgb), 0.96);
+  --annotation-star: rgba(var(--annotation-accent-rgb), 0.96);
   --annotation-arrow: rgba(var(--annotation-accent-rgb), 0.96);
   --modal-scrim: rgba(5, 10, 18, 0.72);
   --modal-border: rgba(44, 69, 105, 0.82);
@@ -672,7 +674,7 @@ code {
   background: var(--annotation-paint);
 }
 
-  .board-annotation-circle {
+.board-annotation-circle {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -680,6 +682,25 @@ code {
   box-sizing: border-box;
   border: 4px solid var(--annotation-ring);
   border-radius: 50%;
+}
+
+.board-annotation-star {
+  inset: 7%;
+  width: 86%;
+  height: 86%;
+  background: var(--annotation-star);
+  clip-path: polygon(
+    50% 0%,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
 }
 
 .board-annotation-arrow {

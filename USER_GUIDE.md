@@ -11,7 +11,7 @@ You can use it to:
 - build main lines and side lines
 - ask Stockfish for analysis
 - practice a recorded line or branch without seeing future moves
-- draw arrows, circles, and highlights on the board
+- draw arrows, circles, stars, and highlights on the board
 - write a lesson note
 - save the lesson as a file and open it again later
 
@@ -389,12 +389,14 @@ You cannot use annotations in:
 Supported annotation types:
 
 - circles on squares
+- stars on squares
 - painted highlighted squares
 - arrows between squares
 
 Mouse actions:
 
 - right-click a square: add or remove a circle
+- `Ctrl` + right-click a square: add or remove a star
 - right-drag across squares: paint highlighted squares
 - `Alt` + right-drag from one square to another: draw an arrow
 - left-click the board while annotations exist: clear all annotations

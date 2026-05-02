@@ -25,7 +25,7 @@ For normal use, you do not need to install anything or run a local server.
 - probe the Lichess tablebase for up-to-3x3 endgames
 - show the top 3 engine lines for the current position
 - practice either the selected lesson line or any recorded branch
-- draw arrows, circles, and highlighted squares
+- draw arrows, circles, stars, and highlighted squares
 - import and export PGN with variations and comments
 - write a lesson note
 - save and reopen lessons as files

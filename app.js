@@ -246,6 +246,7 @@ const state = {
     enabled: false,
     paintedSquares: new Set(),
     circledSquares: new Set(),
+    starredSquares: new Set(),
     arrows: [],
     gesture: createEmptyAnnotationGestureState(),
     suppressBoardClickUntil: 0,
@@ -1046,6 +1047,7 @@ function normalizeAnnotationState(value) {
   return {
     paintedSquares: normalizeAnnotationSquares(value?.paintedSquares),
     circledSquares: normalizeAnnotationSquares(value?.circledSquares),
+    starredSquares: normalizeAnnotationSquares(value?.starredSquares),
     arrows: normalizeAnnotationArrows(value?.arrows),
   };
 }
@@ -1054,6 +1056,7 @@ function buildAnnotationPayload() {
   return {
     paintedSquares: Array.from(state.annotations.paintedSquares).sort(),
     circledSquares: Array.from(state.annotations.circledSquares).sort(),
+    starredSquares: Array.from(state.annotations.starredSquares).sort(),
     arrows: state.annotations.arrows.map((arrow) => ({ from: arrow.from, to: arrow.to })),
   };
 }
@@ -2413,6 +2416,7 @@ function applyLessonState(lessonState) {
   state.annotations.enabled = false;
   state.annotations.paintedSquares = new Set(lessonState.annotations?.paintedSquares || []);
   state.annotations.circledSquares = new Set(lessonState.annotations?.circledSquares || []);
+  state.annotations.starredSquares = new Set(lessonState.annotations?.starredSquares || []);
   state.annotations.arrows = normalizeAnnotationArrows(lessonState.annotations?.arrows);
   state.annotations.suppressContextMenu = false;
   state.annotations.gesture = createEmptyAnnotationGestureState();
@@ -4267,6 +4271,9 @@ function annotationMarkupForSquare(square) {
   if (state.annotations.circledSquares.has(square)) {
     layers.push('<span class="board-annotation board-annotation-circle" aria-hidden="true"></span>');
   }
+  if (state.annotations.starredSquares.has(square)) {
+    layers.push('<span class="board-annotation board-annotation-star" aria-hidden="true"></span>');
+  }
   return layers.join('');
 }
 
@@ -4380,6 +4387,7 @@ function renderAnnotationOverlay() {
 function hasAnyAnnotations() {
   return state.annotations.paintedSquares.size > 0
     || state.annotations.circledSquares.size > 0
+    || state.annotations.starredSquares.size > 0
     || state.annotations.arrows.length > 0;
 }
 
@@ -4411,6 +4419,7 @@ function clearAllAnnotations() {
   }
   state.annotations.paintedSquares.clear();
   state.annotations.circledSquares.clear();
+  state.annotations.starredSquares.clear();
   state.annotations.arrows = [];
   return true;
 }
@@ -4423,6 +4432,18 @@ function toggleAnnotationCircle(square) {
     state.annotations.circledSquares.delete(square);
   } else {
     state.annotations.circledSquares.add(square);
+  }
+  return true;
+}
+
+function toggleAnnotationStar(square) {
+  if (!SQUARE_PATTERN.test(square)) {
+    return false;
+  }
+  if (state.annotations.starredSquares.has(square)) {
+    state.annotations.starredSquares.delete(square);
+  } else {
+    state.annotations.starredSquares.add(square);
   }
   return true;
 }
@@ -4478,6 +4499,8 @@ function applyAnnotationGestureSquare(square) {
       }
       changed = paintAnnotationSquare(square) || changed;
     } else if (gesture.mode === 'arrow') {
+      gesture.dragged = true;
+    } else if (gesture.mode === 'star') {
       gesture.dragged = true;
     }
   }
@@ -5579,6 +5602,16 @@ function handleBoardContextMenu(event) {
   removeSetupPiece(square);
 }
 
+function annotationGestureModeFromEvent(event) {
+  if (event.button === 2 && event.altKey) {
+    return 'arrow';
+  }
+  if (event.button === 2 && event.ctrlKey) {
+    return 'star';
+  }
+  return 'paint';
+}
+
 function handleBoardMouseDown(event) {
   if (event.button !== 0 && event.button !== 2) {
     return;
@@ -5618,7 +5651,7 @@ function handleBoardMouseDown(event) {
   state.annotations.gesture = {
     active: true,
     button: event.button,
-    mode: event.button === 2 && event.altKey ? 'arrow' : 'paint',
+    mode: annotationGestureModeFromEvent(event),
     startSquare: square,
     lastSquare: square,
     dragged: false,
@@ -5648,6 +5681,8 @@ function handleDocumentMouseUp(event) {
   if (gesture.button === 2) {
     if (gesture.mode === 'paint' && !gesture.dragged && releaseSquare === gesture.startSquare) {
       changed = toggleAnnotationCircle(gesture.startSquare);
+    } else if (gesture.mode === 'star' && !gesture.dragged && releaseSquare === gesture.startSquare) {
+      changed = toggleAnnotationStar(gesture.startSquare);
     } else if (gesture.mode === 'arrow' && releaseSquare && releaseSquare !== gesture.startSquare) {
       changed = addAnnotationArrow(gesture.startSquare, releaseSquare);
     }
