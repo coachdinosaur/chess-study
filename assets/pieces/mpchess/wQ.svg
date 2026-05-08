@@ -186,10 +186,10 @@
        transform="matrix(1.0736137,0,0,1,-0.23322654,0.02910263)">
       <path
          d="m 6.5422048,294.17824 c 1.077612,0 1.124675,0.85728 1.124675,1.49455 H 2.068755 c 0,-0.64896 0.046562,-1.49455 1.1241734,-1.49455 z"
-         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.38604325;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.24;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          id="path886-5" />
       <path
-         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.51181102;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.94;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
          d="M 15.013672 3.8730469 A 3.016314 3.0163139 0 0 0 11.996094 6.8886719 A 3.016314 3.0163139 0 0 0 13.90625 9.6933594 L 13.533203 17.808594 L 9.5488281 11.285156 A 3.016314 3.0163139 0 0 0 10.078125 9.5761719 A 3.016314 3.0163139 0 0 0 7.0625 6.5605469 A 3.016314 3.0163139 0 0 0 4.046875 9.5761719 A 3.016314 3.0163139 0 0 0 6.5507812 12.546875 L 11.324219 27.236328 L 26.470703 27.236328 L 31.230469 12.636719 A 3.016314 3.0163139 0 0 0 33.826172 9.6542969 A 3.016314 3.0163139 0 0 0 30.810547 6.6386719 A 3.016314 3.0163139 0 0 0 27.794922 9.6542969 A 3.016314 3.0163139 0 0 0 28.25 11.238281 L 24.177734 17.808594 L 23.859375 9.6796875 A 3.016314 3.0163139 0 0 0 25.734375 6.8886719 A 3.016314 3.0163139 0 0 0 22.71875 3.8730469 A 3.016314 3.0163139 0 0 0 19.703125 6.8886719 A 3.016314 3.0163139 0 0 0 20.556641 8.9921875 L 18.855469 17.808594 L 17.230469 8.9296875 A 3.016314 3.0163139 0 0 0 18.029297 6.8886719 A 3.016314 3.0163139 0 0 0 15.013672 3.8730469 z "
          transform="matrix(0.24644184,0,0,0.26458333,0.21723506,286.9709)"
          id="path854" />
