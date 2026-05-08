@@ -16,8 +16,9 @@ const ENGINE_MULTI_PV_COUNT = 3;
 const ENGINE_READY_TIMEOUT_MS = 15000;
 const TABLEBASE_ENDPOINT = 'https://tablebase.lichess.org/standard';
 const TABLEBASE_FETCH_TIMEOUT_MS = 30000;
-const TABLEBASE_MAX_TOTAL_PIECES = 6;
-const TABLEBASE_MAX_PIECES_PER_SIDE = 3;
+const TABLEBASE_MAX_TOTAL_PIECES = 7;
+const TABLEBASE_MAX_PIECES_PER_SIDE = 4;
+const TABLEBASE_ENDGAME_LABEL = 'up-to-7-piece endgame';
 const TABLEBASE_LINE_MAX_PLIES = 80;
 const TABLEBASE_LINE_MAX_REQUESTS = 80;
 const DEFAULT_ANALYSIS_TARGET_DEPTH = 30;
@@ -2112,7 +2113,7 @@ function defaultAnalysisSummary() {
     return 'Fix the setup in the Setup tab to enable legal-move analysis.';
   }
   if (isTablebaseEligibleFen(state.analysis.currentFen)) {
-    return 'Select Analyze to probe the Lichess tablebase for this up-to-3x3 endgame. Stockfish is used if the lookup is unavailable.';
+    return `Select Analyze to probe the Lichess tablebase for this ${TABLEBASE_ENDGAME_LABEL}. Stockfish is used if the lookup is unavailable.`;
   }
   const targetDepth = currentAnalysisTargetDepth();
   if (state.engine.ready) {
@@ -3941,7 +3942,7 @@ async function startTablebaseAnalysisForFen(fen, options = {}) {
   }
   state.tablebase.error = '';
   state.engine.evalRailVisible = true;
-  state.engine.summary = 'Probing Lichess tablebase for this up-to-3x3 endgame...';
+  state.engine.summary = `Probing Lichess tablebase for this ${TABLEBASE_ENDGAME_LABEL}...`;
   renderAnalysisOutputPanels();
 
   const timeoutId = window.setTimeout(() => {
@@ -5355,7 +5356,7 @@ function analysisStatusBannerTitle(hasBoard) {
 
 function analysisStatusSummary() {
   if (state.tablebase.probing) {
-    return state.engine.summary || 'Probing Lichess tablebase for this up-to-3x3 endgame...';
+    return state.engine.summary || `Probing Lichess tablebase for this ${TABLEBASE_ENDGAME_LABEL}...`;
   }
   const tablebaseResult = currentTablebaseResultForDisplay();
   if (tablebaseResult) {

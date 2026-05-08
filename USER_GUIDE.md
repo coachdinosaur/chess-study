@@ -271,7 +271,7 @@ The app has one main engine button beside the three-dot menu:
 - `Analyze`: start live Stockfish analysis
 - `Stop`: stop the current search
 
-If the current position is a legal tablebase endgame, `Analyze` checks the Lichess tablebase instead of starting Stockfish. This applies when the board has one king per side, no castling rights, up to 3 pieces per side, and up to 6 pieces total. Pawns are included.
+If the current position is a legal tablebase endgame, `Analyze` checks the Lichess tablebase instead of starting Stockfish. This applies when the board has one king per side, no castling rights, and up to 7 pieces total. This includes 4v3 and 3v4 endgames. Pawns are included.
 
 Tablebase lookup needs internet access. If the lookup is unavailable or rate-limited, the app automatically falls back to Stockfish.
 

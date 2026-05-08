@@ -22,7 +22,7 @@ For normal use, you do not need to install anything or run a local server.
 - play moves from that position
 - create main lines and side variations
 - run Stockfish analysis in the browser
-- probe the Lichess tablebase for up-to-3x3 endgames
+- probe the Lichess tablebase for up-to-7-piece endgames
 - show the top 3 engine lines for the current position
 - practice either the selected lesson line or any recorded branch
 - draw arrows, circles, stars, and highlighted squares
@@ -32,7 +32,7 @@ For normal use, you do not need to install anything or run a local server.
 
 ## Recent Improvements
 
-- added Lichess tablebase analysis for legal up-to-3x3 endgames, including pawns, with no backend or API key required
+- added Lichess tablebase analysis for legal up-to-7-piece endgames, including pawns, with no backend or API key required
 - tablebase results now replace Stockfish automatically for eligible positions and fall back to Stockfish if the lookup is unavailable, rate-limited, offline, or out of scope
 - tablebase move output now shows numbered SAN continuation lines, such as `1. Kb4 Kc6 2. ...`, instead of only result, DTM, and DTZ fields
 - tablebase and engine PV lines stay visible after a move is played when the move belongs to one of the displayed lines, matching the smoother Lichess-style analysis flow
@@ -157,7 +157,7 @@ If you only install a multi-threaded bundle, the app needs the local server abov
 
 ## Tablebase Analysis
 
-For legal endgames with one king per side, no castling rights, up to 3 pieces per side, and up to 6 pieces total, `Analyze` uses the public Lichess tablebase before Stockfish.
+For legal endgames with one king per side, no castling rights, and up to 7 pieces total, `Analyze` uses the public Lichess tablebase before Stockfish. This includes 4v3 and 3v4 endgames. Pawns are included.
 
 This works from GitHub Pages or any static deployment because the request goes directly from the browser to:
 
