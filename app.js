@@ -12,6 +12,10 @@ const BOARD_VIEWBOX_SIZE = 800;
 const BOARD_CELL_SIZE = BOARD_VIEWBOX_SIZE / 8;
 const ANNOTATION_ARROW_HEAD_LENGTH = 30;
 const ANNOTATION_ARROW_HEAD_WIDTH = 40;
+const LAST_MOVE_ARROW_START_INSET = 30;
+const LAST_MOVE_ARROW_TIP_INSET = 30;
+const LAST_MOVE_ARROW_HEAD_LENGTH = 24;
+const LAST_MOVE_ARROW_HEAD_WIDTH = 34;
 const ENGINE_MULTI_PV_COUNT = 3;
 const ENGINE_READY_TIMEOUT_MS = 15000;
 const TABLEBASE_ENDPOINT = 'https://tablebase.lichess.org/standard';
@@ -1017,13 +1021,20 @@ function startEngineSearch(worker, fen, options = {}) {
 
 function queueEngineSearchForFen(fen, options = {}) {
   const { preserveDisplay = false } = options;
-  if (!fen || !state.engine.worker || !state.engine.ready || !state.engine.analyzing || state.engine.stopping) {
+  if (!fen || state.engine.stopping) {
+    return;
+  }
+  const canQueueActiveSearch = Boolean(state.engine.worker && state.engine.ready && state.engine.analyzing);
+  const canQueueLoadingSearch = Boolean(state.engine.loading);
+  if (!canQueueActiveSearch && !canQueueLoadingSearch) {
     return;
   }
   clearTablebaseDisplay();
   state.engine.pendingFen = fen;
   state.engine.pendingSearchMode = state.engine.searchMode || ENGINE_SEARCH_MODE_CHECKPOINT;
-  state.engine.searchFen = '';
+  if (canQueueActiveSearch) {
+    state.engine.searchFen = '';
+  }
   clearEngineContinuationState();
   if (!preserveDisplay) {
     clearEngineSearchData({ preserveEval: true });
@@ -1035,7 +1046,9 @@ function queueEngineSearchForFen(fen, options = {}) {
   renderAnalysisPanel();
   renderBoard();
   renderHeaderMeta();
-  state.engine.worker.postMessage('stop');
+  if (canQueueActiveSearch) {
+    state.engine.worker.postMessage('stop');
+  }
 }
 
 function normalizeAnnotationSquares(value) {
@@ -2898,6 +2911,10 @@ function clearAnalysisSelection() {
   state.analysis.legalMoves = [];
 }
 
+function analysisShouldFollowPositionChanges() {
+  return (state.engine.analyzing && !state.engine.stopping) || state.engine.loading;
+}
+
 function resetAnalysisOutput(options = {}) {
   const { keepReady = true, summary = defaultAnalysisSummary() } = options;
   if (state.engine.worker && state.engine.analyzing) {
@@ -2988,6 +3005,7 @@ function jumpToAnalysisNode(nodeId, options = {}) {
   if (!nextNode) {
     return;
   }
+  const shouldKeepAnalysisLive = analysisShouldFollowPositionChanges();
   if (state.activeTab === TAB_SETUP && countAnalysisMoveNodes()) {
     state.activeTab = TAB_PGN;
   }
@@ -2995,7 +3013,11 @@ function jumpToAnalysisNode(nodeId, options = {}) {
     applyAnalysisPathSelection(nodeId);
   }
   state.analysis.currentNodeId = nodeId;
-  syncAnalysisGameFromTree();
+  syncAnalysisGameFromTree({ resetEngine: !shouldKeepAnalysisLive });
+  if (shouldKeepAnalysisLive) {
+    state.analysis.boardMessage = 'Stockfish is following the selected lesson position.';
+    queueEngineSearchForFen(state.analysis.currentFen, { preserveDisplay: true });
+  }
   schedulePersist();
   renderAll();
 }
@@ -3935,6 +3957,26 @@ async function startStockfishAnalysisForCurrentPosition(options = {}) {
       summaryPrefix: prelude,
     });
     if (!state.analysis.game || state.analysis.currentFen !== currentFen) {
+      const pendingFen = state.engine.pendingFen;
+      if (
+        pendingFen
+        && state.analysis.game
+        && state.analysis.currentFen === pendingFen
+        && worker === state.engine.worker
+        && !state.engine.stopping
+      ) {
+        const pendingSearchMode = state.engine.pendingSearchMode || ENGINE_SEARCH_MODE_CHECKPOINT;
+        startEngineSearch(worker, pendingFen, {
+          preserveDisplay: true,
+          freshGame: true,
+          searchMode: pendingSearchMode,
+          targetDepth: pendingSearchMode === ENGINE_SEARCH_MODE_CHECKPOINT ? currentAnalysisTargetDepth() : null,
+          summary: pendingSearchMode === ENGINE_SEARCH_MODE_CONTINUE
+            ? 'Continuing analysis from the current board position...'
+            : `Analyzing current board position toward depth ${currentAnalysisTargetDepth()}...`,
+        });
+        return;
+      }
       state.engine.summary = defaultAnalysisSummary();
       renderAnalysisOutputPanels();
       return;
@@ -4130,7 +4172,7 @@ function applyAnalysisMove(move) {
   if (!state.analysis.game) {
     return;
   }
-  const shouldKeepAnalysisLive = (state.engine.analyzing && !state.engine.stopping) || state.engine.loading;
+  const shouldKeepAnalysisLive = analysisShouldFollowPositionChanges();
   const currentNode = getCurrentAnalysisNode();
   if (!currentNode) {
     return;
@@ -4168,33 +4210,24 @@ function applyAnalysisMove(move) {
 
   const nextFen = state.analysis.game.fen();
   const followedDisplay = createFollowedAnalysisDisplay(applied, nextFen);
-  const shouldKeepFollowedDisplay = Boolean(followedDisplay);
+  const shouldKeepFollowedDisplay = Boolean(
+    followedDisplay
+    && !(shouldKeepAnalysisLive && followedDisplay.source === 'tablebase')
+  );
   syncAnalysisGameFromTree({ resetEngine: !(shouldKeepAnalysisLive || shouldKeepFollowedDisplay) });
   if (shouldKeepFollowedDisplay) {
     applyFollowedAnalysisDisplay(followedDisplay);
   }
-  const shouldProbeTablebaseAfterMove = Boolean(
-    state.engine.analyzing
-    && !state.engine.stopping
-    && isTablebaseEligibleFen(state.analysis.currentFen),
-  );
-  state.analysis.boardMessage = shouldProbeTablebaseAfterMove
-    ? `Current move: ${applied.san}. Tablebase is solving the new board position.`
-    : shouldKeepAnalysisLive
+  state.analysis.boardMessage = shouldKeepAnalysisLive
       ? `Current move: ${applied.san}. Stockfish is following the new board position.`
-    : `Current move: ${applied.san}. Analyze the current board position for fresh evaluation.`;
-  if (shouldProbeTablebaseAfterMove) {
-    void startTablebaseAnalysisForFen(state.analysis.currentFen, {
-      fallbackToEngine: true,
-      preserveDisplay: shouldKeepFollowedDisplay,
-    });
+      : `Current move: ${applied.san}. Analyze the current board position for fresh evaluation.`;
+  if (shouldKeepAnalysisLive && !state.engine.stopping) {
+    queueEngineSearchForFen(state.analysis.currentFen, { preserveDisplay: shouldKeepFollowedDisplay });
   } else if (followedDisplay?.source === 'tablebase' && isTablebaseEligibleFen(state.analysis.currentFen)) {
     void startTablebaseAnalysisForFen(state.analysis.currentFen, {
       fallbackToEngine: false,
       preserveDisplay: true,
     });
-  } else if (state.engine.analyzing && !state.engine.stopping) {
-    queueEngineSearchForFen(state.analysis.currentFen, { preserveDisplay: shouldKeepFollowedDisplay });
   }
   schedulePersist();
   renderAll();
@@ -4416,6 +4449,78 @@ function buildAnnotationArrowMarkup(from, to, options = {}) {
   `;
 }
 
+function buildLastMoveArrowMarkup() {
+  if (state.activeTab === TAB_SETUP) {
+    return '';
+  }
+  const [from, to] = state.analysis.lastMoveSquares;
+  const start = squareCenterPoint(from);
+  const end = squareCenterPoint(to);
+  if (!start || !end || (start.x === end.x && start.y === end.y)) {
+    return '';
+  }
+
+  const deltaX = end.x - start.x;
+  const deltaY = end.y - start.y;
+  const distance = Math.hypot(deltaX, deltaY);
+  const requiredDistance = LAST_MOVE_ARROW_START_INSET
+    + LAST_MOVE_ARROW_TIP_INSET
+    + LAST_MOVE_ARROW_HEAD_LENGTH;
+  if (distance <= requiredDistance) {
+    return '';
+  }
+
+  const unitX = deltaX / distance;
+  const unitY = deltaY / distance;
+  const startX = start.x + (unitX * LAST_MOVE_ARROW_START_INSET);
+  const startY = start.y + (unitY * LAST_MOVE_ARROW_START_INSET);
+  const tipX = end.x - (unitX * LAST_MOVE_ARROW_TIP_INSET);
+  const tipY = end.y - (unitY * LAST_MOVE_ARROW_TIP_INSET);
+  const headBaseX = tipX - (unitX * LAST_MOVE_ARROW_HEAD_LENGTH);
+  const headBaseY = tipY - (unitY * LAST_MOVE_ARROW_HEAD_LENGTH);
+  const perpendicularX = -unitY;
+  const perpendicularY = unitX;
+  const headHalfWidth = LAST_MOVE_ARROW_HEAD_WIDTH / 2;
+  const leftX = headBaseX + (perpendicularX * headHalfWidth);
+  const leftY = headBaseY + (perpendicularY * headHalfWidth);
+  const rightX = headBaseX - (perpendicularX * headHalfWidth);
+  const rightY = headBaseY - (perpendicularY * headHalfWidth);
+
+  return `
+    <svg
+      class="last-move-overlay"
+      viewBox="0 0 ${BOARD_VIEWBOX_SIZE} ${BOARD_VIEWBOX_SIZE}"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <g>
+        <line
+          class="last-move-arrow-outline"
+          x1="${startX}"
+          y1="${startY}"
+          x2="${headBaseX}"
+          y2="${headBaseY}"
+        ></line>
+        <line
+          class="last-move-arrow"
+          x1="${startX}"
+          y1="${startY}"
+          x2="${headBaseX}"
+          y2="${headBaseY}"
+        ></line>
+        <polygon
+          class="last-move-arrow-head-outline"
+          points="${tipX},${tipY} ${leftX},${leftY} ${rightX},${rightY}"
+        ></polygon>
+        <polygon
+          class="last-move-arrow-head"
+          points="${tipX},${tipY} ${leftX},${leftY} ${rightX},${rightY}"
+        ></polygon>
+      </g>
+    </svg>
+  `;
+}
+
 function currentPreviewArrow() {
   const { gesture } = state.annotations;
   if (!gesture.active || gesture.mode !== 'arrow') {
@@ -4601,7 +4706,6 @@ function boardLightAtCell(row, col) {
 function buildBoardMarkup() {
   const pieces = currentDisplayPieces();
   const selectedSquare = state.activeTab === TAB_SETUP ? null : state.analysis.selectedSquare;
-  const lastMoveSquares = new Set(state.activeTab === TAB_SETUP ? [] : state.analysis.lastMoveSquares);
   const legalMoves = state.activeTab === TAB_SETUP ? [] : state.analysis.legalMoves;
   const legalTargets = new Set(legalMoves.map((move) => move.to));
   const legalCaptures = new Set(
@@ -4623,9 +4727,6 @@ function buildBoardMarkup() {
       }
       if (square === selectedSquare) {
         classes.push('selected');
-      }
-      if (lastMoveSquares.has(square)) {
-        classes.push('last-move');
       }
       if (legalTargets.has(square)) {
         classes.push(legalCaptures.has(square) ? 'legal-capture' : 'legal-target');
@@ -4650,7 +4751,7 @@ function buildBoardMarkup() {
       `;
     }
   }
-  return markup;
+  return `${buildLastMoveArrowMarkup()}${markup}`;
 }
 
 function renderBoard() {

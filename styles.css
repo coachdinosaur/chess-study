@@ -157,7 +157,8 @@
   --eval-rail-gap: 0rem;
   --eval-rail-shadow: rgba(47, 36, 13, 0.2);
   --selection: rgba(201, 169, 74, 0.92);
-  --last-move: rgba(214, 182, 91, 0.34);
+  --last-move-arrow: rgba(47, 111, 105, 0.88);
+  --last-move-arrow-outline: rgba(255, 255, 252, 0.78);
   --legal-target: rgba(78, 125, 212, 0.64);
   --legal-capture: rgba(200, 95, 74, 0.78);
   --drag-hover: rgba(228, 196, 107, 0.42);
@@ -313,7 +314,8 @@
   --eval-rail-gap: 0rem;
   --eval-rail-shadow: rgba(0, 0, 0, 0.34);
   --selection: rgba(228, 196, 107, 0.9);
-  --last-move: rgba(228, 196, 107, 0.28);
+  --last-move-arrow: rgba(126, 213, 177, 0.9);
+  --last-move-arrow-outline: rgba(7, 16, 14, 0.72);
   --legal-target: rgba(110, 158, 235, 0.72);
   --legal-capture: rgba(255, 146, 125, 0.86);
   --drag-hover: rgba(138, 216, 183, 0.28);
@@ -608,6 +610,16 @@ code {
   overflow: visible;
 }
 
+.last-move-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
 .board-square {
   position: relative;
   display: flex;
@@ -640,10 +652,6 @@ code {
 
 .board-square.selected {
   box-shadow: inset 0 0 0 3px var(--selection);
-}
-
-.board-square.last-move {
-  box-shadow: inset 0 0 0 999px var(--last-move);
 }
 
 .board-square.legal-target::after,
@@ -729,6 +737,35 @@ code {
 
 .board-annotation-arrow-head.is-preview {
   opacity: 0.72;
+}
+
+.last-move-arrow-outline,
+.last-move-arrow {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.last-move-arrow-outline {
+  stroke: var(--last-move-arrow-outline);
+  stroke-width: 18;
+  opacity: 0.78;
+}
+
+.last-move-arrow {
+  stroke: var(--last-move-arrow);
+  stroke-width: 8;
+  opacity: 0.92;
+}
+
+.last-move-arrow-head-outline {
+  fill: var(--last-move-arrow-outline);
+  opacity: 0.78;
+}
+
+.last-move-arrow-head {
+  fill: var(--last-move-arrow);
+  opacity: 0.92;
 }
 
 .board-piece-shell {
