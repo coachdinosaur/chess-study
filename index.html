@@ -132,6 +132,7 @@
                 <button id="toggleNoteMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-note" role="menuitem">Show note</button>
                 <button id="toggleToolsMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-tools" role="menuitem">Show tools</button>
                 <button id="togglePvLinesMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-pv-lines" role="menuitem">Hide PV lines</button>
+                <button id="enterFocusModeButton" type="button" class="lesson-overflow-item" data-action="enter-focus-mode" role="menuitem">Focus mode</button>
                 <button id="toggleFullscreenMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-fullscreen" role="menuitem" hidden>Enter fullscreen</button>
                 <div class="lesson-overflow-divider" role="separator"></div>
                 <p class="lesson-overflow-section-label" role="presentation">Theme</p>
@@ -227,6 +228,33 @@
         </div>
       </section>
     </main>
+    <div id="focusModeControls" class="focus-mode-controls" aria-label="Focus mode controls" hidden>
+      <button
+        id="focusModeAnalyzeButton"
+        type="button"
+        class="focus-mode-button focus-mode-analyze-button"
+        data-action="toggle-analysis"
+        aria-label="Analyze"
+        title="Analyze"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M3 12h4l2-6 4 12 2-6h6"></path>
+        </svg>
+      </button>
+      <button
+        id="exitFocusModeButton"
+        type="button"
+        class="focus-mode-button"
+        data-action="exit-focus-mode"
+        aria-label="Exit focus mode"
+        title="Exit focus mode"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M6 6l12 12"></path>
+          <path d="M18 6L6 18"></path>
+        </svg>
+      </button>
+    </div>
   </div>
 
   <div id="promotionModal" class="promotion-modal" hidden aria-hidden="true">

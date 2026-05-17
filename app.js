@@ -101,6 +101,7 @@ const PIECE_ASSETS = Object.freeze({
 
 const dom = {
   rootElement: document.documentElement,
+  pageShell: document.querySelector('.page-shell'),
   boardGrid: document.getElementById('boardGrid'),
   boardAnnotationOverlay: document.getElementById('boardAnnotationOverlay'),
   boardFrame: document.querySelector('.board-frame'),
@@ -134,6 +135,9 @@ const dom = {
   toggleToolsMenuButton: document.getElementById('toggleToolsMenuButton'),
   togglePvLinesMenuButton: document.getElementById('togglePvLinesMenuButton'),
   toggleFullscreenMenuButton: document.getElementById('toggleFullscreenMenuButton'),
+  focusModeControls: document.getElementById('focusModeControls'),
+  focusModeAnalyzeButton: document.getElementById('focusModeAnalyzeButton'),
+  exitFocusModeButton: document.getElementById('exitFocusModeButton'),
   colorThemeItems: Array.from(document.querySelectorAll('[data-action="set-color-theme"]')),
   lessonFileInput: document.getElementById('lessonFileInput'),
   pgnFileInput: document.getElementById('pgnFileInput'),
@@ -162,6 +166,7 @@ const dom = {
 const state = {
   title: DEFAULT_TITLE,
   colorTheme: document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light',
+  focusMode: false,
   boardOrientation: 'white',
   activeTab: TAB_PGN,
   setup: {
@@ -1709,6 +1714,40 @@ function handleFullscreenChange() {
 
 function handleFullscreenError() {
   reportFullscreenToggleError(null);
+}
+
+function syncFocusModeControls() {
+  if (!dom.focusModeControls) {
+    return;
+  }
+  dom.focusModeControls.hidden = !state.focusMode;
+  syncAnalyzeButtonState(dom.focusModeAnalyzeButton, { iconOnly: true });
+}
+
+function syncFocusModeUi() {
+  dom.pageShell?.classList.toggle('is-focus-mode', state.focusMode);
+  syncFocusModeControls();
+}
+
+function setFocusMode(isActive, options = {}) {
+  const { restoreFocus = !isActive } = options;
+  const nextFocusMode = Boolean(isActive);
+  closeLessonActionsMenu();
+  if (state.focusMode !== nextFocusMode) {
+    state.focusMode = nextFocusMode;
+  }
+  syncFocusModeUi();
+  renderBoard();
+  window.requestAnimationFrame(() => {
+    syncBoardSize();
+  });
+  if (nextFocusMode) {
+    dom.exitFocusModeButton?.focus();
+    return;
+  }
+  if (restoreFocus) {
+    dom.lessonActionsButton?.focus();
+  }
 }
 
 function buildLessonPayload() {
@@ -3298,6 +3337,40 @@ function currentAnalyzeButtonLabel() {
   return hasAnalysisContinuationAvailable() ? 'Continue' : 'Analyze';
 }
 
+function analyzeButtonAccessibleLabel(label) {
+  if (label === 'Stop') {
+    return 'Stop analysis';
+  }
+  if (label === 'Continue') {
+    return 'Continue analysis';
+  }
+  return label || 'Analyze';
+}
+
+function analysisToggleDisabled(hasBoard = Boolean(state.analysis.game)) {
+  return state.practice.active || !hasBoard || state.tablebase.probing || state.engine.loading || state.engine.stopping;
+}
+
+function syncAnalyzeButtonState(button, options = {}) {
+  if (!button) {
+    return;
+  }
+  const { iconOnly = false, hasBoard = Boolean(state.analysis.game) } = options;
+  const label = currentAnalyzeButtonLabel();
+  const accessibleLabel = analyzeButtonAccessibleLabel(label);
+  if (!iconOnly) {
+    button.textContent = label;
+  }
+  button.disabled = analysisToggleDisabled(hasBoard);
+  button.classList.toggle('primary', !state.engine.analyzing && !state.engine.stopping);
+  button.classList.toggle('danger', state.engine.analyzing || state.engine.stopping);
+  button.classList.toggle('is-analyzing', state.engine.analyzing || state.engine.stopping);
+  button.classList.toggle('is-loading', state.tablebase.probing || state.engine.loading);
+  button.setAttribute('aria-label', accessibleLabel);
+  button.setAttribute('title', accessibleLabel);
+  button.setAttribute('aria-pressed', state.engine.analyzing ? 'true' : 'false');
+}
+
 function currentPvPlaceholderText() {
   if (state.tablebase.probing) {
     return 'Probing tablebase moves...';
@@ -4585,13 +4658,16 @@ function renderBoard() {
   renderAnnotationOverlay();
   syncBoardSize();
 
-  if (state.engine.evalRailVisible) {
+  const showEvalRail = state.engine.evalRailVisible || state.focusMode;
+  if (showEvalRail) {
     dom.evalBadgeWrap.classList.remove('is-hidden');
     dom.evalBarWrap.classList.remove('is-hidden');
     dom.evalBadgeWrap.setAttribute('aria-hidden', 'false');
     dom.evalBarWrap.setAttribute('aria-hidden', 'false');
     dom.evalBarWrap.dataset.orientation = state.boardOrientation;
-    const evalDisplay = currentEvalDisplay();
+    const evalDisplay = state.engine.evalRailVisible
+      ? currentEvalDisplay()
+      : { label: '0.00', whiteFraction: 0.5 };
     dom.evalBadge.textContent = evalDisplay.label || '0.00';
     const whiteFraction = Number.isFinite(evalDisplay.whiteFraction) ? evalDisplay.whiteFraction : 0.5;
     dom.evalBarWhite.style.height = `${(whiteFraction * 100).toFixed(1)}%`;
@@ -4612,6 +4688,26 @@ function syncBoardSize() {
   dom.rootElement.style.setProperty('--board-side-gap', '0px');
   dom.boardColumn.style.removeProperty('--board-size');
   dom.boardFrame.style.removeProperty('--board-size');
+
+  if (state.focusMode) {
+    const viewportWidth = window.visualViewport?.width ?? window.innerWidth;
+    const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+    const evalRailWidth = remToPx(1);
+    const evalRailGap = remToPx(0.8);
+    const horizontalPadding = remToPx(viewportWidth < 760 ? 1 : 2);
+    const verticalPadding = remToPx(viewportHeight < 520 ? 1 : 2);
+    const maxBoardSize = remToPx(56);
+    const boardSize = Math.floor(Math.min(
+      Math.max(0, viewportWidth - (horizontalPadding * 2) - evalRailWidth - evalRailGap),
+      Math.max(0, viewportHeight - (verticalPadding * 2)),
+      maxBoardSize,
+    ));
+    if (boardSize > 0) {
+      dom.boardColumn.style.setProperty('--board-size', `${boardSize}px`);
+    }
+    dom.rootElement.style.setProperty('--board-side-gap', '0px');
+    return;
+  }
 
   const columnWidth = dom.boardColumn.clientWidth;
   if (!columnWidth) {
@@ -4669,13 +4765,8 @@ function renderHeaderMeta() {
   dom.currentFenCode.textContent = currentBoardFenLabel();
   dom.setupFenCode.textContent = state.setupFen;
   dom.engineReadyLabel.textContent = engineLabel;
-  if (dom.headerAnalyzeButton) {
-    dom.headerAnalyzeButton.textContent = currentAnalyzeButtonLabel();
-    dom.headerAnalyzeButton.disabled = state.practice.active || !state.analysis.game || state.tablebase.probing || state.engine.loading || state.engine.stopping;
-    dom.headerAnalyzeButton.classList.toggle('primary', !state.engine.analyzing && !state.engine.stopping);
-    dom.headerAnalyzeButton.classList.toggle('danger', state.engine.analyzing || state.engine.stopping);
-    dom.headerAnalyzeButton.setAttribute('aria-pressed', state.engine.analyzing ? 'true' : 'false');
-  }
+  syncAnalyzeButtonState(dom.headerAnalyzeButton);
+  syncFocusModeControls();
   if (document.activeElement !== dom.titleInput) {
     dom.titleInput.value = state.title;
   }
@@ -5369,7 +5460,7 @@ function renderAnalysisPanel() {
   const hasBoard = Boolean(state.analysis.game);
   const annotateButtonClass = `action-button tonal ${state.annotations.enabled ? 'is-active' : ''}`.trim();
   const analyzeButtonLabel = currentAnalyzeButtonLabel();
-  const analysisButtonDisabled = state.practice.active || !hasBoard || state.tablebase.probing || state.engine.loading || state.engine.stopping;
+  const analysisButtonDisabled = analysisToggleDisabled(hasBoard);
   const depthInputDisabled = state.practice.active || !hasBoard || state.tablebase.probing || state.engine.loading || state.engine.analyzing || state.engine.stopping;
   const analyzeButtonTone = state.engine.analyzing || state.engine.stopping ? 'danger' : 'primary';
   const pvLineMarkup = !state.practice.active && state.pvLinesVisible ? renderPvLineListMarkup() : '';
@@ -5522,6 +5613,7 @@ function renderWorkspaceTools() {
 }
 
 function renderAll() {
+  syncFocusModeUi();
   renderBoard();
   renderHeaderMeta();
   renderHeroBanner();
@@ -5938,6 +6030,12 @@ function handleDocumentClick(event) {
     case 'toggle-fullscreen':
       void toggleFullscreenMode();
       break;
+    case 'enter-focus-mode':
+      setFocusMode(true);
+      break;
+    case 'exit-focus-mode':
+      setFocusMode(false);
+      break;
     case 'reset-analysis':
       resetAnalysisToSetup({ keepTab: true });
       renderAll();
@@ -6112,6 +6210,11 @@ function isTypingTarget(target) {
 }
 
 function handleDocumentKeydown(event) {
+  if (event.key === 'Escape' && state.focusMode) {
+    event.preventDefault();
+    setFocusMode(false);
+    return;
+  }
   if (event.key === 'Escape' && isLessonActionsMenuOpen()) {
     event.preventDefault();
     closeLessonActionsMenu({ restoreFocus: true });
