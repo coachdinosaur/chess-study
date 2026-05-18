@@ -798,20 +798,24 @@ code {
 .coord-file {
   position: absolute;
   z-index: 2;
-  font-size: 0.66rem;
-  font-weight: 700;
-  opacity: 0.72;
+  font-size: clamp(0.92rem, calc(var(--board-size, 42rem) / 32), 1.16rem);
+  font-weight: 800;
+  line-height: 1;
+  opacity: 0.9;
   pointer-events: none;
+  text-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.18),
+    0 0 2px rgba(255, 255, 255, 0.3);
 }
 
 .coord-rank {
-  top: 0.2rem;
-  left: 0.22rem;
+  top: clamp(0.22rem, calc(var(--board-size, 42rem) / 160), 0.34rem);
+  left: clamp(0.22rem, calc(var(--board-size, 42rem) / 150), 0.36rem);
 }
 
 .coord-file {
-  right: 0.22rem;
-  bottom: 0.14rem;
+  right: clamp(0.22rem, calc(var(--board-size, 42rem) / 150), 0.36rem);
+  bottom: clamp(0.18rem, calc(var(--board-size, 42rem) / 170), 0.32rem);
 }
 
 .coord-light {
