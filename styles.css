@@ -165,14 +165,15 @@
   --legal-target-shadow: rgba(78, 45, 8, 0.28);
   --legal-capture: #d35f35;
   --legal-capture-rim: rgba(83, 40, 14, 0.38);
-  --turn-marker-size: clamp(0.72rem, calc(var(--board-size, 42rem) / 42), 1.02rem);
-  --turn-marker-gap: clamp(0.42rem, calc(var(--board-size, 42rem) / 58), 0.72rem);
+  --turn-marker-size: clamp(0.9rem, calc(var(--board-size, 42rem) / 34), 1.3rem);
+  --turn-marker-gap: clamp(0.5rem, calc(var(--board-size, 42rem) / 52), 0.82rem);
   --turn-marker-offset: clamp(0.42rem, calc(var(--board-size, 42rem) / 40), 0.88rem);
   --turn-marker-white: linear-gradient(135deg, #ffffff 0%, #f7f8f4 52%, #dfe8e1 100%);
-  --turn-marker-white-border: rgba(109, 124, 118, 0.6);
+  --turn-marker-white-border: rgba(45, 61, 56, 0.72);
+  --turn-marker-white-ring: rgba(24, 38, 41, 0.42);
   --turn-marker-black: linear-gradient(135deg, #263034 0%, #111a1d 56%, #030807 100%);
   --turn-marker-black-border: rgba(7, 16, 18, 0.88);
-  --turn-marker-ring: rgba(255, 255, 252, 0.86);
+  --turn-marker-black-ring: rgba(255, 255, 252, 0.9);
   --turn-marker-shadow: rgba(47, 36, 13, 0.24);
   --drag-hover: rgba(228, 196, 107, 0.42);
   --annotation-accent-rgb: 37, 111, 96;
@@ -337,9 +338,10 @@
   --legal-capture-rim: rgba(6, 16, 14, 0.56);
   --turn-marker-white: linear-gradient(135deg, #ffffff 0%, #f2f5ef 52%, #b9c6c3 100%);
   --turn-marker-white-border: rgba(247, 250, 245, 0.78);
+  --turn-marker-white-ring: rgba(7, 16, 18, 0.94);
   --turn-marker-black: linear-gradient(135deg, #1c2b30 0%, #071012 62%, #020506 100%);
-  --turn-marker-black-border: rgba(138, 216, 183, 0.34);
-  --turn-marker-ring: rgba(7, 16, 18, 0.9);
+  --turn-marker-black-border: rgba(199, 232, 220, 0.68);
+  --turn-marker-black-ring: rgba(247, 250, 245, 0.88);
   --turn-marker-shadow: rgba(0, 0, 0, 0.44);
   --drag-hover: rgba(138, 216, 183, 0.28);
   --annotation-accent-rgb: 138, 216, 183;
@@ -916,7 +918,7 @@ code {
   border: 1px solid var(--turn-marker-white-border);
   background: var(--turn-marker-white);
   box-shadow:
-    0 0 0 2px var(--turn-marker-ring),
+    0 0 0 2px var(--turn-marker-white-ring),
     0 8px 18px var(--turn-marker-shadow);
   pointer-events: none;
 }
@@ -933,6 +935,9 @@ code {
 .turn-side-marker[data-side='b'] {
   border-color: var(--turn-marker-black-border);
   background: var(--turn-marker-black);
+  box-shadow:
+    0 0 0 2px var(--turn-marker-black-ring),
+    0 8px 18px var(--turn-marker-shadow);
 }
 
 .turn-side-marker[data-side='b']::after {

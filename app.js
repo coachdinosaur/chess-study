@@ -4813,7 +4813,7 @@ function syncBoardSize() {
     const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
     const evalRailWidth = remToPx(1);
     const evalRailGap = remToPx(0.8);
-    const turnMarkerSpace = remToPx(1.75);
+    const turnMarkerSpace = remToPx(2.15);
     const horizontalPadding = remToPx(viewportWidth < 760 ? 1 : 2);
     const verticalPadding = remToPx(viewportHeight < 520 ? 1 : 2);
     const maxBoardSize = remToPx(56);
