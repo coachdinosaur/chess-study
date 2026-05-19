@@ -118,6 +118,7 @@ const dom = {
   evalBadge: document.getElementById('evalBadge'),
   evalBarWrap: document.getElementById('evalBarWrap'),
   evalBarWhite: document.getElementById('evalBarWhite'),
+  turnSideMarker: document.getElementById('turnSideMarker'),
   boardContextLabel: document.getElementById('boardContextLabel'),
   turnToken: document.getElementById('turnToken'),
   castlingToken: document.getElementById('castlingToken'),
@@ -4320,11 +4321,20 @@ function currentDisplayPieces() {
   return state.setup.pieces;
 }
 
-function currentTurnLabel() {
-  if (state.activeTab === TAB_SETUP || !state.analysis.game) {
-    return state.setup.meta.activeColor === 'b' ? 'Black to move' : 'White to move';
+function currentTurnSide() {
+  const fen = currentBoardFenLabel();
+  const parsed = parseFenLike(fen);
+  if (parsed.ok) {
+    return parsed.meta.activeColor === 'b' ? 'b' : 'w';
   }
-  return state.analysis.game.turn() === 'b' ? 'Black to move' : 'White to move';
+  if (state.activeTab === TAB_SETUP || !state.analysis.game) {
+    return state.setup.meta.activeColor === 'b' ? 'b' : 'w';
+  }
+  return state.analysis.game.turn() === 'b' ? 'b' : 'w';
+}
+
+function currentTurnLabel() {
+  return currentTurnSide() === 'b' ? 'Black to move' : 'White to move';
 }
 
 function currentContextLabel() {
@@ -4760,6 +4770,14 @@ function renderBoard() {
   syncBoardSize();
 
   const showEvalRail = state.engine.evalRailVisible || state.focusMode;
+  const turnSide = currentTurnSide();
+  if (dom.evalBarWrap) {
+    dom.evalBarWrap.dataset.turnSide = turnSide;
+  }
+  if (dom.turnSideMarker) {
+    dom.turnSideMarker.dataset.side = turnSide;
+    dom.turnSideMarker.title = turnSide === 'b' ? 'Black to move' : 'White to move';
+  }
   if (showEvalRail) {
     dom.evalBadgeWrap.classList.remove('is-hidden');
     dom.evalBarWrap.classList.remove('is-hidden');
@@ -4795,11 +4813,12 @@ function syncBoardSize() {
     const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
     const evalRailWidth = remToPx(1);
     const evalRailGap = remToPx(0.8);
+    const turnMarkerSpace = remToPx(1.75);
     const horizontalPadding = remToPx(viewportWidth < 760 ? 1 : 2);
     const verticalPadding = remToPx(viewportHeight < 520 ? 1 : 2);
     const maxBoardSize = remToPx(56);
     const boardSize = Math.floor(Math.min(
-      Math.max(0, viewportWidth - (horizontalPadding * 2) - evalRailWidth - evalRailGap),
+      Math.max(0, viewportWidth - (horizontalPadding * 2) - evalRailWidth - evalRailGap - turnMarkerSpace),
       Math.max(0, viewportHeight - (verticalPadding * 2)),
       maxBoardSize,
     ));

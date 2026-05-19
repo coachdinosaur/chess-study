@@ -159,8 +159,21 @@
   --selection: rgba(201, 169, 74, 0.92);
   --last-move-arrow: rgba(47, 111, 105, 0.88);
   --last-move-arrow-outline: rgba(255, 255, 252, 0.78);
-  --legal-target: rgba(78, 125, 212, 0.64);
-  --legal-capture: rgba(200, 95, 74, 0.78);
+  --legal-target: #e09a2c;
+  --legal-target-rim: rgba(78, 45, 8, 0.52);
+  --legal-target-halo: rgba(255, 255, 252, 0.9);
+  --legal-target-shadow: rgba(78, 45, 8, 0.28);
+  --legal-capture: #d35f35;
+  --legal-capture-rim: rgba(83, 40, 14, 0.38);
+  --turn-marker-size: clamp(0.72rem, calc(var(--board-size, 42rem) / 42), 1.02rem);
+  --turn-marker-gap: clamp(0.42rem, calc(var(--board-size, 42rem) / 58), 0.72rem);
+  --turn-marker-offset: clamp(0.42rem, calc(var(--board-size, 42rem) / 40), 0.88rem);
+  --turn-marker-white: linear-gradient(135deg, #ffffff 0%, #f7f8f4 52%, #dfe8e1 100%);
+  --turn-marker-white-border: rgba(109, 124, 118, 0.6);
+  --turn-marker-black: linear-gradient(135deg, #263034 0%, #111a1d 56%, #030807 100%);
+  --turn-marker-black-border: rgba(7, 16, 18, 0.88);
+  --turn-marker-ring: rgba(255, 255, 252, 0.86);
+  --turn-marker-shadow: rgba(47, 36, 13, 0.24);
   --drag-hover: rgba(228, 196, 107, 0.42);
   --annotation-accent-rgb: 37, 111, 96;
   --annotation-paint: rgba(var(--annotation-accent-rgb), 0.78);
@@ -316,8 +329,18 @@
   --selection: rgba(228, 196, 107, 0.9);
   --last-move-arrow: rgba(126, 213, 177, 0.9);
   --last-move-arrow-outline: rgba(7, 16, 14, 0.72);
-  --legal-target: rgba(110, 158, 235, 0.72);
-  --legal-capture: rgba(255, 146, 125, 0.86);
+  --legal-target: #f0b247;
+  --legal-target-rim: rgba(247, 250, 245, 0.7);
+  --legal-target-halo: rgba(6, 16, 14, 0.62);
+  --legal-target-shadow: rgba(0, 0, 0, 0.34);
+  --legal-capture: #ff927d;
+  --legal-capture-rim: rgba(6, 16, 14, 0.56);
+  --turn-marker-white: linear-gradient(135deg, #ffffff 0%, #f2f5ef 52%, #b9c6c3 100%);
+  --turn-marker-white-border: rgba(247, 250, 245, 0.78);
+  --turn-marker-black: linear-gradient(135deg, #1c2b30 0%, #071012 62%, #020506 100%);
+  --turn-marker-black-border: rgba(138, 216, 183, 0.34);
+  --turn-marker-ring: rgba(7, 16, 18, 0.9);
+  --turn-marker-shadow: rgba(0, 0, 0, 0.44);
   --drag-hover: rgba(138, 216, 183, 0.28);
   --annotation-accent-rgb: 138, 216, 183;
   --annotation-paint: rgba(var(--annotation-accent-rgb), 0.72);
@@ -664,14 +687,22 @@ code {
 }
 
 .board-square.legal-target::after {
-  width: 22%;
-  height: 22%;
-  background: var(--legal-target);
+  width: 24%;
+  height: 24%;
+  background: radial-gradient(circle at 38% 32%, rgba(255, 255, 255, 0.45) 0 18%, var(--legal-target) 19% 100%);
+  box-shadow:
+    0 0 0 2px var(--legal-target-halo),
+    0 0 0 4px var(--legal-target-rim),
+    0 8px 16px var(--legal-target-shadow);
 }
 
 .board-square.legal-capture::after {
   inset: 10%;
   border: 3px solid var(--legal-capture);
+  box-shadow:
+    inset 0 0 0 2px var(--legal-target-halo),
+    0 0 0 2px var(--legal-capture-rim),
+    0 8px 18px var(--legal-target-shadow);
 }
 
 .board-square.is-setup:hover {
@@ -873,6 +904,46 @@ code {
   top: calc(50% - 1px);
   height: 2px;
   background: var(--eval-divider);
+}
+
+.turn-side-marker {
+  position: absolute;
+  top: var(--turn-marker-offset);
+  left: calc((var(--turn-marker-size) + var(--turn-marker-gap)) * -1);
+  width: var(--turn-marker-size);
+  height: var(--turn-marker-size);
+  border-radius: 3px;
+  border: 1px solid var(--turn-marker-white-border);
+  background: var(--turn-marker-white);
+  box-shadow:
+    0 0 0 2px var(--turn-marker-ring),
+    0 8px 18px var(--turn-marker-shadow);
+  pointer-events: none;
+}
+
+.turn-side-marker::after {
+  content: "";
+  position: absolute;
+  inset: 25%;
+  border-radius: 1px;
+  background: rgba(255, 255, 255, 0.55);
+  opacity: 0.7;
+}
+
+.turn-side-marker[data-side='b'] {
+  border-color: var(--turn-marker-black-border);
+  background: var(--turn-marker-black);
+}
+
+.turn-side-marker[data-side='b']::after {
+  background: rgba(255, 255, 255, 0.18);
+  opacity: 0.45;
+}
+
+.eval-bar-wrap[data-orientation='white'][data-turn-side='w'] .turn-side-marker,
+.eval-bar-wrap[data-orientation='black'][data-turn-side='b'] .turn-side-marker {
+  top: auto;
+  bottom: var(--turn-marker-offset);
 }
 
 .board-stage-foot {
@@ -2369,16 +2440,16 @@ code {
   --board-frame-padding: clamp(0.35rem, 0.7vw, 0.65rem);
   --eval-rail-track-width: clamp(0.78rem, 1.1vw, 1rem);
   --eval-rail-gap: clamp(0.55rem, 1vw, 0.8rem);
-  width: calc(var(--board-size, 42rem) + var(--eval-rail-track-width) + var(--eval-rail-gap));
+  width: calc(var(--board-size, 42rem) + var(--eval-rail-track-width) + var(--eval-rail-gap) + var(--turn-marker-size) + var(--turn-marker-gap));
   max-width: 100%;
 }
 
 .page-shell.is-focus-mode .board-frame {
-  margin: 0 0 0 calc(var(--eval-rail-track-width) + var(--eval-rail-gap));
+  margin: 0 0 0 calc(var(--eval-rail-track-width) + var(--eval-rail-gap) + var(--turn-marker-size) + var(--turn-marker-gap));
 }
 
 .page-shell.is-focus-mode .eval-bar-wrap {
-  left: 0;
+  left: calc(var(--turn-marker-size) + var(--turn-marker-gap));
 }
 
 @media (max-width: 1100px) {
