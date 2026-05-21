@@ -4802,15 +4802,43 @@ function buildCapturedPiecesByColor(pieces) {
   return captured;
 }
 
+function capturedPieceEntries(pieces) {
+  const entries = [];
+  let pawnCount = 0;
+  let pawnPiece = '';
+
+  pieces.forEach((piece) => {
+    if (piece.toUpperCase() === 'P') {
+      pawnCount += 1;
+      pawnPiece = piece;
+      return;
+    }
+    entries.push({ piece, count: 1 });
+  });
+
+  if (pawnCount > 0) {
+    entries.push({ piece: pawnPiece, count: pawnCount });
+  }
+
+  return entries;
+}
+
 function capturedPiecesMarkup(pieces) {
-  return pieces.map((piece) => `
+  return capturedPieceEntries(pieces).map(({ piece, count }) => {
+    const colorLabel = piece === piece.toLowerCase() ? 'Black' : 'White';
+    const pieceLabel = PIECE_LABELS[piece.toUpperCase()];
+    const countLabel = count > 1 ? ` x${count}` : '';
+    return `
     <span
-      class="captured-piece-shell ${piece === piece.toLowerCase() ? 'is-dark-piece' : 'is-light-piece'}"
-      title="${escapeHtml((piece === piece.toLowerCase() ? 'Black' : 'White'))} ${escapeHtml(PIECE_LABELS[piece.toUpperCase()])}"
+      class="captured-piece-shell ${piece === piece.toLowerCase() ? 'is-dark-piece' : 'is-light-piece'} ${count > 1 ? 'has-count' : ''}"
+      title="${escapeHtml(colorLabel)} ${escapeHtml(pieceLabel)}${escapeHtml(countLabel)}"
+      aria-label="${escapeHtml(colorLabel)} ${escapeHtml(pieceLabel)}${escapeHtml(countLabel)}"
     >
       <img class="captured-piece" src="${PIECE_ASSETS[piece]}" alt="">
+      ${count > 1 ? `<span class="captured-piece-count" aria-hidden="true">x${count}</span>` : ''}
     </span>
-  `).join('');
+  `;
+  }).join('');
 }
 
 function renderCapturedPieces() {
@@ -4843,6 +4871,25 @@ function cssLengthToPx(value, fallback = 0) {
   return Number.isFinite(numeric) ? numeric : fallback;
 }
 
+function currentViewportWidth() {
+  return window.visualViewport?.width ?? window.innerWidth ?? document.documentElement?.clientWidth ?? 0;
+}
+
+function currentViewportHeight() {
+  return window.visualViewport?.height ?? window.innerHeight ?? document.documentElement?.clientHeight ?? 0;
+}
+
+function elementPaddingInsetPx(element, axis) {
+  if (!element) {
+    return 0;
+  }
+  const styles = window.getComputedStyle(element);
+  if (axis === 'x') {
+    return cssLengthToPx(styles.paddingLeft, 0) + cssLengthToPx(styles.paddingRight, 0);
+  }
+  return cssLengthToPx(styles.paddingTop, 0) + cssLengthToPx(styles.paddingBottom, 0);
+}
+
 function capturedCellSizeForBoardSize(boardSize) {
   return clamp(boardSize / 15.5, remToPx(0.95), remToPx(1.35));
 }
@@ -4856,7 +4903,7 @@ function capturedRowGapForBoardSize(boardSize) {
 }
 
 function focusModeSideOffsetForBoardSize(boardSize) {
-  const viewportWidth = window.visualViewport?.width ?? window.innerWidth;
+  const viewportWidth = currentViewportWidth();
   const evalRailWidth = clamp(viewportWidth * 0.011, remToPx(0.78), remToPx(1));
   const evalRailGap = clamp(viewportWidth * 0.01, remToPx(0.55), remToPx(0.8));
   const turnMarkerSize = clamp(boardSize / 34, remToPx(0.9), remToPx(1.3));
@@ -5322,10 +5369,18 @@ function syncBoardSize() {
 
   const stageCard = dom.boardColumn.closest('.board-stage-card');
   const stageRect = stageCard?.getBoundingClientRect();
-  const stageHeight = stageRect?.height || 0;
-  const containerWidth = state.focusMode
+  let stageHeight = stageRect?.height || 0;
+  let containerWidth = state.focusMode
     ? (stageRect?.width || dom.boardColumn.parentElement?.clientWidth || dom.boardColumn.clientWidth)
     : dom.boardColumn.clientWidth;
+  if (state.focusMode) {
+    const focusHeightBudget = Math.max(0, currentViewportHeight() - elementPaddingInsetPx(dom.pageShell, 'y'));
+    const focusWidthBudget = Math.max(0, currentViewportWidth() - elementPaddingInsetPx(dom.pageShell, 'x'));
+    stageHeight = focusHeightBudget || stageHeight;
+    containerWidth = focusWidthBudget
+      ? Math.min(containerWidth || focusWidthBudget, focusWidthBudget)
+      : containerWidth;
+  }
   if (!containerWidth || !stageHeight) {
     return;
   }

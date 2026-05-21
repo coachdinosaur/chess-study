@@ -167,6 +167,9 @@
   --captured-dark-piece-slot-bg: rgba(255, 255, 252, 0.98);
   --captured-light-piece-slot-border: rgba(23, 39, 43, 0.42);
   --captured-light-piece-slot-bg: rgba(24, 38, 41, 0.96);
+  --captured-count-bg: rgba(228, 196, 107, 0.96);
+  --captured-count-color: #07100f;
+  --captured-count-border: rgba(83, 40, 14, 0.32);
   --selection: rgba(201, 169, 74, 0.92);
   --last-move-arrow: rgba(47, 111, 105, 0.88);
   --last-move-arrow-outline: rgba(255, 255, 252, 0.78);
@@ -346,6 +349,9 @@
   --captured-dark-piece-slot-bg: rgba(245, 248, 243, 0.98);
   --captured-light-piece-slot-border: rgba(214, 235, 227, 0.44);
   --captured-light-piece-slot-bg: rgba(12, 19, 22, 0.98);
+  --captured-count-bg: rgba(228, 196, 107, 0.96);
+  --captured-count-color: #06100e;
+  --captured-count-border: rgba(247, 250, 245, 0.34);
   --selection: rgba(228, 196, 107, 0.9);
   --last-move-arrow: rgba(126, 213, 177, 0.9);
   --last-move-arrow-outline: rgba(7, 16, 14, 0.72);
@@ -664,10 +670,11 @@ code {
   justify-content: flex-end;
   align-items: center;
   gap: 0.18rem;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .captured-piece-shell {
+  position: relative;
   display: inline-flex;
   flex: 0 0 auto;
   align-items: center;
@@ -694,6 +701,27 @@ code {
   height: 96%;
   object-fit: contain;
   filter: drop-shadow(0 1px 2px var(--piece-shadow));
+}
+
+.captured-piece-count {
+  position: absolute;
+  right: -0.12rem;
+  bottom: -0.08rem;
+  min-width: 0.88rem;
+  height: 0.72rem;
+  padding: 0 0.14rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--captured-count-border);
+  border-radius: 999px;
+  background: var(--captured-count-bg);
+  color: var(--captured-count-color);
+  font-size: clamp(0.5rem, calc(var(--captured-cell-size) / 2.35), 0.62rem);
+  font-weight: 800;
+  line-height: 1;
+  box-shadow: 0 2px 4px rgba(7, 17, 15, 0.22);
+  pointer-events: none;
 }
 
 .board-frame {
@@ -2559,18 +2587,32 @@ code {
 }
 
 .page-shell.is-focus-mode {
+  --focus-padding: clamp(0.75rem, 2vmin, 1.5rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: var(--app-height);
   min-height: var(--app-height);
   overflow: hidden;
-  padding: clamp(1rem, 2vw, 2rem);
+  padding: var(--focus-padding);
+}
+
+@supports (height: 100dvh) {
+  .page-shell.is-focus-mode {
+    height: 100dvh;
+    min-height: 100dvh;
+  }
 }
 
 .page-shell.is-focus-mode .workspace {
   display: grid;
   grid-template-columns: 1fr;
   place-items: center;
-  min-height: 100%;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
   max-width: none;
+  margin: 0;
 }
 
 .page-shell.is-focus-mode .control-pane {
@@ -2581,6 +2623,8 @@ code {
 .page-shell.is-focus-mode .board-stage-card,
 .page-shell.is-focus-mode .board-block {
   width: 100%;
+  height: 100%;
+  min-height: 0;
   display: grid;
   place-items: center;
 }
@@ -2589,29 +2633,33 @@ code {
   position: static;
   top: auto;
   height: 100%;
+  max-height: 100%;
+  overflow: visible;
 }
 
 .page-shell.is-focus-mode .board-column {
   --board-frame-padding: clamp(0.35rem, 0.7vw, 0.65rem);
   --eval-rail-track-width: clamp(0.78rem, 1.1vw, 1rem);
   --eval-rail-gap: clamp(0.55rem, 1vw, 0.8rem);
-  width: calc(
-    var(--board-size)
-    + var(--eval-rail-track-width)
-    + var(--eval-rail-gap)
-    + var(--turn-marker-size)
-    + var(--turn-marker-gap)
-  );
-  max-width: 100%;
-}
-
-.page-shell.is-focus-mode .board-frame {
-  margin: 0 0 0 calc(
+  --focus-side-offset: calc(
     var(--eval-rail-track-width)
     + var(--eval-rail-gap)
     + var(--turn-marker-size)
     + var(--turn-marker-gap)
   );
+  --focus-board-shell-width: calc(var(--board-size) + (var(--board-frame-padding) * 2) + 2px);
+  width: calc(
+    var(--focus-board-shell-width)
+    + var(--focus-side-offset)
+  );
+  max-width: 100%;
+  max-height: 100%;
+  align-self: center;
+  justify-self: center;
+}
+
+.page-shell.is-focus-mode .board-frame {
+  margin: 0 0 0 var(--focus-side-offset);
 }
 
 .page-shell.is-focus-mode .eval-bar-wrap {
@@ -2619,12 +2667,12 @@ code {
 }
 
 .page-shell.is-focus-mode .captured-row {
-  margin: 0 0 0 calc(
-    var(--eval-rail-track-width)
-    + var(--eval-rail-gap)
-    + var(--turn-marker-size)
-    + var(--turn-marker-gap)
-  );
+  margin: 0 0 0 var(--focus-side-offset);
+}
+
+.page-shell.is-focus-mode .captured-piece {
+  width: 106%;
+  height: 106%;
 }
 
 @media (max-width: 1100px) {
@@ -2662,8 +2710,24 @@ code {
 }
 
 @media (max-width: 760px) {
+  .page-shell {
+    padding: 0.55rem;
+  }
+
   .workspace {
-    gap: 1rem;
+    gap: 0.65rem;
+  }
+
+  .board-stage-card {
+    height: auto;
+  }
+
+  .board-block {
+    height: auto;
+  }
+
+  .board-column {
+    align-content: start;
   }
 
   .board-stage-head,
