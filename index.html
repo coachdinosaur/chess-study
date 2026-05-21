@@ -39,6 +39,9 @@
 
           <div class="board-block">
             <div class="board-column">
+              <div id="capturedTop" class="captured-row is-empty" aria-hidden="true">
+                <div id="capturedBlackPieces" class="captured-pieces" aria-label="Captured black pieces"></div>
+              </div>
               <div class="board-frame">
                 <div class="board-surface">
                   <div id="boardGrid" class="board-grid" aria-label="Chess board"></div>
@@ -50,6 +53,9 @@
                     focusable="false"
                   ></svg>
                 </div>
+              </div>
+              <div id="capturedBottom" class="captured-row is-empty" aria-hidden="true">
+                <div id="capturedWhitePieces" class="captured-pieces" aria-label="Captured white pieces"></div>
               </div>
               <div id="evalBarWrap" class="eval-bar-wrap is-hidden" aria-hidden="true">
                 <div id="turnSideMarker" class="turn-side-marker" aria-hidden="true"></div>
@@ -95,6 +101,13 @@
             autocomplete="off"
             spellcheck="false"
           >
+          <div class="lesson-book-row">
+            <label class="sr-only" for="lessonPicker">Lesson menu</label>
+            <select id="lessonPicker" class="field-select lesson-picker" aria-label="Select lesson"></select>
+            <button id="newLessonButton" type="button" class="action-button tonal lesson-book-button" data-action="new-lesson">New</button>
+            <button id="duplicateLessonButton" type="button" class="action-button lesson-book-button" data-action="duplicate-lesson">Duplicate</button>
+            <button id="deleteLessonButton" type="button" class="action-button danger lesson-book-button" data-action="delete-lesson">Delete</button>
+          </div>
           <div class="lesson-header-actions">
             <button
               id="headerAnalyzeButton"

@@ -71,8 +71,17 @@ const PRACTICE_KIND_LINE = 'line';
 const PRACTICE_KIND_BRANCH = 'branch';
 const DEFAULT_TITLE = '';
 const LESSON_FILE_VERSION = 1;
+const LESSON_BOOK_FILE_VERSION = 2;
 const ROOT_NODE_ID = 'root';
 const STANDARD_INITIAL_PLACEMENT = DEFAULT_POSITION.split(/\s+/)[0];
+const CAPTURED_PIECE_ORDER = ['Q', 'R', 'B', 'N', 'P'];
+const STANDARD_PIECE_COUNTS = Object.freeze({
+  Q: 1,
+  R: 2,
+  B: 2,
+  N: 2,
+  P: 8,
+});
 const DEFAULT_META = Object.freeze({
   activeColor: 'w',
   castling: 'KQkq',
@@ -119,6 +128,10 @@ const dom = {
   evalBarWrap: document.getElementById('evalBarWrap'),
   evalBarWhite: document.getElementById('evalBarWhite'),
   turnSideMarker: document.getElementById('turnSideMarker'),
+  capturedTop: document.getElementById('capturedTop'),
+  capturedBottom: document.getElementById('capturedBottom'),
+  capturedBlackPieces: document.getElementById('capturedBlackPieces'),
+  capturedWhitePieces: document.getElementById('capturedWhitePieces'),
   boardContextLabel: document.getElementById('boardContextLabel'),
   turnToken: document.getElementById('turnToken'),
   castlingToken: document.getElementById('castlingToken'),
@@ -144,6 +157,10 @@ const dom = {
   focusModeAnalyzeButton: document.getElementById('focusModeAnalyzeButton'),
   exitFocusModeButton: document.getElementById('exitFocusModeButton'),
   colorThemeItems: Array.from(document.querySelectorAll('[data-action="set-color-theme"]')),
+  lessonPicker: document.getElementById('lessonPicker'),
+  newLessonButton: document.getElementById('newLessonButton'),
+  duplicateLessonButton: document.getElementById('duplicateLessonButton'),
+  deleteLessonButton: document.getElementById('deleteLessonButton'),
   lessonFileInput: document.getElementById('lessonFileInput'),
   pgnFileInput: document.getElementById('pgnFileInput'),
   guidedReviewFileInput: document.getElementById('guidedReviewFileInput'),
@@ -174,6 +191,11 @@ const state = {
   focusMode: false,
   boardOrientation: 'white',
   activeTab: TAB_PGN,
+  lessonBook: {
+    activeLessonId: '',
+    nextId: 1,
+    lessons: [],
+  },
   setup: {
     pieces: {},
     meta: { ...DEFAULT_META },
@@ -265,6 +287,7 @@ const state = {
   },
   persistTimer: null,
   boardDragHoverSquare: null,
+  setupDrag: createEmptySetupDragState(),
 };
 
 let guidedReviewController = null;
@@ -362,6 +385,16 @@ function createEmptyPracticeState() {
     revealedCount: 0,
     feedback: '',
     feedbackKind: 'warning',
+  };
+}
+
+function createEmptySetupDragState() {
+  return {
+    active: false,
+    source: '',
+    piece: '',
+    fromSquare: '',
+    droppedOnBoard: false,
   };
 }
 
@@ -1414,6 +1447,133 @@ function syncLessonFileStatus(message) {
   }
 }
 
+function renderLessonBookControls() {
+  if (!dom.lessonPicker) {
+    return;
+  }
+  ensureLessonBookInitialized();
+  const optionsMarkup = state.lessonBook.lessons.map((entry, index) => {
+    const lessonState = lessonStateForDisplay(entry);
+    const label = lessonDisplayTitle(lessonState, index);
+    const selected = entry.id === state.lessonBook.activeLessonId ? ' selected' : '';
+    return `<option value="${escapeHtml(entry.id)}"${selected}>${escapeHtml(label)}</option>`;
+  }).join('');
+  if (dom.lessonPicker.innerHTML !== optionsMarkup) {
+    dom.lessonPicker.innerHTML = optionsMarkup;
+  }
+  if (dom.lessonPicker.value !== state.lessonBook.activeLessonId) {
+    dom.lessonPicker.value = state.lessonBook.activeLessonId;
+  }
+  if (dom.deleteLessonButton) {
+    dom.deleteLessonButton.disabled = state.lessonBook.lessons.length <= 1;
+  }
+}
+
+function createDefaultLessonState(title = DEFAULT_TITLE) {
+  const parsed = parseFenLike(DEFAULT_POSITION);
+  if (!parsed.ok) {
+    throw new Error(parsed.error);
+  }
+  const sanitized = sanitizeSetupState(parsed.pieces, parsed.meta);
+  const setupFen = buildFenFromPiecesAndMeta(sanitized.pieces, sanitized.meta);
+  return {
+    title: normalizeEditableText(title),
+    analysisTargetDepth: currentAnalysisTargetDepth(),
+    boardOrientation: state.boardOrientation === 'black' ? 'black' : 'white',
+    activeTab: TAB_SETUP,
+    advancedOpen: false,
+    toolsExpanded: Boolean(state.toolsExpanded),
+    pgnCommentsVisible: state.pgnCommentsVisible !== false,
+    pvLinesVisible: state.pvLinesVisible !== false,
+    setupFen,
+    setup: sanitized,
+    analysis: createEmptyAnalysisTree(setupFen),
+    annotations: normalizeAnnotationState(null),
+    note: normalizeNoteState(null),
+  };
+}
+
+function duplicateLessonTitle(title) {
+  const normalized = normalizeEditableText(title).trim();
+  return normalized ? `${normalized} copy` : 'Untitled lesson copy';
+}
+
+function activateLessonById(lessonId) {
+  ensureLessonBookInitialized();
+  if (!lessonId || lessonId === state.lessonBook.activeLessonId) {
+    renderLessonBookControls();
+    return;
+  }
+  storeCurrentLessonInBook();
+  const nextEntry = state.lessonBook.lessons.find((entry) => entry.id === lessonId);
+  if (!nextEntry) {
+    renderLessonBookControls();
+    return;
+  }
+  state.guidedReview.active = false;
+  state.lessonBook.activeLessonId = nextEntry.id;
+  applyLessonState(cloneLessonState(nextEntry.lessonState));
+  syncAnalysisGameFromTree();
+  renderAll();
+  schedulePersist();
+  syncLessonFileStatus(`Switched to ${lessonDisplayTitle(nextEntry.lessonState, lessonBookEntryIndex(nextEntry.id))}.`);
+}
+
+function addLessonToBook(lessonState) {
+  storeCurrentLessonInBook();
+  const lessonId = allocateLessonBookId();
+  state.lessonBook.lessons.push({
+    id: lessonId,
+    lessonState: cloneLessonState(lessonState),
+  });
+  state.lessonBook.activeLessonId = lessonId;
+  state.guidedReview.active = false;
+  applyLessonState(cloneLessonState(lessonState));
+  syncAnalysisGameFromTree();
+  renderAll();
+  schedulePersist();
+}
+
+function createNewLesson() {
+  addLessonToBook(createDefaultLessonState());
+  syncLessonFileStatus(`Added ${lessonDisplayTitle(createCurrentLessonStateSnapshot(), lessonBookEntryIndex())}.`);
+}
+
+function duplicateCurrentLesson() {
+  const currentSnapshot = createCurrentLessonStateSnapshot();
+  currentSnapshot.title = duplicateLessonTitle(currentSnapshot.title);
+  addLessonToBook(currentSnapshot);
+  syncLessonFileStatus(`Duplicated the current lesson into ${lessonDisplayTitle(currentSnapshot, lessonBookEntryIndex())}.`);
+}
+
+function deleteCurrentLesson() {
+  ensureLessonBookInitialized();
+  if (state.lessonBook.lessons.length <= 1) {
+    syncLessonFileStatus('At least one lesson must remain in the menu.');
+    renderLessonBookControls();
+    return;
+  }
+  const currentIndex = lessonBookEntryIndex();
+  const currentEntry = activeLessonBookEntry();
+  if (currentIndex < 0 || !currentEntry) {
+    return;
+  }
+  const currentTitle = lessonDisplayTitle(lessonStateForDisplay(currentEntry), currentIndex);
+  if (!window.confirm(`Delete "${currentTitle}" from this lesson menu?`)) {
+    return;
+  }
+  state.lessonBook.lessons.splice(currentIndex, 1);
+  const nextIndex = Math.min(currentIndex, state.lessonBook.lessons.length - 1);
+  const nextEntry = state.lessonBook.lessons[nextIndex];
+  state.guidedReview.active = false;
+  state.lessonBook.activeLessonId = nextEntry.id;
+  applyLessonState(cloneLessonState(nextEntry.lessonState));
+  syncAnalysisGameFromTree();
+  renderAll();
+  schedulePersist();
+  syncLessonFileStatus(`Deleted ${currentTitle}.`);
+}
+
 async function copyCurrentFenToClipboard() {
   const fen = currentBoardFenLabel();
   closeLessonActionsMenu({ restoreFocus: true });
@@ -1764,29 +1924,199 @@ function setFocusMode(isActive, options = {}) {
   }
 }
 
-function buildLessonPayload() {
+function cloneSetupPieces(pieces) {
+  return { ...(pieces || {}) };
+}
+
+function createCurrentLessonStateSnapshot() {
   return {
-    version: LESSON_FILE_VERSION,
     title: normalizeEditableText(state.title),
-    setupFen: state.setupFen,
     analysisTargetDepth: currentAnalysisTargetDepth(),
-    boardOrientation: state.boardOrientation,
-    activeTab: state.activeTab,
-    advancedOpen: state.setup.advancedOpen,
-    toolsExpanded: state.toolsExpanded,
-    pgnCommentsVisible: state.pgnCommentsVisible,
-    pvLinesVisible: state.pvLinesVisible,
-    currentNodeId: state.analysis.currentNodeId,
-    rootId: state.analysis.rootId,
-    nodes: cloneAnalysisNodes(state.analysis.nodes),
+    boardOrientation: state.boardOrientation === 'black' ? 'black' : 'white',
+    activeTab: [TAB_SETUP, TAB_ANALYSIS, TAB_PGN].includes(state.activeTab) ? state.activeTab : TAB_PGN,
+    advancedOpen: Boolean(state.setup.advancedOpen),
+    toolsExpanded: Boolean(state.toolsExpanded),
+    pgnCommentsVisible: state.pgnCommentsVisible !== false,
+    pvLinesVisible: state.pvLinesVisible !== false,
+    setupFen: state.setupFen,
+    setup: {
+      pieces: cloneSetupPieces(state.setup.pieces),
+      meta: cloneMeta(state.setup.meta),
+    },
+    analysis: {
+      rootId: state.analysis.rootId,
+      currentNodeId: state.analysis.currentNodeId,
+      nodeCounter: state.analysis.nodeCounter,
+      nodes: cloneAnalysisNodes(state.analysis.nodes),
+    },
     annotations: buildAnnotationPayload(),
     note: normalizeNoteState(state.note),
   };
 }
 
+function cloneLessonState(lessonState) {
+  return {
+    title: normalizeEditableText(lessonState?.title),
+    analysisTargetDepth: normalizeAnalysisTargetDepth(lessonState?.analysisTargetDepth),
+    boardOrientation: lessonState?.boardOrientation === 'black' ? 'black' : 'white',
+    activeTab: [TAB_SETUP, TAB_ANALYSIS, TAB_PGN].includes(lessonState?.activeTab) ? lessonState.activeTab : TAB_PGN,
+    advancedOpen: Boolean(lessonState?.advancedOpen),
+    toolsExpanded: Boolean(lessonState?.toolsExpanded),
+    pgnCommentsVisible: lessonState?.pgnCommentsVisible !== false,
+    pvLinesVisible: lessonState?.pvLinesVisible !== false,
+    setupFen: String(lessonState?.setupFen || DEFAULT_POSITION).trim() || DEFAULT_POSITION,
+    setup: {
+      pieces: cloneSetupPieces(lessonState?.setup?.pieces),
+      meta: cloneMeta(lessonState?.setup?.meta || DEFAULT_META),
+    },
+    analysis: {
+      rootId: String(lessonState?.analysis?.rootId || ROOT_NODE_ID).trim() || ROOT_NODE_ID,
+      currentNodeId: String(lessonState?.analysis?.currentNodeId || ROOT_NODE_ID).trim() || ROOT_NODE_ID,
+      nodeCounter: Math.max(
+        1,
+        Number(lessonState?.analysis?.nodeCounter) || deriveAnalysisNodeCounter(lessonState?.analysis?.nodes),
+      ),
+      nodes: cloneAnalysisNodes(lessonState?.analysis?.nodes || {}),
+    },
+    annotations: normalizeAnnotationState(lessonState?.annotations),
+    note: normalizeNoteState(lessonState?.note),
+  };
+}
+
+function serializeLessonState(lessonState) {
+  const normalized = cloneLessonState(lessonState);
+  return {
+    version: LESSON_FILE_VERSION,
+    title: normalized.title,
+    setupFen: normalized.setupFen,
+    analysisTargetDepth: normalized.analysisTargetDepth,
+    boardOrientation: normalized.boardOrientation,
+    activeTab: normalized.activeTab,
+    advancedOpen: normalized.advancedOpen,
+    toolsExpanded: normalized.toolsExpanded,
+    pgnCommentsVisible: normalized.pgnCommentsVisible,
+    pvLinesVisible: normalized.pvLinesVisible,
+    currentNodeId: normalized.analysis.currentNodeId,
+    rootId: normalized.analysis.rootId,
+    nodes: cloneAnalysisNodes(normalized.analysis.nodes),
+    annotations: normalizeAnnotationState(normalized.annotations),
+    note: normalizeNoteState(normalized.note),
+  };
+}
+
+function buildLessonPayload() {
+  return serializeLessonState(createCurrentLessonStateSnapshot());
+}
+
+function deriveLessonBookCounter(lessons) {
+  let maxIndex = 0;
+  lessons.forEach((entry) => {
+    const match = /^lesson-(\d+)$/.exec(String(entry?.id || '').trim());
+    if (match) {
+      maxIndex = Math.max(maxIndex, Number.parseInt(match[1], 10) || 0);
+    }
+  });
+  return maxIndex + 1;
+}
+
+function createSingleLessonBookState(lessonState = createCurrentLessonStateSnapshot()) {
+  const normalizedLessonState = cloneLessonState(lessonState);
+  return {
+    activeLessonId: 'lesson-1',
+    nextId: 2,
+    lessons: [
+      {
+        id: 'lesson-1',
+        lessonState: normalizedLessonState,
+      },
+    ],
+  };
+}
+
+function ensureLessonBookInitialized() {
+  if (Array.isArray(state.lessonBook.lessons) && state.lessonBook.lessons.length) {
+    if (!state.lessonBook.activeLessonId) {
+      state.lessonBook.activeLessonId = state.lessonBook.lessons[0].id;
+    }
+    state.lessonBook.nextId = Math.max(
+      1,
+      Number(state.lessonBook.nextId) || deriveLessonBookCounter(state.lessonBook.lessons),
+    );
+    return;
+  }
+  const initialBook = createSingleLessonBookState();
+  state.lessonBook.activeLessonId = initialBook.activeLessonId;
+  state.lessonBook.nextId = initialBook.nextId;
+  state.lessonBook.lessons = initialBook.lessons;
+}
+
+function lessonBookEntryIndex(lessonId = state.lessonBook.activeLessonId) {
+  return state.lessonBook.lessons.findIndex((entry) => entry.id === lessonId);
+}
+
+function activeLessonBookEntry() {
+  const entryIndex = lessonBookEntryIndex();
+  return entryIndex >= 0 ? state.lessonBook.lessons[entryIndex] : null;
+}
+
+function lessonStateForDisplay(entry) {
+  if (!entry) {
+    return createCurrentLessonStateSnapshot();
+  }
+  if (entry.id === state.lessonBook.activeLessonId) {
+    return createCurrentLessonStateSnapshot();
+  }
+  return cloneLessonState(entry.lessonState);
+}
+
+function lessonDisplayTitle(lessonState, index) {
+  const title = normalizeEditableText(lessonState?.title).trim();
+  return title || `Lesson ${index + 1}`;
+}
+
+function storeCurrentLessonInBook() {
+  ensureLessonBookInitialized();
+  const snapshot = createCurrentLessonStateSnapshot();
+  const entryIndex = lessonBookEntryIndex();
+  if (entryIndex >= 0) {
+    state.lessonBook.lessons[entryIndex] = {
+      ...state.lessonBook.lessons[entryIndex],
+      lessonState: snapshot,
+    };
+    return;
+  }
+  state.lessonBook.lessons.push({
+    id: state.lessonBook.activeLessonId || 'lesson-1',
+    lessonState: snapshot,
+  });
+}
+
+function allocateLessonBookId() {
+  ensureLessonBookInitialized();
+  let candidate = '';
+  do {
+    candidate = `lesson-${Math.max(1, state.lessonBook.nextId)}`;
+    state.lessonBook.nextId += 1;
+  } while (state.lessonBook.lessons.some((entry) => entry.id === candidate));
+  return candidate;
+}
+
+function buildLessonBookPayload() {
+  ensureLessonBookInitialized();
+  const lessons = state.lessonBook.lessons.map((entry) => ({
+    id: entry.id,
+    ...serializeLessonState(lessonStateForDisplay(entry)),
+  }));
+  return {
+    version: LESSON_BOOK_FILE_VERSION,
+    activeLessonId: state.lessonBook.activeLessonId,
+    lessons,
+  };
+}
+
 function buildDraftPayload() {
   return {
-    ...buildLessonPayload(),
+    ...buildLessonBookPayload(),
     practiceKindPreference: state.practicePreferenceKind,
     guidedReviewActive: state.guidedReview.active,
   };
@@ -2445,6 +2775,47 @@ function validateAndNormalizeLessonPayload(payload) {
   };
 }
 
+function validateAndNormalizeLessonBookPayload(payload) {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+    throw new Error('Lesson file must contain a JSON object.');
+  }
+  if (Number(payload.version) !== LESSON_BOOK_FILE_VERSION) {
+    throw new Error(`Unsupported lesson book version: ${payload.version ?? 'unknown'}.`);
+  }
+  if (!Array.isArray(payload.lessons) || !payload.lessons.length) {
+    throw new Error('Lesson book must contain at least one lesson.');
+  }
+
+  const seenIds = new Set();
+  const lessons = payload.lessons.map((rawLesson, index) => {
+    if (!rawLesson || typeof rawLesson !== 'object' || Array.isArray(rawLesson)) {
+      throw new Error(`Lesson ${index + 1} is invalid.`);
+    }
+    const id = String(rawLesson.id || '').trim() || `lesson-${index + 1}`;
+    if (seenIds.has(id)) {
+      throw new Error(`Lesson id ${id} is duplicated.`);
+    }
+    seenIds.add(id);
+    return {
+      id,
+      lessonState: validateAndNormalizeLessonPayload({
+        ...rawLesson,
+        version: LESSON_FILE_VERSION,
+      }),
+    };
+  });
+
+  const activeLessonId = lessons.some((entry) => entry.id === payload.activeLessonId)
+    ? String(payload.activeLessonId)
+    : lessons[0].id;
+
+  return {
+    activeLessonId,
+    nextId: deriveLessonBookCounter(lessons),
+    lessons,
+  };
+}
+
 function persistDraft() {
   const payload = buildDraftPayload();
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
@@ -2474,20 +2845,47 @@ function applyLessonState(lessonState) {
   state.annotations.arrows = normalizeAnnotationArrows(lessonState.annotations?.arrows);
   state.annotations.suppressContextMenu = false;
   state.annotations.gesture = createEmptyAnnotationGestureState();
+  state.boardDragHoverSquare = null;
+  state.setupDrag = createEmptySetupDragState();
   assignAnalysisTree(lessonState.analysis);
+}
+
+function applyLessonBookState(lessonBookState) {
+  state.lessonBook.activeLessonId = lessonBookState.activeLessonId;
+  state.lessonBook.nextId = Math.max(
+    1,
+    Number(lessonBookState.nextId) || deriveLessonBookCounter(lessonBookState.lessons),
+  );
+  state.lessonBook.lessons = lessonBookState.lessons.map((entry) => ({
+    id: entry.id,
+    lessonState: cloneLessonState(entry.lessonState),
+  }));
+  const activeEntry = activeLessonBookEntry() || state.lessonBook.lessons[0];
+  if (!activeEntry) {
+    throw new Error('Lesson book is empty.');
+  }
+  state.lessonBook.activeLessonId = activeEntry.id;
+  applyLessonState(cloneLessonState(activeEntry.lessonState));
 }
 
 function hydrateDraft() {
   const raw = window.localStorage.getItem(STORAGE_KEY);
   if (!raw) {
+    ensureLessonBookInitialized();
     return;
   }
   try {
     const draft = JSON.parse(raw);
     const guidedReviewActive = Boolean(draft?.guidedReviewActive);
     state.practicePreferenceKind = normalizePracticeKind(draft?.practiceKindPreference);
+    if (draft?.version === LESSON_BOOK_FILE_VERSION && Array.isArray(draft?.lessons)) {
+      applyLessonBookState(validateAndNormalizeLessonBookPayload(draft));
+      state.guidedReview.active = guidedReviewActive;
+      return;
+    }
     if (draft && typeof draft === 'object' && !Array.isArray(draft) && draft.nodes && draft.rootId) {
       applyLessonState(validateAndNormalizeLessonPayload(draft));
+      ensureLessonBookInitialized();
       state.guidedReview.active = guidedReviewActive;
       return;
     }
@@ -2530,9 +2928,11 @@ function hydrateDraft() {
       annotations: normalizeAnnotationState(draft?.annotations),
       note: normalizeNoteState(draft?.note),
     });
+    ensureLessonBookInitialized();
     state.guidedReview.active = guidedReviewActive;
   } catch (error) {
     console.warn('Unable to restore draft.', error);
+    ensureLessonBookInitialized();
   }
 }
 
@@ -2553,10 +2953,14 @@ function downloadTextFile(fileName, text, mimeType) {
 }
 
 function saveLessonFile() {
-  const payload = buildLessonPayload();
-  const fileName = `${slugifyLessonTitle(state.title)}.lesson.json`;
+  ensureLessonBookInitialized();
+  const lessonCount = state.lessonBook.lessons.length;
+  const payload = lessonCount > 1 ? buildLessonBookPayload() : buildLessonPayload();
+  const fileName = lessonCount > 1
+    ? `${slugifyLessonTitle(state.title || 'lesson-book')}.lesson-book.json`
+    : `${slugifyLessonTitle(state.title)}.lesson.json`;
   downloadTextFile(fileName, JSON.stringify(payload, null, 2), 'application/json');
-  syncLessonFileStatus(`Saved ${fileName}.`);
+  syncLessonFileStatus(`Saved ${fileName}${lessonCount > 1 ? ` with ${pluralize(lessonCount, 'lesson')}` : ''}.`);
 }
 
 async function openLessonFile(file) {
@@ -2572,12 +2976,22 @@ async function openLessonFile(file) {
     throw new Error('Lesson file is not valid JSON.');
   }
 
-  const lessonState = validateAndNormalizeLessonPayload(payload);
-  applyLessonState(lessonState);
+  if (payload?.version === LESSON_BOOK_FILE_VERSION && Array.isArray(payload?.lessons)) {
+    applyLessonBookState(validateAndNormalizeLessonBookPayload(payload));
+  } else {
+    const lessonState = validateAndNormalizeLessonPayload(payload);
+    applyLessonState(lessonState);
+    state.lessonBook = createSingleLessonBookState(lessonState);
+  }
+  state.guidedReview.active = false;
   syncAnalysisGameFromTree();
   renderAll();
   schedulePersist();
-  syncLessonFileStatus(`Loaded ${file.name}.`);
+  syncLessonFileStatus(
+    payload?.version === LESSON_BOOK_FILE_VERSION && Array.isArray(payload?.lessons)
+      ? `Loaded ${file.name} with ${pluralize(state.lessonBook.lessons.length, 'lesson')}.`
+      : `Loaded ${file.name}.`,
+  );
 }
 
 function buildLessonStateFromImportedPgn(importedPgn) {
@@ -2626,6 +3040,7 @@ async function openPgnFile(file) {
   const importedPgn = parsePgnToLessonTree(text);
   const lessonState = buildLessonStateFromImportedPgn(importedPgn);
   applyLessonState(lessonState);
+  ensureLessonBookInitialized();
   syncAnalysisGameFromTree();
   renderAll();
   schedulePersist();
@@ -2658,6 +3073,7 @@ function updateGuidedReviewTitle(title) {
   if (dom.titleInput) {
     dom.titleInput.value = state.title;
   }
+  renderLessonBookControls();
   if (dom.boardTitleDisplay) {
     dom.boardTitleDisplay.textContent = state.title.trim() || 'Untitled position';
   }
@@ -2815,7 +3231,10 @@ function updateSetupFromBoardMutation(mutator) {
 
 function clearBoard() {
   updateSetupFromBoardMutation((pieces) => {
-    Object.keys(pieces).forEach((square) => {
+    Object.entries(pieces).forEach(([square, piece]) => {
+      if (piece === 'K' || piece === 'k') {
+        return;
+      }
       delete pieces[square];
     });
   });
@@ -4110,18 +4529,22 @@ async function startTablebaseAnalysisForFen(fen, options = {}) {
 }
 
 async function toggleAnalysis() {
+  if (state.guidedReview.active) {
+    state.guidedReview.active = false;
+  }
+  if (state.activeTab !== TAB_ANALYSIS) {
+    state.activeTab = TAB_ANALYSIS;
+  }
+  renderAll();
+  schedulePersist();
   if (state.practice.active) {
     state.engine.summary = 'Stop practice mode before re-enabling Stockfish.';
-    renderNotationPanel();
-    renderAnalysisPanel();
-    renderHeaderMeta();
+    renderAll();
     return;
   }
   if (!state.analysis.game) {
     state.engine.summary = defaultAnalysisSummary();
-    renderNotationPanel();
-    renderAnalysisPanel();
-    renderHeaderMeta();
+    renderAll();
     return;
   }
   if (state.tablebase.probing || state.engine.loading) {
@@ -4132,9 +4555,7 @@ async function toggleAnalysis() {
     state.engine.pendingFen = '';
     state.engine.pendingSearchMode = '';
     state.engine.summary = 'Stopping Stockfish search...';
-    renderNotationPanel();
-    renderAnalysisPanel();
-    renderHeaderMeta();
+    renderAll();
     if (state.engine.worker) {
       state.engine.worker.postMessage('stop');
     }
@@ -4349,6 +4770,98 @@ function currentContextLabel() {
 
 function currentBoardFenLabel() {
   return state.activeTab === TAB_SETUP ? state.setupFen : state.analysis.currentFen;
+}
+
+function buildCapturedPiecesByColor(pieces) {
+  const boardCounts = {
+    w: { Q: 0, R: 0, B: 0, N: 0, P: 0 },
+    b: { Q: 0, R: 0, B: 0, N: 0, P: 0 },
+  };
+  Object.values(pieces || {}).forEach((piece) => {
+    const symbol = String(piece || '').trim();
+    const upper = symbol.toUpperCase();
+    if (!CAPTURED_PIECE_ORDER.includes(upper)) {
+      return;
+    }
+    const color = symbol === symbol.toLowerCase() ? 'b' : 'w';
+    boardCounts[color][upper] += 1;
+  });
+
+  const captured = { w: [], b: [] };
+  CAPTURED_PIECE_ORDER.forEach((upper) => {
+    const maxCount = STANDARD_PIECE_COUNTS[upper] || 0;
+    const whiteMissing = Math.max(0, maxCount - boardCounts.w[upper]);
+    const blackMissing = Math.max(0, maxCount - boardCounts.b[upper]);
+    for (let index = 0; index < whiteMissing; index += 1) {
+      captured.w.push(upper);
+    }
+    for (let index = 0; index < blackMissing; index += 1) {
+      captured.b.push(upper.toLowerCase());
+    }
+  });
+  return captured;
+}
+
+function capturedPiecesMarkup(pieces) {
+  return pieces.map((piece) => `
+    <span
+      class="captured-piece-shell ${piece === piece.toLowerCase() ? 'is-dark-piece' : 'is-light-piece'}"
+      title="${escapeHtml((piece === piece.toLowerCase() ? 'Black' : 'White'))} ${escapeHtml(PIECE_LABELS[piece.toUpperCase()])}"
+    >
+      <img class="captured-piece" src="${PIECE_ASSETS[piece]}" alt="">
+    </span>
+  `).join('');
+}
+
+function renderCapturedPieces() {
+  if (!dom.capturedTop || !dom.capturedBottom || !dom.capturedBlackPieces || !dom.capturedWhitePieces) {
+    return;
+  }
+  const captured = buildCapturedPiecesByColor(currentDisplayPieces());
+  dom.capturedBlackPieces.innerHTML = capturedPiecesMarkup(captured.b);
+  dom.capturedWhitePieces.innerHTML = capturedPiecesMarkup(captured.w);
+  dom.capturedTop.classList.toggle('is-empty', captured.b.length === 0);
+  dom.capturedBottom.classList.toggle('is-empty', captured.w.length === 0);
+  dom.capturedTop.setAttribute('aria-hidden', captured.b.length === 0 ? 'true' : 'false');
+  dom.capturedBottom.setAttribute('aria-hidden', captured.w.length === 0 ? 'true' : 'false');
+}
+
+function cssLengthToPx(value, fallback = 0) {
+  const normalized = String(value || '').trim();
+  if (!normalized) {
+    return fallback;
+  }
+  if (normalized.endsWith('px')) {
+    const numeric = Number.parseFloat(normalized);
+    return Number.isFinite(numeric) ? numeric : fallback;
+  }
+  if (normalized.endsWith('rem')) {
+    const numeric = Number.parseFloat(normalized);
+    return Number.isFinite(numeric) ? remToPx(numeric) : fallback;
+  }
+  const numeric = Number.parseFloat(normalized);
+  return Number.isFinite(numeric) ? numeric : fallback;
+}
+
+function capturedCellSizeForBoardSize(boardSize) {
+  return clamp(boardSize / 15.5, remToPx(0.95), remToPx(1.35));
+}
+
+function capturedRowHeightForBoardSize(boardSize) {
+  return capturedCellSizeForBoardSize(boardSize) + remToPx(0.56) + 2;
+}
+
+function capturedRowGapForBoardSize(boardSize) {
+  return clamp(boardSize / 140, remToPx(0.24), remToPx(0.4));
+}
+
+function focusModeSideOffsetForBoardSize(boardSize) {
+  const viewportWidth = window.visualViewport?.width ?? window.innerWidth;
+  const evalRailWidth = clamp(viewportWidth * 0.011, remToPx(0.78), remToPx(1));
+  const evalRailGap = clamp(viewportWidth * 0.01, remToPx(0.55), remToPx(0.8));
+  const turnMarkerSize = clamp(boardSize / 34, remToPx(0.9), remToPx(1.3));
+  const turnMarkerGap = clamp(boardSize / 52, remToPx(0.5), remToPx(0.82));
+  return evalRailWidth + evalRailGap + turnMarkerSize + turnMarkerGap;
 }
 
 function annotationsVisible() {
@@ -4767,6 +5280,7 @@ function buildBoardMarkup() {
 function renderBoard() {
   dom.boardGrid.innerHTML = buildBoardMarkup();
   renderAnnotationOverlay();
+  renderCapturedPieces();
   syncBoardSize();
 
   const showEvalRail = state.engine.evalRailVisible || state.focusMode;
@@ -4805,47 +5319,44 @@ function syncBoardSize() {
   }
 
   dom.rootElement.style.setProperty('--board-side-gap', '0px');
-  dom.boardColumn.style.removeProperty('--board-size');
-  dom.boardFrame.style.removeProperty('--board-size');
 
-  if (state.focusMode) {
-    const viewportWidth = window.visualViewport?.width ?? window.innerWidth;
-    const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
-    const evalRailWidth = remToPx(1);
-    const evalRailGap = remToPx(0.8);
-    const turnMarkerSpace = remToPx(2.15);
-    const horizontalPadding = remToPx(viewportWidth < 760 ? 1 : 2);
-    const verticalPadding = remToPx(viewportHeight < 520 ? 1 : 2);
-    const maxBoardSize = remToPx(56);
-    const boardSize = Math.floor(Math.min(
-      Math.max(0, viewportWidth - (horizontalPadding * 2) - evalRailWidth - evalRailGap - turnMarkerSpace),
-      Math.max(0, viewportHeight - (verticalPadding * 2)),
-      maxBoardSize,
-    ));
-    if (boardSize > 0) {
-      dom.boardColumn.style.setProperty('--board-size', `${boardSize}px`);
+  const stageCard = dom.boardColumn.closest('.board-stage-card');
+  const stageRect = stageCard?.getBoundingClientRect();
+  const stageHeight = stageRect?.height || 0;
+  const containerWidth = state.focusMode
+    ? (stageRect?.width || dom.boardColumn.parentElement?.clientWidth || dom.boardColumn.clientWidth)
+    : dom.boardColumn.clientWidth;
+  if (!containerWidth || !stageHeight) {
+    return;
+  }
+
+  const columnStyles = window.getComputedStyle(dom.boardColumn);
+  const framePadding = cssLengthToPx(columnStyles.getPropertyValue('--board-frame-padding'), remToPx(0.5));
+  const maxBoardSize = state.focusMode ? remToPx(56) : remToPx(42);
+  let boardSize = Math.min(containerWidth, stageHeight, maxBoardSize);
+
+  for (let index = 0; index < 6; index += 1) {
+    const rowHeight = capturedRowHeightForBoardSize(boardSize);
+    const rowGap = capturedRowGapForBoardSize(boardSize);
+    const frameBorderWidth = 2;
+    const frameShellWidth = (framePadding * 2) + frameBorderWidth;
+    const heightBudget = Math.max(0, stageHeight - (rowHeight * 2) - (rowGap * 2) - frameShellWidth);
+    const sideOffset = state.focusMode ? focusModeSideOffsetForBoardSize(boardSize) : 0;
+    const widthBudget = Math.max(0, containerWidth - sideOffset - frameShellWidth);
+    const nextBoardSize = Math.floor(Math.min(widthBudget, heightBudget, maxBoardSize));
+    if (Math.abs(nextBoardSize - boardSize) < 1) {
+      boardSize = nextBoardSize;
+      break;
     }
-    dom.rootElement.style.setProperty('--board-side-gap', '0px');
-    return;
+    boardSize = nextBoardSize;
   }
-
-  const columnWidth = dom.boardColumn.clientWidth;
-  if (!columnWidth) {
-    return;
-  }
-
-  const viewportBottomPadding = remToPx(0.9);
-  const frameTop = dom.boardFrame.getBoundingClientRect().top;
-  const availableHeight = Math.max(0, window.innerHeight - frameTop - viewportBottomPadding);
-  const maxBoardSize = remToPx(42);
-  const boardSize = Math.floor(Math.min(columnWidth, availableHeight, maxBoardSize));
 
   if (boardSize > 0) {
     dom.boardColumn.style.setProperty('--board-size', `${boardSize}px`);
   }
 
   const boardWidth = dom.boardFrame.offsetWidth;
-  const boardSideGap = Math.max(0, (columnWidth - boardWidth) / 2);
+  const boardSideGap = state.focusMode ? 0 : Math.max(0, (containerWidth - boardWidth) / 2);
   dom.rootElement.style.setProperty('--board-side-gap', `${boardSideGap}px`);
 }
 
@@ -4886,6 +5397,7 @@ function renderHeaderMeta() {
   dom.setupFenCode.textContent = state.setupFen;
   dom.engineReadyLabel.textContent = engineLabel;
   syncAnalyzeButtonState(dom.headerAnalyzeButton);
+  renderLessonBookControls();
   syncFocusModeControls();
   if (document.activeElement !== dom.titleInput) {
     dom.titleInput.value = state.title;
@@ -5300,16 +5812,21 @@ function advancedControlsMarkup() {
   });
   const locksActiveColor = hasStandardInitialPlacement(state.setup.pieces);
   const activeValue = locksActiveColor ? 'w' : state.setup.meta.activeColor;
+  const activeLabel = activeValue === 'b' ? 'Black to move' : 'White to move';
 
   return `
     <div class="details-body">
       <div class="stack-grid">
         <div class="field-row">
-          <label class="field-label">Side to move</label>
+          <label class="field-label">Side to move (next turn)</label>
           ${sideSelectorMarkup('set-active-color', activeValue, [
             { value: 'w', label: 'White' },
             { value: 'b', label: 'Black' },
           ])}
+          <p class="setup-turn-indicator">
+            <span class="setup-turn-swatch ${activeValue === 'b' ? 'is-black' : 'is-white'}" aria-hidden="true"></span>
+            <span>${activeLabel}</span>
+          </p>
           ${locksActiveColor ? '<p class="muted-copy">The standard starting position always begins with White.</p>' : ''}
         </div>
 
@@ -5963,6 +6480,13 @@ function handleBoardDragStart(event) {
     source: square ? 'board' : 'palette',
   }));
   event.dataTransfer.effectAllowed = 'copyMove';
+  state.setupDrag = {
+    active: true,
+    source: square ? 'board' : 'palette',
+    piece,
+    fromSquare: square || '',
+    droppedOnBoard: false,
+  };
 }
 
 function handlePaletteDragStart(event) {
@@ -5980,6 +6504,13 @@ function handlePaletteDragStart(event) {
     source: 'palette',
   }));
   event.dataTransfer.effectAllowed = 'copy';
+  state.setupDrag = {
+    active: true,
+    source: 'palette',
+    piece,
+    fromSquare: '',
+    droppedOnBoard: false,
+  };
 }
 
 function handleBoardDragOver(event) {
@@ -6006,9 +6537,12 @@ function handleBoardDrop(event) {
   const payload = extractDragPayload(event);
   updateBoardDragHover(null);
   if (!payload?.piece) {
+    state.setupDrag = createEmptySetupDragState();
     return;
   }
+  state.setupDrag.droppedOnBoard = true;
   placeSetupPiece(squareEl.dataset.square, payload.piece, payload.fromSquare || null);
+  state.setupDrag = createEmptySetupDragState();
 }
 
 function updateBoardDragHover(square) {
@@ -6030,6 +6564,23 @@ function clearBoardDragHover() {
   updateBoardDragHover(null);
 }
 
+function handleBoardDragEnd() {
+  clearBoardDragHover();
+  const dragState = state.setupDrag;
+  state.setupDrag = createEmptySetupDragState();
+  if (!dragState.active) {
+    return;
+  }
+  const droppedOutsideBoard = !dragState.droppedOnBoard;
+  const shouldDelete = state.activeTab === TAB_SETUP
+    && dragState.source === 'board'
+    && SQUARE_PATTERN.test(dragState.fromSquare)
+    && droppedOutsideBoard;
+  if (shouldDelete) {
+    removeSetupPiece(dragState.fromSquare);
+  }
+}
+
 function handleDocumentClick(event) {
   const clickTarget = event.target;
   const clickedInsideLessonActions = clickTarget instanceof Element && Boolean(clickTarget.closest('.lesson-overflow'));
@@ -6048,6 +6599,15 @@ function handleDocumentClick(event) {
   switch (action) {
     case 'toggle-lesson-actions':
       toggleLessonActionsMenu();
+      break;
+    case 'new-lesson':
+      createNewLesson();
+      break;
+    case 'duplicate-lesson':
+      duplicateCurrentLesson();
+      break;
+    case 'delete-lesson':
+      deleteCurrentLesson();
       break;
     case 'set-tab':
       if (state.practice.active && actionEl.dataset.tab === TAB_SETUP) {
@@ -6226,6 +6786,7 @@ function handleDocumentInput(event) {
   if (event.target === dom.titleInput) {
     state.title = normalizeTextControlValue(dom.titleInput);
     dom.boardTitleDisplay.textContent = state.title.trim() || 'Untitled position';
+    renderLessonBookControls();
     schedulePersist();
     return;
   }
@@ -6295,6 +6856,10 @@ function handleDocumentChange(event) {
         dom.pgnFileInput.value = '';
       }
     });
+    return;
+  }
+  if (event.target === dom.lessonPicker) {
+    activateLessonById(event.target.value);
     return;
   }
   if (event.target?.id === 'analysisTargetDepthInput') {
@@ -6405,7 +6970,7 @@ function bindEvents() {
     }
     clearBoardDragHover();
   });
-  dom.boardGrid.addEventListener('dragend', clearBoardDragHover);
+  dom.boardGrid.addEventListener('dragend', handleBoardDragEnd);
   dom.promotionModal.addEventListener('click', (event) => {
     if (event.target === dom.promotionModal) {
       dismissPromotionDialog();
