@@ -301,6 +301,7 @@ const state = {
 };
 
 let guidedReviewController = null;
+let setupDragPreviewEl = null;
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
@@ -5895,14 +5896,27 @@ function renderNotationPanel() {
 function sideSelectorMarkup(keyPrefix, selectedValue, labels) {
   return `
     <div class="segment-group">
-      ${labels.map((entry) => `
+      ${labels.map((entry) => {
+        const isSelected = selectedValue === entry.value;
+        const isSideOption = entry.value === 'w' || entry.value === 'b';
+        const selectedText = isSelected && entry.selectedText ? String(entry.selectedText) : '';
+        const sideClass = isSideOption ? ` side-segment side-${entry.value}` : '';
+        return `
         <button
           type="button"
-          class="segmented-button ${selectedValue === entry.value ? 'is-selected' : ''}"
+          class="segmented-button${sideClass} ${isSelected ? 'is-selected' : ''}"
           data-action="${keyPrefix}"
           data-value="${entry.value}"
-        >${entry.label}</button>
-      `).join('')}
+          aria-pressed="${isSelected ? 'true' : 'false'}"
+        >
+          <span class="segmented-button-main">
+            ${isSideOption ? `<span class="side-segment-swatch ${entry.value === 'b' ? 'is-black' : 'is-white'}" aria-hidden="true"></span>` : ''}
+            <span class="segmented-button-label">${escapeHtml(entry.label)}</span>
+          </span>
+          ${selectedText ? `<span class="segmented-button-status">${escapeHtml(selectedText)}</span>` : ''}
+        </button>
+        `;
+      }).join('')}
     </div>
   `;
 }
@@ -5950,8 +5964,8 @@ function advancedControlsMarkup() {
         <div class="field-row">
           <label class="field-label">Side to move (next turn)</label>
           ${sideSelectorMarkup('set-active-color', activeValue, [
-            { value: 'w', label: 'White' },
-            { value: 'b', label: 'Black' },
+            { value: 'w', label: 'White', selectedText: 'To move' },
+            { value: 'b', label: 'Black', selectedText: 'To move' },
           ])}
           <p class="setup-turn-indicator">
             <span class="setup-turn-swatch ${activeValue === 'b' ? 'is-black' : 'is-white'}" aria-hidden="true"></span>
@@ -6002,31 +6016,40 @@ function advancedControlsMarkup() {
 
 function renderSetupPanel() {
   const currentPalette = currentPalettePieces();
+  const paletteIsBlack = state.setup.paletteColor === 'b';
+  const paletteLabel = paletteIsBlack ? 'Placing black pieces' : 'Placing white pieces';
+  const sideToMoveValue = hasStandardInitialPlacement(state.setup.pieces) ? 'w' : state.setup.meta.activeColor;
+  const sideToMoveLabel = sideToMoveValue === 'b' ? 'Black to move' : 'White to move';
   const markup = `
-    <article class="lesson-section">
+    <article class="lesson-section setup-board-section">
       <div class="lesson-section-header">
         <div>
           <h3 class="lesson-section-title">Board setup</h3>
         </div>
       </div>
 
-      <div class="action-row action-row-compact">
-        <button type="button" class="action-button tonal" data-action="reset-setup">Reset setup</button>
-        <button type="button" class="action-button danger" data-action="clear-board">Clear board</button>
-        <button type="button" class="action-button" data-action="flip-board">Flip board</button>
+      <div class="action-row action-row-compact setup-board-actions">
+        <button type="button" class="action-button tonal" data-action="reset-setup">Reset</button>
+        <button type="button" class="action-button danger" data-action="clear-board">Clear</button>
+        <button type="button" class="action-button" data-action="flip-board">Flip</button>
       </div>
 
-      <div class="section-divider"></div>
+      <div class="section-divider setup-board-divider"></div>
 
-      <div class="panel-grid">
-        <div class="field-row">
+      <div class="panel-grid setup-palette-panel">
+        <div class="field-row setup-palette-color">
           ${sideSelectorMarkup('set-palette-color', state.setup.paletteColor, [
-            { value: 'w', label: 'White' },
-            { value: 'b', label: 'Black' },
+            { value: 'w', label: 'White', selectedText: 'Placing' },
+            { value: 'b', label: 'Black', selectedText: 'Placing' },
           ])}
         </div>
 
-        <div class="piece-palette">
+        <div class="setup-active-summary">
+          <span class="setup-turn-swatch ${paletteIsBlack ? 'is-black' : 'is-white'}" aria-hidden="true"></span>
+          <strong>${paletteLabel}</strong>
+        </div>
+
+        <div class="piece-palette setup-piece-palette">
           ${currentPalette.map((piece) => `
             <div class="piece-tool">
               <button
@@ -6070,7 +6093,10 @@ function renderSetupPanel() {
 
     <article class="lesson-section lesson-section-compact">
       <button type="button" class="details-toggle" data-action="toggle-advanced">
-        <span>Advanced position details</span>
+        <span class="details-toggle-main">
+          <span>Advanced position details</span>
+          <span class="details-toggle-status">Side to move: ${sideToMoveLabel}</span>
+        </span>
         <span class="details-toggle-copy">${state.setup.advancedOpen ? 'Hide' : 'Show'}</span>
       </button>
       ${state.setup.advancedOpen ? advancedControlsMarkup() : ''}
@@ -6337,6 +6363,9 @@ function renderPromotionModal() {
 
 function renderTabs() {
   state.activeTab = normalizeActiveTab(state.activeTab);
+  if (dom.rootElement) {
+    dom.rootElement.dataset.activeTab = state.activeTab;
+  }
   document.querySelectorAll('.tab-chip').forEach((button) => {
     button.classList.toggle('is-active', button.dataset.tab === state.activeTab);
   });
@@ -6572,6 +6601,36 @@ function extractDragPayload(event) {
   }
 }
 
+function clearSetupDragPreview() {
+  if (!setupDragPreviewEl) {
+    return;
+  }
+  setupDragPreviewEl.remove();
+  setupDragPreviewEl = null;
+}
+
+function setSetupDragPreview(event, piece, sourceEl) {
+  if (!event.dataTransfer?.setDragImage || !PIECE_ASSETS[piece]) {
+    return;
+  }
+  clearSetupDragPreview();
+  const rect = sourceEl?.getBoundingClientRect?.();
+  const sourceSize = Math.min(rect?.width || 72, rect?.height || 72);
+  const size = Math.round(clamp(sourceSize, 40, 92));
+  const preview = document.createElement('div');
+  preview.className = 'setup-drag-preview';
+  preview.style.width = `${size}px`;
+  preview.style.height = `${size}px`;
+
+  const image = document.createElement('img');
+  image.src = PIECE_ASSETS[piece];
+  image.alt = '';
+  preview.append(image);
+  document.body.append(preview);
+  event.dataTransfer.setDragImage(preview, size / 2, size / 2);
+  setupDragPreviewEl = preview;
+}
+
 function handleBoardDragStart(event) {
   if (state.activeTab !== TAB_SETUP) {
     return;
@@ -6590,6 +6649,7 @@ function handleBoardDragStart(event) {
     fromSquare: square || null,
     source: square ? 'board' : 'palette',
   }));
+  setSetupDragPreview(event, piece, pieceShell);
   event.dataTransfer.effectAllowed = 'copyMove';
   state.setupDrag = {
     active: true,
@@ -6614,6 +6674,7 @@ function handlePaletteDragStart(event) {
     fromSquare: null,
     source: 'palette',
   }));
+  setSetupDragPreview(event, piece, dragSource);
   event.dataTransfer.effectAllowed = 'copy';
   state.setupDrag = {
     active: true,
@@ -6648,11 +6709,13 @@ function handleBoardDrop(event) {
   const payload = extractDragPayload(event);
   updateBoardDragHover(null);
   if (!payload?.piece) {
+    clearSetupDragPreview();
     state.setupDrag = createEmptySetupDragState();
     return;
   }
   state.setupDrag.droppedOnBoard = true;
   placeSetupPiece(squareEl.dataset.square, payload.piece, payload.fromSquare || null);
+  clearSetupDragPreview();
   state.setupDrag = createEmptySetupDragState();
 }
 
@@ -6677,6 +6740,7 @@ function clearBoardDragHover() {
 
 function handleBoardDragEnd() {
   clearBoardDragHover();
+  clearSetupDragPreview();
   const dragState = state.setupDrag;
   state.setupDrag = createEmptySetupDragState();
   if (!dragState.active) {
