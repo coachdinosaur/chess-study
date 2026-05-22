@@ -4934,6 +4934,11 @@ function cssLengthToPx(value, fallback = 0) {
   return Number.isFinite(numeric) ? numeric : fallback;
 }
 
+function cssNumberToFloat(value, fallback) {
+  const numeric = Number.parseFloat(String(value || '').trim());
+  return Number.isFinite(numeric) ? numeric : fallback;
+}
+
 function currentViewportWidth() {
   return window.visualViewport?.width ?? window.innerWidth ?? document.documentElement?.clientWidth ?? 0;
 }
@@ -4953,12 +4958,22 @@ function elementPaddingInsetPx(element, axis) {
   return cssLengthToPx(styles.paddingTop, 0) + cssLengthToPx(styles.paddingBottom, 0);
 }
 
-function capturedCellSizeForBoardSize(boardSize) {
-  return clamp(boardSize / 15.5, remToPx(0.95), remToPx(1.35));
+function capturedSizingMetricsFromStyles(styles) {
+  const cellDivisor = cssNumberToFloat(styles?.getPropertyValue('--captured-cell-divisor'), 15.5);
+  return {
+    cellDivisor: cellDivisor > 0 ? cellDivisor : 15.5,
+    cellMin: cssLengthToPx(styles?.getPropertyValue('--captured-cell-min'), remToPx(0.95)),
+    cellMax: cssLengthToPx(styles?.getPropertyValue('--captured-cell-max'), remToPx(1.35)),
+    rowExtraHeight: cssLengthToPx(styles?.getPropertyValue('--captured-row-extra-height'), remToPx(0.56)),
+  };
 }
 
-function capturedRowHeightForBoardSize(boardSize) {
-  return capturedCellSizeForBoardSize(boardSize) + remToPx(0.56) + 2;
+function capturedCellSizeForBoardSize(boardSize, metrics = capturedSizingMetricsFromStyles()) {
+  return clamp(boardSize / metrics.cellDivisor, metrics.cellMin, metrics.cellMax);
+}
+
+function capturedRowHeightForBoardSize(boardSize, metrics = capturedSizingMetricsFromStyles()) {
+  return capturedCellSizeForBoardSize(boardSize, metrics) + metrics.rowExtraHeight + 2;
 }
 
 function capturedRowGapForBoardSize(boardSize) {
@@ -5448,11 +5463,12 @@ function syncBoardSize() {
 
   const columnStyles = window.getComputedStyle(dom.boardColumn);
   const framePadding = cssLengthToPx(columnStyles.getPropertyValue('--board-frame-padding'), remToPx(0.5));
+  const capturedSizingMetrics = capturedSizingMetricsFromStyles(columnStyles);
   const maxBoardSize = state.focusMode ? remToPx(56) : remToPx(42);
   let boardSize = Math.min(containerWidth, stageHeight, maxBoardSize);
 
   for (let index = 0; index < 6; index += 1) {
-    const rowHeight = capturedRowHeightForBoardSize(boardSize);
+    const rowHeight = capturedRowHeightForBoardSize(boardSize, capturedSizingMetrics);
     const rowGap = capturedRowGapForBoardSize(boardSize);
     const frameBorderWidth = 2;
     const frameShellWidth = (framePadding * 2) + frameBorderWidth;

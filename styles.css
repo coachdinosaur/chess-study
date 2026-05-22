@@ -157,9 +157,14 @@
   --eval-rail-gap: 0rem;
   --eval-rail-shadow: rgba(47, 36, 13, 0.2);
   --board-size: 42rem;
+  --captured-cell-min: 0.95rem;
+  --captured-cell-divisor: 15.5;
+  --captured-cell-max: 1.35rem;
+  --captured-row-extra-height: 0.56rem;
+  --captured-count-extra-width: 1.12rem;
   --captured-row-gap: clamp(0.24rem, calc(var(--board-size, 42rem) / 140), 0.4rem);
-  --captured-cell-size: clamp(0.95rem, calc(var(--board-size, 42rem) / 15.5), 1.35rem);
-  --captured-row-height: calc(var(--captured-cell-size) + 0.56rem + 2px);
+  --captured-cell-size: clamp(var(--captured-cell-min), calc(var(--board-size, 42rem) / var(--captured-cell-divisor)), var(--captured-cell-max));
+  --captured-row-height: calc(var(--captured-cell-size) + var(--captured-row-extra-height) + 2px);
   --captured-row-border: rgba(199, 211, 204, 0.94);
   --captured-row-bg: linear-gradient(180deg, rgba(255, 255, 252, 0.98), rgba(248, 247, 240, 0.96));
   --captured-row-shadow: rgba(47, 36, 13, 0.12);
@@ -598,6 +603,9 @@ code {
 
 .board-column {
   --board-frame-padding: 0.5rem;
+  --captured-row-gap: clamp(0.24rem, calc(var(--board-size, 42rem) / 140), 0.4rem);
+  --captured-cell-size: clamp(var(--captured-cell-min), calc(var(--board-size, 42rem) / var(--captured-cell-divisor)), var(--captured-cell-max));
+  --captured-row-height: calc(var(--captured-cell-size) + var(--captured-row-extra-height) + 2px);
   --board-available-height: calc(
     var(--app-height)
     - 1.8rem
@@ -669,7 +677,7 @@ code {
 
 .captured-piece-shell.has-count {
   width: auto;
-  min-width: calc(var(--captured-cell-size) + 1.12rem);
+  min-width: calc(var(--captured-cell-size) + var(--captured-count-extra-width));
   padding: 0 0.12rem 0 0.04rem;
   justify-content: flex-start;
   gap: 0.08rem;
@@ -2750,6 +2758,13 @@ code {
 
   .board-column {
     align-content: start;
+    --captured-cell-min: 0.82rem;
+    --captured-cell-divisor: 18.25;
+    --captured-cell-max: 1.12rem;
+    --captured-row-extra-height: 0.48rem;
+    --captured-count-extra-width: 0.92rem;
+    --captured-cell-size: clamp(var(--captured-cell-min), calc(var(--board-size, 42rem) / var(--captured-cell-divisor)), var(--captured-cell-max));
+    --captured-row-height: calc(var(--captured-cell-size) + var(--captured-row-extra-height) + 2px);
   }
 
   .board-stage-head,
@@ -2812,10 +2827,14 @@ code {
 
   .lesson-header {
     order: 0;
+    position: relative;
+    z-index: 30;
   }
 
   .board-pane {
     order: 1;
+    position: relative;
+    z-index: 1;
   }
 
   .board-column {
@@ -2907,6 +2926,7 @@ code {
   }
 
   .lesson-overflow-menu {
+    z-index: 40;
     max-width: calc(100vw - 1.1rem);
   }
 }
