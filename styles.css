@@ -2814,7 +2814,20 @@ code {
   }
 
   .piece-palette {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 0.35rem;
+  }
+
+  .piece-tool {
+    gap: 0;
+  }
+
+  .piece-tool-button {
+    border-radius: 0.75rem;
+  }
+
+  .piece-tool-label {
+    display: none;
   }
 
   .board-block {
@@ -3060,6 +3073,19 @@ code {
   }
 
   .piece-palette {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 0.35rem;
+  }
+
+  .piece-tool {
+    gap: 0;
+  }
+
+  .piece-tool-button {
+    border-radius: 0.75rem;
+  }
+
+  .piece-tool-label {
+    display: none;
   }
 }

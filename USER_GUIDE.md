@@ -169,7 +169,7 @@ Helpful behavior:
 
 FEN is a text way to describe a chess position.
 
-The `Position source` area lets you paste a full 6-part FEN and load it.
+The FEN box lets you paste a full 6-part FEN and load it.
 
 You can:
 

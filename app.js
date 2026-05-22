@@ -6007,7 +6007,6 @@ function renderSetupPanel() {
       <div class="lesson-section-header">
         <div>
           <h3 class="lesson-section-title">Board setup</h3>
-          <p class="section-copy">Keep the source position clean and lesson-ready while the board stays in sync on the left.</p>
         </div>
       </div>
 
@@ -6019,16 +6018,8 @@ function renderSetupPanel() {
 
       <div class="section-divider"></div>
 
-      <div class="lesson-subsection">
-        <div>
-          <h4 class="lesson-subtitle">Piece palette</h4>
-          <p class="muted-copy">Arm a piece, drag it onto the board, or right-click a square to clear it.</p>
-        </div>
-      </div>
-
       <div class="panel-grid">
         <div class="field-row">
-          <label class="field-label">Palette side</label>
           ${sideSelectorMarkup('set-palette-color', state.setup.paletteColor, [
             { value: 'w', label: 'White' },
             { value: 'b', label: 'Black' },
@@ -6057,13 +6048,6 @@ function renderSetupPanel() {
     </article>
 
     <article class="lesson-section">
-      <div class="lesson-section-header">
-        <div>
-          <h3 class="lesson-section-title">Position source</h3>
-          <p class="section-copy">Paste a legal FEN to replace the setup board, or let the editor keep it synchronized for you.</p>
-        </div>
-      </div>
-
       <div class="stack-grid">
         <div class="field-row">
           <label class="field-label" for="fenInput">FEN</label>
