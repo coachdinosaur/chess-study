@@ -66,7 +66,7 @@ const ENGINE_BUNDLE_CANDIDATES = Object.freeze([
 ]);
 const TAB_SETUP = 'setup';
 const TAB_ANALYSIS = 'analysis';
-const TAB_PGN = 'pgn';
+const LEGACY_TAB_PGN = 'pgn';
 const PRACTICE_KIND_LINE = 'line';
 const PRACTICE_KIND_BRANCH = 'branch';
 const DEFAULT_TITLE = '';
@@ -74,6 +74,17 @@ const LESSON_FILE_VERSION = 1;
 const LESSON_BOOK_FILE_VERSION = 2;
 const ROOT_NODE_ID = 'root';
 const STANDARD_INITIAL_PLACEMENT = DEFAULT_POSITION.split(/\s+/)[0];
+
+function normalizeActiveTab(value, fallback = TAB_ANALYSIS) {
+  const normalized = String(value || '').trim();
+  if (normalized === TAB_SETUP || normalized === TAB_ANALYSIS) {
+    return normalized;
+  }
+  if (normalized === LEGACY_TAB_PGN) {
+    return TAB_ANALYSIS;
+  }
+  return fallback;
+}
 const CAPTURED_PIECE_ORDER = ['Q', 'R', 'B', 'N', 'P'];
 const STANDARD_PIECE_COUNTS = Object.freeze({
   Q: 1,
@@ -123,8 +134,6 @@ const dom = {
   boardStageSubtitle: document.getElementById('boardStageSubtitle'),
   modePill: document.getElementById('modePill'),
   validityPill: document.getElementById('validityPill'),
-  evalBadgeWrap: document.getElementById('evalBadgeWrap'),
-  evalBadge: document.getElementById('evalBadge'),
   evalBarWrap: document.getElementById('evalBarWrap'),
   evalBarWhite: document.getElementById('evalBarWhite'),
   turnSideMarker: document.getElementById('turnSideMarker'),
@@ -141,6 +150,8 @@ const dom = {
   engineReadyLabel: document.getElementById('engineReadyLabel'),
   titleInput: document.getElementById('titleInput'),
   headerAnalyzeButton: document.getElementById('headerAnalyzeButton'),
+  lessonBookActionsButton: document.getElementById('lessonBookActionsButton'),
+  lessonBookActionsMenu: document.getElementById('lessonBookActionsMenu'),
   lessonActionsButton: document.getElementById('lessonActionsButton'),
   lessonActionsMenu: document.getElementById('lessonActionsMenu'),
   openLessonButton: document.getElementById('openLessonButton'),
@@ -179,7 +190,6 @@ const dom = {
   workspaceTools: document.getElementById('workspaceTools'),
   setupPanel: document.getElementById('setupPanel'),
   analysisPanel: document.getElementById('analysisPanel'),
-  pgnPanel: document.getElementById('pgnPanel'),
   promotionModal: document.getElementById('promotionModal'),
   promotionSubtitle: document.getElementById('promotionSubtitle'),
   promotionChoices: document.getElementById('promotionChoices'),
@@ -190,7 +200,7 @@ const state = {
   colorTheme: document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light',
   focusMode: false,
   boardOrientation: 'white',
-  activeTab: TAB_PGN,
+  activeTab: TAB_ANALYSIS,
   lessonBook: {
     activeLessonId: '',
     nextId: 1,
@@ -1787,32 +1797,50 @@ function initializeColorTheme() {
   applyColorTheme(initialTheme);
 }
 
-function isLessonActionsMenuOpen() {
-  return Boolean(dom.lessonActionsMenu && !dom.lessonActionsMenu.hidden);
+const HEADER_MENU_NAMES = Object.freeze(['lesson-book', 'settings']);
+
+function headerMenuElements(menuName) {
+  if (menuName === 'lesson-book') {
+    return {
+      button: dom.lessonBookActionsButton,
+      menu: dom.lessonBookActionsMenu,
+    };
+  }
+  return {
+    button: dom.lessonActionsButton,
+    menu: dom.lessonActionsMenu,
+  };
 }
 
-function clearLessonActionsMenuLayout() {
-  if (!dom.lessonActionsMenu) {
+function isHeaderMenuOpen(menuName) {
+  const { menu } = headerMenuElements(menuName);
+  return Boolean(menu && !menu.hidden);
+}
+
+function clearHeaderMenuLayout(menuName) {
+  const { menu } = headerMenuElements(menuName);
+  if (!menu) {
     return;
   }
-  dom.lessonActionsMenu.removeAttribute('data-placement');
-  dom.lessonActionsMenu.style.removeProperty('max-height');
+  menu.removeAttribute('data-placement');
+  menu.style.removeProperty('max-height');
 }
 
-function syncLessonActionsMenuLayout() {
-  if (!dom.lessonActionsButton || !dom.lessonActionsMenu || dom.lessonActionsMenu.hidden) {
+function syncHeaderMenuLayout(menuName) {
+  const { button, menu } = headerMenuElements(menuName);
+  if (!button || !menu || menu.hidden) {
     return;
   }
 
   const menuGap = remToPx(LESSON_ACTIONS_MENU_GAP_REM);
   const viewportPadding = remToPx(LESSON_ACTIONS_MENU_VIEWPORT_PADDING_REM);
   const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
-  const buttonRect = dom.lessonActionsButton.getBoundingClientRect();
+  const buttonRect = button.getBoundingClientRect();
 
-  clearLessonActionsMenuLayout();
-  dom.lessonActionsMenu.dataset.placement = 'down';
+  clearHeaderMenuLayout(menuName);
+  menu.dataset.placement = 'down';
 
-  const naturalHeight = Math.ceil(dom.lessonActionsMenu.getBoundingClientRect().height);
+  const naturalHeight = Math.ceil(menu.getBoundingClientRect().height);
   const availableBelow = Math.max(0, viewportHeight - buttonRect.bottom - menuGap - viewportPadding);
   const availableAbove = Math.max(0, buttonRect.top - menuGap - viewportPadding);
 
@@ -1830,55 +1858,94 @@ function syncLessonActionsMenuLayout() {
     availableSpace = availableAbove;
   }
 
-  dom.lessonActionsMenu.dataset.placement = placement;
+  menu.dataset.placement = placement;
   if (availableSpace > 0) {
-    dom.lessonActionsMenu.style.maxHeight = `${Math.floor(availableSpace)}px`;
+    menu.style.maxHeight = `${Math.floor(availableSpace)}px`;
   }
+}
+
+function syncOpenHeaderMenusLayout() {
+  HEADER_MENU_NAMES.forEach((menuName) => {
+    if (isHeaderMenuOpen(menuName)) {
+      syncHeaderMenuLayout(menuName);
+    }
+  });
 }
 
 function syncOpenLessonActionsMenuLayout() {
   if (!isLessonActionsMenuOpen()) {
     return;
   }
-  syncLessonActionsMenuLayout();
+  syncHeaderMenuLayout('settings');
 }
 
-function setLessonActionsMenuOpen(isOpen) {
-  if (!dom.lessonActionsButton || !dom.lessonActionsMenu) {
+function setHeaderMenuOpen(menuName, isOpen) {
+  const { button, menu } = headerMenuElements(menuName);
+  if (!button || !menu) {
     return;
   }
   const nextOpen = Boolean(isOpen);
-  dom.lessonActionsButton.setAttribute('aria-expanded', nextOpen ? 'true' : 'false');
-  dom.lessonActionsButton.closest('.lesson-overflow')?.classList.toggle('is-open', nextOpen);
   if (nextOpen) {
-    dom.lessonActionsMenu.hidden = false;
-    dom.lessonActionsMenu.scrollTop = 0;
-    syncLessonActionsMenuLayout();
+    HEADER_MENU_NAMES
+      .filter((otherMenuName) => otherMenuName !== menuName)
+      .forEach((otherMenuName) => setHeaderMenuOpen(otherMenuName, false));
+  }
+  button.setAttribute('aria-expanded', nextOpen ? 'true' : 'false');
+  button.closest('.lesson-overflow')?.classList.toggle('is-open', nextOpen);
+  if (nextOpen) {
+    menu.hidden = false;
+    menu.scrollTop = 0;
+    syncHeaderMenuLayout(menuName);
     return;
   }
-  clearLessonActionsMenuLayout();
-  dom.lessonActionsMenu.hidden = true;
+  clearHeaderMenuLayout(menuName);
+  menu.hidden = true;
+}
+
+function closeHeaderMenu(menuName, options = {}) {
+  const { restoreFocus = false } = options;
+  const { button } = headerMenuElements(menuName);
+  if (!isHeaderMenuOpen(menuName)) {
+    return;
+  }
+  setHeaderMenuOpen(menuName, false);
+  if (restoreFocus) {
+    button?.focus();
+  }
+}
+
+function closeHeaderMenus(options = {}) {
+  HEADER_MENU_NAMES.forEach((menuName) => closeHeaderMenu(menuName, options));
+}
+
+function isLessonBookActionsMenuOpen() {
+  return isHeaderMenuOpen('lesson-book');
+}
+
+function closeLessonBookActionsMenu(options = {}) {
+  closeHeaderMenu('lesson-book', options);
+}
+
+function toggleLessonBookActionsMenu() {
+  setHeaderMenuOpen('lesson-book', !isLessonBookActionsMenuOpen());
+}
+
+function isLessonActionsMenuOpen() {
+  return isHeaderMenuOpen('settings');
 }
 
 function closeLessonActionsMenu(options = {}) {
-  const { restoreFocus = false } = options;
-  if (!isLessonActionsMenuOpen()) {
-    return;
-  }
-  setLessonActionsMenuOpen(false);
-  if (restoreFocus) {
-    dom.lessonActionsButton?.focus();
-  }
+  closeHeaderMenu('settings', options);
 }
 
 function toggleLessonActionsMenu() {
-  setLessonActionsMenuOpen(!isLessonActionsMenuOpen());
+  setHeaderMenuOpen('settings', !isLessonActionsMenuOpen());
 }
 
 function handleViewportResize() {
   renderBoard();
   syncFullscreenMenuState();
-  syncOpenLessonActionsMenuLayout();
+  syncOpenHeaderMenusLayout();
 }
 
 function handleFullscreenChange() {
@@ -1933,7 +2000,7 @@ function createCurrentLessonStateSnapshot() {
     title: normalizeEditableText(state.title),
     analysisTargetDepth: currentAnalysisTargetDepth(),
     boardOrientation: state.boardOrientation === 'black' ? 'black' : 'white',
-    activeTab: [TAB_SETUP, TAB_ANALYSIS, TAB_PGN].includes(state.activeTab) ? state.activeTab : TAB_PGN,
+    activeTab: normalizeActiveTab(state.activeTab),
     advancedOpen: Boolean(state.setup.advancedOpen),
     toolsExpanded: Boolean(state.toolsExpanded),
     pgnCommentsVisible: state.pgnCommentsVisible !== false,
@@ -1959,7 +2026,7 @@ function cloneLessonState(lessonState) {
     title: normalizeEditableText(lessonState?.title),
     analysisTargetDepth: normalizeAnalysisTargetDepth(lessonState?.analysisTargetDepth),
     boardOrientation: lessonState?.boardOrientation === 'black' ? 'black' : 'white',
-    activeTab: [TAB_SETUP, TAB_ANALYSIS, TAB_PGN].includes(lessonState?.activeTab) ? lessonState.activeTab : TAB_PGN,
+    activeTab: normalizeActiveTab(lessonState?.activeTab),
     advancedOpen: Boolean(lessonState?.advancedOpen),
     toolsExpanded: Boolean(lessonState?.toolsExpanded),
     pgnCommentsVisible: lessonState?.pgnCommentsVisible !== false,
@@ -2762,7 +2829,7 @@ function validateAndNormalizeLessonPayload(payload) {
     title: typeof payload.title === 'string' ? normalizeEditableText(payload.title) : DEFAULT_TITLE,
     analysisTargetDepth: normalizeAnalysisTargetDepth(payload.analysisTargetDepth),
     boardOrientation: payload.boardOrientation === 'black' ? 'black' : 'white',
-    activeTab: [TAB_SETUP, TAB_ANALYSIS, TAB_PGN].includes(payload.activeTab) ? payload.activeTab : TAB_PGN,
+    activeTab: normalizeActiveTab(payload.activeTab),
     advancedOpen: Boolean(payload.advancedOpen),
     toolsExpanded: Boolean(payload.toolsExpanded),
     pgnCommentsVisible: payload.pgnCommentsVisible !== false,
@@ -2825,7 +2892,7 @@ function applyLessonState(lessonState) {
   state.title = normalizeEditableText(lessonState.title);
   state.analysisTargetDepth = normalizeAnalysisTargetDepth(lessonState.analysisTargetDepth);
   state.boardOrientation = lessonState.boardOrientation;
-  state.activeTab = lessonState.activeTab;
+  state.activeTab = normalizeActiveTab(lessonState.activeTab);
   state.setup.advancedOpen = lessonState.advancedOpen;
   state.toolsExpanded = Boolean(lessonState.toolsExpanded);
   state.pgnCommentsVisible = lessonState.pgnCommentsVisible !== false;
@@ -2893,7 +2960,7 @@ function hydrateDraft() {
     const title = typeof draft?.title === 'string' ? normalizeEditableText(draft.title) : DEFAULT_TITLE;
     const analysisTargetDepth = normalizeAnalysisTargetDepth(draft?.analysisTargetDepth);
     const boardOrientation = draft?.boardOrientation === 'black' ? 'black' : 'white';
-    const activeTab = [TAB_SETUP, TAB_ANALYSIS, TAB_PGN].includes(draft?.activeTab) ? draft.activeTab : TAB_PGN;
+    const activeTab = normalizeActiveTab(draft?.activeTab);
     const advancedOpen = Boolean(draft?.advancedOpen);
     const toolsExpanded = Boolean(draft?.toolsExpanded);
     const pgnCommentsVisible = draft?.pgnCommentsVisible !== false;
@@ -3007,7 +3074,7 @@ function buildLessonStateFromImportedPgn(importedPgn) {
     title: typeof importedPgn?.title === 'string' ? normalizeEditableText(importedPgn.title) : DEFAULT_TITLE,
     analysisTargetDepth: currentAnalysisTargetDepth(),
     boardOrientation: state.boardOrientation,
-    activeTab: TAB_PGN,
+    activeTab: TAB_ANALYSIS,
     advancedOpen: false,
     toolsExpanded: true,
     pvLinesVisible: state.pvLinesVisible,
@@ -3062,7 +3129,7 @@ function renderGuidedReviewVisibility() {
 function setGuidedReviewActive(active) {
   state.guidedReview.active = Boolean(active);
   if (state.guidedReview.active) {
-    state.activeTab = TAB_PGN;
+    state.activeTab = TAB_ANALYSIS;
   }
   renderGuidedReviewVisibility();
   schedulePersist();
@@ -3097,13 +3164,12 @@ function loadGuidedReviewFenToBoard(fen) {
     if (!parsed.ok) {
       return { ok: false, error: parsed.error };
     }
-    state.activeTab = TAB_PGN;
+    state.activeTab = TAB_ANALYSIS;
     commitSetupState(parsed.pieces, parsed.meta, { syncFenInput: true, resetAnalysis: true });
     renderBoard();
     renderHeaderMeta();
     renderHeroBanner();
     renderAnalysisPanel();
-    renderPgnPanel();
     renderPromotionModal();
     return { ok: true, fen: state.setupFen };
   } catch (error) {
@@ -3427,7 +3493,7 @@ function jumpToAnalysisNode(nodeId, options = {}) {
   }
   const shouldKeepAnalysisLive = analysisShouldFollowPositionChanges();
   if (state.activeTab === TAB_SETUP && countAnalysisMoveNodes()) {
-    state.activeTab = TAB_PGN;
+    state.activeTab = TAB_ANALYSIS;
   }
   if (syncSelection) {
     applyAnalysisPathSelection(nodeId);
@@ -3597,13 +3663,11 @@ function startPracticeSession(options = {}) {
   if (practiceKind === PRACTICE_KIND_LINE && lineNodeIds.length < 2) {
     syncLessonFileStatus('Record at least one move on the selected lesson line before starting practice.');
     renderAnalysisPanel();
-    renderPgnPanel();
     return;
   }
   if (practiceKind === PRACTICE_KIND_BRANCH && !branchReady) {
     syncLessonFileStatus('Jump to a lesson position with at least one recorded continuation before starting a branch drill.');
     renderAnalysisPanel();
-    renderPgnPanel();
     return;
   }
 
@@ -3645,7 +3709,6 @@ function requestPracticeHint() {
   syncPracticeBoardMessage();
   renderNotationPanel();
   renderAnalysisPanel();
-  renderPgnPanel();
 }
 
 function revealPracticeMove() {
@@ -4765,7 +4828,7 @@ function currentContextLabel() {
   if (state.activeTab === TAB_SETUP) {
     return 'Setup editor';
   }
-  return state.activeTab === TAB_ANALYSIS ? 'Analysis board' : 'Line navigator';
+  return 'Analysis board';
 }
 
 function currentBoardFenLabel() {
@@ -5230,7 +5293,6 @@ function setAnnotateMode(enabled) {
   }
   renderBoard();
   renderAnalysisPanel();
-  renderPgnPanel();
 }
 
 function applyAnnotationGestureSquare(square) {
@@ -5340,24 +5402,23 @@ function renderBoard() {
     dom.turnSideMarker.title = turnSide === 'b' ? 'Black to move' : 'White to move';
   }
   if (showEvalRail) {
-    dom.evalBadgeWrap.classList.remove('is-hidden');
-    dom.evalBarWrap.classList.remove('is-hidden');
-    dom.evalBadgeWrap.setAttribute('aria-hidden', 'false');
-    dom.evalBarWrap.setAttribute('aria-hidden', 'false');
-    dom.evalBarWrap.dataset.orientation = state.boardOrientation;
+    dom.evalBarWrap?.classList.remove('is-hidden');
+    dom.evalBarWrap?.setAttribute('aria-hidden', 'false');
+    if (dom.evalBarWrap) {
+      dom.evalBarWrap.dataset.orientation = state.boardOrientation;
+    }
     const evalDisplay = state.engine.evalRailVisible
       ? currentEvalDisplay()
       : { label: '0.00', whiteFraction: 0.5 };
-    dom.evalBadge.textContent = evalDisplay.label || '0.00';
     const whiteFraction = Number.isFinite(evalDisplay.whiteFraction) ? evalDisplay.whiteFraction : 0.5;
-    dom.evalBarWhite.style.height = `${(whiteFraction * 100).toFixed(1)}%`;
-    dom.evalBarWhite.style.width = '100%';
+    if (dom.evalBarWhite) {
+      dom.evalBarWhite.style.height = `${(whiteFraction * 100).toFixed(1)}%`;
+      dom.evalBarWhite.style.width = '100%';
+    }
     return;
   }
-  dom.evalBadgeWrap.classList.add('is-hidden');
-  dom.evalBarWrap.classList.add('is-hidden');
-  dom.evalBadgeWrap.setAttribute('aria-hidden', 'true');
-  dom.evalBarWrap.setAttribute('aria-hidden', 'true');
+  dom.evalBarWrap?.classList.add('is-hidden');
+  dom.evalBarWrap?.setAttribute('aria-hidden', 'true');
 }
 
 function syncBoardSize() {
@@ -5438,10 +5499,8 @@ function renderHeaderMeta() {
       : 'Solve the next move from the selected lesson line without seeing future moves or engine output.'
     : state.activeTab === TAB_SETUP
       ? 'Build the source position on the board while keeping the setup fields synchronized.'
-      : state.activeTab === TAB_ANALYSIS
-        ? 'Play legal moves on the board while the right pane tracks evaluation and the current lesson tree.'
-        : 'Follow the lesson tree on the right and jump to any recorded branch while the board stays in view.';
-  dom.modePill.textContent = state.practice.active ? 'Practice' : state.activeTab === TAB_SETUP ? 'Setup' : state.activeTab === TAB_ANALYSIS ? 'Analysis' : 'Line';
+      : 'Play legal moves on the board while the right pane tracks evaluation and the current lesson tree.';
+  dom.modePill.textContent = state.practice.active ? 'Practice' : state.activeTab === TAB_SETUP ? 'Setup' : 'Analysis';
   dom.validityPill.textContent = state.activeTab === TAB_SETUP ? setupSummary.title : engineLabel;
   dom.validityPill.className = `pill ${state.activeTab === TAB_SETUP && setupSummary.kind === 'success' ? 'pill-primary' : ''}`.trim();
   dom.boardContextLabel.textContent = currentContextLabel();
@@ -6150,7 +6209,6 @@ function analysisStatusSummary() {
 
 function renderAnalysisPanel() {
   const hasBoard = Boolean(state.analysis.game);
-  const annotateButtonClass = `action-button tonal ${state.annotations.enabled ? 'is-active' : ''}`.trim();
   const analyzeButtonLabel = currentAnalyzeButtonLabel();
   const analysisButtonDisabled = analysisToggleDisabled(hasBoard);
   const depthInputDisabled = state.practice.active || !hasBoard || state.tablebase.probing || state.engine.loading || state.engine.analyzing || state.engine.stopping;
@@ -6168,9 +6226,6 @@ function renderAnalysisPanel() {
         <button type="button" class="action-button ${analyzeButtonTone}" data-action="toggle-analysis" ${analysisButtonDisabled ? 'disabled' : ''}>
           ${escapeHtml(analyzeButtonLabel)}
         </button>
-        <button type="button" class="action-button tonal" data-action="reset-analysis" ${hasBoard ? '' : 'disabled'}>Reset to setup</button>
-        <button type="button" class="${annotateButtonClass}" data-action="toggle-annotate" aria-pressed="${state.annotations.enabled ? 'true' : 'false'}">Annotate</button>
-        <button type="button" class="action-button" data-action="flip-board">Flip board</button>
       </div>
       <div class="analysis-target-depth-row">
         <label class="field-label" for="analysisTargetDepthInput">Target depth</label>
@@ -6215,12 +6270,13 @@ function renderAnalysisPanel() {
         </div>
       `}
     </article>
+    ${renderLineNavigationSection()}
     ${renderPracticeToolSection()}
   `;
   renderGuidedReviewAnalysisPanel();
 }
 
-function renderPgnPanel() {
+function renderLineNavigationSection() {
   const hasBoard = Boolean(state.analysis.game);
   const totalPly = countAnalysisMoveNodes();
   const branchPoints = countAnalysisBranchPoints();
@@ -6228,7 +6284,7 @@ function renderPgnPanel() {
     ? `${totalPly} ply recorded in the lesson tree with ${branchPoints || 0} branch point${branchPoints === 1 ? '' : 's'}.`
     : 'No moves recorded yet. Use Analysis to start building the lesson tree.';
   const annotateButtonClass = `action-button tonal ${state.annotations.enabled ? 'is-active' : ''}`.trim();
-  dom.pgnPanel.innerHTML = `
+  return `
     <article class="lesson-section">
       <div class="lesson-section-header">
         <div>
@@ -6252,7 +6308,6 @@ function renderPgnPanel() {
         </div>
       </div>
     </article>
-    ${renderPracticeToolSection()}
   `;
 }
 
@@ -6281,6 +6336,7 @@ function renderPromotionModal() {
 }
 
 function renderTabs() {
+  state.activeTab = normalizeActiveTab(state.activeTab);
   document.querySelectorAll('.tab-chip').forEach((button) => {
     button.classList.toggle('is-active', button.dataset.tab === state.activeTab);
   });
@@ -6288,9 +6344,11 @@ function renderTabs() {
   const panels = [
     [dom.setupPanel, TAB_SETUP],
     [dom.analysisPanel, TAB_ANALYSIS],
-    [dom.pgnPanel, TAB_PGN],
   ];
   panels.forEach(([panel, tab]) => {
+    if (!panel) {
+      return;
+    }
     const active = tab === state.activeTab;
     panel.hidden = !active;
     panel.classList.toggle('is-active', active);
@@ -6312,7 +6370,6 @@ function renderAll() {
   renderNotationPanel();
   renderSetupPanel();
   renderAnalysisPanel();
-  renderPgnPanel();
   renderTabs();
   renderWorkspaceTools();
   renderGuidedReviewVisibility();
@@ -6328,7 +6385,6 @@ function renderAfterSetupMetaChange() {
     renderNotationPanel();
     renderSetupPanel();
     renderAnalysisPanel();
-    renderPgnPanel();
     renderPromotionModal();
   });
 }
@@ -6638,9 +6694,9 @@ function handleBoardDragEnd() {
 
 function handleDocumentClick(event) {
   const clickTarget = event.target;
-  const clickedInsideLessonActions = clickTarget instanceof Element && Boolean(clickTarget.closest('.lesson-overflow'));
-  if (!clickedInsideLessonActions) {
-    closeLessonActionsMenu();
+  const clickedInsideHeaderMenu = clickTarget instanceof Element && Boolean(clickTarget.closest('.lesson-overflow'));
+  if (!clickedInsideHeaderMenu) {
+    closeHeaderMenus();
   }
 
   const actionEl = clickTarget instanceof Element ? clickTarget.closest('[data-action]') : null;
@@ -6652,23 +6708,29 @@ function handleDocumentClick(event) {
   }
   const { action } = actionEl.dataset;
   switch (action) {
+    case 'toggle-lesson-book-actions':
+      toggleLessonBookActionsMenu();
+      break;
     case 'toggle-lesson-actions':
       toggleLessonActionsMenu();
       break;
     case 'new-lesson':
+      closeLessonBookActionsMenu();
       createNewLesson();
       break;
     case 'duplicate-lesson':
+      closeLessonBookActionsMenu();
       duplicateCurrentLesson();
       break;
     case 'delete-lesson':
+      closeLessonBookActionsMenu();
       deleteCurrentLesson();
       break;
     case 'set-tab':
       if (state.practice.active && actionEl.dataset.tab === TAB_SETUP) {
         stopPracticeSession();
       }
-      state.activeTab = actionEl.dataset.tab || TAB_SETUP;
+      state.activeTab = normalizeActiveTab(actionEl.dataset.tab, TAB_SETUP);
       renderAll();
       schedulePersist();
       break;
@@ -6704,7 +6766,6 @@ function handleDocumentClick(event) {
     case 'set-practice-kind':
       state.practicePreferenceKind = normalizePracticeKind(actionEl.dataset.value);
       renderAnalysisPanel();
-      renderPgnPanel();
       schedulePersist();
       break;
     case 'toggle-analysis':
@@ -6955,9 +7016,9 @@ function handleDocumentKeydown(event) {
     setFocusMode(false);
     return;
   }
-  if (event.key === 'Escape' && isLessonActionsMenuOpen()) {
+  if (event.key === 'Escape' && (isLessonBookActionsMenuOpen() || isLessonActionsMenuOpen())) {
     event.preventDefault();
-    closeLessonActionsMenu({ restoreFocus: true });
+    closeHeaderMenus({ restoreFocus: true });
     return;
   }
   if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) {
@@ -7041,10 +7102,11 @@ function bindEvents() {
     terminateEngineWorker();
   });
   window.addEventListener('resize', handleViewportResize);
-  window.visualViewport?.addEventListener('resize', syncOpenLessonActionsMenuLayout);
+  window.visualViewport?.addEventListener('resize', syncOpenHeaderMenusLayout);
   window.addEventListener('blur', cancelAnnotationGesture);
   syncLessonFileStatus(state.lessonFileStatus);
-  setLessonActionsMenuOpen(false);
+  setHeaderMenuOpen('lesson-book', false);
+  setHeaderMenuOpen('settings', false);
 }
 
 initializeColorTheme();

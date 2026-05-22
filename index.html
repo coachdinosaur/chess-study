@@ -90,102 +90,110 @@
       </aside>
 
       <section class="control-pane">
-        <section class="lesson-header" aria-labelledby="titleInput">
-          <label class="sr-only" for="titleInput">Lesson title</label>
-          <input
-            id="titleInput"
-            class="title-input lesson-title-input"
-            type="text"
-            maxlength="120"
-            placeholder="Untitled position"
-            autocomplete="off"
-            spellcheck="false"
-          >
-          <div class="lesson-book-row">
-            <label class="sr-only" for="lessonPicker">Lesson menu</label>
-            <select id="lessonPicker" class="field-select lesson-picker" aria-label="Select lesson"></select>
-            <button id="newLessonButton" type="button" class="action-button tonal lesson-book-button" data-action="new-lesson">New</button>
-            <button id="duplicateLessonButton" type="button" class="action-button lesson-book-button" data-action="duplicate-lesson">Duplicate</button>
-            <button id="deleteLessonButton" type="button" class="action-button danger lesson-book-button" data-action="delete-lesson">Delete</button>
-          </div>
-          <div class="lesson-header-actions">
-            <button
-              id="headerAnalyzeButton"
-              type="button"
-              class="header-analyze-button action-button primary"
-              data-action="toggle-analysis"
-            >Analyze</button>
-            <div id="evalBadgeWrap" class="eval-badge-wrap is-hidden" aria-hidden="true">
-              <span id="evalBadge" class="eval-badge">+0.00</span>
-            </div>
-            <div class="lesson-overflow">
+        <div class="control-pane-scroll">
+          <section class="lesson-header" aria-labelledby="titleInput">
+            <label class="sr-only" for="titleInput">Lesson title</label>
+            <input
+              id="titleInput"
+              class="title-input lesson-title-input"
+              type="text"
+              maxlength="120"
+              placeholder="Untitled position"
+              autocomplete="off"
+              spellcheck="false"
+            >
+            <div class="lesson-command-row">
+              <label class="sr-only" for="lessonPicker">Lesson selector</label>
+              <select id="lessonPicker" class="field-select lesson-picker" aria-label="Lesson selector"></select>
+              <div class="lesson-overflow lesson-book-overflow">
+                <button
+                  id="lessonBookActionsButton"
+                  type="button"
+                  class="lesson-actions-button action-button tonal"
+                  data-action="toggle-lesson-book-actions"
+                  aria-haspopup="menu"
+                  aria-controls="lessonBookActionsMenu"
+                  aria-expanded="false"
+                >Actions</button>
+                <div id="lessonBookActionsMenu" class="lesson-overflow-menu lesson-book-actions-menu" role="menu" aria-labelledby="lessonBookActionsButton" hidden>
+                  <button id="newLessonButton" type="button" class="lesson-overflow-item" data-action="new-lesson" role="menuitem">New</button>
+                  <button id="duplicateLessonButton" type="button" class="lesson-overflow-item" data-action="duplicate-lesson" role="menuitem">Duplicate</button>
+                  <button id="deleteLessonButton" type="button" class="lesson-overflow-item lesson-overflow-item-danger" data-action="delete-lesson" role="menuitem">Delete</button>
+                </div>
+              </div>
               <button
-                id="lessonActionsButton"
+                id="headerAnalyzeButton"
                 type="button"
-                class="lesson-overflow-trigger"
-                data-action="toggle-lesson-actions"
-                aria-label="Lesson actions"
-                aria-haspopup="menu"
-                aria-controls="lessonActionsMenu"
-                aria-expanded="false"
-              >
-                <span class="lesson-overflow-dots" aria-hidden="true">
-                  <span class="lesson-overflow-dot"></span>
-                  <span class="lesson-overflow-dot"></span>
-                  <span class="lesson-overflow-dot"></span>
-                </span>
-              </button>
-              <div id="lessonActionsMenu" class="lesson-overflow-menu" role="menu" aria-labelledby="lessonActionsButton" hidden>
-                <button id="openLessonButton" type="button" class="lesson-overflow-item" data-action="open-lesson" role="menuitem">Open lesson</button>
-                <button id="saveLessonButton" type="button" class="lesson-overflow-item" data-action="save-lesson" role="menuitem">Save lesson</button>
-                <button id="guidedReviewButton" type="button" class="lesson-overflow-item" data-action="open-guided-review" role="menuitem">Guided Review</button>
-                <button id="importPgnButton" type="button" class="lesson-overflow-item" data-action="import-pgn" role="menuitem">Import PGN</button>
-                <button id="exportPgnButton" type="button" class="lesson-overflow-item" data-action="export-pgn" role="menuitem">Export PGN</button>
-                <button id="copyFenButton" type="button" class="lesson-overflow-item" data-action="copy-fen" role="menuitem">Copy FEN</button>
-                <button id="togglePgnCommentsMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-pgn-comments" role="menuitem">Hide PGN comments</button>
-                <button id="toggleNoteMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-note" role="menuitem">Show note</button>
-                <button id="toggleToolsMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-tools" role="menuitem">Show tools</button>
-                <button id="togglePvLinesMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-pv-lines" role="menuitem">Hide PV lines</button>
-                <button id="enterFocusModeButton" type="button" class="lesson-overflow-item" data-action="enter-focus-mode" role="menuitem">Focus mode</button>
-                <button id="toggleFullscreenMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-fullscreen" role="menuitem" hidden>Enter fullscreen</button>
-                <div class="lesson-overflow-divider" role="separator"></div>
-                <p class="lesson-overflow-section-label" role="presentation">Theme</p>
+                class="header-analyze-button action-button primary"
+                data-action="toggle-analysis"
+              >Analyze</button>
+              <div class="lesson-overflow lesson-settings-overflow">
                 <button
-                  id="lightThemeButton"
+                  id="lessonActionsButton"
                   type="button"
-                  class="lesson-overflow-item lesson-overflow-item-radio"
-                  data-action="set-color-theme"
-                  data-value="light"
-                  role="menuitemradio"
-                  aria-checked="false"
+                  class="lesson-overflow-trigger"
+                  data-action="toggle-lesson-actions"
+                  aria-label="Settings"
+                  title="Settings"
+                  aria-haspopup="menu"
+                  aria-controls="lessonActionsMenu"
+                  aria-expanded="false"
                 >
-                  <span>Light</span>
-                  <span class="lesson-overflow-check" aria-hidden="true"></span>
+                  <span class="lesson-overflow-dots" aria-hidden="true">
+                    <span class="lesson-overflow-dot"></span>
+                    <span class="lesson-overflow-dot"></span>
+                    <span class="lesson-overflow-dot"></span>
+                  </span>
                 </button>
-                <button
-                  id="darkThemeButton"
-                  type="button"
-                  class="lesson-overflow-item lesson-overflow-item-radio"
-                  data-action="set-color-theme"
-                  data-value="dark"
-                  role="menuitemradio"
-                  aria-checked="false"
-                >
-                  <span>Dark</span>
-                  <span class="lesson-overflow-check" aria-hidden="true"></span>
-                </button>
+                <div id="lessonActionsMenu" class="lesson-overflow-menu" role="menu" aria-labelledby="lessonActionsButton" hidden>
+                  <button id="openLessonButton" type="button" class="lesson-overflow-item" data-action="open-lesson" role="menuitem">Open lesson</button>
+                  <button id="saveLessonButton" type="button" class="lesson-overflow-item" data-action="save-lesson" role="menuitem">Save lesson</button>
+                  <button id="guidedReviewButton" type="button" class="lesson-overflow-item" data-action="open-guided-review" role="menuitem">Guided Review</button>
+                  <button id="importPgnButton" type="button" class="lesson-overflow-item" data-action="import-pgn" role="menuitem">Import PGN</button>
+                  <button id="exportPgnButton" type="button" class="lesson-overflow-item" data-action="export-pgn" role="menuitem">Export PGN</button>
+                  <button id="copyFenButton" type="button" class="lesson-overflow-item" data-action="copy-fen" role="menuitem">Copy FEN</button>
+                  <button id="togglePgnCommentsMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-pgn-comments" role="menuitem">Hide PGN comments</button>
+                  <button id="toggleNoteMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-note" role="menuitem">Show note</button>
+                  <button id="toggleToolsMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-tools" role="menuitem">Show tools</button>
+                  <button id="togglePvLinesMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-pv-lines" role="menuitem">Hide PV lines</button>
+                  <button id="enterFocusModeButton" type="button" class="lesson-overflow-item" data-action="enter-focus-mode" role="menuitem">Focus mode</button>
+                  <button id="toggleFullscreenMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-fullscreen" role="menuitem" hidden>Enter fullscreen</button>
+                  <div class="lesson-overflow-divider" role="separator"></div>
+                  <p class="lesson-overflow-section-label" role="presentation">Theme</p>
+                  <button
+                    id="lightThemeButton"
+                    type="button"
+                    class="lesson-overflow-item lesson-overflow-item-radio"
+                    data-action="set-color-theme"
+                    data-value="light"
+                    role="menuitemradio"
+                    aria-checked="false"
+                  >
+                    <span>Light</span>
+                    <span class="lesson-overflow-check" aria-hidden="true"></span>
+                  </button>
+                  <button
+                    id="darkThemeButton"
+                    type="button"
+                    class="lesson-overflow-item lesson-overflow-item-radio"
+                    data-action="set-color-theme"
+                    data-value="dark"
+                    role="menuitemradio"
+                    aria-checked="false"
+                  >
+                    <span>Dark</span>
+                    <span class="lesson-overflow-check" aria-hidden="true"></span>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-          <p id="lessonFileStatus" class="lesson-file-status" aria-live="polite"></p>
-          <input id="lessonFileInput" type="file" accept=".json,.lesson.json,application/json" hidden>
-          <input id="pgnFileInput" type="file" accept=".pgn,.txt,text/plain,application/x-chess-pgn" hidden>
-          <input id="guidedReviewFileInput" type="file" accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" hidden>
-          <span id="engineReadyLabel" class="sr-only">Stockfish idle</span>
-          <div id="heroBanner" class="hero-banner recording-hidden" aria-hidden="true"></div>
-        </section>
-
-        <div class="control-pane-scroll">
+            <p id="lessonFileStatus" class="lesson-file-status" aria-live="polite"></p>
+            <input id="lessonFileInput" type="file" accept=".json,.lesson.json,application/json" hidden>
+            <input id="pgnFileInput" type="file" accept=".pgn,.txt,text/plain,application/x-chess-pgn" hidden>
+            <input id="guidedReviewFileInput" type="file" accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" hidden>
+            <span id="engineReadyLabel" class="sr-only">Stockfish idle</span>
+            <div id="heroBanner" class="hero-banner recording-hidden" aria-hidden="true"></div>
+          </section>
           <section id="guidedReviewAnalysisPanel" class="guided-review-analysis-panel" aria-label="Guided review analysis" hidden></section>
           <section id="guidedReviewPanel" class="guided-review-panel" aria-label="Guided lesson row review" hidden></section>
 
@@ -231,12 +239,10 @@
               <nav class="tab-nav" aria-label="Workspace sections">
                 <button class="tab-chip is-active" type="button" data-action="set-tab" data-tab="setup">Setup</button>
                 <button class="tab-chip" type="button" data-action="set-tab" data-tab="analysis">Analysis</button>
-                <button class="tab-chip" type="button" data-action="set-tab" data-tab="pgn">Line</button>
               </nav>
 
               <section class="tab-panel is-active" id="setupPanel" aria-label="Setup tab"></section>
               <section class="tab-panel" id="analysisPanel" aria-label="Analysis tab" hidden></section>
-              <section class="tab-panel" id="pgnPanel" aria-label="Line tab" hidden></section>
             </section>
           </section>
         </div>
