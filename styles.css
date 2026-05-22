@@ -157,11 +157,11 @@
   --eval-rail-gap: 0rem;
   --eval-rail-shadow: rgba(47, 36, 13, 0.2);
   --board-size: 42rem;
-  --captured-cell-min: 0.95rem;
-  --captured-cell-divisor: 15.5;
-  --captured-cell-max: 1.35rem;
-  --captured-row-extra-height: 0.56rem;
-  --captured-count-extra-width: 1.12rem;
+  --captured-cell-min: 0.86rem;
+  --captured-cell-divisor: 17.25;
+  --captured-cell-max: 1.18rem;
+  --captured-row-extra-height: 0.48rem;
+  --captured-count-extra-width: 0.96rem;
   --captured-row-gap: clamp(0.24rem, calc(var(--board-size, 42rem) / 140), 0.4rem);
   --captured-cell-size: clamp(var(--captured-cell-min), calc(var(--board-size, 42rem) / var(--captured-cell-divisor)), var(--captured-cell-max));
   --captured-row-height: calc(var(--captured-cell-size) + var(--captured-row-extra-height) + 2px);
@@ -1137,6 +1137,7 @@ code {
 .control-pane-scroll {
   display: grid;
   gap: 0.9rem;
+  align-content: start;
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
@@ -1152,6 +1153,8 @@ code {
 .lesson-section {
   display: grid;
   gap: 0.75rem;
+  align-content: start;
+  align-items: start;
 }
 
 .lesson-header {
@@ -1184,8 +1187,8 @@ code {
 }
 
 .title-input.lesson-title-input {
-  min-height: 3.6rem;
-  padding: 0.84rem 0.95rem;
+  min-height: 3.05rem;
+  padding: 0.64rem 0.82rem;
   font-family: var(--font-display);
   font-size: var(--notation-text-size);
   font-weight: 700;
@@ -1326,22 +1329,22 @@ code {
 }
 
 .lesson-picker {
-  min-height: 2.55rem;
-  padding: 0.5rem 0.7rem;
-  font-size: 0.86rem;
+  min-height: 2.35rem;
+  padding: 0.42rem 0.64rem;
+  font-size: 0.84rem;
   font-weight: 700;
 }
 
 .lesson-actions-button {
-  min-height: 2.55rem;
-  padding: 0.48rem 0.82rem;
+  min-height: 2.35rem;
+  padding: 0.4rem 0.7rem;
   white-space: nowrap;
 }
 
 .header-analyze-button {
   min-width: 5.8rem;
-  min-height: 2.55rem;
-  padding: 0.48rem 0.82rem;
+  min-height: 2.35rem;
+  padding: 0.4rem 0.7rem;
   white-space: nowrap;
 }
 
@@ -1354,8 +1357,8 @@ code {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.55rem;
-  height: 2.55rem;
+  width: 2.35rem;
+  height: 2.35rem;
   padding: 0;
   border: 1px solid var(--overflow-trigger-border);
   border-radius: 999px;
@@ -1397,11 +1400,11 @@ code {
   right: 0;
   z-index: 8;
   display: grid;
-  gap: 0.14rem;
+  gap: 0.1rem;
   min-width: 9.4rem;
-  padding: 0.34rem;
+  padding: 0.28rem;
   border: 1px solid var(--overflow-menu-border);
-  border-radius: 1.25rem;
+  border-radius: 1rem;
   background: var(--overflow-menu-bg);
   box-shadow: 0 16px 30px var(--overflow-menu-shadow);
   overflow-x: hidden;
@@ -1427,14 +1430,14 @@ code {
 
 .lesson-overflow-item {
   width: 100%;
-  min-height: 3rem;
-  padding: 0.65rem 0.85rem;
+  min-height: 2.5rem;
+  padding: 0.48rem 0.74rem;
   border: 0;
   border-radius: var(--radius-pill);
   background: transparent;
   color: var(--text);
   text-align: left;
-  font-size: 0.86rem;
+  font-size: 0.82rem;
   font-weight: 700;
   transition: background-color var(--ease), color var(--ease);
 }
@@ -1682,15 +1685,15 @@ code {
   display: inline-grid;
   grid-auto-flow: column;
   grid-auto-columns: minmax(0, 1fr);
-  gap: 0.45rem;
+  gap: 0.34rem;
   align-items: center;
   justify-self: start;
   width: fit-content;
   max-width: 100%;
-  margin-top: 0.15rem;
-  padding: 0.4rem;
+  margin-top: 0.08rem;
+  padding: 0.28rem;
   border: 1px solid var(--card-border);
-  border-radius: 1.2rem;
+  border-radius: 1rem;
   background: var(--card-bg);
   box-shadow: 0 12px 26px var(--panel-shadow);
   backdrop-filter: blur(14px);
@@ -1701,8 +1704,8 @@ code {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 3rem;
-  height: 3rem;
+  width: 2.55rem;
+  height: 2.55rem;
   padding: 0;
   border: 1px solid var(--nav-button-border);
   border-radius: var(--radius-pill);
@@ -1723,8 +1726,8 @@ code {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1rem;
-  height: 1rem;
+  width: 0.92rem;
+  height: 0.92rem;
 }
 
 .notation-nav-icon svg {
@@ -1855,10 +1858,16 @@ code {
 }
 
 .action-button {
-  min-height: 3rem;
-  padding: 0.65rem 1rem;
+  min-height: 2.55rem;
+  padding: 0.5rem 0.86rem;
   border-radius: var(--radius-pill);
   font-weight: 700;
+}
+
+.lesson-actions-button,
+.header-analyze-button {
+  min-height: 2.35rem;
+  padding: 0.4rem 0.7rem;
 }
 
 .action-button:hover,
@@ -2758,11 +2767,11 @@ code {
 
   .board-column {
     align-content: start;
-    --captured-cell-min: 0.82rem;
-    --captured-cell-divisor: 18.25;
-    --captured-cell-max: 1.12rem;
-    --captured-row-extra-height: 0.48rem;
-    --captured-count-extra-width: 0.92rem;
+    --captured-cell-min: 0.76rem;
+    --captured-cell-divisor: 20;
+    --captured-cell-max: 1rem;
+    --captured-row-extra-height: 0.4rem;
+    --captured-count-extra-width: 0.78rem;
     --captured-cell-size: clamp(var(--captured-cell-min), calc(var(--board-size, 42rem) / var(--captured-cell-divisor)), var(--captured-cell-max));
     --captured-row-height: calc(var(--captured-cell-size) + var(--captured-row-extra-height) + 2px);
   }
@@ -2785,6 +2794,11 @@ code {
     padding: 0;
   }
 
+  .title-input.lesson-title-input {
+    min-height: 2.65rem;
+    padding: 0.46rem 0.66rem;
+  }
+
   .notation-toolbar {
     width: 100%;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -2792,6 +2806,7 @@ code {
 
   .notation-nav-button {
     width: 100%;
+    height: 2.35rem;
   }
 
   .lesson-meta-strip {
@@ -2829,6 +2844,8 @@ code {
     order: 0;
     position: relative;
     z-index: 30;
+    gap: 0.32rem;
+    padding: 0.18rem 0 0.24rem;
   }
 
   .board-pane {
@@ -2857,26 +2874,27 @@ code {
 
   .lesson-command-row {
     grid-template-columns: minmax(0, 1fr) auto auto auto;
-    gap: 0.32rem;
+    gap: 0.26rem;
   }
 
   .lesson-picker {
-    min-height: 2.45rem;
-    padding-inline: 0.52rem;
+    min-height: 2.25rem;
+    padding-inline: 0.48rem;
+    font-size: 0.8rem;
   }
 
   .lesson-actions-button,
   .header-analyze-button {
     min-width: auto;
-    min-height: 2.45rem;
-    padding: 0.45rem 0.58rem;
-    font-size: 0.78rem;
+    min-height: 2.25rem;
+    padding: 0.34rem 0.5rem;
+    font-size: 0.75rem;
   }
 
   .header-analyze-button {
     position: relative;
-    width: 2.45rem;
-    min-width: 2.45rem;
+    width: 2.25rem;
+    min-width: 2.25rem;
     padding: 0;
     font-size: 0;
   }
@@ -2892,24 +2910,24 @@ code {
   }
 
   .header-analyze-button::before {
-    width: 0.84rem;
-    height: 0.84rem;
-    border: 0.14rem solid currentColor;
+    width: 0.76rem;
+    height: 0.76rem;
+    border: 0.13rem solid currentColor;
     border-radius: 50%;
     transform: translate(-58%, -58%);
   }
 
   .header-analyze-button::after {
-    width: 0.52rem;
-    height: 0.14rem;
+    width: 0.46rem;
+    height: 0.13rem;
     border-radius: 999px;
     background: currentColor;
     transform: translate(-5%, -5%) rotate(45deg);
   }
 
   .header-analyze-button.is-analyzing::before {
-    width: 0.9rem;
-    height: 0.9rem;
+    width: 0.82rem;
+    height: 0.82rem;
     border: 0;
     border-radius: 0.18rem;
     background: currentColor;
@@ -2921,13 +2939,19 @@ code {
   }
 
   .lesson-overflow-trigger {
-    width: 2.45rem;
-    height: 2.45rem;
+    width: 2.25rem;
+    height: 2.25rem;
   }
 
   .lesson-overflow-menu {
     z-index: 40;
     max-width: calc(100vw - 1.1rem);
+  }
+
+  .lesson-overflow-item {
+    min-height: 2.25rem;
+    padding: 0.4rem 0.62rem;
+    font-size: 0.78rem;
   }
 }
 
@@ -2999,12 +3023,12 @@ code {
   }
 
   .lesson-header {
-    padding: 0.15rem 0 0.3rem;
+    padding: 0.1rem 0 0.2rem;
   }
 
   .title-input.lesson-title-input {
-    min-height: 3.1rem;
-    padding: 0.75rem 0.85rem;
+    min-height: 2.8rem;
+    padding: 0.56rem 0.74rem;
   }
 
   .lesson-command-row {
@@ -3015,7 +3039,7 @@ code {
   .lesson-actions-button,
   .header-analyze-button,
   .lesson-overflow-trigger {
-    min-height: 2.35rem;
+    min-height: 2.25rem;
   }
 
   .header-analyze-button {
