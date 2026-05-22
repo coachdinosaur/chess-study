@@ -2823,6 +2823,8 @@ code {
   }
 
   .piece-tool-button {
+    width: clamp(2.05rem, 10vw, 2.5rem);
+    justify-self: center;
     border-radius: 0.75rem;
   }
 
@@ -3082,6 +3084,8 @@ code {
   }
 
   .piece-tool-button {
+    width: clamp(2.05rem, 10vw, 2.5rem);
+    justify-self: center;
     border-radius: 0.75rem;
   }
 
