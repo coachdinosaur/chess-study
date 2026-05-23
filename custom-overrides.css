@@ -1,24 +1,47 @@
-# Custom CSS overrides for local testing
+/* Custom CSS overrides for Chess Lesson Study Board */
 
-/* Shrink the height of the FEN input field. The !important flag ensures this wins over later declarations. */
+/* 1. Shrink the FEN input textarea in the Setup panel */
 #fenInput {
-  min-height: 3rem !important;
+  min-height: 2.5rem !important;
+  height: 2.5rem !important;
+  padding: 0.5rem !important;
+  font-size: 0.8rem !important;
+  line-height: 1.2 !important;
   resize: vertical;
 }
 
-/* Also shrink the guided-review FEN textarea. */
+/* Also shrink the FEN textarea used in guided review panels */
 .guided-review-fen-input {
-  min-height: 3rem !important;
+  min-height: 2.5rem !important;
+  height: 2.5rem !important;
+  padding: 0.5rem !important;
+  font-size: 0.8rem !important;
+  line-height: 1.2 !important;
+  resize: vertical;
 }
 
-/* Hide the “Placing black/white pieces” helper text */
-.setup-active-summary strong {
-  display: none;
+/* 2. Hide the color indicator bar in the Setup palette */
+.setup-active-summary {
+  display: none !important;
 }
 
-/* Keep Setup/Analyze tab selector visible on small portrait devices; override the default rule */
+/* 3. Ensure the Setup/Analyze tab selector stays visible in mobile portrait */
 @media (max-width: 760px) and (orientation: portrait) {
   html[data-active-tab="setup"] .tab-nav {
     display: flex !important;
   }
+}
+
+/* 4. Remove the horizontal divider above the White/Black palette */
+.setup-board-divider {
+  display: none !important;
+}
+
+/* 5. Optionally reduce the height of FEN display cards at the bottom of the board */
+.fen-card {
+  padding: 0.4rem 0.5rem !important;
+}
+.fen-code {
+  font-size: 0.7rem !important;
+  line-height: 1.25 !important;
 }
