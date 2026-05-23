@@ -21,7 +21,12 @@
   <link rel="stylesheet" href="./styles.css">
   <link rel="stylesheet" href="./custom-overrides.css">
 </head>
-<body>
+<body class="loading">
+  <div id="loadingOverlay" class="loading-overlay">
+    Loading…
+  </div>
+  <!-- existing page-shell markup continues here -->
+
   <div class="page-shell">
     <main class="workspace" aria-label="Chess lesson workspace">
       <aside class="board-pane">
@@ -291,5 +296,16 @@
 
   <script src="./vendor/xlsx.full.min.js"></script>
   <script type="module" src="./app.js"></script>
+
+<script>
+  window.addEventListener('load', function () {
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+      overlay.remove();
+    }
+    document.body.classList.remove('loading');
+  });
+</script>
+
 </body>
 </html>

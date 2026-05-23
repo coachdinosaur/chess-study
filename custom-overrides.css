@@ -45,3 +45,31 @@
   font-size: 0.7rem !important;
   line-height: 1.25 !important;
 }
+
+/* Hide content until the page has loaded */
+body.loading .page-shell {
+  visibility: hidden;
+}
+
+/* Loading overlay styles */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card-bg, #fff); /* fallback in case CSS variables aren't loaded */
+  z-index: 9999;
+  font-family: var(--font-display, sans-serif);
+  font-size: 1.5rem;
+  color: var(--text, #000);
+}
+
+/* Hide the line navigation summary and board message */
+.lesson-section .stack-grid .muted-copy,
+.lesson-section .stack-grid .banner {
+  display: none !important;
+}
