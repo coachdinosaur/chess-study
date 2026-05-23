@@ -1,0 +1,24 @@
+# Custom CSS overrides for local testing
+
+/* Shrink the height of the FEN input field. The !important flag ensures this wins over later declarations. */
+#fenInput {
+  min-height: 3rem !important;
+  resize: vertical;
+}
+
+/* Also shrink the guided-review FEN textarea. */
+.guided-review-fen-input {
+  min-height: 3rem !important;
+}
+
+/* Hide the “Placing black/white pieces” helper text */
+.setup-active-summary strong {
+  display: none;
+}
+
+/* Keep Setup/Analyze tab selector visible on small portrait devices; override the default rule */
+@media (max-width: 760px) and (orientation: portrait) {
+  html[data-active-tab="setup"] .tab-nav {
+    display: flex !important;
+  }
+}
