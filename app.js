@@ -309,6 +309,7 @@ const state = {
     timeControl: 'none',
     side: 'white',
     assignedSide: 'white',
+    startPosition: 'current',
     clockRunning: false,
     whiteTime: 0,
     blackTime: 0,
@@ -7255,6 +7256,9 @@ function handleDocumentChange(event) {
     case 'set-play-speed':
       updatePlaySpeed(event.target.value);
       break;
+    case 'set-play-start-position':
+      updatePlayStartPosition(event.target.value);
+      break;
     default:
       break;
   }
@@ -7342,7 +7346,36 @@ function updatePlaySpeed(value) {
   renderPlayPanel();
 }
 
+function updatePlayStartPosition(value) {
+  if (value === 'current' || value === 'setup' || value === 'initial') {
+    state.play.startPosition = value;
+  }
+  renderPlayPanel();
+}
+
+function resolvePlayStartFen() {
+  const pos = state.play.startPosition;
+  if (pos === 'setup') {
+    return state.setupFen;
+  }
+  if (pos === 'initial') {
+    return DEFAULT_POSITION;
+  }
+  // 'current' (default): use the current analysis board position
+  return state.analysis.currentFen || state.setupFen;
+}
+
 async function startPlayGame() {
+  const startFen = resolvePlayStartFen();
+
+  // Guard: do not start if the chosen FEN is already a finished position.
+  const probe = new Chess(startFen);
+  if (probe.isGameOver()) {
+    state.analysis.boardMessage = 'The selected starting position is already game over. Choose a different starting position.';
+    renderAll();
+    return;
+  }
+
   stopAnalysisSearch({ clearSummary: true });
   state.play.active = true;
 
@@ -7354,15 +7387,15 @@ async function startPlayGame() {
 
   state.boardOrientation = state.play.assignedSide;
 
-  const game = new Chess(state.setupFen);
+  const game = new Chess(startFen);
   state.analysis.game = game;
-  state.analysis.currentFen = state.setupFen;
+  state.analysis.currentFen = startFen;
   state.analysis.currentNodeId = ROOT_NODE_ID;
   state.analysis.nodes = {
     [ROOT_NODE_ID]: {
       id: ROOT_NODE_ID,
       parentId: null,
-      fen: state.setupFen,
+      fen: startFen,
       children: [],
       selectedChildId: null,
       comment: '',
@@ -7705,7 +7738,7 @@ function renderPlayPanel() {
   if (!dom.playPanel) {
     return;
   }
-  const { skill, timeControl, side, active, whiteTime, blackTime, thinkingSpeed } = state.play;
+  const { skill, timeControl, side, active, whiteTime, blackTime, thinkingSpeed, startPosition } = state.play;
   const gameActive = active;
 
   const formatTime = (ms) => {
@@ -7759,6 +7792,15 @@ function renderPlayPanel() {
             >
             <span class="field-value">${skill}</span>
           </div>
+        </div>
+
+        <div class="field-row">
+          <label class="field-label" for="playStartPositionSelect">Starting Position</label>
+          <select id="playStartPositionSelect" class="field-select" data-action="set-play-start-position" ${gameActive ? 'disabled' : ''}>
+            <option value="current" ${startPosition === 'current' || !startPosition ? 'selected' : ''}>Current board</option>
+            <option value="setup" ${startPosition === 'setup' ? 'selected' : ''}>Setup position</option>
+            <option value="initial" ${startPosition === 'initial' ? 'selected' : ''}>Initial position</option>
+          </select>
         </div>
 
         <div class="field-row">
