@@ -2720,6 +2720,34 @@ code {
   box-shadow: none;
 }
 
+/* Focus mode brand watermark — lower-right corner, focus mode only */
+.focus-mode-brand {
+  display: none;
+  position: fixed;
+  bottom: clamp(1rem, 2.5vw, 1.8rem);
+  right: clamp(1rem, 2.5vw, 1.8rem);
+  z-index: 17;
+  align-items: center;
+  gap: 0.65rem;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.page-shell.is-focus-mode ~ .focus-mode-brand,
+.is-focus-mode .focus-mode-brand {
+  display: flex;
+  opacity: 1;
+}
+
+.focus-mode-brand-img {
+  width: clamp(2.4rem, 4vw, 3.2rem);
+  height: clamp(2.4rem, 4vw, 3.2rem);
+  border-radius: 50%;
+  object-fit: contain;
+}
+
 .page-shell.is-focus-mode {
   --focus-padding: clamp(0.75rem, 2vmin, 1.5rem);
   display: flex;
