@@ -66,6 +66,7 @@ const ENGINE_BUNDLE_CANDIDATES = Object.freeze([
 ]);
 const TAB_SETUP = 'setup';
 const TAB_ANALYSIS = 'analysis';
+const TAB_PLAY = 'play';
 const LEGACY_TAB_PGN = 'pgn';
 const PRACTICE_KIND_LINE = 'line';
 const PRACTICE_KIND_BRANCH = 'branch';
@@ -77,7 +78,7 @@ const STANDARD_INITIAL_PLACEMENT = DEFAULT_POSITION.split(/\s+/)[0];
 
 function normalizeActiveTab(value, fallback = TAB_ANALYSIS) {
   const normalized = String(value || '').trim();
-  if (normalized === TAB_SETUP || normalized === TAB_ANALYSIS) {
+  if (normalized === TAB_SETUP || normalized === TAB_ANALYSIS || normalized === TAB_PLAY) {
     return normalized;
   }
   if (normalized === LEGACY_TAB_PGN) {
@@ -85,6 +86,7 @@ function normalizeActiveTab(value, fallback = TAB_ANALYSIS) {
   }
   return fallback;
 }
+
 const CAPTURED_PIECE_ORDER = ['Q', 'R', 'B', 'N', 'P'];
 const STANDARD_PIECE_COUNTS = Object.freeze({
   Q: 1,
@@ -167,7 +169,7 @@ const dom = {
   focusModeControls: document.getElementById('focusModeControls'),
   focusModeAnalyzeButton: document.getElementById('focusModeAnalyzeButton'),
   exitFocusModeButton: document.getElementById('exitFocusModeButton'),
-  colorThemeItems: Array.from(document.querySelectorAll('[data-action="set-color-theme"]')),
+  toggleThemeButton: document.getElementById('toggleThemeButton'),
   lessonPicker: document.getElementById('lessonPicker'),
   newLessonButton: document.getElementById('newLessonButton'),
   duplicateLessonButton: document.getElementById('duplicateLessonButton'),
@@ -190,9 +192,12 @@ const dom = {
   workspaceTools: document.getElementById('workspaceTools'),
   setupPanel: document.getElementById('setupPanel'),
   analysisPanel: document.getElementById('analysisPanel'),
+  playPanel: document.getElementById('playPanel'),
   promotionModal: document.getElementById('promotionModal'),
   promotionSubtitle: document.getElementById('promotionSubtitle'),
   promotionChoices: document.getElementById('promotionChoices'),
+  gameResultModal: document.getElementById('gameResultModal'),
+  gameResultMessage: document.getElementById('gameResultMessage'),
 };
 
 const state = {
@@ -298,6 +303,23 @@ const state = {
   persistTimer: null,
   boardDragHoverSquare: null,
   setupDrag: createEmptySetupDragState(),
+  play: {
+    active: false,
+    skill: 1200,
+    timeControl: 'none',
+    side: 'white',
+    assignedSide: 'white',
+    clockRunning: false,
+    whiteTime: 0,
+    blackTime: 0,
+    whiteInc: 0,
+    blackInc: 0,
+    lastClockTick: 0,
+    timerId: null,
+    engineThinking: false,
+    thinkingSpeed: 'normal',
+  },
+
 };
 
 let guidedReviewController = null;
@@ -992,8 +1014,10 @@ function hasAnalysisContinuationAvailable() {
 }
 
 function clearEngineSearchData(options = {}) {
-  const { preserveEval = false } = options;
-  state.engine.pvLines = createEmptyEnginePvLines();
+  const { preserveEval = false, preservePv = false } = options;
+  if (!preservePv) {
+    state.engine.pvLines = createEmptyEnginePvLines();
+  }
   state.engine.depth = null;
   state.engine.nodes = 0;
   state.engine.nps = 0;
@@ -1017,6 +1041,8 @@ function postEngineSearchCommands(worker, fen, options = {}) {
     targetDepth = currentAnalysisTargetDepth(),
   } = options;
   worker.postMessage(`setoption name MultiPV value ${ENGINE_MULTI_PV_COUNT}`);
+  worker.postMessage('setoption name Skill Level value 20');
+  worker.postMessage('setoption name UCI_LimitStrength value false');
   if (freshGame) {
     worker.postMessage('ucinewgame');
   }
@@ -1039,7 +1065,7 @@ function startEngineSearch(worker, fen, options = {}) {
   } = options;
   clearTablebaseDisplay();
   if (!preserveDisplay) {
-    clearEngineSearchData();
+    clearEngineSearchData({ preservePv: true });
   }
   state.engine.pendingFen = '';
   state.engine.pendingSearchMode = '';
@@ -1082,7 +1108,7 @@ function queueEngineSearchForFen(fen, options = {}) {
   }
   clearEngineContinuationState();
   if (!preserveDisplay) {
-    clearEngineSearchData({ preserveEval: true });
+    clearEngineSearchData({ preserveEval: true, preservePv: true });
   }
   state.engine.summary = state.engine.pendingSearchMode === ENGINE_SEARCH_MODE_CONTINUE
     ? 'Continuing analysis from the current board position...'
@@ -1636,10 +1662,10 @@ function persistColorTheme(theme) {
 }
 
 function syncColorThemeMenuState() {
-  for (const item of dom.colorThemeItems) {
-    const isSelected = item.dataset.value === state.colorTheme;
-    item.setAttribute('aria-checked', isSelected ? 'true' : 'false');
-    item.classList.toggle('is-selected', isSelected);
+  if (dom.toggleThemeButton) {
+    const isDark = state.colorTheme === 'dark';
+    dom.toggleThemeButton.setAttribute('aria-checked', isDark ? 'true' : 'false');
+    dom.toggleThemeButton.classList.toggle('is-selected', isDark);
   }
 }
 
@@ -3321,7 +3347,11 @@ function placeSetupPiece(square, piece, fromSquare = null) {
     if (fromSquare && fromSquare !== square) {
       delete pieces[fromSquare];
     }
-    pieces[square] = piece;
+    if (piece === 'eraser') {
+      delete pieces[square];
+    } else {
+      pieces[square] = piece;
+    }
   });
 }
 
@@ -3346,7 +3376,7 @@ function setPaletteColor(color) {
     return;
   }
   state.setup.paletteColor = color;
-  if (state.setup.armedPiece) {
+  if (state.setup.armedPiece && state.setup.armedPiece !== 'eraser') {
     const upper = state.setup.armedPiece.toUpperCase();
     state.setup.armedPiece = color === 'w' ? upper : upper.toLowerCase();
   }
@@ -3492,6 +3522,7 @@ function jumpToAnalysisNode(nodeId, options = {}) {
   if (!nextNode) {
     return;
   }
+  const wasAnalysisActive = analysisShouldFollowPositionChanges() || state.tablebase.probing || tablebaseResultActive();
   const shouldKeepAnalysisLive = analysisShouldFollowPositionChanges();
   if (state.activeTab === TAB_SETUP && countAnalysisMoveNodes()) {
     state.activeTab = TAB_ANALYSIS;
@@ -3500,10 +3531,16 @@ function jumpToAnalysisNode(nodeId, options = {}) {
     applyAnalysisPathSelection(nodeId);
   }
   state.analysis.currentNodeId = nodeId;
-  syncAnalysisGameFromTree({ resetEngine: !shouldKeepAnalysisLive });
+  syncAnalysisGameFromTree({ resetEngine: !(shouldKeepAnalysisLive || wasAnalysisActive) });
   if (shouldKeepAnalysisLive) {
     state.analysis.boardMessage = 'Stockfish is following the selected lesson position.';
     queueEngineSearchForFen(state.analysis.currentFen, { preserveDisplay: true });
+  } else if (wasAnalysisActive) {
+    if (isTablebaseEligibleFen(state.analysis.currentFen)) {
+      void startTablebaseAnalysisForFen(state.analysis.currentFen, { fallbackToEngine: true, preserveDisplay: false });
+    } else {
+      void startStockfishAnalysisForCurrentPosition();
+    }
   }
   schedulePersist();
   renderAll();
@@ -3900,9 +3937,9 @@ function currentPvPlaceholderText() {
       ? state.engine.searchTargetDepth
       : currentAnalysisTargetDepth();
     if (!state.engine.depth) {
-      return `Stockfish is starting deep analysis toward depth ${targetDepth}...`;
+      return 'Calculating...';
     }
-    return `Stockfish is computing 3 variations toward depth ${targetDepth}...`;
+    return 'Calculating...';
   }
   return 'No principal variation yet.';
 }
@@ -3964,8 +4001,9 @@ function renderPvLineListMarkup() {
     return renderTablebaseLineListMarkup();
   }
   const emptyText = currentPvPlaceholderText();
+  const isStale = !state.engine.depth || state.engine.searchFen !== state.analysis.currentFen;
   return `
-    <div class="pv-line-list">
+    <div class="pv-line-list ${isStale ? 'is-stale' : ''}">
       ${state.engine.pvLines.map((entry) => `
         <div class="pv-line ${entry.line ? '' : 'is-empty'}">
           <div class="pv-line-head">
@@ -4198,7 +4236,10 @@ function handleWorkerMessage(event) {
   if (!line) {
     return;
   }
-  if (line === 'readyok') {
+  if (line.startsWith('option name ')) {
+    console.log('[Stockfish Option]', line);
+  }
+  if (line.startsWith('readyok')) {
     state.engine.ready = true;
     state.engine.loading = false;
     const resolve = state.engine.resolveReady;
@@ -4211,7 +4252,25 @@ function handleWorkerMessage(event) {
       renderAnalysisPanel();
       renderHeaderMeta();
     }
+    if (state.play.active && state.play.engineThinking) {
+      startPlayClock();
+    }
     return;
+  }
+  if (line.startsWith('info ')) {
+    const info = parseInfoLine(line);
+    if (info && info.multipv === 1 && info.scoreType) {
+      const searchFen = state.play.active ? state.analysis.currentFen : state.engine.searchFen;
+      if (searchFen) {
+        const normalizedScore = normalizeScoreToWhitePerspective(info.scoreType, info.scoreValue, searchFen);
+        state.engine.scoreType = normalizedScore.scoreType;
+        state.engine.scoreValue = normalizedScore.scoreValue;
+        state.engine.evalLabel = info.scoreType ? formatScoreLabel(normalizedScore.scoreType, normalizedScore.scoreValue) : state.engine.evalLabel;
+      }
+    }
+    if (state.play.active) {
+      return;
+    }
   }
   if (line.startsWith('info ') && state.engine.searchFen) {
     const info = parseInfoLine(line);
@@ -4267,7 +4326,24 @@ function handleWorkerMessage(event) {
     return;
   }
   if (line.startsWith('bestmove ')) {
+    if (state.play.active) {
+      if (!state.play.engineThinking) {
+        return;
+      }
+      state.play.engineThinking = false;
+      state.engine.analyzing = false;
+      state.engine.stopping = false;
+      state.engine.pendingFen = '';
+      state.engine.pendingSearchMode = '';
+      const tokens = line.split(/\s+/);
+      const bestMove = tokens[1] || '';
+      if (bestMove && bestMove !== '(none)') {
+        applyPlayEngineMove(bestMove);
+      }
+      return;
+    }
     if (state.engine.pendingFen && state.engine.worker) {
+
       const pendingSearchMode = state.engine.pendingSearchMode || ENGINE_SEARCH_MODE_CHECKPOINT;
       startEngineSearch(state.engine.worker, state.engine.pendingFen, {
         preserveDisplay: true,
@@ -4427,7 +4503,7 @@ async function startStockfishAnalysisForCurrentPosition(options = {}) {
             : 'Continuing analysis from the current board position...')
         : 'Loading Stockfish engine...';
     } else {
-      clearEngineSearchData();
+      clearEngineSearchData({ preservePv: true });
       const stockfishSummary = state.engine.ready
         ? `Analyzing current board position toward depth ${currentAnalysisTargetDepth()}...`
         : 'Loading Stockfish engine...';
@@ -4596,6 +4672,9 @@ async function toggleAnalysis() {
   if (state.guidedReview.active) {
     state.guidedReview.active = false;
   }
+  if (state.play.active) {
+    stopPlayGame({ reason: 'Game ended by enabling analysis.' });
+  }
   if (state.activeTab !== TAB_ANALYSIS) {
     state.activeTab = TAB_ANALYSIS;
   }
@@ -4658,6 +4737,7 @@ function applyAnalysisMove(move) {
   if (!state.analysis.game) {
     return;
   }
+  updateClockElapsed();
   const shouldKeepAnalysisLive = analysisShouldFollowPositionChanges();
   const currentNode = getCurrentAnalysisNode();
   if (!currentNode) {
@@ -4694,13 +4774,39 @@ function applyAnalysisMove(move) {
     state.analysis.currentNodeId = nodeId;
   }
 
+  if (state.play.active) {
+    clearAnalysisSelection();
+    state.analysis.lastMoveSquares = [applied.from, applied.to];
+    if (state.play.timeControl !== 'none') {
+      const turn = state.analysis.game.turn();
+      if (turn === 'b') {
+        state.play.whiteTime += state.play.whiteInc;
+      } else {
+        state.play.blackTime += state.play.blackInc;
+      }
+    }
+    state.analysis.currentFen = state.analysis.game.fen();
+    if (checkPlayGameOver()) {
+      return;
+    }
+    schedulePersist();
+    renderAll();
+    window.setTimeout(() => {
+      if (state.play.active) {
+        void triggerEngineMove();
+      }
+    }, 50);
+    return;
+  }
+
+  const wasAnalysisActive = analysisShouldFollowPositionChanges() || state.tablebase.probing || tablebaseResultActive();
   const nextFen = state.analysis.game.fen();
   const followedDisplay = createFollowedAnalysisDisplay(applied, nextFen);
   const shouldKeepFollowedDisplay = Boolean(
     followedDisplay
     && !(shouldKeepAnalysisLive && followedDisplay.source === 'tablebase')
   );
-  syncAnalysisGameFromTree({ resetEngine: !(shouldKeepAnalysisLive || shouldKeepFollowedDisplay) });
+  syncAnalysisGameFromTree({ resetEngine: !(shouldKeepAnalysisLive || shouldKeepFollowedDisplay || wasAnalysisActive) });
   if (shouldKeepFollowedDisplay) {
     applyFollowedAnalysisDisplay(followedDisplay);
   }
@@ -4709,11 +4815,12 @@ function applyAnalysisMove(move) {
       : `Current move: ${applied.san}. Analyze the current board position for fresh evaluation.`;
   if (shouldKeepAnalysisLive && !state.engine.stopping) {
     queueEngineSearchForFen(state.analysis.currentFen, { preserveDisplay: shouldKeepFollowedDisplay });
-  } else if (followedDisplay?.source === 'tablebase' && isTablebaseEligibleFen(state.analysis.currentFen)) {
-    void startTablebaseAnalysisForFen(state.analysis.currentFen, {
-      fallbackToEngine: false,
-      preserveDisplay: true,
-    });
+  } else if (wasAnalysisActive) {
+    if (isTablebaseEligibleFen(state.analysis.currentFen)) {
+      void startTablebaseAnalysisForFen(state.analysis.currentFen, { fallbackToEngine: true, preserveDisplay: false });
+    } else {
+      void startStockfishAnalysisForCurrentPosition();
+    }
   }
   schedulePersist();
   renderAll();
@@ -4751,6 +4858,12 @@ function choosePromotion(promotion) {
 function handleAnalysisSquareClick(square) {
   if (!state.analysis.game) {
     return;
+  }
+  if (state.play.active) {
+    const humanSide = state.play.assignedSide === 'white' ? 'w' : 'b';
+    if (state.analysis.game.turn() !== humanSide) {
+      return;
+    }
   }
   if (state.analysis.selectedSquare) {
     if (square === state.analysis.selectedSquare) {
@@ -6054,7 +6167,7 @@ function renderSetupPanel() {
             <div class="piece-tool">
               <button
                 type="button"
-                class="piece-tool-button ${state.setup.armedPiece === piece ? 'is-armed' : ''}"
+                class="piece-tool-button ${state.setup.armedPiece === piece ? 'is-armed' : ''} ${piece === piece.toLowerCase() ? 'is-black-piece' : ''}"
                 data-action="toggle-piece-tool"
                 data-piece="${piece}"
                 data-drag-piece="${piece}"
@@ -6066,6 +6179,22 @@ function renderSetupPanel() {
               <span class="piece-tool-label">${PIECE_LABELS[piece.toUpperCase()]}</span>
             </div>
           `).join('')}
+          <div class="piece-tool">
+            <button
+              type="button"
+              class="piece-tool-button ${state.setup.armedPiece === 'eraser' ? 'is-armed' : ''}"
+              data-action="toggle-piece-tool"
+              data-piece="eraser"
+              aria-label="Eraser"
+            >
+              <svg class="piece-tool-icon eraser-icon" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="width: 58%; height: 58%; color: var(--text-soft); transition: color var(--ease);">
+                <path d="m20 20-5-5"></path>
+                <path d="m3 16 5 5c.9.9 2 1 3 0l9-9c.9-.9 1-2 0-3L15 4c-.9-.9-2-.9-3 0L3 13c-.9.9-.9 2 0 3Z"></path>
+                <path d="m7 12 5 5"></path>
+              </svg>
+            </button>
+            <span class="piece-tool-label">Erase</span>
+          </div>
         </div>
       </div>
     </article>
@@ -6373,6 +6502,7 @@ function renderTabs() {
   const panels = [
     [dom.setupPanel, TAB_SETUP],
     [dom.analysisPanel, TAB_ANALYSIS],
+    [dom.playPanel, TAB_PLAY],
   ];
   panels.forEach(([panel, tab]) => {
     if (!panel) {
@@ -6382,7 +6512,12 @@ function renderTabs() {
     panel.hidden = !active;
     panel.classList.toggle('is-active', active);
   });
+
+  if (state.activeTab === TAB_PLAY) {
+    renderPlayPanel();
+  }
 }
+
 
 function renderWorkspaceTools() {
   if (!dom.workspaceTools) {
@@ -6794,9 +6929,21 @@ function handleDocumentClick(event) {
       if (state.practice.active && actionEl.dataset.tab === TAB_SETUP) {
         stopPracticeSession();
       }
+      if (state.play.active && actionEl.dataset.tab !== TAB_PLAY) {
+        stopPlayGame({ reason: 'Game abandoned by switching tabs.' });
+      }
       state.activeTab = normalizeActiveTab(actionEl.dataset.tab, TAB_SETUP);
       renderAll();
       schedulePersist();
+      break;
+    case 'start-play':
+      void startPlayGame();
+      break;
+    case 'stop-play':
+      stopPlayGame({ reason: 'Resigned.' });
+      break;
+    case 'offer-draw':
+      offerDraw();
       break;
     case 'flip-board':
       flipBoard();
@@ -6901,18 +7048,43 @@ function handleDocumentClick(event) {
       renderAll();
       break;
     case 'navigate-start':
+      if (state.play.active) {
+        state.analysis.boardMessage = "Navigation is locked during an active play session. Resign first.";
+        renderAll();
+        break;
+      }
       navigateToAnalysisStart();
       break;
     case 'navigate-back':
+      if (state.play.active) {
+        state.analysis.boardMessage = "Navigation is locked during an active play session. Resign first.";
+        renderAll();
+        break;
+      }
       navigateToAnalysisParent();
       break;
     case 'navigate-forward':
+      if (state.play.active) {
+        state.analysis.boardMessage = "Navigation is locked during an active play session. Resign first.";
+        renderAll();
+        break;
+      }
       navigateToAnalysisForward();
       break;
     case 'navigate-end':
+      if (state.play.active) {
+        state.analysis.boardMessage = "Navigation is locked during an active play session. Resign first.";
+        renderAll();
+        break;
+      }
       navigateToAnalysisEnd();
       break;
     case 'jump-node':
+      if (state.play.active) {
+        state.analysis.boardMessage = "Navigation is locked during an active play session. Resign first.";
+        renderAll();
+        break;
+      }
       jumpToAnalysisNode(actionEl.dataset.nodeId || '');
       break;
     case 'open-lesson':
@@ -6944,8 +7116,9 @@ function handleDocumentClick(event) {
     case 'copy-fen':
       void copyCurrentFenToClipboard();
       break;
-    case 'set-color-theme':
-      applyColorTheme(actionEl.dataset.value || 'light', { persist: true });
+    case 'toggle-color-theme':
+      const newTheme = state.colorTheme === 'dark' ? 'light' : 'dark';
+      applyColorTheme(newTheme, { persist: true });
       closeLessonActionsMenu({ restoreFocus: true });
       break;
     case 'choose-promotion':
@@ -6954,12 +7127,20 @@ function handleDocumentClick(event) {
     case 'dismiss-promotion':
       dismissPromotionDialog();
       break;
+    case 'dismiss-game-result':
+      dismissGameResultModal();
+      break;
     default:
       break;
   }
 }
 
 function handleDocumentInput(event) {
+  const inputAction = event.target?.dataset?.action;
+  if (inputAction === 'set-play-skill') {
+    updatePlaySkill(event.target.value);
+    return;
+  }
   if (dom.guidedReviewPanel?.contains(event.target) && guidedReviewController?.handleInput(event)) {
     return;
   }
@@ -7065,6 +7246,15 @@ function handleDocumentChange(event) {
     case 'set-en-passant':
       updateEnPassantSquare(event.target.value || '-');
       break;
+    case 'set-play-time':
+      updatePlayTime(event.target.value);
+      break;
+    case 'set-play-side':
+      updatePlaySide(event.target.value);
+      break;
+    case 'set-play-speed':
+      updatePlaySpeed(event.target.value);
+      break;
     default:
       break;
   }
@@ -7088,7 +7278,7 @@ function handleDocumentKeydown(event) {
   if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) {
     return;
   }
-  if (state.practice.active) {
+  if (state.practice.active || state.play.active) {
     return;
   }
   if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') {
@@ -7112,6 +7302,514 @@ function handleDocumentKeydown(event) {
 
   event.preventDefault();
   jumpToAnalysisNode(targetNodeId);
+}
+
+// Functions related to playing against Stockfish
+function updatePlaySkill(value) {
+  const elo = parseInt(value, 10);
+  state.play.skill = clamp(elo, 700, 3000);
+  if (state.play.active && state.engine.worker && state.engine.ready) {
+    applyEngineSkillLevel(state.play.skill);
+  }
+  renderPlayPanel();
+}
+
+function applyEngineSkillLevel(elo) {
+  if (!state.engine.worker || !state.engine.ready) {
+    return;
+  }
+  const worker = state.engine.worker;
+  const skillLevel = clamp(Math.round((elo - 700) / 115), 0, 20);
+  worker.postMessage(`setoption name Skill Level value ${skillLevel}`);
+  console.log(`[Stockfish] Set Elo to ${elo} (Skill Level ${skillLevel})`);
+}
+
+function updatePlayTime(value) {
+  state.play.timeControl = value;
+  renderPlayPanel();
+}
+
+function updatePlaySide(value) {
+  state.play.side = value;
+  if (value === 'white' || value === 'black') {
+    state.boardOrientation = value;
+  }
+  renderAll();
+}
+
+function updatePlaySpeed(value) {
+  state.play.thinkingSpeed = value;
+  renderPlayPanel();
+}
+
+async function startPlayGame() {
+  stopAnalysisSearch({ clearSummary: true });
+  state.play.active = true;
+
+  if (state.play.side === 'random') {
+    state.play.assignedSide = Math.random() < 0.5 ? 'white' : 'black';
+  } else {
+    state.play.assignedSide = state.play.side;
+  }
+
+  state.boardOrientation = state.play.assignedSide;
+
+  const game = new Chess(state.setupFen);
+  state.analysis.game = game;
+  state.analysis.currentFen = state.setupFen;
+  state.analysis.currentNodeId = ROOT_NODE_ID;
+  state.analysis.nodes = {
+    [ROOT_NODE_ID]: {
+      id: ROOT_NODE_ID,
+      parentId: null,
+      fen: state.setupFen,
+      children: [],
+      selectedChildId: null,
+      comment: '',
+    }
+  };
+  state.analysis.boardMessage = `Game started! You are playing as ${state.play.assignedSide === 'white' ? 'White' : 'Black'}.`;
+  state.analysis.lastMoveSquares = [];
+
+  if (state.play.timeControl !== 'none') {
+    const [minsStr, incStr] = state.play.timeControl.split('+');
+    const mins = parseInt(minsStr, 10);
+    const inc = parseInt(incStr, 10);
+    const ms = mins * 60 * 1000;
+    const incMs = inc * 1000;
+
+    state.play.whiteTime = ms;
+    state.play.blackTime = ms;
+    state.play.whiteInc = incMs;
+    state.play.blackInc = incMs;
+    state.play.clockRunning = false;
+  } else {
+    state.play.clockRunning = false;
+  }
+
+  renderAll();
+
+  state.engine.summary = 'Loading Stockfish engine...';
+  renderPlayPanel();
+
+  let worker;
+  try {
+    worker = await ensureStockfishReady({
+      summary: 'Loading Stockfish for game play...',
+    });
+  } catch (error) {
+    console.error('Failed to load Stockfish', error);
+    stopPlayGame({ reason: 'Stockfish worker failed to load' });
+    return;
+  }
+
+  if (!state.play.active) {
+    return;
+  }
+
+  applyEngineSkillLevel(state.play.skill);
+  worker.postMessage('ucinewgame');
+
+  if (state.play.timeControl !== 'none') {
+    state.play.clockRunning = true;
+    startPlayClock();
+  }
+
+  const turn = game.turn();
+  const humanSideLetter = state.play.assignedSide === 'white' ? 'w' : 'b';
+  if (turn !== humanSideLetter) {
+    void triggerEngineMove();
+  }
+}
+
+function showGameResultModal(reason) {
+  const modal = dom.gameResultModal;
+  const messageEl = dom.gameResultMessage;
+  if (modal && messageEl) {
+    messageEl.textContent = reason;
+    modal.hidden = false;
+    modal.setAttribute('aria-hidden', 'false');
+  }
+}
+
+function dismissGameResultModal() {
+  const modal = dom.gameResultModal;
+  if (modal) {
+    modal.hidden = true;
+    modal.setAttribute('aria-hidden', 'true');
+  }
+}
+
+function stopPlayGame(options = {}) {
+  const { reason = 'Resigned' } = options;
+  state.play.active = false;
+  state.play.engineThinking = false;
+  stopPlayClock();
+
+  if (state.engine.worker) {
+    state.engine.worker.postMessage('stop');
+  }
+
+  state.analysis.boardMessage = `Game ended. ${reason}`;
+  renderAll();
+
+  // Show premium popup modal for game result
+  showGameResultModal(reason);
+}
+
+function offerDraw() {
+  if (!state.play.active || !state.analysis.game) {
+    return;
+  }
+  const game = state.analysis.game;
+  const score = state.engine.scoreValue;
+  const scoreType = state.engine.scoreType;
+  
+  const stockfishSide = state.play.assignedSide === 'white' ? 'b' : 'w';
+  const scoreMultiplier = stockfishSide === 'b' ? -1 : 1;
+  const stockfishScore = score !== null ? (score * scoreMultiplier) : 0;
+
+  const moveCount = Math.floor(game.history().length / 2);
+  
+  if (moveCount < 8) {
+    state.analysis.boardMessage = "Stockfish declined the draw offer. It is too early in the game.";
+    renderAll();
+    return;
+  }
+
+  let accept = false;
+  let declineReason = "It believes it has an advantage.";
+  
+  if (scoreType === 'mate') {
+    if (stockfishScore < 0) {
+      accept = true;
+    } else {
+      declineReason = "It sees a checkmate path!";
+    }
+  } else {
+    if (stockfishScore <= 30) {
+      accept = true;
+    } else if (stockfishScore > 150) {
+      declineReason = "It has a winning advantage.";
+    } else {
+      declineReason = "It wants to keep playing for a win.";
+    }
+  }
+
+  if (accept) {
+    stopPlayGame({ reason: 'Draw by agreement.' });
+  } else {
+    state.analysis.boardMessage = `Stockfish declined the draw offer. ${declineReason}`;
+    renderAll();
+  }
+}
+
+async function triggerEngineMove() {
+  if (!state.play.active || !state.analysis.game) {
+    return;
+  }
+
+  const worker = state.engine.worker;
+  if (!worker) {
+    return;
+  }
+
+  state.play.engineThinking = true;
+  state.analysis.boardMessage = "Stockfish is thinking...";
+  renderPlayPanel();
+
+  const cmd = (msg) => worker.postMessage(msg);
+  cmd(`position fen ${state.analysis.currentFen}`);
+
+  const isEngineWhite = state.play.assignedSide === 'black';
+  const engineTime = isEngineWhite ? state.play.whiteTime : state.play.blackTime;
+  const engineInc = isEngineWhite ? state.play.whiteInc : state.play.blackInc;
+
+  let thinkTime;
+  if (state.play.timeControl !== 'none') {
+    // Clock mode: base think time is (remaining / 40) + increment
+    const calculatedTime = (engineTime / 40) + engineInc;
+    
+    // Clamp by thinking speed limits
+    let maxThinkTime = 2000; // default for normal
+    if (state.play.thinkingSpeed === 'instant') {
+      maxThinkTime = 500;
+    } else if (state.play.thinkingSpeed === 'fast') {
+      maxThinkTime = 1000;
+    } else if (state.play.thinkingSpeed === 'slow') {
+      maxThinkTime = 4000;
+    }
+    
+    thinkTime = Math.min(calculatedTime, maxThinkTime);
+    // Safety buffer: ensure we do not flag or overrun remaining time (leave 100ms safety buffer)
+    thinkTime = clamp(thinkTime, 100, Math.max(100, engineTime - 100));
+  } else {
+    // No clock mode: pure thinking speed delay
+    if (state.play.thinkingSpeed === 'instant') {
+      thinkTime = clamp(100 + (state.play.skill - 700) * 0.15, 100, 500);
+    } else if (state.play.thinkingSpeed === 'fast') {
+      thinkTime = clamp(250 + (state.play.skill - 700) * 0.3, 250, 1000);
+    } else if (state.play.thinkingSpeed === 'slow') {
+      thinkTime = clamp(1000 + (state.play.skill - 700) * 1.0, 1000, 4000);
+    } else {
+      // normal
+      thinkTime = clamp(500 + (state.play.skill - 700) * 0.5, 500, 2000);
+    }
+  }
+
+  cmd(`go movetime ${Math.trunc(thinkTime)}`);
+}
+
+function applyPlayEngineMove(bestMoveUci) {
+  if (!state.play.active || !state.analysis.game) {
+    return;
+  }
+  updateClockElapsed();
+  const parsedMove = tablebaseUciMoveObject(bestMoveUci);
+  if (!parsedMove) {
+    stopPlayGame({ reason: 'Stockfish returned an invalid move.' });
+    return;
+  }
+
+  let applied;
+  try {
+    applied = state.analysis.game.move({
+      from: parsedMove.from,
+      to: parsedMove.to,
+      promotion: parsedMove.promotion,
+    });
+  } catch (error) {
+    console.error('Stockfish move failed to apply', error);
+    stopPlayGame({ reason: 'Stockfish attempted an illegal move.' });
+    return;
+  }
+
+  const currentNode = getCurrentAnalysisNode();
+  if (currentNode) {
+    const nodeId = allocateAnalysisNodeId();
+    state.analysis.nodes[nodeId] = {
+      id: nodeId,
+      parentId: currentNode.id,
+      from: applied.from,
+      to: applied.to,
+      promotion: applied.promotion || undefined,
+      san: applied.san,
+      fen: state.analysis.game.fen(),
+      children: [],
+      selectedChildId: null,
+      comment: '',
+    };
+    currentNode.children.push(nodeId);
+    currentNode.selectedChildId = nodeId;
+    applyAnalysisPathSelection(nodeId);
+    state.analysis.currentNodeId = nodeId;
+  }
+
+  state.analysis.currentFen = state.analysis.game.fen();
+  state.analysis.lastMoveSquares = [applied.from, applied.to];
+  state.analysis.boardMessage = `Stockfish played ${applied.san}. Your turn!`;
+
+  if (state.play.timeControl !== 'none') {
+    const turn = state.analysis.game.turn();
+    if (turn === 'w') {
+      state.play.blackTime += state.play.blackInc;
+    } else {
+      state.play.whiteTime += state.play.whiteInc;
+    }
+  }
+
+  if (checkPlayGameOver()) {
+    return;
+  }
+
+  renderAll();
+}
+
+function checkPlayGameOver() {
+  const game = state.analysis.game;
+  if (!game) {
+    return false;
+  }
+  if (game.isGameOver()) {
+    let reason = 'Game over.';
+    if (game.isCheckmate()) {
+      const winner = game.turn() === 'w' ? 'Black' : 'White';
+      reason = `Checkmate! ${winner} wins.`;
+    } else if (game.isDraw()) {
+      if (game.isStalemate()) {
+        reason = 'Draw by stalemate.';
+      } else if (game.isThreefoldRepetition()) {
+        reason = 'Draw by threefold repetition.';
+      } else if (game.isInsufficientMaterial()) {
+        reason = 'Draw by insufficient material.';
+      } else {
+        reason = 'Draw by 50-move rule.';
+      }
+    }
+    stopPlayGame({ reason });
+    return true;
+  }
+  return false;
+}
+
+function startPlayClock() {
+  stopPlayClock();
+  state.play.lastClockTick = Date.now();
+  state.play.timerId = window.setInterval(tickPlayClock, 100);
+}
+
+function stopPlayClock() {
+  if (state.play.timerId) {
+    window.clearInterval(state.play.timerId);
+    state.play.timerId = null;
+  }
+}
+
+function updateClockElapsed() {
+  if (!state.play.active || !state.play.clockRunning || !state.analysis.game) {
+    return;
+  }
+  const now = Date.now();
+  const elapsed = now - state.play.lastClockTick;
+  state.play.lastClockTick = now;
+
+  const turn = state.analysis.game.turn();
+  if (turn === 'w') {
+    state.play.whiteTime = Math.max(0, state.play.whiteTime - elapsed);
+  } else {
+    state.play.blackTime = Math.max(0, state.play.blackTime - elapsed);
+  }
+}
+
+function tickPlayClock() {
+  if (!state.play.active || !state.analysis.game) {
+    stopPlayClock();
+    return;
+  }
+
+  updateClockElapsed();
+
+  if (state.play.whiteTime === 0) {
+    stopPlayGame({ reason: 'Black wins on time (White flagged).' });
+    return;
+  }
+  if (state.play.blackTime === 0) {
+    stopPlayGame({ reason: 'White wins on time (Black flagged).' });
+    return;
+  }
+
+  renderPlayPanel();
+}
+
+function renderPlayPanel() {
+  if (!dom.playPanel) {
+    return;
+  }
+  const { skill, timeControl, side, active, whiteTime, blackTime, thinkingSpeed } = state.play;
+  const gameActive = active;
+
+  const formatTime = (ms) => {
+    if (ms <= 0) return '0:00';
+    const totalSecs = Math.ceil(ms / 1000);
+    const mins = Math.floor(totalSecs / 60);
+    const secs = totalSecs % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const statusText = gameActive
+    ? `Playing as ${state.play.assignedSide === 'white' ? 'White' : 'Black'}. Engine Elo: ${skill}`
+    : 'Configure your game options and click Start Game.';
+
+  const playMarkup = `
+    <article class="lesson-section">
+      <div class="lesson-section-header">
+        <div>
+          <h3 class="lesson-section-title">Play vs Stockfish</h3>
+          <p class="section-copy">${escapeHtml(statusText)}</p>
+        </div>
+      </div>
+
+      ${gameActive && timeControl !== 'none' ? `
+        <div class="play-clocks-container">
+          <div class="play-clock ${state.analysis.game?.turn() === 'w' ? 'is-active' : ''}">
+            <span class="play-clock-label">White</span>
+            <span class="play-clock-time">${formatTime(whiteTime)}</span>
+          </div>
+          <div class="play-clock ${state.analysis.game?.turn() === 'b' ? 'is-active' : ''}">
+            <span class="play-clock-label">Black</span>
+            <span class="play-clock-time">${formatTime(blackTime)}</span>
+          </div>
+        </div>
+        <div class="section-divider"></div>
+      ` : ''}
+
+      <div class="stack-grid">
+        <div class="field-row">
+          <label class="field-label" for="engineSkillSlider">Engine Strength (Elo)</label>
+          <div class="range-control-wrap">
+            <input
+              type="range"
+              id="engineSkillSlider"
+              min="700"
+              max="3000"
+              step="50"
+              value="${skill}"
+              data-action="set-play-skill"
+              ${gameActive ? 'disabled' : ''}
+            >
+            <span class="field-value">${skill}</span>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label class="field-label" for="playSideSelect">Your Color</label>
+          <select id="playSideSelect" class="field-select" data-action="set-play-side" ${gameActive ? 'disabled' : ''}>
+            <option value="white" ${side === 'white' ? 'selected' : ''}>White</option>
+            <option value="black" ${side === 'black' ? 'selected' : ''}>Black</option>
+            <option value="random" ${side === 'random' ? 'selected' : ''}>Random</option>
+          </select>
+        </div>
+
+        <div class="field-row">
+          <label class="field-label" for="playTimeSelect">Time Control</label>
+          <select id="playTimeSelect" class="field-select" data-action="set-play-time" ${gameActive ? 'disabled' : ''}>
+            <option value="none" ${timeControl === 'none' ? 'selected' : ''}>No clock</option>
+            <option value="1+0" ${timeControl === '1+0' ? 'selected' : ''}>1+0 (Bullet)</option>
+            <option value="3+2" ${timeControl === '3+2' ? 'selected' : ''}>3+2 (Blitz)</option>
+            <option value="5+0" ${timeControl === '5+0' ? 'selected' : ''}>5+0 (Blitz)</option>
+            <option value="10+0" ${timeControl === '10+0' ? 'selected' : ''}>10+0 (Rapid)</option>
+            <option value="15+10" ${timeControl === '15+10' ? 'selected' : ''}>15+10 (Rapid)</option>
+            <option value="30+0" ${timeControl === '30+0' ? 'selected' : ''}>30+0 (Classical)</option>
+            <option value="45+45" ${timeControl === '45+45' ? 'selected' : ''}>45+45 (Classical)</option>
+          </select>
+        </div>
+
+        <div class="field-row">
+          <label class="field-label" for="playSpeedSelect">Thinking Speed</label>
+          <select id="playSpeedSelect" class="field-select" data-action="set-play-speed" ${gameActive ? 'disabled' : ''}>
+            <option value="instant" ${thinkingSpeed === 'instant' ? 'selected' : ''}>Instant (0.1s - 0.5s)</option>
+            <option value="fast" ${thinkingSpeed === 'fast' ? 'selected' : ''}>Fast (0.25s - 1.0s)</option>
+            <option value="normal" ${thinkingSpeed === 'normal' || !thinkingSpeed ? 'selected' : ''}>Normal (0.5s - 2.0s)</option>
+            <option value="slow" ${thinkingSpeed === 'slow' ? 'selected' : ''}>Slow / Thorough (1.0s - 4.0s)</option>
+          </select>
+        </div>
+
+        <div class="action-row" style="margin-top: 1rem; gap: 0.5rem; display: flex;">
+          ${gameActive
+            ? `
+              <button type="button" class="action-button danger" data-action="stop-play" style="flex: 1;">Resign</button>
+              <button type="button" class="action-button tonal" data-action="offer-draw" style="flex: 1;">Offer Draw</button>
+            `
+            : `<button type="button" class="action-button primary" data-action="start-play" style="width: 100%;">Start Game</button>`}
+        </div>
+        ${state.analysis.boardMessage ? `<p class="section-copy" style="margin-top: 1rem;">${escapeHtml(state.analysis.boardMessage)}</p>` : ''}
+      </div>
+    </article>
+  `;
+
+  withPreservedScroll(dom.controlPaneScroll, () => {
+    dom.playPanel.innerHTML = playMarkup;
+  });
 }
 
 function initializeDefaultSetup() {

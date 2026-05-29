@@ -2036,7 +2036,7 @@ code {
 
 .piece-palette {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 0.65rem;
 }
 
@@ -2458,6 +2458,11 @@ code {
 .pv-line-list {
   display: grid;
   gap: 0.6rem;
+}
+
+.pv-line-list.is-stale {
+  opacity: 0.55;
+  transition: opacity 0.15s ease;
 }
 
 .pv-line {
@@ -2918,7 +2923,7 @@ code {
   }
 
   .piece-palette {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     gap: 0.35rem;
   }
 
@@ -3239,7 +3244,7 @@ code {
   }
 
   .piece-palette {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     gap: 0.35rem;
   }
 
@@ -3256,4 +3261,15 @@ code {
   .piece-tool-label {
     display: none;
   }
+}
+
+:root[data-theme="dark"] .piece-tool-button.is-black-piece {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+:root[data-theme="dark"] .piece-tool-button.is-black-piece.is-armed {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: var(--piece-tool-armed-border);
+  box-shadow: 0 0 8px var(--piece-tool-armed-border);
 }

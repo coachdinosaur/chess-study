@@ -152,43 +152,75 @@
                   </span>
                 </button>
                 <div id="lessonActionsMenu" class="lesson-overflow-menu" role="menu" aria-labelledby="lessonActionsButton" hidden>
-                  <button id="openLessonButton" type="button" class="lesson-overflow-item" data-action="open-lesson" role="menuitem">Open lesson</button>
-                  <button id="saveLessonButton" type="button" class="lesson-overflow-item" data-action="save-lesson" role="menuitem">Save lesson</button>
-                  <button id="guidedReviewButton" type="button" class="lesson-overflow-item" data-action="open-guided-review" role="menuitem">Guided Review</button>
-                  <button id="importPgnButton" type="button" class="lesson-overflow-item" data-action="import-pgn" role="menuitem">Import PGN</button>
-                  <button id="exportPgnButton" type="button" class="lesson-overflow-item" data-action="export-pgn" role="menuitem">Export PGN</button>
-                  <button id="copyFenButton" type="button" class="lesson-overflow-item" data-action="copy-fen" role="menuitem">Copy FEN</button>
-                  <button id="togglePgnCommentsMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-pgn-comments" role="menuitem">Hide PGN comments</button>
-                  <button id="toggleNoteMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-note" role="menuitem">Show note</button>
-                  <button id="toggleToolsMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-tools" role="menuitem">Show tools</button>
-                  <button id="togglePvLinesMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-pv-lines" role="menuitem">Hide PV lines</button>
-                  <button id="enterFocusModeButton" type="button" class="lesson-overflow-item" data-action="enter-focus-mode" role="menuitem">Focus mode</button>
-                  <button id="toggleFullscreenMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-fullscreen" role="menuitem" hidden>Enter fullscreen</button>
+                  <!-- 1. File & Lesson Submenu -->
+                  <details class="menu-submenu" open>
+                    <summary class="menu-submenu-title">
+                      <span>📁 File & Lesson</span>
+                      <span class="menu-submenu-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                      </span>
+                    </summary>
+                    <div class="menu-submenu-content">
+                      <button id="openLessonButton" type="button" class="lesson-overflow-item" data-action="open-lesson" role="menuitem">Open lesson</button>
+                      <button id="saveLessonButton" type="button" class="lesson-overflow-item" data-action="save-lesson" role="menuitem">Save lesson</button>
+                      <button id="guidedReviewButton" type="button" class="lesson-overflow-item" data-action="open-guided-review" role="menuitem">Guided Review</button>
+                      <button id="importPgnButton" type="button" class="lesson-overflow-item" data-action="import-pgn" role="menuitem">Import PGN</button>
+                      <button id="exportPgnButton" type="button" class="lesson-overflow-item" data-action="export-pgn" role="menuitem">Export PGN</button>
+                      <button id="copyFenButton" type="button" class="lesson-overflow-item" data-action="copy-fen" role="menuitem">Copy FEN</button>
+                    </div>
+                  </details>
+
+                  <!-- 2. View & Interface Submenu -->
+                  <details class="menu-submenu">
+                    <summary class="menu-submenu-title">
+                      <span>👁️ View & Interface</span>
+                      <span class="menu-submenu-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                      </span>
+                    </summary>
+                    <div class="menu-submenu-content">
+                      <button id="enterFocusModeButton" type="button" class="lesson-overflow-item" data-action="enter-focus-mode" role="menuitem">Focus mode</button>
+                      <button id="toggleToolsMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-tools" role="menuitem">Show tools</button>
+                      <button id="toggleNoteMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-note" role="menuitem">Show note</button>
+                      <button id="toggleFullscreenMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-fullscreen" role="menuitem" hidden>Enter fullscreen</button>
+                    </div>
+                  </details>
+
+                  <!-- 3. Analysis & Notation Submenu -->
+                  <details class="menu-submenu">
+                    <summary class="menu-submenu-title">
+                      <span>📊 Analysis & PGN</span>
+                      <span class="menu-submenu-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                      </span>
+                    </summary>
+                    <div class="menu-submenu-content">
+                      <button id="togglePgnCommentsMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-pgn-comments" role="menuitem">Hide PGN comments</button>
+                      <button id="togglePvLinesMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-pv-lines" role="menuitem">Hide PV lines</button>
+                    </div>
+                  </details>
+
                   <div class="lesson-overflow-divider" role="separator"></div>
-                  <p class="lesson-overflow-section-label" role="presentation">Theme</p>
+
+                  <!-- 4. Top-level Dark Theme Switch -->
                   <button
-                    id="lightThemeButton"
+                    id="toggleThemeButton"
                     type="button"
-                    class="lesson-overflow-item lesson-overflow-item-radio"
-                    data-action="set-color-theme"
-                    data-value="light"
-                    role="menuitemradio"
+                    class="lesson-overflow-item lesson-overflow-item-toggle"
+                    data-action="toggle-color-theme"
+                    role="menuitemcheckbox"
                     aria-checked="false"
                   >
-                    <span>Light</span>
-                    <span class="lesson-overflow-check" aria-hidden="true"></span>
-                  </button>
-                  <button
-                    id="darkThemeButton"
-                    type="button"
-                    class="lesson-overflow-item lesson-overflow-item-radio"
-                    data-action="set-color-theme"
-                    data-value="dark"
-                    role="menuitemradio"
-                    aria-checked="false"
-                  >
-                    <span>Dark</span>
-                    <span class="lesson-overflow-check" aria-hidden="true"></span>
+                    <span>Dark Theme</span>
+                    <span class="theme-toggle-switch" aria-hidden="true">
+                      <span class="theme-toggle-thumb"></span>
+                    </span>
                   </button>
                 </div>
               </div>
@@ -245,10 +277,12 @@
               <nav class="tab-nav" aria-label="Workspace sections">
                 <button class="tab-chip is-active" type="button" data-action="set-tab" data-tab="setup">Setup</button>
                 <button class="tab-chip" type="button" data-action="set-tab" data-tab="analysis">Analysis</button>
+                 <button class="tab-chip" type="button" data-action="set-tab" data-tab="play">Play</button>
               </nav>
 
               <section class="tab-panel is-active" id="setupPanel" aria-label="Setup tab"></section>
               <section class="tab-panel" id="analysisPanel" aria-label="Analysis tab" hidden></section>
+              <section class="tab-panel" id="playPanel" aria-label="Play tab" hidden></section>
             </section>
           </section>
         </div>
@@ -291,6 +325,19 @@
       </div>
       <p id="promotionSubtitle" class="promotion-subtitle">Select the piece for this promotion.</p>
       <div id="promotionChoices" class="promotion-choices"></div>
+    </div>
+  </div>
+
+  <div id="gameResultModal" class="promotion-modal" hidden aria-hidden="true">
+    <div class="promotion-dialog" role="dialog" aria-modal="true" aria-labelledby="gameResultTitle">
+      <div class="promotion-head">
+        <h3 id="gameResultTitle">Game Over</h3>
+        <button type="button" class="icon-button" data-action="dismiss-game-result" aria-label="Close game result dialog">×</button>
+      </div>
+      <p id="gameResultMessage" class="promotion-subtitle">Result details go here.</p>
+      <div class="action-row" style="margin-top: 1.5rem; justify-content: center;">
+        <button type="button" class="action-button primary" data-action="dismiss-game-result">Ok</button>
+      </div>
     </div>
   </div>
 
