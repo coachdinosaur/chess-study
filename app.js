@@ -305,7 +305,7 @@ const state = {
   setupDrag: createEmptySetupDragState(),
   play: {
     active: false,
-    skill: 1200,
+    skill: 1320,
     timeControl: 'none',
     side: 'white',
     assignedSide: 'white',
@@ -7311,7 +7311,7 @@ function handleDocumentKeydown(event) {
 // Functions related to playing against Stockfish
 function updatePlaySkill(value) {
   const elo = parseInt(value, 10);
-  state.play.skill = clamp(elo, 700, 3000);
+  state.play.skill = clamp(elo, 1320, 3190);
   if (state.play.active && state.engine.worker && state.engine.ready) {
     applyEngineSkillLevel(state.play.skill);
   }
@@ -7323,9 +7323,13 @@ function applyEngineSkillLevel(elo) {
     return;
   }
   const worker = state.engine.worker;
-  const skillLevel = clamp(Math.round((elo - 700) / 115), 0, 20);
-  worker.postMessage(`setoption name Skill Level value ${skillLevel}`);
-  console.log(`[Stockfish] Set Elo to ${elo} (Skill Level ${skillLevel})`);
+  // Use UCI_LimitStrength + UCI_Elo for accurate ELO targeting.
+  // Stockfish's Skill Level alone is imprecise (Skill Level 0 still plays ~1100+).
+  // UCI_LimitStrength enables the proper ELO-calibrated strength limiter.
+  const clampedElo = clamp(elo, 1320, 3190); // Stockfish's supported UCI_Elo range
+  worker.postMessage('setoption name UCI_LimitStrength value true');
+  worker.postMessage(`setoption name UCI_Elo value ${clampedElo}`);
+  console.log(`[Stockfish] Set UCI_Elo to ${clampedElo} (requested: ${elo})`);
 }
 
 function updatePlayTime(value) {
@@ -7806,8 +7810,8 @@ function renderPlayPanel() {
             <input
               type="range"
               id="engineSkillSlider"
-              min="700"
-              max="3000"
+              min="1320"
+              max="3190"
               step="50"
               value="${skill}"
               data-action="set-play-skill"
