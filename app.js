@@ -7351,6 +7351,29 @@ function updatePlayStartPosition(value) {
     state.play.startPosition = value;
   }
   renderPlayPanel();
+  renderBoardForPlayPreview();
+}
+
+function renderBoardForPlayPreview() {
+  // Only preview the start position on the board when no game is active
+  if (state.play.active) {
+    return;
+  }
+  const previewFen = resolvePlayStartFen();
+  if (!previewFen || previewFen === state.analysis.currentFen) {
+    return;
+  }
+  try {
+    new Chess(previewFen); // validate FEN
+    state.analysis.currentFen = previewFen;
+    state.analysis.selectedSquare = null;
+    state.analysis.legalMoves = [];
+    state.analysis.lastMoveSquares = [];
+    renderBoard();
+    renderHeaderMeta();
+  } catch {
+    // If FEN is invalid, skip preview update
+  }
 }
 
 function resolvePlayStartFen() {
