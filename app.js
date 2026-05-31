@@ -31,6 +31,7 @@ const ANALYSIS_TARGET_DEPTH_MAX = 99;
 const LESSON_ACTIONS_MENU_GAP_REM = 0.4;
 const LESSON_ACTIONS_MENU_VIEWPORT_PADDING_REM = 0.5;
 const MOBILE_VIEWPORT_MEDIA_QUERY = '(max-width: 760px)';
+const MOBILE_PORTRAIT_VIEWPORT_MEDIA_QUERY = '(max-width: 760px) and (orientation: portrait)';
 const MOBILE_COARSE_LANDSCAPE_MEDIA_QUERY = '(max-width: 1100px) and (min-width: 640px) and (orientation: landscape) and (pointer: coarse)';
 const ENGINE_SEARCH_MODE_CHECKPOINT = 'checkpoint';
 const ENGINE_SEARCH_MODE_CONTINUE = 'continue';
@@ -248,6 +249,7 @@ const state = {
   },
   pvLinesVisible: true,
   lessonFileStatus: '',
+  boardLayoutFrame: 0,
   engine: {
     worker: null,
     ready: false,
@@ -279,7 +281,7 @@ const state = {
     pendingSearchMode: '',
     searchTargetDepth: null,
     summaryPrefix: '',
-    evalRailVisible: true,
+    evalRailVisible: false,
   },
   tablebase: {
     probing: false,
@@ -1970,10 +1972,22 @@ function toggleLessonActionsMenu() {
   setHeaderMenuOpen('settings', !isLessonActionsMenuOpen());
 }
 
-function handleViewportResize() {
-  renderBoard();
+function syncResponsiveLayout() {
+  state.boardLayoutFrame = 0;
+  syncBoardSize();
   syncFullscreenMenuState();
   syncOpenHeaderMenusLayout();
+}
+
+function scheduleBoardLayoutSync() {
+  if (state.boardLayoutFrame) {
+    return;
+  }
+  state.boardLayoutFrame = window.requestAnimationFrame(syncResponsiveLayout);
+}
+
+function handleViewportResize() {
+  scheduleBoardLayoutSync();
 }
 
 function handleFullscreenChange() {
@@ -3449,7 +3463,7 @@ function resetAnalysisOutput(options = {}) {
   state.engine.summaryPrefix = '';
   clearEngineContinuationState();
   state.engine.summary = summary;
-  state.engine.evalRailVisible = true;
+  state.engine.evalRailVisible = false;
   clearEngineSearchData();
   if (!keepReady) {
     state.engine.ready = false;
@@ -5062,6 +5076,10 @@ function currentViewportHeight() {
   return window.visualViewport?.height ?? window.innerHeight ?? document.documentElement?.clientHeight ?? 0;
 }
 
+function mobilePortraitLayoutActive() {
+  return Boolean(window.matchMedia?.(MOBILE_PORTRAIT_VIEWPORT_MEDIA_QUERY).matches);
+}
+
 function elementPaddingInsetPx(element, axis) {
   if (!element) {
     return 0;
@@ -5564,6 +5582,7 @@ function syncBoardSize() {
   let containerWidth = state.focusMode
     ? (stageRect?.width || dom.boardColumn.parentElement?.clientWidth || dom.boardColumn.clientWidth)
     : dom.boardColumn.clientWidth;
+  const isMobilePortrait = !state.focusMode && mobilePortraitLayoutActive();
   if (state.focusMode) {
     const focusHeightBudget = Math.max(0, currentViewportHeight() - elementPaddingInsetPx(dom.pageShell, 'y'));
     const focusWidthBudget = Math.max(0, currentViewportWidth() - elementPaddingInsetPx(dom.pageShell, 'x'));
@@ -5572,12 +5591,22 @@ function syncBoardSize() {
       ? Math.min(containerWidth || focusWidthBudget, focusWidthBudget)
       : containerWidth;
   }
-  if (!containerWidth || !stageHeight) {
+  if (!containerWidth || (!stageHeight && !isMobilePortrait)) {
     return;
   }
 
   const columnStyles = window.getComputedStyle(dom.boardColumn);
   const framePadding = cssLengthToPx(columnStyles.getPropertyValue('--board-frame-padding'), remToPx(0.5));
+  if (isMobilePortrait) {
+    const pageWidth = Math.max(0, currentViewportWidth() - elementPaddingInsetPx(dom.pageShell, 'x'));
+    const mobileBoardSize = Math.floor(Math.max(0, pageWidth - (framePadding * 2) - 2));
+    if (mobileBoardSize > 0) {
+      dom.boardColumn.style.setProperty('--board-size', `${mobileBoardSize}px`);
+      dom.rootElement.style.setProperty('--board-side-gap', '0px');
+    }
+    return;
+  }
+
   const capturedSizingMetrics = capturedSizingMetricsFromStyles(columnStyles);
   const maxBoardSize = state.focusMode ? remToPx(56) : remToPx(42);
   let boardSize = Math.min(containerWidth, stageHeight, maxBoardSize);
@@ -6188,7 +6217,7 @@ function renderSetupPanel() {
               data-piece="eraser"
               aria-label="Eraser"
             >
-              <svg class="piece-tool-icon eraser-icon" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="width: 58%; height: 58%; color: var(--text-soft); transition: color var(--ease);">
+              <svg class="piece-tool-icon eraser-icon" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
                 <path d="m20 20-5-5"></path>
                 <path d="m3 16 5 5c.9.9 2 1 3 0l9-9c.9-.9 1-2 0-3L15 4c-.9-.9-2-.9-3 0L3 13c-.9.9-.9 2 0 3Z"></path>
                 <path d="m7 12 5 5"></path>
@@ -6454,7 +6483,7 @@ function renderLineNavigationSection() {
         <button type="button" class="${annotateButtonClass}" data-action="toggle-annotate" aria-pressed="${state.annotations.enabled ? 'true' : 'false'}">Annotate</button>
         <button type="button" class="action-button" data-action="flip-board">Flip board</button>
       </div>
-      <div class="stack-grid">
+      <div class="stack-grid line-navigation-meta">
         <p class="muted-copy">${escapeHtml(lineSummary)}</p>
         <div class="banner ${hasBoard ? 'success' : 'warning'}">
           <div>
@@ -6513,12 +6542,20 @@ function renderTabs() {
     panel.hidden = !active;
     panel.classList.toggle('is-active', active);
   });
-
-  if (state.activeTab === TAB_PLAY) {
-    renderPlayPanel();
-  }
 }
 
+function renderActiveToolPanel() {
+  state.activeTab = normalizeActiveTab(state.activeTab);
+  if (state.activeTab === TAB_SETUP) {
+    renderSetupPanel();
+    return;
+  }
+  if (state.activeTab === TAB_PLAY) {
+    renderPlayPanel();
+    return;
+  }
+  renderAnalysisPanel();
+}
 
 function renderWorkspaceTools() {
   if (!dom.workspaceTools) {
@@ -6533,9 +6570,8 @@ function renderAll() {
   renderHeaderMeta();
   renderHeroBanner();
   renderNotationPanel();
-  renderSetupPanel();
-  renderAnalysisPanel();
   renderTabs();
+  renderActiveToolPanel();
   renderWorkspaceTools();
   renderGuidedReviewVisibility();
   syncLessonVisibilityMenuState();
@@ -6548,8 +6584,7 @@ function renderAfterSetupMetaChange() {
     renderHeaderMeta();
     renderHeroBanner();
     renderNotationPanel();
-    renderSetupPanel();
-    renderAnalysisPanel();
+    renderActiveToolPanel();
     renderPromotionModal();
   });
 }
@@ -7870,15 +7905,15 @@ function renderPlayPanel() {
           </select>
         </div>
 
-        <div class="action-row" style="margin-top: 1rem; gap: 0.5rem; display: flex;">
+        <div class="action-row play-action-row">
           ${gameActive
             ? `
-              <button type="button" class="action-button danger" data-action="stop-play" style="flex: 1;">Resign</button>
-              <button type="button" class="action-button tonal" data-action="offer-draw" style="flex: 1;">Offer Draw</button>
+              <button type="button" class="action-button danger" data-action="stop-play">Resign</button>
+              <button type="button" class="action-button tonal" data-action="offer-draw">Offer Draw</button>
             `
-            : `<button type="button" class="action-button primary" data-action="start-play" style="width: 100%;">Start Game</button>`}
+            : `<button type="button" class="action-button primary" data-action="start-play">Start Game</button>`}
         </div>
-        ${state.analysis.boardMessage ? `<p class="section-copy" style="margin-top: 1rem;">${escapeHtml(state.analysis.boardMessage)}</p>` : ''}
+        ${state.analysis.boardMessage ? `<p class="section-copy play-board-message">${escapeHtml(state.analysis.boardMessage)}</p>` : ''}
       </div>
     </article>
   `;
@@ -7940,7 +7975,7 @@ function bindEvents() {
     terminateEngineWorker();
   });
   window.addEventListener('resize', handleViewportResize);
-  window.visualViewport?.addEventListener('resize', syncOpenHeaderMenusLayout);
+  window.visualViewport?.addEventListener('resize', handleViewportResize);
   window.addEventListener('blur', cancelAnnotationGesture);
   syncLessonFileStatus(state.lessonFileStatus);
   setHeaderMenuOpen('lesson-book', false);
