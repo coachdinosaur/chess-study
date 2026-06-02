@@ -939,6 +939,9 @@ code {
 
 .last-move-arrow-head-outline {
   fill: var(--last-move-arrow-outline);
+  stroke: var(--last-move-arrow-outline);
+  stroke-width: 10;
+  stroke-linejoin: round;
   opacity: 0.78;
 }
 

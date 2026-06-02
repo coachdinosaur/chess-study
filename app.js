@@ -169,6 +169,7 @@ const dom = {
   focusModeAnalyzeButton: document.getElementById('focusModeAnalyzeButton'),
   exitFocusModeButton: document.getElementById('exitFocusModeButton'),
   toggleThemeButton: document.getElementById('toggleThemeButton'),
+  toggleLastMoveArrowButton: document.getElementById('toggleLastMoveArrowButton'),
   lessonPicker: document.getElementById('lessonPicker'),
   newLessonButton: document.getElementById('newLessonButton'),
   duplicateLessonButton: document.getElementById('duplicateLessonButton'),
@@ -241,6 +242,7 @@ const state = {
   analysisTargetDepth: DEFAULT_ANALYSIS_TARGET_DEPTH,
   practice: createEmptyPracticeState(),
   pgnCommentsVisible: true,
+  lastMoveArrowVisible: true,
   toolsExpanded: false,
   guidedReview: {
     active: false,
@@ -1669,6 +1671,10 @@ function syncColorThemeMenuState() {
     const isDark = state.colorTheme === 'dark';
     dom.toggleThemeButton.setAttribute('aria-checked', isDark ? 'true' : 'false');
     dom.toggleThemeButton.classList.toggle('is-selected', isDark);
+  }
+  if (dom.toggleLastMoveArrowButton) {
+    dom.toggleLastMoveArrowButton.setAttribute('aria-checked', state.lastMoveArrowVisible ? 'true' : 'false');
+    dom.toggleLastMoveArrowButton.classList.toggle('is-selected', state.lastMoveArrowVisible);
   }
 }
 
@@ -5277,7 +5283,7 @@ function buildAnnotationArrowMarkup(from, to, options = {}) {
 }
 
 function buildLastMoveArrowMarkup() {
-  if (state.activeTab === TAB_SETUP) {
+  if (state.activeTab === TAB_SETUP || !state.lastMoveArrowVisible) {
     return '';
   }
   const [from, to] = state.analysis.lastMoveSquares;
@@ -7180,6 +7186,13 @@ function handleDocumentClick(event) {
     case 'toggle-color-theme':
       const newTheme = state.colorTheme === 'dark' ? 'light' : 'dark';
       applyColorTheme(newTheme, { persist: true });
+      closeLessonActionsMenu({ restoreFocus: true });
+      break;
+    case 'toggle-last-move-arrow':
+      state.lastMoveArrowVisible = !state.lastMoveArrowVisible;
+      syncColorThemeMenuState();
+      renderBoard();
+      schedulePersist();
       closeLessonActionsMenu({ restoreFocus: true });
       break;
     case 'choose-promotion':
