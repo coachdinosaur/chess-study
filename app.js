@@ -75,7 +75,6 @@ const DEFAULT_TITLE = '';
 const LESSON_FILE_VERSION = 1;
 const LESSON_BOOK_FILE_VERSION = 2;
 const ROOT_NODE_ID = 'root';
-const STANDARD_INITIAL_PLACEMENT = DEFAULT_POSITION.split(/\s+/)[0];
 
 function normalizeActiveTab(value, fallback = TAB_ANALYSIS) {
   const normalized = String(value || '').trim();
@@ -2334,10 +2333,6 @@ function buildFenFromPiecesAndMeta(pieces, meta) {
   return `${buildPlacementFromPieces(pieces)} ${meta.activeColor} ${meta.castling} ${meta.enPassant} ${meta.halfmove} ${meta.fullmove}`;
 }
 
-function hasStandardInitialPlacement(pieces) {
-  return buildPlacementFromPieces(pieces) === STANDARD_INITIAL_PLACEMENT;
-}
-
 function parseCastlingRights(castling) {
   const rights = new Set();
   const normalized = String(castling ?? '').trim();
@@ -2526,7 +2521,7 @@ function sanitizeSetupState(pieces, meta) {
     halfmove: Math.max(0, Number.parseInt(meta.halfmove, 10) || 0),
     fullmove: Math.max(1, Number.parseInt(meta.fullmove, 10) || 1),
   };
-  const activeColor = hasStandardInitialPlacement(clonedPieces) ? 'w' : safeMeta.activeColor;
+  const activeColor = safeMeta.activeColor;
   const castling = sanitizeCastlingForPieces(safeMeta.castling, clonedPieces);
   const enPassant = sanitizeEnPassantForPieces(
     safeMeta.enPassant,
@@ -3295,31 +3290,64 @@ function commitSetupState(pieces, meta, options = {}) {
   schedulePersist();
 }
 
-function applyStrictFenInput() {
-  const fen = state.setup.fenInput.trim();
+function parseStrictFenInput(value) {
+  const fen = String(value || '').trim().replace(/\s+/g, ' ');
   const validation = validateFen(fen);
   if (!validation.ok) {
-    state.setup.fenError = validation.error;
-    renderHeroBanner();
-    renderSetupPanel();
-    return;
+    return { ok: false, error: validation.error || 'FEN is invalid.' };
   }
   try {
     const game = new Chess(fen);
     const parsed = parseFenLike(game.fen());
     if (!parsed.ok) {
+      return { ok: false, error: parsed.error };
+    }
+    return { ok: true, pieces: parsed.pieces, meta: parsed.meta };
+  } catch (error) {
+    return { ok: false, error: error?.message || 'Unable to apply that FEN.' };
+  }
+}
+
+function commitStrictFenInput(value, options = {}) {
+  const { render = true, showError = true } = options;
+  const parsed = parseStrictFenInput(value);
+  if (!parsed.ok) {
+    if (showError) {
       state.setup.fenError = parsed.error;
       renderHeroBanner();
       renderSetupPanel();
+    }
+    return false;
+  }
+  commitSetupState(parsed.pieces, parsed.meta, { syncFenInput: true, resetAnalysis: true });
+  if (render) {
+    renderAll();
+  }
+  return true;
+}
+
+function applyStrictFenInput() {
+  commitStrictFenInput(state.setup.fenInput, { render: true, showError: true });
+}
+
+function autoApplyPastedFenInput() {
+  if (commitStrictFenInput(state.setup.fenInput, { render: true, showError: false })) {
+    syncLessonFileStatus('Pasted FEN applied.');
+  }
+}
+
+function handleDocumentPaste(event) {
+  if (event.target?.id !== 'fenInput') {
+    return;
+  }
+  window.setTimeout(() => {
+    const fenInput = document.getElementById('fenInput');
+    if (!fenInput) {
       return;
     }
-    commitSetupState(parsed.pieces, parsed.meta, { syncFenInput: true, resetAnalysis: true });
-    renderAll();
-  } catch (error) {
-    state.setup.fenError = error?.message || 'Unable to apply that FEN.';
-    renderHeroBanner();
-    renderSetupPanel();
-  }
+    state.setup.fenInput = fenInput.value;
+    autoApplyPastedFenInput();
+  }, 0);
 }
 
 function resetFenDraft() {
@@ -3408,9 +3436,6 @@ function currentPalettePieces() {
 }
 
 function setSetupActiveColor(color) {
-  if (hasStandardInitialPlacement(state.setup.pieces)) {
-    return;
-  }
   const nextMeta = cloneMeta(state.setup.meta);
   nextMeta.activeColor = color === 'b' ? 'b' : 'w';
   commitSetupState({ ...state.setup.pieces }, nextMeta, { syncFenInput: true, resetAnalysis: true });
@@ -6101,8 +6126,7 @@ function advancedControlsMarkup() {
     halfmove: state.setup.meta.halfmove,
     fullmove: state.setup.meta.fullmove,
   });
-  const locksActiveColor = hasStandardInitialPlacement(state.setup.pieces);
-  const activeValue = locksActiveColor ? 'w' : state.setup.meta.activeColor;
+  const activeValue = state.setup.meta.activeColor;
   const activeLabel = activeValue === 'b' ? 'Black to move' : 'White to move';
 
   return `
@@ -6163,7 +6187,7 @@ function renderSetupPanel() {
   const currentPalette = currentPalettePieces();
   const paletteIsBlack = state.setup.paletteColor === 'b';
   const paletteLabel = paletteIsBlack ? 'Placing black pieces' : 'Placing white pieces';
-  const sideToMoveValue = hasStandardInitialPlacement(state.setup.pieces) ? 'w' : state.setup.meta.activeColor;
+  const sideToMoveValue = state.setup.meta.activeColor;
   const sideToMoveLabel = sideToMoveValue === 'b' ? 'Black to move' : 'White to move';
   const markup = `
     <article class="lesson-section setup-board-section">
@@ -7545,6 +7569,10 @@ function dismissGameResultModal() {
 
 function stopPlayGame(options = {}) {
   const { reason = 'Resigned' } = options;
+  if (!state.play.active) {
+    return;
+  }
+
   state.play.active = false;
   state.play.engineThinking = false;
   stopPlayClock();
@@ -7554,10 +7582,26 @@ function stopPlayGame(options = {}) {
       state.engine.rejectReady(new Error('Game play stopped.'));
     }
     clearEngineReadyHandshake();
-    terminateEngineWorker();
-  } else if (state.engine.worker) {
-    state.engine.worker.postMessage('stop');
   }
+
+  if (state.engine.worker) {
+    try {
+      state.engine.worker.postMessage('stop');
+    } catch (error) {
+      // Ignore worker messaging errors during shutdown.
+    }
+    terminateEngineWorker();
+    state.engine.ready = false;
+  }
+
+  state.engine.analyzing = false;
+  state.engine.stopping = false;
+  state.engine.searchFen = '';
+  state.engine.pendingFen = '';
+  state.engine.pendingSearchMode = '';
+  state.engine.resumeFen = '';
+  state.engine.resumeEligible = false;
+  state.engine.resumeDepth = null;
 
   state.analysis.boardMessage = `Game ended. ${reason}`;
   renderAll();
@@ -7953,6 +7997,7 @@ function bindEvents() {
   document.addEventListener('click', handleDocumentClick);
   document.addEventListener('input', handleDocumentInput);
   document.addEventListener('change', handleDocumentChange);
+  document.addEventListener('paste', handleDocumentPaste);
   document.addEventListener('keydown', handleDocumentKeydown);
   document.addEventListener('mousemove', handleDocumentMouseMove);
   document.addEventListener('mouseup', handleDocumentMouseUp);
