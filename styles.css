@@ -1858,8 +1858,8 @@ code {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.55rem;
-  height: 2.55rem;
+  width: 1.85rem;
+  height: 1.85rem;
   padding: 0;
   border: 1px solid var(--nav-button-border);
   border-radius: var(--radius-pill);
@@ -1880,8 +1880,8 @@ code {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 0.92rem;
-  height: 0.92rem;
+  width: 1.15rem;
+  height: 1.15rem;
 }
 
 .notation-nav-icon svg {
