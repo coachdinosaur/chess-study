@@ -142,8 +142,8 @@ const dom = {
   turnSideMarker: document.getElementById('turnSideMarker'),
   capturedTop: document.getElementById('capturedTop'),
   capturedBottom: document.getElementById('capturedBottom'),
-  capturedBlackPieces: document.getElementById('capturedBlackPieces'),
-  capturedWhitePieces: document.getElementById('capturedWhitePieces'),
+  capturedTopPieces: document.getElementById('capturedTopPieces'),
+  capturedBottomPieces: document.getElementById('capturedBottomPieces'),
   boardContextLabel: document.getElementById('boardContextLabel'),
   turnToken: document.getElementById('turnToken'),
   castlingToken: document.getElementById('castlingToken'),
@@ -5051,16 +5051,23 @@ function capturedPiecesMarkup(pieces) {
 }
 
 function renderCapturedPieces() {
-  if (!dom.capturedTop || !dom.capturedBottom || !dom.capturedBlackPieces || !dom.capturedWhitePieces) {
+  if (!dom.capturedTop || !dom.capturedBottom || !dom.capturedTopPieces || !dom.capturedBottomPieces) {
     return;
   }
   const captured = buildCapturedPiecesByColor(currentDisplayPieces());
-  dom.capturedBlackPieces.innerHTML = capturedPiecesMarkup(captured.b);
-  dom.capturedWhitePieces.innerHTML = capturedPiecesMarkup(captured.w);
-  dom.capturedTop.classList.toggle('is-empty', captured.b.length === 0);
-  dom.capturedBottom.classList.toggle('is-empty', captured.w.length === 0);
-  dom.capturedTop.setAttribute('aria-hidden', captured.b.length === 0 ? 'true' : 'false');
-  dom.capturedBottom.setAttribute('aria-hidden', captured.w.length === 0 ? 'true' : 'false');
+  const capturedWhite = { pieces: captured.w, label: 'Captured white pieces' };
+  const capturedBlack = { pieces: captured.b, label: 'Captured black pieces' };
+  const topCaptured = state.boardOrientation === 'black' ? capturedBlack : capturedWhite;
+  const bottomCaptured = state.boardOrientation === 'black' ? capturedWhite : capturedBlack;
+
+  dom.capturedTopPieces.innerHTML = capturedPiecesMarkup(topCaptured.pieces);
+  dom.capturedBottomPieces.innerHTML = capturedPiecesMarkup(bottomCaptured.pieces);
+  dom.capturedTopPieces.setAttribute('aria-label', topCaptured.label);
+  dom.capturedBottomPieces.setAttribute('aria-label', bottomCaptured.label);
+  dom.capturedTop.classList.toggle('is-empty', topCaptured.pieces.length === 0);
+  dom.capturedBottom.classList.toggle('is-empty', bottomCaptured.pieces.length === 0);
+  dom.capturedTop.setAttribute('aria-hidden', topCaptured.pieces.length === 0 ? 'true' : 'false');
+  dom.capturedBottom.setAttribute('aria-hidden', bottomCaptured.pieces.length === 0 ? 'true' : 'false');
 }
 
 function cssLengthToPx(value, fallback = 0) {
@@ -7846,12 +7853,23 @@ function renderPlayPanel() {
   const statusText = gameActive
     ? `Playing as ${state.play.assignedSide === 'white' ? 'White' : 'Black'}. Engine Elo: ${skill}`
     : 'Configure your game options and click Start Game.';
+  const activePlayActionsMarkup = gameActive ? `
+    <div class="action-row play-action-row">
+      <button type="button" class="action-button danger" data-action="stop-play">Resign</button>
+      <button type="button" class="action-button tonal" data-action="offer-draw">Offer Draw</button>
+    </div>
+  ` : '';
 
   const playMarkup = `
     <article class="lesson-section">
       <div class="lesson-section-header">
-        <div>
-          <h3 class="lesson-section-title">Play vs Stockfish</h3>
+        <div class="play-section-heading">
+          <h3 class="lesson-section-title play-section-title">Play vs Stockfish</h3>
+          ${!gameActive ? `
+            <div class="action-row play-start-action-row">
+              <button type="button" class="action-button primary" data-action="start-play">Start Game</button>
+            </div>
+          ` : ''}
           <p class="section-copy">${escapeHtml(statusText)}</p>
         </div>
       </div>
@@ -7867,8 +7885,10 @@ function renderPlayPanel() {
             <span class="play-clock-time">${formatTime(blackTime)}</span>
           </div>
         </div>
+        ${activePlayActionsMarkup}
         <div class="section-divider"></div>
       ` : ''}
+      ${gameActive && timeControl === 'none' ? activePlayActionsMarkup : ''}
 
       <div class="stack-grid">
         <div class="field-row">
@@ -7930,14 +7950,6 @@ function renderPlayPanel() {
           </select>
         </div>
 
-        <div class="action-row play-action-row">
-          ${gameActive
-            ? `
-              <button type="button" class="action-button danger" data-action="stop-play">Resign</button>
-              <button type="button" class="action-button tonal" data-action="offer-draw">Offer Draw</button>
-            `
-            : `<button type="button" class="action-button primary" data-action="start-play">Start Game</button>`}
-        </div>
         ${state.analysis.boardMessage ? `<p class="section-copy play-board-message">${escapeHtml(state.analysis.boardMessage)}</p>` : ''}
       </div>
     </article>
