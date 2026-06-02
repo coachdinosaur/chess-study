@@ -319,6 +319,8 @@ const state = {
     timerId: null,
     engineThinking: false,
     thinkingSpeed: 'normal',
+    autoHiddenPgnComments: false,
+    autoHiddenPvLines: false,
   },
 
 };
@@ -7471,6 +7473,19 @@ async function startPlayGame() {
   stopAnalysisSearch({ clearSummary: true });
   state.play.active = true;
 
+  state.play.autoHiddenPgnComments = false;
+  state.play.autoHiddenPvLines = false;
+  if (state.pgnCommentsVisible) {
+    state.pgnCommentsVisible = false;
+    state.play.autoHiddenPgnComments = true;
+  }
+  if (state.pvLinesVisible) {
+    state.pvLinesVisible = false;
+    state.play.autoHiddenPvLines = true;
+  }
+  syncLessonVisibilityMenuState();
+  schedulePersist();
+
   if (state.play.side === 'random') {
     state.play.assignedSide = Math.random() < 0.5 ? 'white' : 'black';
   } else {
@@ -7512,6 +7527,7 @@ async function startPlayGame() {
     state.play.clockRunning = false;
   }
 
+  state.activeTab = TAB_PLAY;
   renderAll();
 
   state.engine.summary = 'Loading Stockfish engine...';
@@ -7576,6 +7592,23 @@ function stopPlayGame(options = {}) {
   state.play.active = false;
   state.play.engineThinking = false;
   stopPlayClock();
+
+  let visibilityRestored = false;
+  if (state.play.autoHiddenPgnComments && !state.pgnCommentsVisible) {
+    state.pgnCommentsVisible = true;
+    visibilityRestored = true;
+  }
+  if (state.play.autoHiddenPvLines && !state.pvLinesVisible) {
+    state.pvLinesVisible = true;
+    visibilityRestored = true;
+  }
+  state.play.autoHiddenPgnComments = false;
+  state.play.autoHiddenPvLines = false;
+
+  if (visibilityRestored) {
+    syncLessonVisibilityMenuState();
+    schedulePersist();
+  }
 
   if (state.engine.loading) {
     if (state.engine.rejectReady) {
@@ -7851,7 +7884,22 @@ function tickPlayClock() {
     return;
   }
 
-  renderPlayPanel();
+  if (dom.playPanel) {
+    const clocks = dom.playPanel.querySelectorAll('.play-clock-time');
+    if (clocks.length === 2) {
+      const formatTime = (ms) => {
+        if (ms <= 0) return '0:00';
+        const totalSecs = Math.ceil(ms / 1000);
+        const mins = Math.floor(totalSecs / 60);
+        const secs = totalSecs % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+      };
+      clocks[0].textContent = formatTime(state.play.whiteTime);
+      clocks[1].textContent = formatTime(state.play.blackTime);
+    } else {
+      renderPlayPanel();
+    }
+  }
 }
 
 function renderPlayPanel() {
