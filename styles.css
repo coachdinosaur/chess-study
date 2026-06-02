@@ -564,13 +564,6 @@ code {
   font-size: var(--notation-text-size);
 }
 
-.board-stage-subtitle {
-  margin: 0.45rem 0 0;
-  max-width: 36ch;
-  color: var(--text-muted);
-  line-height: 1.45;
-}
-
 .head-pills,
 .hero-stats,
 .meta-strip {
@@ -1820,12 +1813,6 @@ code {
   font-weight: 700;
 }
 
-.notation-pv-copy {
-  margin: 0.2rem 0 0;
-  color: var(--text-soft);
-  line-height: 1.45;
-}
-
 .notation-note-head {
   display: flex;
   justify-content: space-between;
@@ -1842,12 +1829,6 @@ code {
   font-family: var(--font-display);
   font-size: 1rem;
   font-weight: 700;
-}
-
-.notation-note-copy {
-  margin: 0.2rem 0 0;
-  color: var(--text-soft);
-  line-height: 1.45;
 }
 
 .notation-note-input {
@@ -2261,13 +2242,6 @@ code {
 
 .analysis-target-depth-input {
   width: min(100%, 7rem);
-}
-
-.analysis-target-depth-copy {
-  margin: 0;
-  color: var(--text-soft);
-  font-size: 0.78rem;
-  line-height: 1.45;
 }
 
 .range-control-wrap {
@@ -2834,6 +2808,10 @@ code {
   font-weight: 800;
 }
 
+.play-options-grid > .field-row {
+  min-width: 0;
+}
+
 .play-action-row {
   display: flex;
   gap: 0.5rem;
@@ -2846,10 +2824,6 @@ code {
 
 .play-action-row .action-button:only-child {
   width: 100%;
-}
-
-.play-board-message {
-  margin-top: 1rem;
 }
 
 .game-result-actions {

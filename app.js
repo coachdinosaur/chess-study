@@ -134,7 +134,6 @@ const dom = {
   boardFrame: document.querySelector('.board-frame'),
   boardColumn: document.querySelector('.board-column'),
   boardTitleDisplay: document.getElementById('boardTitleDisplay'),
-  boardStageSubtitle: document.getElementById('boardStageSubtitle'),
   modePill: document.getElementById('modePill'),
   validityPill: document.getElementById('validityPill'),
   evalBarWrap: document.getElementById('evalBarWrap'),
@@ -4060,16 +4059,12 @@ function renderGuidedReviewAnalysisPanel() {
   }
 
   const title = tablebaseDisplayActive() ? 'Tablebase moves' : 'Engine lines';
-  const copy = tablebaseDisplayActive()
-    ? 'Solved continuations for the current row position.'
-    : 'Top 3 candidate lines for the current row position.';
 
   dom.guidedReviewAnalysisPanel.innerHTML = `
     <article class="lesson-section guided-review-analysis-card">
       <div class="lesson-section-header">
         <div>
           <h3 class="lesson-section-title">${escapeHtml(title)}</h3>
-          <p class="section-copy">${escapeHtml(copy)}</p>
         </div>
       </div>
       ${renderAnalysisStatusGridMarkup()}
@@ -5677,13 +5672,6 @@ function renderHeaderMeta() {
               : 'Stockfish idle';
 
   dom.boardTitleDisplay.textContent = state.title.trim() || 'Untitled position';
-  dom.boardStageSubtitle.textContent = state.practice.active
-    ? state.practice.kind === PRACTICE_KIND_BRANCH
-      ? 'Solve any recorded continuation from the current lesson branch without seeing future moves or engine output.'
-      : 'Solve the next move from the selected lesson line without seeing future moves or engine output.'
-    : state.activeTab === TAB_SETUP
-      ? 'Build the source position on the board while keeping the setup fields synchronized.'
-      : 'Play legal moves on the board while the right pane tracks evaluation and the current lesson tree.';
   dom.modePill.textContent = state.practice.active ? 'Practice' : state.activeTab === TAB_SETUP ? 'Setup' : 'Analysis';
   dom.validityPill.textContent = state.activeTab === TAB_SETUP ? setupSummary.title : engineLabel;
   dom.validityPill.className = `pill ${state.activeTab === TAB_SETUP && setupSummary.kind === 'success' ? 'pill-primary' : ''}`.trim();
@@ -5739,12 +5727,10 @@ function currentAnalysisCommentContext() {
   const currentNode = getCurrentAnalysisNode() || getAnalysisNode(state.analysis.rootId);
   if (!currentNode || currentNode.id === state.analysis.rootId) {
     return {
-      copy: 'Saved in PGN before the first move.',
       value: currentNode?.comment || '',
     };
   }
   return {
-    copy: `Saved in PGN after ${currentNode.san}.`,
     value: currentNode.comment || '',
   };
 }
@@ -5775,7 +5761,6 @@ function renderNotationCommentEditor() {
       <div class="notation-note-head">
         <div>
           <h3 class="notation-note-title">PGN comment</h3>
-          <p class="notation-note-copy">${escapeHtml(commentState.copy)}</p>
         </div>
       </div>
       <div>
@@ -5940,15 +5925,11 @@ function renderNotationPvBlock() {
     return '';
   }
   const title = tablebaseDisplayActive() ? 'Tablebase moves' : 'Engine lines';
-  const copy = tablebaseDisplayActive()
-    ? 'Top solved tablebase moves from the current board position.'
-    : 'Top 3 candidate lines from the current board position.';
   return `
     <section class="notation-pv" aria-label="${escapeHtml(title)}">
       <div class="notation-pv-head">
         <div>
           <h3 class="notation-pv-title">${escapeHtml(title)}</h3>
-          <p class="notation-pv-copy">${escapeHtml(copy)}</p>
         </div>
       </div>
       ${renderPvLineListMarkup()}
@@ -5997,7 +5978,6 @@ function renderPracticeNotationBlock() {
       <div class="notation-note-head">
         <div>
           <h3 class="notation-note-title">Practice mode</h3>
-          <p class="notation-note-copy">${escapeHtml(currentPracticePrompt())}</p>
         </div>
       </div>
       ${renderPracticeStatusGridMarkup()}
@@ -6138,7 +6118,6 @@ function advancedControlsMarkup() {
             <span class="setup-turn-swatch ${activeValue === 'b' ? 'is-black' : 'is-white'}" aria-hidden="true"></span>
             <span>${activeLabel}</span>
           </p>
-          ${locksActiveColor ? '<p class="muted-copy">The standard starting position always begins with White.</p>' : ''}
         </div>
 
         <div class="castling-grid">
@@ -6174,7 +6153,6 @@ function advancedControlsMarkup() {
               <option value="${square}" ${state.setup.meta.enPassant === square ? 'selected' : ''}>${square}</option>
             `).join('')}
           </select>
-          <p class="muted-copy">${enPassantSquares.length ? 'Only legal en passant target squares are shown.' : 'No legal en passant square exists for this position.'}</p>
         </div>
       </div>
     </div>
@@ -6265,12 +6243,14 @@ function renderSetupPanel() {
           <button type="button" class="action-button action-button-static tonal" data-action="reset-fen">Reset draft</button>
         </div>
 
-        <div class="banner ${state.setup.fenError ? 'danger' : 'warning'}">
-          <div>
-            <strong>${state.setup.fenError ? 'FEN blocked' : 'Editor sync'}</strong>
-            <div>${escapeHtml(state.setup.fenError || 'Board edits rewrite this field immediately, and any setup change resets the analysis state and lesson tree.')}</div>
+        ${state.setup.fenError ? `
+          <div class="banner danger">
+            <div>
+              <strong>FEN blocked</strong>
+              <div>${escapeHtml(state.setup.fenError)}</div>
+            </div>
           </div>
-        </div>
+        ` : ''}
       </div>
     </article>
 
@@ -6300,7 +6280,6 @@ function renderPracticeToolSection() {
         <div class="lesson-section-header">
           <div>
             <h3 class="lesson-section-title">Practice mode</h3>
-            <p class="section-copy">Switch between a fixed selected-line drill and a branch drill that accepts any recorded continuation from the current position.</p>
           </div>
         </div>
         <div class="stack-grid">
@@ -6326,7 +6305,6 @@ function renderPracticeToolSection() {
       <div class="lesson-section-header">
         <div>
           <h3 class="lesson-section-title">Practice mode</h3>
-          <p class="section-copy">${escapeHtml(currentPracticePrompt())}</p>
         </div>
       </div>
       ${renderPracticeStatusGridMarkup()}
@@ -6428,7 +6406,6 @@ function renderAnalysisPanel() {
       <div class="lesson-section-header">
         <div>
           <h3 class="lesson-section-title">Analysis</h3>
-          <p class="section-copy">${escapeHtml(state.analysis.boardMessage)}</p>
         </div>
       </div>
       <div class="action-row action-row-compact">
@@ -6450,7 +6427,6 @@ function renderAnalysisPanel() {
             value="${currentAnalysisTargetDepth()}"
             ${depthInputDisabled ? 'disabled' : ''}
           >
-          <p class="analysis-target-depth-copy">Auto-stop at this checkpoint, then use Continue to resume open-ended search.</p>
         </div>
       </div>
 
@@ -6498,7 +6474,6 @@ function renderLineNavigationSection() {
       <div class="lesson-section-header">
         <div>
           <h3 class="lesson-section-title">Line navigation</h3>
-          <p class="section-copy">The notation above stays live. Jump back to the start, reset to the setup, or keep exploring from the board.</p>
         </div>
       </div>
       <div class="action-row action-row-compact">
@@ -7850,9 +7825,7 @@ function renderPlayPanel() {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const statusText = gameActive
-    ? `Playing as ${state.play.assignedSide === 'white' ? 'White' : 'Black'}. Engine Elo: ${skill}`
-    : 'Configure your game options and click Start Game.';
+  const statusText = `Playing as ${state.play.assignedSide === 'white' ? 'White' : 'Black'}. Engine Elo: ${skill}`;
   const activePlayActionsMarkup = gameActive ? `
     <div class="action-row play-action-row">
       <button type="button" class="action-button danger" data-action="stop-play">Resign</button>
@@ -7870,7 +7843,7 @@ function renderPlayPanel() {
               <button type="button" class="action-button primary" data-action="start-play">Start Game</button>
             </div>
           ` : ''}
-          <p class="section-copy">${escapeHtml(statusText)}</p>
+          ${gameActive ? `<p class="section-copy">${escapeHtml(statusText)}</p>` : ''}
         </div>
       </div>
 
@@ -7908,49 +7881,50 @@ function renderPlayPanel() {
           </div>
         </div>
 
-        <div class="field-row">
-          <label class="field-label" for="playStartPositionSelect">Starting Position</label>
-          <select id="playStartPositionSelect" class="field-select" data-action="set-play-start-position" ${gameActive ? 'disabled' : ''}>
-            <option value="current" ${startPosition === 'current' || !startPosition ? 'selected' : ''}>Current board</option>
-            <option value="setup" ${startPosition === 'setup' ? 'selected' : ''}>Setup position</option>
-            <option value="initial" ${startPosition === 'initial' ? 'selected' : ''}>Initial position</option>
-          </select>
+        <div class="two-col play-options-grid">
+          <div class="field-row">
+            <label class="field-label" for="playStartPositionSelect">Starting Position</label>
+            <select id="playStartPositionSelect" class="field-select" data-action="set-play-start-position" ${gameActive ? 'disabled' : ''}>
+              <option value="current" ${startPosition === 'current' || !startPosition ? 'selected' : ''}>Current board</option>
+              <option value="setup" ${startPosition === 'setup' ? 'selected' : ''}>Setup position</option>
+              <option value="initial" ${startPosition === 'initial' ? 'selected' : ''}>Initial position</option>
+            </select>
+          </div>
+
+          <div class="field-row">
+            <label class="field-label" for="playSideSelect">Your Color</label>
+            <select id="playSideSelect" class="field-select" data-action="set-play-side" ${gameActive ? 'disabled' : ''}>
+              <option value="white" ${side === 'white' ? 'selected' : ''}>White</option>
+              <option value="black" ${side === 'black' ? 'selected' : ''}>Black</option>
+              <option value="random" ${side === 'random' ? 'selected' : ''}>Random</option>
+            </select>
+          </div>
+
+          <div class="field-row">
+            <label class="field-label" for="playTimeSelect">Time Control</label>
+            <select id="playTimeSelect" class="field-select" data-action="set-play-time" ${gameActive ? 'disabled' : ''}>
+              <option value="none" ${timeControl === 'none' ? 'selected' : ''}>No clock</option>
+              <option value="1+0" ${timeControl === '1+0' ? 'selected' : ''}>1+0 (Bullet)</option>
+              <option value="3+2" ${timeControl === '3+2' ? 'selected' : ''}>3+2 (Blitz)</option>
+              <option value="5+0" ${timeControl === '5+0' ? 'selected' : ''}>5+0 (Blitz)</option>
+              <option value="10+0" ${timeControl === '10+0' ? 'selected' : ''}>10+0 (Rapid)</option>
+              <option value="15+10" ${timeControl === '15+10' ? 'selected' : ''}>15+10 (Rapid)</option>
+              <option value="30+0" ${timeControl === '30+0' ? 'selected' : ''}>30+0 (Classical)</option>
+              <option value="45+45" ${timeControl === '45+45' ? 'selected' : ''}>45+45 (Classical)</option>
+            </select>
+          </div>
+
+          <div class="field-row">
+            <label class="field-label" for="playSpeedSelect">Thinking Speed</label>
+            <select id="playSpeedSelect" class="field-select" data-action="set-play-speed" ${gameActive ? 'disabled' : ''}>
+              <option value="instant" ${thinkingSpeed === 'instant' ? 'selected' : ''}>Instant (0.1s - 0.5s)</option>
+              <option value="fast" ${thinkingSpeed === 'fast' ? 'selected' : ''}>Fast (0.25s - 1.0s)</option>
+              <option value="normal" ${thinkingSpeed === 'normal' || !thinkingSpeed ? 'selected' : ''}>Normal (0.5s - 2.0s)</option>
+              <option value="slow" ${thinkingSpeed === 'slow' ? 'selected' : ''}>Slow / Thorough (1.0s - 4.0s)</option>
+            </select>
+          </div>
         </div>
 
-        <div class="field-row">
-          <label class="field-label" for="playSideSelect">Your Color</label>
-          <select id="playSideSelect" class="field-select" data-action="set-play-side" ${gameActive ? 'disabled' : ''}>
-            <option value="white" ${side === 'white' ? 'selected' : ''}>White</option>
-            <option value="black" ${side === 'black' ? 'selected' : ''}>Black</option>
-            <option value="random" ${side === 'random' ? 'selected' : ''}>Random</option>
-          </select>
-        </div>
-
-        <div class="field-row">
-          <label class="field-label" for="playTimeSelect">Time Control</label>
-          <select id="playTimeSelect" class="field-select" data-action="set-play-time" ${gameActive ? 'disabled' : ''}>
-            <option value="none" ${timeControl === 'none' ? 'selected' : ''}>No clock</option>
-            <option value="1+0" ${timeControl === '1+0' ? 'selected' : ''}>1+0 (Bullet)</option>
-            <option value="3+2" ${timeControl === '3+2' ? 'selected' : ''}>3+2 (Blitz)</option>
-            <option value="5+0" ${timeControl === '5+0' ? 'selected' : ''}>5+0 (Blitz)</option>
-            <option value="10+0" ${timeControl === '10+0' ? 'selected' : ''}>10+0 (Rapid)</option>
-            <option value="15+10" ${timeControl === '15+10' ? 'selected' : ''}>15+10 (Rapid)</option>
-            <option value="30+0" ${timeControl === '30+0' ? 'selected' : ''}>30+0 (Classical)</option>
-            <option value="45+45" ${timeControl === '45+45' ? 'selected' : ''}>45+45 (Classical)</option>
-          </select>
-        </div>
-
-        <div class="field-row">
-          <label class="field-label" for="playSpeedSelect">Thinking Speed</label>
-          <select id="playSpeedSelect" class="field-select" data-action="set-play-speed" ${gameActive ? 'disabled' : ''}>
-            <option value="instant" ${thinkingSpeed === 'instant' ? 'selected' : ''}>Instant (0.1s - 0.5s)</option>
-            <option value="fast" ${thinkingSpeed === 'fast' ? 'selected' : ''}>Fast (0.25s - 1.0s)</option>
-            <option value="normal" ${thinkingSpeed === 'normal' || !thinkingSpeed ? 'selected' : ''}>Normal (0.5s - 2.0s)</option>
-            <option value="slow" ${thinkingSpeed === 'slow' ? 'selected' : ''}>Slow / Thorough (1.0s - 4.0s)</option>
-          </select>
-        </div>
-
-        ${state.analysis.boardMessage ? `<p class="section-copy play-board-message">${escapeHtml(state.analysis.boardMessage)}</p>` : ''}
       </div>
     </article>
   `;
