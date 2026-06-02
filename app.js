@@ -4181,8 +4181,25 @@ async function isStockfishBundleInstalled(candidate) {
 }
 
 async function resolveStockfishBundleCandidate() {
+  const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+    || window.matchMedia('(max-width: 760px)').matches
+    || ('ontouchstart' in window)
+    || (navigator.maxTouchPoints > 0);
+
+  // On mobile, prefer lite bundles first to avoid crashing/timeout due to the 113MB WASM footprint.
+  const candidates = [...ENGINE_BUNDLE_CANDIDATES];
+  if (isMobile) {
+    candidates.sort((a, b) => {
+      const aIsLite = a.id.includes('lite');
+      const bIsLite = b.id.includes('lite');
+      if (aIsLite && !bIsLite) return -1;
+      if (!aIsLite && bIsLite) return 1;
+      return 0;
+    });
+  }
+
   let sawThreadedOnlyInstall = false;
-  for (const candidate of ENGINE_BUNDLE_CANDIDATES) {
+  for (const candidate of candidates) {
     if (!await isStockfishBundleInstalled(candidate)) {
       continue;
     }
@@ -7501,7 +7518,9 @@ async function startPlayGame() {
     });
   } catch (error) {
     console.error('Failed to load Stockfish', error);
-    stopPlayGame({ reason: 'Stockfish worker failed to load' });
+    if (state.play.active) {
+      stopPlayGame({ reason: 'Stockfish worker failed to load' });
+    }
     return;
   }
 
@@ -7548,7 +7567,13 @@ function stopPlayGame(options = {}) {
   state.play.engineThinking = false;
   stopPlayClock();
 
-  if (state.engine.worker) {
+  if (state.engine.loading) {
+    if (state.engine.rejectReady) {
+      state.engine.rejectReady(new Error('Game play stopped.'));
+    }
+    clearEngineReadyHandshake();
+    terminateEngineWorker();
+  } else if (state.engine.worker) {
     state.engine.worker.postMessage('stop');
   }
 
