@@ -265,6 +265,8 @@ const state = {
     rejectReady: null,
     searchFen: '',
     pendingFen: '',
+    requestId: 0,
+    loadingRequestId: 0,
     resumeFen: '',
     resumeEligible: false,
     resumeDepth: null,
@@ -912,14 +914,13 @@ function createFollowedEnginePvLines(move, nextFen) {
     .filter((entry) => entry?.uciMoves?.length && moveMatchesUci(move, entry.uciMoves[0]))
     .map((entry) => {
       const remainingUciMoves = entry.uciMoves.slice(1).map(normalizeUciMove).filter(Boolean);
-      const line = formatUciMoveLine(nextFen, remainingUciMoves);
+      const line = formatUciMoveLine(nextFen, remainingUciMoves) || 'Line reached.';
       return {
         ...entry,
         line,
         uciMoves: remainingUciMoves,
       };
-    })
-    .filter((entry) => entry.line || entry.uciMoves.length);
+    });
   return followedLines.length ? paddedEnginePvLines(followedLines) : null;
 }
 
@@ -998,10 +999,30 @@ function applyFollowedAnalysisDisplay(followedDisplay) {
     clearTablebaseDisplay();
     clearEngineContinuationState();
     state.engine.pvLines = followedDisplay.pvLines;
-    state.engine.summary = state.engine.analyzing
-      ? 'Following displayed PV while Stockfish searches the new position...'
-      : 'Following displayed PV. Analyze to refresh this position.';
+    state.engine.summary = 'Following displayed PV. Analyze to refresh this position.';
   }
+}
+
+function stopAnalysisWorkForFollowedDisplay() {
+  state.engine.requestId += 1;
+  if (state.engine.worker && state.engine.searchFen) {
+    state.engine.worker.postMessage('stop');
+  }
+  state.engine.loading = false;
+  state.engine.analyzing = false;
+  state.engine.stopping = false;
+  state.engine.searchFen = '';
+  state.engine.pendingFen = '';
+  state.engine.searchMode = '';
+  state.engine.pendingSearchMode = '';
+  state.engine.searchTargetDepth = null;
+  state.engine.summaryPrefix = '';
+  state.engine.bestMove = '';
+  state.engine.evalRailVisible = true;
+  clearEngineContinuationState();
+  state.tablebase.requestId += 1;
+  abortTablebaseProbe();
+  state.tablebase.probing = false;
 }
 
 function clearEngineContinuationState() {
@@ -4282,11 +4303,21 @@ function handleWorkerError(event) {
   const message = event?.message || (state.engine.bundleLabel
     ? `Stockfish (${state.engine.bundleLabel}) worker failed to start.`
     : 'Stockfish worker failed to start.');
+  const isStaleLoadingError = state.engine.loadingRequestId
+    && state.engine.loadingRequestId !== state.engine.requestId;
   if (state.engine.rejectReady) {
     state.engine.rejectReady(new Error(message));
   }
   clearEngineReadyHandshake();
   terminateEngineWorker();
+  state.engine.loadingRequestId = 0;
+  state.engine.loading = false;
+  if (isStaleLoadingError) {
+    state.engine.ready = false;
+    renderAnalysisPanel();
+    renderHeaderMeta();
+    return;
+  }
   resetAnalysisOutput({ keepReady: false, summary: message });
   renderAll();
 }
@@ -4307,11 +4338,11 @@ function handleWorkerMessage(event) {
     if (resolve) {
       resolve(state.engine.worker);
     }
-    if (!state.engine.analyzing && !state.engine.stopping) {
+    if (!state.engine.analyzing && !state.engine.stopping && !hasVisibleAnalysisLines()) {
       state.engine.summary = defaultAnalysisSummary();
-      renderAnalysisPanel();
-      renderHeaderMeta();
     }
+    renderAnalysisPanel();
+    renderHeaderMeta();
     if (state.play.active && state.play.engineThinking) {
       startPlayClock();
     }
@@ -4546,6 +4577,9 @@ function renderAnalysisOutputPanels() {
 
 async function startStockfishAnalysisForCurrentPosition(options = {}) {
   const { prelude = '' } = options;
+  const requestId = state.engine.requestId + 1;
+  state.engine.requestId = requestId;
+  state.engine.loadingRequestId = requestId;
   try {
     state.engine.evalRailVisible = true;
     const currentFen = state.analysis.currentFen;
@@ -4576,6 +4610,13 @@ async function startStockfishAnalysisForCurrentPosition(options = {}) {
       summary: prelude ? `${prelude} Loading Stockfish engine...` : 'Loading Stockfish engine...',
       summaryPrefix: prelude,
     });
+    if (state.engine.requestId !== requestId) {
+      if (state.engine.loadingRequestId === requestId) {
+        state.engine.loadingRequestId = 0;
+      }
+      return;
+    }
+    state.engine.loadingRequestId = 0;
     if (!state.analysis.game || state.analysis.currentFen !== currentFen) {
       const pendingFen = state.engine.pendingFen;
       if (
@@ -4616,6 +4657,13 @@ async function startStockfishAnalysisForCurrentPosition(options = {}) {
       summary: prelude ? `${prelude} ${stockfishSearchSummary}` : stockfishSearchSummary,
     });
   } catch (error) {
+    if (state.engine.requestId !== requestId) {
+      if (state.engine.loadingRequestId === requestId) {
+        state.engine.loadingRequestId = 0;
+      }
+      return;
+    }
+    state.engine.loadingRequestId = 0;
     state.engine.ready = false;
     state.engine.analyzing = false;
     state.engine.stopping = false;
@@ -4862,19 +4910,22 @@ function applyAnalysisMove(move) {
   const wasAnalysisActive = analysisShouldFollowPositionChanges() || state.tablebase.probing || tablebaseResultActive();
   const nextFen = state.analysis.game.fen();
   const followedDisplay = createFollowedAnalysisDisplay(applied, nextFen);
-  const shouldKeepFollowedDisplay = Boolean(
-    followedDisplay
-    && !(shouldKeepAnalysisLive && followedDisplay.source === 'tablebase')
-  );
-  syncAnalysisGameFromTree({ resetEngine: !(shouldKeepAnalysisLive || shouldKeepFollowedDisplay || wasAnalysisActive) });
-  if (shouldKeepFollowedDisplay) {
+  syncAnalysisGameFromTree({ resetEngine: !(shouldKeepAnalysisLive || wasAnalysisActive || followedDisplay) });
+  if (followedDisplay) {
+    stopAnalysisWorkForFollowedDisplay();
     applyFollowedAnalysisDisplay(followedDisplay);
+    state.analysis.boardMessage = followedDisplay.source === 'tablebase'
+      ? `Current move: ${applied.san}. Following displayed tablebase line.`
+      : `Current move: ${applied.san}. Following displayed PV line.`;
+    schedulePersist();
+    renderAll();
+    return;
   }
   state.analysis.boardMessage = shouldKeepAnalysisLive
       ? `Current move: ${applied.san}. Stockfish is following the new board position.`
       : `Current move: ${applied.san}. Analyze the current board position for fresh evaluation.`;
   if (shouldKeepAnalysisLive && !state.engine.stopping) {
-    queueEngineSearchForFen(state.analysis.currentFen, { preserveDisplay: shouldKeepFollowedDisplay });
+    queueEngineSearchForFen(state.analysis.currentFen);
   } else if (wasAnalysisActive) {
     if (isTablebaseEligibleFen(state.analysis.currentFen)) {
       void startTablebaseAnalysisForFen(state.analysis.currentFen, { fallbackToEngine: true, preserveDisplay: false });
