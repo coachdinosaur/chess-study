@@ -6201,6 +6201,83 @@ function renderNotationPanel() {
   `;
 }
 
+function customSelectMarkup(id, selectedValue, options, selectAttributes = '') {
+  const selectedOption = options.find((o) => o.value === selectedValue) || options[0];
+  const triggerText = selectedOption ? selectedOption.label : '';
+
+  const itemsHtml = options.map((option) => {
+    const isSelected = option.value === selectedValue;
+    const activeClass = isSelected ? ' is-selected' : '';
+    const ariaSelected = isSelected ? 'true' : 'false';
+    return `
+      <button
+        type="button"
+        class="custom-select-item${activeClass}"
+        role="option"
+        data-action="select-custom-option"
+        data-select-id="${id}"
+        data-value="${escapeHtml(option.value)}"
+        aria-selected="${ariaSelected}"
+      >
+        <span class="custom-select-item-title">${escapeHtml(option.label)}</span>
+        ${isSelected ? `
+          <span class="custom-select-item-check" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </span>
+        ` : ''}
+      </button>
+    `;
+  }).join('');
+
+  return `
+    <div class="custom-select-wrapper" data-select-id="${id}">
+      <select id="${id}-native" style="display: none;" ${selectAttributes}>
+        ${options.map((option) => `
+          <option value="${option.value}" ${option.value === selectedValue ? 'selected' : ''}>
+            ${option.label}
+          </option>
+        `).join('')}
+      </select>
+      <button
+        type="button"
+        id="${id}"
+        class="custom-select-trigger field-select"
+        data-action="toggle-custom-select"
+        data-select-id="${id}"
+        aria-haspopup="listbox"
+        aria-expanded="false"
+        ${selectAttributes.includes('disabled') ? 'disabled' : ''}
+      >
+        <span class="custom-select-value">${escapeHtml(triggerText)}</span>
+        <span class="custom-select-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </span>
+      </button>
+      <div class="custom-select-menu" role="listbox" hidden>
+        ${itemsHtml}
+      </div>
+    </div>
+  `;
+}
+
+function closeCustomSelects() {
+  document.querySelectorAll('.custom-select-wrapper.is-open').forEach((wrapper) => {
+    wrapper.classList.remove('is-open');
+    const trigger = wrapper.querySelector('.custom-select-trigger');
+    if (trigger) {
+      trigger.setAttribute('aria-expanded', 'false');
+    }
+    const menu = wrapper.querySelector('.custom-select-menu');
+    if (menu) {
+      menu.hidden = true;
+    }
+  });
+}
+
 function sideSelectorMarkup(keyPrefix, selectedValue, labels) {
   return `
     <div class="segment-group">
@@ -6307,12 +6384,15 @@ function advancedControlsMarkup() {
 
         <div class="field-row">
           <label class="field-label" for="enPassantSelect">En passant</label>
-          <select id="enPassantSelect" class="field-select" data-action="set-en-passant">
-            <option value="-">None</option>
-            ${enPassantSquares.map((square) => `
-              <option value="${square}" ${state.setup.meta.enPassant === square ? 'selected' : ''}>${square}</option>
-            `).join('')}
-          </select>
+          ${customSelectMarkup(
+            'enPassantSelect',
+            state.setup.meta.enPassant || '-',
+            [
+              { value: '-', label: 'None' },
+              ...enPassantSquares.map((square) => ({ value: square, label: square }))
+            ],
+            'data-action="set-en-passant"'
+          )}
         </div>
       </div>
     </div>
@@ -7068,6 +7148,11 @@ function handleDocumentClick(event) {
     closeHeaderMenus();
   }
 
+  const clickedInsideCustomSelect = clickTarget instanceof Element && Boolean(clickTarget.closest('.custom-select-wrapper'));
+  if (!clickedInsideCustomSelect) {
+    closeCustomSelects();
+  }
+
   const actionEl = clickTarget instanceof Element ? clickTarget.closest('[data-action]') : null;
   if (!actionEl) {
     return;
@@ -7077,6 +7162,53 @@ function handleDocumentClick(event) {
   }
   const { action } = actionEl.dataset;
   switch (action) {
+    case 'toggle-custom-select': {
+      const wrapper = actionEl.closest('.custom-select-wrapper');
+      if (wrapper) {
+        const isOpen = wrapper.classList.contains('is-open');
+        closeCustomSelects();
+        if (!isOpen) {
+          wrapper.classList.add('is-open');
+          const trigger = wrapper.querySelector('.custom-select-trigger');
+          if (trigger) {
+            trigger.setAttribute('aria-expanded', 'true');
+          }
+          const menu = wrapper.querySelector('.custom-select-menu');
+          if (menu) {
+            menu.hidden = false;
+            // Let's decide placement based on space
+            const rect = trigger.getBoundingClientRect();
+            const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+            const menuHeight = menu.offsetHeight || 180; // approximate
+            const spaceBelow = viewportHeight - rect.bottom;
+            const spaceAbove = rect.top;
+            if (spaceBelow < menuHeight && spaceAbove > spaceBelow) {
+              menu.dataset.placement = 'up';
+              menu.style.top = 'auto';
+              menu.style.bottom = 'calc(100% + 0.4rem)';
+            } else {
+              menu.dataset.placement = 'down';
+              menu.style.top = 'calc(100% + 0.4rem)';
+              menu.style.bottom = 'auto';
+            }
+          }
+        }
+      }
+      break;
+    }
+    case 'select-custom-option': {
+      const wrapper = actionEl.closest('.custom-select-wrapper');
+      if (wrapper) {
+        const value = actionEl.dataset.value;
+        const nativeSelect = wrapper.querySelector('select');
+        if (nativeSelect) {
+          nativeSelect.value = value;
+          nativeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        closeCustomSelects();
+      }
+      break;
+    }
     case 'toggle-lesson-picker':
       toggleLessonPickerMenu();
       break;
@@ -7327,7 +7459,7 @@ function handleDocumentClick(event) {
 function handleDocumentInput(event) {
   const inputAction = event.target?.dataset?.action;
   if (inputAction === 'set-play-skill') {
-    updatePlaySkill(event.target.value);
+    updatePlaySkill(event.target.value, { skipRender: true });
     return;
   }
   if (dom.guidedReviewPanel?.contains(event.target) && guidedReviewController?.handleInput(event)) {
@@ -7454,6 +7586,16 @@ function isTypingTarget(target) {
 }
 
 function handleDocumentKeydown(event) {
+  if (event.key === 'Escape') {
+    const openSelect = document.querySelector('.custom-select-wrapper.is-open');
+    if (openSelect) {
+      event.preventDefault();
+      closeCustomSelects();
+      const trigger = openSelect.querySelector('.custom-select-trigger');
+      trigger?.focus();
+      return;
+    }
+  }
   if (event.key === 'Escape' && state.focusMode) {
     event.preventDefault();
     setFocusMode(false);
@@ -7494,13 +7636,27 @@ function handleDocumentKeydown(event) {
 }
 
 // Functions related to playing against Stockfish
-function updatePlaySkill(value) {
+function updatePlaySkill(value, { skipRender = false } = {}) {
   const elo = parseInt(value, 10);
   state.play.skill = clamp(elo, 800, 3190);
   if (state.play.active && state.engine.worker && state.engine.ready) {
     applyEngineSkillLevel(state.play.skill);
   }
-  renderPlayPanel();
+  if (skipRender) {
+    const labelEl = document.querySelector('label[for="engineSkillSlider"]');
+    if (labelEl) {
+      labelEl.textContent = `Engine Strength (${state.play.skill < 1320 ? '~Elo' : 'Elo'})`;
+    }
+    const sliderEl = document.getElementById('engineSkillSlider');
+    if (sliderEl) {
+      const valueEl = sliderEl.parentElement?.querySelector('.field-value');
+      if (valueEl) {
+        valueEl.textContent = `${state.play.skill}${state.play.skill < 1320 ? '*' : ''}`;
+      }
+    }
+  } else {
+    renderPlayPanel();
+  }
 }
 
 function applyEngineSkillLevel(elo) {
@@ -8101,44 +8257,64 @@ function renderPlayPanel() {
         <div class="two-col play-options-grid">
           <div class="field-row">
             <label class="field-label" for="playStartPositionSelect">Starting Position</label>
-            <select id="playStartPositionSelect" class="field-select" data-action="set-play-start-position" ${gameActive ? 'disabled' : ''}>
-              <option value="current" ${startPosition === 'current' || !startPosition ? 'selected' : ''}>Current board</option>
-              <option value="setup" ${startPosition === 'setup' ? 'selected' : ''}>Setup position</option>
-              <option value="initial" ${startPosition === 'initial' ? 'selected' : ''}>Initial position</option>
-            </select>
+            ${customSelectMarkup(
+              'playStartPositionSelect',
+              startPosition || 'current',
+              [
+                { value: 'current', label: 'Current board' },
+                { value: 'setup', label: 'Setup position' },
+                { value: 'initial', label: 'Initial position' }
+              ],
+              `data-action="set-play-start-position" ${gameActive ? 'disabled' : ''}`
+            )}
           </div>
 
           <div class="field-row">
             <label class="field-label" for="playSideSelect">Your Color</label>
-            <select id="playSideSelect" class="field-select" data-action="set-play-side" ${gameActive ? 'disabled' : ''}>
-              <option value="white" ${side === 'white' ? 'selected' : ''}>White</option>
-              <option value="black" ${side === 'black' ? 'selected' : ''}>Black</option>
-              <option value="random" ${side === 'random' ? 'selected' : ''}>Random</option>
-            </select>
+            ${customSelectMarkup(
+              'playSideSelect',
+              side || 'white',
+              [
+                { value: 'white', label: 'White' },
+                { value: 'black', label: 'Black' },
+                { value: 'random', label: 'Random' }
+              ],
+              `data-action="set-play-side" ${gameActive ? 'disabled' : ''}`
+            )}
           </div>
 
           <div class="field-row">
             <label class="field-label" for="playTimeSelect">Time Control</label>
-            <select id="playTimeSelect" class="field-select" data-action="set-play-time" ${gameActive ? 'disabled' : ''}>
-              <option value="none" ${timeControl === 'none' ? 'selected' : ''}>No clock</option>
-              <option value="1+0" ${timeControl === '1+0' ? 'selected' : ''}>1+0 (Bullet)</option>
-              <option value="3+2" ${timeControl === '3+2' ? 'selected' : ''}>3+2 (Blitz)</option>
-              <option value="5+0" ${timeControl === '5+0' ? 'selected' : ''}>5+0 (Blitz)</option>
-              <option value="10+0" ${timeControl === '10+0' ? 'selected' : ''}>10+0 (Rapid)</option>
-              <option value="15+10" ${timeControl === '15+10' ? 'selected' : ''}>15+10 (Rapid)</option>
-              <option value="30+0" ${timeControl === '30+0' ? 'selected' : ''}>30+0 (Classical)</option>
-              <option value="45+45" ${timeControl === '45+45' ? 'selected' : ''}>45+45 (Classical)</option>
-            </select>
+            ${customSelectMarkup(
+              'playTimeSelect',
+              timeControl || 'none',
+              [
+                { value: 'none', label: 'No clock' },
+                { value: '1+0', label: '1+0 (Bullet)' },
+                { value: '3+2', label: '3+2 (Blitz)' },
+                { value: '5+0', label: '5+0 (Blitz)' },
+                { value: '10+0', label: '10+0 (Rapid)' },
+                { value: '15+10', label: '15+10 (Rapid)' },
+                { value: '30+0', label: '30+0 (Classical)' },
+                { value: '45+45', label: '45+45 (Classical)' }
+              ],
+              `data-action="set-play-time" ${gameActive ? 'disabled' : ''}`
+            )}
           </div>
 
           <div class="field-row">
             <label class="field-label" for="playSpeedSelect">Thinking Speed</label>
-            <select id="playSpeedSelect" class="field-select" data-action="set-play-speed" ${gameActive ? 'disabled' : ''}>
-              <option value="instant" ${thinkingSpeed === 'instant' ? 'selected' : ''}>Instant (0.1s - 0.5s)</option>
-              <option value="fast" ${thinkingSpeed === 'fast' ? 'selected' : ''}>Fast (0.25s - 1.0s)</option>
-              <option value="normal" ${thinkingSpeed === 'normal' || !thinkingSpeed ? 'selected' : ''}>Normal (0.5s - 2.0s)</option>
-              <option value="slow" ${thinkingSpeed === 'slow' ? 'selected' : ''}>Slow / Thorough (1.0s - 4.0s)</option>
-            </select>
+            ${customSelectMarkup(
+              'playSpeedSelect',
+              thinkingSpeed || 'normal',
+              [
+                { value: 'instant', label: 'Instant (0.1s - 0.5s)' },
+                { value: 'fast', label: 'Fast (0.25s - 1.0s)' },
+                { value: 'normal', label: 'Normal (0.5s - 2.0s)' },
+                { value: 'slow', label: 'Slow / Thorough (1.0s - 4.0s)' }
+              ],
+              `data-action="set-play-speed" ${gameActive ? 'disabled' : ''}`
+            )}
           </div>
         </div>
 
