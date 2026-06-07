@@ -1520,7 +1520,7 @@ function renderLessonBookControls() {
     const label = lessonDisplayTitle(lessonState, index);
     const selected = entry.id === state.lessonBook.activeLessonId ? ' selected' : '';
     return `<option value="${escapeHtml(entry.id)}"${selected}>${escapeHtml(label)}</option>`;
-  }).join('');
+  }).join('') + '<option value="add-lesson">+ Add lesson...</option>';
   if (dom.lessonPicker.innerHTML !== optionsMarkup) {
     dom.lessonPicker.innerHTML = optionsMarkup;
   }
@@ -7320,7 +7320,11 @@ function handleDocumentChange(event) {
     return;
   }
   if (event.target === dom.lessonPicker) {
-    activateLessonById(event.target.value);
+    if (event.target.value === 'add-lesson') {
+      createNewLesson();
+    } else {
+      activateLessonById(event.target.value);
+    }
     return;
   }
   if (event.target?.id === 'analysisTargetDepthInput') {

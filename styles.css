@@ -2994,8 +2994,8 @@ code {
 }
 
 .focus-mode-brand-img {
-  width: clamp(2.4rem, 4vw, 3.2rem);
-  height: clamp(2.4rem, 4vw, 3.2rem);
+  width: clamp(4.8rem, 8vw, 6.4rem);
+  height: clamp(4.8rem, 8vw, 6.4rem);
   border-radius: 50%;
   object-fit: contain;
 }
