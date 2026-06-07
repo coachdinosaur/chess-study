@@ -170,7 +170,9 @@ const dom = {
   exitFocusModeButton: document.getElementById('exitFocusModeButton'),
   toggleThemeButton: document.getElementById('toggleThemeButton'),
   toggleLastMoveArrowButton: document.getElementById('toggleLastMoveArrowButton'),
-  lessonPicker: document.getElementById('lessonPicker'),
+  lessonPickerButton: document.getElementById('lessonPickerButton'),
+  lessonPickerValue: document.getElementById('lessonPickerValue'),
+  lessonPickerMenu: document.getElementById('lessonPickerMenu'),
   newLessonButton: document.getElementById('newLessonButton'),
   duplicateLessonButton: document.getElementById('duplicateLessonButton'),
   deleteLessonButton: document.getElementById('deleteLessonButton'),
@@ -1511,22 +1513,79 @@ function syncLessonFileStatus(message) {
 }
 
 function renderLessonBookControls() {
-  if (!dom.lessonPicker) {
+  if (!dom.lessonPickerButton || !dom.lessonPickerMenu) {
     return;
   }
   ensureLessonBookInitialized();
-  const optionsMarkup = state.lessonBook.lessons.map((entry, index) => {
+
+  // Find the active lesson title to display on the trigger button
+  const activeEntry = activeLessonBookEntry();
+  const activeIndex = lessonBookEntryIndex();
+  const activeState = lessonStateForDisplay(activeEntry);
+  const activeTitle = lessonDisplayTitle(activeState, activeIndex);
+  if (dom.lessonPickerValue) {
+    dom.lessonPickerValue.textContent = activeTitle;
+  }
+
+  // Generate the custom dropdown items list
+  const itemsMarkup = state.lessonBook.lessons.map((entry, index) => {
     const lessonState = lessonStateForDisplay(entry);
     const label = lessonDisplayTitle(lessonState, index);
-    const selected = entry.id === state.lessonBook.activeLessonId ? ' selected' : '';
-    return `<option value="${escapeHtml(entry.id)}"${selected}>${escapeHtml(label)}</option>`;
-  }).join('') + '<option value="add-lesson">+ Add lesson...</option>';
-  if (dom.lessonPicker.innerHTML !== optionsMarkup) {
-    dom.lessonPicker.innerHTML = optionsMarkup;
+    const isActive = entry.id === state.lessonBook.activeLessonId;
+    const activeClass = isActive ? ' is-selected' : '';
+    const ariaSelected = isActive ? 'true' : 'false';
+
+    // Count moves in this lesson
+    let movesText = '0 moves';
+    if (lessonState?.analysis?.nodes) {
+      const movesCount = Math.max(0, Object.keys(lessonState.analysis.nodes).length - 1);
+      movesText = `${movesCount} move${movesCount === 1 ? '' : 's'}`;
+    }
+
+    // Orientation
+    const orientation = lessonState?.boardOrientation || 'white';
+
+    return `
+      <button
+        type="button"
+        class="lesson-overflow-item lesson-picker-item${activeClass}"
+        role="option"
+        data-action="select-lesson"
+        data-value="${escapeHtml(entry.id)}"
+        aria-selected="${ariaSelected}"
+      >
+        <span class="lesson-picker-item-content">
+          <span class="lesson-picker-item-title">${escapeHtml(label)}</span>
+          <span class="lesson-picker-item-meta">${movesText} • orientation: ${orientation}</span>
+        </span>
+        ${isActive ? `
+          <span class="lesson-picker-item-check" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </span>
+        ` : ''}
+      </button>
+    `;
+  }).join('') + `
+    <div class="lesson-overflow-divider" role="separator"></div>
+    <button
+      type="button"
+      class="lesson-overflow-item lesson-picker-item lesson-picker-add-item"
+      data-action="select-lesson"
+      data-value="add-lesson"
+      role="option"
+    >
+      <span class="lesson-picker-item-content">
+        <span class="lesson-picker-item-title">+ Add new lesson...</span>
+      </span>
+    </button>
+  `;
+
+  if (dom.lessonPickerMenu.innerHTML !== itemsMarkup) {
+    dom.lessonPickerMenu.innerHTML = itemsMarkup;
   }
-  if (dom.lessonPicker.value !== state.lessonBook.activeLessonId) {
-    dom.lessonPicker.value = state.lessonBook.activeLessonId;
-  }
+
   if (dom.deleteLessonButton) {
     dom.deleteLessonButton.disabled = state.lessonBook.lessons.length <= 1;
   }
@@ -1854,13 +1913,19 @@ function initializeColorTheme() {
   applyColorTheme(initialTheme);
 }
 
-const HEADER_MENU_NAMES = Object.freeze(['lesson-book', 'settings']);
+const HEADER_MENU_NAMES = Object.freeze(['lesson-book', 'settings', 'lesson-select']);
 
 function headerMenuElements(menuName) {
   if (menuName === 'lesson-book') {
     return {
       button: dom.lessonBookActionsButton,
       menu: dom.lessonBookActionsMenu,
+    };
+  }
+  if (menuName === 'lesson-select') {
+    return {
+      button: dom.lessonPickerButton,
+      menu: dom.lessonPickerMenu,
     };
   }
   return {
@@ -1985,6 +2050,18 @@ function closeLessonBookActionsMenu(options = {}) {
 
 function toggleLessonBookActionsMenu() {
   setHeaderMenuOpen('lesson-book', !isLessonBookActionsMenuOpen());
+}
+
+function isLessonPickerMenuOpen() {
+  return isHeaderMenuOpen('lesson-select');
+}
+
+function closeLessonPickerMenu(options = {}) {
+  closeHeaderMenu('lesson-select', options);
+}
+
+function toggleLessonPickerMenu() {
+  setHeaderMenuOpen('lesson-select', !isLessonPickerMenuOpen());
 }
 
 function isLessonActionsMenuOpen() {
@@ -7000,6 +7077,18 @@ function handleDocumentClick(event) {
   }
   const { action } = actionEl.dataset;
   switch (action) {
+    case 'toggle-lesson-picker':
+      toggleLessonPickerMenu();
+      break;
+    case 'select-lesson':
+      closeLessonPickerMenu();
+      const lessonId = actionEl.dataset.value;
+      if (lessonId === 'add-lesson') {
+        createNewLesson();
+      } else {
+        activateLessonById(lessonId);
+      }
+      break;
     case 'toggle-lesson-book-actions':
       toggleLessonBookActionsMenu();
       break;
@@ -7319,14 +7408,7 @@ function handleDocumentChange(event) {
     });
     return;
   }
-  if (event.target === dom.lessonPicker) {
-    if (event.target.value === 'add-lesson') {
-      createNewLesson();
-    } else {
-      activateLessonById(event.target.value);
-    }
-    return;
-  }
+
   if (event.target?.id === 'analysisTargetDepthInput') {
     state.analysisTargetDepth = normalizeAnalysisTargetDepth(event.target.value);
     event.target.value = String(state.analysisTargetDepth);
@@ -7377,7 +7459,7 @@ function handleDocumentKeydown(event) {
     setFocusMode(false);
     return;
   }
-  if (event.key === 'Escape' && (isLessonBookActionsMenuOpen() || isLessonActionsMenuOpen())) {
+  if (event.key === 'Escape' && (isLessonBookActionsMenuOpen() || isLessonActionsMenuOpen() || isLessonPickerMenuOpen())) {
     event.preventDefault();
     closeHeaderMenus({ restoreFocus: true });
     return;

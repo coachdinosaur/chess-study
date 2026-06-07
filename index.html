@@ -107,8 +107,28 @@
               spellcheck="false"
             >
             <div class="lesson-command-row">
-              <label class="sr-only" for="lessonPicker">Lesson selector</label>
-              <select id="lessonPicker" class="field-select lesson-picker" aria-label="Lesson selector"></select>
+              <label class="sr-only" for="lessonPickerButton">Lesson selector</label>
+              <div class="lesson-overflow lesson-picker-overflow">
+                <button
+                  id="lessonPickerButton"
+                  type="button"
+                  class="lesson-picker-trigger field-select lesson-picker"
+                  data-action="toggle-lesson-picker"
+                  aria-haspopup="listbox"
+                  aria-expanded="false"
+                  aria-controls="lessonPickerMenu"
+                >
+                  <span id="lessonPickerValue" class="lesson-picker-value">Select a lesson...</span>
+                  <span class="lesson-picker-arrow" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </button>
+                <div id="lessonPickerMenu" class="lesson-overflow-menu lesson-picker-menu" role="listbox" aria-labelledby="lessonPickerButton" hidden>
+                  <!-- Populated by JS -->
+                </div>
+              </div>
               <div class="lesson-overflow lesson-book-overflow">
                 <button
                   id="lessonBookActionsButton"
