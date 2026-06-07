@@ -9,6 +9,8 @@ const FIELD_ALIASES = Object.freeze({
   difficulty: ['level_tier', 'difficulty', 'level'],
   goalType: ['goal_type', 'goal', 'objective'],
   lessonText: ['lesson_text', 'text', 'description'],
+  mode: ['mode'],
+  endgamePosition: ['endgame_position'],
   status: ['status', 'review_status'],
 });
 
@@ -18,6 +20,8 @@ const FIELD_CANONICAL_HEADERS = Object.freeze({
   difficulty: 'level_tier',
   goalType: 'goal_type',
   lessonText: 'lesson_text',
+  mode: 'mode',
+  endgamePosition: 'endgame_position',
   status: 'status',
 });
 
@@ -27,11 +31,14 @@ const FIELD_LABELS = Object.freeze({
   difficulty: 'Difficulty',
   goalType: 'Goal type',
   lessonText: 'Lesson text',
+  mode: 'Mode',
+  endgamePosition: 'Endgame position',
   status: 'Status',
 });
 
-const REQUIRED_FIELDS = Object.freeze(['fen', 'lessonText']);
-const EDITOR_FIELDS = Object.freeze(['title', 'fen', 'difficulty', 'goalType', 'lessonText', 'status']);
+const REQUIRED_FIELDS = Object.freeze(['fen']);
+const DEFAULT_EDITOR_FIELDS = Object.freeze(['title', 'fen', 'difficulty', 'goalType', 'lessonText', 'status']);
+const ALTERNATE_EDITOR_FIELDS = Object.freeze(['title', 'fen', 'difficulty', 'mode', 'endgamePosition', 'status']);
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -352,6 +359,20 @@ function missingFieldNames(columnMap, fields) {
     .map((field) => FIELD_CANONICAL_HEADERS[field]);
 }
 
+function usesAlternatePatternFields(columnMap) {
+  return !Number.isInteger(columnMap.goalType) && !Number.isInteger(columnMap.lessonText);
+}
+
+function editorFieldsForColumnMap(columnMap) {
+  return usesAlternatePatternFields(columnMap) ? ALTERNATE_EDITOR_FIELDS : DEFAULT_EDITOR_FIELDS;
+}
+
+function visiblePatternFieldsForColumnMap(columnMap) {
+  return usesAlternatePatternFields(columnMap)
+    ? ['mode', 'endgamePosition']
+    : ['goalType', 'lessonText'];
+}
+
 function fieldInputMarkup(field, value, options = {}) {
   const inputId = `guidedReview${field[0].toUpperCase()}${field.slice(1)}Input`;
   const label = FIELD_LABELS[field];
@@ -378,6 +399,20 @@ function fieldInputMarkup(field, value, options = {}) {
         </div>
         <textarea id="${inputId}" class="field-textarea guided-review-textarea" data-guided-field="${field}">${escapeHtml(value)}</textarea>
         <p id="guidedTextWarning" class="guided-review-inline-warning">${escapeHtml(lessonTextIssue(value))}</p>
+        ${missingCopy}
+      </div>
+    `;
+  }
+
+  if (field === 'endgamePosition') {
+    return `
+      <div class="field-row">
+        <label class="field-label" for="${inputId}">${label}</label>
+        <input id="${inputId}" class="field-input" type="text" list="guidedReviewEndgamePositionOptions" value="${escapeAttribute(value)}" data-guided-field="${field}">
+        <datalist id="guidedReviewEndgamePositionOptions">
+          <option value="yes"></option>
+          <option value="no"></option>
+        </datalist>
         ${missingCopy}
       </div>
     `;
@@ -486,7 +521,7 @@ export function createGuidedReviewController({ host, fileInput, callbacks = {} }
 
   function currentFormValues() {
     const values = {};
-    EDITOR_FIELDS.forEach((field) => {
+    editorFieldsForColumnMap(state.columnMap).forEach((field) => {
       const input = state.host?.querySelector(`[data-guided-field="${field}"]`);
       values[field] = input ? normalizeTextControlValue(input) : getFieldValue(state.activeIndex, field);
     });
@@ -637,7 +672,10 @@ export function createGuidedReviewController({ host, fileInput, callbacks = {} }
     }
 
     const row = state.rows[state.activeIndex];
-    ['title', 'fen', 'difficulty', 'goalType', 'lessonText'].forEach((field) => {
+    editorFieldsForColumnMap(state.columnMap).forEach((field) => {
+      if (field === 'status') {
+        return;
+      }
       const value = values[field] ?? '';
       if (Number.isInteger(state.columnMap[field]) || value !== '') {
         row[ensureColumnForField(field)] = value;
@@ -708,7 +746,9 @@ export function createGuidedReviewController({ host, fileInput, callbacks = {} }
       saveCurrentLessonRow({ render: false, skipBoardLoad: true, quiet: true });
     }
 
-    const lessonTextColumn = state.columnMap.lessonText;
+    const lessonTextColumn = editorFieldsForColumnMap(state.columnMap).includes('lessonText')
+      ? state.columnMap.lessonText
+      : null;
     const unsafeCount = Number.isInteger(lessonTextColumn)
       ? state.rows.filter((row) => lessonTextIssue(row[lessonTextColumn])).length
       : 0;
@@ -801,8 +841,14 @@ export function createGuidedReviewController({ host, fileInput, callbacks = {} }
     const title = getFieldValue(state.activeIndex, 'title') || `Row ${rowNumber}`;
     const status = getFieldValue(state.activeIndex, 'status');
     const requiredMissing = missingFieldNames(state.columnMap, REQUIRED_FIELDS);
-    const optionalMissing = missingFieldNames(state.columnMap, ['title', 'difficulty', 'goalType']);
-    const textWarning = lessonTextIssue(getFieldValue(state.activeIndex, 'lessonText'));
+    const visiblePatternFields = visiblePatternFieldsForColumnMap(state.columnMap);
+    const optionalMissing = missingFieldNames(
+      state.columnMap,
+      ['title', 'difficulty', ...visiblePatternFields],
+    );
+    const textWarning = visiblePatternFields.includes('lessonText')
+      ? lessonTextIssue(getFieldValue(state.activeIndex, 'lessonText'))
+      : '';
     const statusClass = statusKind(status);
 
     const requiredWarning = requiredMissing.length
@@ -841,9 +887,17 @@ export function createGuidedReviewController({ host, fileInput, callbacks = {} }
             ${fieldInputMarkup('fen', getFieldValue(state.activeIndex, 'fen'), { missing: !Number.isInteger(state.columnMap.fen) })}
             <div class="two-col guided-review-two-col">
               ${fieldInputMarkup('difficulty', getFieldValue(state.activeIndex, 'difficulty'), { missing: !Number.isInteger(state.columnMap.difficulty) })}
-              ${fieldInputMarkup('goalType', getFieldValue(state.activeIndex, 'goalType'), { missing: !Number.isInteger(state.columnMap.goalType) })}
+              ${fieldInputMarkup(
+                visiblePatternFields[0],
+                getFieldValue(state.activeIndex, visiblePatternFields[0]),
+                { missing: !Number.isInteger(state.columnMap[visiblePatternFields[0]]) },
+              )}
             </div>
-            ${fieldInputMarkup('lessonText', getFieldValue(state.activeIndex, 'lessonText'), { missing: !Number.isInteger(state.columnMap.lessonText) })}
+            ${fieldInputMarkup(
+              visiblePatternFields[1],
+              getFieldValue(state.activeIndex, visiblePatternFields[1]),
+              { missing: !Number.isInteger(state.columnMap[visiblePatternFields[1]]) },
+            )}
             ${fieldInputMarkup('status', getFieldValue(state.activeIndex, 'status'), { missing: !Number.isInteger(state.columnMap.status) })}
           </div>
 
@@ -865,7 +919,7 @@ export function createGuidedReviewController({ host, fileInput, callbacks = {} }
 
   function handleInput(event) {
     const field = event.target?.dataset?.guidedField;
-    if (field && EDITOR_FIELDS.includes(field)) {
+    if (field && editorFieldsForColumnMap(state.columnMap).includes(field)) {
       const value = normalizeTextControlValue(event.target);
       setDraftField(field, value);
       if (field === 'lessonText') {

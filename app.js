@@ -6512,31 +6512,6 @@ function renderAnalysisPanel() {
           >
         </div>
       </div>
-
-      <div class="section-divider"></div>
-
-      ${state.practice.active ? `
-        <div class="stack-grid">
-          <div class="banner warning">
-            <div>
-              <strong>Engine hidden</strong>
-              <div>Stockfish output is hidden while practice mode is active.</div>
-            </div>
-          </div>
-        </div>
-      ` : `
-        ${renderAnalysisStatusGridMarkup()}
-
-        <div class="stack-grid">
-          <div class="banner ${analysisStatusBannerKind(hasBoard)}">
-            <div>
-              <strong>${escapeHtml(analysisStatusBannerTitle(hasBoard))}</strong>
-              <div>${escapeHtml(analysisStatusSummary())}</div>
-            </div>
-          </div>
-          ${pvLineMarkup}
-        </div>
-      `}
     </article>
     ${renderLineNavigationSection()}
     ${renderPracticeToolSection()}
