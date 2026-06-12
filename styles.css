@@ -499,7 +499,8 @@ code {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: minmax(22rem, 42rem) minmax(19rem, 29rem);
+  grid-template-columns: minmax(22rem, calc(var(--board-size, 42rem) + 1rem + 2px)) minmax(19rem, 29rem);
+  justify-content: center;
   gap: var(--workspace-gap);
   min-height: calc(var(--app-height) - 1.5rem);
   max-width: 72rem;
@@ -3126,6 +3127,7 @@ code {
 .page-shell.is-focus-mode .workspace {
   display: grid;
   grid-template-columns: 1fr;
+  justify-content: normal;
   place-items: center;
   width: 100%;
   height: 100%;
@@ -3213,6 +3215,7 @@ code {
 
   .workspace {
     grid-template-columns: 1fr;
+    justify-content: normal;
     min-height: 0;
   }
 
@@ -3581,6 +3584,7 @@ code {
 
   .workspace {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-content: normal;
     gap: clamp(0.55rem, 1.4vw, 0.8rem);
     min-height: calc(var(--app-height) - 1.3rem);
     max-width: none;
@@ -3837,3 +3841,162 @@ code {
   flex-shrink: 0;
 }
 
+
+/* --- Endgame Puzzles (premium feature) ----------------------------------- */
+
+.tab-chip-premium-star {
+  margin-left: 0.3rem;
+  font-size: 0.72em;
+  color: #d4a017;
+  vertical-align: 0.12em;
+}
+
+.puzzle-plan-pill {
+  margin-left: 0.5rem;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.puzzle-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.puzzle-stat {
+  display: grid;
+  justify-items: center;
+  gap: 0.1rem;
+  padding: 0.5rem 0.4rem;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--card-border);
+  background: var(--input-bg);
+}
+
+.puzzle-stat-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--accent-strong);
+  line-height: 1.1;
+}
+
+.puzzle-stat-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.puzzle-objective-banner {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.8rem 0.9rem;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--accent);
+  background: var(--accent-soft);
+  line-height: 1.4;
+}
+
+.puzzle-objective-kicker {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-strong);
+}
+
+.puzzle-objective-meta {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.puzzle-generating-banner {
+  align-items: center;
+}
+
+.puzzle-spinner {
+  flex-shrink: 0;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  border: 2px solid var(--accent-soft);
+  border-top-color: var(--accent);
+  animation: puzzle-spinner-rotate 0.8s linear infinite;
+}
+
+@keyframes puzzle-spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.puzzle-lock-card {
+  display: grid;
+  justify-items: center;
+  gap: 0.5rem;
+  padding: 1.2rem 1rem;
+  text-align: center;
+  border-radius: var(--radius-card);
+  border: 1px dashed var(--card-border);
+  background: var(--input-bg);
+}
+
+.puzzle-lock-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.premium-dialog {
+  max-width: 26rem;
+}
+
+.premium-benefits {
+  margin: 0.2rem 0 0.8rem;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.premium-key-row {
+  margin-bottom: 0.4rem;
+}
+
+.premium-key-input {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  color: inherit;
+  font-family: inherit;
+  font-size: 0.92rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.premium-key-input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.premium-modal-status {
+  min-height: 1.2em;
+  margin: 0 0 0.4rem;
+  font-size: 0.84rem;
+}
+
+.premium-modal-status.is-error {
+  color: var(--banner-danger-text);
+}
+
+.premium-modal-status.is-success {
+  color: var(--banner-success-text);
+}
+
+@media (max-width: 760px) {
+  .puzzle-stats-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

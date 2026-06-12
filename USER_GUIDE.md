@@ -128,11 +128,13 @@ Here is a simple example you can follow from start to finish.
 
 ## The Three Tabs
 
-The tools panel has three tabs:
+The tools panel has these tabs:
 
 - `Setup`: build or change the starting position
 - `Analysis`: play legal moves and run Stockfish
 - `Line`: review the move tree without focusing on the engine panel
+- `Play`: play a full game against Stockfish
+- `Puzzle`: solve random Stockfish-verified endgame puzzles (premium feature)
 
 ## Setup Tab
 
@@ -339,6 +341,39 @@ The `Line` tab shows:
 - the same `Annotate` and `Flip board` controls
 
 The notation tree above the tabs still works, so you can click moves and variations directly.
+
+## Puzzle Tab (Premium)
+
+The `Puzzle` tab (next to `Play`) serves random endgame puzzles generated and
+verified by the built-in puzzle API. Every puzzle:
+
+- has at most 6 pieces per side, kings included
+- is a fully legal position, checked by Stockfish before you see it
+- randomly assigns you White or Black (you always have the move)
+- has one of three objectives:
+  - `Checkmate`: deliver checkmate against Stockfish
+  - `Gain a piece`: win at least a minor piece's worth of material (+3 points)
+  - `Hold the draw`: you start down material and must reach a draw
+
+You solve each puzzle live against Stockfish. Adjust its resistance with the
+`Stockfish Defense (Elo)` slider and the `Stockfish Reply Speed` selector
+(instant to slow). Pick a specific objective or choose `Surprise me (random)`.
+
+During a puzzle you can `Give Up`, `Skip Puzzle`, or (in hold-the-draw
+puzzles) `Offer Draw`. When a puzzle ends, a result popup offers `Next
+Puzzle` so you can keep solving for as long as you like. The panel tracks
+your solved count, failed count, current streak, and best streak.
+
+### Free plan and Premium
+
+The free plan includes 3 puzzles per day. Premium removes the limit:
+
+- open the `Puzzle` tab and press `Unlock Premium`
+- enter an activation key shaped like `CHESS-XXXX-XXXX-XX`
+- the unlock is stored in your browser, so it survives reloads
+
+Activation keys are validated offline. App owners can issue keys from the
+browser console with `window.__endgamePuzzlePremium.generateKey()`.
 
 ## The Move List and Navigation
 

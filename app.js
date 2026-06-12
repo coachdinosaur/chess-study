@@ -2,6 +2,13 @@ import { Chess, DEFAULT_POSITION, validateFen } from './vendor/chess.js';
 import { buildPgnFromLessonTree, parsePgnToLessonTree } from './pgn.mjs';
 import { createGuidedReviewController } from './guided-review.mjs';
 import { normalizeEditableText } from './text-normalization.mjs';
+import {
+  createEndgamePuzzleApi,
+  materialBalanceFromFen,
+  PUZZLE_OBJECTIVE_MATE,
+  PUZZLE_OBJECTIVE_WIN,
+  PUZZLE_OBJECTIVE_DRAW,
+} from './puzzle-api.mjs';
 
 const STORAGE_KEY = 'setup-analysis-draft-v1';
 const COLOR_THEME_STORAGE_KEY = 'color-theme-v1';
@@ -68,7 +75,13 @@ const ENGINE_BUNDLE_CANDIDATES = Object.freeze([
 const TAB_SETUP = 'setup';
 const TAB_ANALYSIS = 'analysis';
 const TAB_PLAY = 'play';
+const TAB_PUZZLE = 'puzzle';
 const LEGACY_TAB_PGN = 'pgn';
+const PUZZLE_PREFS_STORAGE_KEY = 'endgame-puzzle-prefs-v1';
+const PUZZLE_PREMIUM_STORAGE_KEY = 'endgame-puzzle-premium-v1';
+const PUZZLE_FREE_STORAGE_KEY = 'endgame-puzzle-free-v1';
+const PUZZLE_FREE_PER_DAY = 3;
+const PUZZLE_WIN_MATERIAL_GAIN = 3;
 const PRACTICE_KIND_LINE = 'line';
 const PRACTICE_KIND_BRANCH = 'branch';
 const DEFAULT_TITLE = '';
@@ -78,7 +91,7 @@ const ROOT_NODE_ID = 'root';
 
 function normalizeActiveTab(value, fallback = TAB_ANALYSIS) {
   const normalized = String(value || '').trim();
-  if (normalized === TAB_SETUP || normalized === TAB_ANALYSIS || normalized === TAB_PLAY) {
+  if (normalized === TAB_SETUP || normalized === TAB_ANALYSIS || normalized === TAB_PLAY || normalized === TAB_PUZZLE) {
     return normalized;
   }
   if (normalized === LEGACY_TAB_PGN) {
@@ -195,11 +208,19 @@ const dom = {
   setupPanel: document.getElementById('setupPanel'),
   analysisPanel: document.getElementById('analysisPanel'),
   playPanel: document.getElementById('playPanel'),
+  puzzlePanel: document.getElementById('puzzlePanel'),
   promotionModal: document.getElementById('promotionModal'),
   promotionSubtitle: document.getElementById('promotionSubtitle'),
   promotionChoices: document.getElementById('promotionChoices'),
   gameResultModal: document.getElementById('gameResultModal'),
   gameResultMessage: document.getElementById('gameResultMessage'),
+  puzzleResultModal: document.getElementById('puzzleResultModal'),
+  puzzleResultTitle: document.getElementById('puzzleResultTitle'),
+  puzzleResultMessage: document.getElementById('puzzleResultMessage'),
+  puzzleResultActions: document.getElementById('puzzleResultActions'),
+  premiumModal: document.getElementById('premiumModal'),
+  premiumKeyInput: document.getElementById('premiumKeyInput'),
+  premiumModalStatus: document.getElementById('premiumModalStatus'),
 };
 
 const state = {
@@ -327,6 +348,27 @@ const state = {
     thinkingSpeed: 'normal',
     autoHiddenPgnComments: false,
     autoHiddenPvLines: false,
+  },
+  puzzle: {
+    premium: false,
+    premiumKey: '',
+    freeDate: '',
+    freeUsed: 0,
+    generating: false,
+    sessionActive: false,
+    current: null,
+    startBalance: 0,
+    pendingResult: null,
+    lastResult: null,
+    objectivePreference: 'random',
+    skill: 2400,
+    thinkingSpeed: 'fast',
+    solvedCount: 0,
+    failedCount: 0,
+    streak: 0,
+    bestStreak: 0,
+    savedPlaySettings: null,
+    apiError: '',
   },
 
 };
@@ -5759,17 +5801,34 @@ function syncBoardSize() {
   const stageCard = dom.boardColumn.closest('.board-stage-card');
   const stageRect = stageCard?.getBoundingClientRect();
   let stageHeight = stageRect?.height || 0;
-  let containerWidth = state.focusMode
-    ? (stageRect?.width || dom.boardColumn.parentElement?.clientWidth || dom.boardColumn.clientWidth)
-    : dom.boardColumn.clientWidth;
   const isMobilePortrait = !state.focusMode && mobilePortraitLayoutActive();
+
+  let containerWidth = dom.boardColumn.clientWidth;
   if (state.focusMode) {
+    containerWidth = stageRect?.width || dom.boardColumn.parentElement?.clientWidth || dom.boardColumn.clientWidth;
     const focusHeightBudget = Math.max(0, currentViewportHeight() - elementPaddingInsetPx(dom.pageShell, 'y'));
     const focusWidthBudget = Math.max(0, currentViewportWidth() - elementPaddingInsetPx(dom.pageShell, 'x'));
     stageHeight = focusHeightBudget || stageHeight;
     containerWidth = focusWidthBudget
       ? Math.min(containerWidth || focusWidthBudget, focusWidthBudget)
       : containerWidth;
+  } else if (!isMobilePortrait && window.innerWidth > 1100) {
+    const pageShellWidth = dom.pageShell?.clientWidth || window.innerWidth;
+    const pageShellStyles = dom.pageShell ? window.getComputedStyle(dom.pageShell) : null;
+    const pageShellPaddingX = pageShellStyles
+      ? cssLengthToPx(pageShellStyles.paddingLeft, remToPx(0.75)) + cssLengthToPx(pageShellStyles.paddingRight, remToPx(0.75))
+      : remToPx(1.5);
+
+    const workspace = dom.boardColumn.closest('.workspace');
+    const workspaceStyles = workspace ? window.getComputedStyle(workspace) : null;
+    const gapPx = workspaceStyles ? cssLengthToPx(workspaceStyles.getPropertyValue('gap'), remToPx(0.9)) : remToPx(0.9);
+
+    const maxWorkspaceWidth = remToPx(72);
+    const controlPane = workspace?.querySelector('.control-pane');
+    const controlPaneWidth = controlPane?.clientWidth || remToPx(29);
+
+    const availableWorkspaceWidth = Math.min(maxWorkspaceWidth, pageShellWidth - pageShellPaddingX);
+    containerWidth = Math.max(0, availableWorkspaceWidth - controlPaneWidth - gapPx);
   }
   if (!containerWidth || (!stageHeight && !isMobilePortrait)) {
     return;
@@ -5833,7 +5892,7 @@ function renderHeaderMeta() {
               : 'Stockfish idle';
 
   dom.boardTitleDisplay.textContent = state.title.trim() || 'Untitled position';
-  dom.modePill.textContent = state.practice.active ? 'Practice' : state.activeTab === TAB_SETUP ? 'Setup' : 'Analysis';
+  dom.modePill.textContent = state.practice.active ? 'Practice' : state.activeTab === TAB_SETUP ? 'Setup' : state.activeTab === TAB_PUZZLE ? 'Puzzle' : 'Analysis';
   dom.validityPill.textContent = state.activeTab === TAB_SETUP ? setupSummary.title : engineLabel;
   dom.validityPill.className = `pill ${state.activeTab === TAB_SETUP && setupSummary.kind === 'success' ? 'pill-primary' : ''}`.trim();
   dom.boardContextLabel.textContent = currentContextLabel();
@@ -6747,6 +6806,7 @@ function renderTabs() {
     [dom.setupPanel, TAB_SETUP],
     [dom.analysisPanel, TAB_ANALYSIS],
     [dom.playPanel, TAB_PLAY],
+    [dom.puzzlePanel, TAB_PUZZLE],
   ];
   panels.forEach(([panel, tab]) => {
     if (!panel) {
@@ -6766,6 +6826,10 @@ function renderActiveToolPanel() {
   }
   if (state.activeTab === TAB_PLAY) {
     renderPlayPanel();
+    return;
+  }
+  if (state.activeTab === TAB_PUZZLE) {
+    renderPuzzlePanel();
     return;
   }
   renderAnalysisPanel();
@@ -7243,7 +7307,7 @@ function handleDocumentClick(event) {
       if (state.practice.active && actionEl.dataset.tab === TAB_SETUP) {
         stopPracticeSession();
       }
-      if (state.play.active && actionEl.dataset.tab !== TAB_PLAY) {
+      if (state.play.active && actionEl.dataset.tab !== (state.puzzle.sessionActive ? TAB_PUZZLE : TAB_PLAY)) {
         stopPlayGame({ reason: 'Game abandoned by switching tabs.' });
       }
       state.activeTab = normalizeActiveTab(actionEl.dataset.tab, TAB_SETUP);
@@ -7451,6 +7515,34 @@ function handleDocumentClick(event) {
     case 'dismiss-game-result':
       dismissGameResultModal();
       break;
+    case 'new-puzzle':
+      void requestNewPuzzle();
+      break;
+    case 'retry-puzzle':
+      void retryCurrentPuzzle();
+      break;
+    case 'give-up-puzzle':
+      giveUpPuzzle();
+      break;
+    case 'skip-puzzle':
+      void skipPuzzle();
+      break;
+    case 'puzzle-next':
+      dismissPuzzleResultModal();
+      void requestNewPuzzle();
+      break;
+    case 'dismiss-puzzle-result':
+      dismissPuzzleResultModal();
+      break;
+    case 'open-premium-modal':
+      openPremiumModal();
+      break;
+    case 'dismiss-premium-modal':
+      dismissPremiumModal();
+      break;
+    case 'activate-premium':
+      activatePremiumFromInput();
+      break;
     default:
       break;
   }
@@ -7460,6 +7552,10 @@ function handleDocumentInput(event) {
   const inputAction = event.target?.dataset?.action;
   if (inputAction === 'set-play-skill') {
     updatePlaySkill(event.target.value, { skipRender: true });
+    return;
+  }
+  if (inputAction === 'set-puzzle-skill') {
+    updatePuzzleSkill(event.target.value, { skipRender: true });
     return;
   }
   if (dom.guidedReviewPanel?.contains(event.target) && guidedReviewController?.handleInput(event)) {
@@ -7576,6 +7672,12 @@ function handleDocumentChange(event) {
     case 'set-play-start-position':
       updatePlayStartPosition(event.target.value);
       break;
+    case 'set-puzzle-objective':
+      updatePuzzleObjective(event.target.value);
+      break;
+    case 'set-puzzle-speed':
+      updatePuzzleSpeed(event.target.value);
+      break;
     default:
       break;
   }
@@ -7586,6 +7688,21 @@ function isTypingTarget(target) {
 }
 
 function handleDocumentKeydown(event) {
+  if (event.key === 'Enter' && dom.premiumKeyInput && event.target === dom.premiumKeyInput) {
+    event.preventDefault();
+    activatePremiumFromInput();
+    return;
+  }
+  if (event.key === 'Escape' && dom.premiumModal && !dom.premiumModal.hidden) {
+    event.preventDefault();
+    dismissPremiumModal();
+    return;
+  }
+  if (event.key === 'Escape' && dom.puzzleResultModal && !dom.puzzleResultModal.hidden) {
+    event.preventDefault();
+    dismissPuzzleResultModal();
+    return;
+  }
   if (event.key === 'Escape') {
     const openSelect = document.querySelector('.custom-select-wrapper.is-open');
     if (openSelect) {
@@ -7740,7 +7857,8 @@ function resolvePlayStartFen() {
   return state.analysis.currentFen || state.setupFen;
 }
 
-async function startPlayGame() {
+async function startPlayGame(options = {}) {
+  const { ownerTab = TAB_PLAY } = options;
   const startFen = resolvePlayStartFen();
 
   // Guard: do not start if the chosen FEN is already a finished position.
@@ -7808,11 +7926,11 @@ async function startPlayGame() {
     state.play.clockRunning = false;
   }
 
-  state.activeTab = TAB_PLAY;
+  state.activeTab = ownerTab;
   renderAll();
 
   state.engine.summary = 'Loading Stockfish engine...';
-  renderPlayPanel();
+  renderActiveToolPanel();
 
   let worker;
   try {
@@ -7820,6 +7938,11 @@ async function startPlayGame() {
       summary: 'Loading Stockfish for game play...',
     });
   } catch (error) {
+    // Stopping the game while the engine is still loading rejects the ready
+    // promise on purpose; that is not a load failure worth reporting.
+    if (error?.isIntentionalStop) {
+      return;
+    }
     console.error('Failed to load Stockfish', error);
     if (state.play.active) {
       stopPlayGame({ reason: 'Stockfish worker failed to load' });
@@ -7893,7 +8016,9 @@ function stopPlayGame(options = {}) {
 
   if (state.engine.loading) {
     if (state.engine.rejectReady) {
-      state.engine.rejectReady(new Error('Game play stopped.'));
+      const stopError = new Error('Game play stopped.');
+      stopError.isIntentionalStop = true;
+      state.engine.rejectReady(stopError);
     }
     clearEngineReadyHandshake();
   }
@@ -7918,6 +8043,12 @@ function stopPlayGame(options = {}) {
   state.engine.resumeDepth = null;
 
   state.analysis.boardMessage = `Game ended. ${reason}`;
+
+  if (state.puzzle.sessionActive) {
+    finishPuzzleSession(reason);
+    return;
+  }
+
   renderAll();
 
   // Show premium popup modal for game result
@@ -7983,7 +8114,7 @@ async function triggerEngineMove() {
 
   state.play.engineThinking = true;
   state.analysis.boardMessage = "Stockfish is thinking...";
-  renderPlayPanel();
+  renderActiveToolPanel();
 
   const cmd = (msg) => worker.postMessage(msg);
   cmd(`position fen ${state.analysis.currentFen}`);
@@ -8086,6 +8217,10 @@ function applyPlayEngineMove(bestMoveUci) {
   }
 
   if (checkPlayGameOver()) {
+    return;
+  }
+
+  if (checkPuzzleMaterialObjective()) {
     return;
   }
 
@@ -8327,6 +8462,662 @@ function renderPlayPanel() {
   });
 }
 
+// --- Endgame Puzzles (premium feature) -------------------------------------
+// Random Stockfish-verified endgame puzzles served by the local puzzle API
+// (puzzle-api.mjs). The solving session itself rides on the Play-vs-Stockfish
+// machinery: the puzzle FEN becomes the start position and the solver always
+// has the move. Free plan: PUZZLE_FREE_PER_DAY puzzles per day; an activation
+// key unlocks unlimited puzzles.
+
+let puzzleApi = null;
+
+function ensurePuzzleApi() {
+  if (!puzzleApi) {
+    puzzleApi = createEndgamePuzzleApi({
+      resolveWorkerPath: async () => (await resolveStockfishBundleCandidate()).workerPath,
+    });
+  }
+  return puzzleApi;
+}
+
+function puzzleTodayKey() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function persistPuzzlePrefs() {
+  try {
+    window.localStorage.setItem(PUZZLE_PREFS_STORAGE_KEY, JSON.stringify({
+      objectivePreference: state.puzzle.objectivePreference,
+      skill: state.puzzle.skill,
+      thinkingSpeed: state.puzzle.thinkingSpeed,
+      solvedCount: state.puzzle.solvedCount,
+      failedCount: state.puzzle.failedCount,
+      streak: state.puzzle.streak,
+      bestStreak: state.puzzle.bestStreak,
+    }));
+  } catch {
+    // localStorage may be unavailable; preferences just won't persist.
+  }
+}
+
+function persistPuzzleFreeUsage() {
+  try {
+    window.localStorage.setItem(PUZZLE_FREE_STORAGE_KEY, JSON.stringify({
+      date: state.puzzle.freeDate,
+      used: state.puzzle.freeUsed,
+    }));
+  } catch {
+    // Ignore storage failures.
+  }
+}
+
+function puzzleFreeRemaining() {
+  if (state.puzzle.premium) {
+    return Infinity;
+  }
+  const today = puzzleTodayKey();
+  if (state.puzzle.freeDate !== today) {
+    state.puzzle.freeDate = today;
+    state.puzzle.freeUsed = 0;
+    persistPuzzleFreeUsage();
+  }
+  return Math.max(0, PUZZLE_FREE_PER_DAY - state.puzzle.freeUsed);
+}
+
+// Activation keys are validated offline: CHESS-XXXX-XXXX-CC where CC is a
+// checksum of the first three groups. Keys can be issued with
+// window.__endgamePuzzlePremium.generateKey().
+function puzzleKeyChecksum(seed) {
+  let hash = 5381;
+  for (let i = 0; i < seed.length; i++) {
+    hash = ((hash * 33) ^ seed.charCodeAt(i)) >>> 0;
+  }
+  return (hash % 1296).toString(36).toUpperCase().padStart(2, '0');
+}
+
+function validatePremiumKey(raw) {
+  const key = String(raw || '').trim().toUpperCase();
+  const match = /^CHESS-([A-Z0-9]{4})-([A-Z0-9]{4})-([A-Z0-9]{2})$/.exec(key);
+  if (!match) {
+    return '';
+  }
+  return puzzleKeyChecksum(`CHESS-${match[1]}-${match[2]}`) === match[3] ? key : '';
+}
+
+function generatePremiumKey() {
+  const alphabet = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  const group = () => Array.from({ length: 4 }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join('');
+  const body = `CHESS-${group()}-${group()}`;
+  return `${body}-${puzzleKeyChecksum(body)}`;
+}
+
+function hydratePuzzleState() {
+  try {
+    const prefs = JSON.parse(window.localStorage.getItem(PUZZLE_PREFS_STORAGE_KEY) || 'null');
+    if (prefs && typeof prefs === 'object') {
+      const objectives = ['random', PUZZLE_OBJECTIVE_MATE, PUZZLE_OBJECTIVE_WIN, PUZZLE_OBJECTIVE_DRAW];
+      if (objectives.includes(prefs.objectivePreference)) {
+        state.puzzle.objectivePreference = prefs.objectivePreference;
+      }
+      if (Number.isFinite(prefs.skill)) {
+        state.puzzle.skill = clamp(Math.round(prefs.skill), 800, 3190);
+      }
+      if (['instant', 'fast', 'normal', 'slow'].includes(prefs.thinkingSpeed)) {
+        state.puzzle.thinkingSpeed = prefs.thinkingSpeed;
+      }
+      for (const field of ['solvedCount', 'failedCount', 'streak', 'bestStreak']) {
+        if (Number.isInteger(prefs[field]) && prefs[field] >= 0) {
+          state.puzzle[field] = prefs[field];
+        }
+      }
+    }
+  } catch {
+    // Corrupt prefs are ignored.
+  }
+  try {
+    const premium = JSON.parse(window.localStorage.getItem(PUZZLE_PREMIUM_STORAGE_KEY) || 'null');
+    if (premium?.unlocked && validatePremiumKey(premium.key)) {
+      state.puzzle.premium = true;
+      state.puzzle.premiumKey = String(premium.key);
+    }
+  } catch {
+    // Corrupt premium record is ignored.
+  }
+  try {
+    const free = JSON.parse(window.localStorage.getItem(PUZZLE_FREE_STORAGE_KEY) || 'null');
+    if (free && typeof free === 'object') {
+      state.puzzle.freeDate = typeof free.date === 'string' ? free.date : '';
+      state.puzzle.freeUsed = Number.isInteger(free.used) && free.used >= 0 ? free.used : 0;
+    }
+  } catch {
+    // Corrupt usage record is ignored.
+  }
+}
+
+function updatePuzzleObjective(value) {
+  const objectives = ['random', PUZZLE_OBJECTIVE_MATE, PUZZLE_OBJECTIVE_WIN, PUZZLE_OBJECTIVE_DRAW];
+  if (objectives.includes(value)) {
+    state.puzzle.objectivePreference = value;
+    persistPuzzlePrefs();
+  }
+  renderPuzzlePanel();
+}
+
+function updatePuzzleSkill(value, { skipRender = false } = {}) {
+  const elo = clamp(parseInt(value, 10) || 0, 800, 3190);
+  state.puzzle.skill = elo;
+  if (state.puzzle.sessionActive && state.play.active) {
+    state.play.skill = elo;
+    if (state.engine.worker && state.engine.ready) {
+      applyEngineSkillLevel(elo);
+    }
+  }
+  persistPuzzlePrefs();
+  if (skipRender) {
+    const labelEl = document.querySelector('label[for="puzzleSkillSlider"]');
+    if (labelEl) {
+      labelEl.textContent = `Stockfish Defense (${elo < 1320 ? '~Elo' : 'Elo'})`;
+    }
+    const sliderEl = document.getElementById('puzzleSkillSlider');
+    const valueEl = sliderEl?.parentElement?.querySelector('.field-value');
+    if (valueEl) {
+      valueEl.textContent = `${elo}${elo < 1320 ? '*' : ''}`;
+    }
+  } else {
+    renderPuzzlePanel();
+  }
+}
+
+function updatePuzzleSpeed(value) {
+  if (['instant', 'fast', 'normal', 'slow'].includes(value)) {
+    state.puzzle.thinkingSpeed = value;
+    if (state.puzzle.sessionActive && state.play.active) {
+      state.play.thinkingSpeed = value;
+    }
+    persistPuzzlePrefs();
+  }
+  renderPuzzlePanel();
+}
+
+function puzzleObjectiveLabel(objective) {
+  if (objective === PUZZLE_OBJECTIVE_MATE) {
+    return 'Checkmate';
+  }
+  if (objective === PUZZLE_OBJECTIVE_WIN) {
+    return 'Gain a piece';
+  }
+  if (objective === PUZZLE_OBJECTIVE_DRAW) {
+    return 'Hold the draw';
+  }
+  return 'Surprise me';
+}
+
+function puzzleSpeedLabel(speed) {
+  if (speed === 'instant') {
+    return 'Instant';
+  }
+  if (speed === 'fast') {
+    return 'Fast';
+  }
+  if (speed === 'slow') {
+    return 'Slow';
+  }
+  return 'Normal';
+}
+
+function puzzleObjectiveInstruction(puzzle) {
+  const sideLabel = puzzle.solverColor === 'w' ? 'White' : 'Black';
+  if (puzzle.objective === PUZZLE_OBJECTIVE_MATE) {
+    return puzzle.mateIn
+      ? `You play ${sideLabel}. Checkmate Stockfish — mate in ${puzzle.mateIn} is available.`
+      : `You play ${sideLabel}. Checkmate Stockfish.`;
+  }
+  if (puzzle.objective === PUZZLE_OBJECTIVE_WIN) {
+    return `You play ${sideLabel}. Win material — gain at least a minor piece (+${PUZZLE_WIN_MATERIAL_GAIN} points).`;
+  }
+  return `You play ${sideLabel}. You are down material — hold the draw against Stockfish.`;
+}
+
+async function requestNewPuzzle() {
+  if (state.puzzle.generating) {
+    return;
+  }
+  if (state.puzzle.sessionActive && state.play.active) {
+    return;
+  }
+  if (state.play.active) {
+    stopPlayGame({ reason: 'Game abandoned to start a puzzle.' });
+  }
+  if (puzzleFreeRemaining() <= 0) {
+    openPremiumModal();
+    renderPuzzlePanel();
+    return;
+  }
+  dismissPuzzleResultModal();
+  if (!state.puzzle.premium) {
+    state.puzzle.freeUsed += 1;
+    persistPuzzleFreeUsage();
+  }
+  state.puzzle.generating = true;
+  state.puzzle.apiError = '';
+  state.puzzle.lastResult = null;
+  state.activeTab = TAB_PUZZLE;
+  renderAll();
+  try {
+    const api = ensurePuzzleApi();
+    const puzzle = await api.generatePuzzle({ objective: state.puzzle.objectivePreference });
+    state.puzzle.generating = false;
+    await startPuzzleSession(puzzle);
+  } catch (error) {
+    console.error('Puzzle generation failed', error);
+    state.puzzle.generating = false;
+    state.puzzle.apiError = error?.message || 'Puzzle generation failed. Please try again.';
+    if (!state.puzzle.premium) {
+      state.puzzle.freeUsed = Math.max(0, state.puzzle.freeUsed - 1);
+      persistPuzzleFreeUsage();
+    }
+    renderPuzzlePanel();
+  }
+}
+
+async function startPuzzleSession(puzzle) {
+  if (!puzzle) {
+    return;
+  }
+  if (state.play.active) {
+    stopPlayGame({ reason: 'Game abandoned to start a puzzle.' });
+  }
+  state.puzzle.savedPlaySettings ??= {
+    skill: state.play.skill,
+    timeControl: state.play.timeControl,
+    side: state.play.side,
+    startPosition: state.play.startPosition,
+    thinkingSpeed: state.play.thinkingSpeed,
+  };
+  state.puzzle.current = puzzle;
+  state.puzzle.sessionActive = true;
+  state.puzzle.pendingResult = null;
+  state.puzzle.lastResult = null;
+  state.puzzle.startBalance = materialBalanceFromFen(puzzle.fen, puzzle.solverColor);
+  state.play.side = puzzle.solverColor === 'w' ? 'white' : 'black';
+  state.play.timeControl = 'none';
+  state.play.startPosition = 'current';
+  state.play.skill = state.puzzle.skill;
+  state.play.thinkingSpeed = state.puzzle.thinkingSpeed;
+  state.analysis.currentFen = puzzle.fen;
+  // startPlayGame runs synchronously up to its first await, so the objective
+  // instruction can replace the generic "Game started" message right away
+  // while Stockfish is still loading.
+  const startPromise = startPlayGame({ ownerTab: TAB_PUZZLE });
+  if (state.play.active && state.puzzle.sessionActive) {
+    state.analysis.boardMessage = puzzleObjectiveInstruction(puzzle);
+    renderAll();
+  }
+  await startPromise;
+}
+
+async function retryCurrentPuzzle() {
+  const puzzle = state.puzzle.current;
+  dismissPuzzleResultModal();
+  if (!puzzle || state.puzzle.generating || (state.puzzle.sessionActive && state.play.active)) {
+    return;
+  }
+  await startPuzzleSession(puzzle);
+}
+
+async function skipPuzzle() {
+  if (state.puzzle.sessionActive && state.play.active) {
+    state.puzzle.pendingResult = { kind: 'abandoned' };
+    stopPlayGame({ reason: 'Puzzle skipped.' });
+  }
+  await requestNewPuzzle();
+}
+
+function giveUpPuzzle() {
+  if (state.puzzle.sessionActive && state.play.active) {
+    stopPlayGame({ reason: 'You gave up.' });
+  }
+}
+
+// Called after each Stockfish reply: in "gain a piece" puzzles the session
+// ends as solved once the solver is up the required material with the move.
+function checkPuzzleMaterialObjective() {
+  if (!state.puzzle.sessionActive || !state.play.active || !state.analysis.game) {
+    return false;
+  }
+  const puzzle = state.puzzle.current;
+  if (!puzzle || puzzle.objective !== PUZZLE_OBJECTIVE_WIN) {
+    return false;
+  }
+  const balance = materialBalanceFromFen(state.analysis.game.fen(), puzzle.solverColor);
+  const gain = balance - state.puzzle.startBalance;
+  if (gain >= PUZZLE_WIN_MATERIAL_GAIN) {
+    state.puzzle.pendingResult = {
+      kind: 'solved',
+      title: 'Puzzle solved!',
+      message: `You won material (+${gain} points). Objective complete.`,
+    };
+    stopPlayGame({ reason: `You won material (+${gain}).` });
+    return true;
+  }
+  return false;
+}
+
+function restoreSavedPlaySettings() {
+  const saved = state.puzzle.savedPlaySettings;
+  if (!saved) {
+    return;
+  }
+  state.play.skill = saved.skill;
+  state.play.timeControl = saved.timeControl;
+  state.play.side = saved.side;
+  state.play.startPosition = saved.startPosition;
+  state.play.thinkingSpeed = saved.thinkingSpeed;
+  state.puzzle.savedPlaySettings = null;
+}
+
+function evaluatePuzzleOutcome(puzzle, reason) {
+  const game = state.analysis.game;
+  const reasonText = String(reason || '');
+  if (!puzzle || !game) {
+    return { kind: 'abandoned' };
+  }
+  if (/abandoned|enabling analysis|failed to load|skipped|invalid move|illegal move/i.test(reasonText)) {
+    return { kind: 'abandoned' };
+  }
+  const objectiveLabel = puzzleObjectiveLabel(puzzle.objective);
+  if (game.isCheckmate()) {
+    const winner = game.turn() === 'w' ? 'b' : 'w';
+    if (winner === puzzle.solverColor) {
+      return {
+        kind: 'solved',
+        title: 'Puzzle solved!',
+        message: puzzle.objective === PUZZLE_OBJECTIVE_MATE
+          ? 'Checkmate delivered. Well played!'
+          : `Checkmate! You went beyond the "${objectiveLabel}" objective.`,
+      };
+    }
+    return { kind: 'failed', title: 'Puzzle failed', message: 'Stockfish checkmated you.' };
+  }
+  if (game.isDraw() || /draw/i.test(reasonText)) {
+    if (puzzle.objective === PUZZLE_OBJECTIVE_DRAW) {
+      return { kind: 'solved', title: 'Puzzle solved!', message: `Draw secured (${reasonText.replace(/\.+$/, '')}). Defense held!` };
+    }
+    return { kind: 'failed', title: 'Puzzle failed', message: `The game was drawn, but the objective was "${objectiveLabel}".` };
+  }
+  if (/gave up|resigned/i.test(reasonText)) {
+    return { kind: 'failed', title: 'Puzzle failed', message: 'You gave up this puzzle.' };
+  }
+  return { kind: 'failed', title: 'Puzzle failed', message: `Objective "${objectiveLabel}" was not met. (${reasonText})` };
+}
+
+// Invoked by stopPlayGame whenever a puzzle session is running.
+function finishPuzzleSession(reason) {
+  const puzzle = state.puzzle.current;
+  state.puzzle.sessionActive = false;
+  restoreSavedPlaySettings();
+  const outcome = state.puzzle.pendingResult || evaluatePuzzleOutcome(puzzle, reason);
+  state.puzzle.pendingResult = null;
+  if (!outcome || outcome.kind === 'abandoned') {
+    state.puzzle.lastResult = null;
+    renderAll();
+    return;
+  }
+  if (outcome.kind === 'solved') {
+    state.puzzle.solvedCount += 1;
+    state.puzzle.streak += 1;
+    state.puzzle.bestStreak = Math.max(state.puzzle.bestStreak, state.puzzle.streak);
+  } else {
+    state.puzzle.failedCount += 1;
+    state.puzzle.streak = 0;
+  }
+  persistPuzzlePrefs();
+  state.puzzle.lastResult = outcome;
+  renderAll();
+  showPuzzleResultModal(outcome);
+}
+
+function showPuzzleResultModal(outcome) {
+  const modal = dom.puzzleResultModal;
+  if (!modal || !dom.puzzleResultTitle || !dom.puzzleResultMessage || !dom.puzzleResultActions) {
+    return;
+  }
+  dom.puzzleResultTitle.textContent = outcome.title || (outcome.kind === 'solved' ? 'Puzzle solved!' : 'Puzzle failed');
+  dom.puzzleResultMessage.textContent = outcome.message || '';
+  const buttons = [];
+  if (outcome.kind === 'failed' && state.puzzle.current) {
+    buttons.push('<button type="button" class="action-button tonal" data-action="retry-puzzle">Retry Puzzle</button>');
+  }
+  if (puzzleFreeRemaining() > 0) {
+    buttons.push('<button type="button" class="action-button primary" data-action="puzzle-next">Next Puzzle</button>');
+  } else {
+    buttons.push('<button type="button" class="action-button primary" data-action="open-premium-modal">Unlock Premium</button>');
+  }
+  buttons.push('<button type="button" class="action-button" data-action="dismiss-puzzle-result">Close</button>');
+  dom.puzzleResultActions.innerHTML = buttons.join('');
+  modal.hidden = false;
+  modal.setAttribute('aria-hidden', 'false');
+}
+
+function dismissPuzzleResultModal() {
+  const modal = dom.puzzleResultModal;
+  if (modal) {
+    modal.hidden = true;
+    modal.setAttribute('aria-hidden', 'true');
+  }
+}
+
+function openPremiumModal() {
+  dismissPuzzleResultModal();
+  const modal = dom.premiumModal;
+  if (!modal) {
+    return;
+  }
+  if (dom.premiumModalStatus) {
+    dom.premiumModalStatus.textContent = '';
+    dom.premiumModalStatus.classList.remove('is-error', 'is-success');
+  }
+  modal.hidden = false;
+  modal.setAttribute('aria-hidden', 'false');
+  window.setTimeout(() => dom.premiumKeyInput?.focus(), 0);
+}
+
+function dismissPremiumModal() {
+  const modal = dom.premiumModal;
+  if (modal) {
+    modal.hidden = true;
+    modal.setAttribute('aria-hidden', 'true');
+  }
+}
+
+function activatePremiumFromInput() {
+  const statusEl = dom.premiumModalStatus;
+  const normalized = validatePremiumKey(dom.premiumKeyInput?.value);
+  if (!normalized) {
+    if (statusEl) {
+      statusEl.textContent = 'That activation key is not valid. Keys look like CHESS-XXXX-XXXX-XX.';
+      statusEl.classList.add('is-error');
+      statusEl.classList.remove('is-success');
+    }
+    return;
+  }
+  state.puzzle.premium = true;
+  state.puzzle.premiumKey = normalized;
+  try {
+    window.localStorage.setItem(PUZZLE_PREMIUM_STORAGE_KEY, JSON.stringify({ unlocked: true, key: normalized }));
+  } catch {
+    // Unlock still applies for this session even if persistence fails.
+  }
+  if (statusEl) {
+    statusEl.textContent = 'Premium unlocked — enjoy unlimited endgame puzzles!';
+    statusEl.classList.add('is-success');
+    statusEl.classList.remove('is-error');
+  }
+  window.setTimeout(() => {
+    dismissPremiumModal();
+    renderActiveToolPanel();
+  }, 900);
+  renderPuzzlePanel();
+}
+
+function renderPuzzlePanel() {
+  if (!dom.puzzlePanel) {
+    return;
+  }
+  const pz = state.puzzle;
+  const remaining = puzzleFreeRemaining();
+  const planPill = pz.premium
+    ? '<span class="pill pill-primary puzzle-plan-pill">Premium</span>'
+    : `<span class="pill puzzle-plan-pill">Free · ${remaining}/${PUZZLE_FREE_PER_DAY} today</span>`;
+
+  const statsMarkup = `
+    <div class="puzzle-stats-row" role="group" aria-label="Puzzle statistics">
+      <div class="puzzle-stat"><span class="puzzle-stat-value">${pz.solvedCount}</span><span class="puzzle-stat-label">Solved</span></div>
+      <div class="puzzle-stat"><span class="puzzle-stat-value">${pz.failedCount}</span><span class="puzzle-stat-label">Failed</span></div>
+      <div class="puzzle-stat"><span class="puzzle-stat-value">${pz.streak}</span><span class="puzzle-stat-label">Streak</span></div>
+      <div class="puzzle-stat"><span class="puzzle-stat-value">${pz.bestStreak}</span><span class="puzzle-stat-label">Best</span></div>
+    </div>
+  `;
+
+  let bodyMarkup = '';
+  if (pz.generating) {
+    bodyMarkup = `
+      <div class="banner puzzle-generating-banner">
+        <span class="puzzle-spinner" aria-hidden="true"></span>
+        <div>
+          <strong>Generating puzzle…</strong>
+          <div>The puzzle API is building a random endgame and verifying it with Stockfish.</div>
+        </div>
+      </div>
+    `;
+  } else if (pz.sessionActive && pz.current) {
+    const puzzle = pz.current;
+    let progressMarkup = '';
+    if (puzzle.objective === PUZZLE_OBJECTIVE_WIN && state.analysis.game) {
+      const gain = materialBalanceFromFen(state.analysis.game.fen(), puzzle.solverColor) - pz.startBalance;
+      progressMarkup = `<p class="section-copy">Material gained: ${gain >= 0 ? '+' : ''}${gain} of +${PUZZLE_WIN_MATERIAL_GAIN}</p>`;
+    }
+    bodyMarkup = `
+      <div class="puzzle-objective-banner" data-objective="${escapeHtml(puzzle.objective)}">
+        <span class="puzzle-objective-kicker">${escapeHtml(puzzleObjectiveLabel(puzzle.objective))} puzzle</span>
+        <strong>${escapeHtml(puzzleObjectiveInstruction(puzzle))}</strong>
+        <span class="puzzle-objective-meta">Defense ${pz.skill}${pz.skill < 1320 ? ' ~' : ' '}Elo · ${escapeHtml(puzzleSpeedLabel(pz.thinkingSpeed))} replies</span>
+      </div>
+      ${progressMarkup}
+      <div class="banner ${state.play.engineThinking ? 'warning' : 'success'}">
+        <div>
+          <strong>${state.play.engineThinking ? 'Stockfish is thinking…' : 'Your move'}</strong>
+          <div>${escapeHtml(state.analysis.boardMessage)}</div>
+        </div>
+      </div>
+      <div class="action-row play-action-row">
+        <button type="button" class="action-button danger" data-action="give-up-puzzle">Give Up</button>
+        ${puzzle.objective === PUZZLE_OBJECTIVE_DRAW ? '<button type="button" class="action-button tonal" data-action="offer-draw">Offer Draw</button>' : ''}
+        <button type="button" class="action-button tonal" data-action="skip-puzzle">Skip Puzzle</button>
+      </div>
+    `;
+  } else if (!pz.premium && remaining <= 0) {
+    bodyMarkup = `
+      <div class="puzzle-lock-card">
+        <div class="puzzle-lock-icon" aria-hidden="true">🔒</div>
+        <strong>Daily free puzzles used up</strong>
+        <p class="muted-copy">You have used your ${PUZZLE_FREE_PER_DAY} free endgame puzzles for today. Unlock Premium for unlimited Stockfish-verified puzzles, or come back tomorrow.</p>
+        <div class="action-row">
+          <button type="button" class="action-button primary" data-action="open-premium-modal">Unlock Premium</button>
+        </div>
+      </div>
+    `;
+  } else {
+    bodyMarkup = `
+      <div class="stack-grid">
+        <div class="two-col play-options-grid">
+          <div class="field-row">
+            <label class="field-label" for="puzzleObjectiveSelect">Objective</label>
+            ${customSelectMarkup(
+              'puzzleObjectiveSelect',
+              pz.objectivePreference,
+              [
+                { value: 'random', label: 'Surprise me (random)' },
+                { value: PUZZLE_OBJECTIVE_MATE, label: 'Checkmate' },
+                { value: PUZZLE_OBJECTIVE_WIN, label: 'Gain a piece' },
+                { value: PUZZLE_OBJECTIVE_DRAW, label: 'Hold the draw' },
+              ],
+              'data-action="set-puzzle-objective"'
+            )}
+          </div>
+          <div class="field-row">
+            <label class="field-label" for="puzzleSpeedSelect">Stockfish Reply Speed</label>
+            ${customSelectMarkup(
+              'puzzleSpeedSelect',
+              pz.thinkingSpeed,
+              [
+                { value: 'instant', label: 'Instant (0.1s - 0.5s)' },
+                { value: 'fast', label: 'Fast (0.25s - 1.0s)' },
+                { value: 'normal', label: 'Normal (0.5s - 2.0s)' },
+                { value: 'slow', label: 'Slow / Thorough (1.0s - 4.0s)' },
+              ],
+              'data-action="set-puzzle-speed"'
+            )}
+          </div>
+        </div>
+        <div class="field-row">
+          <label class="field-label" for="puzzleSkillSlider">Stockfish Defense (${pz.skill < 1320 ? '~Elo' : 'Elo'})</label>
+          <div class="range-control-wrap">
+            <input
+              type="range"
+              id="puzzleSkillSlider"
+              min="800"
+              max="3190"
+              step="50"
+              value="${pz.skill}"
+              data-action="set-puzzle-skill"
+            >
+            <span class="field-value">${pz.skill}${pz.skill < 1320 ? '*' : ''}</span>
+          </div>
+        </div>
+      </div>
+      ${pz.lastResult ? `
+        <div class="banner ${pz.lastResult.kind === 'solved' ? 'success' : 'danger'}">
+          <div>
+            <strong>${escapeHtml(pz.lastResult.title || '')}</strong>
+            <div>${escapeHtml(pz.lastResult.message || '')}</div>
+          </div>
+        </div>
+      ` : ''}
+      ${pz.apiError ? `
+        <div class="banner warning">
+          <div>
+            <strong>Puzzle API error</strong>
+            <div>${escapeHtml(pz.apiError)}</div>
+          </div>
+        </div>
+      ` : ''}
+      <div class="action-row play-start-action-row">
+        <button type="button" class="action-button primary" data-action="new-puzzle">New Puzzle</button>
+        ${pz.premium ? '' : '<button type="button" class="action-button tonal" data-action="open-premium-modal">Unlock Premium</button>'}
+      </div>
+      <p class="muted-copy">Random endgames with at most 6 pieces per side, generated and verified by Stockfish. You play the side to move: deliver checkmate, win a piece, or hold a draw.</p>
+    `;
+  }
+
+  const markup = `
+    <article class="lesson-section">
+      <div class="lesson-section-header">
+        <div class="play-section-heading">
+          <h3 class="lesson-section-title play-section-title">Endgame Puzzles ${planPill}</h3>
+        </div>
+      </div>
+      ${statsMarkup}
+      <div class="section-divider"></div>
+      ${bodyMarkup}
+    </article>
+  `;
+
+  withPreservedScroll(dom.controlPaneScroll, () => {
+    dom.puzzlePanel.innerHTML = markup;
+  });
+}
+
 function initializeDefaultSetup() {
   const parsed = parseFenLike(DEFAULT_POSITION);
   if (!parsed.ok) {
@@ -8378,6 +9169,7 @@ function bindEvents() {
     guidedReviewController?.saveReviewProgress();
     persistDraft();
     terminateEngineWorker();
+    puzzleApi?.dispose();
   });
   window.addEventListener('resize', handleViewportResize);
   window.visualViewport?.addEventListener('resize', handleViewportResize);
@@ -8390,6 +9182,9 @@ function bindEvents() {
 initializeColorTheme();
 initializeDefaultSetup();
 hydrateDraft();
+hydratePuzzleState();
+// Developer helper for issuing premium activation keys from the console.
+window.__endgamePuzzlePremium = Object.freeze({ generateKey: generatePremiumKey });
 syncAnalysisGameFromTree();
 initializeGuidedReviewController();
 bindEvents();

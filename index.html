@@ -309,11 +309,13 @@
                 <button class="tab-chip is-active" type="button" data-action="set-tab" data-tab="setup">Setup</button>
                 <button class="tab-chip" type="button" data-action="set-tab" data-tab="analysis">Analysis</button>
                  <button class="tab-chip" type="button" data-action="set-tab" data-tab="play">Play</button>
+                <button class="tab-chip" type="button" data-action="set-tab" data-tab="puzzle">Puzzle<span class="tab-chip-premium-star" aria-hidden="true">★</span></button>
               </nav>
 
               <section class="tab-panel is-active" id="setupPanel" aria-label="Setup tab"></section>
               <section class="tab-panel" id="analysisPanel" aria-label="Analysis tab" hidden></section>
               <section class="tab-panel" id="playPanel" aria-label="Play tab" hidden></section>
+              <section class="tab-panel" id="puzzlePanel" aria-label="Puzzle tab" hidden></section>
             </section>
           </section>
         </div>
@@ -372,6 +374,49 @@
       <p id="gameResultMessage" class="promotion-subtitle">Result details go here.</p>
       <div class="action-row game-result-actions">
         <button type="button" class="action-button primary" data-action="dismiss-game-result">Ok</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="puzzleResultModal" class="promotion-modal" hidden aria-hidden="true">
+    <div class="promotion-dialog" role="dialog" aria-modal="true" aria-labelledby="puzzleResultTitle">
+      <div class="promotion-head">
+        <h3 id="puzzleResultTitle">Puzzle solved!</h3>
+        <button type="button" class="icon-button" data-action="dismiss-puzzle-result" aria-label="Close puzzle result dialog">×</button>
+      </div>
+      <p id="puzzleResultMessage" class="promotion-subtitle">Result details go here.</p>
+      <div id="puzzleResultActions" class="action-row game-result-actions"></div>
+    </div>
+  </div>
+
+  <div id="premiumModal" class="promotion-modal" hidden aria-hidden="true">
+    <div class="promotion-dialog premium-dialog" role="dialog" aria-modal="true" aria-labelledby="premiumModalTitle">
+      <div class="promotion-head">
+        <h3 id="premiumModalTitle">Endgame Puzzles Premium</h3>
+        <button type="button" class="icon-button" data-action="dismiss-premium-modal" aria-label="Close premium dialog">×</button>
+      </div>
+      <p class="promotion-subtitle">The free plan includes 3 endgame puzzles per day. Premium unlocks:</p>
+      <ul class="premium-benefits">
+        <li>Unlimited random endgame puzzles (max 6 pieces per side)</li>
+        <li>Checkmate, gain-a-piece and hold-the-draw objectives</li>
+        <li>Adjustable Stockfish defense strength and reply speed</li>
+        <li>Endless "next puzzle" training streaks</li>
+      </ul>
+      <div class="field-row premium-key-row">
+        <label class="field-label" for="premiumKeyInput">Activation key</label>
+        <input
+          id="premiumKeyInput"
+          class="premium-key-input"
+          type="text"
+          placeholder="CHESS-XXXX-XXXX-XX"
+          autocomplete="off"
+          spellcheck="false"
+        >
+      </div>
+      <p id="premiumModalStatus" class="premium-modal-status" aria-live="polite"></p>
+      <div class="action-row game-result-actions">
+        <button type="button" class="action-button tonal" data-action="dismiss-premium-modal">Not now</button>
+        <button type="button" class="action-button primary" data-action="activate-premium">Unlock Premium</button>
       </div>
     </div>
   </div>
