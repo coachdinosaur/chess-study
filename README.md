@@ -194,6 +194,34 @@ http://127.0.0.1:8000/
 
 Do not open `index.html` directly over `file://`. The Stockfish worker and asset loading are intended to run from an HTTP server.
 
+## Endgame Puzzle Premium Keys
+
+The Endgame Puzzles tab allows `PUZZLE_FREE_PER_DAY` (3) free puzzles per day. An activation key in the form `CHESS-XXXX-XXXX-CC` removes the limit. Keys are validated entirely offline with a checksum, so no server or account is involved.
+
+Pre-generated working keys:
+
+```text
+CHESS-894P-JZ3E-4O
+CHESS-EV9G-UJ4U-YG
+CHESS-QABK-VT27-AD
+CHESS-4BZ6-8G8V-DS
+CHESS-6Z58-J4HU-KP
+CHESS-CVXK-32NW-NP
+CHESS-42YC-DJG3-8T
+CHESS-M7B9-ZMX9-BW
+```
+
+Generate more keys from the browser console while the app is open:
+
+```js
+window.__endgamePuzzlePremium.generateKey()
+```
+
+Important limits:
+
+- this README is published with the public repository, so anyone who reads it can use these keys
+- the checksum gate is a convenience lock, not real licensing — the generator ships in the client code
+
 ## Update GitHub
 
 After making changes, review what will be committed and push to GitHub:
