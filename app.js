@@ -8,6 +8,7 @@ import {
   PUZZLE_OBJECTIVE_MATE,
   PUZZLE_OBJECTIVE_WIN,
   PUZZLE_OBJECTIVE_DRAW,
+  PUZZLE_DIFFICULTIES,
 } from './puzzle-api.mjs';
 
 const STORAGE_KEY = 'setup-analysis-draft-v1';
@@ -355,12 +356,15 @@ const state = {
     freeDate: '',
     freeUsed: 0,
     generating: false,
+    generatingAttempt: 0,
+    generatingMaxAttempts: 0,
     sessionActive: false,
     current: null,
     startBalance: 0,
     pendingResult: null,
     lastResult: null,
     objectivePreference: 'random',
+    difficultyPreference: 'any',
     skill: 2400,
     thinkingSpeed: 'fast',
     solvedCount: 0,
@@ -7310,6 +7314,9 @@ function handleDocumentClick(event) {
       if (state.play.active && actionEl.dataset.tab !== (state.puzzle.sessionActive ? TAB_PUZZLE : TAB_PLAY)) {
         stopPlayGame({ reason: 'Game abandoned by switching tabs.' });
       }
+      if (state.puzzle.generating && actionEl.dataset.tab !== TAB_PUZZLE) {
+        cancelPuzzleGeneration();
+      }
       state.activeTab = normalizeActiveTab(actionEl.dataset.tab, TAB_SETUP);
       renderAll();
       schedulePersist();
@@ -7674,6 +7681,9 @@ function handleDocumentChange(event) {
       break;
     case 'set-puzzle-objective':
       updatePuzzleObjective(event.target.value);
+      break;
+    case 'set-puzzle-difficulty':
+      updatePuzzleDifficulty(event.target.value);
       break;
     case 'set-puzzle-speed':
       updatePuzzleSpeed(event.target.value);
@@ -8470,6 +8480,7 @@ function renderPlayPanel() {
 // key unlocks unlimited puzzles.
 
 let puzzleApi = null;
+let puzzleGenerationController = null;
 
 function ensurePuzzleApi() {
   if (!puzzleApi) {
@@ -8488,6 +8499,7 @@ function persistPuzzlePrefs() {
   try {
     window.localStorage.setItem(PUZZLE_PREFS_STORAGE_KEY, JSON.stringify({
       objectivePreference: state.puzzle.objectivePreference,
+      difficultyPreference: state.puzzle.difficultyPreference,
       skill: state.puzzle.skill,
       thinkingSpeed: state.puzzle.thinkingSpeed,
       solvedCount: state.puzzle.solvedCount,
@@ -8559,6 +8571,9 @@ function hydratePuzzleState() {
       if (objectives.includes(prefs.objectivePreference)) {
         state.puzzle.objectivePreference = prefs.objectivePreference;
       }
+      if (PUZZLE_DIFFICULTIES.includes(prefs.difficultyPreference)) {
+        state.puzzle.difficultyPreference = prefs.difficultyPreference;
+      }
       if (Number.isFinite(prefs.skill)) {
         state.puzzle.skill = clamp(Math.round(prefs.skill), 800, 3190);
       }
@@ -8598,6 +8613,14 @@ function updatePuzzleObjective(value) {
   const objectives = ['random', PUZZLE_OBJECTIVE_MATE, PUZZLE_OBJECTIVE_WIN, PUZZLE_OBJECTIVE_DRAW];
   if (objectives.includes(value)) {
     state.puzzle.objectivePreference = value;
+    persistPuzzlePrefs();
+  }
+  renderPuzzlePanel();
+}
+
+function updatePuzzleDifficulty(value) {
+  if (PUZZLE_DIFFICULTIES.includes(value)) {
+    state.puzzle.difficultyPreference = value;
     persistPuzzlePrefs();
   }
   renderPuzzlePanel();
@@ -8667,15 +8690,35 @@ function puzzleSpeedLabel(speed) {
 
 function puzzleObjectiveInstruction(puzzle) {
   const sideLabel = puzzle.solverColor === 'w' ? 'White' : 'Black';
+  let text;
   if (puzzle.objective === PUZZLE_OBJECTIVE_MATE) {
-    return puzzle.mateIn
+    text = puzzle.mateIn
       ? `You play ${sideLabel}. Checkmate Stockfish — mate in ${puzzle.mateIn} is available.`
       : `You play ${sideLabel}. Checkmate Stockfish.`;
+  } else if (puzzle.objective === PUZZLE_OBJECTIVE_WIN) {
+    text = `You play ${sideLabel}. Win material — gain at least a minor piece (+${PUZZLE_WIN_MATERIAL_GAIN} points).`;
+  } else {
+    text = `You play ${sideLabel}. You are down material — hold the draw against Stockfish.`;
   }
-  if (puzzle.objective === PUZZLE_OBJECTIVE_WIN) {
-    return `You play ${sideLabel}. Win material — gain at least a minor piece (+${PUZZLE_WIN_MATERIAL_GAIN} points).`;
+  if (puzzle.isFallback) {
+    text = `No "${puzzleObjectiveLabel(puzzle.requestedObjective)}" puzzle verified in time, so here is a "${puzzleObjectiveLabel(puzzle.objective)}" puzzle instead. ${text}`;
   }
-  return `You play ${sideLabel}. You are down material — hold the draw against Stockfish.`;
+  return text;
+}
+
+function puzzleGeneratingDetail() {
+  return state.puzzle.generatingAttempt > 0
+    ? `Stockfish is verifying candidate ${state.puzzle.generatingAttempt} of ${state.puzzle.generatingMaxAttempts}…`
+    : 'The puzzle API is building a random endgame and verifying it with Stockfish.';
+}
+
+function handlePuzzleGenerationAttempt({ attempt, maxAttempts }) {
+  state.puzzle.generatingAttempt = attempt;
+  state.puzzle.generatingMaxAttempts = maxAttempts;
+  const detail = dom.puzzlePanel?.querySelector('.puzzle-generating-detail');
+  if (detail) {
+    detail.textContent = puzzleGeneratingDetail();
+  }
 }
 
 async function requestNewPuzzle() {
@@ -8699,25 +8742,45 @@ async function requestNewPuzzle() {
     persistPuzzleFreeUsage();
   }
   state.puzzle.generating = true;
+  state.puzzle.generatingAttempt = 0;
   state.puzzle.apiError = '';
   state.puzzle.lastResult = null;
   state.activeTab = TAB_PUZZLE;
   renderAll();
+  puzzleGenerationController = new AbortController();
   try {
     const api = ensurePuzzleApi();
-    const puzzle = await api.generatePuzzle({ objective: state.puzzle.objectivePreference });
+    const puzzle = await api.generatePuzzle({
+      objective: state.puzzle.objectivePreference,
+      difficulty: state.puzzle.difficultyPreference,
+      signal: puzzleGenerationController.signal,
+      onAttempt: handlePuzzleGenerationAttempt,
+    });
     state.puzzle.generating = false;
     await startPuzzleSession(puzzle);
+    // Warm up the next puzzle in the background so "Next Puzzle" is instant.
+    api.prefetchPuzzle({
+      objective: state.puzzle.objectivePreference,
+      difficulty: state.puzzle.difficultyPreference,
+    });
   } catch (error) {
-    console.error('Puzzle generation failed', error);
     state.puzzle.generating = false;
-    state.puzzle.apiError = error?.message || 'Puzzle generation failed. Please try again.';
     if (!state.puzzle.premium) {
       state.puzzle.freeUsed = Math.max(0, state.puzzle.freeUsed - 1);
       persistPuzzleFreeUsage();
     }
+    if (error?.name !== 'AbortError') {
+      console.error('Puzzle generation failed', error);
+      state.puzzle.apiError = error?.message || 'Puzzle generation failed. Please try again.';
+    }
     renderPuzzlePanel();
+  } finally {
+    puzzleGenerationController = null;
   }
+}
+
+function cancelPuzzleGeneration() {
+  puzzleGenerationController?.abort();
 }
 
 async function startPuzzleSession(puzzle) {
@@ -8986,7 +9049,7 @@ function renderPuzzlePanel() {
         <span class="puzzle-spinner" aria-hidden="true"></span>
         <div>
           <strong>Generating puzzle…</strong>
-          <div>The puzzle API is building a random endgame and verifying it with Stockfish.</div>
+          <div class="puzzle-generating-detail">${escapeHtml(puzzleGeneratingDetail())}</div>
         </div>
       </div>
     `;
@@ -9043,6 +9106,19 @@ function renderPuzzlePanel() {
                 { value: PUZZLE_OBJECTIVE_DRAW, label: 'Hold the draw' },
               ],
               'data-action="set-puzzle-objective"'
+            )}
+          </div>
+          <div class="field-row">
+            <label class="field-label" for="puzzleDifficultySelect">Difficulty</label>
+            ${customSelectMarkup(
+              'puzzleDifficultySelect',
+              pz.difficultyPreference,
+              [
+                { value: 'any', label: 'Any difficulty' },
+                { value: 'easy', label: 'Easier (short mates, fewer pieces)' },
+                { value: 'hard', label: 'Harder (long mates, more pieces)' },
+              ],
+              'data-action="set-puzzle-difficulty"'
             )}
           </div>
           <div class="field-row">
