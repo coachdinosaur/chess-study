@@ -81,6 +81,8 @@ const LEGACY_TAB_PGN = 'pgn';
 const PUZZLE_PREFS_STORAGE_KEY = 'endgame-puzzle-prefs-v1';
 const PUZZLE_PREMIUM_STORAGE_KEY = 'endgame-puzzle-premium-v1';
 const PUZZLE_FREE_STORAGE_KEY = 'endgame-puzzle-free-v1';
+const PUZZLE_QUEUE_STORAGE_KEY = 'endgame-puzzle-queue-v1';
+const PUZZLE_QUEUE_MAX = 100;
 const PUZZLE_FREE_PER_DAY = 3;
 const PUZZLE_WIN_MATERIAL_GAIN = 3;
 const PRACTICE_KIND_LINE = 'line';
@@ -385,6 +387,58 @@ const state = {
 
 let guidedReviewController = null;
 let setupDragPreviewEl = null;
+
+function isFenInsufficientMaterialDraw(fen) {
+  try {
+    const parts = fen.trim().split(/\s+/);
+    const rows = parts[0].split('/');
+    const nonKingPieces = [];
+
+    for (let r = 0; r < 8; r++) {
+      const row = rows[r] || '';
+      let f = 0;
+      for (let i = 0; i < row.length; i++) {
+        const char = row[i];
+        if (/[1-8]/.test(char)) {
+          f += parseInt(char, 10);
+        } else {
+          const upper = char.toUpperCase();
+          if (upper === 'P' || upper === 'R' || upper === 'Q') {
+            return false;
+          }
+          if (upper !== 'K') {
+            nonKingPieces.push({
+              type: upper,
+              squareColor: (r + f) % 2,
+            });
+          }
+          f++;
+        }
+      }
+    }
+
+    if (nonKingPieces.length === 0) {
+      return true; // King vs King
+    }
+    if (nonKingPieces.length === 1) {
+      if (nonKingPieces[0].type === 'B' || nonKingPieces[0].type === 'N') {
+        return true; // KB vs K or KN vs K
+      }
+    }
+    if (nonKingPieces.length > 1) {
+      if (nonKingPieces.every(p => p.type === 'B')) {
+        const firstColor = nonKingPieces[0].squareColor;
+        if (nonKingPieces.every(p => p.squareColor === firstColor)) {
+          return true; // Bishops on same color squares
+        }
+      }
+    }
+    return false;
+  } catch (e) {
+    console.error('Error checking insufficient material draw from FEN:', e);
+    return false;
+  }
+}
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
@@ -8198,6 +8252,22 @@ function offerDraw() {
     return;
   }
   const game = state.analysis.game;
+
+  if (state.puzzle.sessionActive) {
+    const legallyDrawn =
+      game.isDraw?.() ||
+      game.isInsufficientMaterial?.() ||
+      isFenInsufficientMaterialDraw(game.fen());
+
+    if (legallyDrawn) {
+      stopPlayGame({ reason: 'Draw secured.' });
+    } else {
+      state.analysis.boardMessage = "Draw not secured yet.";
+      renderAll();
+    }
+    return;
+  }
+
   const score = state.engine.scoreValue;
   const scoreType = state.engine.scoreType;
   
@@ -8370,17 +8440,18 @@ function checkPlayGameOver() {
   if (!game) {
     return false;
   }
-  if (game.isGameOver()) {
+  const isDrawFromFen = isFenInsufficientMaterialDraw(game.fen());
+  if (game.isGameOver() || isDrawFromFen) {
     let reason = 'Game over.';
     if (game.isCheckmate()) {
       const winner = game.turn() === 'w' ? 'Black' : 'White';
       reason = `Checkmate! ${winner} wins.`;
-    } else if (game.isDraw()) {
+    } else if (game.isDraw() || isDrawFromFen) {
       if (game.isStalemate()) {
         reason = 'Draw by stalemate.';
       } else if (game.isThreefoldRepetition()) {
         reason = 'Draw by threefold repetition.';
-      } else if (game.isInsufficientMaterial()) {
+      } else if (game.isInsufficientMaterial() || isDrawFromFen) {
         reason = 'Draw by insufficient material.';
       } else {
         reason = 'Draw by 50-move rule.';
@@ -8682,6 +8753,14 @@ function generatePremiumKey() {
   return `${body}-${puzzleKeyChecksum(body)}`;
 }
 
+function persistPuzzleQueue() {
+  try {
+    window.localStorage.setItem(PUZZLE_QUEUE_STORAGE_KEY, JSON.stringify(state.puzzle.puzzleQueue));
+  } catch {
+    // Ignore storage failures.
+  }
+}
+
 function hydratePuzzleState() {
   try {
     const prefs = JSON.parse(window.localStorage.getItem(PUZZLE_PREFS_STORAGE_KEY) || 'null');
@@ -8725,6 +8804,17 @@ function hydratePuzzleState() {
     }
   } catch {
     // Corrupt usage record is ignored.
+  }
+  try {
+    const rawQueue = window.localStorage.getItem(PUZZLE_QUEUE_STORAGE_KEY);
+    if (rawQueue) {
+      const queue = JSON.parse(rawQueue);
+      if (Array.isArray(queue)) {
+        state.puzzle.puzzleQueue = queue;
+      }
+    }
+  } catch {
+    // Corrupt queue record is ignored, preserving existing state.puzzle.puzzleQueue
   }
 }
 
@@ -8844,8 +8934,15 @@ async function generatePuzzleBatch(count = 5) {
   if (state.puzzle.isGeneratingPuzzleBatch) {
     return;
   }
+  if (state.puzzle.puzzleQueue.length >= PUZZLE_QUEUE_MAX) {
+    state.puzzle.apiError = `Queue is full (maximum ${PUZZLE_QUEUE_MAX} puzzles). Solve some puzzles first!`;
+    renderPuzzlePanel();
+    return;
+  }
+  const countToGenerate = Math.min(count, PUZZLE_QUEUE_MAX - state.puzzle.puzzleQueue.length);
+
   state.puzzle.isGeneratingPuzzleBatch = true;
-  state.puzzle.puzzleBatchStatus = `Generating puzzles... (0/${count})`;
+  state.puzzle.puzzleBatchStatus = `Generating puzzles... (0/${countToGenerate})`;
   state.puzzle.apiError = '';
   renderPuzzlePanel();
 
@@ -8856,12 +8953,12 @@ async function generatePuzzleBatch(count = 5) {
 
   puzzleGenerationController = new AbortController();
 
-  while (successCount < count && attempts < maxRetries) {
+  while (successCount < countToGenerate && attempts < maxRetries) {
     if (puzzleGenerationController.signal.aborted) {
       break;
     }
     attempts++;
-    state.puzzle.puzzleBatchStatus = `Generating puzzles... (${successCount}/${count})`;
+    state.puzzle.puzzleBatchStatus = `Generating puzzles... (${successCount}/${countToGenerate})`;
     renderPuzzlePanel();
 
     try {
@@ -8877,6 +8974,8 @@ async function generatePuzzleBatch(count = 5) {
 
       if (puzzle && puzzle.fen) {
         state.puzzle.puzzleQueue.push(puzzle);
+        state.puzzle.puzzleQueue = state.puzzle.puzzleQueue.slice(0, PUZZLE_QUEUE_MAX);
+        persistPuzzleQueue();
         successCount++;
       }
     } catch (error) {
@@ -8890,10 +8989,10 @@ async function generatePuzzleBatch(count = 5) {
   state.puzzle.isGeneratingPuzzleBatch = false;
   if (puzzleGenerationController?.signal?.aborted) {
     state.puzzle.puzzleBatchStatus = `Generation cancelled. ${successCount} puzzle(s) ready.`;
-  } else if (successCount === count) {
-    state.puzzle.puzzleBatchStatus = `5 puzzles ready.`;
+  } else if (successCount === countToGenerate) {
+    state.puzzle.puzzleBatchStatus = `${successCount} puzzle(s) ready.`;
   } else {
-    state.puzzle.puzzleBatchStatus = `Generated ${successCount} of ${count} puzzles.`;
+    state.puzzle.puzzleBatchStatus = `Generated ${successCount} of ${countToGenerate} puzzles.`;
   }
   puzzleGenerationController = null;
   renderPuzzlePanel();
@@ -8914,6 +9013,7 @@ async function requestNewPuzzle() {
   dismissPuzzleResultModal();
   
   const puzzle = state.puzzle.puzzleQueue.shift();
+  persistPuzzleQueue();
   state.puzzle.apiError = '';
   state.puzzle.lastResult = null;
   state.activeTab = TAB_PUZZLE;
@@ -9051,12 +9151,56 @@ function evaluatePuzzleOutcome(puzzle, reason) {
     }
     return { kind: 'failed', title: 'Puzzle failed', message: 'Stockfish checkmated you.' };
   }
-  if (game.isDraw() || /draw/i.test(reasonText)) {
-    if (puzzle.objective === PUZZLE_OBJECTIVE_DRAW) {
-      return { kind: 'solved', title: 'Puzzle solved!', message: `Draw secured (${reasonText.replace(/\.+$/, '')}). Defense held!` };
+
+  const legallyDrawn =
+    game.isDraw?.() ||
+    game.isInsufficientMaterial?.() ||
+    isFenInsufficientMaterialDraw(game.fen());
+
+  if (puzzle.objective === PUZZLE_OBJECTIVE_DRAW) {
+    if (legallyDrawn) {
+      const displayReason = reasonText ? reasonText.replace(/\.+$/, '') : 'insufficient material';
+      return { kind: 'solved', title: 'Puzzle solved!', message: `Draw secured (${displayReason}). Defense held!` };
     }
+    
+    // If the puzzle objective is draw but legallyDrawn is false:
+    // - do NOT return solved
+    // - do NOT show “you were able to draw”
+    // - if the engine/tablebase says the player is losing, show failed
+    // - otherwise continue the puzzle or show neutral/incomplete status
+    let isLosing = false;
+    const tbResult = currentTablebaseResultForDisplay();
+    if (tbResult) {
+      if (puzzle.solverColor === 'w' && tbResult.outcome === 'black') {
+        isLosing = true;
+      } else if (puzzle.solverColor === 'b' && tbResult.outcome === 'white') {
+        isLosing = true;
+      }
+    } else if (state.engine.scoreValue !== null) {
+      const solverSide = puzzle.solverColor === 'w' ? 'white' : 'black';
+      const playerMultiplier = solverSide === 'black' ? -1 : 1;
+      const playerScore = state.engine.scoreValue * playerMultiplier;
+      if (state.engine.scoreType === 'mate') {
+        if (playerScore < 0) {
+          isLosing = true;
+        }
+      } else {
+        if (playerScore < -150) {
+          isLosing = true;
+        }
+      }
+    }
+
+    if (isLosing) {
+      return { kind: 'failed', title: 'Puzzle failed', message: 'The position is losing according to evaluation.' };
+    }
+    return { kind: 'incomplete', title: 'Puzzle incomplete', message: 'Draw not secured yet.' };
+  }
+
+  if (legallyDrawn) {
     return { kind: 'failed', title: 'Puzzle failed', message: `The game was drawn, but the objective was "${objectiveLabel}".` };
   }
+
   if (/gave up|resigned/i.test(reasonText)) {
     return { kind: 'failed', title: 'Puzzle failed', message: 'You gave up this puzzle.' };
   }
@@ -9079,7 +9223,7 @@ function finishPuzzleSession(reason) {
     state.puzzle.solvedCount += 1;
     state.puzzle.streak += 1;
     state.puzzle.bestStreak = Math.max(state.puzzle.bestStreak, state.puzzle.streak);
-  } else {
+  } else if (outcome.kind === 'failed') {
     state.puzzle.failedCount += 1;
     state.puzzle.streak = 0;
   }
@@ -9097,7 +9241,7 @@ function showPuzzleResultModal(outcome) {
   dom.puzzleResultTitle.textContent = outcome.title || (outcome.kind === 'solved' ? 'Puzzle solved!' : 'Puzzle failed');
   dom.puzzleResultMessage.textContent = outcome.message || '';
   const buttons = [];
-  if (outcome.kind === 'failed' && state.puzzle.current) {
+  if ((outcome.kind === 'failed' || outcome.kind === 'incomplete') && state.puzzle.current) {
     buttons.push('<button type="button" class="action-button tonal" data-action="retry-puzzle">Retry Puzzle</button>');
   }
   if (state.puzzle.puzzleQueue.length > 0) {
@@ -9285,7 +9429,7 @@ function renderPuzzlePanel() {
         </div>
       </div>
       ${pz.lastResult ? `
-        <div class="banner ${pz.lastResult.kind === 'solved' ? 'success' : 'danger'}">
+        <div class="banner ${pz.lastResult.kind === 'solved' ? 'success' : (pz.lastResult.kind === 'incomplete' ? 'warning' : 'danger')}">
           <div>
             <strong>${escapeHtml(pz.lastResult.title || '')}</strong>
             <div>${escapeHtml(pz.lastResult.message || '')}</div>
@@ -9305,7 +9449,7 @@ function renderPuzzlePanel() {
         <div class="banner puzzle-generating-banner">
           <span class="puzzle-spinner" aria-hidden="true"></span>
           <div>
-            <strong>Generating 5 puzzles...</strong>
+            <strong>Generating puzzles...</strong>
             <div class="puzzle-generating-detail">${escapeHtml(pz.puzzleBatchStatus)}</div>
             ${(pz.generatingAttempt > 0) ? `
               <div style="font-size: 0.85em; color: var(--color-text-muted); margin-top: 4px;">
@@ -9320,15 +9464,15 @@ function renderPuzzlePanel() {
       ` : `
         <div class="action-row play-start-action-row" style="flex-direction: column; align-items: stretch; gap: 12px;">
           <div style="display: flex; gap: 12px; width: 100%;">
-            <button type="button" class="action-button tonal" data-action="generate-batch" style="flex: 1;">Generate 5 Puzzles</button>
+            <button type="button" class="action-button tonal" data-action="generate-batch" ${pz.puzzleQueue.length >= PUZZLE_QUEUE_MAX ? 'disabled' : ''} style="flex: 1;">Generate 5 Puzzles</button>
             <button type="button" class="action-button primary" data-action="new-puzzle" ${pz.puzzleQueue.length === 0 ? 'disabled' : ''} style="flex: 1;">Next Puzzle</button>
           </div>
           <div class="puzzle-batch-status-container" style="text-align: center; font-size: 0.9em; margin-top: 4px;">
             <div style="font-weight: 500;">
-              Ready puzzles: ${pz.puzzleQueue.length}/5
+              Ready puzzles: ${pz.puzzleQueue.length}
             </div>
             <div style="color: var(--color-text-muted); margin-top: 4px;">
-              ${pz.puzzleQueue.length === 0 ? 'No ready puzzles. Generate 5 more.' : (pz.puzzleBatchStatus || '5 puzzles ready.')}
+              ${pz.puzzleQueue.length === 0 ? 'No ready puzzles. Generate 5 more.' : (pz.puzzleBatchStatus || `${pz.puzzleQueue.length} puzzle(s) ready.`)}
             </div>
           </div>
         </div>
