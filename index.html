@@ -183,7 +183,6 @@
                     <div class="menu-submenu-content">
                       <button id="openLessonButton" type="button" class="lesson-overflow-item" data-action="open-lesson" role="menuitem">Open lesson</button>
                       <button id="saveLessonButton" type="button" class="lesson-overflow-item" data-action="save-lesson" role="menuitem">Save lesson</button>
-                      <button id="guidedReviewButton" type="button" class="lesson-overflow-item" data-action="open-guided-review" role="menuitem">Guided Review</button>
                       <button id="importPgnButton" type="button" class="lesson-overflow-item" data-action="import-pgn" role="menuitem">Import PGN</button>
                       <button id="exportPgnButton" type="button" class="lesson-overflow-item" data-action="export-pgn" role="menuitem">Export PGN</button>
                       <button id="copyFenButton" type="button" class="lesson-overflow-item" data-action="copy-fen" role="menuitem">Copy FEN</button>
@@ -202,16 +201,15 @@
                     </summary>
                     <div class="menu-submenu-content">
                       <button id="enterFocusModeButton" type="button" class="lesson-overflow-item" data-action="enter-focus-mode" role="menuitem">Focus mode</button>
-                      <button id="toggleToolsMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-tools" role="menuitem">Show tools</button>
                       <button id="toggleNoteMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-note" role="menuitem">Show note</button>
                       <button id="toggleFullscreenMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-fullscreen" role="menuitem" hidden>Enter fullscreen</button>
                     </div>
                   </details>
 
-                  <!-- 3. Analysis & Notation Submenu -->
+                  <!-- 3. Engine & PGN Settings Submenu -->
                   <details class="menu-submenu">
                     <summary class="menu-submenu-title">
-                      <span>Analysis & PGN</span>
+                      <span>Engine & PGN Settings</span>
                       <span class="menu-submenu-arrow">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                           <polyline points="6 9 12 15 18 9"></polyline>
@@ -264,6 +262,14 @@
             <span id="engineReadyLabel" class="sr-only">Stockfish idle</span>
             <div id="heroBanner" class="hero-banner recording-hidden" aria-hidden="true"></div>
           </section>
+          <nav class="tab-nav" aria-label="Workspace sections">
+            <button class="tab-chip" type="button" data-action="set-tab" data-tab="study">Study</button>
+            <button class="tab-chip" type="button" data-action="set-tab" data-tab="setup">Setup</button>
+            <button class="tab-chip" type="button" data-action="set-tab" data-tab="analysis">Analysis</button>
+            <button class="tab-chip is-active" type="button" data-action="set-tab" data-tab="play">Play</button>
+            <button class="tab-chip" type="button" data-action="set-tab" data-tab="puzzle">Puzzle</button>
+            <button class="tab-chip" type="button" data-action="set-tab" data-tab="lessons">Lessons</button>
+          </nav>
           <section id="guidedReviewAnalysisPanel" class="guided-review-analysis-panel" aria-label="Guided review analysis" hidden></section>
           <section id="guidedReviewPanel" class="guided-review-panel" aria-label="Guided lesson row review" hidden></section>
 
@@ -306,13 +312,6 @@
 
           <section id="workspaceTools" class="workspace-tools" hidden>
             <section class="lesson-tools" aria-label="Lesson tools">
-              <nav class="tab-nav" aria-label="Workspace sections">
-                <button class="tab-chip is-active" type="button" data-action="set-tab" data-tab="setup">Setup</button>
-                <button class="tab-chip" type="button" data-action="set-tab" data-tab="analysis">Analysis</button>
-                 <button class="tab-chip" type="button" data-action="set-tab" data-tab="play">Play</button>
-                <button class="tab-chip" type="button" data-action="set-tab" data-tab="puzzle">Puzzle<span class="tab-chip-premium-star" aria-hidden="true">★</span></button>
-              </nav>
-
               <section class="tab-panel is-active" id="setupPanel" aria-label="Setup tab"></section>
               <section class="tab-panel" id="analysisPanel" aria-label="Analysis tab" hidden></section>
               <section class="tab-panel" id="playPanel" aria-label="Play tab" hidden></section>

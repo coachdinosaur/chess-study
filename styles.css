@@ -501,9 +501,10 @@ code {
   display: grid;
   grid-template-columns: minmax(22rem, calc(var(--board-size, 42rem) + 1rem + 2px)) minmax(19rem, 29rem);
   justify-content: center;
-  gap: var(--workspace-gap);
+  row-gap: var(--workspace-gap);
+  column-gap: calc(var(--workspace-gap) * 2);
   min-height: calc(var(--app-height) - 1.5rem);
-  max-width: 72rem;
+  max-width: calc(72rem + var(--workspace-gap));
   margin: 0 auto;
   padding: 0;
   align-items: start;
@@ -1935,6 +1936,40 @@ code {
   border-top: 1px solid var(--section-divider-soft);
 }
 
+/* PGN comment collapsible toggle */
+.pgn-comment-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  width: fit-content;
+  text-align: left;
+  transition: color var(--ease);
+}
+
+.pgn-comment-toggle:hover {
+  color: var(--text);
+}
+
+.pgn-comment-arrow {
+  display: inline-block;
+  width: 1em;
+  font-size: 0.8rem;
+  transition: transform 0.2s ease;
+}
+
+.pgn-comment-content {
+  margin-top: 0.5rem;
+}
+
 .notation-pv {
   display: grid;
   gap: 0.8rem;
@@ -2071,6 +2106,8 @@ code {
   display: flex;
   flex-wrap: wrap;
   gap: 0.9rem;
+  border-bottom: 1px solid var(--section-divider-soft);
+  margin-bottom: 0.4rem;
 }
 
 .tab-chip {
@@ -2082,6 +2119,7 @@ code {
   color: var(--text-muted);
   font-weight: 700;
   transition: border-color var(--ease), color var(--ease);
+  margin-bottom: -1px;
 }
 
 .tab-chip:hover {

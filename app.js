@@ -77,11 +77,15 @@ const TAB_SETUP = 'setup';
 const TAB_ANALYSIS = 'analysis';
 const TAB_PLAY = 'play';
 const TAB_PUZZLE = 'puzzle';
+const TAB_STUDY = 'study';
+const TAB_LESSONS = 'lessons';
 const LEGACY_TAB_PGN = 'pgn';
 const PUZZLE_PREFS_STORAGE_KEY = 'endgame-puzzle-prefs-v1';
 const PUZZLE_PREMIUM_STORAGE_KEY = 'endgame-puzzle-premium-v1';
 const PUZZLE_FREE_STORAGE_KEY = 'endgame-puzzle-free-v1';
 const PUZZLE_QUEUE_STORAGE_KEY = 'endgame-puzzle-queue-v1';
+const PUZZLE_HISTORY_STORAGE_KEY = 'endgame-puzzle-history-v1';
+const PUZZLE_HISTORY_MAX = 300;
 const PUZZLE_QUEUE_MAX = 100;
 const PUZZLE_FREE_PER_DAY = 3;
 const PUZZLE_WIN_MATERIAL_GAIN = 3;
@@ -92,9 +96,16 @@ const LESSON_FILE_VERSION = 1;
 const LESSON_BOOK_FILE_VERSION = 2;
 const ROOT_NODE_ID = 'root';
 
-function normalizeActiveTab(value, fallback = TAB_ANALYSIS) {
+function normalizeActiveTab(value, fallback = TAB_PLAY) {
   const normalized = String(value || '').trim();
-  if (normalized === TAB_SETUP || normalized === TAB_ANALYSIS || normalized === TAB_PLAY || normalized === TAB_PUZZLE) {
+  if (
+    normalized === TAB_SETUP
+    || normalized === TAB_ANALYSIS
+    || normalized === TAB_PLAY
+    || normalized === TAB_PUZZLE
+    || normalized === TAB_STUDY
+    || normalized === TAB_LESSONS
+  ) {
     return normalized;
   }
   if (normalized === LEGACY_TAB_PGN) {
@@ -232,7 +243,9 @@ const state = {
   colorTheme: document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light',
   focusMode: false,
   boardOrientation: 'white',
-  activeTab: TAB_ANALYSIS,
+  activeTab: TAB_PLAY,
+  previousNonLessonTab: TAB_PLAY,
+  pgnCommentsExpanded: false,
   lessonBook: {
     activeLessonId: '',
     nextId: 1,
@@ -272,7 +285,7 @@ const state = {
   practice: createEmptyPracticeState(),
   pgnCommentsVisible: true,
   lastMoveArrowVisible: true,
-  toolsExpanded: false,
+  toolsExpanded: true,
   guidedReview: {
     active: false,
   },
@@ -379,6 +392,8 @@ const state = {
     savedPlaySettings: null,
     apiError: '',
     puzzleQueue: [],
+    puzzleHistory: [],
+    historyCursor: 0,
     isGeneratingPuzzleBatch: false,
     puzzleBatchStatus: '',
   },
@@ -3377,10 +3392,16 @@ function renderGuidedReviewVisibility() {
 function setGuidedReviewActive(active) {
   state.guidedReview.active = Boolean(active);
   if (state.guidedReview.active) {
-    state.activeTab = TAB_ANALYSIS;
+    if (state.activeTab !== TAB_LESSONS) {
+      state.previousNonLessonTab = state.activeTab;
+    }
+    state.activeTab = TAB_LESSONS;
+  } else {
+    state.activeTab = state.previousNonLessonTab || TAB_PLAY;
   }
   renderGuidedReviewVisibility();
   schedulePersist();
+  renderAll();
 }
 
 function updateGuidedReviewTitle(title) {
@@ -5969,9 +5990,9 @@ function syncBoardSize() {
 
     const workspace = dom.boardColumn.closest('.workspace');
     const workspaceStyles = workspace ? window.getComputedStyle(workspace) : null;
-    const gapPx = workspaceStyles ? cssLengthToPx(workspaceStyles.getPropertyValue('gap'), remToPx(0.9)) : remToPx(0.9);
+    const gapPx = workspaceStyles ? (cssLengthToPx(workspaceStyles.getPropertyValue('column-gap'), null) || cssLengthToPx(workspaceStyles.getPropertyValue('gap'), remToPx(0.9))) : remToPx(0.9);
 
-    const maxWorkspaceWidth = remToPx(72);
+    const maxWorkspaceWidth = workspaceStyles ? cssLengthToPx(workspaceStyles.getPropertyValue('max-width'), remToPx(72)) : remToPx(72);
     const controlPane = workspace?.querySelector('.control-pane');
     const controlPaneWidth = controlPane?.clientWidth || remToPx(29);
 
@@ -6124,14 +6145,14 @@ function renderNotationCommentEditor() {
     return '';
   }
   const commentState = currentAnalysisCommentContext();
+  const expanded = state.pgnCommentsExpanded;
   return `
-    <section class="notation-note" aria-label="PGN comment">
-      <div class="notation-note-head">
-        <div>
-          <h3 class="notation-note-title">PGN comment</h3>
-        </div>
-      </div>
-      <div>
+    <section class="notation-note pgn-comment-section" aria-label="PGN comment">
+      <button type="button" class="pgn-comment-toggle" data-action="toggle-pgn-comment-collapse" aria-expanded="${expanded}">
+        <span class="pgn-comment-arrow">${expanded ? '▼' : '▶'}</span>
+        <span class="pgn-comment-title">PGN Comment</span>
+      </button>
+      <div class="pgn-comment-content" ${expanded ? '' : 'hidden'}>
         <label class="sr-only" for="notationCommentInput">PGN comment</label>
         <textarea
           id="notationCommentInput"
@@ -7461,20 +7482,42 @@ function handleDocumentClick(event) {
       closeLessonBookActionsMenu();
       deleteCurrentLesson();
       break;
-    case 'set-tab':
-      if (state.practice.active && actionEl.dataset.tab === TAB_SETUP) {
+    case 'set-tab': {
+      const targetTab = actionEl.dataset.tab;
+      if (state.practice.active && targetTab === TAB_SETUP) {
         stopPracticeSession();
       }
-      if (state.play.active && actionEl.dataset.tab !== (state.puzzle.sessionActive ? TAB_PUZZLE : TAB_PLAY)) {
+      if (state.play.active && targetTab !== (state.puzzle.sessionActive ? TAB_PUZZLE : TAB_PLAY)) {
         stopPlayGame({ reason: 'Game abandoned by switching tabs.' });
       }
-      if ((state.puzzle.generating || state.puzzle.isGeneratingPuzzleBatch) && actionEl.dataset.tab !== TAB_PUZZLE) {
+      if ((state.puzzle.generating || state.puzzle.isGeneratingPuzzleBatch) && targetTab !== TAB_PUZZLE) {
         cancelPuzzleGeneration();
       }
-      state.activeTab = normalizeActiveTab(actionEl.dataset.tab, TAB_SETUP);
+
+      // Handle transition to/from lessons (Guided Review)
+      if (targetTab === TAB_LESSONS) {
+        if (!state.guidedReview.active) {
+          guidedReviewController?.openGuidedReviewMode();
+        }
+      } else {
+        if (state.guidedReview.active) {
+          guidedReviewController?.closeGuidedReviewMode();
+        }
+        state.previousNonLessonTab = targetTab;
+      }
+
+      // Handle tools expanded state
+      if (targetTab === TAB_STUDY) {
+        state.toolsExpanded = false;
+      } else if (targetTab !== TAB_LESSONS) {
+        state.toolsExpanded = true;
+      }
+
+      state.activeTab = normalizeActiveTab(targetTab, TAB_PLAY);
       renderAll();
       schedulePersist();
       break;
+    }
     case 'start-play':
       void startPlayGame();
       break;
@@ -7570,6 +7613,10 @@ function handleDocumentClick(event) {
       renderNotationPanel();
       syncLessonVisibilityMenuState();
       schedulePersist();
+      break;
+    case 'toggle-pgn-comment-collapse':
+      state.pgnCommentsExpanded = !state.pgnCommentsExpanded;
+      renderNotationPanel();
       break;
     case 'toggle-tools':
       state.toolsExpanded = !state.toolsExpanded;
@@ -7690,6 +7737,7 @@ function handleDocumentClick(event) {
       dismissGameResultModal();
       break;
     case 'generate-batch':
+    case 'generate-puzzle-batch':
       void generatePuzzleBatch(5);
       break;
     case 'cancel-batch-generation':
@@ -7698,6 +7746,18 @@ function handleDocumentClick(event) {
     case 'new-puzzle':
       void requestNewPuzzle();
       break;
+    case 'replay-previous-puzzle':
+      void requestPreviousPuzzle();
+      break;
+    case 'clear-puzzle-history': {
+      if (window.confirm('Clear saved previous puzzles on this browser?')) {
+        state.puzzle.puzzleHistory = [];
+        state.puzzle.historyCursor = 0;
+        persistPuzzleHistory();
+        renderPuzzlePanel();
+      }
+      break;
+    }
     case 'retry-puzzle':
       void retryCurrentPuzzle();
       break;
@@ -8366,11 +8426,222 @@ async function triggerEngineMove() {
   cmd(`go movetime ${Math.trunc(thinkTime)}`);
 }
 
+function chooseBeginnerMove(bestMoveUci) {
+  if (!state.play.active || !state.analysis.game) {
+    return bestMoveUci;
+  }
+
+  const rating = state.play.skill;
+  if (rating > 1100) {
+    return bestMoveUci;
+  }
+
+  // 1. Get the legal move list
+  const legalMoves = state.analysis.game.moves({ verbose: true });
+  const moveCount = legalMoves.length;
+  if (moveCount === 0) {
+    return bestMoveUci;
+  }
+
+  // 2. Compute mistake probability based on rating (800 -> 45%, 900 -> 30%, 1000 -> 18%, 1100 -> 8%)
+  const elo = clamp(rating, 800, 1100);
+  let pMistake = 0.45;
+  if (elo <= 900) {
+    pMistake = 0.45 - ((elo - 800) / 100) * (0.45 - 0.30);
+  } else if (elo <= 1000) {
+    pMistake = 0.30 - ((elo - 900) / 100) * (0.30 - 0.18);
+  } else {
+    pMistake = 0.18 - ((elo - 1000) / 100) * (0.18 - 0.08);
+  }
+
+  // Safety adjustments
+  // - If side to move is in check: Reduce mistake probability by 75%
+  if (state.analysis.game.inCheck()) {
+    pMistake *= 0.25;
+  }
+
+  // - If legal move count <= 3: Reduce mistake probability significantly
+  if (moveCount <= 1) {
+    pMistake = 0;
+  } else if (moveCount === 2) {
+    pMistake *= 0.1;
+  } else if (moveCount === 3) {
+    pMistake *= 0.3;
+  }
+
+  // Probability check
+  if (Math.random() >= pMistake) {
+    return bestMoveUci;
+  }
+
+  // 3. Remove Stockfish move from candidate alternatives
+  const normBest = bestMoveUci.toLowerCase();
+  const alternatives = legalMoves.filter(move => {
+    const moveUci = (move.from + move.to + (move.promotion || '')).toLowerCase();
+    return moveUci !== normBest;
+  });
+
+  if (alternatives.length === 0) {
+    return bestMoveUci;
+  }
+
+  // 4. Classify alternative moves into Safe (A), Imperfect (B), Weak (C)
+  const categoryA = [];
+  const categoryB = [];
+  const categoryC = [];
+
+  const opponentColor = state.analysis.game.turn() === 'w' ? 'b' : 'w';
+  const ourColor = state.analysis.game.turn();
+  const pieceValues = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 100 };
+
+  for (const move of alternatives) {
+    let givesCheck = false;
+    let deliversMate = false;
+    let allowsMateIn1 = false;
+    let hangsMaterial = false;
+
+    // We clone the game to inspect the position after the move is made
+    const tempGame = new Chess(state.analysis.game.fen());
+    try {
+      tempGame.move({
+        from: move.from,
+        to: move.to,
+        promotion: move.promotion,
+      });
+
+      givesCheck = tempGame.inCheck();
+      deliversMate = tempGame.isCheckmate();
+
+      // Check if opponent attacks the target square and if we defend it
+      const isAttacked = tempGame.isAttacked(move.to, opponentColor);
+      const isDefended = tempGame.isAttacked(move.to, ourColor);
+      const val = pieceValues[move.piece] || 0;
+
+      if (isAttacked) {
+        if (!isDefended) {
+          // If undefended and not a pawn, or any piece that is hanging
+          if (val >= 3) {
+            hangsMaterial = true;
+          }
+        } else {
+          // Defended, but moving a valuable piece (Rook, Queen) to a square attacked by opponent
+          if (val >= 5) {
+            hangsMaterial = true;
+          }
+        }
+      }
+
+      // Check if this move allows opponent checkmate in 1
+      const opponentMoves = tempGame.moves({ verbose: true });
+      for (const opMove of opponentMoves) {
+        const replyGame = new Chess(tempGame.fen());
+        try {
+          replyGame.move({
+            from: opMove.from,
+            to: opMove.to,
+            promotion: opMove.promotion,
+          });
+          if (replyGame.isCheckmate()) {
+            allowsMateIn1 = true;
+            break;
+          }
+        } catch (err) {}
+      }
+    } catch (err) {}
+
+    const isCapture = Boolean(move.captured);
+
+    // Classify into categories:
+    // C. Weak alternatives: hangs material or allows checkmate in 1
+    if (hangsMaterial || allowsMateIn1) {
+      categoryC.push({ ...move, allowsMateIn1, hangsMaterial });
+    }
+    // B. Imperfect alternatives: captures or checks, but safe
+    else if (isCapture || givesCheck || deliversMate) {
+      categoryB.push({ ...move, allowsMateIn1, hangsMaterial });
+    }
+    // A. Safe alternatives: quiet developing moves
+    else {
+      categoryA.push({ ...move, allowsMateIn1, hangsMaterial });
+    }
+  }
+
+  // 5. Select category based on rating weighting
+  // Weightings at key ratings:
+  // 1100: 80% A, 20% B, 0% C
+  // 1000: 60% A, 40% B, 0% C
+  // 900:  0% A,  40% B, 60% C
+  // 800:  0% A,  5% B,  95% C
+  let wA = 0;
+  let wB = 0;
+  let wC = 0;
+
+  if (elo <= 900) {
+    const t = (elo - 800) / 100;
+    wA = 0;
+    wB = 0.05 + t * (0.40 - 0.05);
+    wC = 0.95 - t * (0.95 - 0.60);
+  } else if (elo <= 1000) {
+    const t = (elo - 900) / 100;
+    wA = t * 0.60;
+    wB = 0.40;
+    wC = 0.60 - t * 0.60;
+  } else {
+    const t = (elo - 1000) / 100;
+    wA = 0.60 + t * (0.80 - 0.60);
+    wB = 0.40 - t * (0.40 - 0.20);
+    wC = 0;
+  }
+
+  const roll = Math.random();
+  let targetCategory = 'C';
+  if (roll < wA) {
+    targetCategory = 'A';
+  } else if (roll < wA + wB) {
+    targetCategory = 'B';
+  } else {
+    targetCategory = 'C';
+  }
+
+  // Selection with fallback
+  let choices = [];
+  if (targetCategory === 'A') {
+    choices = categoryA;
+    if (choices.length === 0) choices = categoryB;
+    if (choices.length === 0) choices = categoryC;
+  } else if (targetCategory === 'B') {
+    choices = categoryB;
+    if (choices.length === 0) choices = categoryA;
+    if (choices.length === 0) choices = categoryC;
+  } else {
+    choices = categoryC;
+    // Prefer moves that don't allow checkmate in 1 if possible, even for weak moves
+    if (choices.length > 0) {
+      const nonMateC = choices.filter(m => !m.allowsMateIn1);
+      if (nonMateC.length > 0) {
+        choices = nonMateC;
+      }
+    }
+    if (choices.length === 0) choices = categoryB;
+    if (choices.length === 0) choices = categoryA;
+  }
+
+  if (choices.length > 0) {
+    const pick = choices[Math.floor(Math.random() * choices.length)];
+    const chosenUci = pick.from + pick.to + (pick.promotion || '');
+    console.log(`[Beginner Weakness] Intercepted Stockfish bestmove ${bestMoveUci} -> Played beginner alternative: ${chosenUci} (Rating: ${rating}, Category: ${targetCategory})`);
+    return chosenUci;
+  }
+
+  return bestMoveUci;
+}
+
 function applyPlayEngineMove(bestMoveUci) {
   if (!state.play.active || !state.analysis.game) {
     return;
   }
   updateClockElapsed();
+  bestMoveUci = chooseBeginnerMove(bestMoveUci);
   const parsedMove = tablebaseUciMoveObject(bestMoveUci);
   if (!parsedMove) {
     stopPlayGame({ reason: 'Stockfish returned an invalid move.' });
@@ -8761,6 +9032,45 @@ function persistPuzzleQueue() {
   }
 }
 
+function persistPuzzleHistory() {
+  try {
+    window.localStorage.setItem(PUZZLE_HISTORY_STORAGE_KEY, JSON.stringify(state.puzzle.puzzleHistory));
+  } catch {
+    // Ignore storage failures.
+  }
+}
+
+function hydratePuzzleHistory() {
+  try {
+    const rawHistory = window.localStorage.getItem(PUZZLE_HISTORY_STORAGE_KEY);
+    if (rawHistory) {
+      const history = JSON.parse(rawHistory);
+      if (Array.isArray(history)) {
+        state.puzzle.puzzleHistory = history;
+      }
+    }
+  } catch {
+    // Corrupt history record is ignored, preserving existing state.puzzle.puzzleHistory
+  }
+}
+
+function addPuzzleToHistory(puzzle) {
+  if (!puzzle || !puzzle.fen) {
+    return;
+  }
+  const key = (p) => `${p.fen}::${p.objective || ''}::${p.solverColor || ''}`;
+  const targetKey = key(puzzle);
+  const exists = state.puzzle.puzzleHistory.some(p => key(p) === targetKey);
+  if (exists) {
+    return;
+  }
+  state.puzzle.puzzleHistory.unshift(puzzle);
+  if (state.puzzle.puzzleHistory.length > PUZZLE_HISTORY_MAX) {
+    state.puzzle.puzzleHistory = state.puzzle.puzzleHistory.slice(0, PUZZLE_HISTORY_MAX);
+  }
+  persistPuzzleHistory();
+}
+
 function hydratePuzzleState() {
   try {
     const prefs = JSON.parse(window.localStorage.getItem(PUZZLE_PREFS_STORAGE_KEY) || 'null');
@@ -8816,6 +9126,7 @@ function hydratePuzzleState() {
   } catch {
     // Corrupt queue record is ignored, preserving existing state.puzzle.puzzleQueue
   }
+  hydratePuzzleHistory();
 }
 
 function updatePuzzleObjective(value) {
@@ -8973,9 +9284,13 @@ async function generatePuzzleBatch(count = 5) {
       });
 
       if (puzzle && puzzle.fen) {
+        if (state.puzzle.difficultyPreference && state.puzzle.difficultyPreference !== 'any') {
+          puzzle.difficulty = state.puzzle.difficultyPreference;
+        }
         state.puzzle.puzzleQueue.push(puzzle);
         state.puzzle.puzzleQueue = state.puzzle.puzzleQueue.slice(0, PUZZLE_QUEUE_MAX);
         persistPuzzleQueue();
+        addPuzzleToHistory(puzzle);
         successCount++;
       }
     } catch (error) {
@@ -9023,6 +9338,29 @@ async function requestNewPuzzle() {
     await startPuzzleSession(puzzle);
   } catch (error) {
     console.error('Failed to start puzzle session', error);
+    state.puzzle.apiError = error?.message || 'Failed to load puzzle.';
+    renderPuzzlePanel();
+  }
+}
+
+async function requestPreviousPuzzle() {
+  if (!state.puzzle.puzzleHistory || state.puzzle.puzzleHistory.length === 0) {
+    state.puzzle.apiError = 'No previous puzzles saved yet.';
+    renderPuzzlePanel();
+    return;
+  }
+  const puzzle = state.puzzle.puzzleHistory[state.puzzle.historyCursor];
+  state.puzzle.historyCursor = (state.puzzle.historyCursor + 1) % state.puzzle.puzzleHistory.length;
+  dismissPuzzleResultModal();
+  state.puzzle.apiError = '';
+  state.puzzle.lastResult = null;
+  state.activeTab = TAB_PUZZLE;
+  renderAll();
+
+  try {
+    await startPuzzleSession(puzzle);
+  } catch (error) {
+    console.error('Failed to replay puzzle session', error);
     state.puzzle.apiError = error?.message || 'Failed to load puzzle.';
     renderPuzzlePanel();
   }
@@ -9314,6 +9652,59 @@ function activatePremiumFromInput() {
   renderPuzzlePanel();
 }
 
+function renderPuzzleQueueControls(pz) {
+  const isGenerating = pz.isGeneratingPuzzleBatch || pz.generating;
+  const historyLength = pz.puzzleHistory ? pz.puzzleHistory.length : 0;
+  
+  let generationStatusMarkup = '';
+  if (pz.isGeneratingPuzzleBatch) {
+    generationStatusMarkup = `
+      <div class="banner puzzle-generating-banner" style="margin-top: 8px;">
+        <span class="puzzle-spinner" aria-hidden="true"></span>
+        <div>
+          <strong>Generating puzzles...</strong>
+          <div class="puzzle-generating-detail">${escapeHtml(pz.puzzleBatchStatus)}</div>
+          ${(pz.generatingAttempt > 0) ? `
+            <div style="font-size: 0.85em; color: var(--color-text-muted); margin-top: 4px;">
+              ${escapeHtml(puzzleGeneratingDetail())}
+            </div>
+          ` : ''}
+        </div>
+      </div>
+      <div class="action-row play-start-action-row" style="justify-content: center; margin-top: 8px;">
+        <button type="button" class="action-button danger" data-action="cancel-batch-generation">Cancel</button>
+      </div>
+    `;
+  } else {
+    generationStatusMarkup = `
+      <div style="text-align: center; color: var(--color-text-muted); font-size: 0.85em; margin-top: 6px;">
+        ${pz.puzzleQueue.length === 0 ? 'No ready puzzles. Generate 5 more.' : (pz.puzzleBatchStatus || `${pz.puzzleQueue.length} puzzle(s) ready.`)}
+      </div>
+    `;
+  }
+
+  const clearButtonMarkup = (pz.puzzleHistory && pz.puzzleHistory.length > 0)
+    ? `<button type="button" class="action-button danger" data-action="clear-puzzle-history" style="flex: 1; min-height: 36px;">Clear Previous Puzzles</button>`
+    : '';
+
+  return `
+    <div class="puzzle-queue-controls" style="display: flex; flex-direction: column; gap: 10px; background: var(--card-bg, rgba(255, 255, 255, 0.05)); border: 1px solid var(--card-border); border-radius: var(--radius-card); padding: 12px; margin-bottom: 12px;">
+      <div style="display: flex; justify-content: space-between; font-size: 0.9em; font-weight: 500;">
+        <div>Ready puzzles: <span style="font-weight: 700;">${pz.puzzleQueue.length}</span></div>
+        <div>Previous puzzles saved: <span style="font-weight: 700;">${historyLength}</span></div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
+        <button type="button" class="action-button tonal" data-action="generate-puzzle-batch" ${ (isGenerating || pz.puzzleQueue.length >= PUZZLE_QUEUE_MAX) ? 'disabled' : '' }>Generate 5 Puzzles</button>
+        <div style="display: flex; gap: 8px; width: 100%;">
+          <button type="button" class="action-button tonal" data-action="replay-previous-puzzle" ${ (historyLength === 0 || isGenerating) ? 'disabled' : '' } style="flex: 1; min-height: 36px;">Replay Previous Puzzle</button>
+          ${clearButtonMarkup}
+        </div>
+      </div>
+      ${generationStatusMarkup}
+    </div>
+  `;
+}
+
 function renderPuzzlePanel() {
   if (!dom.puzzlePanel) {
     return;
@@ -9328,6 +9719,8 @@ function renderPuzzlePanel() {
       <div class="puzzle-stat"><span class="puzzle-stat-value">${pz.bestStreak}</span><span class="puzzle-stat-label">Best</span></div>
     </div>
   `;
+
+  const queueControlsMarkup = renderPuzzleQueueControls(pz);
 
   let bodyMarkup = '';
   if (pz.generating) {
@@ -9445,38 +9838,10 @@ function renderPuzzlePanel() {
         </div>
       ` : ''}
       
-      ${pz.isGeneratingPuzzleBatch ? `
-        <div class="banner puzzle-generating-banner">
-          <span class="puzzle-spinner" aria-hidden="true"></span>
-          <div>
-            <strong>Generating puzzles...</strong>
-            <div class="puzzle-generating-detail">${escapeHtml(pz.puzzleBatchStatus)}</div>
-            ${(pz.generatingAttempt > 0) ? `
-              <div style="font-size: 0.85em; color: var(--color-text-muted); margin-top: 4px;">
-                ${escapeHtml(puzzleGeneratingDetail())}
-              </div>
-            ` : ''}
-          </div>
-        </div>
-        <div class="action-row play-start-action-row" style="justify-content: center;">
-          <button type="button" class="action-button danger" data-action="cancel-batch-generation">Cancel</button>
-        </div>
-      ` : `
-        <div class="action-row play-start-action-row" style="flex-direction: column; align-items: stretch; gap: 12px;">
-          <div style="display: flex; gap: 12px; width: 100%;">
-            <button type="button" class="action-button tonal" data-action="generate-batch" ${pz.puzzleQueue.length >= PUZZLE_QUEUE_MAX ? 'disabled' : ''} style="flex: 1;">Generate 5 Puzzles</button>
-            <button type="button" class="action-button primary" data-action="new-puzzle" ${pz.puzzleQueue.length === 0 ? 'disabled' : ''} style="flex: 1;">Next Puzzle</button>
-          </div>
-          <div class="puzzle-batch-status-container" style="text-align: center; font-size: 0.9em; margin-top: 4px;">
-            <div style="font-weight: 500;">
-              Ready puzzles: ${pz.puzzleQueue.length}
-            </div>
-            <div style="color: var(--color-text-muted); margin-top: 4px;">
-              ${pz.puzzleQueue.length === 0 ? 'No ready puzzles. Generate 5 more.' : (pz.puzzleBatchStatus || `${pz.puzzleQueue.length} puzzle(s) ready.`)}
-            </div>
-          </div>
-        </div>
-      `}
+      <div class="action-row play-start-action-row" style="display: flex; flex-direction: column; align-items: stretch; gap: 12px; margin-top: 12px;">
+        <button type="button" class="action-button primary" data-action="new-puzzle" ${pz.puzzleQueue.length === 0 ? 'disabled' : ''} style="width: 100%;">Next Puzzle</button>
+      </div>
+
       <p class="muted-copy">Random endgames with at most 6 pieces per side, generated and verified by Stockfish. You play the side to move: deliver checkmate, win a piece, or hold a draw.</p>
     `;
   }
@@ -9489,6 +9854,8 @@ function renderPuzzlePanel() {
         </div>
       </div>
       ${statsMarkup}
+      <div class="section-divider"></div>
+      ${queueControlsMarkup}
       <div class="section-divider"></div>
       ${bodyMarkup}
     </article>
