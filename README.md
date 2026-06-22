@@ -194,6 +194,30 @@ http://127.0.0.1:8000/
 
 Do not open `index.html` directly over `file://`. The Stockfish worker and asset loading are intended to run from an HTTP server.
 
+### Chessboard Image Scanner Helper (Optional)
+
+The app includes an optional **Scan board** feature that automatically converts chessboard images (`.png`, `.jpg`, `.jpeg`) into FEN positions. It relies on a local offline Python environment in `C:\Users\Ronaldo\fen_test` utilizing `chessimg2pos`.
+
+#### 1. Start the Scanner Helper Server
+In a separate terminal window, start the local scanner helper backend:
+```powershell
+python scanner_server.py
+```
+This starts a lightweight HTTP server on `http://127.0.0.1:8765`.
+
+#### 2. Run the Main Web App
+Ensure you are running the main HTTP server:
+```powershell
+python local_server.py
+```
+And open `http://127.0.0.1:8000/` in your browser.
+
+#### 3. Use the Scan board Button
+1. In the web app, click the **Setup** tab on the right pane.
+2. Click the **Scan board** button.
+3. Select a valid chessboard image file.
+4. The helper server will process the image offline, return the parsed chessboard placement, and the app will automatically apply the FEN to the chessboard!
+
 ## Endgame Puzzle Premium Keys
 
 The Endgame Puzzles tab allows `PUZZLE_FREE_PER_DAY` (3) free puzzles per day. An activation key in the form `CHESS-XXXX-XXXX-CC` removes the limit. Keys are validated entirely offline with a checksum, so no server or account is involved.

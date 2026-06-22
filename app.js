@@ -193,6 +193,7 @@ const dom = {
   lessonFileInput: document.getElementById('lessonFileInput'),
   pgnFileInput: document.getElementById('pgnFileInput'),
   guidedReviewFileInput: document.getElementById('guidedReviewFileInput'),
+  scanBoardInput: document.getElementById('scanBoardInput'),
   lessonFileStatus: document.getElementById('lessonFileStatus'),
   heroBanner: document.getElementById('heroBanner'),
   controlPaneScroll: document.querySelector('.control-pane-scroll'),
@@ -240,6 +241,8 @@ const state = {
     meta: { ...DEFAULT_META },
     fenInput: DEFAULT_POSITION,
     fenError: '',
+    scanStatus: '',
+    scanStatusType: '',
     paletteColor: 'w',
     armedPiece: null,
     advancedOpen: false,
@@ -351,7 +354,7 @@ const state = {
     autoHiddenPvLines: false,
   },
   puzzle: {
-    premium: false,
+    premium: true,
     premiumKey: '',
     freeDate: '',
     freeUsed: 0,
@@ -373,6 +376,9 @@ const state = {
     bestStreak: 0,
     savedPlaySettings: null,
     apiError: '',
+    puzzleQueue: [],
+    isGeneratingPuzzleBatch: false,
+    puzzleBatchStatus: '',
   },
 
 };
@@ -3482,6 +3488,90 @@ function applyStrictFenInput() {
   commitStrictFenInput(state.setup.fenInput, { render: true, showError: true });
 }
 
+async function scanBoardImage(file) {
+  state.setup.scanStatus = 'Scanning board...';
+  state.setup.scanStatusType = 'warning';
+  state.setup.fenError = '';
+  renderSetupPanel();
+
+  try {
+    const response = await fetch('http://127.0.0.1:8765/predict-fen', {
+      method: 'POST',
+      headers: {
+        'Content-Type': file.type || 'application/octet-stream',
+      },
+      body: file
+    });
+
+    if (!response.ok) {
+      let errorMsg = 'Scan failed. Please try a clearer image.';
+      try {
+        const errJson = await response.json();
+        if (errJson && errJson.error) {
+          errorMsg = `Scan failed: ${errJson.error}`;
+        }
+      } catch (e) {}
+      state.setup.scanStatus = errorMsg;
+      state.setup.scanStatusType = 'danger';
+      renderSetupPanel();
+      return;
+    }
+
+    const data = await response.json();
+    if (!data || !data.placement) {
+      state.setup.scanStatus = 'Scan failed. Please try a clearer image.';
+      state.setup.scanStatusType = 'danger';
+      renderSetupPanel();
+      return;
+    }
+
+    const placement = compressFen(data.placement);
+    const activeColor = state.setup.meta.activeColor === 'b' ? 'b' : 'w';
+    const fullFen = `${placement} ${activeColor} - - 0 1`;
+
+    state.setup.fenInput = fullFen;
+    const applied = commitStrictFenInput(fullFen, { render: true, showError: false });
+    if (applied) {
+      state.setup.scanStatus = 'FEN detected. Please verify the board.';
+      state.setup.scanStatusType = 'success';
+      state.setup.fenError = '';
+    } else {
+      state.setup.scanStatus = 'Scan failed. Please try a clearer image.';
+      state.setup.scanStatusType = 'danger';
+    }
+    renderSetupPanel();
+  } catch (error) {
+    console.error('Scan board error:', error);
+    state.setup.scanStatus = 'Scanner helper is not running. Start the local scanner server first.';
+    state.setup.scanStatusType = 'danger';
+    renderSetupPanel();
+  }
+}
+
+function compressFen(raw) {
+  const rows = raw.trim().split('/');
+  const fixedRows = rows.map(row => {
+    let empty = 0;
+    let fixed = '';
+    for (const ch of row) {
+      if (ch === '1') {
+        empty += 1;
+      } else {
+        if (empty > 0) {
+          fixed += empty;
+          empty = 0;
+        }
+        fixed += ch;
+      }
+    }
+    if (empty > 0) {
+      fixed += empty;
+    }
+    return fixed;
+  });
+  return fixedRows.join('/');
+}
+
 function autoApplyPastedFenInput() {
   if (commitStrictFenInput(state.setup.fenInput, { render: true, showError: false })) {
     syncLessonFileStatus('Pasted FEN applied.');
@@ -3505,11 +3595,15 @@ function handleDocumentPaste(event) {
 function resetFenDraft() {
   state.setup.fenInput = state.setupFen;
   state.setup.fenError = '';
+  state.setup.scanStatus = '';
+  state.setup.scanStatusType = '';
   renderHeroBanner();
   renderSetupPanel();
 }
 
 function updateSetupFromBoardMutation(mutator) {
+  state.setup.scanStatus = '';
+  state.setup.scanStatusType = '';
   const nextPieces = { ...state.setup.pieces };
   mutator(nextPieces);
   commitSetupState(nextPieces, cloneMeta(state.setup.meta), { syncFenInput: true, resetAnalysis: true });
@@ -3579,6 +3673,8 @@ function setPaletteColor(color) {
 }
 
 function toggleArmedPiece(piece) {
+  state.setup.scanStatus = '';
+  state.setup.scanStatusType = '';
   state.setup.armedPiece = state.setup.armedPiece === piece ? null : piece;
   renderSetupPanel();
 }
@@ -4124,13 +4220,7 @@ function currentPvPlaceholderText() {
         ? `Continuing analysis past depth ${state.engine.searchTargetDepth}...`
         : 'Continuing analysis from the current board position...';
     }
-    const targetDepth = Number.isFinite(state.engine.searchTargetDepth)
-      ? state.engine.searchTargetDepth
-      : currentAnalysisTargetDepth();
-    if (!state.engine.depth) {
-      return 'Calculating...';
-    }
-    return 'Calculating...';
+    return '';
   }
   return 'No principal variation yet.';
 }
@@ -6544,7 +6634,17 @@ function renderSetupPanel() {
         <div class="action-row">
           <button type="button" class="action-button action-button-static primary" data-action="apply-fen">Apply FEN</button>
           <button type="button" class="action-button action-button-static tonal" data-action="reset-fen">Reset draft</button>
+          <button type="button" class="action-button action-button-static tonal" data-action="scan-board">Scan board</button>
         </div>
+
+        ${state.setup.scanStatus ? `
+          <div class="banner ${state.setup.scanStatusType || 'warning'}">
+            <div>
+              <strong>Board Scan</strong>
+              <div>${escapeHtml(state.setup.scanStatus)}</div>
+            </div>
+          </div>
+        ` : ''}
 
         ${state.setup.fenError ? `
           <div class="banner danger">
@@ -7314,7 +7414,7 @@ function handleDocumentClick(event) {
       if (state.play.active && actionEl.dataset.tab !== (state.puzzle.sessionActive ? TAB_PUZZLE : TAB_PLAY)) {
         stopPlayGame({ reason: 'Game abandoned by switching tabs.' });
       }
-      if (state.puzzle.generating && actionEl.dataset.tab !== TAB_PUZZLE) {
+      if ((state.puzzle.generating || state.puzzle.isGeneratingPuzzleBatch) && actionEl.dataset.tab !== TAB_PUZZLE) {
         cancelPuzzleGeneration();
       }
       state.activeTab = normalizeActiveTab(actionEl.dataset.tab, TAB_SETUP);
@@ -7346,7 +7446,20 @@ function handleDocumentClick(event) {
       setPaletteColor(actionEl.dataset.value || 'w');
       break;
     case 'set-active-color':
+      state.setup.scanStatus = '';
+      state.setup.scanStatusType = '';
       setSetupActiveColor(actionEl.dataset.value || 'w');
+      break;
+    case 'set-palette-color':
+      state.setup.scanStatus = '';
+      state.setup.scanStatusType = '';
+      setPaletteColor(actionEl.dataset.value || 'w');
+      break;
+    case 'scan-board':
+      if (dom.scanBoardInput) {
+        dom.scanBoardInput.value = '';
+        dom.scanBoardInput.click();
+      }
       break;
     case 'apply-fen':
       applyStrictFenInput();
@@ -7522,6 +7635,12 @@ function handleDocumentClick(event) {
     case 'dismiss-game-result':
       dismissGameResultModal();
       break;
+    case 'generate-batch':
+      void generatePuzzleBatch(5);
+      break;
+    case 'cancel-batch-generation':
+      cancelPuzzleGeneration();
+      break;
     case 'new-puzzle':
       void requestNewPuzzle();
       break;
@@ -7597,6 +7716,8 @@ function handleDocumentInput(event) {
   }
   if (event.target.id === 'fenInput') {
     state.setup.fenInput = event.target.value;
+    state.setup.scanStatus = '';
+    state.setup.scanStatusType = '';
   }
 }
 
@@ -7611,6 +7732,13 @@ function handleDocumentChange(event) {
         dom.guidedReviewFileInput.value = '';
       }
     });
+    return;
+  }
+  if (event.target === dom.scanBoardInput) {
+    const file = event.target.files?.[0];
+    if (file) {
+      void scanBoardImage(file);
+    }
     return;
   }
   if (event.target === dom.lessonFileInput) {
@@ -8524,16 +8652,7 @@ function persistPuzzleFreeUsage() {
 }
 
 function puzzleFreeRemaining() {
-  if (state.puzzle.premium) {
-    return Infinity;
-  }
-  const today = puzzleTodayKey();
-  if (state.puzzle.freeDate !== today) {
-    state.puzzle.freeDate = today;
-    state.puzzle.freeUsed = 0;
-    persistPuzzleFreeUsage();
-  }
-  return Math.max(0, PUZZLE_FREE_PER_DAY - state.puzzle.freeUsed);
+  return Infinity;
 }
 
 // Activation keys are validated offline: CHESS-XXXX-XXXX-CC where CC is a
@@ -8721,61 +8840,91 @@ function handlePuzzleGenerationAttempt({ attempt, maxAttempts }) {
   }
 }
 
-async function requestNewPuzzle() {
-  if (state.puzzle.generating) {
+async function generatePuzzleBatch(count = 5) {
+  if (state.puzzle.isGeneratingPuzzleBatch) {
     return;
   }
+  state.puzzle.isGeneratingPuzzleBatch = true;
+  state.puzzle.puzzleBatchStatus = `Generating puzzles... (0/${count})`;
+  state.puzzle.apiError = '';
+  renderPuzzlePanel();
+
+  const api = ensurePuzzleApi();
+  let successCount = 0;
+  let attempts = 0;
+  const maxRetries = 15;
+
+  puzzleGenerationController = new AbortController();
+
+  while (successCount < count && attempts < maxRetries) {
+    if (puzzleGenerationController.signal.aborted) {
+      break;
+    }
+    attempts++;
+    state.puzzle.puzzleBatchStatus = `Generating puzzles... (${successCount}/${count})`;
+    renderPuzzlePanel();
+
+    try {
+      state.puzzle.generatingAttempt = 0;
+      state.puzzle.generatingMaxAttempts = 0;
+
+      const puzzle = await api.generatePuzzle({
+        objective: state.puzzle.objectivePreference,
+        difficulty: state.puzzle.difficultyPreference,
+        signal: puzzleGenerationController.signal,
+        onAttempt: handlePuzzleGenerationAttempt,
+      });
+
+      if (puzzle && puzzle.fen) {
+        state.puzzle.puzzleQueue.push(puzzle);
+        successCount++;
+      }
+    } catch (error) {
+      if (error?.name === 'AbortError') {
+        break;
+      }
+      console.error('Batch puzzle generation attempt failed', error);
+    }
+  }
+
+  state.puzzle.isGeneratingPuzzleBatch = false;
+  if (puzzleGenerationController?.signal?.aborted) {
+    state.puzzle.puzzleBatchStatus = `Generation cancelled. ${successCount} puzzle(s) ready.`;
+  } else if (successCount === count) {
+    state.puzzle.puzzleBatchStatus = `5 puzzles ready.`;
+  } else {
+    state.puzzle.puzzleBatchStatus = `Generated ${successCount} of ${count} puzzles.`;
+  }
+  puzzleGenerationController = null;
+  renderPuzzlePanel();
+}
+
+async function requestNewPuzzle() {
   if (state.puzzle.sessionActive && state.play.active) {
     return;
   }
   if (state.play.active) {
     stopPlayGame({ reason: 'Game abandoned to start a puzzle.' });
   }
-  if (puzzleFreeRemaining() <= 0) {
-    openPremiumModal();
+  if (state.puzzle.puzzleQueue.length === 0) {
+    state.puzzle.apiError = 'No ready puzzles. Generate 5 more.';
     renderPuzzlePanel();
     return;
   }
   dismissPuzzleResultModal();
-  if (!state.puzzle.premium) {
-    state.puzzle.freeUsed += 1;
-    persistPuzzleFreeUsage();
-  }
-  state.puzzle.generating = true;
-  state.puzzle.generatingAttempt = 0;
+  
+  const puzzle = state.puzzle.puzzleQueue.shift();
   state.puzzle.apiError = '';
   state.puzzle.lastResult = null;
   state.activeTab = TAB_PUZZLE;
   renderAll();
-  puzzleGenerationController = new AbortController();
+
   try {
-    const api = ensurePuzzleApi();
-    const puzzle = await api.generatePuzzle({
-      objective: state.puzzle.objectivePreference,
-      difficulty: state.puzzle.difficultyPreference,
-      signal: puzzleGenerationController.signal,
-      onAttempt: handlePuzzleGenerationAttempt,
-    });
-    state.puzzle.generating = false;
     await startPuzzleSession(puzzle);
-    // Warm up the next puzzle in the background so "Next Puzzle" is instant.
-    api.prefetchPuzzle({
-      objective: state.puzzle.objectivePreference,
-      difficulty: state.puzzle.difficultyPreference,
-    });
   } catch (error) {
-    state.puzzle.generating = false;
-    if (!state.puzzle.premium) {
-      state.puzzle.freeUsed = Math.max(0, state.puzzle.freeUsed - 1);
-      persistPuzzleFreeUsage();
-    }
-    if (error?.name !== 'AbortError') {
-      console.error('Puzzle generation failed', error);
-      state.puzzle.apiError = error?.message || 'Puzzle generation failed. Please try again.';
-    }
+    console.error('Failed to start puzzle session', error);
+    state.puzzle.apiError = error?.message || 'Failed to load puzzle.';
     renderPuzzlePanel();
-  } finally {
-    puzzleGenerationController = null;
   }
 }
 
@@ -8822,7 +8971,7 @@ async function startPuzzleSession(puzzle) {
 async function retryCurrentPuzzle() {
   const puzzle = state.puzzle.current;
   dismissPuzzleResultModal();
-  if (!puzzle || state.puzzle.generating || (state.puzzle.sessionActive && state.play.active)) {
+  if (!puzzle || state.puzzle.generating || state.puzzle.isGeneratingPuzzleBatch || (state.puzzle.sessionActive && state.play.active)) {
     return;
   }
   await startPuzzleSession(puzzle);
@@ -8951,10 +9100,8 @@ function showPuzzleResultModal(outcome) {
   if (outcome.kind === 'failed' && state.puzzle.current) {
     buttons.push('<button type="button" class="action-button tonal" data-action="retry-puzzle">Retry Puzzle</button>');
   }
-  if (puzzleFreeRemaining() > 0) {
+  if (state.puzzle.puzzleQueue.length > 0) {
     buttons.push('<button type="button" class="action-button primary" data-action="puzzle-next">Next Puzzle</button>');
-  } else {
-    buttons.push('<button type="button" class="action-button primary" data-action="open-premium-modal">Unlock Premium</button>');
   }
   buttons.push('<button type="button" class="action-button" data-action="dismiss-puzzle-result">Close</button>');
   dom.puzzleResultActions.innerHTML = buttons.join('');
@@ -9028,10 +9175,6 @@ function renderPuzzlePanel() {
     return;
   }
   const pz = state.puzzle;
-  const remaining = puzzleFreeRemaining();
-  const planPill = pz.premium
-    ? '<span class="pill pill-primary puzzle-plan-pill">Premium</span>'
-    : `<span class="pill puzzle-plan-pill">Free · ${remaining}/${PUZZLE_FREE_PER_DAY} today</span>`;
 
   const statsMarkup = `
     <div class="puzzle-stats-row" role="group" aria-label="Puzzle statistics">
@@ -9077,17 +9220,6 @@ function renderPuzzlePanel() {
         <button type="button" class="action-button danger" data-action="give-up-puzzle">Give Up</button>
         ${puzzle.objective === PUZZLE_OBJECTIVE_DRAW ? '<button type="button" class="action-button tonal" data-action="offer-draw">Offer Draw</button>' : ''}
         <button type="button" class="action-button tonal" data-action="skip-puzzle">Skip Puzzle</button>
-      </div>
-    `;
-  } else if (!pz.premium && remaining <= 0) {
-    bodyMarkup = `
-      <div class="puzzle-lock-card">
-        <div class="puzzle-lock-icon" aria-hidden="true">🔒</div>
-        <strong>Daily free puzzles used up</strong>
-        <p class="muted-copy">You have used your ${PUZZLE_FREE_PER_DAY} free endgame puzzles for today. Unlock Premium for unlimited Stockfish-verified puzzles, or come back tomorrow.</p>
-        <div class="action-row">
-          <button type="button" class="action-button primary" data-action="open-premium-modal">Unlock Premium</button>
-        </div>
       </div>
     `;
   } else {
@@ -9168,10 +9300,39 @@ function renderPuzzlePanel() {
           </div>
         </div>
       ` : ''}
-      <div class="action-row play-start-action-row">
-        <button type="button" class="action-button primary" data-action="new-puzzle">New Puzzle</button>
-        ${pz.premium ? '' : '<button type="button" class="action-button tonal" data-action="open-premium-modal">Unlock Premium</button>'}
-      </div>
+      
+      ${pz.isGeneratingPuzzleBatch ? `
+        <div class="banner puzzle-generating-banner">
+          <span class="puzzle-spinner" aria-hidden="true"></span>
+          <div>
+            <strong>Generating 5 puzzles...</strong>
+            <div class="puzzle-generating-detail">${escapeHtml(pz.puzzleBatchStatus)}</div>
+            ${(pz.generatingAttempt > 0) ? `
+              <div style="font-size: 0.85em; color: var(--color-text-muted); margin-top: 4px;">
+                ${escapeHtml(puzzleGeneratingDetail())}
+              </div>
+            ` : ''}
+          </div>
+        </div>
+        <div class="action-row play-start-action-row" style="justify-content: center;">
+          <button type="button" class="action-button danger" data-action="cancel-batch-generation">Cancel</button>
+        </div>
+      ` : `
+        <div class="action-row play-start-action-row" style="flex-direction: column; align-items: stretch; gap: 12px;">
+          <div style="display: flex; gap: 12px; width: 100%;">
+            <button type="button" class="action-button tonal" data-action="generate-batch" style="flex: 1;">Generate 5 Puzzles</button>
+            <button type="button" class="action-button primary" data-action="new-puzzle" ${pz.puzzleQueue.length === 0 ? 'disabled' : ''} style="flex: 1;">Next Puzzle</button>
+          </div>
+          <div class="puzzle-batch-status-container" style="text-align: center; font-size: 0.9em; margin-top: 4px;">
+            <div style="font-weight: 500;">
+              Ready puzzles: ${pz.puzzleQueue.length}/5
+            </div>
+            <div style="color: var(--color-text-muted); margin-top: 4px;">
+              ${pz.puzzleQueue.length === 0 ? 'No ready puzzles. Generate 5 more.' : (pz.puzzleBatchStatus || '5 puzzles ready.')}
+            </div>
+          </div>
+        </div>
+      `}
       <p class="muted-copy">Random endgames with at most 6 pieces per side, generated and verified by Stockfish. You play the side to move: deliver checkmate, win a piece, or hold a draw.</p>
     `;
   }
@@ -9180,7 +9341,7 @@ function renderPuzzlePanel() {
     <article class="lesson-section">
       <div class="lesson-section-header">
         <div class="play-section-heading">
-          <h3 class="lesson-section-title play-section-title">Endgame Puzzles ${planPill}</h3>
+          <h3 class="lesson-section-title play-section-title">Endgame Puzzles</h3>
         </div>
       </div>
       ${statsMarkup}

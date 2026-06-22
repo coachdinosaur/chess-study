@@ -1174,6 +1174,42 @@ code {
   max-height: calc(var(--app-height) - 1.5rem);
 }
 
+.control-pane-scroll,
+.guided-review-row-list,
+.lesson-overflow-menu,
+.custom-select-menu {
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-soft) transparent;
+}
+
+.control-pane-scroll::-webkit-scrollbar,
+.guided-review-row-list::-webkit-scrollbar,
+.lesson-overflow-menu::-webkit-scrollbar,
+.custom-select-menu::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.control-pane-scroll::-webkit-scrollbar-thumb,
+.guided-review-row-list::-webkit-scrollbar-thumb,
+.lesson-overflow-menu::-webkit-scrollbar-thumb,
+.custom-select-menu::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: var(--text-soft);
+}
+
+.control-pane-scroll::-webkit-scrollbar-track,
+.guided-review-row-list::-webkit-scrollbar-track,
+.lesson-overflow-menu::-webkit-scrollbar-track,
+.custom-select-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.control-pane-scroll,
+.guided-review-row-list {
+  scrollbar-gutter: stable;
+}
+
 .control-pane-scroll {
   display: grid;
   gap: 0.72rem;
@@ -1182,6 +1218,7 @@ code {
   overflow-y: auto;
   overflow-x: hidden;
   padding: 0 0 0.3rem;
+  padding-inline-end: max(0.35rem, 8px);
   border: 0;
   background: transparent;
   box-shadow: none;
@@ -1548,6 +1585,7 @@ code {
   gap: 0.1rem;
   min-width: 10rem;
   padding: 0.28rem;
+  padding-inline-end: max(0.28rem, 8px);
   border: 1px solid var(--overflow-menu-border);
   border-radius: var(--radius-panel);
   background: var(--overflow-menu-bg);
@@ -2617,7 +2655,7 @@ code {
   gap: 0.45rem;
   max-height: 22rem;
   overflow: auto;
-  padding-right: 0.25rem;
+  padding-inline-end: max(0.25rem, 8px);
 }
 
 .guided-review-row-item {
@@ -2787,6 +2825,8 @@ code {
 }
 
 .pv-line.is-empty .pv-line-text {
+  min-height: 1.55em;
+  min-height: 1lh;
   color: var(--text-muted);
 }
 
@@ -3234,6 +3274,8 @@ code {
   .control-pane-scroll {
     max-height: none;
     min-height: 0;
+    padding-inline-end: 0;
+    scrollbar-gutter: auto;
   }
 }
 
@@ -3622,7 +3664,9 @@ code {
     gap: 0.75rem;
     min-height: 0;
     padding: 0 0 0.15rem;
+    padding-inline-end: max(0.35rem, 8px);
     overflow-y: auto;
+    scrollbar-gutter: stable;
   }
 
   .lesson-header,
@@ -3772,6 +3816,7 @@ code {
   gap: 0.1rem;
   min-width: 100%;
   padding: 0.28rem;
+  padding-inline-end: max(0.28rem, 8px);
   border: 1px solid var(--overflow-menu-border);
   border-radius: var(--radius-panel);
   background: var(--overflow-menu-bg);
