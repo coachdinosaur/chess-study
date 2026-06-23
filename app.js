@@ -456,18 +456,25 @@ const DEFAULT_ENDGAME_PUZZLES = [
 ];
 
 function createDefaultPuzzleQueue() {
-  return DEFAULT_ENDGAME_PUZZLES.map(p => ({ ...p, bestLineUci: [...p.bestLineUci] }));
+  return DEFAULT_ENDGAME_PUZZLES.map(p => ({ ...p, bestLineUci: [...p.bestLineUci], source: 'default' }));
 }
+
+const DEFAULT_PUZZLE_COUNT = DEFAULT_ENDGAME_PUZZLES.length;
 
 function addPuzzleToQueue(puzzle) {
   if (state.puzzle.puzzleQueue.some(p => p.id === puzzle.id)) {
     return;
   }
+  if (!puzzle.source) {
+    puzzle.source = 'generated';
+  }
   state.puzzle.puzzleQueue.push(puzzle);
 }
 
 function restoreDefaultPuzzles() {
-  state.puzzle.puzzleQueue = createDefaultPuzzleQueue();
+  // Keep generated puzzles, replace all defaults with a fresh set
+  const generatedPuzzles = state.puzzle.puzzleQueue.filter(p => p.source === 'generated');
+  state.puzzle.puzzleQueue = [...createDefaultPuzzleQueue(), ...generatedPuzzles];
   persistPuzzleQueue();
   renderPuzzlePanel();
 }
@@ -9731,6 +9738,12 @@ function hydratePuzzleState() {
     } else {
       const queue = JSON.parse(rawQueue);
       if (Array.isArray(queue)) {
+        // Migrate old puzzles that lack a source property
+        for (const p of queue) {
+          if (!p.source) {
+            p.source = (typeof p.id === 'string' && p.id.startsWith('default-endgame-')) ? 'default' : 'generated';
+          }
+        }
         state.puzzle.puzzleQueue = queue;
       }
     }
@@ -9861,7 +9874,7 @@ async function generatePuzzleBatch(count = 5) {
     renderPuzzlePanel();
     return;
   }
-  const countToGenerate = Math.min(count, PUZZLE_QUEUE_MAX - state.puzzle.puzzleQueue.length);
+  const countToGenerate = count;
 
   state.puzzle.isGeneratingPuzzleBatch = true;
   state.puzzle.puzzleBatchStatus = `Generating puzzles... (0/${countToGenerate})`;
@@ -9898,8 +9911,8 @@ async function generatePuzzleBatch(count = 5) {
         if (state.puzzle.difficultyPreference && state.puzzle.difficultyPreference !== 'any') {
           puzzle.difficulty = state.puzzle.difficultyPreference;
         }
+        puzzle.source = 'generated';
         addPuzzleToQueue(puzzle);
-        state.puzzle.puzzleQueue = state.puzzle.puzzleQueue.slice(0, PUZZLE_QUEUE_MAX);
         persistPuzzleQueue();
         addPuzzleToHistory(puzzle);
         successCount++;
@@ -10303,26 +10316,37 @@ function renderPuzzleQueueControls(pz) {
     `;
   }
 
+  const defaultRemaining = pz.puzzleQueue.filter(p => p.source === 'default').length;
+  const generatedReady = pz.puzzleQueue.filter(p => p.source === 'generated').length;
+  const totalReady = pz.puzzleQueue.length;
+
   const clearButtonMarkup = (pz.puzzleHistory && pz.puzzleHistory.length > 0)
     ? `<button type="button" class="action-button danger" data-action="clear-puzzle-history" style="flex: 1; min-height: 36px;">Clear Previous Puzzles</button>`
     : '';
 
-  const restoreButtonMarkup = (pz.puzzleQueue.length === 0 && !isGenerating)
-    ? `<button type="button" class="action-button primary" data-action="restore-default-puzzles" style="width: 100%; min-height: 36px;">Restore Default Puzzles</button>`
-    : '';
-
   return `
     <div class="puzzle-queue-controls" style="display: flex; flex-direction: column; gap: 10px; background: var(--card-bg, rgba(255, 255, 255, 0.05)); border: 1px solid var(--card-border); border-radius: var(--radius-card); padding: 12px; margin-bottom: 12px;">
-      <div style="display: flex; justify-content: space-between; font-size: 0.9em; font-weight: 500;">
-        <div>Ready puzzles: <span style="font-weight: 700;">${pz.puzzleQueue.length}</span></div>
-        <div>Previous puzzles saved: <span style="font-weight: 700;">${historyLength}</span></div>
-      </div>
-      <div style="font-size: 0.8em; color: var(--color-text-muted); text-align: left; margin-top: -4px;">
-        20 default endgame puzzles included.
+      <div style="display: flex; flex-direction: column; gap: 3px; font-size: 0.9em;">
+        <div style="display: flex; justify-content: space-between;">
+          <span>Default puzzles remaining:</span>
+          <span style="font-weight: 700;">${defaultRemaining} / ${DEFAULT_PUZZLE_COUNT}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span>Generated puzzles ready:</span>
+          <span style="font-weight: 700;">${generatedReady}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; border-top: 1px solid var(--card-border); padding-top: 3px; margin-top: 2px; font-weight: 500;">
+          <span>Total ready puzzles:</span>
+          <span style="font-weight: 700;">${totalReady}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 0.9em; color: var(--color-text-muted);">
+          <span>Previous puzzles saved:</span>
+          <span style="font-weight: 700;">${historyLength}</span>
+        </div>
       </div>
       <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
-        <button type="button" class="action-button tonal" data-action="generate-puzzle-batch" ${ (isGenerating || pz.puzzleQueue.length >= PUZZLE_QUEUE_MAX) ? 'disabled' : '' }>Generate 5 More Puzzles</button>
-        ${restoreButtonMarkup}
+        <button type="button" class="action-button tonal" data-action="generate-puzzle-batch" ${ (isGenerating || totalReady >= PUZZLE_QUEUE_MAX) ? 'disabled' : '' }>Generate 5 More Puzzles</button>
+        <button type="button" class="action-button tonal" data-action="restore-default-puzzles" ${ isGenerating ? 'disabled' : '' } style="width: 100%; min-height: 36px;">Reset Default Puzzles</button>
         <div style="display: flex; gap: 8px; width: 100%;">
           <button type="button" class="action-button tonal" data-action="replay-previous-puzzle" ${ (historyLength === 0 || isGenerating) ? 'disabled' : '' } style="flex: 1; min-height: 36px;">Replay Previous Puzzle</button>
           ${clearButtonMarkup}
