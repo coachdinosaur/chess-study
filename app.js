@@ -696,6 +696,7 @@ const state = {
   boardLayoutFrame: 0,
   engine: {
     worker: null,
+    workerGeneration: 0,
     ready: false,
     loading: false,
     analyzing: false,
@@ -766,6 +767,10 @@ const state = {
     lastClockTick: 0,
     timerId: null,
     engineThinking: false,
+    playSessionId: 0,
+    activeEngineSessionId: null,
+    playEngineWatchdog: null,
+    playEngineRetryCount: 0,
     thinkingSpeed: 'normal',
     autoHiddenPgnComments: false,
     autoHiddenPvLines: false,
@@ -3815,7 +3820,12 @@ function persistDraft() {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
 }
 
-function applyLessonState(lessonState) {
+function applyLessonState(lessonState, options = {}) {
+  const { stopPlay = true } = options;
+  if (stopPlay && state.play.active) {
+    stopPlayGame({ reason: 'New position loaded.' });
+  }
+  cancelPlayEngineRequest('PGN/lesson state change');
   state.title = normalizeEditableText(lessonState.title);
   state.analysisTargetDepth = normalizeAnalysisTargetDepth(lessonState.analysisTargetDepth);
   state.boardOrientation = lessonState.boardOrientation;
@@ -5413,8 +5423,8 @@ function terminateEngineWorker() {
   if (!state.engine.worker) {
     return;
   }
-  state.engine.worker.removeEventListener('message', handleWorkerMessage);
-  state.engine.worker.removeEventListener('error', handleWorkerError);
+  state.engine.worker.removeEventListener('message', state.engine.worker._boundOnMessage || handleWorkerMessage);
+  state.engine.worker.removeEventListener('error', state.engine.worker._boundOnError || handleWorkerError);
   state.engine.worker.terminate();
   state.engine.worker = null;
 }
@@ -5429,9 +5439,26 @@ async function createStockfishWorker(options = {}) {
   state.engine.summary = summaryPrefix ? `${summaryPrefix} ${loadingSummary}` : loadingSummary;
   renderAnalysisPanel();
   renderHeaderMeta();
+  state.engine.workerGeneration += 1;
+  const generation = state.engine.workerGeneration;
   const worker = new Worker(new URL(candidate.workerPath, import.meta.url));
-  worker.addEventListener('message', handleWorkerMessage);
-  worker.addEventListener('error', handleWorkerError);
+  const boundOnMessage = (event) => {
+    if (state.engine.workerGeneration !== generation) {
+      debugPlayEngine('ignoring message from stale worker generation', { generation, currentGeneration: state.engine.workerGeneration });
+      return;
+    }
+    handleWorkerMessage(event);
+  };
+  const boundOnError = (event) => {
+    if (state.engine.workerGeneration !== generation) {
+      return;
+    }
+    handleWorkerError(event);
+  };
+  worker._boundOnMessage = boundOnMessage;
+  worker._boundOnError = boundOnError;
+  worker.addEventListener('message', boundOnMessage);
+  worker.addEventListener('error', boundOnError);
   return worker;
 }
 
@@ -5446,6 +5473,7 @@ function clearEngineReadyHandshake() {
 }
 
 function handleWorkerError(event) {
+  cancelPlayEngineRequest('worker error');
   const message = event?.message || (state.engine.bundleLabel
     ? `Stockfish (${state.engine.bundleLabel}) worker failed to start.`
     : 'Stockfish worker failed to start.');
@@ -5563,21 +5591,42 @@ function handleWorkerMessage(event) {
     return;
   }
   if (line.startsWith('bestmove ')) {
-    if (state.play.active) {
-      if (!state.play.engineThinking) {
+    if (state.play.active || state.play.engineThinking) {
+      // If Play is no longer active but engineThinking is stale, clean up
+      if (!state.play.active) {
+        debugPlayEngine('bestmove received but Play is inactive, clearing stale state');
+        cancelPlayEngineRequest('bestmove received after Play stopped');
+        // Fall through to normal analysis bestmove handling below
+      } else if (state.play.activeEngineSessionId !== state.play.playSessionId) {
+        // Stale session: a bestmove from an older Play game arrived
+        debugPlayEngine('bestmove ignored: stale session', {
+          activeEngineSessionId: state.play.activeEngineSessionId,
+          playSessionId: state.play.playSessionId,
+        });
+        cancelPlayEngineRequest('stale session bestmove');
+        return;
+      } else if (!state.play.engineThinking) {
+        // Duplicate bestmove for current session but we're not expecting one
+        debugPlayEngine('bestmove ignored: not expecting engine reply');
+        return;
+      } else {
+        // Valid bestmove for the current Play session
+        clearPlayEngineWatchdog();
+        state.play.engineThinking = false;
+        state.play.activeEngineSessionId = null;
+        state.play.playEngineRetryCount = 0;
+        debugPlayEngine('bestmove received', { line });
+        state.engine.analyzing = false;
+        state.engine.stopping = false;
+        state.engine.pendingFen = '';
+        state.engine.pendingSearchMode = '';
+        const tokens = line.split(/\s+/);
+        const bestMove = tokens[1] || '';
+        if (bestMove && bestMove !== '(none)') {
+          applyPlayEngineMove(bestMove);
+        }
         return;
       }
-      state.play.engineThinking = false;
-      state.engine.analyzing = false;
-      state.engine.stopping = false;
-      state.engine.pendingFen = '';
-      state.engine.pendingSearchMode = '';
-      const tokens = line.split(/\s+/);
-      const bestMove = tokens[1] || '';
-      if (bestMove && bestMove !== '(none)') {
-        applyPlayEngineMove(bestMove);
-      }
-      return;
     }
     if (state.engine.pendingFen && state.engine.worker) {
 
@@ -6040,13 +6089,18 @@ function applyAnalysisMove(move) {
       }
     }
     state.analysis.currentFen = state.analysis.game.fen();
+    debugPlayEngine('user move applied in Play mode', {
+      san: applied.san,
+      turnAfterMove: state.analysis.game.turn(),
+      shouldEngineMove: shouldEngineMoveInPlay(),
+    });
     if (checkPlayGameOver()) {
       return;
     }
     schedulePersist();
     renderAll();
     window.setTimeout(() => {
-      if (state.play.active) {
+      if (shouldEngineMoveInPlay()) {
         void triggerEngineMove();
       }
     }, 50);
@@ -9007,6 +9061,12 @@ function resolvePlayStartFen() {
 }
 
 async function startPlayGame(options = {}) {
+  // Increment play session and cancel any stale engine request from a previous game
+  state.play.playSessionId += 1;
+  cancelPlayEngineRequest('starting new play game');
+  state.play.playEngineRetryCount = 0;
+  debugPlayEngine('startPlayGame', { playSessionId: state.play.playSessionId });
+
   // Clear any old play clock interval and reset play clock/timer states
   stopPlayClock();
   state.play.clockRunning = false;
@@ -9163,6 +9223,9 @@ function stopPlayGame(options = {}) {
     return;
   }
 
+  debugPlayEngine('stopPlayGame', { reason, playSessionId: state.play.playSessionId });
+  state.play.playSessionId += 1;
+  cancelPlayEngineRequest('stopping play game');
   state.play.active = false;
   state.play.engineThinking = false;
   stopPlayClock();
@@ -9288,18 +9351,114 @@ function offerDraw() {
   }
 }
 
+// ── Play Engine Lifecycle Helpers ──────────────────────────────────────────────
+
+function debugPlayEngine(label, detail = {}) {
+  console.log(`[PlayEngine] ${label}`, {
+    active: state.play.active,
+    engineThinking: state.play.engineThinking,
+    playSessionId: state.play.playSessionId,
+    activeEngineSessionId: state.play.activeEngineSessionId,
+    turn: state.analysis.game?.turn?.() ?? '?',
+    ...detail,
+  });
+}
+
+function clearPlayEngineWatchdog() {
+  if (state.play.playEngineWatchdog) {
+    window.clearTimeout(state.play.playEngineWatchdog);
+    state.play.playEngineWatchdog = null;
+  }
+}
+
+function cancelPlayEngineRequest(reason) {
+  clearPlayEngineWatchdog();
+  if (state.play.engineThinking || state.play.activeEngineSessionId !== null) {
+    debugPlayEngine('cancelPlayEngineRequest', { reason });
+  }
+  state.play.engineThinking = false;
+  state.play.activeEngineSessionId = null;
+}
+
+function startPlayEngineWatchdog(sessionId) {
+  clearPlayEngineWatchdog();
+  state.play.playEngineWatchdog = window.setTimeout(() => {
+    // Only act if this watchdog is still relevant
+    if (!state.play.active || !state.play.engineThinking || state.play.playSessionId !== sessionId) {
+      debugPlayEngine('watchdog fired but conditions no longer match, ignoring', { sessionId });
+      return;
+    }
+    debugPlayEngine('watchdog: engine stall detected', { sessionId, retryCount: state.play.playEngineRetryCount });
+
+    // Reset stale engine thinking state
+    state.play.engineThinking = false;
+    state.play.activeEngineSessionId = null;
+
+    if (state.play.playEngineRetryCount === 0) {
+      // First retry: try to reinitialize and retry once
+      state.play.playEngineRetryCount += 1;
+      debugPlayEngine('watchdog: attempting one retry');
+
+      // Send stop to the worker in case it's stuck, then retry
+      if (state.engine.worker) {
+        try {
+          state.engine.worker.postMessage('stop');
+        } catch (_e) { /* ignore */ }
+      }
+
+      // Retry if it's still Stockfish's turn
+      if (shouldEngineMoveInPlay()) {
+        void triggerEngineMove();
+      }
+    } else {
+      // Already retried once — give up to prevent infinite loops
+      debugPlayEngine('watchdog: hard engine stall, giving up retry');
+      state.analysis.boardMessage = 'Stockfish engine stalled. Try making another move or restart the game.';
+      renderAll();
+    }
+  }, 8000);
+}
+
+function shouldEngineMoveInPlay() {
+  if (!state.play.active) {
+    return false;
+  }
+  if (!state.analysis.game) {
+    return false;
+  }
+  const humanSideLetter = state.play.assignedSide === 'white' ? 'w' : 'b';
+  const currentTurn = state.analysis.game.turn();
+  if (currentTurn === humanSideLetter) {
+    // It's the human's turn, not the engine's
+    return false;
+  }
+  if (state.analysis.game.isGameOver() || isFenInsufficientMaterialDraw(state.analysis.game.fen())) {
+    return false;
+  }
+  return true;
+}
+
 async function triggerEngineMove() {
-  if (!state.play.active || !state.analysis.game) {
+  if (!shouldEngineMoveInPlay()) {
+    return;
+  }
+
+  if (state.play.engineThinking) {
+    debugPlayEngine('triggerEngineMove: already thinking, skipping duplicate request');
     return;
   }
 
   const worker = state.engine.worker;
   if (!worker) {
+    debugPlayEngine('triggerEngineMove: no worker available');
     return;
   }
 
+  const sessionId = state.play.playSessionId;
   state.play.engineThinking = true;
+  state.play.activeEngineSessionId = sessionId;
   state.analysis.boardMessage = "Stockfish is thinking...";
+  debugPlayEngine('triggerEngineMove: sending engine request', { sessionId, fen: state.analysis.currentFen });
   renderActiveToolPanel();
 
   const cmd = (msg) => worker.postMessage(msg);
@@ -9342,6 +9501,7 @@ async function triggerEngineMove() {
   }
 
   cmd(`go movetime ${Math.trunc(thinkTime)}`);
+  startPlayEngineWatchdog(sessionId);
 }
 
 function chooseBeginnerMove(bestMoveUci) {
