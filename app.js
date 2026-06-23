@@ -9007,6 +9007,27 @@ function resolvePlayStartFen() {
 }
 
 async function startPlayGame(options = {}) {
+  // Clear any old play clock interval and reset play clock/timer states
+  stopPlayClock();
+  state.play.clockRunning = false;
+  state.play.engineThinking = false;
+  state.play.lastClockTick = 0;
+  state.play.whiteTime = 0;
+  state.play.blackTime = 0;
+  state.play.whiteInc = 0;
+  state.play.blackInc = 0;
+
+  // Clear any old game-over modal/result
+  dismissGameResultModal();
+
+  // Reset practice state so it doesn't interfere
+  state.practice = createEmptyPracticeState();
+
+  // Clear analysis selection and pending promotion to avoid stale visual selections or promotion flows
+  clearAnalysisSelection();
+  state.analysis.pendingPromotion = null;
+  state.analysis.headers = null;
+
   const { ownerTab = TAB_PLAY } = options;
   const startFen = resolvePlayStartFen();
 
@@ -9635,6 +9656,9 @@ function checkPlayGameOver() {
 
 function startPlayClock() {
   stopPlayClock();
+  if (state.play.timeControl === 'none') {
+    return;
+  }
   state.play.lastClockTick = Date.now();
   state.play.timerId = window.setInterval(tickPlayClock, 100);
 }
@@ -9664,6 +9688,12 @@ function updateClockElapsed() {
 
 function tickPlayClock() {
   if (!state.play.active || !state.analysis.game) {
+    stopPlayClock();
+    return;
+  }
+
+  // If Time Control is "none" or clock is not running, stop the clock and do not flag or run clock logic.
+  if (state.play.timeControl === 'none' || !state.play.clockRunning) {
     stopPlayClock();
     return;
   }
