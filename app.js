@@ -633,6 +633,10 @@ const dom = {
   importedPgnContainer: document.getElementById('importedPgnContainer'),
   importedPgnFileNameText: document.getElementById('importedPgnFileNameText'),
   importedPgnStatusText: document.getElementById('importedPgnStatusText'),
+  openingInfoDisplay: document.getElementById('openingInfoDisplay'),
+  openingEcoText: document.getElementById('openingEcoText'),
+  openingNameText: document.getElementById('openingNameText'),
+  importedPgnFileNameWrapper: document.getElementById('importedPgnFileNameWrapper'),
 };
 
 const state = {
@@ -672,6 +676,7 @@ const state = {
     lastMoveSquares: [],
     boardMessage: 'Open Analysis to play legal moves from this setup.',
     pendingPromotion: null,
+    headers: null,
   },
   note: {
     text: '',
@@ -797,6 +802,14 @@ const state = {
   pendingPgnGames: null,
   pendingPgnFileName: '',
   loadedPgnGameIndex: null,
+  openingBook: {
+    loaded: false,
+    loading: false,
+    failed: false,
+    rows: [],
+    byUci: new Map(),
+    byEpd: new Map()
+  },
 };
 
 let guidedReviewController = null;
@@ -873,6 +886,257 @@ function escapeHtml(value) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+function getNodeUciMove(node) {
+  if (!node || !node.from || !node.to) return '';
+  return node.from + node.to + (node.promotion || '');
+}
+
+function normalizeEpdString(epd) {
+  if (!epd) return '';
+  const parts = epd.trim().split(/\s+/);
+  const first4 = parts.slice(0, 4);
+  return first4.join(' ').toLowerCase();
+}
+
+function parseOpeningRows(text) {
+  if (!text) return [];
+  const lines = text.split(/\r?\n/);
+  if (lines.length === 0) return [];
+  
+  const headerLine = lines[0];
+  const headers = headerLine.split('\t').map(h => h.trim().toLowerCase());
+  
+  const ecoIdx = headers.indexOf('eco');
+  const nameIdx = headers.indexOf('name');
+  const pgnIdx = headers.indexOf('pgn');
+  const uciIdx = headers.indexOf('uci');
+  const epdIdx = headers.indexOf('epd');
+  
+  if (ecoIdx === -1 || nameIdx === -1 || pgnIdx === -1 || uciIdx === -1 || epdIdx === -1) {
+    console.warn("TSV header is missing one of the required columns:", headers);
+    return [];
+  }
+  
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    const cols = lines[i].split('\t');
+    if (cols.length < headers.length) {
+      continue;
+    }
+    const eco = cols[ecoIdx]?.trim() || '';
+    const name = cols[nameIdx]?.trim() || '';
+    const pgn = cols[pgnIdx]?.trim() || '';
+    const uci = cols[uciIdx]?.trim() || '';
+    const epd = cols[epdIdx]?.trim() || '';
+    
+    if (!eco || !name || !uci) {
+      continue;
+    }
+    
+    const normalizedUci = uci.toLowerCase().replace(/\s+/g, ' ').trim();
+    const normalizedEpd = epd ? normalizeEpdString(epd) : '';
+    
+    rows.push({
+      eco,
+      name,
+      pgn,
+      uci: normalizedUci,
+      epd: normalizedEpd
+    });
+  }
+  return rows;
+}
+
+function buildUciIndex(rows) {
+  const map = new Map();
+  for (const row of rows) {
+    if (row.uci) {
+      map.set(row.uci, row);
+    }
+  }
+  return map;
+}
+
+function buildEpdIndex(rows) {
+  const map = new Map();
+  for (const row of rows) {
+    if (row.epd) {
+      const existing = map.get(row.epd);
+      if (!existing || row.uci.split(' ').length > existing.uci.split(' ').length) {
+        map.set(row.epd, row);
+      }
+    }
+  }
+  return map;
+}
+
+async function loadOpeningBook() {
+  try {
+    state.openingBook.loading = true;
+    syncOpeningInfoDisplay();
+    
+    const response = await fetch("./assets/openings.tsv");
+    if (!response.ok) throw new Error("Opening book not found");
+    const text = await response.text();
+    const rows = parseOpeningRows(text);
+
+    state.openingBook.rows = rows;
+    state.openingBook.byUci = buildUciIndex(rows);
+    state.openingBook.byEpd = buildEpdIndex(rows);
+    state.openingBook.loaded = true;
+    state.openingBook.failed = false;
+  } catch (error) {
+    console.warn("Opening book unavailable:", error);
+    state.openingBook.loaded = false;
+    state.openingBook.failed = true;
+    state.openingBook.rows = [];
+  } finally {
+    state.openingBook.loading = false;
+    syncOpeningInfoDisplay();
+  }
+}
+
+function getGameMovesAndEpds() {
+  const pathNodes = getAnalysisPathNodes();
+  const uciMoves = [];
+  const epds = [];
+  
+  for (let i = 0; i < pathNodes.length; i++) {
+    const node = pathNodes[i];
+    if (i > 0) {
+      const uci = getNodeUciMove(node);
+      if (uci) uciMoves.push(uci);
+    }
+    if (node.fen) {
+      epds.push(node.fen);
+    }
+  }
+  
+  return {
+    uciMoves,
+    epds
+  };
+}
+
+function identifyOpeningFromMoves(uciMoves, epds) {
+  if (!state.openingBook.loaded) return null;
+  if (!uciMoves || uciMoves.length === 0) return null;
+  
+  // 1. UCI longest-prefix match
+  const moves = [...uciMoves];
+  while (moves.length > 0) {
+    const path = moves.join(' ').toLowerCase();
+    const match = state.openingBook.byUci.get(path);
+    if (match) {
+      return match;
+    }
+    moves.pop();
+  }
+  
+  // 2. Fall back to EPD matching
+  if (epds && epds.length > 0 && state.openingBook.byEpd && state.openingBook.byEpd.size > 0) {
+    for (let i = epds.length - 1; i >= 0; i--) {
+      const epd = normalizeEpdString(epds[i]);
+      if (epd) {
+        const match = state.openingBook.byEpd.get(epd);
+        if (match) {
+          return match;
+        }
+      }
+    }
+  }
+  
+  return null;
+}
+
+function selectBestOpening(dbMatch, headers) {
+  const headerEco = (headers?.ECO && headers.ECO.trim()) || '';
+  const headerOpening = (headers?.Opening && headers.Opening.trim()) || '';
+  const headerVariation = (headers?.Variation && headers.Variation.trim()) || '';
+  
+  let headerName = headerOpening;
+  if (headerName && headerVariation) {
+    headerName += `: ${headerVariation}`;
+  }
+  
+  if (dbMatch) {
+    if (headerName && !dbMatch.name.toLowerCase().includes(headerOpening.toLowerCase()) && headerOpening.toLowerCase().includes(dbMatch.name.toLowerCase())) {
+      return { eco: headerEco || dbMatch.eco, name: headerName };
+    }
+    return dbMatch;
+  } else {
+    if (headerName || headerEco) {
+      return { eco: headerEco, name: headerName || 'Unclassified' };
+    }
+    return null;
+  }
+}
+
+function syncOpeningInfoDisplay() {
+  if (!dom.openingInfoDisplay) return;
+  
+  if (state.openingBook.loading) {
+    if (dom.openingEcoText) {
+      dom.openingEcoText.textContent = '';
+      dom.openingEcoText.style.display = 'none';
+    }
+    if (dom.openingNameText) {
+      dom.openingNameText.textContent = 'Opening book loading...';
+      dom.openingNameText.title = 'Opening book loading...';
+    }
+    dom.openingInfoDisplay.title = 'Opening book loading...';
+    dom.openingInfoDisplay.hidden = false;
+    dom.openingInfoDisplay.setAttribute('aria-hidden', 'false');
+    return;
+  }
+  
+  const headers = state.analysis.headers;
+  const isPgnLoaded = !!headers;
+  
+  if (!isPgnLoaded) {
+    dom.openingInfoDisplay.hidden = true;
+    dom.openingInfoDisplay.setAttribute('aria-hidden', 'true');
+    return;
+  }
+  
+  const { uciMoves, epds } = getGameMovesAndEpds();
+  const dbMatch = identifyOpeningFromMoves(uciMoves, epds);
+  const bestOpening = selectBestOpening(dbMatch, headers);
+  
+  if (bestOpening && bestOpening.name !== 'Unclassified') {
+    const eco = bestOpening.eco || '';
+    const name = bestOpening.name || '';
+    
+    if (dom.openingEcoText) {
+      dom.openingEcoText.textContent = eco;
+      dom.openingEcoText.style.display = eco ? 'inline-block' : 'none';
+    }
+    
+    if (dom.openingNameText) {
+      dom.openingNameText.textContent = name;
+      dom.openingNameText.title = eco ? `${eco}: ${name}` : name;
+    }
+    
+    dom.openingInfoDisplay.title = eco ? `${eco}: ${name}` : name;
+    dom.openingInfoDisplay.hidden = false;
+    dom.openingInfoDisplay.setAttribute('aria-hidden', 'false');
+  } else {
+    if (dom.openingEcoText) {
+      dom.openingEcoText.textContent = '';
+      dom.openingEcoText.style.display = 'none';
+    }
+    if (dom.openingNameText) {
+      dom.openingNameText.textContent = 'Unclassified';
+      dom.openingNameText.title = 'Unclassified';
+    }
+    dom.openingInfoDisplay.title = 'Unclassified';
+    dom.openingInfoDisplay.hidden = false;
+    dom.openingInfoDisplay.setAttribute('aria-hidden', 'false');
+  }
 }
 
 function normalizeTextControlValue(control) {
@@ -3268,6 +3532,7 @@ function assignAnalysisTree(tree) {
   state.analysis.currentNodeId = tree.currentNodeId;
   state.analysis.nodes = cloneAnalysisNodes(tree.nodes);
   state.analysis.nodeCounter = Math.max(1, Number(tree.nodeCounter) || deriveAnalysisNodeCounter(tree.nodes));
+  state.analysis.headers = tree.headers || null;
 }
 
 function buildLegacyAnalysisTree(history, cursor, setupFen) {
@@ -3731,6 +3996,7 @@ function buildLessonStateFromImportedPgn(importedPgn) {
     String(importedPgn?.analysis?.currentNodeId || ROOT_NODE_ID).trim() || ROOT_NODE_ID,
     normalizedSetup.setupFen,
   );
+  analysis.headers = importedPgn?.headers || null;
 
   return {
     title: typeof importedPgn?.title === 'string' ? normalizeEditableText(importedPgn.title) : DEFAULT_TITLE,
@@ -3803,7 +4069,7 @@ function showPgnGamePicker(games, fileName) {
   dom.pgnGamePickerList.innerHTML = '';
 
   games.forEach((gamePgn, index) => {
-    const headers = extractPgnHeaders(gamePgn);
+    const headers = extractPgnHeaders(gamePgn) || {};
     const whitePlayer = headers.White || '?';
     const blackPlayer = headers.Black || '?';
     const event = headers.Event || '?';
@@ -3827,25 +4093,39 @@ function showPgnGamePicker(games, fileName) {
     const escapedEvent = escapeHtml(event);
     const escapedRound = escapeHtml(round);
 
+    const tooltipLines = [];
+    tooltipLines.push(`Game ${index + 1}`);
+    tooltipLines.push(`White: ${whitePlayer}`);
+    tooltipLines.push(`Black: ${blackPlayer}`);
+    if (event && event !== '?') tooltipLines.push(`Event: ${event}`);
+    if (round && round !== '?') tooltipLines.push(`Round: ${round}`);
+    if (dateText) tooltipLines.push(`Date: ${dateText}`);
+    if (result && result !== '*') tooltipLines.push(`Result: ${result}`);
+    const rowTooltip = tooltipLines.join('\n');
+    const escapedRowTooltip = escapeHtml(rowTooltip);
+
     gameEl.innerHTML = `
-      <div class="pgn-game-item-header">
-        <span class="pgn-game-number">Game ${index + 1} of ${games.length}</span>
-        ${escapedDate ? `<span class="pgn-game-date">${escapedDate}</span>` : ''}
+      <div class="pgn-game-item-content" title="${escapedRowTooltip}">
+        <div class="pgn-game-title-row">
+          <span class="pgn-game-title-text">
+            Game ${index + 1}: ${escapedWhite} vs ${escapedBlack}
+          </span>
+          <span class="pgn-game-result">${escapedResult}</span>
+        </div>
+        <div class="pgn-game-meta-row">
+          <span class="pgn-game-event-text">
+            ${escapedEvent !== '?' ? escapedEvent : ''}
+          </span>
+          <span class="pgn-game-round-date">
+            ${escapedRound !== '?' ? `Round ${escapedRound}` : ''}${escapedDate ? (escapedRound !== '?' ? ` · ${escapedDate}` : escapedDate) : ''}
+          </span>
+        </div>
       </div>
-      <div class="pgn-game-players">
-        <div class="pgn-game-player white" title="${escapedWhite}">${escapedWhite}</div>
-        <div class="pgn-game-result">${escapedResult}</div>
-        <div class="pgn-game-player black" title="${escapedBlack}">${escapedBlack}</div>
-      </div>
-      <div class="pgn-game-details">
-        <div class="pgn-game-event" title="${escapedEvent}"><strong>Event:</strong> ${escapedEvent}</div>
-        <div class="pgn-game-round"><strong>Round:</strong> ${escapedRound}</div>
-      </div>
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 0.5rem;">
+      <div class="pgn-game-item-actions">
         ${isLoaded 
-          ? `<span class="loaded-badge" style="color: var(--accent-strong); font-weight: bold; font-size: 0.85rem;">Currently loaded</span>` 
+          ? `<span class="loaded-badge" style="color: var(--accent-strong); font-weight: bold; font-size: 0.85rem; white-space: nowrap;">Currently loaded</span>` 
           : '<span></span>'}
-        <button type="button" class="action-button primary load-game-btn" data-action="load-pgn-game" data-game-index="${index}">Load Game</button>
+        <button type="button" class="action-button primary load-game-btn" data-action="load-pgn-game" data-game-index="${index}" style="width: auto; margin-top: 0; flex-shrink: 0; padding: 0.35rem 0.75rem; min-height: 0; font-size: 0.85rem;">Load Game</button>
       </div>
     `;
     dom.pgnGamePickerList.appendChild(gameEl);
@@ -3866,6 +4146,7 @@ function clearPendingPgnGames() {
   state.pendingPgnGames = null;
   state.pendingPgnFileName = '';
   state.loadedPgnGameIndex = null;
+  state.analysis.headers = null;
   closePgnGamePicker();
   syncPgnBrowseButton();
 }
@@ -3881,52 +4162,53 @@ function syncPgnBrowseButton() {
     if (dom.importedPgnFileNameText) {
       dom.importedPgnFileNameText.textContent = state.pendingPgnFileName || '';
     }
+    if (dom.importedPgnFileNameWrapper) {
+      dom.importedPgnFileNameWrapper.title = state.pendingPgnFileName || '';
+    }
+    
     if (dom.importedPgnStatusText) {
       if (state.loadedPgnGameIndex !== null && state.pendingPgnGames[state.loadedPgnGameIndex]) {
         const gamePgn = state.pendingPgnGames[state.loadedPgnGameIndex];
         const headers = extractPgnHeaders(gamePgn) || {};
         const white = (headers.White && headers.White.trim()) || 'White';
         const black = (headers.Black && headers.Black.trim()) || 'Black';
-        
-        const parts = [];
-        parts.push(`Game ${state.loadedPgnGameIndex + 1} of ${state.pendingPgnGames.length}`);
-        
-        const roundVal = headers.Round ? headers.Round.trim() : '';
-        if (roundVal && roundVal !== '?' && roundVal !== '-') {
-          parts.push(/^\s*round/i.test(roundVal) ? roundVal : `Round ${roundVal}`);
-        }
-        
         const resultVal = headers.Result ? headers.Result.trim() : '';
-        if (resultVal && resultVal !== '?' && resultVal !== '*') {
-          parts.push(/^\s*result/i.test(resultVal) ? resultVal : `Result ${resultVal}`);
-        }
-        
+        const roundVal = headers.Round ? headers.Round.trim() : '';
         const dateVal = headers.Date ? headers.Date.trim() : '';
-        if (dateVal && dateVal !== '????.??.??' && dateVal !== '?') {
-          parts.push(dateVal);
-        }
+        const eventVal = headers.Event ? headers.Event.trim() : '';
         
-        const escapedParts = parts.map(part => escapeHtml(part));
-        const detailsLine = escapedParts.join(' · ');
+        const tooltipLines = [];
+        tooltipLines.push(`Game ${state.loadedPgnGameIndex + 1}`);
+        tooltipLines.push(`White: ${white}`);
+        tooltipLines.push(`Black: ${black}`);
+        if (eventVal && eventVal !== '?') tooltipLines.push(`Event: ${eventVal}`);
+        if (roundVal && roundVal !== '?' && roundVal !== '-') tooltipLines.push(`Round: ${roundVal}`);
+        if (dateVal && dateVal !== '????.??.??' && dateVal !== '?') tooltipLines.push(`Date: ${dateVal}`);
+        if (resultVal && resultVal !== '?' && resultVal !== '*') tooltipLines.push(`Result: ${resultVal}`);
+        if (state.pendingPgnFileName) tooltipLines.push(`File: ${state.pendingPgnFileName}`);
+        
+        const tooltipText = tooltipLines.join('\n');
+        const escapedTooltip = escapeHtml(tooltipText);
         
         const escapedWhite = escapeHtml(white);
         const escapedBlack = escapeHtml(black);
-        
-        let eventLineHtml = '';
-        const eventVal = headers.Event ? headers.Event.trim() : '';
-        if (eventVal && eventVal !== '?') {
-          const escapedEvent = escapeHtml(eventVal);
-          eventLineHtml = `<div style="font-size: 0.8rem; color: var(--text-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapedEvent}">Event: ${escapedEvent}</div>`;
-        }
+        const escapedResult = escapeHtml(resultVal || '*');
         
         dom.importedPgnStatusText.innerHTML = `
-          <div><strong>Current Game:</strong> ${escapedWhite} vs ${escapedBlack}</div>
-          <div>${detailsLine}</div>
-          ${eventLineHtml}
+          <div class="imported-pgn-title" title="${escapedTooltip}">
+            Game ${state.loadedPgnGameIndex + 1}: ${escapedWhite} vs ${escapedBlack} · ${escapedResult}
+          </div>
         `;
       } else {
+        const tooltipLines = [];
+        tooltipLines.push(`Games Available: ${state.pendingPgnGames.length}`);
+        if (state.pendingPgnFileName) tooltipLines.push(`File: ${state.pendingPgnFileName}`);
+        const tooltipText = tooltipLines.join('\n');
+        
         dom.importedPgnStatusText.innerHTML = `
-          <div><strong>Games Available:</strong> ${state.pendingPgnGames.length}</div>
+          <div title="${escapeHtml(tooltipText)}">
+            <strong>${state.pendingPgnGames.length} games imported</strong>
+          </div>
           <div style="font-style: italic; color: var(--text-soft);">No game currently loaded</div>
         `;
       }
@@ -7621,6 +7903,7 @@ function renderAll() {
   syncFullscreenMenuState();
   renderPromotionModal();
   syncPgnBrowseButton();
+  syncOpeningInfoDisplay();
 }
 
 function renderAfterSetupMetaChange() {
@@ -10620,6 +10903,7 @@ window.__endgamePuzzlePremium = Object.freeze({ generateKey: generatePremiumKey 
 syncAnalysisGameFromTree();
 initializeGuidedReviewController();
 bindEvents();
+loadOpeningBook();
 renderAll();
 if (state.guidedReview.active) {
   guidedReviewController?.openGuidedReviewMode();
