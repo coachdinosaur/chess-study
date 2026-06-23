@@ -3358,9 +3358,36 @@ code {
 
   .two-col,
   .castling-grid,
-  .status-grid,
-  .promotion-choices {
+  .status-grid {
     grid-template-columns: 1fr;
+  }
+
+  .promotion-choices {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 0.35rem;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .promotion-choice {
+    min-height: 0 !important;
+    max-width: 56px;
+    height: 56px;
+    padding: 0.25rem;
+    aspect-ratio: 1;
+    justify-self: center;
+    align-items: center;
+    box-sizing: border-box;
+  }
+
+  .promotion-choice span {
+    display: none !important;
+  }
+
+  .promotion-choice img {
+    width: 90% !important;
+    height: 90% !important;
+    object-fit: contain;
   }
 
   .control-pane-scroll {
@@ -4082,4 +4109,9 @@ code {
   .puzzle-stats-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+
+.puzzle-instruction-container {
+  width: 100%;
+  box-sizing: border-box;
 }

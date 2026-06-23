@@ -224,6 +224,7 @@ const dom = {
   analysisPanel: document.getElementById('analysisPanel'),
   playPanel: document.getElementById('playPanel'),
   puzzlePanel: document.getElementById('puzzlePanel'),
+  puzzleBoardInstruction: document.getElementById('puzzleBoardInstruction'),
   promotionModal: document.getElementById('promotionModal'),
   promotionSubtitle: document.getElementById('promotionSubtitle'),
   promotionChoices: document.getElementById('promotionChoices'),
@@ -6015,6 +6016,11 @@ function syncBoardSize() {
     return;
   }
 
+  const puzzleInstruction = dom.puzzleBoardInstruction;
+  if (puzzleInstruction && !puzzleInstruction.hidden) {
+    stageHeight = Math.max(0, stageHeight - (puzzleInstruction.offsetHeight || 80));
+  }
+
   const capturedSizingMetrics = capturedSizingMetricsFromStyles(columnStyles);
   const maxBoardSize = state.focusMode ? remToPx(56) : remToPx(42);
   let boardSize = Math.min(containerWidth, stageHeight, maxBoardSize);
@@ -7023,6 +7029,7 @@ function renderWorkspaceTools() {
 
 function renderAll() {
   syncFocusModeUi();
+  renderPuzzleBoardInstruction();
   renderBoard();
   renderHeaderMeta();
   renderHeroBanner();
@@ -9705,6 +9712,34 @@ function renderPuzzleQueueControls(pz) {
   `;
 }
 
+function renderPuzzleBoardInstruction() {
+  const container = dom.puzzleBoardInstruction;
+  if (!container) {
+    return;
+  }
+  const pz = state.puzzle;
+  if (state.activeTab === TAB_PUZZLE && pz.sessionActive && pz.current) {
+    const puzzle = pz.current;
+    const isThinking = state.play.engineThinking;
+    const titleText = isThinking ? 'Stockfish is thinking…' : 'Your move';
+    const bannerClass = isThinking ? 'warning' : 'success';
+    const instructionText = puzzleObjectiveInstruction(puzzle);
+
+    container.innerHTML = `
+      <div class="banner ${bannerClass}">
+        <div>
+          <strong>${escapeHtml(titleText)}</strong>
+          <div>${escapeHtml(instructionText)}</div>
+        </div>
+      </div>
+    `;
+    container.hidden = false;
+  } else {
+    container.innerHTML = '';
+    container.hidden = true;
+  }
+}
+
 function renderPuzzlePanel() {
   if (!dom.puzzlePanel) {
     return;
@@ -9741,18 +9776,7 @@ function renderPuzzlePanel() {
       progressMarkup = `<p class="section-copy">Material gained: ${gain >= 0 ? '+' : ''}${gain} of +${PUZZLE_WIN_MATERIAL_GAIN}</p>`;
     }
     bodyMarkup = `
-      <div class="puzzle-objective-banner" data-objective="${escapeHtml(puzzle.objective)}">
-        <span class="puzzle-objective-kicker">${escapeHtml(puzzleObjectiveLabel(puzzle.objective))} puzzle</span>
-        <strong>${escapeHtml(puzzleObjectiveInstruction(puzzle))}</strong>
-        <span class="puzzle-objective-meta">Defense ${pz.skill}${pz.skill < 1320 ? ' ~' : ' '}Elo · ${escapeHtml(puzzleSpeedLabel(pz.thinkingSpeed))} replies</span>
-      </div>
       ${progressMarkup}
-      <div class="banner ${state.play.engineThinking ? 'warning' : 'success'}">
-        <div>
-          <strong>${state.play.engineThinking ? 'Stockfish is thinking…' : 'Your move'}</strong>
-          <div>${escapeHtml(state.analysis.boardMessage)}</div>
-        </div>
-      </div>
       <div class="action-row play-action-row">
         <button type="button" class="action-button danger" data-action="give-up-puzzle">Give Up</button>
         ${puzzle.objective === PUZZLE_OBJECTIVE_DRAW ? '<button type="button" class="action-button tonal" data-action="offer-draw">Offer Draw</button>' : ''}
