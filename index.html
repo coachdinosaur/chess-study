@@ -117,6 +117,11 @@
         </article>
       </aside>
 
+      <!-- Mobile-only engine lines slot: shown below the board on small screens.
+           Populated by JS (renderNotationPanel) alongside the regular notation panel.
+           Hidden on desktop via CSS. -->
+      <div id="mobileEngineLinesSlot" class="mobile-engine-lines-slot" aria-hidden="true"></div>
+
       <section class="control-pane">
         <div class="control-pane-scroll">
           <section class="lesson-header" aria-labelledby="titleInput">

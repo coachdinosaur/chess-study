@@ -604,6 +604,7 @@ const dom = {
   notationSection: document.querySelector('.lesson-notation'),
   notationSummary: document.getElementById('notationSummary'),
   notationPanel: document.getElementById('notationPanel'),
+  mobileEngineLinesSlot: document.getElementById('mobileEngineLinesSlot'),
   notationStartButton: document.getElementById('notationStartButton'),
   notationPrevButton: document.getElementById('notationPrevButton'),
   notationNextButton: document.getElementById('notationNextButton'),
@@ -6981,6 +6982,8 @@ function renderNotationPanel() {
         ${renderNotationNote()}
       </div>
     `;
+    // No engine lines during practice mode
+    if (dom.mobileEngineLinesSlot) dom.mobileEngineLinesSlot.innerHTML = '';
     return;
   }
 
@@ -6993,6 +6996,7 @@ function renderNotationPanel() {
         ${renderNotationNote()}
       </div>
     `;
+    if (dom.mobileEngineLinesSlot) dom.mobileEngineLinesSlot.innerHTML = renderNotationPvBlock();
     return;
   }
 
@@ -7007,6 +7011,7 @@ function renderNotationPanel() {
       ${renderNotationNote()}
     </div>
   `;
+  if (dom.mobileEngineLinesSlot) dom.mobileEngineLinesSlot.innerHTML = renderNotationPvBlock();
 }
 
 function customSelectMarkup(id, selectedValue, options, selectAttributes = '') {

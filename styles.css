@@ -3279,6 +3279,11 @@ code {
   height: 106%;
 }
 
+/* Mobile-only engine lines slot: hidden on desktop/tablet, shown below board on mobile */
+.mobile-engine-lines-slot {
+  display: none;
+}
+
 @media (max-width: 1100px) {
   html,
   body {
@@ -3492,19 +3497,34 @@ code {
     width: min(100%, calc(var(--board-size) + (var(--board-frame-padding) * 2) + 2px));
   }
 
+  /* Mobile engine lines slot: show between board (order:1) and workspace tools (order:3) */
+  .mobile-engine-lines-slot {
+    display: block;
+    order: 2;
+    /* Compact spacing between board and engine lines */
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  /* Hide the engine lines inside the notation panel on mobile —
+     they are shown in .mobile-engine-lines-slot instead */
+  #notationPanel .notation-pv {
+    display: none;
+  }
+
   .control-pane-scroll > :not(.lesson-header) {
-    order: 3;
+    order: 4;
   }
 
   .control-pane-scroll > .workspace-tools {
-    order: 2;
+    order: 3;
     padding-top: 0;
   }
 
   .lesson-notation,
   .guided-review-analysis-panel,
   .guided-review-panel {
-    order: 3;
+    order: 4;
   }
 
   .lesson-tools,
