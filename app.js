@@ -10407,6 +10407,14 @@ function renderPuzzlePanel() {
 
   const queueControlsMarkup = renderPuzzleQueueControls(pz);
 
+  const showStartButton = !pz.generating && !pz.sessionActive;
+  const buttonText = pz.current ? 'Next Puzzle' : 'Start Puzzle';
+  const startButtonMarkup = showStartButton ? `
+    <div class="action-row play-start-action-row" style="display: flex; flex-direction: column; align-items: stretch; gap: 12px; margin-bottom: 12px;">
+      <button type="button" class="action-button primary" data-action="new-puzzle" ${pz.puzzleQueue.length === 0 ? 'disabled' : ''} style="width: 100%;">${buttonText}</button>
+    </div>
+  ` : '';
+
   let bodyMarkup = '';
   if (pz.generating) {
     bodyMarkup = `
@@ -10511,10 +10519,6 @@ function renderPuzzlePanel() {
           </div>
         </div>
       ` : ''}
-      
-      <div class="action-row play-start-action-row" style="display: flex; flex-direction: column; align-items: stretch; gap: 12px; margin-top: 12px;">
-        <button type="button" class="action-button primary" data-action="new-puzzle" ${pz.puzzleQueue.length === 0 ? 'disabled' : ''} style="width: 100%;">Next Puzzle</button>
-      </div>
 
       <p class="muted-copy">Random endgames with at most 6 pieces per side, generated and verified by Stockfish. You play the side to move: deliver checkmate, win a piece, or hold a draw.</p>
     `;
@@ -10527,6 +10531,7 @@ function renderPuzzlePanel() {
           <h3 class="lesson-section-title play-section-title">Endgame Puzzles</h3>
         </div>
       </div>
+      ${startButtonMarkup}
       ${statsMarkup}
       <div class="section-divider"></div>
       ${queueControlsMarkup}
