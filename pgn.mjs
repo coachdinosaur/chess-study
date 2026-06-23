@@ -346,3 +346,71 @@ export function buildPgnFromLessonTree({ title = '', setupFen = DEFAULT_POSITION
 
   return `${headerText}\n\n${moveTextParts.join(' ').trim()}`.trim();
 }
+
+export function splitPgnGames(pgnText) {
+  const games = [];
+  let currentGame = [];
+  let inHeaders = true;
+  let inComment = false;
+
+  const lines = pgnText.split(/\r?\n/);
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) {
+      if (currentGame.length > 0) {
+        currentGame.push(line);
+      }
+      continue;
+    }
+
+    const isTag = !inComment && trimmed.startsWith('[');
+
+    if (isTag) {
+      if (!inHeaders) {
+        if (currentGame.length > 0) {
+          games.push(currentGame.join('\n'));
+        }
+        currentGame = [];
+        inHeaders = true;
+      }
+    } else {
+      if (inHeaders && !trimmed.startsWith('%')) {
+        inHeaders = false;
+      }
+    }
+
+    currentGame.push(line);
+
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      if (char === '{' && !inComment) {
+        inComment = true;
+      } else if (char === '}' && inComment) {
+        inComment = false;
+      }
+    }
+  }
+
+  if (currentGame.length > 0) {
+    games.push(currentGame.join('\n'));
+  }
+
+  return games
+    .map(g => g.trim())
+    .filter(g => g.length > 0 && g.includes('['));
+}
+
+export function extractPgnHeaders(pgnString) {
+  const headers = {};
+  const regex = /^\s*\[\s*([A-Za-z0-9_]+)\s+"([^"\\]*(?:\\.[^"\\]*)*)"\s*\]/gm;
+  let match;
+  while ((match = regex.exec(pgnString)) !== null) {
+    const key = match[1];
+    let val = match[2];
+    val = val.replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+    headers[key] = val;
+  }
+  return headers;
+}
+

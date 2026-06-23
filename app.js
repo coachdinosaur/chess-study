@@ -1,5 +1,5 @@
 import { Chess, DEFAULT_POSITION, validateFen } from './vendor/chess.js';
-import { buildPgnFromLessonTree, parsePgnToLessonTree } from './pgn.mjs';
+import { buildPgnFromLessonTree, parsePgnToLessonTree, splitPgnGames, extractPgnHeaders } from './pgn.mjs';
 import { createGuidedReviewController } from './guided-review.mjs';
 import { normalizeEditableText } from './text-normalization.mjs';
 import {
@@ -237,6 +237,12 @@ const dom = {
   premiumModal: document.getElementById('premiumModal'),
   premiumKeyInput: document.getElementById('premiumKeyInput'),
   premiumModalStatus: document.getElementById('premiumModalStatus'),
+  pgnGamePickerModal: document.getElementById('pgnGamePickerModal'),
+  pgnGamePickerList: document.getElementById('pgnGamePickerList'),
+  pgnGamePickerFileName: document.getElementById('pgnGamePickerFileName'),
+  importedPgnContainer: document.getElementById('importedPgnContainer'),
+  importedPgnFileNameText: document.getElementById('importedPgnFileNameText'),
+  importedPgnStatusText: document.getElementById('importedPgnStatusText'),
 };
 
 const state = {
@@ -398,7 +404,9 @@ const state = {
     isGeneratingPuzzleBatch: false,
     puzzleBatchStatus: '',
   },
-
+  pendingPgnGames: null,
+  pendingPgnFileName: '',
+  loadedPgnGameIndex: null,
 };
 
 let guidedReviewController = null;
@@ -3368,14 +3376,191 @@ async function openPgnFile(file) {
   }
 
   const text = await file.text();
-  const importedPgn = parsePgnToLessonTree(text);
-  const lessonState = buildLessonStateFromImportedPgn(importedPgn);
-  applyLessonState(lessonState);
-  ensureLessonBookInitialized();
-  syncAnalysisGameFromTree();
-  renderAll();
-  schedulePersist();
-  syncLessonFileStatus(`Imported ${file.name}.`);
+  const games = splitPgnGames(text);
+
+  if (games.length === 0) {
+    throw new Error('No PGN games found.');
+  }
+  if (games.length === 1) {
+    clearPendingPgnGames();
+    const importedPgn = parsePgnToLessonTree(games[0]);
+    const lessonState = buildLessonStateFromImportedPgn(importedPgn);
+    applyLessonState(lessonState);
+    ensureLessonBookInitialized();
+    syncAnalysisGameFromTree();
+    renderAll();
+    schedulePersist();
+    syncLessonFileStatus(`Imported ${file.name}.`);
+  } else {
+    state.loadedPgnGameIndex = null;
+    showPgnGamePicker(games, file.name);
+  }
+}
+
+function showPgnGamePicker(games, fileName) {
+  state.pendingPgnGames = games;
+  state.pendingPgnFileName = fileName;
+
+  if (!dom.pgnGamePickerModal || !dom.pgnGamePickerList) {
+    return;
+  }
+
+  if (dom.pgnGamePickerFileName) {
+    dom.pgnGamePickerFileName.textContent = fileName || '';
+  }
+
+  // Clear previous list
+  dom.pgnGamePickerList.innerHTML = '';
+
+  games.forEach((gamePgn, index) => {
+    const headers = extractPgnHeaders(gamePgn);
+    const whitePlayer = headers.White || '?';
+    const blackPlayer = headers.Black || '?';
+    const event = headers.Event || '?';
+    const round = headers.Round || '?';
+    const result = headers.Result || '*';
+    const dateText = headers.Date && headers.Date !== '????.??.??' ? headers.Date : '';
+
+    const isLoaded = state.loadedPgnGameIndex === index;
+
+    const gameEl = document.createElement('div');
+    gameEl.className = 'pgn-game-item';
+    if (isLoaded) {
+      gameEl.style.borderColor = 'var(--focus-border)';
+      gameEl.style.backgroundColor = 'var(--accent-soft)';
+    }
+
+    const escapedDate = escapeHtml(dateText);
+    const escapedWhite = escapeHtml(whitePlayer);
+    const escapedBlack = escapeHtml(blackPlayer);
+    const escapedResult = escapeHtml(result);
+    const escapedEvent = escapeHtml(event);
+    const escapedRound = escapeHtml(round);
+
+    gameEl.innerHTML = `
+      <div class="pgn-game-item-header">
+        <span class="pgn-game-number">Game ${index + 1} of ${games.length}</span>
+        ${escapedDate ? `<span class="pgn-game-date">${escapedDate}</span>` : ''}
+      </div>
+      <div class="pgn-game-players">
+        <div class="pgn-game-player white" title="${escapedWhite}">${escapedWhite}</div>
+        <div class="pgn-game-result">${escapedResult}</div>
+        <div class="pgn-game-player black" title="${escapedBlack}">${escapedBlack}</div>
+      </div>
+      <div class="pgn-game-details">
+        <div class="pgn-game-event" title="${escapedEvent}"><strong>Event:</strong> ${escapedEvent}</div>
+        <div class="pgn-game-round"><strong>Round:</strong> ${escapedRound}</div>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 0.5rem;">
+        ${isLoaded 
+          ? `<span class="loaded-badge" style="color: var(--accent-strong); font-weight: bold; font-size: 0.85rem;">Currently loaded</span>` 
+          : '<span></span>'}
+        <button type="button" class="action-button primary load-game-btn" data-action="load-pgn-game" data-game-index="${index}">Load Game</button>
+      </div>
+    `;
+    dom.pgnGamePickerList.appendChild(gameEl);
+  });
+
+  dom.pgnGamePickerModal.hidden = false;
+  dom.pgnGamePickerModal.setAttribute('aria-hidden', 'false');
+}
+
+function closePgnGamePicker() {
+  if (dom.pgnGamePickerModal) {
+    dom.pgnGamePickerModal.hidden = true;
+    dom.pgnGamePickerModal.setAttribute('aria-hidden', 'true');
+  }
+}
+
+function clearPendingPgnGames() {
+  state.pendingPgnGames = null;
+  state.pendingPgnFileName = '';
+  state.loadedPgnGameIndex = null;
+  closePgnGamePicker();
+  syncPgnBrowseButton();
+}
+
+function syncPgnBrowseButton() {
+  const hasPendingGames = Array.isArray(state.pendingPgnGames) && state.pendingPgnGames.length > 0;
+  
+  if (dom.importedPgnContainer) {
+    dom.importedPgnContainer.style.display = hasPendingGames ? 'flex' : 'none';
+  }
+  
+  if (hasPendingGames) {
+    if (dom.importedPgnFileNameText) {
+      dom.importedPgnFileNameText.textContent = state.pendingPgnFileName || '';
+    }
+    if (dom.importedPgnStatusText) {
+      if (state.loadedPgnGameIndex !== null && state.pendingPgnGames[state.loadedPgnGameIndex]) {
+        const gamePgn = state.pendingPgnGames[state.loadedPgnGameIndex];
+        const headers = extractPgnHeaders(gamePgn) || {};
+        const white = (headers.White && headers.White.trim()) || 'White';
+        const black = (headers.Black && headers.Black.trim()) || 'Black';
+        
+        const parts = [];
+        parts.push(`Game ${state.loadedPgnGameIndex + 1} of ${state.pendingPgnGames.length}`);
+        
+        const roundVal = headers.Round ? headers.Round.trim() : '';
+        if (roundVal && roundVal !== '?' && roundVal !== '-') {
+          parts.push(/^\s*round/i.test(roundVal) ? roundVal : `Round ${roundVal}`);
+        }
+        
+        const resultVal = headers.Result ? headers.Result.trim() : '';
+        if (resultVal && resultVal !== '?' && resultVal !== '*') {
+          parts.push(/^\s*result/i.test(resultVal) ? resultVal : `Result ${resultVal}`);
+        }
+        
+        const dateVal = headers.Date ? headers.Date.trim() : '';
+        if (dateVal && dateVal !== '????.??.??' && dateVal !== '?') {
+          parts.push(dateVal);
+        }
+        
+        const escapedParts = parts.map(part => escapeHtml(part));
+        const detailsLine = escapedParts.join(' · ');
+        
+        const escapedWhite = escapeHtml(white);
+        const escapedBlack = escapeHtml(black);
+        
+        let eventLineHtml = '';
+        const eventVal = headers.Event ? headers.Event.trim() : '';
+        if (eventVal && eventVal !== '?') {
+          const escapedEvent = escapeHtml(eventVal);
+          eventLineHtml = `<div style="font-size: 0.8rem; color: var(--text-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapedEvent}">Event: ${escapedEvent}</div>`;
+        }
+        
+        dom.importedPgnStatusText.innerHTML = `
+          <div><strong>Current Game:</strong> ${escapedWhite} vs ${escapedBlack}</div>
+          <div>${detailsLine}</div>
+          ${eventLineHtml}
+        `;
+      } else {
+        dom.importedPgnStatusText.innerHTML = `
+          <div><strong>Games Available:</strong> ${state.pendingPgnGames.length}</div>
+          <div style="font-style: italic; color: var(--text-soft);">No game currently loaded</div>
+        `;
+      }
+    }
+  }
+}
+
+async function loadSelectedPgnGame(gamePgnText, fileName, gameNumber) {
+  try {
+    state.loadedPgnGameIndex = gameNumber - 1;
+    const importedPgn = parsePgnToLessonTree(gamePgnText);
+    const lessonState = buildLessonStateFromImportedPgn(importedPgn);
+    applyLessonState(lessonState);
+    ensureLessonBookInitialized();
+    syncAnalysisGameFromTree();
+    renderAll();
+    schedulePersist();
+    syncLessonFileStatus(`Imported Game ${gameNumber} from ${fileName}.`);
+    closePgnGamePicker();
+  } catch (error) {
+    console.error('Unable to import selected PGN game.', error);
+    syncLessonFileStatus(error?.message || 'Unable to import selected PGN game.');
+    alert(`Failed to load Game ${gameNumber}: ${error?.message || 'Invalid PGN content'}`);
+  }
 }
 
 function renderGuidedReviewVisibility() {
@@ -7041,6 +7226,7 @@ function renderAll() {
   syncLessonVisibilityMenuState();
   syncFullscreenMenuState();
   renderPromotionModal();
+  syncPgnBrowseButton();
 }
 
 function renderAfterSetupMetaChange() {
@@ -7743,6 +7929,25 @@ function handleDocumentClick(event) {
     case 'dismiss-game-result':
       dismissGameResultModal();
       break;
+    case 'dismiss-pgn-game-picker':
+      closePgnGamePicker();
+      break;
+    case 'clear-pgn-games':
+      clearPendingPgnGames();
+      break;
+    case 'browse-pgn-games':
+      closeLessonActionsMenu();
+      if (state.pendingPgnGames && state.pendingPgnGames.length > 0) {
+        showPgnGamePicker(state.pendingPgnGames, state.pendingPgnFileName);
+      }
+      break;
+    case 'load-pgn-game': {
+      const index = parseInt(actionEl.dataset.gameIndex, 10);
+      if (!isNaN(index) && state.pendingPgnGames && state.pendingPgnGames[index]) {
+        void loadSelectedPgnGame(state.pendingPgnGames[index], state.pendingPgnFileName, index + 1);
+      }
+      break;
+    }
     case 'generate-batch':
     case 'generate-puzzle-batch':
       void generatePuzzleBatch(5);
@@ -7955,6 +8160,11 @@ function handleDocumentKeydown(event) {
   if (event.key === 'Escape' && dom.premiumModal && !dom.premiumModal.hidden) {
     event.preventDefault();
     dismissPremiumModal();
+    return;
+  }
+  if (event.key === 'Escape' && dom.pgnGamePickerModal && !dom.pgnGamePickerModal.hidden) {
+    event.preventDefault();
+    closePgnGamePicker();
     return;
   }
   if (event.key === 'Escape' && dom.puzzleResultModal && !dom.puzzleResultModal.hidden) {
@@ -9808,8 +10018,8 @@ function renderPuzzlePanel() {
               pz.difficultyPreference,
               [
                 { value: 'any', label: 'Any difficulty' },
-                { value: 'easy', label: 'Easier (short mates, fewer pieces)' },
-                { value: 'hard', label: 'Harder (long mates, more pieces)' },
+                { value: 'easy', label: 'Easier' },
+                { value: 'hard', label: 'Harder' },
               ],
               'data-action="set-puzzle-difficulty"'
             )}
@@ -9931,6 +10141,11 @@ function bindEvents() {
   dom.promotionModal.addEventListener('click', (event) => {
     if (event.target === dom.promotionModal) {
       dismissPromotionDialog();
+    }
+  });
+  dom.pgnGamePickerModal.addEventListener('click', (event) => {
+    if (event.target === dom.pgnGamePickerModal) {
+      closePgnGamePicker();
     }
   });
   document.addEventListener('fullscreenchange', handleFullscreenChange);
