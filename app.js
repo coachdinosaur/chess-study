@@ -89,6 +89,388 @@ const PUZZLE_HISTORY_MAX = 300;
 const PUZZLE_QUEUE_MAX = 100;
 const PUZZLE_FREE_PER_DAY = 3;
 const PUZZLE_WIN_MATERIAL_GAIN = 3;
+const DRAW_OBJECTIVE_LOSING_THRESHOLD_CP = -300;
+
+
+const DEFAULT_ENDGAME_PUZZLES = [
+  {
+    id: 'default-endgame-001',
+    fen: '7k/8/6K1/8/8/8/3Q4/8 w - - 0 1',
+    objective: 'mate',
+    requestedObjective: 'mate',
+    isFallback: false,
+    solverColor: 'w',
+    startBalance: 9,
+    pieceCount: 3,
+    scoreType: 'mate',
+    scoreValue: 2,
+    mateIn: 2,
+    evalLabel: '+M2',
+    bestMoveUci: 'd2h6',
+    bestLineUci: ['d2h6', 'h8g8', 'h6g7'],
+    title: 'Stalemate Avoidance',
+    instruction: 'Avoid stalemating the Black king. Find the winning path.'
+  },
+  {
+    id: 'default-endgame-002',
+    fen: '3k4/8/8/3K4/3P4/8/8/8 w - - 0 1',
+    objective: 'mate',
+    requestedObjective: 'mate',
+    isFallback: false,
+    solverColor: 'w',
+    startBalance: 1,
+    pieceCount: 3,
+    scoreType: 'mate',
+    scoreValue: 8,
+    mateIn: 8,
+    evalLabel: '+M8',
+    bestMoveUci: 'd5d6',
+    bestLineUci: ['d5d6', 'd8e8', 'd5c7', 'e8e7', 'd4d5', 'e7e8', 'd5d6', 'e8f7', 'd6d7'],
+    title: 'King and Pawn Opposition',
+    instruction: 'Seize the opposition with the King to shepherd your pawn to promotion.'
+  },
+  {
+    id: 'default-endgame-003',
+    fen: '7k/8/5K2/8/8/8/3Q4/8 w - - 0 1',
+    objective: 'mate',
+    requestedObjective: 'mate',
+    isFallback: false,
+    solverColor: 'w',
+    startBalance: 9,
+    pieceCount: 3,
+    scoreType: 'mate',
+    scoreValue: 2,
+    mateIn: 2,
+    evalLabel: '+M2',
+    bestMoveUci: 'd2h6',
+    bestLineUci: ['d2h6', 'h8g8', 'h6g7'],
+    title: 'Queen and King Checkmate',
+    instruction: 'Deliver checkmate in two moves with your King and Queen.'
+  },
+  {
+    id: 'default-endgame-004',
+    fen: '7k/R7/5K2/8/8/8/8/8 w - - 0 1',
+    objective: 'mate',
+    requestedObjective: 'mate',
+    isFallback: false,
+    solverColor: 'w',
+    startBalance: 5,
+    pieceCount: 3,
+    scoreType: 'mate',
+    scoreValue: 2,
+    mateIn: 2,
+    evalLabel: '+M2',
+    bestMoveUci: 'f6g6',
+    bestLineUci: ['f6g6', 'h8g8', 'a7a8'],
+    title: 'Rook and King Mate',
+    instruction: 'Bring your King to support the Rook and deliver checkmate in two moves.'
+  },
+  {
+    id: 'default-endgame-005',
+    fen: '7k/ppp5/8/PPP5/8/8/8/7K w - - 0 1',
+    objective: 'mate',
+    requestedObjective: 'mate',
+    isFallback: false,
+    solverColor: 'w',
+    startBalance: 0,
+    pieceCount: 8,
+    scoreType: 'mate',
+    scoreValue: 12,
+    mateIn: 12,
+    evalLabel: '+M12',
+    bestMoveUci: 'b5b6',
+    bestLineUci: ['b5b6', 'a7b6', 'c5c6', 'b7c6', 'a5a6'],
+    title: 'Pawn Breakthrough',
+    instruction: 'Sacrifice pawns to create a path for one pawn to promote.'
+  },
+  {
+    id: 'default-endgame-006',
+    fen: '8/8/6k1/P7/4K2p/8/8/8 w - - 0 1',
+    objective: 'mate',
+    requestedObjective: 'mate',
+    isFallback: false,
+    solverColor: 'w',
+    startBalance: 0,
+    pieceCount: 4,
+    scoreType: 'mate',
+    scoreValue: 10,
+    mateIn: 10,
+    evalLabel: '+M10',
+    bestMoveUci: 'a5a6',
+    bestLineUci: ['a5a6', 'h4h3', 'e4f3', 'h4h3', 'f3g2', 'h3h2'],
+    title: 'Passed Pawn Race',
+    instruction: 'Advance your passed pawn and use your King to stop the opponent\'s pawn.'
+  },
+  {
+    id: 'default-endgame-007',
+    fen: '6K1/4k1P1/8/8/5R2/8/8/2r5 w - - 0 1',
+    objective: 'mate',
+    requestedObjective: 'mate',
+    isFallback: false,
+    solverColor: 'w',
+    startBalance: 6,
+    pieceCount: 5,
+    scoreType: 'mate',
+    scoreValue: 15,
+    mateIn: 15,
+    evalLabel: '+M15',
+    bestMoveUci: 'f4e4',
+    bestLineUci: ['f4e4', 'e7d7', 'g8f7', 'c1f1', 'e4f4', 'f1g1', 'f7f6'],
+    title: 'Lucena Position',
+    instruction: 'Build a bridge with your Rook to shield your King from checks and promote your pawn.'
+  },
+  {
+    id: 'default-endgame-008',
+    fen: '4k3/R7/8/4P3/8/1r6/8/4K3 b - - 0 1',
+    objective: 'draw',
+    requestedObjective: 'draw',
+    isFallback: false,
+    solverColor: 'b',
+    startBalance: -1,
+    pieceCount: 5,
+    scoreType: 'cp',
+    scoreValue: 0,
+    mateIn: null,
+    evalLabel: '0.00',
+    bestMoveUci: 'b3e3',
+    bestLineUci: ['b3e3', 'e1d2', 'e3e5'],
+    title: 'Philidor Position',
+    instruction: 'Hold the draw as Black. Keep your Rook on the third rank until the pawn advances, then attack from behind.'
+  },
+  {
+    id: 'default-endgame-009',
+    fen: '7R/q5k1/8/8/8/8/8/6K w - - 0 1',
+    objective: 'win',
+    requestedObjective: 'win',
+    isFallback: false,
+    solverColor: 'w',
+    startBalance: -4,
+    pieceCount: 4,
+    scoreType: 'cp',
+    scoreValue: 500,
+    mateIn: null,
+    evalLabel: '+5.00',
+    bestMoveUci: 'h8h7',
+    bestLineUci: ['h8h7', 'g7g6', 'h7a7'],
+    title: 'Rook Skewer',
+    instruction: 'Deliver a check that skewers the opponent\'s King and Queen to win the Queen.'
+  },
+  {
+    id: 'default-endgame-010',
+    fen: '8/8/8/8/8/2K5/p7/k6R w - - 0 1',
+    objective: 'mate',
+    requestedObjective: 'mate',
+    isFallback: false,
+    solverColor: 'w',
+    startBalance: 4,
+    pieceCount: 4,
+    scoreType: 'mate',
+    scoreValue: 2,
+    mateIn: 2,
+    evalLabel: '+M2',
+    bestMoveUci: 'h1h2',
+    bestLineUci: ['h1h2', 'a1b1', 'h2h1'],
+    title: 'Defending Against Promotion',
+    instruction: 'Stop the Black pawn from promoting and find a way to checkmate.'
+  },
+  {
+    id: 'default-endgame-011',
+    fen: 'k7/8/1K6/8/8/8/8/R7 w - - 0 1',
+    objective: 'mate',
+    requestedObjective: 'mate',
+    isFallback: false,
+    solverColor: 'w',
+    startBalance: 5,
+    pieceCount: 3,
+    scoreType: 'mate',
+    scoreValue: 3,
+    mateIn: 3,
+    evalLabel: '+M3',
+    bestMoveUci: 'a1a7',
+    bestLineUci: ['a1a7', 'a8g8', 'a7c7', 'g8a8', 'c7c8'],
+    title: 'Corner Rook Mate',
+    instruction: 'Drive the Black king into the corner and deliver mate in three moves.'
+  },
+  {
+    id: 'default-endgame-012',
+    fen: '8/8/8/3p4/3k4/8/3K4/8 w - - 0 1',
+    objective: 'draw',
+    requestedObjective: 'draw',
+    isFallback: false,
+    solverColor: 'w',
+    startBalance: -1,
+    pieceCount: 3,
+    scoreType: 'cp',
+    scoreValue: 0,
+    mateIn: null,
+    evalLabel: '0.00',
+    bestMoveUci: 'd2d1',
+    bestLineUci: ['d2d1', 'd4e3', 'd1e1', 'd5d4', 'e1d1', 'e3d3'],
+    title: 'Defensive Opposition',
+    instruction: 'Hold the draw by stepping back to d1, ready to take the opposition when the King advances.'
+  },
+  {
+    id: 'default-endgame-013',
+    fen: '7k/8/R7/8/8/8/8/1R4K w - - 0 1',
+    objective: 'mate',
+    requestedObjective: 'mate',
+    isFallback: false,
+    solverColor: 'w',
+    startBalance: 10,
+    pieceCount: 4,
+    scoreType: 'mate',
+    scoreValue: 2,
+    mateIn: 2,
+    evalLabel: '+M2',
+    bestMoveUci: 'b1b7',
+    bestLineUci: ['b1b7', 'h8g8', 'a6a8'],
+    title: 'Rook Lawnmower Mate',
+    instruction: 'Use both Rooks in tandem to cut off the King and deliver checkmate.'
+  },
+  {
+    id: 'default-endgame-014',
+    fen: '8/8/P7/3k3p/5K2/8/8/8 w - - 0 1',
+    objective: 'mate',
+    requestedObjective: 'mate',
+    isFallback: false,
+    solverColor: 'w',
+    startBalance: 0,
+    pieceCount: 4,
+    scoreType: 'mate',
+    scoreValue: 8,
+    mateIn: 8,
+    evalLabel: '+M8',
+    bestMoveUci: 'a6a7',
+    bestLineUci: ['a6a7', 'h5h4', 'a7a8q'],
+    title: 'Pawn Race Victory',
+    instruction: 'Advance your pawn. Your opponent\'s King is too far, and your promotion will come with check.'
+  },
+  {
+    id: 'default-endgame-015',
+    fen: '8/k1P5/2K5/8/8/8/8/8 w - - 0 1',
+    objective: 'mate',
+    requestedObjective: 'mate',
+    isFallback: false,
+    solverColor: 'w',
+    startBalance: 1,
+    pieceCount: 3,
+    scoreType: 'mate',
+    scoreValue: 2,
+    mateIn: 2,
+    evalLabel: '+M2',
+    bestMoveUci: 'c7c8r',
+    bestLineUci: ['c7c8r', 'a7a6', 'c8a8'],
+    title: 'Underpromotion',
+    instruction: 'Avoid stalemate by promoting to a Rook instead of a Queen to deliver mate.'
+  },
+  {
+    id: 'default-endgame-016',
+    fen: '1r6/4k3/8/4N3/8/8/8/6K w - - 0 1',
+    objective: 'win',
+    requestedObjective: 'win',
+    isFallback: false,
+    solverColor: 'w',
+    startBalance: -2,
+    pieceCount: 4,
+    scoreType: 'cp',
+    scoreValue: 300,
+    mateIn: null,
+    evalLabel: '+3.00',
+    bestMoveUci: 'e5c6',
+    bestLineUci: ['e5c6', 'e7d6', 'c6b8'],
+    title: 'Knight Fork',
+    instruction: 'Find the knight jump that checks the King and attacks the Rook simultaneously.'
+  },
+  {
+    id: 'default-endgame-017',
+    fen: '5k2/8/5P1P/8/8/8/8/6K w - - 0 1',
+    objective: 'mate',
+    requestedObjective: 'mate',
+    isFallback: false,
+    solverColor: 'w',
+    startBalance: 2,
+    pieceCount: 4,
+    scoreType: 'mate',
+    scoreValue: 8,
+    mateIn: 8,
+    evalLabel: '+M8',
+    bestMoveUci: 'h6h7',
+    bestLineUci: ['h6h7', 'f8f7', 'h7h8q'],
+    title: 'Defensive Promotion Race',
+    instruction: 'Promote your pawn with checkmate threats before the Black King can defend.'
+  },
+  {
+    id: 'default-endgame-018',
+    fen: '8/8/5B2/8/8/8/p7/1k4K w - - 0 1',
+    objective: 'draw',
+    requestedObjective: 'draw',
+    isFallback: false,
+    solverColor: 'w',
+    startBalance: 2,
+    pieceCount: 4,
+    scoreType: 'cp',
+    scoreValue: 0,
+    mateIn: null,
+    evalLabel: '0.00',
+    bestMoveUci: 'f6e5',
+    bestLineUci: ['f6e5', 'a2a1q', 'e5a1', 'b1a1'],
+    title: 'Bishop Stop',
+    instruction: 'Reposition your Bishop to control the promotion diagonal and stop the pawn.'
+  },
+  {
+    id: 'default-endgame-019',
+    fen: 'k7/8/2K5/8/8/8/7Q/8 w - - 0 1',
+    objective: 'mate',
+    requestedObjective: 'mate',
+    isFallback: false,
+    solverColor: 'w',
+    startBalance: 9,
+    pieceCount: 3,
+    scoreType: 'mate',
+    scoreValue: 2,
+    mateIn: 2,
+    evalLabel: '+M2',
+    bestMoveUci: 'h2h7',
+    bestLineUci: ['h2h7', 'a8b8', 'h7b7'],
+    title: 'Queen Mate Prep',
+    instruction: 'Position your Queen on the 7th rank to restrict the King and force mate.'
+  },
+  {
+    id: 'default-endgame-020',
+    fen: '8/8/8/8/8/5q2/5k2/6RK w - - 0 1',
+    objective: 'draw',
+    requestedObjective: 'draw',
+    isFallback: false,
+    solverColor: 'w',
+    startBalance: -4,
+    pieceCount: 4,
+    scoreType: 'cp',
+    scoreValue: 0,
+    mateIn: null,
+    evalLabel: '0.00',
+    bestMoveUci: 'g1g2',
+    bestLineUci: ['g1g2', 'f3g2'],
+    title: 'Stalemate Save',
+    instruction: 'Save the game by forcing a stalemate using your Rook.'
+  }
+];
+
+function createDefaultPuzzleQueue() {
+  return DEFAULT_ENDGAME_PUZZLES.map(p => ({ ...p, bestLineUci: [...p.bestLineUci] }));
+}
+
+function addPuzzleToQueue(puzzle) {
+  if (state.puzzle.puzzleQueue.some(p => p.id === puzzle.id)) {
+    return;
+  }
+  state.puzzle.puzzleQueue.push(puzzle);
+}
+
+function restoreDefaultPuzzles() {
+  state.puzzle.puzzleQueue = createDefaultPuzzleQueue();
+  persistPuzzleQueue();
+  renderPuzzlePanel();
+}
 const PRACTICE_KIND_LINE = 'line';
 const PRACTICE_KIND_BRANCH = 'branch';
 const DEFAULT_TITLE = '';
@@ -7961,6 +8343,9 @@ function handleDocumentClick(event) {
     case 'replay-previous-puzzle':
       void requestPreviousPuzzle();
       break;
+    case 'restore-default-puzzles':
+      restoreDefaultPuzzles();
+      break;
     case 'clear-puzzle-history': {
       if (window.confirm('Clear saved previous puzzles on this browser?')) {
         state.puzzle.puzzleHistory = [];
@@ -8901,7 +9286,9 @@ function applyPlayEngineMove(bestMoveUci) {
 
   state.analysis.currentFen = state.analysis.game.fen();
   state.analysis.lastMoveSquares = [applied.from, applied.to];
-  state.analysis.boardMessage = `Stockfish played ${applied.san}. Your turn!`;
+  state.analysis.boardMessage = state.puzzle.sessionActive
+    ? `Stockfish played ${applied.san}. Continue toward the objective.`
+    : `Stockfish played ${applied.san}. Your turn!`;
 
   if (state.play.timeControl !== 'none') {
     const turn = state.analysis.game.turn();
@@ -8983,6 +9370,11 @@ function updateClockElapsed() {
 function tickPlayClock() {
   if (!state.play.active || !state.analysis.game) {
     stopPlayClock();
+    return;
+  }
+
+  // Puzzle mode: do not tick or flag the clock.
+  if (state.puzzle.sessionActive) {
     return;
   }
 
@@ -9334,7 +9726,9 @@ function hydratePuzzleState() {
   }
   try {
     const rawQueue = window.localStorage.getItem(PUZZLE_QUEUE_STORAGE_KEY);
-    if (rawQueue) {
+    if (rawQueue === null) {
+      state.puzzle.puzzleQueue = createDefaultPuzzleQueue();
+    } else {
       const queue = JSON.parse(rawQueue);
       if (Array.isArray(queue)) {
         state.puzzle.puzzleQueue = queue;
@@ -9504,7 +9898,7 @@ async function generatePuzzleBatch(count = 5) {
         if (state.puzzle.difficultyPreference && state.puzzle.difficultyPreference !== 'any') {
           puzzle.difficulty = state.puzzle.difficultyPreference;
         }
-        state.puzzle.puzzleQueue.push(puzzle);
+        addPuzzleToQueue(puzzle);
         state.puzzle.puzzleQueue = state.puzzle.puzzleQueue.slice(0, PUZZLE_QUEUE_MAX);
         persistPuzzleQueue();
         addPuzzleToHistory(puzzle);
@@ -9594,6 +9988,8 @@ async function startPuzzleSession(puzzle) {
   if (state.play.active) {
     stopPlayGame({ reason: 'Game abandoned to start a puzzle.' });
   }
+  // Reset practice state so lesson/practice exact-move checks cannot interfere.
+  state.practice = createEmptyPracticeState();
   state.puzzle.savedPlaySettings ??= {
     skill: state.play.skill,
     timeControl: state.play.timeControl,
@@ -9616,6 +10012,8 @@ async function startPuzzleSession(puzzle) {
   // instruction can replace the generic "Game started" message right away
   // while Stockfish is still loading.
   const startPromise = startPlayGame({ ownerTab: TAB_PUZZLE });
+  // Ensure no Play-mode clock interval keeps running in Puzzle mode.
+  stopPlayClock();
   if (state.play.active && state.puzzle.sessionActive) {
     state.analysis.boardMessage = puzzleObjectiveInstruction(puzzle);
     renderAll();
@@ -9692,6 +10090,11 @@ function evaluatePuzzleOutcome(puzzle, reason) {
   if (/abandoned|enabling analysis|failed to load|skipped|invalid move|illegal move/i.test(reasonText)) {
     return { kind: 'abandoned' };
   }
+  // Defensively ignore timeout/flag reasons in Puzzle mode so a queued
+  // timer event cannot fail the puzzle.
+  if (/wins on time|flagged/i.test(reasonText)) {
+    return { kind: 'abandoned' };
+  }
   const objectiveLabel = puzzleObjectiveLabel(puzzle.objective);
   if (game.isCheckmate()) {
     const winner = game.turn() === 'w' ? 'b' : 'w';
@@ -9740,7 +10143,7 @@ function evaluatePuzzleOutcome(puzzle, reason) {
           isLosing = true;
         }
       } else {
-        if (playerScore < -150) {
+        if (playerScore < DRAW_OBJECTIVE_LOSING_THRESHOLD_CP) {
           isLosing = true;
         }
       }
@@ -9904,14 +10307,22 @@ function renderPuzzleQueueControls(pz) {
     ? `<button type="button" class="action-button danger" data-action="clear-puzzle-history" style="flex: 1; min-height: 36px;">Clear Previous Puzzles</button>`
     : '';
 
+  const restoreButtonMarkup = (pz.puzzleQueue.length === 0 && !isGenerating)
+    ? `<button type="button" class="action-button primary" data-action="restore-default-puzzles" style="width: 100%; min-height: 36px;">Restore Default Puzzles</button>`
+    : '';
+
   return `
     <div class="puzzle-queue-controls" style="display: flex; flex-direction: column; gap: 10px; background: var(--card-bg, rgba(255, 255, 255, 0.05)); border: 1px solid var(--card-border); border-radius: var(--radius-card); padding: 12px; margin-bottom: 12px;">
       <div style="display: flex; justify-content: space-between; font-size: 0.9em; font-weight: 500;">
         <div>Ready puzzles: <span style="font-weight: 700;">${pz.puzzleQueue.length}</span></div>
         <div>Previous puzzles saved: <span style="font-weight: 700;">${historyLength}</span></div>
       </div>
+      <div style="font-size: 0.8em; color: var(--color-text-muted); text-align: left; margin-top: -4px;">
+        20 default endgame puzzles included.
+      </div>
       <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
-        <button type="button" class="action-button tonal" data-action="generate-puzzle-batch" ${ (isGenerating || pz.puzzleQueue.length >= PUZZLE_QUEUE_MAX) ? 'disabled' : '' }>Generate 5 Puzzles</button>
+        <button type="button" class="action-button tonal" data-action="generate-puzzle-batch" ${ (isGenerating || pz.puzzleQueue.length >= PUZZLE_QUEUE_MAX) ? 'disabled' : '' }>Generate 5 More Puzzles</button>
+        ${restoreButtonMarkup}
         <div style="display: flex; gap: 8px; width: 100%;">
           <button type="button" class="action-button tonal" data-action="replay-previous-puzzle" ${ (historyLength === 0 || isGenerating) ? 'disabled' : '' } style="flex: 1; min-height: 36px;">Replay Previous Puzzle</button>
           ${clearButtonMarkup}
