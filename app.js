@@ -8457,6 +8457,11 @@ function handleDocumentClick(event) {
       break;
     case 'set-tab': {
       const targetTab = actionEl.dataset.tab;
+
+      // Capture puzzle position before stopPlayGame/finishPuzzleSession clears the session flag
+      const puzzleFenForSetup = targetTab === TAB_SETUP && state.puzzle.sessionActive
+        ? state.analysis.currentFen : null;
+
       if (state.practice.active && targetTab === TAB_SETUP) {
         stopPracticeSession();
       }
@@ -8484,6 +8489,18 @@ function handleDocumentClick(event) {
         state.toolsExpanded = false;
       } else if (targetTab !== TAB_LESSONS) {
         state.toolsExpanded = true;
+      }
+
+      // Sync puzzle position into setup state so the Setup tab shows the puzzle position
+      if (puzzleFenForSetup) {
+        const parsed = parseFenLike(puzzleFenForSetup);
+        if (parsed.ok) {
+          const sanitized = sanitizeSetupState(parsed.pieces, parsed.meta);
+          state.setup.pieces = sanitized.pieces;
+          state.setup.meta = sanitized.meta;
+          state.setupFen = buildFenFromPiecesAndMeta(sanitized.pieces, sanitized.meta);
+          state.setup.fenInput = state.setupFen;
+        }
       }
 
       state.activeTab = normalizeActiveTab(targetTab, TAB_PLAY);
@@ -10347,12 +10364,17 @@ function isPuzzleFenIllegal(fen) {
   const defender = mover === 'w' ? 'b' : 'w';
   for (const row of game.board()) {
     for (const sq of row) {
-      if (sq && sq.type === 'k' && sq.color === defender) {
-        return game.isAttacked(sq.square, mover);
+      if (sq && sq.type === 'k') {
+        if (sq.color === defender && game.isAttacked(sq.square, mover)) {
+          return true; // solver checking opponent's king
+        }
+        if (sq.color === mover && game.isAttacked(sq.square, defender)) {
+          return true; // solver is in check
+        }
       }
     }
   }
-  return true;
+  return false;
 }
 
 function hydratePuzzleHistory() {

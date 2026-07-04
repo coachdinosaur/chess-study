@@ -204,6 +204,15 @@ element:
 updates `data-active-tab` on the root element, which CSS uses to show/hide
 panels and the tab-chip `.is-active` class.
 
+**Tab switch side effects** (`set-tab` handler, `app.js:8458`):
+- Switching away from Play while a game is active stops the game (with reason
+  `'Game abandoned by switching tabs.'`)
+- Switching to Setup while a puzzle session is active saves the puzzle position
+  into `state.setupFen`/`state.setup.pieces` so the Setup board shows the
+  puzzle position (captured before `stopPlayGame` terminates the session).
+- Switching away from Puzzle while generation is in progress cancels it.
+- Switching to Lessons opens Guided Review; switching away closes it.
+
 ---
 
 ## Engine Architecture
@@ -370,6 +379,13 @@ finishPuzzleSession(reason)         ← checkmate / draw / resign / timeout
   → evaluatePuzzleOutcome()
   → update solvedCount/failedCount/streak
   → show result modal
+
+**Puzzle → Setup tab sync:** When the user switches from Puzzle to Setup while a
+puzzle session is active, the `set-tab` handler captures `state.analysis.currentFen`
+before `stopPlayGame`/`finishPuzzleSession` clears the session flag, then copies it
+into `state.setupFen`/`state.setup.pieces` so the Setup tab board reflects the puzzle
+position. This allows the user to explore or modify the puzzle position on the Setup
+board after the puzzle session ends.
 ```
 
 ### Win Objective Checking

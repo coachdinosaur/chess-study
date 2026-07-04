@@ -82,6 +82,7 @@ The Setup tab provides a complete position builder:
 - **Scan Board** — sends a chessboard image to `http://127.0.0.1:8765/predict-fen` (requires the local scanner helper server).
 - **Advanced details** — collapsible panel for side-to-move, castling rights (checkboxes), and en passant target square (dropdown).
 - **Hero banner** — shows green/danger status messages indicating setup validity.
+- **Puzzle position preservation** — switching to the Setup tab while a puzzle is active saves the puzzle position into the setup board, so you can explore or modify the position after the puzzle session ends.
 
 ## Play vs Stockfish Tab
 
