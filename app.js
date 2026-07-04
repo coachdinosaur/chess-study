@@ -596,6 +596,7 @@ const dom = {
   pgnFileInput: document.getElementById('pgnFileInput'),
   guidedReviewFileInput: document.getElementById('guidedReviewFileInput'),
   scanBoardInput: document.getElementById('scanBoardInput'),
+  puzzleCsvFileInput: document.getElementById('puzzleCsvFileInput'),
   lessonFileStatus: document.getElementById('lessonFileStatus'),
   heroBanner: document.getElementById('heroBanner'),
   controlPaneScroll: document.querySelector('.control-pane-scroll'),
@@ -8739,6 +8740,15 @@ function handleDocumentClick(event) {
     case 'dismiss-puzzle-result':
       dismissPuzzleResultModal();
       break;
+    case 'save-puzzle-csv':
+      savePuzzleQueueCsv();
+      break;
+    case 'load-puzzle-csv':
+      if (dom.puzzleCsvFileInput) {
+        dom.puzzleCsvFileInput.value = '';
+        dom.puzzleCsvFileInput.click();
+      }
+      break;
     case 'open-premium-modal':
       openPremiumModal();
       break;
@@ -8811,6 +8821,13 @@ function handleDocumentChange(event) {
         dom.guidedReviewFileInput.value = '';
       }
     });
+    return;
+  }
+  if (event.target === dom.puzzleCsvFileInput) {
+    const file = event.target.files?.[0];
+    if (file) {
+      void loadPuzzleQueueCsv(file);
+    }
     return;
   }
   if (event.target === dom.scanBoardInput) {
@@ -10153,6 +10170,138 @@ function persistPuzzleHistory() {
   }
 }
 
+function savePuzzleQueueCsv() {
+  const puzzles = state.puzzle.puzzleQueue;
+  if (puzzles.length === 0) {
+    state.puzzle.apiError = 'No puzzles in queue to export.';
+    renderPuzzlePanel();
+    return;
+  }
+
+  const headers = ['id','fen','objective','requestedObjective','isFallback','solverColor','startBalance','pieceCount','scoreType','scoreValue','mateIn','evalLabel','bestMoveUci','bestLineUci','title','instruction','source','difficulty'];
+  const rows = puzzles.map(p => [
+    p.id,
+    p.fen,
+    p.objective || '',
+    p.requestedObjective || '',
+    p.isFallback ? 'true' : '',
+    p.solverColor || '',
+    String(p.startBalance ?? ''),
+    String(p.pieceCount ?? ''),
+    p.scoreType || '',
+    String(p.scoreValue ?? ''),
+    p.mateIn != null ? String(p.mateIn) : '',
+    p.evalLabel || '',
+    p.bestMoveUci || '',
+    Array.isArray(p.bestLineUci) ? p.bestLineUci.join(' ') : (p.bestLineUci || ''),
+    p.title || '',
+    p.instruction || '',
+    p.source || '',
+    p.difficulty || '',
+  ]);
+
+  const csvRows = [headers.join(',')];
+  for (const row of rows) {
+    const escaped = row.map(v => {
+      if (v.includes(',') || v.includes('"') || v.includes('\n') || v.includes('\r')) {
+        return '"' + v.replace(/"/g, '""') + '"';
+      }
+      return v;
+    });
+    csvRows.push(escaped.join(','));
+  }
+
+  downloadTextFile('puzzles.csv', csvRows.join('\n'), 'text/csv');
+  state.puzzle.apiError = '';
+  renderPuzzlePanel();
+}
+
+function parseCsvLine(line) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (inQuotes) {
+      if (ch === '"') {
+        if (i + 1 < line.length && line[i + 1] === '"') {
+          current += '"';
+          i++;
+        } else {
+          inQuotes = false;
+        }
+      } else {
+        current += ch;
+      }
+    } else {
+      if (ch === '"') {
+        inQuotes = true;
+      } else if (ch === ',') {
+        result.push(current);
+        current = '';
+      } else if (ch === '\r') {
+        // skip carriage returns
+      } else {
+        current += ch;
+      }
+    }
+  }
+  result.push(current);
+  return result;
+}
+
+async function loadPuzzleQueueCsv(file) {
+  if (!file) {
+    return;
+  }
+
+  const text = await file.text();
+  const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+
+  if (lines.length < 2) {
+    state.puzzle.apiError = 'CSV file is empty or has no data rows.';
+    renderPuzzlePanel();
+    return;
+  }
+
+  const headers = parseCsvLine(lines[0]).map(h => h.trim());
+  let added = 0;
+
+  for (let i = 1; i < lines.length; i++) {
+    const values = parseCsvLine(lines[i]);
+    const puzzle = {};
+    for (let j = 0; j < headers.length; j++) {
+      puzzle[headers[j]] = values[j] || '';
+    }
+
+    if (!puzzle.fen) continue;
+
+    puzzle.isFallback = puzzle.isFallback === 'true';
+    puzzle.startBalance = parseInt(puzzle.startBalance, 10) || 0;
+    puzzle.pieceCount = parseInt(puzzle.pieceCount, 10) || 0;
+    puzzle.scoreValue = parseInt(puzzle.scoreValue, 10) || 0;
+    puzzle.mateIn = puzzle.mateIn !== '' ? parseInt(puzzle.mateIn, 10) : null;
+
+    if (typeof puzzle.bestLineUci === 'string' && puzzle.bestLineUci) {
+      puzzle.bestLineUci = puzzle.bestLineUci.split(/\s+/).filter(Boolean);
+    } else {
+      puzzle.bestLineUci = [];
+    }
+
+    if (!puzzle.id) {
+      puzzle.id = 'imported-' + Date.now() + '-' + added;
+    }
+    puzzle.source = puzzle.source || 'imported';
+
+    addPuzzleToQueue(puzzle);
+    added++;
+  }
+
+  persistPuzzleQueue();
+  state.puzzle.apiError = added > 0 ? `Loaded ${added} puzzle(s) from CSV.` : 'No valid puzzles found in CSV.';
+  renderPuzzlePanel();
+}
+
 function hydratePuzzleHistory() {
   try {
     const rawHistory = window.localStorage.getItem(PUZZLE_HISTORY_STORAGE_KEY);
@@ -10844,6 +10993,10 @@ function renderPuzzleQueueControls(pz) {
       <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
         <button type="button" class="action-button tonal" data-action="generate-puzzle-batch" ${ (isGenerating || totalReady >= PUZZLE_QUEUE_MAX) ? 'disabled' : '' }>Generate 5 More Puzzles</button>
         <button type="button" class="action-button tonal" data-action="restore-default-puzzles" ${ isGenerating ? 'disabled' : '' } style="width: 100%; min-height: 36px;">Reset Default Puzzles</button>
+        <div style="display: flex; gap: 8px; width: 100%;">
+          <button type="button" class="action-button tonal" data-action="save-puzzle-csv" ${ pz.puzzleQueue.length === 0 ? 'disabled' : '' } style="flex: 1; min-height: 36px;">Save Queue as CSV</button>
+          <button type="button" class="action-button tonal" data-action="load-puzzle-csv" ${ isGenerating ? 'disabled' : '' } style="flex: 1; min-height: 36px;">Load CSV Puzzles</button>
+        </div>
         <div style="display: flex; gap: 8px; width: 100%;">
           <button type="button" class="action-button tonal" data-action="replay-previous-puzzle" ${ (historyLength === 0 || isGenerating) ? 'disabled' : '' } style="flex: 1; min-height: 36px;">Replay Previous Puzzle</button>
           ${clearButtonMarkup}
