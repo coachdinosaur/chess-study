@@ -663,8 +663,17 @@ code {
   overflow: hidden;
 }
 
-.captured-row.is-empty {
-  display: none;
+.captured-row.is-empty .captured-piece-shell.is-empty-slot {
+  opacity: 0.3;
+}
+.captured-piece-shell.is-empty-slot {
+  opacity: 0.4;
+  border-style: dashed;
+}
+.captured-piece-placeholder {
+  width: 96%;
+  height: 96%;
+  display: block;
 }
 
 .captured-pieces {

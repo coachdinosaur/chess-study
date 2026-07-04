@@ -6279,12 +6279,20 @@ function buildCapturedPiecesByColor(pieces) {
   CAPTURED_PIECE_ORDER.forEach((upper) => {
     const maxCount = STANDARD_PIECE_COUNTS[upper] || 0;
     const whiteMissing = Math.max(0, maxCount - boardCounts.w[upper]);
+    const whiteOnBoard = boardCounts.w[upper];
     const blackMissing = Math.max(0, maxCount - boardCounts.b[upper]);
+    const blackOnBoard = boardCounts.b[upper];
     for (let index = 0; index < whiteMissing; index += 1) {
-      captured.w.push(upper);
+      captured.w.push({ piece: upper, empty: false });
+    }
+    for (let index = 0; index < whiteOnBoard; index += 1) {
+      captured.w.push({ piece: upper, empty: true });
     }
     for (let index = 0; index < blackMissing; index += 1) {
-      captured.b.push(upper.toLowerCase());
+      captured.b.push({ piece: upper.toLowerCase(), empty: false });
+    }
+    for (let index = 0; index < blackOnBoard; index += 1) {
+      captured.b.push({ piece: upper.toLowerCase(), empty: true });
     }
   });
   return captured;
@@ -6292,37 +6300,48 @@ function buildCapturedPiecesByColor(pieces) {
 
 function capturedPieceEntries(pieces) {
   const entries = [];
-  let pawnCount = 0;
-  let pawnPiece = '';
+  const pawnCaptured = [];
+  const pawnEmpty = [];
 
-  pieces.forEach((piece) => {
+  pieces.forEach((entry) => {
+    const { piece, empty } = entry;
     if (piece.toUpperCase() === 'P') {
-      pawnCount += 1;
-      pawnPiece = piece;
+      if (empty) {
+        pawnEmpty.push(entry);
+      } else {
+        pawnCaptured.push(entry);
+      }
       return;
     }
-    entries.push({ piece, count: 1 });
+    entries.push({ piece, count: 1, empty });
   });
 
-  if (pawnCount > 0) {
-    entries.push({ piece: pawnPiece, count: pawnCount });
+  if (pawnCaptured.length > 0) {
+    entries.push({ piece: pawnCaptured[0].piece, count: pawnCaptured.length, empty: false });
+  }
+  if (pawnEmpty.length > 0) {
+    entries.push({ piece: pawnEmpty[0].piece, count: pawnEmpty.length, empty: true });
   }
 
   return entries;
 }
 
 function capturedPiecesMarkup(pieces) {
-  return capturedPieceEntries(pieces).map(({ piece, count }) => {
+  return capturedPieceEntries(pieces).map(({ piece, count, empty }) => {
     const colorLabel = piece === piece.toLowerCase() ? 'Black' : 'White';
     const pieceLabel = PIECE_LABELS[piece.toUpperCase()];
     const countLabel = count > 1 ? ` x${count}` : '';
+    const emptyClass = empty ? ' is-empty-slot' : '';
+    const pieceImage = empty
+      ? `<span class="captured-piece-placeholder" aria-hidden="true"></span>`
+      : `<img class="captured-piece" src="${PIECE_ASSETS[piece]}" alt="">`;
     return `
     <span
-      class="captured-piece-shell ${piece === piece.toLowerCase() ? 'is-dark-piece' : 'is-light-piece'} ${count > 1 ? 'has-count' : ''}"
-      title="${escapeHtml(colorLabel)} ${escapeHtml(pieceLabel)}${escapeHtml(countLabel)}"
-      aria-label="${escapeHtml(colorLabel)} ${escapeHtml(pieceLabel)}${escapeHtml(countLabel)}"
+      class="captured-piece-shell ${piece === piece.toLowerCase() ? 'is-dark-piece' : 'is-light-piece'} ${count > 1 ? 'has-count' : ''}${emptyClass}"
+      title="${escapeHtml(colorLabel)} ${escapeHtml(pieceLabel)}${escapeHtml(countLabel)}${empty ? ' (on board)' : ''}"
+      aria-label="${escapeHtml(colorLabel)} ${escapeHtml(pieceLabel)}${escapeHtml(countLabel)}${empty ? ' (on board)' : ''}"
     >
-      <img class="captured-piece" src="${PIECE_ASSETS[piece]}" alt="">
+      ${pieceImage}
       ${count > 1 ? `<span class="captured-piece-count" aria-hidden="true">x${count}</span>` : ''}
     </span>
   `;
@@ -6343,10 +6362,10 @@ function renderCapturedPieces() {
   dom.capturedBottomPieces.innerHTML = capturedPiecesMarkup(bottomCaptured.pieces);
   dom.capturedTopPieces.setAttribute('aria-label', topCaptured.label);
   dom.capturedBottomPieces.setAttribute('aria-label', bottomCaptured.label);
-  dom.capturedTop.classList.toggle('is-empty', topCaptured.pieces.length === 0);
-  dom.capturedBottom.classList.toggle('is-empty', bottomCaptured.pieces.length === 0);
-  dom.capturedTop.setAttribute('aria-hidden', topCaptured.pieces.length === 0 ? 'true' : 'false');
-  dom.capturedBottom.setAttribute('aria-hidden', bottomCaptured.pieces.length === 0 ? 'true' : 'false');
+  dom.capturedTop.classList.remove('is-empty');
+  dom.capturedBottom.classList.remove('is-empty');
+  dom.capturedTop.setAttribute('aria-hidden', 'false');
+  dom.capturedBottom.setAttribute('aria-hidden', 'false');
 }
 
 function cssLengthToPx(value, fallback = 0) {
