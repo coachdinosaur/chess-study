@@ -1,0 +1,2 @@
+title,fen,level_tier,goal_type,lesson_text,status,mode,endgame_position,player_color,plan,mate_in,detected_side_to_move
+Chess Basics,3kb3/5r2/8/8/4N3/8/2KP4/8 w - - 0 1,beginner,read,"A simple chess basics lesson for beginners testing the CSV import workflow. Practice knight maneuvers and endgame positioning.",needs_review,,,,,

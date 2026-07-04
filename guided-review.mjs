@@ -1,6 +1,7 @@
 import { normalizeEditableText } from './text-normalization.mjs';
 
 const REVIEW_STORAGE_PREFIX = 'guided-lesson-row-review-v1';
+const REVIEW_DATA_STORAGE_SUFFIX = ':data';
 const LAST_SESSION_STORAGE_KEY = `${REVIEW_STORAGE_PREFIX}:last-session`;
 
 const FIELD_ALIASES = Object.freeze({
@@ -454,7 +455,7 @@ function bannerMarkup(message, kind = 'warning') {
 }
 
 function rowStatusLabel(value) {
-  return normalizeEditableText(value || 'unsaved').trim() || 'unsaved';
+  return normalizeEditableText(value || '').trim() || '\u2014';
 }
 
 export function createGuidedReviewController({ host, fileInput, callbacks = {} } = {}) {
@@ -474,6 +475,7 @@ export function createGuidedReviewController({ host, fileInput, callbacks = {} }
     messageKind: 'warning',
     fenError: '',
     lastSession: null,
+    fileHandle: null,
   };
 
   function rowCount() {
@@ -554,10 +556,18 @@ export function createGuidedReviewController({ host, fileInput, callbacks = {} }
     };
     writeJsonStorage(state.storageKey, payload);
     writeJsonStorage(LAST_SESSION_STORAGE_KEY, {
+      storageKey: state.storageKey,
       fileName: state.sourceFileName,
       headerSignature: state.headerSignature,
       activeIndex: state.activeIndex,
       savedAt: payload.savedAt,
+    });
+    writeJsonStorage(`${state.storageKey}${REVIEW_DATA_STORAGE_SUFFIX}`, {
+      headerSignature: state.headerSignature,
+      headers: state.headers,
+      rows: state.rows,
+      sourceFileName: state.sourceFileName,
+      savedAt: new Date().toISOString(),
     });
   }
 
@@ -565,6 +575,19 @@ export function createGuidedReviewController({ host, fileInput, callbacks = {} }
     if (!state.storageKey) {
       state.lastSession = parseJsonStorage(LAST_SESSION_STORAGE_KEY);
       return;
+    }
+    const savedData = parseJsonStorage(`${state.storageKey}${REVIEW_DATA_STORAGE_SUFFIX}`);
+    if (savedData && savedData.headerSignature === state.headerSignature) {
+      if (Array.isArray(savedData.rows) && savedData.rows.length) {
+        state.rows = savedData.rows;
+      }
+      if (Array.isArray(savedData.headers) && savedData.headers.length) {
+        state.headers = savedData.headers;
+      }
+      if (savedData.sourceFileName) {
+        state.sourceFileName = savedData.sourceFileName;
+      }
+      state.columnMap = buildColumnMap(state.headers);
     }
     const payload = parseJsonStorage(state.storageKey);
     if (!payload || payload.headerSignature !== state.headerSignature) {
@@ -596,6 +619,25 @@ export function createGuidedReviewController({ host, fileInput, callbacks = {} }
   function openGuidedReviewMode() {
     state.active = true;
     callbacks.setActive?.(true);
+
+    if (!hasRows() && !state.storageKey) {
+      const last = state.lastSession || parseJsonStorage(LAST_SESSION_STORAGE_KEY);
+      if (last?.storageKey) {
+        const savedData = parseJsonStorage(`${last.storageKey}${REVIEW_DATA_STORAGE_SUFFIX}`);
+        if (savedData?.headerSignature === last.headerSignature) {
+          state.storageKey = last.storageKey;
+          state.sourceFileName = savedData.sourceFileName || last.fileName || 'lessons';
+          state.headerSignature = savedData.headerSignature;
+          state.rows = savedData.rows || [];
+          state.headers = savedData.headers || [];
+          state.columnMap = buildColumnMap(state.headers);
+          state.activeIndex = Math.min(Math.max(0, Number(last.activeIndex) || 0), Math.max(0, state.rows.length - 1));
+          state.message = `Restored ${state.rows.length} row${state.rows.length === 1 ? '' : 's'} from ${state.sourceFileName}.`;
+          state.messageKind = 'success';
+        }
+      }
+    }
+
     restoreReviewProgress();
     renderCurrentLessonRow();
   }
@@ -631,6 +673,25 @@ export function createGuidedReviewController({ host, fileInput, callbacks = {} }
       renderCurrentLessonRow();
       callbacks.setStatus?.(state.message);
     }
+  }
+
+  function initializeBlankLessonSet() {
+    const defaultHeaders = DEFAULT_EDITOR_FIELDS.map((field) => FIELD_CANONICAL_HEADERS[field]);
+    const blankRow = defaultHeaders.map(() => '');
+    state.headers = defaultHeaders;
+    state.rows = [blankRow];
+    state.columnMap = buildColumnMap(state.headers);
+    state.sourceFileName = 'new-lessons';
+    state.headerSignature = buildHeaderSignature(state.headers);
+    state.storageKey = buildStorageKey(state.sourceFileName, state.headerSignature);
+    state.activeIndex = 0;
+    state.drafts = {};
+    state.fenError = '';
+    state.message = 'Created a new blank lesson set. Fill in the first row and save.';
+    state.messageKind = 'success';
+    state.fileHandle = null;
+    saveReviewProgress();
+    renderCurrentLessonRow();
   }
 
   function loadCurrentFenToBoard() {
@@ -698,6 +759,145 @@ export function createGuidedReviewController({ host, fileInput, callbacks = {} }
       renderCurrentLessonRow();
     }
     return true;
+  }
+
+  function addNewLessonRow() {
+    const blankRow = state.headers.map(() => '');
+    state.rows.push(blankRow);
+    state.activeIndex = state.rows.length - 1;
+    delete state.drafts[String(state.activeIndex)];
+    state.fenError = '';
+    state.message = `Added new row ${state.activeIndex + 1}. Fill in the fields and save.`;
+    state.messageKind = 'success';
+    saveReviewProgress();
+    renderCurrentLessonRow();
+  }
+
+  function deleteCurrentLessonRow() {
+    if (!hasRows()) {
+      return;
+    }
+    if (rowCount() <= 1) {
+      state.message = 'Cannot delete the only remaining row.';
+      state.messageKind = 'danger';
+      renderCurrentLessonRow();
+      return;
+    }
+    const title = getFieldValue(state.activeIndex, 'title') || `Row ${state.activeIndex + 1}`;
+    if (!confirm(`Delete "${title}" (row ${state.activeIndex + 1})? This cannot be undone.`)) {
+      return;
+    }
+    state.rows.splice(state.activeIndex, 1);
+    if (state.activeIndex >= rowCount()) {
+      state.activeIndex = rowCount() - 1;
+    }
+    const newDrafts = {};
+    Object.entries(state.drafts).forEach(([key, value]) => {
+      const numKey = Number(key);
+      if (numKey === state.activeIndex || numKey === state.activeIndex + 1) {
+        return;
+      }
+      newDrafts[numKey > state.activeIndex + 1 ? String(numKey - 1) : key] = value;
+    });
+    state.drafts = newDrafts;
+    state.fenError = '';
+    state.message = `Deleted row ${state.activeIndex + 1}.`;
+    state.messageKind = 'success';
+    saveReviewProgress();
+    renderCurrentLessonRow();
+    loadCurrentFenToBoard();
+  }
+
+  function moveRowUp() {
+    if (!hasRows() || state.activeIndex <= 0) {
+      return;
+    }
+    if (hasDraftForCurrentRow()) {
+      saveCurrentLessonRow({ render: false, skipBoardLoad: true, quiet: true });
+    }
+    const prev = state.activeIndex - 1;
+    [state.rows[prev], state.rows[state.activeIndex]] = [state.rows[state.activeIndex], state.rows[prev]];
+    const prevDraft = state.drafts[String(prev)];
+    state.drafts[String(prev)] = state.drafts[String(state.activeIndex)];
+    state.drafts[String(state.activeIndex)] = prevDraft;
+    state.activeIndex = prev;
+    state.message = `Moved row up.`;
+    state.messageKind = 'success';
+    saveReviewProgress();
+    renderCurrentLessonRow();
+    loadCurrentFenToBoard();
+  }
+
+  function moveRowDown() {
+    if (!hasRows() || state.activeIndex >= rowCount() - 1) {
+      return;
+    }
+    if (hasDraftForCurrentRow()) {
+      saveCurrentLessonRow({ render: false, skipBoardLoad: true, quiet: true });
+    }
+    const next = state.activeIndex + 1;
+    [state.rows[next], state.rows[state.activeIndex]] = [state.rows[state.activeIndex], state.rows[next]];
+    const nextDraft = state.drafts[String(next)];
+    state.drafts[String(next)] = state.drafts[String(state.activeIndex)];
+    state.drafts[String(state.activeIndex)] = nextDraft;
+    state.activeIndex = next;
+    state.message = `Moved row down.`;
+    state.messageKind = 'success';
+    saveReviewProgress();
+    renderCurrentLessonRow();
+    loadCurrentFenToBoard();
+  }
+
+  async function saveToOriginalFile() {
+    if (!hasRows()) {
+      state.message = 'No rows to save.';
+      state.messageKind = 'danger';
+      renderCurrentLessonRow();
+      return;
+    }
+
+    if (hasDraftForCurrentRow()) {
+      saveCurrentLessonRow({ render: false, skipBoardLoad: true, quiet: true });
+    }
+
+    const csv = serializeCsv(state.headers, state.rows);
+    const blob = new Blob(['\ufeff', csv], { type: 'text/csv;charset=utf-8' });
+
+    if (state.fileHandle) {
+      try {
+        const writable = await state.fileHandle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+        state.message = `Saved ${state.sourceFileName}.`;
+        state.messageKind = 'success';
+        renderCurrentLessonRow();
+        saveReviewProgress();
+        return;
+      } catch {
+        // Permission expired or other error — fall through to prompt
+      }
+    }
+
+    try {
+      const suggestedName = `${baseFileName(state.sourceFileName)}.csv`;
+      const handle = await window.showSaveFilePicker({
+        suggestedName,
+        types: [{ description: 'CSV', accept: { 'text/csv': ['.csv'] } }],
+      });
+      const writable = await handle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+      state.fileHandle = handle;
+      state.sourceFileName = handle.name;
+      state.headerSignature = buildHeaderSignature(state.headers);
+      state.storageKey = buildStorageKey(state.sourceFileName, state.headerSignature);
+      state.message = `Saved ${handle.name}.`;
+      state.messageKind = 'success';
+      renderCurrentLessonRow();
+      saveReviewProgress();
+    } catch {
+      // User cancelled the save dialog
+    }
   }
 
   function goToRow(index) {
@@ -813,7 +1013,7 @@ export function createGuidedReviewController({ host, fileInput, callbacks = {} }
             <div>
               <p class="eyebrow lesson-section-eyebrow">Guided Review</p>
               <h3 class="lesson-section-title">Lesson Row Review</h3>
-              <p class="section-copy">Import an existing CSV or XLSX lesson spreadsheet, then review and save one row at a time.</p>
+              <p class="section-copy">Import an existing CSV or XLSX lesson spreadsheet, or start a blank lesson set from scratch.</p>
             </div>
             <button type="button" class="action-button tonal" data-action="guided-close">Close</button>
           </div>
@@ -821,6 +1021,7 @@ export function createGuidedReviewController({ host, fileInput, callbacks = {} }
           ${lastMarkup}
           <div class="action-row">
             <button type="button" class="action-button primary" data-action="guided-import-file">Import CSV/XLSX</button>
+            <button type="button" class="action-button tonal" data-action="guided-start-blank">Start Blank</button>
           </div>
         </article>
       </section>
@@ -908,6 +1109,10 @@ export function createGuidedReviewController({ host, fileInput, callbacks = {} }
             <button type="button" class="action-button primary" data-action="guided-save-next" ${state.activeIndex >= rowCount() - 1 ? 'disabled' : ''}>Save &amp; Next</button>
             <button type="button" class="action-button tonal" data-action="guided-mark-done">Mark Done</button>
             <button type="button" class="action-button tonal" data-action="guided-mark-needs-review">Mark Needs Review</button>
+            <button type="button" class="action-button tonal" data-action="guided-add-row">Add Row</button>
+            <button type="button" class="action-button tonal" data-action="guided-delete-row">Delete Row</button>
+            <button type="button" class="action-button" data-action="guided-move-up" ${state.activeIndex === 0 ? 'disabled' : ''}>Move Up</button>
+            <button type="button" class="action-button" data-action="guided-move-down" ${state.activeIndex >= rowCount() - 1 ? 'disabled' : ''}>Move Down</button>
             <button type="button" class="action-button" data-action="guided-export">Export Updated File</button>
             <button type="button" class="action-button" data-action="guided-import-file">Import Different File</button>
           </div>
@@ -955,18 +1160,35 @@ export function createGuidedReviewController({ host, fileInput, callbacks = {} }
         goToRow(state.activeIndex + 1);
         break;
       case 'guided-save':
-        saveCurrentLessonRow();
+        saveToOriginalFile();
         break;
       case 'guided-save-next':
-        if (saveCurrentLessonRow({ render: false })) {
-          goToRow(state.activeIndex + 1);
-        }
+        saveToOriginalFile().then(() => {
+          if (state.activeIndex < rowCount() - 1) {
+            goToRow(state.activeIndex + 1);
+          }
+        });
         break;
       case 'guided-mark-done':
         markStatus('done');
         break;
       case 'guided-mark-needs-review':
         markStatus('needs_review');
+        break;
+      case 'guided-start-blank':
+        initializeBlankLessonSet();
+        break;
+      case 'guided-add-row':
+        addNewLessonRow();
+        break;
+      case 'guided-delete-row':
+        deleteCurrentLessonRow();
+        break;
+      case 'guided-move-up':
+        moveRowUp();
+        break;
+      case 'guided-move-down':
+        moveRowDown();
         break;
       case 'guided-clean-text': {
         const input = state.host?.querySelector('[data-guided-field="lessonText"]');
@@ -1006,6 +1228,12 @@ export function createGuidedReviewController({ host, fileInput, callbacks = {} }
     handleAction,
     handleInput,
     closeGuidedReviewMode,
+    addNewLessonRow,
+    deleteCurrentLessonRow,
+    moveRowUp,
+    moveRowDown,
+    saveToOriginalFile,
+    initializeBlankLessonSet,
     isActive: () => state.active,
   };
 }
