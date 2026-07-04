@@ -24,8 +24,11 @@ const MAX_PIECES_PER_SIDE = 6; // king included
 const EVAL_DEPTH = 18;
 const EVAL_STOP_MS = 1600;
 const EVAL_HARD_TIMEOUT_MS = EVAL_STOP_MS + 4000;
-// The single accepted candidate gets one deeper confirmation search.
+// The single accepted candidate gets two deeper confirmation searches. A
+// second search at a higher depth catches positions where the initial eval
+// turned out to be a horizon-effect mirage.
 const VERIFY_DEPTH = 24;
+const VERIFY_FOLLOWUP_DEPTH = 28;
 const VERIFY_STOP_MS = 4000;
 const VERIFY_HARD_TIMEOUT_MS = VERIFY_STOP_MS + 4000;
 const HANDSHAKE_TIMEOUT_MS = 20000;
@@ -38,10 +41,10 @@ const DRAW_MAX_ABS_CP = 80;
 const MATE_MAX_DISTANCE = 32;
 // Shallow endgame evals lie (fortress draws, wrong-bishop positions); never
 // classify from anything below this depth.
-const MIN_ACCEPT_DEPTH = 14;
+const MIN_ACCEPT_DEPTH = 16;
 // The best move must beat the second-best line by this margin (or be the only
 // mate) for the position to count as having a clear solution.
-const CLARITY_MIN_GAP_CP = 150;
+const CLARITY_MIN_GAP_CP = 200;
 // Abort an eval early once a reasonably deep score sits outside every
 // acceptance band — it can only get more hopeless.
 const EARLY_ABORT_MIN_DEPTH = 10;
@@ -278,14 +281,18 @@ function buildCandidate(templateObjective, solverColor) {
   } catch {
     return null;
   }
-  // Illegal: the side to move could capture the defender's king.
-  const defenderKingSquare = squareName(defenderKing.file, defenderKing.rank);
-  if (game.isAttacked(defenderKingSquare, solverColor)) {
-    return null;
-  }
-  // Keep puzzles clean: the solver should not start in check, and the
+  // Reject illegal positions where either side's king is under attack by
+  // the opposing side. The solver must not start in check, and the
   // position must not already be finished (mate/stalemate/insufficient).
-  if (game.isCheck() || game.isGameOver()) {
+  const solverKingSquare = squareName(solverKing.file, solverKing.rank);
+  const defenderKingSquare = squareName(defenderKing.file, defenderKing.rank);
+  if (game.isAttacked(solverKingSquare, defenderColor)) {
+    return null; // solver is in check
+  }
+  if (game.isAttacked(defenderKingSquare, solverColor)) {
+    return null; // solver could capture the defender's king (illegal)
+  }
+  if (game.isGameOver()) {
     return null;
   }
 
@@ -587,9 +594,10 @@ export function createEndgamePuzzleApi(options = {}) {
   }
 
   // Confirm an accepted candidate. Uses the Syzygy tablebase as ground truth
-  // when enabled and applicable; otherwise re-runs one deeper engine search
-  // and requires the classification to hold. Returns the score the puzzle
-  // should be built from, or null to reject the candidate.
+  // when enabled and applicable; otherwise runs two deeper engine searches and
+  // requires the classification to hold at both depths. This catches positions
+  // where the first confirmation search happened to miss a refutation that only
+  // becomes visible at higher depth (horizon-effect mirages).
   async function verifyCandidate(candidate, matched, score, signal) {
     const totalPieces = candidate.pieceCount.solver + candidate.pieceCount.defender;
     if (useTablebase && totalPieces <= TABLEBASE_MAX_PIECES) {
@@ -607,7 +615,18 @@ export function createEndgamePuzzleApi(options = {}) {
       hardMs: VERIFY_HARD_TIMEOUT_MS,
     });
     throwIfAborted(signal);
-    return classifyCandidate(candidate, verified) === matched ? verified : null;
+    if (classifyCandidate(candidate, verified) !== matched) {
+      return null;
+    }
+    // Follow-up search at higher depth. If the evaluation collapses at the
+    // deeper limit the position was a mirage — reject it.
+    const followUp = await evaluateFen(candidate.fen, {
+      depth: VERIFY_FOLLOWUP_DEPTH,
+      stopMs: VERIFY_STOP_MS,
+      hardMs: VERIFY_HARD_TIMEOUT_MS,
+    });
+    throwIfAborted(signal);
+    return classifyCandidate(candidate, followUp) === matched ? followUp : null;
   }
 
   function makePuzzle(candidate, objective, score, requestedObjective) {

@@ -4081,6 +4081,15 @@ code {
   }
 }
 
+.puzzle-section-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin: 0 0 0.35rem 0;
+}
+
 .puzzle-lock-card {
   display: grid;
   justify-items: center;

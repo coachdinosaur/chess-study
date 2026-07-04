@@ -237,81 +237,11 @@ const DEFAULT_ENDGAME_PUZZLES = [
     title: 'Philidor Position',
     instruction: 'Hold the draw as Black. Keep your Rook on the third rank until the pawn advances, then attack from behind.'
   },
-  {
-    id: 'default-endgame-009',
-    fen: '7R/q5k1/8/8/8/8/8/6K w - - 0 1',
-    objective: 'win',
-    requestedObjective: 'win',
-    isFallback: false,
-    solverColor: 'w',
-    startBalance: -4,
-    pieceCount: 4,
-    scoreType: 'cp',
-    scoreValue: 500,
-    mateIn: null,
-    evalLabel: '+5.00',
-    bestMoveUci: 'h8h7',
-    bestLineUci: ['h8h7', 'g7g6', 'h7a7'],
-    title: 'Rook Skewer',
-    instruction: 'Deliver a check that skewers the opponent\'s King and Queen to win the Queen.'
-  },
-  {
-    id: 'default-endgame-010',
-    fen: '8/8/8/8/8/2K5/p7/k6R w - - 0 1',
-    objective: 'mate',
-    requestedObjective: 'mate',
-    isFallback: false,
-    solverColor: 'w',
-    startBalance: 4,
-    pieceCount: 4,
-    scoreType: 'mate',
-    scoreValue: 2,
-    mateIn: 2,
-    evalLabel: '+M2',
-    bestMoveUci: 'h1h2',
-    bestLineUci: ['h1h2', 'a1b1', 'h2h1'],
-    title: 'Defending Against Promotion',
-    instruction: 'Stop the Black pawn from promoting and find a way to checkmate.'
-  },
-  {
-    id: 'default-endgame-011',
-    fen: 'k7/8/1K6/8/8/8/8/R7 w - - 0 1',
-    objective: 'mate',
-    requestedObjective: 'mate',
-    isFallback: false,
-    solverColor: 'w',
-    startBalance: 5,
-    pieceCount: 3,
-    scoreType: 'mate',
-    scoreValue: 3,
-    mateIn: 3,
-    evalLabel: '+M3',
-    bestMoveUci: 'a1a7',
-    bestLineUci: ['a1a7', 'a8g8', 'a7c7', 'g8a8', 'c7c8'],
-    title: 'Corner Rook Mate',
-    instruction: 'Drive the Black king into the corner and deliver mate in three moves.'
-  },
-  {
-    id: 'default-endgame-012',
-    fen: '8/8/8/3p4/3k4/8/3K4/8 w - - 0 1',
-    objective: 'draw',
-    requestedObjective: 'draw',
-    isFallback: false,
-    solverColor: 'w',
-    startBalance: -1,
-    pieceCount: 3,
-    scoreType: 'cp',
-    scoreValue: 0,
-    mateIn: null,
-    evalLabel: '0.00',
-    bestMoveUci: 'd2d1',
-    bestLineUci: ['d2d1', 'd4e3', 'd1e1', 'd5d4', 'e1d1', 'e3d3'],
-    title: 'Defensive Opposition',
-    instruction: 'Hold the draw by stepping back to d1, ready to take the opposition when the King advances.'
-  },
+
+
   {
     id: 'default-endgame-013',
-    fen: '7k/8/R7/8/8/8/8/1R4K w - - 0 1',
+    fen: '7k/8/R7/8/8/8/8/1R4K1 w - - 0 1',
     objective: 'mate',
     requestedObjective: 'mate',
     isFallback: false,
@@ -363,27 +293,10 @@ const DEFAULT_ENDGAME_PUZZLES = [
     title: 'Underpromotion',
     instruction: 'Avoid stalemate by promoting to a Rook instead of a Queen to deliver mate.'
   },
-  {
-    id: 'default-endgame-016',
-    fen: '1r6/4k3/8/4N3/8/8/8/6K w - - 0 1',
-    objective: 'win',
-    requestedObjective: 'win',
-    isFallback: false,
-    solverColor: 'w',
-    startBalance: -2,
-    pieceCount: 4,
-    scoreType: 'cp',
-    scoreValue: 300,
-    mateIn: null,
-    evalLabel: '+3.00',
-    bestMoveUci: 'e5c6',
-    bestLineUci: ['e5c6', 'e7d6', 'c6b8'],
-    title: 'Knight Fork',
-    instruction: 'Find the knight jump that checks the King and attacks the Rook simultaneously.'
-  },
+
   {
     id: 'default-endgame-017',
-    fen: '5k2/8/5P1P/8/8/8/8/6K w - - 0 1',
+    fen: '5k2/8/5P1P/8/8/8/8/6K1 w - - 0 1',
     objective: 'mate',
     requestedObjective: 'mate',
     isFallback: false,
@@ -401,7 +314,7 @@ const DEFAULT_ENDGAME_PUZZLES = [
   },
   {
     id: 'default-endgame-018',
-    fen: '8/8/5B2/8/8/8/p7/1k4K w - - 0 1',
+    fen: '8/8/5B2/8/8/8/p7/1k4K1 w - - 0 1',
     objective: 'draw',
     requestedObjective: 'draw',
     isFallback: false,
@@ -436,8 +349,98 @@ const DEFAULT_ENDGAME_PUZZLES = [
     instruction: 'Position your Queen on the 7th rank to restrict the King and force mate.'
   },
   {
-    id: 'default-endgame-020',
-    fen: '8/8/8/8/8/5q2/5k2/6RK w - - 0 1',
+    id: 'default-endgame-023',
+    fen: '8/8/8/5k2/6R1/8/8/5K2 w - - 0 1',
+    objective: 'mate',
+    requestedObjective: 'mate',
+    isFallback: false,
+    solverColor: 'w',
+    startBalance: 5,
+    pieceCount: 3,
+    scoreType: 'mate',
+    scoreValue: 28,
+    mateIn: 28,
+    evalLabel: '+M28',
+    bestMoveUci: 'g4a4',
+    bestLineUci: ['g4a4', 'f5e5', 'a4a5'],
+    title: 'Rook and King Mate',
+    instruction: "Use your Rook and King to drive the opponent's King to the edge and deliver checkmate."
+  },
+  {
+    id: 'default-endgame-024',
+    fen: '8/8/8/5k2/8/6Q1/8/5K2 w - - 0 1',
+    objective: 'mate',
+    requestedObjective: 'mate',
+    isFallback: false,
+    solverColor: 'w',
+    startBalance: 9,
+    pieceCount: 3,
+    scoreType: 'mate',
+    scoreValue: 10,
+    mateIn: 10,
+    evalLabel: '+M10',
+    bestMoveUci: 'g3d6',
+    bestLineUci: ['g3d6', 'f5e4', 'f1e2'],
+    title: 'Queen King Coordination',
+    instruction: 'Coordinate Queen and King to restrict the Black King and deliver checkmate.'
+  },
+  {
+    id: 'default-endgame-025',
+    fen: '8/8/8/5k2/8/8/4B3/4BK2 w - - 0 1',
+    objective: 'mate',
+    requestedObjective: 'mate',
+    isFallback: false,
+    solverColor: 'w',
+    startBalance: 6,
+    pieceCount: 4,
+    scoreType: 'mate',
+    scoreValue: 30,
+    mateIn: 30,
+    evalLabel: '+M30',
+    bestMoveUci: 'f1f2',
+    bestLineUci: ['f1f2', 'f5e4', 'e1c3'],
+    title: 'Bishop Pair Mate',
+    instruction: "Use your two Bishops on opposite colors to force the Black King to the edge and deliver checkmate."
+  },
+  {
+    id: 'default-endgame-026',
+    fen: '5k2/8/8/8/8/8/6r1/5KQ1 w - - 0 1',
+    objective: 'win',
+    requestedObjective: 'win',
+    isFallback: false,
+    solverColor: 'w',
+    startBalance: 4,
+    pieceCount: 4,
+    scoreType: 'cp',
+    scoreValue: 500,
+    mateIn: null,
+    evalLabel: '5.00',
+    bestMoveUci: 'g1h2',
+    bestLineUci: ['g1h2', 'f8g7', 'f1e1'],
+    title: 'Queen vs Rook',
+    instruction: 'The Queen is stronger than the Rook. Win material while keeping your King safe.'
+  },
+  {
+    id: 'default-endgame-027',
+    fen: '8/8/3k4/8/8/8/3p4/3K4 w - - 0 1',
+    objective: 'draw',
+    requestedObjective: 'draw',
+    isFallback: false,
+    solverColor: 'w',
+    startBalance: -1,
+    pieceCount: 3,
+    scoreType: 'cp',
+    scoreValue: 0,
+    mateIn: null,
+    evalLabel: '0.00',
+    bestMoveUci: 'd1d2',
+    bestLineUci: ['d1d2', 'd6c5', 'd2c1'],
+    title: 'King Opposition',
+    instruction: "Your King blocks the pawn. Maintain the opposition to hold the draw."
+  },
+  {
+    id: 'default-endgame-028',
+    fen: '8/8/8/5k2/8/2b5/6p1/6K1 w - - 0 1',
     objective: 'draw',
     requestedObjective: 'draw',
     isFallback: false,
@@ -449,10 +452,11 @@ const DEFAULT_ENDGAME_PUZZLES = [
     mateIn: null,
     evalLabel: '0.00',
     bestMoveUci: 'g1g2',
-    bestLineUci: ['g1g2', 'f3g2'],
-    title: 'Stalemate Save',
-    instruction: 'Save the game by forcing a stalemate using your Rook.'
-  }
+    bestLineUci: ['g1g2', 'c3a1', 'g2f1'],
+    title: 'Bishop Endgame Defense',
+    instruction: 'Down a pawn, use your Bishop to control key diagonals and prevent promotion.'
+  },
+
 ];
 
 function createDefaultPuzzleQueue() {
@@ -462,6 +466,9 @@ function createDefaultPuzzleQueue() {
 const DEFAULT_PUZZLE_COUNT = DEFAULT_ENDGAME_PUZZLES.length;
 
 function addPuzzleToQueue(puzzle) {
+  if (!puzzle || !puzzle.fen || isPuzzleFenIllegal(puzzle.fen)) {
+    return;
+  }
   if (state.puzzle.puzzleQueue.some(p => p.id === puzzle.id)) {
     return;
   }
@@ -472,9 +479,8 @@ function addPuzzleToQueue(puzzle) {
 }
 
 function restoreDefaultPuzzles() {
-  // Keep generated puzzles, replace all defaults with a fresh set
-  const generatedPuzzles = state.puzzle.puzzleQueue.filter(p => p.source === 'generated');
-  state.puzzle.puzzleQueue = [...createDefaultPuzzleQueue(), ...generatedPuzzles];
+  const nonDefaultPuzzles = state.puzzle.puzzleQueue.filter(p => p.source !== 'default');
+  state.puzzle.puzzleQueue = [...createDefaultPuzzleQueue(), ...nonDefaultPuzzles];
   persistPuzzleQueue();
   renderPuzzlePanel();
 }
@@ -3440,25 +3446,48 @@ function sanitizeSetupState(pieces, meta) {
 }
 
 function isIllegalSetupPosition() {
+  const { pieces, meta } = state.setup;
   const basicLegal = isBasicPositionLegal({
-    pieces: state.setup.pieces,
-    activeColor: state.setup.meta.activeColor,
-    castling: state.setup.meta.castling,
-    halfmove: state.setup.meta.halfmove,
-    fullmove: state.setup.meta.fullmove,
+    pieces,
+    activeColor: meta.activeColor,
+    castling: meta.castling,
+    halfmove: meta.halfmove,
+    fullmove: meta.fullmove,
   });
   if (!basicLegal) {
     return true;
   }
   const sanitizedEnPassant = sanitizeEnPassantForPieces(
-    state.setup.meta.enPassant,
-    state.setup.pieces,
-    state.setup.meta.activeColor,
-    state.setup.meta.castling,
-    state.setup.meta.halfmove,
-    state.setup.meta.fullmove,
+    meta.enPassant,
+    pieces,
+    meta.activeColor,
+    meta.castling,
+    meta.halfmove,
+    meta.fullmove,
   );
-  return sanitizedEnPassant !== state.setup.meta.enPassant;
+  if (sanitizedEnPassant !== meta.enPassant) {
+    return true;
+  }
+  // Reject positions where the side to move is checking the opponent king.
+  const fen = `${buildPlacementFromPieces(pieces)} ${meta.activeColor} ${meta.castling} ${meta.enPassant} ${Math.max(0, meta.halfmove)} ${Math.max(1, meta.fullmove)}`;
+  let game;
+  try {
+    game = new Chess(fen);
+  } catch {
+    return true;
+  }
+  const mover = meta.activeColor;
+  const defender = mover === 'w' ? 'b' : 'w';
+  for (const row of game.board()) {
+    for (const square of row) {
+      if (square && square.type === 'k' && square.color === defender) {
+        if (game.isAttacked(square.square, mover)) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
 }
 
 function currentSetupSummary() {
@@ -10275,6 +10304,7 @@ async function loadPuzzleQueueCsv(file) {
     }
 
     if (!puzzle.fen) continue;
+    if (isPuzzleFenIllegal(puzzle.fen)) continue;
 
     puzzle.isFallback = puzzle.isFallback === 'true';
     puzzle.startBalance = parseInt(puzzle.startBalance, 10) || 0;
@@ -10302,13 +10332,36 @@ async function loadPuzzleQueueCsv(file) {
   renderPuzzlePanel();
 }
 
+// Filter out puzzles where the side to move is checking the opponent king.
+function isPuzzleFenIllegal(fen) {
+  if (!fen) {
+    return true;
+  }
+  let game;
+  try {
+    game = new Chess(fen);
+  } catch {
+    return true;
+  }
+  const mover = game.turn();
+  const defender = mover === 'w' ? 'b' : 'w';
+  for (const row of game.board()) {
+    for (const sq of row) {
+      if (sq && sq.type === 'k' && sq.color === defender) {
+        return game.isAttacked(sq.square, mover);
+      }
+    }
+  }
+  return true;
+}
+
 function hydratePuzzleHistory() {
   try {
     const rawHistory = window.localStorage.getItem(PUZZLE_HISTORY_STORAGE_KEY);
     if (rawHistory) {
       const history = JSON.parse(rawHistory);
       if (Array.isArray(history)) {
-        state.puzzle.puzzleHistory = history;
+        state.puzzle.puzzleHistory = history.filter(p => !isPuzzleFenIllegal(p.fen));
       }
     }
   } catch {
@@ -10317,7 +10370,7 @@ function hydratePuzzleHistory() {
 }
 
 function addPuzzleToHistory(puzzle) {
-  if (!puzzle || !puzzle.fen) {
+  if (!puzzle || !puzzle.fen || isPuzzleFenIllegal(puzzle.fen)) {
     return;
   }
   const key = (p) => `${p.fen}::${p.objective || ''}::${p.solverColor || ''}`;
@@ -10390,7 +10443,7 @@ function hydratePuzzleState() {
             p.source = (typeof p.id === 'string' && p.id.startsWith('default-endgame-')) ? 'default' : 'generated';
           }
         }
-        state.puzzle.puzzleQueue = queue;
+        state.puzzle.puzzleQueue = queue.filter(p => !isPuzzleFenIllegal(p.fen));
       }
     }
   } catch {
@@ -11055,14 +11108,12 @@ function renderPuzzlePanel() {
   const showStartButton = !pz.generating && !pz.sessionActive;
   const buttonText = pz.current ? 'Next Puzzle' : 'Start Puzzle';
   const startButtonMarkup = showStartButton ? `
-    <div class="action-row play-start-action-row" style="display: flex; flex-direction: column; align-items: stretch; gap: 12px; margin-bottom: 12px;">
-      <button type="button" class="action-button primary" data-action="new-puzzle" ${pz.puzzleQueue.length === 0 ? 'disabled' : ''} style="width: 100%;">${buttonText}</button>
-    </div>
+    <button type="button" class="action-button primary" data-action="new-puzzle" ${pz.puzzleQueue.length === 0 ? 'disabled' : ''} style="width: 100%;">${buttonText}</button>
   ` : '';
 
-  let bodyMarkup = '';
+  let sessionMarkup = '';
   if (pz.generating) {
-    bodyMarkup = `
+    sessionMarkup = `
       <div class="banner puzzle-generating-banner">
         <span class="puzzle-spinner" aria-hidden="true"></span>
         <div>
@@ -11078,7 +11129,7 @@ function renderPuzzlePanel() {
       const gain = materialBalanceFromFen(state.analysis.game.fen(), puzzle.solverColor) - pz.startBalance;
       progressMarkup = `<p class="section-copy">Material gained: ${gain >= 0 ? '+' : ''}${gain} of +${PUZZLE_WIN_MATERIAL_GAIN}</p>`;
     }
-    bodyMarkup = `
+    sessionMarkup = `
       ${progressMarkup}
       <div class="action-row play-action-row">
         <button type="button" class="action-button danger" data-action="give-up-puzzle">Give Up</button>
@@ -11086,8 +11137,11 @@ function renderPuzzlePanel() {
         <button type="button" class="action-button tonal" data-action="skip-puzzle">Skip Puzzle</button>
       </div>
     `;
-  } else {
-    bodyMarkup = `
+  }
+
+  let settingsMarkup = '';
+  if (!pz.generating && !(pz.sessionActive && pz.current)) {
+    settingsMarkup = `
       <div class="stack-grid">
         <div class="two-col play-options-grid">
           <div class="field-row">
@@ -11148,26 +11202,26 @@ function renderPuzzlePanel() {
           </div>
         </div>
       </div>
-      ${pz.lastResult ? `
-        <div class="banner ${pz.lastResult.kind === 'solved' ? 'success' : (pz.lastResult.kind === 'incomplete' ? 'warning' : 'danger')}">
-          <div>
-            <strong>${escapeHtml(pz.lastResult.title || '')}</strong>
-            <div>${escapeHtml(pz.lastResult.message || '')}</div>
-          </div>
-        </div>
-      ` : ''}
-      ${pz.apiError ? `
-        <div class="banner warning">
-          <div>
-            <strong>Puzzle API error</strong>
-            <div>${escapeHtml(pz.apiError)}</div>
-          </div>
-        </div>
-      ` : ''}
-
-      <p class="muted-copy">Random endgames with at most 6 pieces per side, generated and verified by Stockfish. You play the side to move: deliver checkmate, win a piece, or hold a draw.</p>
     `;
   }
+
+  const resultBanner = pz.lastResult ? `
+    <div class="banner ${pz.lastResult.kind === 'solved' ? 'success' : (pz.lastResult.kind === 'incomplete' ? 'warning' : 'danger')}" style="margin-top: 8px;">
+      <div>
+        <strong>${escapeHtml(pz.lastResult.title || '')}</strong>
+        <div>${escapeHtml(pz.lastResult.message || '')}</div>
+      </div>
+    </div>
+  ` : '';
+
+  const errorBanner = pz.apiError ? `
+    <div class="banner warning" style="margin-top: 8px;">
+      <div>
+        <strong>Puzzle API error</strong>
+        <div>${escapeHtml(pz.apiError)}</div>
+      </div>
+    </div>
+  ` : '';
 
   const markup = `
     <article class="lesson-section">
@@ -11176,12 +11230,26 @@ function renderPuzzlePanel() {
           <h3 class="lesson-section-title play-section-title">Endgame Puzzles</h3>
         </div>
       </div>
-      ${startButtonMarkup}
+
+      <div class="section-divider"></div>
+      <p class="puzzle-section-label">Statistics</p>
       ${statsMarkup}
+
       <div class="section-divider"></div>
+      <p class="puzzle-section-label">Session</p>
+      ${startButtonMarkup}
+      ${sessionMarkup}
+
+      <div class="section-divider"></div>
+      <p class="puzzle-section-label">Queue</p>
       ${queueControlsMarkup}
+
       <div class="section-divider"></div>
-      ${bodyMarkup}
+      <p class="puzzle-section-label">Settings</p>
+      ${settingsMarkup}
+
+      ${resultBanner}
+      ${errorBanner}
     </article>
   `;
 
