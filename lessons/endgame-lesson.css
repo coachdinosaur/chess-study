@@ -794,10 +794,8 @@ body {
   align-self: center;
 }
 .test-diagram .board {
-  width: 100%;
-  max-width: 480px;
-  height: auto;
-  aspect-ratio: 1 / 1;
+  width: min(480px, calc(100vw - 48px));
+  height: min(480px, calc(100vw - 48px));
 }
 .test-fen {
   font-family: var(--font-mono);
@@ -811,10 +809,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  max-width: 280px;
-  height: auto;
-  aspect-ratio: 1 / 1;
+  width: min(280px, calc(100vw - 48px));
+  height: min(280px, calc(100vw - 48px));
   border: 2px dashed #9a2b2b;
   border-radius: 4px;
   background: repeating-linear-gradient(
@@ -920,8 +916,7 @@ body {
   .test-diagram .board,
   .fen-missing {
     width: min(340px, calc(100vw - 72px));
-    height: auto;
-    aspect-ratio: 1 / 1;
+    height: min(340px, calc(100vw - 72px));
   }
 
   .lesson-index {
