@@ -62,7 +62,7 @@
   --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
 
   --max-width: 1280px;
-  --board-max: 640px;
+  --board-max: clamp(280px, calc(100vw * 0.4 + 60px), 640px);
 }
 
 /* ---------- Dark theme (screen only; print forces light below) ---------- */
@@ -101,7 +101,7 @@ body {
   background: var(--page-bg);
   color: var(--ink);
   font-family: var(--font-body);
-  font-size: 19px;
+  font-size: clamp(16px, 0.6vw + 15px, 19px);
   line-height: 1.62;
   font-feature-settings: "kern", "liga", "calt";
   -webkit-font-smoothing: antialiased;
@@ -111,102 +111,7 @@ body {
 .lesson-page {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 40px 48px 96px;
-}
-
-/* ---------- Mobile responsive (screen only, print unaffected) ----------- */
-@media (max-width: 760px) {
-  :root {
-    --board-max: min(calc(100vw - 80px), 380px);
-  }
-
-  .lesson-page {
-    padding: 24px 16px 64px;
-  }
-
-  .toolbar {
-    margin: -24px -16px 16px;
-    padding: 8px 12px;
-  }
-  .toolbar button {
-    font-size: 13px;
-    padding: 6px 12px;
-  }
-
-  .hero {
-    margin: 4px 0 20px;
-    padding-bottom: 16px;
-  }
-  .eyebrow { font-size: 13px; }
-  .chapter-title { font-size: 30px; }
-  .chapter-subtitle { font-size: 16px; }
-
-  .goals { padding: 12px 16px; }
-  .goals li { font-size: 16px; }
-
-  .lesson { margin-bottom: 28px; }
-  .lesson-head { flex-wrap: wrap; gap: 8px; }
-  .lesson-title { font-size: 24px; }
-  .lesson-intro { font-size: 17px; }
-
-  /* Stack board above text on mobile */
-  .position-body {
-    grid-template-columns: 1fr;
-    gap: 16px;
-    justify-items: center;
-  }
-  .position-note {
-    font-size: 17px;
-    max-width: none !important;
-    width: 100%;
-  }
-  .diagram { width: 100%; max-width: var(--board-max); }
-  .diagram .board { width: 100%; height: auto; aspect-ratio: 1 / 1; }
-
-  .moveline { font-size: 16px; padding: 12px 14px; }
-
-  .rule-box, .recap { padding: 14px 16px; }
-  .rule-box h3, .recap h3 { font-size: 14px; }
-  .rule-box p, .recap li, .recap p { font-size: 16px; }
-  .note-accent, .note-soft { font-size: 15px; }
-
-  .checklist h2 { font-size: 24px; }
-  .checklist li { font-size: 17px; }
-
-  /* Test cards: single column, smaller boards */
-  .test-grid {
-    grid-template-columns: 1fr;
-  }
-  .test-card { padding: 14px; }
-  .test-diagram .board {
-    width: min(calc(100vw - 64px), 340px);
-    height: min(calc(100vw - 64px), 340px);
-  }
-  .fen-missing {
-    width: min(calc(100vw - 64px), 340px);
-    height: min(calc(100vw - 64px), 340px);
-  }
-
-  /* Lesson index: single column */
-  .lesson-index {
-    grid-template-columns: 1fr;
-  }
-  .lesson-index-title { font-size: 17px; }
-
-  .lesson-footer { font-size: 12px; flex-direction: column; gap: 4px; }
-}
-
-@media (max-width: 420px) {
-  :root {
-    --board-max: min(calc(100vw - 56px), 320px);
-  }
-  .lesson-page { padding: 20px 12px 56px; }
-  .chapter-title { font-size: 26px; }
-  .lesson-title { font-size: 21px; }
-  .test-diagram .board {
-    width: min(calc(100vw - 48px), 280px);
-    height: min(calc(100vw - 48px), 280px);
-  }
+  padding: clamp(24px, 2.5vw + 16px, 40px) clamp(16px, 3vw + 10px, 48px) clamp(64px, 4vw + 48px, 96px);
 }
 
 /* ---------- Top toolbar (screen only) ------------------------------------ */
@@ -223,15 +128,20 @@ body {
   backdrop-filter: saturate(140%) blur(6px);
   border-bottom: 1px solid var(--hairline);
 }
+.toolbar {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
 .toolbar button {
   font-family: var(--font-body);
-  font-size: 15px;
+  font-size: clamp(13px, 0.3vw + 12px, 15px);
   font-weight: 600;
+  white-space: nowrap;
   color: var(--btn-ink);
   background: var(--btn-bg);
   border: 1px solid var(--rule-border);
   border-radius: 8px;
-  padding: 8px 16px;
+  padding: clamp(6px, 0.3vw + 5px, 8px) clamp(12px, 0.5vw + 10px, 16px);
   cursor: pointer;
 }
 .toolbar button:hover { background: var(--btn-hover); }
@@ -416,7 +326,7 @@ body {
   word-spacing: 0.04em;
 }
 .analysis-popup-body .pv-line.is-empty .pv-line-text { opacity: 0.5; }
-@media (max-width: 760px) {
+@media (max-width: 860px) {
   .analysis-popup {
     width: calc(100vw - 24px);
     max-height: 40vh;
@@ -434,23 +344,23 @@ body {
 .eyebrow {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 16px;
+  font-size: clamp(13px, 0.5vw + 12px, 16px);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--accent);
-  margin: 0 0 12px;
+  margin: 0 0 clamp(8px, 0.5vw + 6px, 12px);
 }
 .chapter-title {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 48px;
+  font-size: clamp(26px, 3vw + 16px, 48px);
   line-height: 1.1;
   letter-spacing: -0.01em;
   margin: 0 0 12px;
   color: var(--ink);
 }
 .chapter-subtitle {
-  font-size: 20px;
+  font-size: clamp(16px, 0.8vw + 14px, 20px);
   color: var(--ink-soft);
   margin: 0;
   max-width: 62ch;
@@ -470,7 +380,7 @@ body {
   position: relative;
   padding-left: 24px;
   margin: 8px 0;
-  font-size: 18px;
+  font-size: clamp(15px, 0.6vw + 14px, 18px);
   color: var(--ink-soft);
   line-height: 1.6;
 }
@@ -501,7 +411,7 @@ body {
 .lesson-number {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 16px;
+  font-size: clamp(13px, 0.5vw + 12px, 16px);
   color: #fff;
   background: var(--accent);
   padding: 4px 11px;
@@ -511,15 +421,15 @@ body {
 .lesson-title {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 31px;
+  font-size: clamp(21px, 1.8vw + 16px, 31px);
   line-height: 1.2;
   margin: 0;
   color: var(--ink);
 }
 .lesson-intro {
-  margin: 6px 0 20px;
+  margin: 6px 0 clamp(16px, 0.6vw + 14px, 20px);
   color: var(--ink-soft);
-  font-size: 19px;
+  font-size: clamp(16px, 0.6vw + 15px, 19px);
   line-height: 1.6;
   max-width: 64ch;
 }
@@ -533,16 +443,16 @@ body {
 .position-label {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 15px;
+  font-size: clamp(12px, 0.4vw + 11px, 15px);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-faint);
-  margin: 0 0 8px;
+  margin: 0 0 clamp(4px, 0.3vw + 3px, 8px);
 }
 .position-body {
   display: grid;
   grid-template-columns: var(--board-max) 1fr;
-  gap: 22px;
+  gap: clamp(16px, 1.5vw + 12px, 22px);
   align-items: start;
 }
 .diagram {
@@ -550,13 +460,13 @@ body {
   page-break-inside: avoid;
 }
 .caption {
-  margin: 10px 0 0;
-  font-size: 15px;
+  margin: clamp(6px, 0.4vw + 5px, 10px) 0 0;
+  font-size: clamp(12px, 0.4vw + 11px, 15px);
   color: var(--ink-faint);
   font-style: italic;
 }
 .position-note {
-  font-size: 19px;
+  font-size: clamp(16px, 0.6vw + 15px, 19px);
   color: var(--ink);
   line-height: 1.65;
   max-width: 58ch;
@@ -567,8 +477,10 @@ body {
 /* ---------- Chessboard (mirrors app markup: .board-grid > .board-square) - */
 .board {
   position: relative;
-  width: var(--board-max);
-  height: var(--board-max);
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  max-width: var(--board-max);
   border: 1px solid #2c2c2c;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
   background: #fff;
@@ -676,7 +588,7 @@ body {
 /* ---------- Move line ---------------------------------------------------- */
 .moveline {
   font-family: var(--font-mono);
-  font-size: 19px;
+  font-size: clamp(15px, 0.6vw + 14px, 19px);
   font-weight: 600;
   line-height: 1.8;
   color: var(--ink);
@@ -710,15 +622,15 @@ body {
 .rule-box h3, .recap h3 {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 16px;
+  font-size: clamp(13px, 0.5vw + 12px, 16px);
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  margin: 0 0 8px;
+  margin: 0 0 clamp(4px, 0.3vw + 3px, 8px);
 }
 .rule-box h3 { color: var(--rule-ink); }
 .rule-box p, .recap li, .recap p {
   margin: 6px 0;
-  font-size: 18px;
+  font-size: clamp(15px, 0.6vw + 14px, 18px);
   line-height: 1.6;
 }
 .recap {
@@ -731,13 +643,13 @@ body {
 
 /* Inline accent / soft notes inside callouts and positions */
 .note-accent {
-  margin-top: 10px;
-  font-size: 16px;
+  margin-top: clamp(6px, 0.4vw + 5px, 10px);
+  font-size: clamp(14px, 0.4vw + 13px, 16px);
   color: var(--accent);
   line-height: 1.55;
 }
 .note-soft {
-  font-size: 16px;
+  font-size: clamp(14px, 0.4vw + 13px, 16px);
   color: var(--ink-soft);
   line-height: 1.55;
 }
@@ -753,15 +665,15 @@ body {
 .checklist h2 {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 29px;
-  margin: 0 0 14px;
+  font-size: clamp(22px, 1.5vw + 16px, 29px);
+  margin: 0 0 clamp(8px, 0.6vw + 6px, 14px);
 }
 .checklist ul { list-style: none; padding: 0; margin: 0; }
 .checklist li {
   position: relative;
-  padding: 10px 8px 10px 34px;
+  padding: clamp(8px, 0.4vw + 6px, 10px) 8px clamp(8px, 0.4vw + 6px, 10px) 34px;
   margin: 5px 0;
-  font-size: 19px;
+  font-size: clamp(16px, 0.6vw + 15px, 19px);
   line-height: 1.55;
   border-bottom: 1px dashed var(--hairline);
   cursor: pointer;
@@ -813,8 +725,8 @@ body {
 }
 .test-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(560px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(min(480px, 100%), 1fr));
+  gap: clamp(16px, 1.5vw + 12px, 24px);
 }
 .test-card {
   break-inside: avoid;
@@ -835,7 +747,7 @@ body {
 .test-number {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 15px;
+  font-size: clamp(13px, 0.3vw + 12px, 15px);
   color: #fff;
   background: var(--accent);
   padding: 4px 10px;
@@ -846,7 +758,7 @@ body {
 .side-to-move {
   font-family: var(--font-body);
   font-weight: 600;
-  font-size: 12px;
+  font-size: clamp(11px, 0.2vw + 10px, 12px);
   padding: 3px 9px;
   border-radius: 4px;
   letter-spacing: 0.03em;
@@ -868,7 +780,7 @@ body {
   color: #1f2430;
 }
 .test-question {
-  font-size: 16px;
+  font-size: clamp(14px, 0.4vw + 13px, 16px);
   color: var(--ink);
   line-height: 1.5;
   padding: 10px 14px;
@@ -882,8 +794,10 @@ body {
   align-self: center;
 }
 .test-diagram .board {
-  width: 480px;
-  height: 480px;
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+  aspect-ratio: 1 / 1;
 }
 .test-fen {
   font-family: var(--font-mono);
@@ -897,8 +811,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 280px;
-  height: 280px;
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  aspect-ratio: 1 / 1;
   border: 2px dashed #9a2b2b;
   border-radius: 4px;
   background: repeating-linear-gradient(
@@ -949,7 +865,7 @@ body {
 .lesson-index-title {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 18px;
+  font-size: clamp(16px, 0.5vw + 14px, 18px);
   line-height: 1.25;
   color: var(--ink);
 }
@@ -973,6 +889,57 @@ body {
   justify-content: space-between;
 }
 .lesson-footer .chapter-name { font-style: italic; }
+
+/* ---------- Layout & spacing overrides for narrow screens ----------- */
+@media (max-width: 860px) {
+  .toolbar {
+    margin: -24px -16px 16px;
+    padding: 8px 12px;
+  }
+
+  .hero {
+    margin: 4px 0 20px;
+    padding-bottom: 16px;
+  }
+
+  .position-body {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    justify-items: center;
+  }
+  .position-note {
+    max-width: none !important;
+    width: 100%;
+  }
+  .diagram { width: 100%; max-width: var(--board-max); }
+
+  .test-grid {
+    grid-template-columns: 1fr;
+  }
+  .test-card { padding: 14px; }
+  .test-diagram .board,
+  .fen-missing {
+    width: min(340px, calc(100vw - 72px));
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+
+  .lesson-index {
+    grid-template-columns: 1fr;
+  }
+
+  .lesson-footer {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .toolbar button {
+    width: 100%;
+    text-align: center;
+  }
+}
 
 /* ==========================================================================
    Print / PDF
