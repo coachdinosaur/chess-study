@@ -168,6 +168,19 @@ user interaction → event handler → mutate state → renderAll()
 Most handlers call `renderAll()` for simplicity. High-frequency operations
 (mouse move during drag, clock ticks) use targeted updates to avoid full re-renders.
 
+### Focus Mode
+
+When focus mode is active (`state.focusMode`, `app.js:2911`):
+
+1. The page shell gets `class="is-focus-mode"`, which CSS uses to hide the control
+   pane, lesson header, tabs, and board foot — only the board remains visible.
+2. A floating **focus mode controls bar** (`#focusModeControls`, `index.html:382`)
+   appears in the top-right with an Analyze button and an Exit (×) button.
+3. A **brand watermark** (`#focusModeBrand`, `index.html:411`) shows the app icon
+   in the bottom-right corner of the viewport.
+4. Pressing Escape exits focus mode.
+5. In `?embed=1` mode, focus mode is entered automatically on load.
+
 ### Board Rendering
 
 The board is an 8×8 `<div>` grid inside `#boardGrid`. Each square is:
@@ -216,6 +229,14 @@ const boardSize    = Math.floor(Math.max(0, vw - sideOffset * 2 - framePadding *
 The `sideOffset * 2` subtraction leaves equal gaps on the left (where the
 sidebar sits) and the right (visual balance), centering the board.
 
+### Mobile Engine Lines Slot
+
+On mobile viewports, engine PV lines are rendered into a dedicated
+`#mobileEngineLinesSlot` div (`index.html:137`) placed below the board in DOM
+order. The slot is hidden via CSS on desktop and shown on mobile. The rendering
+code (`app.js:7441, 7456`) populates both the desktop notation panel and this
+mobile slot so engine output is always visible below the board on small screens.
+
 **Mobile CSS** (`styles.css` media query) flattens the outer board enclosure:
 - `.board-pane` uses `margin-inline: -0.55rem` to cancel page-shell padding
 - `.board-column` sets `max-width: none; width: 100%`
@@ -223,6 +244,19 @@ sidebar sits) and the right (visual balance), centering the board.
 - `.captured-row` drops border, shadow, background; uses `var(--board-size)` width
 - Eval rail, turn marker, board coordinates, and captured-cell sizing are all
   reduced for the smaller screen
+
+---
+
+## Custom Select Dropdowns
+
+Settings panels (Play, Puzzle, Setup) use a custom select widget for choices like
+time control, side, skill level, and objective. The widget consists of a trigger
+button (`data-action="toggle-custom-select"`) and a popup menu. On toggle,
+`app.js:8440` positions the menu upward or downward based on available viewport
+space. Selecting an option (`data-action="select-custom-option"`, `app.js:8474`)
+dispatches a synthetic `change` event on a hidden native `<select>` element so
+existing `change` handlers can process the value. Click-outside detection closes
+the menu.
 
 ---
 
@@ -240,10 +274,29 @@ Delegated document-level listeners catch most user actions:
 | `mousemove` | `handleDocumentMouseMove` | Annotation gesture drawing, drag hover |
 | `mouseup` | `handleDocumentMouseUp` | Commit annotation gesture |
 | `contextmenu` | `handleDocumentContextMenu` | Suppress default browser menu |
+| `resize` | `handleViewportResize` | Debounced board re-layout on viewport/visualViewport change |
+| `blur` (window) | `cancelAnnotationGesture` | Cancel in-progress annotation on window blur |
 
 Board-specific listeners on `dom.boardGrid` handle `mousedown`, `click`,
 `contextmenu`, `dragstart`, `dragover`, `drop`, `dragleave`, and `dragend`
 for piece movement and drag-and-drop from the palette.
+
+### Action Handlers (data-action)
+
+The `handleDocumentClick` switch (`app.js:8438`) dispatches ~70 named actions.
+Major groups not detailed elsewhere in this document:
+
+| Group | Actions | Purpose |
+|---|---|---|
+| **Lesson book** | `new-lesson`, `duplicate-lesson`, `delete-lesson`, `select-lesson`, `toggle-lesson-picker`, `toggle-lesson-book-actions`, `toggle-lesson-actions` | Multi-lesson CRUD and menu toggles |
+| **File I/O** | `open-lesson`, `save-lesson`, `import-pgn`, `export-pgn`, `copy-fen`, `open-guided-review` | File import/export and clipboard |
+| **Setup** | `reset-setup`, `clear-board`, `flip-board`, `toggle-piece-tool`, `set-palette-color`, `set-active-color`, `scan-board`, `apply-fen`, `reset-fen`, `toggle-advanced`, `toggle-castling`, `set-en-passant` | Position builder controls |
+| **Practice** | `start-practice`, `restart-practice`, `stop-practice`, `set-practice-kind`, `practice-hint`, `practice-reveal` | Practice session lifecycle |
+| **Puzzle** | `new-puzzle`, `generate-puzzle-batch`, `cancel-batch-generation`, `retry-puzzle`, `give-up-puzzle`, `skip-puzzle`, `puzzle-next`, `replay-previous-puzzle`, `restore-default-puzzles`, `clear-puzzle-history`, `save-puzzle-csv`, `load-puzzle-csv`, `open-premium-modal`, `activate-premium` | Puzzle queue, generation, CSV, premium |
+| **View** | `toggle-tools`, `toggle-note`, `toggle-pgn-comments`, `toggle-pgn-comment-collapse`, `toggle-pv-lines`, `toggle-fullscreen`, `enter-focus-mode`, `exit-focus-mode`, `toggle-color-theme`, `toggle-last-move-arrow` | Panel and display toggles |
+| **Play** | `start-play`, `stop-play`, `offer-draw`, `set-play-time`, `set-play-side`, `set-play-speed`, `set-play-start-position`, `set-play-skill` | Play-vs-Engine lifecycle and settings |
+| **Navigation** | `navigate-start`, `navigate-back`, `navigate-forward`, `navigate-end`, `jump-node`, `reset-analysis` | Tree navigation |
+| **PGN** | `browse-pgn-games`, `clear-pgn-games`, `load-pgn-game`, `dismiss-pgn-game-picker` | Multi-game PGN picker |
 
 ---
 
@@ -273,6 +326,55 @@ panels and the tab-chip `.is-active` class.
   puzzle position (captured before `stopPlayGame` terminates the session).
 - Switching away from Puzzle while generation is in progress cancels it.
 - Switching to Lessons opens Guided Review; switching away closes it.
+
+### Play Clock System
+
+During an active Play-vs-Engine game, `startPlayClock()` (`app.js:9958`) starts a
+100 ms interval timer. Each tick (`tickPlayClock()`, `app.js:9990`):
+1. Decrements the active side's remaining time by 100 ms.
+2. Formats both clocks via `formatTime()` (`app.js:10021`) as `M:SS.t`.
+3. Highlights the active clock with `class="play-clock is-active"`.
+4. Checks for flag fall (time ≤ 0) and ends the game if detected.
+
+`stopPlayClock()` (`app.js:9967`) clears the interval when the game ends.
+
+### Engine Stall Watchdog
+
+When a Stockfish search is launched in Play mode, an 8-second stall timer is set.
+If no `info` or `bestmove` message arrives within that window, the worker is
+terminated and a new one is created for one automatic retry. If both attempts
+fail, a "Stockfish stalled" message is shown in the Play panel.
+
+---
+
+## Embed Mode
+
+The app supports embedding as an interactive board inside lesson pages and third-party
+sites via the `?embed=1` query parameter.
+
+### Detection
+
+An inline `<script>` in `index.html` reads `?embed=1` or `?embed=true` from the URL
+before app.js loads and sets `<html data-embed="1">`. `applyEmbedDeepLink()`
+(`app.js:11342`) then sets `state.embedMode`, applies an optional `?fen=...` deep-link,
+and enters Focus mode.
+
+### PostMessage Protocol
+
+A `window.addEventListener('message', …)` listener (`bindEmbedMessageListener()`,
+`app.js:11364`) accepts:
+
+| `data.type` | Payload | Effect |
+|---|---|---|
+| `loadFen` | `{ fen, mark?: string[] }` | Loads a FEN position; optionally paints highlighted squares |
+| `setOrientation` | `{ orientation: 'white' \| 'black' }` | Flips the board |
+| `setAnnotations` | `{ mark: string[] }` | Replaces painted-square annotations |
+
+### Analysis Relay
+
+When analysis results change, `postEmbedAnalysisMessage()` (`app.js:5356`) sends a
+message to the parent frame with `{ visible, title, evalLabel, summary, pvHtml }`.
+The parent lesson page can display the real-time evaluation inline.
 
 ---
 
@@ -385,6 +487,19 @@ Each position in the lesson tree is a node:
 - `buildDisplayedLineNodeIds(startNodeId)` — follows `selectedChildId` chain
 - Arrow keys (← →) move through the tree (`handleDocumentKeydown`)
 
+### PGN Game Picker
+
+When a PGN file containing multiple games is imported, the parser stores the game
+list in `state.pendingPgnGames` (`app.js:815`). A container below the lesson header
+shows the filename and game count with two buttons:
+
+- **Browse Games** (`data-action="browse-pgn-games"`) — opens a modal
+  (`#pgnGamePickerModal`) listing each game with headers; clicking "Load Game"
+  selects one and rebuilds the lesson tree from it.
+- **Clear** (`data-action="clear-pgn-games"`) — discards all pending games.
+
+The game-picker modal also has a "Clear Imported PGN Games" button for batch cleanup.
+
 ### Persistence
 
 The tree is serialized as part of the lesson JSON (`.lesson.json` or
@@ -416,6 +531,14 @@ ensurePuzzleApi()               createEndgamePuzzleApi()
                                        ├─ verifyCandidate()     ← deeper search + optional tablebase
                                        └─ makePuzzle()          ← build puzzle object
 ```
+
+### Puzzle Board Instruction Banner
+
+During an active puzzle session, `renderPuzzleBoardInstruction()` (`app.js:11144`)
+shows a contextual instruction banner (`#puzzleBoardInstruction`) above the board
+foot. The text is generated by `puzzleObjectiveInstruction()` (`app.js:10615`) and
+describes the solver's side, the objective, and the available mate distance or
+material goal (e.g. "You play White. Checkmate Stockfish — mate in 2 is available.").
 
 ### Default Puzzles
 
@@ -461,11 +584,29 @@ of material (`PUZZLE_WIN_MATERIAL_GAIN`), the puzzle is solved.
 - Legal draw (stalemate, insufficient material, threefold, 50-move)
 - Solver falling below a losing threshold (`DRAW_OBJECTIVE_LOSING_THRESHOLD_CP` = -300)
 
+### Puzzle Key Checksum
+
+`puzzleKeyChecksum()` (`app.js:10238`) validates premium activation keys (format
+`CHESS-XXXX-XXXX-CC`). The checksum is a deterministic offline algorithm — no
+server or network call is involved. The generator is exposed as
+`window.__endgamePuzzlePremium.generateKey()`.
+
 ### Legality Gate
 
 `isPuzzleFenIllegal()` (`app.js:10336`) rejects any FEN where the side to move
 is checking the opponent's king. This runs on all puzzle ingestion paths:
 queue/history hydration, CSV import, `addPuzzleToQueue`, and `addPuzzleToHistory`.
+
+---
+
+## Scan Board Feature
+
+The Setup panel includes a **Scan board** button (`data-action="scan-board"`,
+`app.js:8604`) that opens a file picker (`.png`, `.jpg`, `.jpeg`). The selected
+image is sent to `http://127.0.0.1:8765/predict-fen` (the local scanner helper
+server, `scanner_server.py`). The response is parsed and applied as a FEN to the
+setup board. Scan status is tracked in `state.scanStatus` / `state.scanStatusType`
+(`app.js:668`) and rendered as success/danger/warning banners in the Setup panel.
 
 ---
 
@@ -510,6 +651,13 @@ Uses `Chess.isAttacked()` on both kings explicitly, not `game.isCheck()`
 `persistDraft()` (`app.js:3927`) serializes the full lesson state to
 `setup-analysis-draft-v1` on `beforeunload` and on significant state changes
 via a debounced `state.persistTimer`.
+
+### Lesson File Status
+
+After save/open/import operations, `syncLessonFileStatus()` (`app.js:2305`) updates
+a transient status line (`#lessonFileStatus`, `index.html:300`) with a message
+(e.g. "Lesson saved", "Lesson opened", "PGN imported"). The status auto-clears on
+the next non-persistence action.
 
 ### Draft Hydration
 
@@ -611,6 +759,17 @@ worksheet-review workflow:
 
 No build step. No package manager. All dependencies are vendored and loaded
 as ES modules or plain `<script>` tags.
+
+---
+
+## Key Utility Functions (app.js)
+
+| Function | Purpose |
+|---|---|
+| `escapeHtml(value)` (`app.js:895`) | XSS-safe HTML escaping for all dynamic text |
+| `downloadTextFile(fileName, text, mimeType)` (`app.js:3974`) | Triggers a browser file download for lesson/CSV/PNG exports |
+| `withPreservedScroll(container, fn)` (`app.js:11337`) | Wraps a DOM mutation so scroll position is restored after re-render |
+| `scheduleBoardLayoutSync()` (`app.js:2883`) | Debounced (rAF) re-layout of board size on viewport resize; also handles `visualViewport` resize on mobile |
 
 ---
 

@@ -35,6 +35,12 @@ For normal use, you do not need to install anything or run a local server.
 - **Endgame Puzzles** tab with queue, statistics, objectives, difficulty, and premium keys
 - **Guided Review** of CSV/XLSX lesson rows with engine and tablebase context
 - **Opening book** identification (ECO code and opening name) from TSV database
+- copy the current FEN to the clipboard from the three-dot menu
+- toggle the tools panel on/off from the three-dot menu
+- expand/collapse PGN comments inline in the move notation
+- browse and load individual games from multi-game PGN imports
+- show/hide PV lines and PGN comments independently
+- request a hint or reveal the next move during practice
 - keyboard navigation of the move tree (Arrow keys), Escape to close modals
 - seven printable endgame lesson chapters with static diagrams and interactive board embeds (`lessons/`)
 
@@ -49,6 +55,12 @@ and separated-knight-corner trap positions, with interactive board embeds:
 - Static chess diagrams rendered by `endgame-lesson.js` (a lightweight FEN→board renderer)
 - Each page embeds the full interactive SPA via an iframe for live practice
 - Print/PDF export styled with [Paged.js](https://pagedjs.org/)-compatible CSS
+
+### Mobile Engine Lines
+
+On mobile viewports, engine PV lines are rendered into a dedicated slot below the
+board (rather than the right-side notation panel) so they remain visible on small
+screens where the control pane is typically hidden.
 
 ### Mobile Layout Optimizations
 
@@ -93,7 +105,7 @@ The app is organized around:
 - a chessboard on the left with on-screen file/rank coordinates and captured-pieces display above and below
 - a lesson title, `Analyze` / `Stop` button, move tree, and navigation area on the right
 - optional tools with `Setup`, `Analysis`, and `Line` tabs
-- a three-dot menu with note, tools, PV-line visibility, Focus mode, theme toggle, and a mobile fullscreen toggle on supported browsers
+- a three-dot menu with note, **Show/Hide tools**, PV-line visibility, PGN comments visibility, Focus mode, theme toggle, last-move arrow toggle, copy FEN, and a mobile fullscreen toggle on supported browsers
 - pill badges showing the active tab, setup validity, and engine status
 - an eval bar with turn-side marker and a meta strip (context label, turn, castling, en passant tokens)
 
@@ -107,7 +119,8 @@ The Setup tab provides a complete position builder:
 - **Clear Board** — removes all non-King pieces at once.
 - **Flip Board** — rotates the board 180 degrees.
 - **FEN field** — paste a full FEN string and it applies automatically; `Apply FEN` and `Reset Draft` buttons for manual control.
-- **Scan Board** — sends a chessboard image to `http://127.0.0.1:8765/predict-fen` (requires the local scanner helper server).
+- **Scan Board** — sends a chessboard image (`.png`, `.jpg`, `.jpeg`) to `http://127.0.0.1:8765/predict-fen` (requires the local scanner helper server).
+- **Scan status** — success/danger/warning banners appear in the Setup panel to report scan results.
 - **Advanced details** — collapsible panel for side-to-move, castling rights (checkboxes), and en passant target square (dropdown).
 - **Hero banner** — shows green/danger status messages indicating setup validity.
 - **Puzzle position preservation** — switching to the Setup tab while a puzzle is active saves the puzzle position into the setup board, so you can explore or modify the position after the puzzle session ends.
@@ -122,7 +135,7 @@ A complete play-against-the-engine mode:
 - **Side selection** — White, Black, or Random.
 - **Starting position** — Current board, Setup position, or Initial position.
 - **Thinking speed** — Instant (0.1–0.5s), Fast (0.25–1.0s), Normal (0.5–2.0s), Slow (1.0–4.0s).
-- **Clock display** — shown for both sides with active-turn highlighting. Resign and Offer Draw buttons available.
+- **Clock display** — shown for both sides with active-turn highlighting (100 ms tick interval). Resign and Offer Draw buttons available.
 - **Engine stall watchdog** — 8-second timeout with one automatic retry, then a panel message.
 - While a Play game is active, PGN comments and PV lines are auto-hidden; restored on resign.
 
@@ -137,6 +150,7 @@ A puzzle-practice system with built-in and generated endgame puzzles:
 - **Stockfish Defense slider** — Elo for the defending side (800–3190).
 - **Stockfish Reply Speed** — Instant, Fast, Normal, Slow.
 - **Statistics** — Solved, Failed, Streak, Best Streak.
+- **Instruction banner** — during a puzzle, a contextual message above the board foot tells you your side, objective, and available goal (e.g. "You play White. Checkmate Stockfish — mate in 2 is available.").
 - **Material gain progress** — shown for "Gain a piece" puzzles; draw objective has a losing-threshold detector.
 - **Generate 5 More Puzzles** — batch-generates puzzles via Stockfish verification.
 - **Reset Default Puzzles** — restores the original 20 built-in puzzles.
@@ -157,6 +171,7 @@ The app validates positions before allowing play:
 
 - **Drawing tools** — arrows, circles, stars, and highlighted (painted) squares, drawn directly on the board.
 - **Annotation toggle** in the Analysis panel enters annotation mode. While active, board clicks draw instead of moving pieces.
+- **PGN comment collapse** — inline PGN comments in the move notation can be collapsed/expanded by clicking the toggle button on each comment block.
 - **Mouse gestures** — right-click + drag paints squares, Alt + right-click + drag draws arrows, Ctrl + right-click places a star. Left-click clears all annotations (with a 400 ms suppression delay to prevent accidental clears).
 - **Annotation colors** — green (primary), configurable. Darker green in both light and dark themes.
 - **Last Move Arrow** — can be toggled on/off from the menu. When on, an arrow from the last move's origin to destination square is shown.
@@ -166,7 +181,9 @@ The app validates positions before allowing play:
 A distraction-free board view:
 
 - **Enter** — from the three-dot menu. Shows only the board with minimal controls.
-- **Exit** — press Escape.
+- **Controls bar** — floating Analyze and Exit (×) buttons appear in the top-right corner.
+- **Watermark** — the app icon is shown in the bottom-right corner as a subtle brand mark.
+- **Exit** — press Escape or click the × button.
 - Useful for teaching, presenting, or concentrating on a single position.
 
 ## Lesson Book
@@ -203,6 +220,8 @@ The app includes two student practice styles:
 - future moves are hidden while practice is active
 - Stockfish output is hidden until practice stops
 - wrong guesses do not change the saved lesson tree
+- **Hint** button shows a subtle highlight on the correct piece; **Reveal move** shows the next move on the board
+- **Restart** resets progress within the current session; **Stop practice** exits practice mode
 
 ## Guided Review
 
@@ -254,7 +273,18 @@ Saved lesson files include:
 
 `Import PGN` accepts `.pgn` files and rebuilds the lesson tree from the PGN move text, variations, and comments.
 
+**Multi-game PGN:** When a PGN file contains multiple games, the header area shows
+the filename and game count with **Browse Games** and **Clear** buttons. Clicking
+**Browse Games** opens a modal listing each game with its headers; select one to
+load it. **Clear** discards all imported games at once.
+
 Use JSON when you need the full app state. JSON keeps the lesson note, annotations, board orientation, active tab, and other app-specific settings that PGN does not carry.
+
+## Lesson File Status
+
+After save, open, or import operations, a transient **file status** message appears
+below the lesson header (e.g. "Lesson saved", "PGN imported", "Lesson opened").
+It auto-clears on the next non-persistence action.
 
 ## Browser Draft Persistence
 
@@ -409,6 +439,36 @@ Important limits:
 
 - this README is published with the public repository, so anyone who reads it can use these keys
 - the checksum gate is a convenience lock, not real licensing — the generator ships in the client code
+
+## Tools and Supporting Files
+
+### `tools/wtharvey/` — WTHarvey Puzzle Downloader
+
+Downloads chess puzzle pages from WTHarvey.com using only the Python standard library.
+Extracts FEN, task text, motif hints, solution, and side-to-move from each page.
+Outputs a raw archive CSV and an app-shaped CSV compatible with the Guided Review
+pipeline. See `tools/wtharvey/README.md` for usage.
+
+### `tools/endgame_kb/` — Endgame Knowledge Base
+
+Local SQLite FTS5 knowledge base builder for endgame PDFs in the `Endgame/` directory.
+Includes OCR fallback (via `pypdfium2` + `rapidocr-onnxruntime`) for scanned or
+low-text pages. Query with `search_endgame_kb.py`. See `tools/endgame_kb/README.md`
+for details.
+
+### `Endgame/` Directory
+
+Contains endgame reference materials:
+- PDF books (Dvoretsky, Silman, 100 Endgames You Must Know, etc.)
+- PGN collections with database files
+- CSV data files for Guided Review (`middlegame_input.csv`, `lesson_input.csv`)
+- SQLite knowledge base (`_kb/`) built by `tools/endgame_kb/`
+- Downloaded WTHarvey puzzle CSVs
+
+### `restore.js`
+
+Utility script (`node restore.js`) that runs `git restore styles.css` to undo local
+style changes — useful when iterating on CSS during development.
 
 ## Update GitHub
 
