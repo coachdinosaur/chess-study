@@ -3537,16 +3537,30 @@ body.is-embed .loading-overlay {
   }
 
   .board-column {
+    --board-frame-padding: 0;
+    --eval-rail-track-width: 0.4rem;
+    --turn-marker-size: 0.5rem;
+    --turn-marker-gap: 0.2rem;
+    --turn-marker-offset: 0.26rem;
     max-width: calc(100vw - 1.1rem);
   }
 
   .board-frame {
-    width: min(100%, calc(var(--board-size) + (var(--board-frame-padding) * 2) + 2px));
-    height: calc(var(--board-size) + (var(--board-frame-padding) * 2) + 2px);
+    border: none;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+    width: var(--board-size);
+    height: var(--board-size);
   }
 
   .captured-row {
-    width: min(100%, calc(var(--board-size) + (var(--board-frame-padding) * 2) + 2px));
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    width: var(--board-size);
+    padding: 0.16rem 0;
+    margin: 0 auto;
   }
 
   /* Mobile engine lines slot: show between board (order:1) and workspace tools (order:3) */
@@ -3645,6 +3659,29 @@ body.is-embed .loading-overlay {
     min-height: 2.25rem;
     padding: 0.34rem 0.5rem;
     font-size: 0.75rem;
+  }
+
+  .coord-rank,
+  .coord-file {
+    font-size: 0.58rem;
+  }
+
+  .coord-rank {
+    top: clamp(0.12rem, 0.4vw, 0.18rem);
+    left: clamp(0.12rem, 0.4vw, 0.18rem);
+  }
+
+  .coord-file {
+    right: clamp(0.12rem, 0.4vw, 0.18rem);
+    bottom: clamp(0.08rem, 0.3vw, 0.14rem);
+  }
+
+  .eval-bar-wrap {
+    top: 0;
+  }
+
+  .board-column:has(> .captured-row:first-child:not(.is-empty)) .eval-bar-wrap {
+    top: calc(var(--captured-row-height) + var(--captured-row-gap));
   }
 
   .header-analyze-button {
