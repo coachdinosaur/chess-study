@@ -939,7 +939,19 @@ body {
     background: var(--page-bg-print) !important;
     color: #1f2430 !important;
     font-size: 12pt;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
+
+  /* Force all board squares, callout backgrounds, and colored elements
+     to print with their backgrounds intact (not stripped by the browser). */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .board-square.light { background: #eee3cb !important; }
+  .board-square.dark  { background: #71925a !important; }
 
   .lesson-page {
     max-width: none;
