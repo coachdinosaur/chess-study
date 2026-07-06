@@ -16,6 +16,11 @@
 (function () {
   "use strict";
 
+  /* Cache-buster for embedded app iframes. Bump this when the app (index.html /
+     app.js / styles.css) changes so browsers fetch fresh copies instead of
+     serving stale cached HTML inside lesson-page iframes. */
+  var EMBED_CACHE_BUSTER = "20260706";
+
   var PIECE_FILES = {
     K: "wK.svg", Q: "wQ.svg", R: "wR.svg", B: "wB.svg", N: "wN.svg", P: "wP.svg",
     k: "bK.svg", q: "bQ.svg", r: "bR.svg", b: "bB.svg", n: "bN.svg", p: "bP.svg"
@@ -128,7 +133,9 @@
   }
 
   function buildIframe(fen, orientation, marks) {
-    var src = appPath() + "?fen=" + encodeURIComponent(fen) + "&embed=1";
+    /* Cache-bust: append a version hash so browsers always fetch the latest
+       app HTML instead of serving a stale cached version inside iframes. */
+    var src = appPath() + "?fen=" + encodeURIComponent(fen) + "&embed=1&_b=" + EMBED_CACHE_BUSTER;
     var iframe = document.createElement("iframe");
     iframe.className = "board-iframe";
     iframe.setAttribute("src", src);

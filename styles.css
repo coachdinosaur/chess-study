@@ -3329,6 +3329,14 @@ body.is-embed .notation-pv {
   display: none !important;
 }
 
+/* Embed mode: hide loading overlay immediately — the app initializes synchronously
+   in embed mode (no draft hydration), so the overlay only flashes the wrong state.
+   Both [data-embed] (set pre-render on <html>) and body.is-embed (set by app.js) are covered. */
+html[data-embed="1"] .loading-overlay,
+body.is-embed .loading-overlay {
+  display: none !important;
+}
+
 @media (max-width: 1100px) {
   html,
   body {

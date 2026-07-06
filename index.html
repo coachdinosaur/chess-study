@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Chess Study</title>
 
   <!-- ==========================================================================
@@ -38,6 +41,17 @@
         }
       } catch {}
       document.documentElement.dataset.theme = theme;
+    })();
+
+    /* Detect embed mode from URL before any rendering — hides loading overlay
+       and prevents flash of the default position in embedded iframes. */
+    (() => {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('embed') === '1' || params.get('embed') === 'true') {
+          document.documentElement.dataset.embed = '1';
+        }
+      } catch {}
     })();
   </script>
   <link rel="stylesheet" href="./styles.css">
