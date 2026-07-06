@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-piece-base="../assets/pieces/mpchess/" data-app-path="../index.html" data-orientation="white">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>King + Pawn vs King: The Rule of the Square</title>
+  <meta name="description" content="Chess endgame lesson: King and Pawn vs King — the Rule of the Square, blocking the king, and opposition.">
+  <script>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("lesson-theme-v1");
+        if (stored === "light" || stored === "dark") {
+          document.documentElement.dataset.theme = stored;
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="endgame-lesson.css">
+</head>
+<body>
+  <div id="analysisPanel" class="analysis-popup" hidden>
+    <div class="analysis-popup-head" data-drag-handle title="Drag to move">
+      <span class="analysis-popup-grip" aria-hidden="true">⠿</span>
+      <span class="analysis-popup-title" id="analysisPopupTitle">Engine</span>
+      <span class="analysis-popup-eval" id="analysisPopupEval"></span>
+      <button type="button" class="analysis-popup-toggle" id="analysisPopupToggle" aria-label="Minimize" title="Minimize">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 15l6-6 6 6"></path></svg>
+      </button>
+      <button type="button" class="analysis-popup-close" id="analysisPopupClose" aria-label="Close" title="Close">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg>
+      </button>
+    </div>
+    <div class="analysis-popup-body" id="analysisPopupBody"></div>
+  </div>
+  <div class="lesson-page">
+
+    <div class="toolbar no-print">
+      <button type="button" id="themeToggle" onclick="toggleTheme()">Light theme</button>
+      <button type="button" onclick="window.print()">Print / Save as PDF</button>
+    </div>
+
+    <!-- ============================ Hero ============================ -->
+    <header class="hero">
+      <p class="eyebrow">King + Pawn vs King · Chapter 1</p>
+      <h1 class="chapter-title">The Rule of the Square</h1>
+      <p class="chapter-subtitle">
+        A beginner-friendly guide to the simplest and most common pawn
+        endgame. Learn when a lone pawn can outrun the enemy king, when it
+        cannot, and how your own king turns a draw into a win.
+      </p>
+    </header>
+
+    <!-- ======================== Learning goals ===================== -->
+    <ul class="goals">
+      <li>Recognise the &ldquo;rule of the square&rdquo; and judge a pawn race at a glance.</li>
+      <li>Know when the defending king must block and when it can simply catch the pawn.</li>
+      <li>Understand opposition and king placement when the pawn reaches the 6th rank.</li>
+      <li>Be able to convert a King + Pawn vs King position into a win, or hold the draw.</li>
+    </ul>
+
+    <!-- ======================= Lesson 1 ============================ -->
+    <section class="lesson" id="lesson-1">
+      <div class="lesson-head">
+        <span class="lesson-number">Lesson 1</span>
+        <h2 class="lesson-title">Rule of the Square</h2>
+      </div>
+      <p class="lesson-intro">
+        When a pawn runs for promotion and the enemy king is far away, you do
+        not need to calculate every move. A simple geometrical trick tells
+        you instantly whether the pawn can promote.
+      </p>
+
+      <!-- Position 1.1 -->
+      <div class="position">
+        <p class="position-label">Position 1.1 &middot; White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="6k1/8/8/8/8/8/P7/7K w - - 0 1"></div>
+            <p class="caption">FEN: 6k1/8/8/8/8/8/P7/7K w - - 0 1</p>
+          </div>
+          <div class="position-note">
+            <p>
+              White has a pawn on <strong>a2</strong> and the kings are on
+              opposite corners. The black king on <strong>g8</strong> looks
+              far away &mdash; but is it far enough?
+            </p>
+            <p>
+              Draw an imaginary square whose base runs from the pawn to its
+              promotion square (<em>a2&ndash;a8</em>), and whose far side
+              reaches <em>a8&ndash;g8</em>. If the defending king can step
+              <em>inside</em> that square on its turn, it catches the pawn.
+              Here it is Black&rsquo;s turn <em>after</em> White&rsquo;s first
+              move, so we must count carefully.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Position 1.2 -->
+      <div class="position">
+        <p class="position-label">Position 1.2 &middot; Black to move (square already drawn)</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="6k1/8/8/8/P7/8/8/7K b - - 0 1"></div>
+            <p class="caption">FEN: 6k1/8/8/8/P7/8/8/7K b - - 0 1</p>
+          </div>
+          <div class="position-note">
+            <p>
+              The pawn has reached <strong>a4</strong>. Now the square
+              shrinks: it runs from <em>a4</em> to <em>a8</em> and across to
+              <em>e8</em>. The black king on <strong>g8</strong> is
+              <em>outside</em> this smaller square, and it is Black&rsquo;s
+              move.
+            </p>
+            <p>
+              Because the king is outside and cannot enter the square in one
+              move, the pawn promotes untouched. The rule converts a long
+              calculation into a one-second glance.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rule box -->
+      <aside class="rule-box">
+        <h3>The Rule of the Square</h3>
+        <p>
+          Imagine a square whose base is the path from the pawn to its
+          promotion square, and whose side is the same length toward the
+          enemy king. If the defending king is <em>inside</em> that square
+          (counting its turn to move), it catches the pawn. If it is
+          <em>outside</em>, the pawn runs and promotes.
+        </p>
+        <p class="note-accent">
+          <strong>Memory hook:</strong> each time the pawn advances, the
+          square <em>shrinks</em> by one row from the back. A king that was
+          almost in can suddenly be out.
+        </p>
+      </aside>
+
+      <!-- Move line -->
+      <p class="position-label">Main line</p>
+      <div class="moveline">
+        <span class="num">1.</span><span class="good">a4!</span> Kf7
+        <span class="num">2.</span>a5 Ke6
+        <span class="num">3.</span>a6 Kd6
+        <span class="num">4.</span>a7 Kc7
+        <span class="num">5.</span>a8=Q <span class="result">1-0</span>
+      </div>
+
+      <!-- Recap -->
+      <aside class="recap">
+        <h3>Recap</h3>
+        <ul>
+          <li>Pawn on a2, Black king on g8, White to move &rarr; White wins.</li>
+          <li>The king was already outside the shrinking square once the pawn reached a4.</li>
+          <li>No calculation needed: the rule of the square decides it instantly.</li>
+        </ul>
+      </aside>
+    </section>
+
+    <!-- ======================= Lesson 2 ============================ -->
+    <section class="lesson" id="lesson-2">
+      <div class="lesson-head">
+        <span class="lesson-number">Lesson 2</span>
+        <h2 class="lesson-title">Blocking the King</h2>
+      </div>
+      <p class="lesson-intro">
+        When the defending king is inside the square, the pawn alone cannot
+        promote. The strong side must use its <em>own king</em> to block the
+        defender&rsquo;s path and escort the pawn forward.
+      </p>
+
+      <!-- Position 1.3 -->
+      <div class="position">
+        <p class="position-label">Position 1.3 &middot; White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="8/4k3/2K5/8/8/1P6/8/8 w - - 0 1"></div>
+            <p class="caption">FEN: 8/4k3/2K5/8/8/1P6/8/8 w - - 0 1</p>
+          </div>
+          <div class="position-note">
+            <p>
+              White&rsquo;s king on <strong>c6</strong> sits directly in
+              front of Black&rsquo;s king on <strong>e7</strong>, and the
+              pawn is far back on <strong>b3</strong>. The black king is
+              inside the square, so White cannot just run the pawn.
+            </p>
+            <p>
+              The winning idea is
+              <strong>1.Kc7!</strong> &mdash; White steps <em>in front of</em>
+              the black king, taking the opposition and blocking the king&rsquo;s
+              path toward the b-pawn. Black is forced to retreat while the
+              pawn marches up.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rule box -->
+      <aside class="rule-box">
+        <h3>Block with the King</h3>
+        <p>
+          When the defending king is inside the square, your own king must
+          go <em>in front of</em> the enemy king to block its shortest path
+          to the pawn. The pawn then advances behind its king and promotes.
+        </p>
+        <p class="note-accent">
+          <strong>Key principle:</strong> the strong king leads, the pawn
+          follows. Never push the pawn past your own king in this kind of
+          position.
+        </p>
+      </aside>
+
+      <!-- Move line -->
+      <p class="position-label">Main line</p>
+      <div class="moveline">
+        <span class="num">1.</span><span class="good">Kc7!</span> Ke6
+        <span class="num">2.</span>b4 Kd5
+        <span class="num">3.</span>b5 <span class="result">1-0</span>
+      </div>
+      <p class="position-note note-soft" style="margin-top:-10px;">
+        The black king is held back and can never reach the b-pawn, which
+        promotes comfortably. (The remaining moves are a routine promotion.)
+      </p>
+
+      <!-- Recap -->
+      <aside class="recap">
+        <h3>Recap</h3>
+        <ul>
+          <li>Inside the square, the pawn alone fails &mdash; the king must help.</li>
+          <li>1.Kc7! blocks the defending king and takes the opposition.</li>
+          <li>The strong king leads, the pawn follows: that order is decisive.</li>
+        </ul>
+      </aside>
+    </section>
+
+    <!-- ======================= Lesson 3 ============================ -->
+    <section class="lesson" id="lesson-3">
+      <div class="lesson-head">
+        <span class="lesson-number">Lesson 3</span>
+        <h2 class="lesson-title">Pawn on the 6th Rank / Opposition</h2>
+      </div>
+      <p class="lesson-intro">
+        Even a pawn one step from promotion can fail if the supporting king
+        is placed badly. The single most important idea here is
+        <strong>opposition</strong>: two kings facing each other with one
+        square between them, and the side <em>not</em> on the move is
+        forced to give way.
+      </p>
+
+      <!-- Position 1.4 -->
+      <div class="position">
+        <p class="position-label">Position 1.4 &middot; White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="6k1/8/5PK1/8/8/8/8/8 w - - 0 1"></div>
+            <p class="caption">FEN: 6k1/8/5PK1/8/8/8/8/8 w - - 0 1</p>
+          </div>
+          <div class="position-note">
+            <p>
+              White&rsquo;s pawn is on <strong>f6</strong>, one move from
+              promotion, and the kings face each other on
+              <strong>f6&rsquo;s file neighbours</strong>: White king on
+              <strong>f6</strong> is beside its pawn; Black king on
+              <strong>g8</strong> guards the promotion square f8/f7 area.
+            </p>
+            <p>
+              Here the outcome hinges entirely on <em>whose turn it is</em>
+              and on <strong>opposition</strong>. With the king correctly
+              placed in front of its pawn and the opposition in hand, White
+              wins; without the opposition, Black holds the draw by
+              stepping in front of the pawn or stalemating.
+            </p>
+            <p class="note-soft">
+              The lesson: a pawn near promotion is <em>not</em> an automatic
+              win. King placement and the opposition decide.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rule box -->
+      <aside class="rule-box">
+        <h3>Opposition</h3>
+        <p>
+          Two kings face each other with one square in between. The side
+          that has <em>the move</em> is at a disadvantage: it must step
+          aside and let the other king advance. The side <em>without</em>
+          the move &ldquo;has the opposition&rdquo; and controls the path.
+        </p>
+        <p class="note-accent">
+          <strong>Rule of thumb:</strong> to win with a pawn on the 6th
+          rank, your king must be in front of the pawn and you must have
+          the opposition. Behind the pawn, or without the opposition, it is
+          often only a draw.
+        </p>
+      </aside>
+
+      <!-- Recap -->
+      <aside class="recap">
+        <h3>Recap</h3>
+        <ul>
+          <li>A pawn on the 6th rank is close to promotion &mdash; but not a guaranteed win.</li>
+          <li>King placement and opposition decide the result.</li>
+          <li>King in front of the pawn <em>plus</em> the opposition &rarr; win. Otherwise the draw is real.</li>
+        </ul>
+      </aside>
+    </section>
+
+    <!-- ===================== Final summary checklist =============== -->
+    <section class="checklist">
+      <h2>Chapter Checklist</h2>
+      <ul>
+        <li>I can draw the &ldquo;square&rdquo; and tell at a glance if a pawn promotes.</li>
+        <li>I know the square shrinks as the pawn advances &mdash; a near catch can become a miss.</li>
+        <li>When the king is inside the square, I block with my own king (1.Kc7-style), not the pawn.</li>
+        <li>My strong king leads, the pawn follows &mdash; never the other way around.</li>
+        <li>I understand opposition: the side <em>without</em> the move controls the path.</li>
+        <li>I never assume a pawn on the 6th wins automatically &mdash; I check king placement and opposition first.</li>
+      </ul>
+    </section>
+
+    <footer class="lesson-footer">
+      <span class="chapter-name">Chapter 1 &middot; King + Pawn vs King: The Rule of the Square</span>
+      <span>Chess Endgame Lessons</span>
+    </footer>
+
+  </div>
+
+  <script src="endgame-lesson.js" defer></script>
+  <script>
+    function toggleTheme() {
+      var html = document.documentElement;
+      var next = html.dataset.theme === "dark" ? "light" : "dark";
+      html.dataset.theme = next;
+      try { window.localStorage.setItem("lesson-theme-v1", next); } catch (e) {}
+      var btn = document.getElementById("themeToggle");
+      if (btn) btn.textContent = next === "dark" ? "Light theme" : "Dark theme";
+    }
+    (function () {
+      try {
+        var t = document.documentElement.dataset.theme || "dark";
+        var btn = document.getElementById("themeToggle");
+        if (btn) btn.textContent = t === "dark" ? "Light theme" : "Dark theme";
+      } catch (e) {}
+    })();
+
+    /* Chapter checklist — toggle + persist checked state */
+    (function () {
+      var KEY = "lesson-checklist-v1:ch01";
+      var items = document.querySelectorAll(".checklist li");
+      if (!items.length) { return; }
+      var saved = {};
+      try { saved = JSON.parse(window.localStorage.getItem(KEY) || "{}"); } catch (e) {}
+
+      items.forEach(function (li, i) {
+        if (saved[i]) { li.classList.add("is-checked"); }
+        li.addEventListener("click", function () {
+          li.classList.toggle("is-checked");
+          var state = {};
+          items.forEach(function (el, j) { state[j] = el.classList.contains("is-checked"); });
+          try { window.localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+        });
+      });
+    })();
+  </script>
+  <script>
+    /* Floating analysis popup — receives postMessage from embedded app iframes.
+       Draggable anywhere in the window, minimizable, hidden in print. */
+    (function () {
+      var popup = document.getElementById("analysisPanel");
+      var titleEl = document.getElementById("analysisPopupTitle");
+      var evalEl = document.getElementById("analysisPopupEval");
+      var bodyEl = document.getElementById("analysisPopupBody");
+      var toggleBtn = document.getElementById("analysisPopupToggle");
+      var closeBtn = document.getElementById("analysisPopupClose");
+      var handle = popup.querySelector("[data-drag-handle]");
+      var minimized = false;
+      var currentSource = null;
+      var userClosed = false;
+
+      function setMinimized(v) {
+        minimized = v;
+        popup.classList.toggle("is-minimized", v);
+        toggleBtn.setAttribute("aria-label", v ? "Expand" : "Minimize");
+        toggleBtn.setAttribute("title", v ? "Expand" : "Minimize");
+        toggleBtn.querySelector("svg").innerHTML = v
+          ? '<path d="M6 9l6 6 6-6"></path>'
+          : '<path d="M6 15l6-6 6 6"></path>';
+      }
+      toggleBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        setMinimized(!minimized);
+      });
+      closeBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        userClosed = true;
+        popup.hidden = true;
+      });
+
+      /* Drag logic */
+      var dragging = false, sx = 0, sy = 0, spx = 0, spy = 0;
+      handle.addEventListener("mousedown", function (e) {
+        if (e.button !== 0) { return; }
+        if (e.target.closest(".analysis-popup-toggle")) { return; }
+        if (e.target.closest(".analysis-popup-close")) { return; }
+        var r = popup.getBoundingClientRect();
+        spx = r.left; spy = r.top;
+        sx = e.clientX; sy = e.clientY;
+        dragging = true;
+        popup.classList.add("is-dragging");
+        document.body.style.userSelect = "none";
+        e.preventDefault();
+      });
+      document.addEventListener("mousemove", function (e) {
+        if (!dragging) { return; }
+        var dx = e.clientX - sx, dy = e.clientY - sy;
+        var m = 4;
+        var pw = popup.offsetWidth, ph = popup.offsetHeight;
+        var nx = Math.max(m, Math.min(window.innerWidth - pw - m, spx + dx));
+        var ny = Math.max(m, Math.min(window.innerHeight - ph - m, spy + dy));
+        popup.style.left = nx + "px";
+        popup.style.top = ny + "px";
+        popup.style.right = "auto";
+        popup.style.bottom = "auto";
+      });
+      document.addEventListener("mouseup", function () {
+        if (!dragging) { return; }
+        dragging = false;
+        popup.classList.remove("is-dragging");
+        document.body.style.userSelect = "";
+      });
+
+      /* Receive analysis updates from any embedded app iframe */
+      window.addEventListener("message", function (event) {
+        var d = event.data;
+        if (!d || d.type !== "analysisUpdate") { return; }
+        if (!d.visible) {
+          if (currentSource === event.source || currentSource === null) {
+            popup.hidden = true;
+            currentSource = null;
+          }
+          return;
+        }
+        /* If user closed the popup for this board, keep it hidden until
+           they click Analyze again (which sends a fresh visible update
+           from a new source URL / reload). Re-show only if the source
+           differs (a different board started analyzing). */
+        if (userClosed && currentSource === event.source) {
+          return;
+        }
+        userClosed = false;
+        currentSource = event.source;
+        popup.hidden = false;
+        if (d.title) { titleEl.textContent = d.title; }
+        evalEl.textContent = d.evalLabel || "";
+        if (!minimized) {
+          var summaryHtml = d.summary
+            ? '<p class="analysis-popup-summary">' + escapeHtml_(d.summary) + "</p>"
+            : "";
+          bodyEl.innerHTML = summaryHtml + (d.pvHtml || "");
+        }
+      });
+
+      function escapeHtml_(s) {
+        return String(s).replace(/[&<>"']/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

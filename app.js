@@ -650,6 +650,7 @@ const state = {
   title: DEFAULT_TITLE,
   colorTheme: document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light',
   focusMode: false,
+  embedMode: false,
   boardOrientation: 'white',
   activeTab: TAB_PLAY,
   previousNonLessonTab: TAB_PLAY,
@@ -5321,6 +5322,46 @@ function renderGuidedReviewAnalysisPanel() {
   `;
 }
 
+function renderEmbedAnalysisPanel() {
+  if (!state.embedMode) {
+    return;
+  }
+  const hasBoard = Boolean(state.analysis.game);
+  const shouldShow = Boolean(
+    hasBoard
+    && !state.practice.active
+    && state.pvLinesVisible
+    && (
+      state.tablebase.probing
+      || state.engine.loading
+      || state.engine.stopping
+      || state.engine.analyzing
+      || hasVisibleAnalysisLines()
+    ),
+  );
+  if (!shouldShow) {
+    postEmbedAnalysisMessage({ visible: false });
+    return;
+  }
+  const title = tablebaseDisplayActive() ? 'Tablebase' : 'Engine';
+  postEmbedAnalysisMessage({
+    visible: true,
+    title: title,
+    evalLabel: state.engine.evalLabel || '',
+    summary: analysisStatusSummary(),
+    pvHtml: renderPvLineListMarkup(),
+  });
+}
+
+function postEmbedAnalysisMessage(payload) {
+  try {
+    window.parent.postMessage(
+      Object.assign({ type: 'analysisUpdate', source: window.location.href }, payload),
+      '*',
+    );
+  } catch (e) {}
+}
+
 function parseInfoLine(line) {
   const tokens = String(line ?? '').trim().split(/\s+/);
   if (!tokens.length || tokens[0] !== 'info') {
@@ -5713,9 +5754,18 @@ function handleWorkerMessage(event) {
         clearEngineContinuationState();
       }
     } else {
-      state.engine.summary = completedMode === ENGINE_SEARCH_MODE_CHECKPOINT && !wasStopping
-        ? 'Analysis complete. No legal moves are available in this position.'
-        : 'Search finished. No legal moves are available in this position.';
+      let chessHasMoves = false;
+      try {
+        const tempGame = new Chess(stoppedFen);
+        chessHasMoves = tempGame.moves().length > 0;
+      } catch (e) { /* fall through */ }
+      state.engine.summary = chessHasMoves
+        ? (completedMode === ENGINE_SEARCH_MODE_CHECKPOINT && !wasStopping
+            ? 'Analysis stopped. This position cannot be analyzed by the engine (unusual piece count).'
+            : 'Search finished. This position cannot be analyzed by the engine (unusual piece count).')
+        : (completedMode === ENGINE_SEARCH_MODE_CHECKPOINT && !wasStopping
+            ? 'Analysis complete. No legal moves are available in this position.'
+            : 'Search finished. No legal moves are available in this position.');
       clearEngineContinuationState();
     }
     state.engine.summary = withEngineSummaryPrefix(state.engine.summary);
@@ -7270,6 +7320,9 @@ function renderNotationNote() {
 }
 
 function renderNotationPvBlock() {
+  if (state.embedMode) {
+    return '';
+  }
   if (state.practice.active) {
     return '';
   }
@@ -7381,7 +7434,7 @@ function renderNotationPanel() {
         ${renderNotationNote()}
       </div>
     `;
-    if (dom.mobileEngineLinesSlot) dom.mobileEngineLinesSlot.innerHTML = renderNotationPvBlock();
+    if (dom.mobileEngineLinesSlot) dom.mobileEngineLinesSlot.innerHTML = state.embedMode ? '' : renderNotationPvBlock();
     return;
   }
 
@@ -7396,7 +7449,7 @@ function renderNotationPanel() {
       ${renderNotationNote()}
     </div>
   `;
-  if (dom.mobileEngineLinesSlot) dom.mobileEngineLinesSlot.innerHTML = renderNotationPvBlock();
+  if (dom.mobileEngineLinesSlot) dom.mobileEngineLinesSlot.innerHTML = state.embedMode ? '' : renderNotationPvBlock();
 }
 
 function customSelectMarkup(id, selectedValue, options, selectAttributes = '') {
@@ -7882,6 +7935,7 @@ function renderAnalysisPanel() {
     ${renderPracticeToolSection()}
   `;
   renderGuidedReviewAnalysisPanel();
+  renderEmbedAnalysisPanel();
 }
 
 function renderLineNavigationSection() {
@@ -8002,6 +8056,7 @@ function renderAll() {
   renderActiveToolPanel();
   renderWorkspaceTools();
   renderGuidedReviewVisibility();
+  renderEmbedAnalysisPanel();
   syncLessonVisibilityMenuState();
   syncFullscreenMenuState();
   renderPromotionModal();
@@ -11280,6 +11335,68 @@ function renderPuzzlePanel() {
   });
 }
 
+function applyEmbedDeepLink() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const fen = (params.get('fen') || '').trim();
+    const embed = (params.get('embed') || '').trim();
+    if (embed === '1' || embed === 'true') {
+      state.embedMode = true;
+      state.activeTab = TAB_ANALYSIS;
+      state.previousNonLessonTab = TAB_ANALYSIS;
+      document.body?.classList.add('is-embed');
+    }
+    if (fen) {
+      commitStrictFenInput(fen, { render: false, showError: false });
+    }
+    if (state.embedMode) {
+      setFocusMode(true, { restoreFocus: false });
+    }
+  } catch (error) {
+    console.warn('[Embed deep-link] failed to apply', error);
+  }
+}
+
+function bindEmbedMessageListener() {
+  window.addEventListener('message', (event) => {
+    if (!state.embedMode) {
+      return;
+    }
+    const data = event?.data;
+    if (!data || typeof data !== 'object') {
+      return;
+    }
+    if (data.type === 'loadFen' && typeof data.fen === 'string') {
+      const fen = data.fen.trim();
+      if (fen) {
+        commitStrictFenInput(fen, { render: true, showError: false });
+        if (Array.isArray(data.mark)) {
+          applyEmbedAnnotations(data.mark);
+        }
+      }
+    } else if (data.type === 'setOrientation' && (data.orientation === 'black' || data.orientation === 'white')) {
+      state.boardOrientation = data.orientation;
+      renderBoard();
+    } else if (data.type === 'setAnnotations') {
+      applyEmbedAnnotations(Array.isArray(data.mark) ? data.mark : []);
+    }
+  });
+}
+
+function applyEmbedAnnotations(marks) {
+  state.annotations.paintedSquares = new Set();
+  state.annotations.circledSquares = new Set();
+  state.annotations.starredSquares = new Set();
+  if (Array.isArray(marks)) {
+    for (const sq of marks) {
+      if (typeof sq === 'string' && /^[a-h][1-8]$/.test(sq)) {
+        state.annotations.paintedSquares.add(sq);
+      }
+    }
+  }
+  renderBoard();
+}
+
 function initializeDefaultSetup() {
   const parsed = parseFenLike(DEFAULT_POSITION);
   if (!parsed.ok) {
@@ -11334,7 +11451,9 @@ function bindEvents() {
   document.addEventListener('webkitfullscreenerror', handleFullscreenError);
   window.addEventListener('beforeunload', () => {
     guidedReviewController?.saveReviewProgress();
-    persistDraft();
+    if (!state.embedMode) {
+      persistDraft();
+    }
     terminateEngineWorker();
     puzzleApi?.dispose();
   });
@@ -11348,13 +11467,17 @@ function bindEvents() {
 
 initializeColorTheme();
 initializeDefaultSetup();
-hydrateDraft();
+applyEmbedDeepLink();
+if (!state.embedMode) {
+  hydrateDraft();
+}
 hydratePuzzleState();
 // Developer helper for issuing premium activation keys from the console.
 window.__endgamePuzzlePremium = Object.freeze({ generateKey: generatePremiumKey });
 syncAnalysisGameFromTree();
 initializeGuidedReviewController();
 bindEvents();
+bindEmbedMessageListener();
 loadOpeningBook();
 renderAll();
 if (state.guidedReview.active) {

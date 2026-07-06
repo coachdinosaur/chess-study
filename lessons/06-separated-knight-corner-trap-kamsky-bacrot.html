@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-piece-base="../assets/pieces/mpchess/" data-app-path="../index.html" data-orientation="white">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ending 9: Rook vs Knight — Separation, Corner Trap & Kamsky-Bacrot</title>
+  <meta name="description" content="Chess endgame lesson: Separated knight analysis, corner trap patterns, the knight's dumb square, and the practical Kamsky vs Bacrot example.">
+  <script>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("lesson-theme-v1");
+        if (stored === "light" || stored === "dark") {
+          document.documentElement.dataset.theme = stored;
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="endgame-lesson.css">
+  <style>
+    @page {
+      @bottom-right {
+        content: "Ending 9 · p. " counter(page);
+        font-family: "Inter", sans-serif;
+        font-size: 9pt;
+        color: #6b7280;
+      }
+      @bottom-left {
+        content: "Rook vs Knight — Separation, Corner Trap & Kamsky-Bacrot";
+        font-family: "Inter", sans-serif;
+        font-size: 9pt;
+        color: #6b7280;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="analysisPanel" class="analysis-popup" hidden>
+    <div class="analysis-popup-head" data-drag-handle title="Drag to move">
+      <span class="analysis-popup-grip" aria-hidden="true">⠿</span>
+      <span class="analysis-popup-title" id="analysisPopupTitle">Engine</span>
+      <span class="analysis-popup-eval" id="analysisPopupEval"></span>
+      <button type="button" class="analysis-popup-toggle" id="analysisPopupToggle" aria-label="Minimize" title="Minimize">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 15l6-6 6 6"></path></svg>
+      </button>
+      <button type="button" class="analysis-popup-close" id="analysisPopupClose" aria-label="Close" title="Close">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg>
+      </button>
+    </div>
+    <div class="analysis-popup-body" id="analysisPopupBody"></div>
+  </div>
+
+  <div class="lesson-page">
+
+    <div class="toolbar no-print">
+      <button type="button" id="themeToggle" onclick="toggleTheme()">Light theme</button>
+      <button type="button" onclick="window.print()">Print / Save as PDF</button>
+    </div>
+
+    <!-- ============================ Hero ============================ -->
+    <header class="hero">
+      <p class="eyebrow">Ending 9</p>
+      <h1 class="chapter-title">Rook vs Knight — Separation, Corner Trap & Kamsky-Bacrot</h1>
+      <p class="chapter-subtitle">
+        The separated knight becomes the target, corner trap patterns that
+        are theoretically lost, the knight's dumb square, and a practical
+        example from elite chess showing how difficult the defence really is.
+      </p>
+    </header>
+
+    <!-- ======================== Learning goals ===================== -->
+    <ul class="goals">
+      <li>Understand why a separated knight is the rook's primary target.</li>
+      <li>Follow the trapping process: restrict, take away escapes, bring the king.</li>
+      <li>Recognise corner trap configurations as theoretically lost.</li>
+      <li>Know the knight's dumb square on g2 and why it is fatal.</li>
+      <li>Appreciate that practical defence can be extremely difficult even for elite players.</li>
+      <li>Understand zugzwang as the final winning mechanism in Rook vs Knight.</li>
+    </ul>
+
+    <!-- ================ Analysis: Separated Knight ================ -->
+    <section class="lesson" id="analysis-separated-knight">
+      <div class="lesson-head">
+        <span class="lesson-number">Analysis</span>
+        <h2 class="lesson-title">The Knight Becomes the Target</h2>
+      </div>
+      <p class="lesson-intro">
+        Once the knight becomes separated from its king, the stronger
+        side's main objective is to trap it. The trapping process usually
+        involves restricting the knight's mobility, taking away escape
+        squares, using pins and double attacks, and bringing the king
+        closer.
+      </p>
+
+      <div class="position">
+        <p class="position-label">Position 1.20 &middot; Rook vs Knight: Separated Knight &middot; Black to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="8/8/8/3N4/8/5k2/2r5/4K3 b - - 0 4"></div>
+            <p class="caption">FEN: 8/8/8/3N4/8/5k2/2r5/4K3 b - - 0 4</p>
+          </div>
+          <div class="position-note">
+            <p>
+              The white knight on <strong>d5</strong> has moved away from
+              the king on <strong>e1</strong> and is very likely to be
+              lost. The black rook on <strong>c2</strong> and king on
+              <strong>f3</strong> are well placed to begin the hunt.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <p class="position-label">Main line</p>
+      <div class="moveline">
+        <span class="num">4...</span><span class="good">Rc4</span>
+        <span class="num">5.</span>Nb6 Rb4
+        <span class="num">6.</span>Nc8 <span class="good">Rb7!</span>
+        <span class="num">7.</span>Kd2 Kf4
+        <span class="num">8.</span>Ke2 Ke5 <span class="result">-+</span>
+      </div>
+      <p class="position-note">
+        The rook gradually removes every escape square until the king can
+        capture the knight.
+      </p>
+
+      <p class="position-label">Variation &mdash; 5.Nf6</p>
+      <div class="moveline">
+        <span class="num">5.</span>Nf6 <span class="good">Rd4</span>
+        <span class="num">6.</span>Nh7 Kf4
+        <span class="num">7.</span>Nf8 Kf5 <span class="result">+-</span>
+      </div>
+
+      <p class="position-label">Variation &mdash; 6.Nd5</p>
+      <div class="moveline">
+        <span class="num">6.</span>Nd5 <span class="good">Re4+</span>
+        <span class="num">7.</span>Kf1 Rd4
+        <span class="num">8.</span>Nc3 Rd3 <span class="result">+-</span>
+      </div>
+
+      <p class="position-label">Variation &mdash; 7.Nd6</p>
+      <div class="moveline">
+        <span class="num">7.</span>Nd6 <span class="good">Re7+</span>
+        <span class="num">8.</span>Kf1 Rd7 <span class="result">+-</span>
+      </div>
+
+      <aside class="rule-box">
+        <h3>Practical Rule</h3>
+        <p>
+          When defending Rook vs Knight, never allow the knight to become
+          separated from its king.
+        </p>
+      </aside>
+    </section>
+
+    <!-- ================ Analysis: Temporary Separation ============ -->
+    <section class="lesson" id="analysis-temporary-separation">
+      <div class="lesson-head">
+        <span class="lesson-number">Analysis</span>
+        <h2 class="lesson-title">Temporary Separation</h2>
+      </div>
+      <p class="lesson-intro">
+        Continuation from the previous position. There is one case where a
+        temporary separation is acceptable.
+      </p>
+
+      <p class="position-label">Main line</p>
+      <div class="moveline">
+        <span class="num">4...</span><span class="good">Re2+</span>
+        <span class="num">5.</span>Kf1 Rh2
+        <span class="num">6.</span>Ke1
+        <span class="num">7.</span>Kf1 <span class="result">=</span>
+      </div>
+      <p class="position-note">
+        The king immediately returns beside the knight. This is the only
+        acceptable temporary separation.
+      </p>
+
+      <aside class="rule-box">
+        <h3>Key Idea</h3>
+        <p>
+          A temporary separation is acceptable only if king and knight
+          reunite immediately.
+        </p>
+      </aside>
+    </section>
+
+    <!-- ======================= Ending 9 Intro ===================== -->
+    <section class="lesson" id="ending-9-intro">
+      <div class="lesson-head">
+        <span class="lesson-number">Ending 9</span>
+        <h2 class="lesson-title">Rook vs Knight in the Corner</h2>
+      </div>
+      <p class="lesson-intro">
+        Everything changes once both defending pieces are trapped near the
+        corner. Mobility disappears, and the knight is normally lost.
+      </p>
+    </section>
+
+    <!-- ================ Lesson: Corner Trap Pattern =============== -->
+    <section class="lesson" id="lesson-corner-trap">
+      <div class="lesson-head">
+        <span class="lesson-number">Lesson</span>
+        <h2 class="lesson-title">Corner Trap Pattern</h2>
+      </div>
+      <p class="lesson-intro">
+        There is no need for lengthy calculation. This configuration is
+        theoretically lost.
+      </p>
+
+      <div class="position">
+        <p class="position-label">Position 1.21 &middot; Corner trap pattern &middot; White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="8/8/8/8/8/6k1/r7/6NK w - - 0 1"></div>
+            <p class="caption">FEN: 8/8/8/8/8/6k1/r7/6NK w - - 0 1</p>
+          </div>
+          <div class="position-note">
+            <p>
+              The white knight on <strong>g1</strong> and king on
+              <strong>h1</strong> are trapped near the corner. The black
+              rook on <strong>a2</strong> and king on <strong>g3</strong>
+              have full control. White loses the knight immediately.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <aside class="rule-box">
+        <h3>Key Idea</h3>
+        <p>
+          When king and knight are trapped near the corner with no
+          mobility, the position is theoretically lost. The rook wins
+          without needing lengthy calculation.
+        </p>
+      </aside>
+    </section>
+
+    <!-- ================ Lesson: Both Pieces in Corner ============== -->
+    <section class="lesson" id="lesson-both-in-corner">
+      <div class="lesson-head">
+        <span class="lesson-number">Lesson</span>
+        <h2 class="lesson-title">Both Pieces in the Corner</h2>
+      </div>
+      <p class="lesson-intro">
+        Both defending pieces are trapped in the corner, so the knight is
+        lost.
+      </p>
+
+      <div class="position">
+        <p class="position-label">Position 1.22 &middot; Both pieces in the corner &middot; White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="8/8/8/8/8/6k1/r7/6KN w - - 0 1"></div>
+            <p class="caption">FEN: 8/8/8/8/8/6k1/r7/6KN w - - 0 1</p>
+          </div>
+          <div class="position-note">
+            <p>
+              With the king on <strong>g1</strong> and the knight on
+              <strong>h1</strong>, both pieces are trapped. The rook
+              easily wins once both defending pieces have no room to
+              manoeuvre.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <aside class="rule-box">
+        <h3>Key Idea</h3>
+        <p>
+          The rook easily wins once both defending pieces have no room.
+          Corner imprisonment is fatal regardless of how the pieces are
+          arranged within it.
+        </p>
+      </aside>
+    </section>
+
+    <!-- ================ Lesson: Knight's Dumb Square =============== -->
+    <section class="lesson" id="lesson-dumb-square">
+      <div class="lesson-head">
+        <span class="lesson-number">Lesson</span>
+        <h2 class="lesson-title">The Knight's Dumb Square</h2>
+      </div>
+      <p class="lesson-intro">
+        Even with the knight on g2, it is lost because both pieces are
+        trapped. This is the first appearance of the knight's dumb square.
+      </p>
+
+      <div class="position">
+        <p class="position-label">Position 1.23 &middot; The knight's dumb square &middot; White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="r7/8/8/8/8/6k1/6N1/7K w - - 0 1"></div>
+            <p class="caption">FEN: r7/8/8/8/8/6k1/6N1/7K w - - 0 1</p>
+          </div>
+          <div class="position-note">
+            <p>
+              The knight on <strong>g2</strong> is not on the edge itself,
+              but it is still trapped because of the surrounding geometry.
+              The king on <strong>h1</strong> has no escape, and the rook
+              on <strong>a8</strong> controls everything.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <aside class="rule-box">
+        <h3>Key Idea</h3>
+        <p>
+          The square <strong>g2</strong> is a notorious &ldquo;dumb
+          square&rdquo; for the knight in these endings. Although the
+          knight is not on the edge itself, it is still trapped because of
+          the surrounding geometry.
+        </p>
+      </aside>
+    </section>
+
+    <!-- ===================== Practical Summary ==================== -->
+    <section class="lesson" id="practical-summary">
+      <div class="lesson-head">
+        <span class="lesson-number">Summary</span>
+        <h2 class="lesson-title">Practical Summary</h2>
+      </div>
+      <p class="lesson-intro">
+        The two defensive rules to remember from this section:
+      </p>
+      <aside class="rule-box">
+        <h3>The Two Defensive Rules</h3>
+        <ol style="margin: 6px 0 0; padding-left: 24px;">
+          <li>Never separate the knight from its king.</li>
+          <li>Never allow both king and knight to become trapped in the corner, even if the knight is on g2.</li>
+        </ol>
+      </aside>
+    </section>
+
+    <!-- ================ Practical Example: Kamsky-Bacrot ========== -->
+    <section class="lesson" id="practical-kamsky-bacrot">
+      <div class="lesson-head">
+        <span class="lesson-number">Practical Example</span>
+        <h2 class="lesson-title">Kamsky vs Bacrot (Sofia 2006)</h2>
+      </div>
+      <p class="lesson-intro">
+        Bacrot promoted to a knight, reaching what is generally considered
+        a theoretical draw. However, the knight is dangerously close to
+        its dumb square, making defence much harder than expected.
+      </p>
+
+      <div class="position">
+        <p class="position-label">Position 1.24 &middot; Kamsky vs Bacrot, Sofia 2006 &middot; White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="8/8/8/8/8/5K2/7R/4nk2 w - - 0 1"></div>
+            <p class="caption">FEN: 8/8/8/8/8/5K2/7R/4nk2 w - - 0 1 &middot; Bacrot has just promoted to a knight.</p>
+          </div>
+          <div class="position-note">
+            <p>
+              The position looks like a standard draw, but the knight on
+              <strong>e1</strong> is dangerously close to the dumb square
+              <strong>g2</strong>. Defence requires extreme precision.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <p class="position-label">Main game &mdash; forced phase</p>
+      <div class="moveline">
+        <span class="num">1.</span>Kg3 Nd3
+        <span class="num">2.</span>Rd2 Ne1
+        <span class="num">3.</span>Rf2+ Kg1
+        <span class="num">4.</span>Rf8 Ng2
+      </div>
+      <p class="position-note">
+        Up to this point the moves are essentially forced. Now Black faces
+        a critical decision.
+      </p>
+
+      <aside class="rule-box">
+        <h3>Candidate Moves at Move 4...Black to Move</h3>
+        <ul style="margin: 6px 0 0; padding-left: 20px;">
+          <li><span class="moveline" style="display:inline; background:transparent; border:0; padding:0; font-size:inherit;"><span class="num">4...</span><span class="bad">Nd3?</span></span> loses.</li>
+          <li><span class="moveline" style="display:inline; background:transparent; border:0; padding:0; font-size:inherit;"><span class="num">4...</span><span class="good">Nc2</span></span> draws and is the easiest defence.</li>
+          <li><span class="moveline" style="display:inline; background:transparent; border:0; padding:0; font-size:inherit;"><span class="num">4...</span>Ng2</span> is playable but leads to difficult defence.</li>
+        </ul>
+      </aside>
+
+      <p class="position-label">Game continuation</p>
+      <div class="moveline">
+        <span class="num">5.</span>Kf3 <span class="bad">Kf1?</span>
+      </div>
+      <p class="position-note">
+        This is the losing move.
+      </p>
+
+      <p class="position-label">Correct defence</p>
+      <div class="moveline">
+        <span class="num">5...</span><span class="good">Nh4+</span>
+        <span class="num">6.</span>Ke3 Kg2
+        <span class="num">7.</span>Rg8+ Kh3
+        <span class="num">8.</span>Kf2 Kh2 <span class="result">=</span>
+      </div>
+      <p class="position-note">
+        This returns to a drawable setup.
+      </p>
+
+      <aside class="rule-box">
+        <h3>Missed Winning Opportunity</h3>
+        <p>
+          Kamsky also missed an earlier winning opportunity with
+          <strong>6.Rf7!</strong> instead of the game continuation.
+        </p>
+        <div class="moveline" style="margin: 8px 0 0; background: transparent; border: 0; padding: 0;">
+          <span class="num">6.</span><span class="good">Rf7!</span> Kg1
+          <span class="num">7.</span>Kf3 Kf1?
+          <span class="num">8.</span><span class="good">Rf7!</span>
+        </div>
+        <p style="margin-top: 8px;">
+          White reaches a remarkable zugzwang.
+        </p>
+      </aside>
+    </section>
+
+    <!-- ================ Lesson: Zugzwang Position ================= -->
+    <section class="lesson" id="lesson-zugzwang">
+      <div class="lesson-head">
+        <span class="lesson-number">Lesson</span>
+        <h2 class="lesson-title">Zugzwang Position</h2>
+      </div>
+      <p class="lesson-intro">
+        An amazing zugzwang position after 11.Rh7. Black is to move and
+        has no good option.
+      </p>
+
+      <div class="position">
+        <p class="position-label">Position 1.25 &middot; Zugzwang after 11.Rh7 &middot; Black to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="8/7R/8/8/8/8/4K1n1/6k1 b - - 0 11"></div>
+            <p class="caption">FEN: 8/7R/8/8/8/8/4K1n1/6k1 b - - 0 11</p>
+          </div>
+          <div class="position-note">
+            <p>
+              The knight on <strong>g2</strong> &mdash; the dumb square
+              &mdash; has almost no safe moves. The king on
+              <strong>g1</strong> is boxed in. Black is in complete
+              zugzwang.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <p class="position-label">Principal variation</p>
+      <div class="moveline">
+        <span class="num">11...</span>Nf4+
+        <span class="num">12.</span>Kf3 Nd3
+        <span class="num">13.</span>Rh4 Ne5+
+        <span class="num">14.</span><span class="bad">Ke2?</span>
+      </div>
+      <p class="position-note">
+        This misses the strongest continuation.
+      </p>
+
+      <p class="position-label">Better</p>
+      <div class="moveline">
+        <span class="num">14.</span><span class="good">Ke3!</span> <span class="result">+-</span>
+      </div>
+
+      <p class="position-label">Game continuation</p>
+      <div class="moveline">
+        <span class="num">14...</span>Kg2
+        <span class="num">15.</span>Re4 <span class="bad">Nf7?</span>
+      </div>
+      <p class="position-note note-soft">
+        15...Nd7! would have drawn.
+      </p>
+
+      <p class="position-label">Remaining moves</p>
+      <div class="moveline">
+        <span class="num">16.</span>Re7 Nd6
+        <span class="num">17.</span>Rg7+ Kh3
+        <span class="num">18.</span>Kf3 Kh4
+        <span class="num">19.</span>Kf4 Kh5
+        <span class="num">20.</span>Re7 Nc4
+        <span class="num">21.</span>Re6 Nd2
+        <span class="num">22.</span>Rc6 Nb3
+        <span class="num">23.</span>Ke3 Kg4
+        <span class="num">24.</span>Rc4+ Kg3
+        <span class="num">25.</span>Rc3 Na5
+        <span class="num">26.</span>Ke4+ Kf2
+        <span class="num">27.</span>Kd5 Nb7
+        <span class="num">28.</span>Rb3 Nd8
+        <span class="num">29.</span>Rb8 <span class="result">1-0</span>
+      </div>
+
+      <aside class="rule-box">
+        <h3>Final Practical Lessons</h3>
+        <ul style="margin: 6px 0 0; padding-left: 20px;">
+          <li>Theory provides the framework.</li>
+          <li>Practical defence can still be extremely difficult.</li>
+          <li>The knight's dumb square and king placement can completely change the evaluation.</li>
+          <li>Even elite players can fail to find the only drawing continuation under tournament conditions.</li>
+        </ul>
+      </aside>
+    </section>
+
+    <!-- ===================== Final summary checklist =============== -->
+    <section class="checklist">
+      <h2>Chapter Checklist</h2>
+      <ul>
+        <li>A separated knight is the rook's primary target &mdash; never allow it.</li>
+        <li>The trapping process restricts mobility, takes away escapes, and brings the king closer.</li>
+        <li>A temporary separation is acceptable only if king and knight reunite immediately.</li>
+        <li>Corner trap configurations with both pieces trapped are theoretically lost.</li>
+        <li>The knight's dumb square on g2 is fatal despite not being on the edge.</li>
+        <li>Practical defence is far harder than theory suggests &mdash; even elite players fail.</li>
+        <li>Zugzwang is the final winning mechanism when the knight is on its dumb square.</li>
+      </ul>
+    </section>
+
+    <footer class="lesson-footer">
+      <span class="chapter-name">Ending 9 &middot; Rook vs Knight &mdash; Separation, Corner Trap & Kamsky-Bacrot</span>
+      <span>Chess Endgame Lessons</span>
+    </footer>
+
+  </div>
+
+  <script src="endgame-lesson.js" defer></script>
+  <script>
+    function toggleTheme() {
+      var html = document.documentElement;
+      var next = html.dataset.theme === "dark" ? "light" : "dark";
+      html.dataset.theme = next;
+      try { window.localStorage.setItem("lesson-theme-v1", next); } catch (e) {}
+      var btn = document.getElementById("themeToggle");
+      if (btn) btn.textContent = next === "dark" ? "Light theme" : "Dark theme";
+    }
+    (function () {
+      try {
+        var t = document.documentElement.dataset.theme || "dark";
+        var btn = document.getElementById("themeToggle");
+        if (btn) btn.textContent = t === "dark" ? "Light theme" : "Dark theme";
+      } catch (e) {}
+    })();
+
+    /* Chapter checklist — toggle + persist checked state */
+    (function () {
+      var KEY = "lesson-checklist-v1:ch06";
+      var items = document.querySelectorAll(".checklist li");
+      if (!items.length) { return; }
+      var saved = {};
+      try { saved = JSON.parse(window.localStorage.getItem(KEY) || "{}"); } catch (e) {}
+
+      items.forEach(function (li, i) {
+        if (saved[i]) { li.classList.add("is-checked"); }
+        li.addEventListener("click", function () {
+          li.classList.toggle("is-checked");
+          var state = {};
+          items.forEach(function (el, j) { state[j] = el.classList.contains("is-checked"); });
+          try { window.localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+        });
+      });
+    })();
+  </script>
+  <script>
+    /* Floating analysis popup — receives postMessage from embedded app iframes. */
+    (function () {
+      var popup = document.getElementById("analysisPanel");
+      var titleEl = document.getElementById("analysisPopupTitle");
+      var evalEl = document.getElementById("analysisPopupEval");
+      var bodyEl = document.getElementById("analysisPopupBody");
+      var toggleBtn = document.getElementById("analysisPopupToggle");
+      var closeBtn = document.getElementById("analysisPopupClose");
+      var handle = popup.querySelector("[data-drag-handle]");
+      var minimized = false;
+      var currentSource = null;
+      var userClosed = false;
+
+      function setMinimized(v) {
+        minimized = v;
+        popup.classList.toggle("is-minimized", v);
+        toggleBtn.setAttribute("aria-label", v ? "Expand" : "Minimize");
+        toggleBtn.setAttribute("title", v ? "Expand" : "Minimize");
+        toggleBtn.querySelector("svg").innerHTML = v
+          ? '<path d="M6 9l6 6 6-6"></path>'
+          : '<path d="M6 15l6-6 6 6"></path>';
+      }
+      toggleBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        setMinimized(!minimized);
+      });
+      closeBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        userClosed = true;
+        popup.hidden = true;
+      });
+
+      var dragging = false, sx = 0, sy = 0, spx = 0, spy = 0;
+      handle.addEventListener("mousedown", function (e) {
+        if (e.button !== 0) { return; }
+        if (e.target.closest(".analysis-popup-toggle")) { return; }
+        if (e.target.closest(".analysis-popup-close")) { return; }
+        var r = popup.getBoundingClientRect();
+        spx = r.left; spy = r.top;
+        sx = e.clientX; sy = e.clientY;
+        dragging = true;
+        popup.classList.add("is-dragging");
+        document.body.style.userSelect = "none";
+        e.preventDefault();
+      });
+      document.addEventListener("mousemove", function (e) {
+        if (!dragging) { return; }
+        var dx = e.clientX - sx, dy = e.clientY - sy;
+        var m = 4;
+        var pw = popup.offsetWidth, ph = popup.offsetHeight;
+        var nx = Math.max(m, Math.min(window.innerWidth - pw - m, spx + dx));
+        var ny = Math.max(m, Math.min(window.innerHeight - ph - m, spy + dy));
+        popup.style.left = nx + "px";
+        popup.style.top = ny + "px";
+        popup.style.right = "auto";
+        popup.style.bottom = "auto";
+      });
+      document.addEventListener("mouseup", function () {
+        if (!dragging) { return; }
+        dragging = false;
+        popup.classList.remove("is-dragging");
+        document.body.style.userSelect = "";
+      });
+
+      window.addEventListener("message", function (event) {
+        var d = event.data;
+        if (!d || d.type !== "analysisUpdate") { return; }
+        if (!d.visible) {
+          if (currentSource === event.source || currentSource === null) {
+            popup.hidden = true;
+            currentSource = null;
+          }
+          return;
+        }
+        if (userClosed && currentSource === event.source) {
+          return;
+        }
+        userClosed = false;
+        currentSource = event.source;
+        popup.hidden = false;
+        if (d.title) { titleEl.textContent = d.title; }
+        evalEl.textContent = d.evalLabel || "";
+        if (!minimized) {
+          var summaryHtml = d.summary
+            ? '<p class="analysis-popup-summary">' + escapeHtml_(d.summary) + "</p>"
+            : "";
+          bodyEl.innerHTML = summaryHtml + (d.pvHtml || "");
+        }
+      });
+
+      function escapeHtml_(s) {
+        return String(s).replace(/[&<>"']/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

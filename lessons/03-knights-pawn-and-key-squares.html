@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-piece-base="../assets/pieces/mpchess/" data-app-path="../index.html" data-orientation="white">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ending 3: Key Squares — Knight’s Pawn & Key Squares</title>
+  <meta name="description" content="Chess endgame lesson: Knight’s pawn stalemate resources, diagonal opposition, and key squares for pawn promotion.">
+  <script>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("lesson-theme-v1");
+        if (stored === "light" || stored === "dark") {
+          document.documentElement.dataset.theme = stored;
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="endgame-lesson.css">
+  <style>
+    @page {
+      @bottom-right {
+        content: "Ending 3 · p. " counter(page);
+        font-family: "Inter", sans-serif;
+        font-size: 9pt;
+        color: #6b7280;
+      }
+      @bottom-left {
+        content: "Key Squares — Knight’s Pawn & Key Squares";
+        font-family: "Inter", sans-serif;
+        font-size: 9pt;
+        color: #6b7280;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="analysisPanel" class="analysis-popup" hidden>
+    <div class="analysis-popup-head" data-drag-handle title="Drag to move">
+      <span class="analysis-popup-grip" aria-hidden="true">⠿</span>
+      <span class="analysis-popup-title" id="analysisPopupTitle">Engine</span>
+      <span class="analysis-popup-eval" id="analysisPopupEval"></span>
+      <button type="button" class="analysis-popup-toggle" id="analysisPopupToggle" aria-label="Minimize" title="Minimize">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 15l6-6 6 6"></path></svg>
+      </button>
+      <button type="button" class="analysis-popup-close" id="analysisPopupClose" aria-label="Close" title="Close">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg>
+      </button>
+    </div>
+    <div class="analysis-popup-body" id="analysisPopupBody"></div>
+  </div>
+
+  <div class="lesson-page">
+
+    <div class="toolbar no-print">
+      <button type="button" id="themeToggle" onclick="toggleTheme()">Light theme</button>
+      <button type="button" onclick="window.print()">Print / Save as PDF</button>
+    </div>
+
+    <!-- ============================ Hero ============================ -->
+    <header class="hero">
+      <p class="eyebrow">King + Pawn vs King · Ending 3</p>
+      <h1 class="chapter-title">Key Squares</h1>
+      <p class="chapter-subtitle">
+        Knight’s pawn stalemate resources, diagonal opposition, and the
+        essential concept of key squares — the rules that tell us at a
+        glance whether the pawn can promote.
+      </p>
+    </header>
+
+    <!-- ======================== Learning goals ===================== -->
+    <ul class="goals">
+      <li>Recognise knight’s pawn stalemate resources caused by the nearby edge.</li>
+      <li>Understand diagonal opposition in exceptional edge-board cases.</li>
+      <li>Know the key squares for a 5th-rank pawn and for a pawn not yet on the 5th.</li>
+      <li>Apply the rule: if the strong king occupies a key square, the pawn promotes.</li>
+      <li>Avoid pushing the pawn before the king has prepared the way.</li>
+      <li>Appreciate distant opposition as a transition to the next topic.</li>
+    </ul>
+
+    <!-- ============== Continuation: Knight’s Pawn ================= -->
+    <section class="lesson" id="continuation-knights-pawn">
+      <div class="lesson-head">
+        <span class="lesson-number">Continuation</span>
+        <h2 class="lesson-title">Knight’s Pawn</h2>
+      </div>
+      <p class="lesson-intro">
+        We continue from the knight’s pawn preview of the previous chapter.
+        White cannot take the opposition, but the nearby edge creates a
+        special saving resource.
+      </p>
+
+      <div class="position">
+        <p class="position-label">Position 1.8 &middot; Knight’s pawn stalemate resource &middot; White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="8/8/8/8/8/5kp1/7K/8 w - - 0 1"></div>
+            <p class="caption">FEN: 8/8/8/8/8/5kp1/7K/8 w - - 0 1</p>
+          </div>
+          <div class="position-note">
+            <p>
+              Let us have a look at the position. White cannot take the
+              opposition. If the king moves in front of the pawn, he will
+              have to retreat from his blocking position on the next move.
+            </p>
+            <p>
+              This position would be lost if Black had a central pawn, but
+              with a knight’s pawn White can be saved thanks to a special
+              detail.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <p class="position-label">The right move</p>
+      <div class="moveline">
+        <span class="num">1.</span><span class="good">Kh1!</span>
+      </div>
+      <p class="position-note">
+        This relative position of the kings is called
+        <strong>diagonal opposition</strong>. Usually, diagonal opposition
+        does not help much, but here it works because of the nearby edge.
+      </p>
+
+      <p class="position-label">Continuation</p>
+      <div class="moveline">
+        <span class="num">1...</span>Kf2
+      </div>
+      <p class="position-note">
+        This move would secure promotion with any other pawn, but now the
+        white king is stalemated and the position is drawn.
+      </p>
+
+      <p class="position-label">Variation</p>
+      <div class="moveline">
+        <span class="num">1...</span>Kg4
+        <span class="num">2.</span><span class="good">Kg2!</span>=
+      </div>
+
+      <aside class="rule-box">
+        <h3>Key Idea</h3>
+        <p>
+          With a knight’s pawn, the nearby edge can create stalemate
+          resources that do not exist with central pawns.
+        </p>
+      </aside>
+    </section>
+
+    <!-- ======================= Ending 3 Intro ===================== -->
+    <section class="lesson" id="ending-3-intro">
+      <div class="lesson-head">
+        <span class="lesson-number">Ending 3</span>
+        <h2 class="lesson-title">Key Squares</h2>
+      </div>
+      <p class="lesson-intro">
+        When the pawn has not reached the 6th rank yet, the analysis grows
+        in complexity, but there are very clear rules. If we know them, we
+        can play the ending accurately and quickly know whether the pawn
+        promotes or not. The essential concept here is that of
+        <strong>key squares</strong>.
+      </p>
+
+      <aside class="rule-box">
+        <h3>Key Principle</h3>
+        <p>
+          If the strong king occupies one of the key squares, the pawn
+          promotes.
+        </p>
+      </aside>
+    </section>
+
+    <!-- ======================= Lesson 1 ============================ -->
+    <section class="lesson" id="lesson-1">
+      <div class="lesson-head">
+        <span class="lesson-number">Lesson 1</span>
+        <h2 class="lesson-title">Key Squares for a 5th-Rank Pawn</h2>
+      </div>
+      <p class="lesson-intro">
+        When the pawn is on the 5th rank, its key squares are the three
+        squares directly in front of it. Since the white king has reached
+        one of them, White wins.
+      </p>
+
+      <div class="position">
+        <p class="position-label">Position 1.9 &middot; Key squares for a 5th-rank pawn &middot; White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="5k2/8/4K3/5P2/8/8/8/8 w - - 0 1" data-mark="e6 f6 g6"></div>
+            <p class="caption">FEN: 5k2/8/4K3/5P2/8/8/8/8 w - - 0 1 &middot; Key squares: e6, f6, g6</p>
+          </div>
+          <div class="position-note">
+            <p>
+              The marked squares <strong>e6</strong>, <strong>f6</strong>,
+              and <strong>g6</strong> are the key squares for the pawn on
+              <strong>f5</strong>. The white king already occupies one of
+              them, so White wins.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <p class="position-label">Winning move</p>
+      <div class="moveline">
+        <span class="num">1.</span><span class="good">Kf6!</span>
+      </div>
+
+      <aside class="rule-box">
+        <h3>Not 1.f6??</h3>
+        <div class="moveline" style="margin: 8px 0 0; background: transparent; border: 0; padding: 0;">
+          <span class="num">1.</span><span class="bad">f6??</span> <span class="good">Ke8!</span>
+        </div>
+        <p style="margin-top: 8px;">
+          Black would take the opposition and draw. There is no need to
+          hurry to push the pawn. The white king must pave the way first.
+        </p>
+      </aside>
+
+      <p class="position-label">Continuation</p>
+      <div class="moveline">
+        <span class="num">1...</span>Ke8
+      </div>
+      <p class="position-note">
+        The black king has retreated from the pawn’s path. Now White
+        secures promotion.
+      </p>
+
+      <p class="position-label">Main line</p>
+      <div class="moveline">
+        <span class="num">2.</span><span class="good">Kg7!</span> Ke7
+        <span class="num">3.</span>f6+ Ke6
+        <span class="num">4.</span>f7 <span class="result">1-0</span>
+      </div>
+      <p class="position-note">
+        Now the pawn’s path is clear.
+      </p>
+
+      <aside class="rule-box">
+        <h3>Extra Explanation</h3>
+        <p>
+          If, in the starting position, the white king had been on
+          <strong>g6</strong>, 1.Kf6 would have led to the same winning
+          position.
+        </p>
+        <p style="margin-top: 8px;">
+          If the white king had been on <strong>f6</strong>, White wins
+          with:
+        </p>
+        <div class="moveline" style="margin: 8px 0 0; background: transparent; border: 0; padding: 0;">
+          <span class="num">1.</span>Ke6 Ke8 <span class="num">2.</span>f6
+        </div>
+        <p style="margin-top: 8px;">
+          White takes the opposition in the key situation: when the pawn
+          reaches the 6th rank.
+        </p>
+        <p style="margin-top: 8px;">
+          Were it Black’s turn in any of the three key-square examples,
+          White would still win by one of two methods:
+        </p>
+        <ol style="padding-left: 24px; margin: 6px 0 0;">
+          <li>supporting the pawn from the 7th rank, or</li>
+          <li>taking the opposition.</li>
+        </ol>
+      </aside>
+
+      <aside class="recap">
+        <h3>Key Idea</h3>
+        <p>
+          White wins if his king reaches any key square.
+        </p>
+      </aside>
+    </section>
+
+    <!-- ======================= Lesson 2 ============================ -->
+    <section class="lesson" id="lesson-2">
+      <div class="lesson-head">
+        <span class="lesson-number">Lesson 2</span>
+        <h2 class="lesson-title">Knight’s Pawn and Key Squares</h2>
+      </div>
+      <p class="lesson-intro">
+        Once again, the knight’s pawn poses extra difficulties, but the
+        key-square rule still applies. We just need to be slightly more
+        careful.
+      </p>
+
+      <div class="position">
+        <p class="position-label">Position 1.10 &middot; Knight’s pawn &middot; White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="7k/5K2/8/6P1/8/8/8/8 w - - 0 1"></div>
+            <p class="caption">FEN: 7k/5K2/8/6P1/8/8/8/8 w - - 0 1</p>
+          </div>
+          <div class="position-note">
+            <p>
+              The king must go to the other side to avoid annoying
+              stalemate tricks.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <p class="position-label">Winning move</p>
+      <div class="moveline">
+        <span class="num">1.</span><span class="good">Kg6!</span>
+      </div>
+      <p class="position-note">
+        The king must go to the other side to avoid annoying stalemate
+        tricks.
+      </p>
+
+      <aside class="rule-box">
+        <h3>Mistake</h3>
+        <div class="moveline" style="margin: 8px 0 0; background: transparent; border: 0; padding: 0;">
+          <span class="num">1.</span><span class="bad">g6?</span> <span class="result">stalemate</span>
+        </div>
+      </aside>
+
+      <p class="position-note note-soft">
+        Note: 1.Kf6 does not throw away the win, but after accurate defence
+        White may need to return to the starting position.
+      </p>
+
+      <p class="position-label">Main line</p>
+      <div class="moveline">
+        <span class="num">1...</span>Kg8
+        <span class="num">2.</span>Kh6 Kh8
+        <span class="num">3.</span>g6
+      </div>
+      <p class="position-note">
+        Now the king is on the correct side of the pawn, so promotion runs
+        smoothly.
+      </p>
+
+      <p class="position-label">Continuation</p>
+      <div class="moveline">
+        <span class="num">3...</span>Kg8
+        <span class="num">4.</span>g7 Kf7
+        <span class="num">5.</span>Kh7 <span class="result">1-0</span>
+      </div>
+
+      <aside class="recap">
+        <h3>Key Idea</h3>
+        <p>
+          For a knight’s pawn, the winning king often needs to stand on the
+          correct side of the pawn to avoid stalemate tricks.
+        </p>
+      </aside>
+    </section>
+
+    <!-- ======================= Lesson 3 ============================ -->
+    <section class="lesson" id="lesson-3">
+      <div class="lesson-head">
+        <span class="lesson-number">Lesson 3</span>
+        <h2 class="lesson-title">Key Squares Before the Pawn Reaches the 5th Rank</h2>
+      </div>
+      <p class="lesson-intro">
+        If the pawn has not reached the 5th rank, its key squares are two
+        ranks ahead. For example, for a pawn on the 4th rank, the key
+        squares are on the 6th rank. The rule still applies: if the white
+        king occupies one of those key squares, the pawn promotes.
+      </p>
+
+      <div class="position">
+        <p class="position-label">Position 1.11 &middot; Key squares when the pawn has not reached the 5th rank &middot; White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="4k3/8/8/8/3PK3/8/8/8 w - - 0 1" data-mark="c6 d6 e6"></div>
+            <p class="caption">FEN: 4k3/8/8/8/3PK3/8/8/8 w - - 0 1 &middot; Key squares: c6, d6, e6</p>
+          </div>
+          <div class="position-note">
+            <p>
+              The marked squares <strong>c6</strong>, <strong>d6</strong>,
+              and <strong>e6</strong> are the key squares for the pawn on
+              <strong>d4</strong>. In the diagram position, the white king
+              can reach one of the key squares, but sometimes opposition
+              makes the fight for those squares harder.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <p class="position-label">Winning move</p>
+      <div class="moveline">
+        <span class="num">1.</span><span class="good">Kd5!</span>
+      </div>
+      <p class="position-note">
+        White heads for the key square c6.
+      </p>
+
+      <aside class="rule-box">
+        <h3>Mistake</h3>
+        <div class="moveline" style="margin: 8px 0 0; background: transparent; border: 0; padding: 0;">
+          <span class="num">1.</span><span class="bad">Ke5??</span> <span class="good">Ke7!</span>
+        </div>
+        <p style="margin-top: 8px;">
+          After this, opposition prevents the white king from reaching the
+          key squares.
+        </p>
+      </aside>
+
+      <p class="position-label">Main line</p>
+      <div class="moveline">
+        <span class="num">1.</span><span class="good">Kd5!</span> Ke7
+        <span class="num">2.</span><span class="good">Kc6</span>
+      </div>
+      <p class="position-note">
+        Once White has occupied one of the key squares, the pawn promotes.
+      </p>
+
+      <p class="position-label">Continuation</p>
+      <div class="moveline">
+        <span class="num">2...</span>Kd8
+        <span class="num">3.</span>Kd6 Kc8
+        <span class="num">4.</span>Ke7 Kc7
+        <span class="num">5.</span>d5 Kc8
+        <span class="num">6.</span>d6 Kb7
+        <span class="num">7.</span>d7 <span class="result">1-0</span>
+      </div>
+
+      <aside class="recap">
+        <h3>Key Idea</h3>
+        <p>
+          Before the pawn reaches the 5th rank, the strong king must aim for
+          the key squares two ranks ahead of the pawn.
+        </p>
+      </aside>
+    </section>
+
+    <!-- ======================= Lesson 4 ============================ -->
+    <section class="lesson" id="lesson-4">
+      <div class="lesson-head">
+        <span class="lesson-number">Lesson 4</span>
+        <h2 class="lesson-title">The Distant Opposition</h2>
+      </div>
+      <p class="lesson-intro">
+        This position introduces the distant opposition. In the source
+        diagram, the key squares are marked on the third rank:
+        <strong>b3</strong>, <strong>c3</strong>, and <strong>d3</strong>.
+      </p>
+
+      <div class="position">
+        <p class="position-label">Position 1.12 &middot; The distant opposition &middot; White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="8/8/8/1kp5/8/8/8/K7 w - - 0 1" data-mark="b3 c3 d3"></div>
+            <p class="caption">FEN: 8/8/8/1kp5/8/8/8/K7 w - - 0 1 &middot; Key squares: b3, c3, d3</p>
+          </div>
+          <div class="position-note">
+            <p>
+              When the kings are far apart, opposition can still decide who
+              reaches the key squares first. The detailed explanation
+              continues in the following part. For now, this is the
+              transition into the next lesson.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <aside class="rule-box">
+        <h3>Key Idea</h3>
+        <p>
+          When the kings are far apart, opposition can still decide who
+          reaches the key squares first.
+        </p>
+      </aside>
+    </section>
+
+    <!-- ===================== Final summary checklist =============== -->
+    <section class="checklist">
+      <h2>Chapter Checklist</h2>
+      <ul>
+        <li>Knight’s pawns have special stalemate resources because of the nearby edge.</li>
+        <li>Diagonal opposition can matter in exceptional edge-board cases.</li>
+        <li>Key squares tell us whether the pawn can promote.</li>
+        <li>If the strong king occupies a key square, the pawn usually wins.</li>
+        <li>For a 5th-rank pawn, the key squares are the three squares directly in front of it.</li>
+        <li>Before the pawn reaches the 5th rank, the key squares are two ranks ahead.</li>
+        <li>The pawn should not be pushed before the king has prepared the way.</li>
+        <li>Distant opposition becomes important when the kings are far apart.</li>
+      </ul>
+    </section>
+
+    <footer class="lesson-footer">
+      <span class="chapter-name">Ending 3 &middot; Key Squares &mdash; Knight’s Pawn & Key Squares</span>
+      <span>Chess Endgame Lessons</span>
+    </footer>
+
+  </div>
+
+  <script src="endgame-lesson.js" defer></script>
+  <script>
+    function toggleTheme() {
+      var html = document.documentElement;
+      var next = html.dataset.theme === "dark" ? "light" : "dark";
+      html.dataset.theme = next;
+      try { window.localStorage.setItem("lesson-theme-v1", next); } catch (e) {}
+      var btn = document.getElementById("themeToggle");
+      if (btn) btn.textContent = next === "dark" ? "Light theme" : "Dark theme";
+    }
+    (function () {
+      try {
+        var t = document.documentElement.dataset.theme || "dark";
+        var btn = document.getElementById("themeToggle");
+        if (btn) btn.textContent = t === "dark" ? "Light theme" : "Dark theme";
+      } catch (e) {}
+    })();
+
+    /* Chapter checklist — toggle + persist checked state */
+    (function () {
+      var KEY = "lesson-checklist-v1:ch03";
+      var items = document.querySelectorAll(".checklist li");
+      if (!items.length) { return; }
+      var saved = {};
+      try { saved = JSON.parse(window.localStorage.getItem(KEY) || "{}"); } catch (e) {}
+
+      items.forEach(function (li, i) {
+        if (saved[i]) { li.classList.add("is-checked"); }
+        li.addEventListener("click", function () {
+          li.classList.toggle("is-checked");
+          var state = {};
+          items.forEach(function (el, j) { state[j] = el.classList.contains("is-checked"); });
+          try { window.localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+        });
+      });
+    })();
+  </script>
+  <script>
+    /* Floating analysis popup — receives postMessage from embedded app iframes. */
+    (function () {
+      var popup = document.getElementById("analysisPanel");
+      var titleEl = document.getElementById("analysisPopupTitle");
+      var evalEl = document.getElementById("analysisPopupEval");
+      var bodyEl = document.getElementById("analysisPopupBody");
+      var toggleBtn = document.getElementById("analysisPopupToggle");
+      var closeBtn = document.getElementById("analysisPopupClose");
+      var handle = popup.querySelector("[data-drag-handle]");
+      var minimized = false;
+      var currentSource = null;
+      var userClosed = false;
+
+      function setMinimized(v) {
+        minimized = v;
+        popup.classList.toggle("is-minimized", v);
+        toggleBtn.setAttribute("aria-label", v ? "Expand" : "Minimize");
+        toggleBtn.setAttribute("title", v ? "Expand" : "Minimize");
+        toggleBtn.querySelector("svg").innerHTML = v
+          ? '<path d="M6 9l6 6 6-6"></path>'
+          : '<path d="M6 15l6-6 6 6"></path>';
+      }
+      toggleBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        setMinimized(!minimized);
+      });
+      closeBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        userClosed = true;
+        popup.hidden = true;
+      });
+
+      var dragging = false, sx = 0, sy = 0, spx = 0, spy = 0;
+      handle.addEventListener("mousedown", function (e) {
+        if (e.button !== 0) { return; }
+        if (e.target.closest(".analysis-popup-toggle")) { return; }
+        if (e.target.closest(".analysis-popup-close")) { return; }
+        var r = popup.getBoundingClientRect();
+        spx = r.left; spy = r.top;
+        sx = e.clientX; sy = e.clientY;
+        dragging = true;
+        popup.classList.add("is-dragging");
+        document.body.style.userSelect = "none";
+        e.preventDefault();
+      });
+      document.addEventListener("mousemove", function (e) {
+        if (!dragging) { return; }
+        var dx = e.clientX - sx, dy = e.clientY - sy;
+        var m = 4;
+        var pw = popup.offsetWidth, ph = popup.offsetHeight;
+        var nx = Math.max(m, Math.min(window.innerWidth - pw - m, spx + dx));
+        var ny = Math.max(m, Math.min(window.innerHeight - ph - m, spy + dy));
+        popup.style.left = nx + "px";
+        popup.style.top = ny + "px";
+        popup.style.right = "auto";
+        popup.style.bottom = "auto";
+      });
+      document.addEventListener("mouseup", function () {
+        if (!dragging) { return; }
+        dragging = false;
+        popup.classList.remove("is-dragging");
+        document.body.style.userSelect = "";
+      });
+
+      window.addEventListener("message", function (event) {
+        var d = event.data;
+        if (!d || d.type !== "analysisUpdate") { return; }
+        if (!d.visible) {
+          if (currentSource === event.source || currentSource === null) {
+            popup.hidden = true;
+            currentSource = null;
+          }
+          return;
+        }
+        if (userClosed && currentSource === event.source) {
+          return;
+        }
+        userClosed = false;
+        currentSource = event.source;
+        popup.hidden = false;
+        if (d.title) { titleEl.textContent = d.title; }
+        evalEl.textContent = d.evalLabel || "";
+        if (!minimized) {
+          var summaryHtml = d.summary
+            ? '<p class="analysis-popup-summary">' + escapeHtml_(d.summary) + "</p>"
+            : "";
+          bodyEl.innerHTML = summaryHtml + (d.pvHtml || "");
+        }
+      });
+
+      function escapeHtml_(s) {
+        return String(s).replace(/[&<>"']/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

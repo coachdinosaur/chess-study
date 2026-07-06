@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-piece-base="../assets/pieces/mpchess/" data-app-path="../index.html" data-orientation="white">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Basic Test — Positions 2.01 to 2.18</title>
+  <meta name="description" content="Chess endgame basic test: 18 positions testing fundamental endgame ideas. Study the side to move and answer the question.">
+  <script>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("lesson-theme-v1");
+        if (stored === "light" || stored === "dark") {
+          document.documentElement.dataset.theme = stored;
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="endgame-lesson.css">
+  <style>
+    @page {
+      @bottom-right {
+        content: "Basic Test · p. " counter(page);
+        font-family: "Inter", sans-serif;
+        font-size: 9pt;
+        color: #6b7280;
+      }
+      @bottom-left {
+        content: "Basic Test — Positions 2.01 to 2.18";
+        font-family: "Inter", sans-serif;
+        font-size: 9pt;
+        color: #6b7280;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="analysisPanel" class="analysis-popup" hidden>
+    <div class="analysis-popup-head" data-drag-handle title="Drag to move">
+      <span class="analysis-popup-grip" aria-hidden="true">⠿</span>
+      <span class="analysis-popup-title" id="analysisPopupTitle">Engine</span>
+      <span class="analysis-popup-eval" id="analysisPopupEval"></span>
+      <button type="button" class="analysis-popup-toggle" id="analysisPopupToggle" aria-label="Minimize" title="Minimize">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 15l6-6 6 6"></path></svg>
+      </button>
+      <button type="button" class="analysis-popup-close" id="analysisPopupClose" aria-label="Close" title="Close">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg>
+      </button>
+    </div>
+    <div class="analysis-popup-body" id="analysisPopupBody"></div>
+  </div>
+
+  <div class="lesson-page">
+
+    <div class="toolbar no-print">
+      <button type="button" id="themeToggle" onclick="toggleTheme()">Light theme</button>
+      <button type="button" onclick="window.print()">Print / Save as PDF</button>
+    </div>
+
+    <!-- ============================ Hero ============================ -->
+    <header class="hero">
+      <p class="eyebrow">Test Section</p>
+      <h1 class="chapter-title">Basic Test</h1>
+      <p class="chapter-subtitle">
+        These positions test the basic endgame ideas from the previous
+        lessons. For each diagram, study the side to move and answer the
+        question before checking the solution.
+      </p>
+    </header>
+
+    <!-- ======================== Test grid ========================= -->
+    <section class="test-section">
+      <div class="test-grid">
+
+        <!-- 2.01 -->
+        <div class="test-card">
+          <div class="test-card-head">
+            <span class="test-number">2.01</span>
+            <span class="side-to-move white">White to move</span>
+          </div>
+          <p class="test-question">Is it a draw?</p>
+          <div class="test-diagram">
+            <div class="board" data-fen="8/8/K7/N7/7p/7k/8/8 w - - 0 1"></div>
+          </div>
+          <p class="test-fen">FEN: 8/8/K7/N7/7p/7k/8/8 w - - 0 1</p>
+        </div>
+
+        <!-- 2.02 -->
+        <div class="test-card">
+          <div class="test-card-head">
+            <span class="test-number">2.02</span>
+            <span class="side-to-move white">White to move</span>
+          </div>
+          <p class="test-question">Is it a draw?</p>
+          <div class="test-diagram">
+            <div class="board" data-fen="8/8/K7/7N/7p/7k/8/8 w - - 0 1"></div>
+          </div>
+          <p class="test-fen">FEN: 8/8/K7/7N/7p/7k/8/8 w - - 0 1</p>
+        </div>
+
+        <!-- 2.04 -->
+        <div class="test-card">
+          <div class="test-card-head">
+            <span class="test-number">2.04</span>
+            <span class="side-to-move black">Black to move</span>
+          </div>
+          <p class="test-question">What should you play and with which result?</p>
+          <div class="test-diagram">
+            <div class="board" data-fen="4k3/R7/5K2/4P3/8/8/1r6/8 b - - 0 1"></div>
+          </div>
+          <p class="test-fen">FEN: 4k3/R7/5K2/4P3/8/8/1r6/8 b - - 0 1</p>
+        </div>
+
+        <!-- 2.05 -->
+        <div class="test-card">
+          <div class="test-card-head">
+            <span class="test-number">2.05</span>
+            <span class="side-to-move white">White to move</span>
+          </div>
+          <p class="test-question">What should you play and with which result?</p>
+          <div class="test-diagram">
+            <div class="board" data-fen="8/2K5/8/8/3kN3/8/7p/8 w - - 0 1"></div>
+          </div>
+          <p class="test-fen">FEN: 8/2K5/8/8/3kN3/8/7p/8 w - - 0 1</p>
+        </div>
+
+        <!-- 2.07 -->
+        <div class="test-card">
+          <div class="test-card-head">
+            <span class="test-number">2.07</span>
+            <span class="side-to-move white">White to move</span>
+          </div>
+          <p class="test-question">Is it a draw?</p>
+          <div class="test-diagram">
+            <div class="board" data-fen="8/7K/6P1/6k1/2b5/8/8/2B5 w - - 0 1"></div>
+          </div>
+          <p class="test-fen">FEN: 8/7K/6P1/6k1/2b5/8/8/2B5 w - - 0 1</p>
+        </div>
+
+        <!-- 2.08 -->
+        <div class="test-card">
+          <div class="test-card-head">
+            <span class="test-number">2.08</span>
+            <span class="side-to-move black">Black to move</span>
+          </div>
+          <p class="test-question">Is 1...Bc4 a good or a bad move? Or is it irrelevant?</p>
+          <div class="test-diagram">
+            <div class="board" data-fen="8/5k2/8/1b2PP2/4K3/8/3B4/8 b - - 0 1"></div>
+          </div>
+          <p class="test-fen">FEN: 8/5k2/8/1b2PP2/4K3/8/3B4/8 b - - 0 1</p>
+        </div>
+
+        <!-- 2.09 -->
+        <div class="test-card">
+          <div class="test-card-head">
+            <span class="test-number">2.09</span>
+            <span class="side-to-move white">White to move</span>
+          </div>
+          <p class="test-question">Is it a draw?</p>
+          <div class="test-diagram">
+            <div class="board" data-fen="8/1Pbb4/8/6k1/4K3/5P2/8/8 w - - 0 1"></div>
+          </div>
+          <p class="test-fen">FEN: 8/1Pbb4/8/6k1/4K3/5P2/8/8 w - - 0 1</p>
+        </div>
+
+        <!-- 2.10 -->
+        <div class="test-card">
+          <div class="test-card-head">
+            <span class="test-number">2.10</span>
+            <span class="side-to-move black">Black to move</span>
+          </div>
+          <p class="test-question">Is it a draw?</p>
+          <div class="test-diagram">
+            <div class="board" data-fen="8/6k1/p5p1/8/1B3K2/3b4/8/8 b - - 0 1"></div>
+          </div>
+          <p class="test-fen">FEN: 8/6k1/p5p1/8/1B3K2/3b4/8/8 b - - 0 1</p>
+        </div>
+
+        <!-- 2.11 -->
+        <div class="test-card">
+          <div class="test-card-head">
+            <span class="test-number">2.11</span>
+            <span class="side-to-move white">White to move</span>
+          </div>
+          <p class="test-question">What should you play and with which result?</p>
+          <div class="test-diagram">
+            <div class="board" data-fen="2R5/4K3/8/8/3pk3/8/8/8 w - - 0 1"></div>
+          </div>
+          <p class="test-fen">FEN: 2R5/4K3/8/8/3pk3/8/8/8 w - - 0 1</p>
+        </div>
+
+        <!-- 2.12 -->
+        <div class="test-card">
+          <div class="test-card-head">
+            <span class="test-number">2.12</span>
+            <span class="side-to-move black">Black to move</span>
+          </div>
+          <p class="test-question">Is it a draw?</p>
+          <div class="test-diagram">
+            <div class="board" data-fen="R7/8/8/8/8/pk1K4/8/8 b - - 0 1"></div>
+          </div>
+          <p class="test-fen">FEN: R7/8/8/8/8/pk1K4/8/8 b - - 0 1</p>
+        </div>
+
+        <!-- 2.13 -->
+        <div class="test-card">
+          <div class="test-card-head">
+            <span class="test-number">2.13</span>
+            <span class="side-to-move white">White to move</span>
+          </div>
+          <p class="test-question">Can he win?</p>
+          <div class="test-diagram">
+            <div class="board" data-fen="R7/4k3/P7/8/8/6K1/r7/8 w - - 0 1"></div>
+          </div>
+          <p class="test-fen">FEN: R7/4k3/P7/8/8/6K1/r7/8 w - - 0 1</p>
+        </div>
+
+        <!-- 2.14 -->
+        <div class="test-card">
+          <div class="test-card-head">
+            <span class="test-number">2.14</span>
+            <span class="side-to-move white">White to move</span>
+          </div>
+          <p class="test-question">Is it worth playing on?</p>
+          <div class="test-diagram">
+            <div class="board" data-fen="8/3K4/8/8/3p4/1Pk5/8/8 w - - 0 1"></div>
+          </div>
+          <p class="test-fen">FEN: 8/3K4/8/8/3p4/1Pk5/8/8 w - - 0 1</p>
+        </div>
+
+        <!-- 2.15 -->
+        <div class="test-card">
+          <div class="test-card-head">
+            <span class="test-number">2.15</span>
+            <span class="side-to-move white">White to move</span>
+          </div>
+          <p class="test-question">Can he win?</p>
+          <div class="test-diagram">
+            <div class="board" data-fen="8/3Pk3/8/1K3P2/8/8/8/8 w - - 0 1"></div>
+          </div>
+          <p class="test-fen">FEN: 8/3Pk3/8/1K3P2/8/8/8/8 w - - 0 1</p>
+        </div>
+
+        <!-- 2.16 -->
+        <div class="test-card">
+          <div class="test-card-head">
+            <span class="test-number">2.16</span>
+            <span class="side-to-move white">White to move</span>
+          </div>
+          <p class="test-question">What should he do and with which result?</p>
+          <div class="test-diagram">
+            <div class="board" data-fen="8/8/8/3p4/5k2/3P4/8/2K5 w - - 0 1"></div>
+          </div>
+          <p class="test-fen">FEN: 8/8/8/3p4/5k2/3P4/8/2K5 w - - 0 1</p>
+        </div>
+
+        <!-- 2.17 -->
+        <div class="test-card">
+          <div class="test-card-head">
+            <span class="test-number">2.17</span>
+            <span class="side-to-move white">White to move</span>
+          </div>
+          <p class="test-question">Can he draw?</p>
+          <div class="test-diagram">
+            <div class="board" data-fen="7K/8/8/8/8/2p4N/8/2k5 w - - 0 1"></div>
+          </div>
+          <p class="test-fen">FEN: 7K/8/8/8/8/2p4N/8/2k5 w - - 0 1</p>
+        </div>
+
+        <!-- 2.18 -->
+        <div class="test-card">
+          <div class="test-card-head">
+            <span class="test-number">2.18</span>
+            <span class="side-to-move white">White to move</span>
+          </div>
+          <p class="test-question">Can he win?</p>
+          <div class="test-diagram">
+            <div class="board" data-fen="2k5/8/8/8/6P1/8/8/4K3 w - - 0 1"></div>
+          </div>
+          <p class="test-fen">FEN: 2k5/8/8/8/6P1/8/8/4K3 w - - 0 1</p>
+        </div>
+
+      </div>
+    </section>
+
+    <footer class="lesson-footer">
+      <span class="chapter-name">Basic Test &middot; Positions 2.01 to 2.18</span>
+      <span>Chess Endgame Lessons</span>
+    </footer>
+
+  </div>
+
+  <script src="endgame-lesson.js" defer></script>
+  <script>
+    function toggleTheme() {
+      var html = document.documentElement;
+      var next = html.dataset.theme === "dark" ? "light" : "dark";
+      html.dataset.theme = next;
+      try { window.localStorage.setItem("lesson-theme-v1", next); } catch (e) {}
+      var btn = document.getElementById("themeToggle");
+      if (btn) btn.textContent = next === "dark" ? "Light theme" : "Dark theme";
+    }
+    (function () {
+      try {
+        var t = document.documentElement.dataset.theme || "dark";
+        var btn = document.getElementById("themeToggle");
+        if (btn) btn.textContent = t === "dark" ? "Light theme" : "Dark theme";
+      } catch (e) {}
+    })();
+  </script>
+  <script>
+    /* Floating analysis popup — receives postMessage from embedded app iframes. */
+    (function () {
+      var popup = document.getElementById("analysisPanel");
+      var titleEl = document.getElementById("analysisPopupTitle");
+      var evalEl = document.getElementById("analysisPopupEval");
+      var bodyEl = document.getElementById("analysisPopupBody");
+      var toggleBtn = document.getElementById("analysisPopupToggle");
+      var closeBtn = document.getElementById("analysisPopupClose");
+      var handle = popup.querySelector("[data-drag-handle]");
+      var minimized = false;
+      var currentSource = null;
+      var userClosed = false;
+
+      function setMinimized(v) {
+        minimized = v;
+        popup.classList.toggle("is-minimized", v);
+        toggleBtn.setAttribute("aria-label", v ? "Expand" : "Minimize");
+        toggleBtn.setAttribute("title", v ? "Expand" : "Minimize");
+        toggleBtn.querySelector("svg").innerHTML = v
+          ? '<path d="M6 9l6 6 6-6"></path>'
+          : '<path d="M6 15l6-6 6 6"></path>';
+      }
+      toggleBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        setMinimized(!minimized);
+      });
+      closeBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        userClosed = true;
+        popup.hidden = true;
+      });
+
+      var dragging = false, sx = 0, sy = 0, spx = 0, spy = 0;
+      handle.addEventListener("mousedown", function (e) {
+        if (e.button !== 0) { return; }
+        if (e.target.closest(".analysis-popup-toggle")) { return; }
+        if (e.target.closest(".analysis-popup-close")) { return; }
+        var r = popup.getBoundingClientRect();
+        spx = r.left; spy = r.top;
+        sx = e.clientX; sy = e.clientY;
+        dragging = true;
+        popup.classList.add("is-dragging");
+        document.body.style.userSelect = "none";
+        e.preventDefault();
+      });
+      document.addEventListener("mousemove", function (e) {
+        if (!dragging) { return; }
+        var dx = e.clientX - sx, dy = e.clientY - sy;
+        var m = 4;
+        var pw = popup.offsetWidth, ph = popup.offsetHeight;
+        var nx = Math.max(m, Math.min(window.innerWidth - pw - m, spx + dx));
+        var ny = Math.max(m, Math.min(window.innerHeight - ph - m, spy + dy));
+        popup.style.left = nx + "px";
+        popup.style.top = ny + "px";
+        popup.style.right = "auto";
+        popup.style.bottom = "auto";
+      });
+      document.addEventListener("mouseup", function () {
+        if (!dragging) { return; }
+        dragging = false;
+        popup.classList.remove("is-dragging");
+        document.body.style.userSelect = "";
+      });
+
+      window.addEventListener("message", function (event) {
+        var d = event.data;
+        if (!d || d.type !== "analysisUpdate") { return; }
+        if (!d.visible) {
+          if (currentSource === event.source || currentSource === null) {
+            popup.hidden = true;
+            currentSource = null;
+          }
+          return;
+        }
+        if (userClosed && currentSource === event.source) {
+          return;
+        }
+        userClosed = false;
+        currentSource = event.source;
+        popup.hidden = false;
+        if (d.title) { titleEl.textContent = d.title; }
+        evalEl.textContent = d.evalLabel || "";
+        if (!minimized) {
+          var summaryHtml = d.summary
+            ? '<p class="analysis-popup-summary">' + escapeHtml_(d.summary) + "</p>"
+            : "";
+          bodyEl.innerHTML = summaryHtml + (d.pvHtml || "");
+        }
+      });
+
+      function escapeHtml_(s) {
+        return String(s).replace(/[&<>"']/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

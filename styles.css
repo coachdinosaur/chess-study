@@ -3306,6 +3306,29 @@ code {
   display: none;
 }
 
+/* ---------- Embed mode (app loaded inside a lesson page iframe) ---------- */
+body.is-embed {
+  background: transparent;
+}
+body.is-embed .focus-mode-button[data-action="exit-focus-mode"] {
+  display: none;
+}
+body.is-embed .focus-mode-brand,
+body.is-embed ~ .focus-mode-brand,
+.is-embed .focus-mode-brand {
+  display: none !important;
+}
+body.is-embed .focus-mode-controls {
+  top: 0.4rem;
+  right: 0.4rem;
+}
+
+/* Embed mode: no in-iframe PV/tablebase rendering — it goes to the parent page popup */
+body.is-embed .mobile-engine-lines-slot,
+body.is-embed .notation-pv {
+  display: none !important;
+}
+
 @media (max-width: 1100px) {
   html,
   body {

@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-piece-base="../assets/pieces/mpchess/" data-app-path="../index.html" data-orientation="white">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Endings 6-8: Rook vs Bishop, Rook vs Knight & Rook-Pawn Rule</title>
+  <meta name="description" content="Chess endgame lesson: Rook-pawn drawing rule, Rook vs Bishop wrong/right corner, and Rook vs Knight defensive principles.">
+  <script>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("lesson-theme-v1");
+        if (stored === "light" || stored === "dark") {
+          document.documentElement.dataset.theme = stored;
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="endgame-lesson.css">
+  <style>
+    @page {
+      @bottom-right {
+        content: "Endings 6-8 · p. " counter(page);
+        font-family: "Inter", sans-serif;
+        font-size: 9pt;
+        color: #6b7280;
+      }
+      @bottom-left {
+        content: "Rook vs Bishop, Rook vs Knight & Rook-Pawn Rule";
+        font-family: "Inter", sans-serif;
+        font-size: 9pt;
+        color: #6b7280;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="analysisPanel" class="analysis-popup" hidden>
+    <div class="analysis-popup-head" data-drag-handle title="Drag to move">
+      <span class="analysis-popup-grip" aria-hidden="true">⠿</span>
+      <span class="analysis-popup-title" id="analysisPopupTitle">Engine</span>
+      <span class="analysis-popup-eval" id="analysisPopupEval"></span>
+      <button type="button" class="analysis-popup-toggle" id="analysisPopupToggle" aria-label="Minimize" title="Minimize">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 15l6-6 6 6"></path></svg>
+      </button>
+      <button type="button" class="analysis-popup-close" id="analysisPopupClose" aria-label="Close" title="Close">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg>
+      </button>
+    </div>
+    <div class="analysis-popup-body" id="analysisPopupBody"></div>
+  </div>
+
+  <div class="lesson-page">
+
+    <div class="toolbar no-print">
+      <button type="button" id="themeToggle" onclick="toggleTheme()">Light theme</button>
+      <button type="button" onclick="window.print()">Print / Save as PDF</button>
+    </div>
+
+    <!-- ============================ Hero ============================ -->
+    <header class="hero">
+      <p class="eyebrow">Endings 6, 7 & 8</p>
+      <h1 class="chapter-title">Rook vs Bishop, Rook vs Knight & Rook-Pawn Rule</h1>
+      <p class="chapter-subtitle">
+        The rook-pawn drawing rule completed, then the wrong and right
+        corners in Rook vs Bishop, and the fundamental defensive principle
+        in Rook vs Knight: keep the king and knight together.
+      </p>
+    </header>
+
+    <!-- ======================== Learning goals ===================== -->
+    <ul class="goals">
+      <li>Know that occupying the bishop-file squares beside the promotion corner also draws against a rook pawn.</li>
+      <li>Understand the wrong corner concept in Rook vs Bishop.</li>
+      <li>Recognise the right corner as a theoretical draw for the bishop.</li>
+      <li>Follow the rook's plan of progressively restricting the bishop.</li>
+      <li>Know that in Rook vs Knight the king and knight must stay together.</li>
+      <li>Spot when a separated knight becomes the target.</li>
+    </ul>
+
+    <!-- ============ Continuation: Rook-Pawn Drawing Rule =========== -->
+    <section class="lesson" id="continuation-rook-pawn">
+      <div class="lesson-head">
+        <span class="lesson-number">Continuation</span>
+        <h2 class="lesson-title">Rook-Pawn Drawing Rule</h2>
+      </div>
+      <p class="lesson-intro">
+        We continue from Position 1.16. Black's only chance is to prevent
+        the white king from getting in front of the pawn.
+      </p>
+
+      <div class="position">
+        <p class="position-label">Position 1.16 &middot; Rook-pawn drawing rule &middot; White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="8/8/8/8/p7/1k6/3K4/8 w - - 0 1" data-mark="c1 c2"></div>
+            <p class="caption">FEN: 8/8/8/8/p7/1k6/3K4/8 w - - 0 1 &middot; Key squares: c1, c2</p>
+          </div>
+          <div class="position-note">
+            <p>
+              The marked squares <strong>c1</strong> and <strong>c2</strong>
+              are the bishop-file squares next to the promotion corner
+              <strong>a1</strong>. White can hold the draw by occupying one
+              of them.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <p class="position-label">Main line &mdash; Black pushes the pawn</p>
+      <div class="moveline">
+        <span class="num">1...</span>a4
+        <span class="num">2.</span>Kb1 a3
+        <span class="num">3.</span>Ka1
+      </div>
+      <p class="position-note">
+        This reaches the well-known drawn rook-pawn position.
+      </p>
+
+      <p class="position-label">Main continuation &mdash; White holds</p>
+      <div class="moveline">
+        <span class="num">2.</span><span class="good">Kc2!</span>
+      </div>
+      <p class="position-note">
+        White prevents the black king from escaping the corner.
+      </p>
+
+      <p class="position-label">Continuation</p>
+      <div class="moveline">
+        <span class="num">2...</span>a4
+        <span class="num">3.</span>Kc1 a3
+        <span class="num">4.</span>Kc2 Ka1
+        <span class="num">5.</span>Kc1 <span class="result">=</span>
+      </div>
+      <p class="position-note">
+        Nothing can be done. The black king cannot escape, and pushing the
+        pawn immediately stalemates the king.
+      </p>
+
+      <p class="position-label">Variation</p>
+      <div class="moveline">
+        <span class="num">2...</span>Ka3
+        <span class="num">3.</span>Kb1 <span class="result">=</span>
+      </div>
+
+      <p class="position-note">
+        Even several doubled rook pawns would not change the result.
+      </p>
+
+      <aside class="rule-box">
+        <h3>Key Idea</h3>
+        <p>
+          Against a rook pawn, the defender draws not only by standing
+          directly in front of the pawn, but also by occupying one of the
+          two bishop-file squares next to the promotion corner (in this
+          example, <strong>c1</strong> and <strong>c2</strong>).
+        </p>
+      </aside>
+    </section>
+
+    <!-- ======================= Ending 6 Intro ===================== -->
+    <section class="lesson" id="ending-6-intro">
+      <div class="lesson-head">
+        <span class="lesson-number">Ending 6</span>
+        <h2 class="lesson-title">Rook vs Bishop: The Wrong Corner</h2>
+      </div>
+      <p class="lesson-intro">
+        Rook vs Bishop is normally drawn, but becomes dangerous when the
+        defending king is trapped in the wrong corner.
+      </p>
+
+      <aside class="rule-box">
+        <h3>Definition</h3>
+        <p>
+          The <strong>wrong corner</strong> is the corner having the same
+          colour as the bishop's squares. When the defending king is
+          trapped there, the rook can force the bishop off its safe squares
+          and deliver mate.
+        </p>
+      </aside>
+    </section>
+
+    <!-- ======================= Lesson: Wrong Corner =============== -->
+    <section class="lesson" id="lesson-wrong-corner">
+      <div class="lesson-head">
+        <span class="lesson-number">Lesson</span>
+        <h2 class="lesson-title">The Wrong Corner</h2>
+      </div>
+      <p class="lesson-intro">
+        Black is trapped in the wrong corner. White wins by forcing the
+        bishop out.
+      </p>
+
+      <div class="position">
+        <p class="position-label">Position 1.17 &middot; Rook vs Bishop: The Wrong Corner &middot; White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="7k/5R2/6K1/8/8/8/8/6b1 w - - 0 1"></div>
+            <p class="caption">FEN: 7k/5R2/6K1/8/8/8/8/6b1 w - - 0 1</p>
+          </div>
+          <div class="position-note">
+            <p>
+              The black king on <strong>h8</strong> is trapped in the
+              wrong corner &mdash; the same colour as the bishop on
+              <strong>g1</strong>. White wins by forcing the bishop out of
+              its safe squares behind the white king, then gaining the
+              decisive tempo needed for mate.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <p class="position-label">Winning move</p>
+      <div class="moveline">
+        <span class="num">1.</span><span class="good">Rf1!</span>
+      </div>
+
+      <aside class="rule-box">
+        <h3>Mistake: 1.Rb7??</h3>
+        <div class="moveline" style="margin: 8px 0 0; background: transparent; border: 0; padding: 0;">
+          <span class="num">1.</span><span class="bad">Rb7??</span> Bf8
+        </div>
+        <p style="margin-top: 8px;">
+          After <strong>1...Bf8</strong> the king can no longer be forced
+          back into the wrong corner. The drawing resource is gone for
+          White.
+        </p>
+      </aside>
+
+      <p class="position-label">Main line</p>
+      <div class="moveline">
+        <span class="num">1...</span>Bh2
+        <span class="num">2.</span>Rh1 Bg3
+        <span class="num">3.</span>Rg1 Bh2
+        <span class="num">4.</span><span class="good">Rg2</span>
+      </div>
+      <p class="position-note">
+        The rook gradually removes the bishop's safe squares.
+      </p>
+
+      <p class="position-label">Continuation</p>
+      <div class="moveline">
+        <span class="num">4...</span>Bd6
+        <span class="num">5.</span>Rd2 Be7
+        <span class="num">6.</span><span class="good">Rc2</span>
+      </div>
+
+      <aside class="rule-box">
+        <h3>Warning</h3>
+        <div class="moveline" style="margin: 8px 0 0; background: transparent; border: 0; padding: 0;">
+          <span class="num">6.</span><span class="bad">Rd7?</span> Bf8 <span class="result">draws</span>
+        </div>
+      </aside>
+
+      <p class="position-label">Finish</p>
+      <div class="moveline">
+        <span class="num">6...</span>Bf8
+        <span class="num">7.</span>Rc8 <span class="result">#</span>
+      </div>
+
+      <p class="position-label">Variation</p>
+      <div class="moveline">
+        <span class="num">1...</span>Bd4
+        <span class="num">2.</span>Rd1 Bb6
+        <span class="num">3.</span>Rb1 Bc7
+        <span class="num">4.</span><span class="good">Rc1</span>
+      </div>
+      <p class="position-note">
+        Black can no longer prevent the mating threat. The rook has
+        restricted the bishop to the fatal diagonal.
+      </p>
+
+      <aside class="rule-box">
+        <h3>Key Idea</h3>
+        <p>
+          The rook wins by progressively restricting the bishop until it
+          is forced onto vulnerable squares.
+        </p>
+      </aside>
+    </section>
+
+    <!-- ======================= Ending 7 Intro ===================== -->
+    <section class="lesson" id="ending-7-intro">
+      <div class="lesson-head">
+        <span class="lesson-number">Ending 7</span>
+        <h2 class="lesson-title">Rook vs Bishop: The Right Corner</h2>
+      </div>
+      <p class="lesson-intro">
+        The opposite corner completely changes the evaluation. The bishop
+        has enough room to interpose, making the ending a theoretical draw.
+      </p>
+    </section>
+
+    <!-- ======================= Lesson: Right Corner =============== -->
+    <section class="lesson" id="lesson-right-corner">
+      <div class="lesson-head">
+        <span class="lesson-number">Lesson</span>
+        <h2 class="lesson-title">The Right Corner</h2>
+      </div>
+      <p class="lesson-intro">
+        The bishop can interpose on g8, giving Black drawing chances.
+      </p>
+
+      <div class="position">
+        <p class="position-label">Position 1.18 &middot; Rook vs Bishop: The Right Corner &middot; White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="7k/R7/7K/8/8/1b6/8/8 w - - 0 1"></div>
+            <p class="caption">FEN: 7k/R7/7K/8/8/1b6/8/8 w - - 0 1</p>
+          </div>
+          <div class="position-note">
+            <p>
+              The black king on <strong>h8</strong> is in the
+              <em>right</em> corner &mdash; the opposite colour to the
+              bishop on <strong>b3</strong>. The bishop can interpose on
+              <strong>g8</strong> along the long diagonal, giving Black
+              drawing chances.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <p class="position-label">Main line</p>
+      <div class="moveline">
+        <span class="num">1.</span>Ra8+ <span class="good">Bg8</span>
+      </div>
+      <p class="position-note">
+        White must eventually release the pressure to avoid stalemate.
+      </p>
+
+      <p class="position-label">Continuation</p>
+      <div class="moveline">
+        <span class="num">2.</span>Ra7 Bb3
+        <span class="num">3.</span>Kg6 Bc4
+        <span class="num">4.</span>Rh7+ Kg8
+        <span class="num">5.</span>Rc7 Bd3+
+        <span class="num">6.</span>Kh6 Be4 <span class="result">=</span>
+      </div>
+
+      <p class="position-label">Variation</p>
+      <div class="moveline">
+        <span class="num">2.</span>Kg5 Kg7
+        <span class="num">3.</span>Ra7+ Kh8
+        <span class="num">4.</span>Kg6 Bc4
+        <span class="num">5.</span>Ra3 Bd5
+        <span class="num">6.</span>Rh3+ Kg8
+        <span class="num">7.</span>Re3 Kh8 <span class="result">=</span>
+      </div>
+
+      <p class="position-label">Another variation</p>
+      <div class="moveline">
+        <span class="num">3.</span>Rh7+ Kg8
+        <span class="num">4.</span>Rb7 Bd5 <span class="result">=</span>
+      </div>
+      <p class="position-note">
+        The bishop always has enough squares available along the long
+        diagonal.
+      </p>
+
+      <aside class="rule-box">
+        <h3>Warning</h3>
+        <div class="moveline" style="margin: 8px 0 0; background: transparent; border: 0; padding: 0;">
+          <span class="num">3...</span><span class="bad">Be6??</span>
+        </div>
+        <p style="margin-top: 8px;">
+          fails because:
+        </p>
+        <div class="moveline" style="margin: 8px 0 0; background: transparent; border: 0; padding: 0;">
+          <span class="num">4.</span>Rh7+ Kg8
+          <span class="num">5.</span><span class="good">Re7</span> <span class="result">wins</span>
+        </div>
+      </aside>
+
+      <aside class="rule-box">
+        <h3>Key Idea</h3>
+        <p>
+          The correct corner gives the bishop enough defensive squares to
+          hold the draw.
+        </p>
+      </aside>
+    </section>
+
+    <!-- ======================= Ending 8 Intro ===================== -->
+    <section class="lesson" id="ending-8-intro">
+      <div class="lesson-head">
+        <span class="lesson-number">Ending 8</span>
+        <h2 class="lesson-title">Rook vs Knight</h2>
+      </div>
+      <p class="lesson-intro">
+        Although Rook vs Knight is generally drawn, the knight must remain
+        close to its king. If separated, the knight may be lost.
+      </p>
+    </section>
+
+    <!-- ======================= Lesson: Knight + King ============== -->
+    <section class="lesson" id="lesson-knight-king-together">
+      <div class="lesson-head">
+        <span class="lesson-number">Lesson</span>
+        <h2 class="lesson-title">Knight and King Together</h2>
+      </div>
+      <p class="lesson-intro">
+        Being driven to the edge is usually not fatal. The real danger
+        comes when the knight becomes separated from its king.
+      </p>
+
+      <div class="position">
+        <p class="position-label">Position 1.19 &middot; Rook vs Knight: king and knight together &middot; White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="8/8/8/8/8/3k4/r7/3NK3 w - - 0 1"></div>
+            <p class="caption">FEN: 8/8/8/8/8/3k4/r7/3NK3 w - - 0 1</p>
+          </div>
+          <div class="position-note">
+            <p>
+              The knight on <strong>e1</strong> and the white king on
+              <strong>f1</strong> are together on the edge. The black
+              rook on <strong>a2</strong> and king on
+              <strong>d3</strong> press for separation. The main danger
+              is the knight being driven away from its king.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <p class="position-label">Main line</p>
+      <div class="moveline">
+        <span class="num">1.</span><span class="good">Nf2+</span> Ke3
+        <span class="num">2.</span><span class="good">Nd1+</span> Kf3
+        <span class="num">3.</span>Nc3 Rc2
+        <span class="num">4.</span><span class="good">Nd1</span>
+      </div>
+      <p class="position-note">
+        The knight returns to the king. This is the only temporary
+        separation before king and knight reunite.
+      </p>
+
+      <p class="position-label">Variation</p>
+      <div class="moveline">
+        <span class="num">3.</span>Kf1 Re2
+        <span class="num">4.</span><span class="good">Nc3</span>
+      </div>
+      <p class="position-note">
+        Again the knight rejoins the king. The defence holds as long as
+        the two pieces stay within reach of each other.
+      </p>
+
+      <aside class="rule-box">
+        <h3>Warning</h3>
+        <div class="moveline" style="margin: 8px 0 0; background: transparent; border: 0; padding: 0;">
+          <span class="num">4.</span><span class="bad">Nd5??</span>
+        </div>
+        <p style="margin-top: 8px;">
+          The knight is separated from the king and becomes the target.
+          The rook can pick it off.
+        </p>
+      </aside>
+
+      <aside class="rule-box">
+        <h3>Practical Rule</h3>
+        <p>
+          Against a rook, the knight should stay close to its king. A
+          separated knight can become the target.
+        </p>
+      </aside>
+    </section>
+
+    <!-- ===================== Final summary checklist =============== -->
+    <section class="checklist">
+      <h2>Chapter Checklist</h2>
+      <ul>
+        <li>Against a rook pawn, occupying the bishop-file squares beside the promotion corner also draws.</li>
+        <li>The wrong corner is losing in Rook vs Bishop.</li>
+        <li>The right corner usually draws because the bishop can interpose.</li>
+        <li>The rook wins by forcing the bishop off its safe squares.</li>
+        <li>In Rook vs Knight, keeping the king and knight together is the fundamental defensive principle.</li>
+        <li>A separated knight becomes the target for the rook.</li>
+      </ul>
+    </section>
+
+    <footer class="lesson-footer">
+      <span class="chapter-name">Endings 6-8 &middot; Rook vs Bishop, Rook vs Knight & Rook-Pawn Rule</span>
+      <span>Chess Endgame Lessons</span>
+    </footer>
+
+  </div>
+
+  <script src="endgame-lesson.js" defer></script>
+  <script>
+    function toggleTheme() {
+      var html = document.documentElement;
+      var next = html.dataset.theme === "dark" ? "light" : "dark";
+      html.dataset.theme = next;
+      try { window.localStorage.setItem("lesson-theme-v1", next); } catch (e) {}
+      var btn = document.getElementById("themeToggle");
+      if (btn) btn.textContent = next === "dark" ? "Light theme" : "Dark theme";
+    }
+    (function () {
+      try {
+        var t = document.documentElement.dataset.theme || "dark";
+        var btn = document.getElementById("themeToggle");
+        if (btn) btn.textContent = t === "dark" ? "Light theme" : "Dark theme";
+      } catch (e) {}
+    })();
+
+    /* Chapter checklist — toggle + persist checked state */
+    (function () {
+      var KEY = "lesson-checklist-v1:ch05";
+      var items = document.querySelectorAll(".checklist li");
+      if (!items.length) { return; }
+      var saved = {};
+      try { saved = JSON.parse(window.localStorage.getItem(KEY) || "{}"); } catch (e) {}
+
+      items.forEach(function (li, i) {
+        if (saved[i]) { li.classList.add("is-checked"); }
+        li.addEventListener("click", function () {
+          li.classList.toggle("is-checked");
+          var state = {};
+          items.forEach(function (el, j) { state[j] = el.classList.contains("is-checked"); });
+          try { window.localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+        });
+      });
+    })();
+  </script>
+  <script>
+    /* Floating analysis popup — receives postMessage from embedded app iframes. */
+    (function () {
+      var popup = document.getElementById("analysisPanel");
+      var titleEl = document.getElementById("analysisPopupTitle");
+      var evalEl = document.getElementById("analysisPopupEval");
+      var bodyEl = document.getElementById("analysisPopupBody");
+      var toggleBtn = document.getElementById("analysisPopupToggle");
+      var closeBtn = document.getElementById("analysisPopupClose");
+      var handle = popup.querySelector("[data-drag-handle]");
+      var minimized = false;
+      var currentSource = null;
+      var userClosed = false;
+
+      function setMinimized(v) {
+        minimized = v;
+        popup.classList.toggle("is-minimized", v);
+        toggleBtn.setAttribute("aria-label", v ? "Expand" : "Minimize");
+        toggleBtn.setAttribute("title", v ? "Expand" : "Minimize");
+        toggleBtn.querySelector("svg").innerHTML = v
+          ? '<path d="M6 9l6 6 6-6"></path>'
+          : '<path d="M6 15l6-6 6 6"></path>';
+      }
+      toggleBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        setMinimized(!minimized);
+      });
+      closeBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        userClosed = true;
+        popup.hidden = true;
+      });
+
+      var dragging = false, sx = 0, sy = 0, spx = 0, spy = 0;
+      handle.addEventListener("mousedown", function (e) {
+        if (e.button !== 0) { return; }
+        if (e.target.closest(".analysis-popup-toggle")) { return; }
+        if (e.target.closest(".analysis-popup-close")) { return; }
+        var r = popup.getBoundingClientRect();
+        spx = r.left; spy = r.top;
+        sx = e.clientX; sy = e.clientY;
+        dragging = true;
+        popup.classList.add("is-dragging");
+        document.body.style.userSelect = "none";
+        e.preventDefault();
+      });
+      document.addEventListener("mousemove", function (e) {
+        if (!dragging) { return; }
+        var dx = e.clientX - sx, dy = e.clientY - sy;
+        var m = 4;
+        var pw = popup.offsetWidth, ph = popup.offsetHeight;
+        var nx = Math.max(m, Math.min(window.innerWidth - pw - m, spx + dx));
+        var ny = Math.max(m, Math.min(window.innerHeight - ph - m, spy + dy));
+        popup.style.left = nx + "px";
+        popup.style.top = ny + "px";
+        popup.style.right = "auto";
+        popup.style.bottom = "auto";
+      });
+      document.addEventListener("mouseup", function () {
+        if (!dragging) { return; }
+        dragging = false;
+        popup.classList.remove("is-dragging");
+        document.body.style.userSelect = "";
+      });
+
+      window.addEventListener("message", function (event) {
+        var d = event.data;
+        if (!d || d.type !== "analysisUpdate") { return; }
+        if (!d.visible) {
+          if (currentSource === event.source || currentSource === null) {
+            popup.hidden = true;
+            currentSource = null;
+          }
+          return;
+        }
+        if (userClosed && currentSource === event.source) {
+          return;
+        }
+        userClosed = false;
+        currentSource = event.source;
+        popup.hidden = false;
+        if (d.title) { titleEl.textContent = d.title; }
+        evalEl.textContent = d.evalLabel || "";
+        if (!minimized) {
+          var summaryHtml = d.summary
+            ? '<p class="analysis-popup-summary">' + escapeHtml_(d.summary) + "</p>"
+            : "";
+          bodyEl.innerHTML = summaryHtml + (d.pvHtml || "");
+        }
+      });
+
+      function escapeHtml_(s) {
+        return String(s).replace(/[&<>"']/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
