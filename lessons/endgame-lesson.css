@@ -114,6 +114,101 @@ body {
   padding: 40px 48px 96px;
 }
 
+/* ---------- Mobile responsive (screen only, print unaffected) ----------- */
+@media (max-width: 760px) {
+  :root {
+    --board-max: min(calc(100vw - 80px), 380px);
+  }
+
+  .lesson-page {
+    padding: 24px 16px 64px;
+  }
+
+  .toolbar {
+    margin: -24px -16px 16px;
+    padding: 8px 12px;
+  }
+  .toolbar button {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+
+  .hero {
+    margin: 4px 0 20px;
+    padding-bottom: 16px;
+  }
+  .eyebrow { font-size: 13px; }
+  .chapter-title { font-size: 30px; }
+  .chapter-subtitle { font-size: 16px; }
+
+  .goals { padding: 12px 16px; }
+  .goals li { font-size: 16px; }
+
+  .lesson { margin-bottom: 28px; }
+  .lesson-head { flex-wrap: wrap; gap: 8px; }
+  .lesson-title { font-size: 24px; }
+  .lesson-intro { font-size: 17px; }
+
+  /* Stack board above text on mobile */
+  .position-body {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    justify-items: center;
+  }
+  .position-note {
+    font-size: 17px;
+    max-width: none !important;
+    width: 100%;
+  }
+  .diagram { width: 100%; max-width: var(--board-max); }
+  .diagram .board { width: 100%; height: auto; aspect-ratio: 1 / 1; }
+
+  .moveline { font-size: 16px; padding: 12px 14px; }
+
+  .rule-box, .recap { padding: 14px 16px; }
+  .rule-box h3, .recap h3 { font-size: 14px; }
+  .rule-box p, .recap li, .recap p { font-size: 16px; }
+  .note-accent, .note-soft { font-size: 15px; }
+
+  .checklist h2 { font-size: 24px; }
+  .checklist li { font-size: 17px; }
+
+  /* Test cards: single column, smaller boards */
+  .test-grid {
+    grid-template-columns: 1fr;
+  }
+  .test-card { padding: 14px; }
+  .test-diagram .board {
+    width: min(calc(100vw - 64px), 340px);
+    height: min(calc(100vw - 64px), 340px);
+  }
+  .fen-missing {
+    width: min(calc(100vw - 64px), 340px);
+    height: min(calc(100vw - 64px), 340px);
+  }
+
+  /* Lesson index: single column */
+  .lesson-index {
+    grid-template-columns: 1fr;
+  }
+  .lesson-index-title { font-size: 17px; }
+
+  .lesson-footer { font-size: 12px; flex-direction: column; gap: 4px; }
+}
+
+@media (max-width: 420px) {
+  :root {
+    --board-max: min(calc(100vw - 56px), 320px);
+  }
+  .lesson-page { padding: 20px 12px 56px; }
+  .chapter-title { font-size: 26px; }
+  .lesson-title { font-size: 21px; }
+  .test-diagram .board {
+    width: min(calc(100vw - 48px), 280px);
+    height: min(calc(100vw - 48px), 280px);
+  }
+}
+
 /* ---------- Top toolbar (screen only) ------------------------------------ */
 .toolbar {
   position: sticky;
@@ -979,7 +1074,7 @@ body {
   .lesson-number { background: #1f4e79 !important; color: #fff !important; }
 
   .position { break-inside: avoid; page-break-inside: avoid; }
-  .position-body { grid-template-columns: var(--board-max) 1fr; gap: 18px; }
+  .position-body { grid-template-columns: var(--board-max) 1fr !important; gap: 18px; }
   .position-note { color: #1f2430 !important; }
 
   .diagram, .board { break-inside: avoid; page-break-inside: avoid; }
@@ -989,6 +1084,8 @@ body {
   }
   .board-screen, .board-iframe { display: none !important; }
   .board-static { display: block !important; }
+  .board { width: var(--board-max) !important; height: var(--board-max) !important; }
+  .diagram .board { width: var(--board-max) !important; height: var(--board-max) !important; aspect-ratio: auto !important; }
   .board-piece { filter: drop-shadow(0 0.4px 0.4px rgba(0,0,0,0.35)); }
   .board-square.is-marked.light { background: rgba(31, 78, 121, 0.28) !important; }
   .board-square.is-marked.dark  { background: rgba(31, 78, 121, 0.40) !important; }
