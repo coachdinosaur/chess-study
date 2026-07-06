@@ -915,19 +915,6 @@ body {
   padding: 20px;
   line-height: 1.5;
 }
-@media (max-width: 760px) {
-  .test-grid {
-    grid-template-columns: 1fr;
-  }
-  .test-diagram .board {
-    width: 400px;
-    height: 400px;
-  }
-  .fen-missing {
-    width: 400px;
-    height: 400px;
-  }
-}
 
 /* ---------- Lesson index (lessons/ directory landing page) -------------- */
 .lesson-index {
