@@ -19,6 +19,17 @@ chess-study/
 ├── puzzle-api.mjs              Endgame puzzle generation (Stockfish worker)
 ├── guided-review.mjs           CSV/XLSX lesson-row review controller
 ├── text-normalization.mjs      Unicode repair and punctuation normalization
+├── lessons/
+│   ├── index.html              Lesson index / landing page (static HTML)
+│   ├── endgame-lesson.css      Shared lesson page styles (~1,116 lines)
+│   ├── endgame-lesson.js       Vanilla FEN→board renderer for lesson pages
+│   ├── 01-king-pawn-rule-of-square.html
+│   ├── 02-pawn-on-the-6th-rank.html
+│   ├── 03-knights-pawn-and-key-squares.html
+│   ├── 04-distant-opposition-rooks-pawn-imprisoning.html
+│   ├── 05-rook-pawn-rule-rook-vs-bishop-knight.html
+│   ├── 06-separated-knight-corner-trap-kamsky-bacrot.html
+│   └── 07-basic-test-positions.html
 ├── local_server.py             Python HTTP server with COOP/COEP headers
 ├── scanner_server.py           Chessboard image recognition HTTP server
 ├── scanner_predict.py          Image-to-FEN prediction logic
@@ -71,6 +82,19 @@ index.html
 | `guided-review.mjs` | CSV/XLSX row parsing, field alias normalization (title, fen, difficulty, goalType, lessonText, mode, etc.), review progress persistence and restoration |
 | `text-normalization.mjs` | Multi-pass Unicode repair (mojibake, smart quotes, dashes, ellipsis) and whitespace normalization |
 | `chess.js` (vendor) | FEN parsing/validation, move execution, check/checkmate/stalemate detection, PGN parsing (Peggy-generated parser), board state queries |
+| `lessons/` | Standalone endgame lesson pages. Each chapter HTML loads `endgame-lesson.css` and `endgame-lesson.js` for static board rendering. An iframe on each page embeds the interactive SPA (`app.js`) at the bottom for hands-on practice. No framework, no build step. |
+
+### Lesson Pages
+
+The `lessons/` directory contains 7 chapter HTML files plus a landing index.
+Each chapter page:
+1. Renders static chess diagrams using `endgame-lesson.js` (a lightweight
+   vanilla-JS FEN→board renderer that mirrors the SPA's board markup).
+2. Embeds the full interactive app via an iframe pointing at `index.html` with
+   `?embed=1`, enabling the reader to explore positions live.
+3. Shares `endgame-lesson.css` for layout, typography, and print/PDF output
+   styles (the print stylesheet in that file is designed for
+   [Paged.js](https://pagedjs.org/) paginated export).
 
 ---
 
@@ -162,6 +186,43 @@ Piece images are SVG files from `assets/pieces/mpchess/`. The annotation SVG
 overlay (`#boardAnnotationOverlay`) sits on top of the board grid and renders
 arrows as `<line>` + `<polygon>` elements. Square-level annotations (paint,
 circle, star) are rendered as HTML inside the square div.
+
+### Responsive Board Sizing
+
+`syncBoardSize()` (`app.js:6974`) computes `--board-size` (a pixel CSS custom
+property) so the board-square grid, eval bar, turn marker, captured-piece rows,
+and frame all scale proportionally.
+
+**Desktop / tablet landscape:** The board fits within both the available column
+width (workspace minus the control pane) and the viewport height (minus captured
+rows, padding, and gaps).  Iterative refinement balances the board size against
+the captured-row heights that depend on it.  The result is capped at 42 rem
+(56 rem in Focus mode).
+
+**Mobile portrait** (`(max-width: 760px) and (orientation: portrait)`):
+The board spans nearly the full viewport width.  The sizing accounts for the
+eval-bar sidebar (eval rail + turn-marker badge + gap) so that the board +
+sidebar fits without horizontal overflow:
+
+```javascript
+// app.js — syncBoardSize() mobile portrait path
+const evalRailWidth = cssLengthToPx(columnStyles.getPropertyValue('--eval-rail-track-width'), …);
+const turnSize     = cssLengthToPx(columnStyles.getPropertyValue('--turn-marker-size'), …);
+const turnGap      = cssLengthToPx(columnStyles.getPropertyValue('--turn-marker-gap'), …);
+const sideOffset   = evalRailWidth + turnSize + turnGap;
+const boardSize    = Math.floor(Math.max(0, vw - sideOffset * 2 - framePadding * 2 - 2));
+```
+
+The `sideOffset * 2` subtraction leaves equal gaps on the left (where the
+sidebar sits) and the right (visual balance), centering the board.
+
+**Mobile CSS** (`styles.css` media query) flattens the outer board enclosure:
+- `.board-pane` uses `margin-inline: -0.55rem` to cancel page-shell padding
+- `.board-column` sets `max-width: none; width: 100%`
+- `.board-frame` drops its border, padding, background, and shadow
+- `.captured-row` drops border, shadow, background; uses `var(--board-size)` width
+- Eval rail, turn marker, board coordinates, and captured-cell sizing are all
+  reduced for the smaller screen
 
 ---
 

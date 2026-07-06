@@ -36,8 +36,36 @@ For normal use, you do not need to install anything or run a local server.
 - **Guided Review** of CSV/XLSX lesson rows with engine and tablebase context
 - **Opening book** identification (ECO code and opening name) from TSV database
 - keyboard navigation of the move tree (Arrow keys), Escape to close modals
+- seven printable endgame lesson chapters with static diagrams and interactive board embeds (`lessons/`)
 
 ## Recent Improvements
+
+### Endgame Lesson Pages
+
+Seven printable endgame lesson chapters covering king-and-pawn, rook endgames,
+and separated-knight-corner trap positions, with interactive board embeds:
+
+- **[Lesson Index](lessons/index.html)** — landing page with links to all chapters
+- Static chess diagrams rendered by `endgame-lesson.js` (a lightweight FEN→board renderer)
+- Each page embeds the full interactive SPA via an iframe for live practice
+- Print/PDF export styled with [Paged.js](https://pagedjs.org/)-compatible CSS
+
+### Mobile Layout Optimizations
+
+The mobile portrait layout was reworked to maximize usable board width on small
+screens (360–430 px viewport):
+
+- The outer board enclosure (`.board-frame` border, padding, background, shadow)
+  is removed so the chessboard uses nearly the full viewport width.
+- The eval bar and turn-side-marker badge are reduced proportionally and the
+  board size is calculated to account for their left-side offset, ensuring the
+  entire assembly fits without horizontal scroll.
+- Board coordinates (ranks 1–8, files a–h) are reduced to 0.46 rem.
+- Captured-piece icons use smaller cell sizing (min 0.5 rem, divisor 24).
+- All supporting elements (eval bar, turn marker, captured pieces, coordinates)
+  remain visible and balanced alongside the maximized board.
+
+### Earlier Improvements
 
 - added Lichess tablebase analysis for legal up-to-7-piece endgames, including pawns, with no backend or API key required
 - tablebase results now replace Stockfish automatically for eligible positions and fall back to Stockfish if the lookup is unavailable, rate-limited, offline, or out of scope

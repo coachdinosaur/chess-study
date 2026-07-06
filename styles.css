@@ -3534,15 +3534,23 @@ body.is-embed .loading-overlay {
     order: 1;
     position: relative;
     z-index: 1;
+    margin-inline: -0.55rem;
+    width: auto;
   }
 
   .board-column {
     --board-frame-padding: 0;
-    --eval-rail-track-width: 0.4rem;
-    --turn-marker-size: 0.5rem;
-    --turn-marker-gap: 0.2rem;
-    --turn-marker-offset: 0.26rem;
-    max-width: calc(100vw - 1.1rem);
+    --eval-rail-track-width: 0.3rem;
+    --turn-marker-size: 0.38rem;
+    --turn-marker-gap: 0.12rem;
+    --turn-marker-offset: 0.2rem;
+    --captured-cell-min: 0.5rem;
+    --captured-cell-divisor: 24;
+    --captured-cell-max: 0.65rem;
+    --captured-row-extra-height: 0.2rem;
+    --captured-count-extra-width: 0.5rem;
+    max-width: none;
+    width: 100%;
   }
 
   .board-frame {
@@ -3559,7 +3567,7 @@ body.is-embed .loading-overlay {
     box-shadow: none;
     background: transparent;
     width: var(--board-size);
-    padding: 0.16rem 0;
+    padding: 0.1rem 0;
     margin: 0 auto;
   }
 
@@ -3663,17 +3671,18 @@ body.is-embed .loading-overlay {
 
   .coord-rank,
   .coord-file {
-    font-size: 0.58rem;
+    font-size: 0.46rem;
+    font-weight: 700;
   }
 
   .coord-rank {
-    top: clamp(0.12rem, 0.4vw, 0.18rem);
-    left: clamp(0.12rem, 0.4vw, 0.18rem);
+    top: clamp(0.08rem, 0.3vw, 0.12rem);
+    left: clamp(0.08rem, 0.3vw, 0.12rem);
   }
 
   .coord-file {
-    right: clamp(0.12rem, 0.4vw, 0.18rem);
-    bottom: clamp(0.08rem, 0.3vw, 0.14rem);
+    right: clamp(0.08rem, 0.3vw, 0.12rem);
+    bottom: clamp(0.05rem, 0.2vw, 0.08rem);
   }
 
   .eval-bar-wrap {

@@ -7017,8 +7017,12 @@ function syncBoardSize() {
   const columnStyles = window.getComputedStyle(dom.boardColumn);
   const framePadding = cssLengthToPx(columnStyles.getPropertyValue('--board-frame-padding'), remToPx(0.5));
   if (isMobilePortrait) {
-    const pageWidth = Math.max(0, currentViewportWidth() - elementPaddingInsetPx(dom.pageShell, 'x'));
-    const mobileBoardSize = Math.floor(Math.max(0, pageWidth - (framePadding * 2) - 2));
+    const vw = currentViewportWidth();
+    const evalRailWidth = cssLengthToPx(columnStyles.getPropertyValue('--eval-rail-track-width'), remToPx(0.8));
+    const turnSize = cssLengthToPx(columnStyles.getPropertyValue('--turn-marker-size'), remToPx(1.0));
+    const turnGap = cssLengthToPx(columnStyles.getPropertyValue('--turn-marker-gap'), remToPx(0.5));
+    const sideOffset = evalRailWidth + turnSize + turnGap;
+    const mobileBoardSize = Math.floor(Math.max(0, vw - sideOffset * 2 - (framePadding * 2) - 2));
     if (mobileBoardSize > 0) {
       dom.boardColumn.style.setProperty('--board-size', `${mobileBoardSize}px`);
       dom.rootElement.style.setProperty('--board-side-gap', '0px');
