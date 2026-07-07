@@ -3515,6 +3515,10 @@ body.is-embed .loading-overlay {
 }
 
 @media (max-width: 760px) and (orientation: portrait) {
+  .workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .control-pane,
   .control-pane-scroll {
     display: contents;
