@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
+  <link rel="apple-touch-icon" href="../assets/pieces/app_icon.png">
+  <title>The Chessboard - Pawn Level</title>
+  <meta name="description" content="Lesson 2: 64 squares, alternating colors, and the rule: white square on the right.">
+  <script>
+    (function () {
+      try {
+        var s = window.localStorage.getItem("lesson-theme-v1");
+        if (s === "light" || s === "dark") document.documentElement.dataset.theme = s;
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="endgame-lesson.css">
+  <style>
+    .board-demo{display:grid;grid-template-columns:repeat(8,1fr);width:100%;max-width:400px;margin:20px auto;border:2px solid var(--ink);aspect-ratio:1/1}
+    .board-demo .s{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:clamp(14px,3vw,20px)}
+    .board-demo .s.l{background:var(--board-light);color:#6f6a52}
+    .board-demo .s.d{background:var(--board-dark);color:#f4eed7}
+    .corner-highlight{box-shadow:inset 0 0 0 3px var(--accent)}
+    .board-labels{display:grid;grid-template-columns:repeat(8,1fr);width:100%;max-width:400px;margin:0 auto}
+    .board-labels span{text-align:center;font-size:12px;font-weight:700;color:var(--accent);padding:4px 0}
+    .hero-image{width:100%;max-width:800px;margin:0 auto 20px;display:block;border-radius:10px;border:2px solid var(--hairline)}
+    .lesson-image{width:100%;max-width:720px;margin:20px auto;display:block;border-radius:8px;border:1px solid var(--hairline)}
+    .image-caption{text-align:center;font-size:13px;color:var(--ink-faint);margin:6px 0 20px;font-style:italic}
+    .chessboard-divider{height:12px;margin:28px 0;background:repeating-linear-gradient(90deg,var(--board-light) 0px,var(--board-light) 15px,var(--board-dark) 15px,var(--board-dark) 30px);border-radius:3px;opacity:0.5}
+    .rule-box p{margin:6px 0}
+  </style>
+</head>
+<body>
+  <div class="lesson-page">
+
+    <div class="toolbar no-print">
+      <a class="toolbar-button" href="pawn-index.html">&larr; Table of Contents</a>
+      <button type="button" id="themeToggle" onclick="toggleTheme()">Light theme</button>
+    </div>
+
+    <header class="hero">
+      <p class="eyebrow">Pawn Level &middot; Lesson 2</p>
+      <h1 class="chapter-title">The Chessboard</h1>
+      <p class="chapter-subtitle">64 squares, alternating colors, and the most important rule for setting up.</p>
+    </header>
+
+    <section class="goals">
+      <h2>In this lesson you will learn:</h2>
+      <ul>
+        <li>How many squares are on the chessboard</li>
+        <li>How the squares alternate between light and dark</li>
+        <li>The rule for placing the board correctly</li>
+      </ul>
+    </section>
+
+    <section class="lesson">
+      <div class="lesson-head">
+        <span class="lesson-number">1</span>
+        <h2 class="lesson-title">64 Squares</h2>
+      </div>
+      <p class="lesson-intro">
+        The chessboard is a square grid made up of <strong>64 smaller squares</strong> &mdash; 8 rows of 8. Each square is the same size.
+      </p>
+      <p class="lesson-intro">
+        The squares alternate between two colors: <strong>light</strong> and <strong>dark</strong>. No two squares of the same color ever touch side by side.
+      </p>
+
+      <div class="board-demo" id="demoBoard1"></div>
+      <p class="image-caption">An empty chessboard: 64 squares in alternating light and dark.</p>
+    </section>
+
+    <div class="chessboard-divider" aria-hidden="true"></div>
+
+    <section class="lesson">
+      <div class="lesson-head">
+        <span class="lesson-number">2</span>
+        <h2 class="lesson-title">The Most Important Rule</h2>
+      </div>
+      <p class="lesson-intro">
+        When you place the chessboard in front of you, the <strong>bottom-right corner</strong> must always be a <strong>light square</strong>.
+      </p>
+
+      <div class="board-demo" id="demoBoard2"></div>
+      <p class="image-caption">Notice the bottom-right corner is a light square (highlighted).</p>
+
+      <div class="rule-box">
+        <h3>White on the Right!</h3>
+        <p>Before beginning a game, always check: <strong>the bottom-right square should be light</strong>. This is the first thing to remember when setting up any chessboard.</p>
+      </div>
+    </section>
+
+    <section class="lesson">
+      <div class="lesson-head">
+        <span class="lesson-number">3</span>
+        <h2 class="lesson-title">Light and Dark Squares</h2>
+      </div>
+      <p class="lesson-intro">
+        The board is divided equally: <strong>32 light squares</strong> and <strong>32 dark squares</strong>. Together they form the checkered pattern you see on every chessboard.
+      </p>
+      <p class="lesson-intro">
+        The board has no special center square. Instead, the four squares in the very middle of the board form the <strong>center</strong> &mdash; two light and two dark.
+      </p>
+    </section>
+
+    <section class="recap">
+      <h3>Remember</h3>
+      <ul>
+        <li>The chessboard has <strong>64 squares</strong> (8 &times; 8).</li>
+        <li>Squares alternate between <strong>light</strong> and <strong>dark</strong>.</li>
+        <li>There are <strong>32 light</strong> squares and <strong>32 dark</strong> squares.</li>
+        <li>The bottom-right corner must always be a <strong>light square</strong> &mdash; <em>White on the right!</em></li>
+      </ul>
+    </section>
+
+    <nav class="lesson-nav no-print" aria-label="Lesson navigation">
+      <a class="toolbar-link" href="pawn-01-introducing-chess.html">&larr; Previous: Introducing Chess</a>
+      <a class="toolbar-link" href="pawn-03-files-ranks-diagonals.html">Next: Files, Ranks, and Diagonals &rarr;</a>
+    </nav>
+
+    <footer class="lesson-footer">
+      <span class="chapter-name">Pawn Level</span>
+      <span>Beginner Module 1 &middot; Coach Dinosaur Chess Course</span>
+    </footer>
+
+  </div>
+
+  <script>
+    function toggleTheme() {
+      var h = document.documentElement;
+      var n = h.dataset.theme === "dark" ? "light" : "dark";
+      h.dataset.theme = n;
+      try { localStorage.setItem("lesson-theme-v1", n); } catch (e) {}
+      var b = document.getElementById("themeToggle");
+      if (b) b.textContent = n === "dark" ? "Light theme" : "Dark theme";
+    }
+    (function () {
+      var t = document.documentElement.dataset.theme || "dark";
+      var b = document.getElementById("themeToggle");
+      if (b) b.textContent = t === "dark" ? "Light theme" : "Dark theme";
+    })();
+    function buildBoard(id, highlightCorner) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      for (var r = 0; r < 8; r++) {
+        for (var c = 0; c < 8; c++) {
+          var sq = document.createElement("div");
+          var isLight = (r + c) % 2 === 0;
+          sq.className = "s " + (isLight ? "l" : "d");
+          if (highlightCorner && r === 7 && c === 7) sq.className += " corner-highlight";
+          el.appendChild(sq);
+        }
+      }
+    }
+    buildBoard("demoBoard1", false);
+    buildBoard("demoBoard2", true);
+  </script>
+</body>
+</html>

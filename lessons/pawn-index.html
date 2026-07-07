@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
+  <link rel="apple-touch-icon" href="../assets/pieces/app_icon.png">
+  <title>Pawn Level — Beginner Chess Lessons</title>
+  <meta name="description" content="Pawn Level beginner chess module table of contents.">
+  <script>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("lesson-theme-v1");
+        if (stored === "light" || stored === "dark") {
+          document.documentElement.dataset.theme = stored;
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="endgame-lesson.css">
+  <style>
+    .toc-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      counter-reset: toc;
+    }
+    .toc-list li {
+      counter-increment: toc;
+      position: relative;
+      padding: 14px 0 14px 0;
+      border-bottom: 1px solid var(--hairline);
+    }
+    .toc-list li:last-child { border-bottom: none; }
+    .toc-list a {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .toc-list a:hover { opacity: 0.8; }
+    .toc-row {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+    .toc-num {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(15px, 0.4vw + 14px, 17px);
+      color: var(--accent);
+      min-width: 22px;
+      flex-shrink: 0;
+    }
+    .toc-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: clamp(17px, 0.6vw + 15px, 20px);
+      color: var(--ink);
+    }
+    .toc-desc {
+      margin: 4px 0 0 34px;
+      font-size: clamp(14px, 0.4vw + 13px, 16px);
+      color: var(--ink-soft);
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="lesson-page">
+
+    <div class="toolbar no-print">
+      <a class="toolbar-button" href="index.html">← Lesson Index</a>
+      <button type="button" id="themeToggle" onclick="toggleTheme()">Light theme</button>
+    </div>
+
+    <header class="hero">
+      <p class="eyebrow">Coach Dinosaur Chess Course</p>
+      <h1 class="chapter-title">Pawn Level</h1>
+      <p class="chapter-subtitle">
+        Beginner Module 1: learn the board, coordinates, chess vocabulary,
+        setup, basic rules, and piece values.
+      </p>
+    </header>
+
+    <section class="test-section">
+      <h2>Table of Contents</h2>
+
+      <ol class="toc-list">
+        <li>
+          <a href="pawn-01-introducing-chess.html">
+            <div class="toc-row">
+              <span class="toc-num">1.</span>
+              <span class="toc-title">Introducing the Game of Chess</span>
+            </div>
+            <p class="toc-desc">What chess is, where it came from, and why it is learned around the world.</p>
+          </a>
+        </li>
+        <li>
+          <a href="pawn-02-the-chessboard.html">
+            <div class="toc-row">
+              <span class="toc-num">2.</span>
+              <span class="toc-title">The Chessboard</span>
+            </div>
+            <p class="toc-desc">64 squares, alternating colors, and the rule: white square on the right.</p>
+          </a>
+        </li>
+        <li>
+          <a href="pawn-03-files-ranks-diagonals.html">
+            <div class="toc-row">
+              <span class="toc-num">3.</span>
+              <span class="toc-title">Files, Ranks, and Diagonals</span>
+            </div>
+            <p class="toc-desc">Learn the three ways the board is divided and how squares are grouped.</p>
+          </a>
+        </li>
+        <li>
+          <a href="pawn-04-algebraic-notation.html">
+            <div class="toc-row">
+              <span class="toc-num">4.</span>
+              <span class="toc-title">Scorekeeping: Algebraic Notation</span>
+            </div>
+            <p class="toc-desc">Learn square names, move notation, captures, and examples like Kf2, Nd3, and Nxd3.</p>
+          </a>
+        </li>
+        <li>
+          <a href="pawn-05-chess-terms.html">
+            <div class="toc-row">
+              <span class="toc-num">5.</span>
+              <span class="toc-title">Chess Terms</span>
+            </div>
+            <p class="toc-desc">Kingside, queenside, whiteside, and blackside.</p>
+          </a>
+        </li>
+        <li>
+          <a href="pawn-06-setting-up-the-board.html">
+            <div class="toc-row">
+              <span class="toc-num">6.</span>
+              <span class="toc-title">Setting Up the Chessboard</span>
+            </div>
+            <p class="toc-desc">Place kings, queens, rooks, knights, bishops, and pawns in the correct starting squares.</p>
+          </a>
+        </li>
+        <li>
+          <a href="pawn-07-basic-rules.html">
+            <div class="toc-row">
+              <span class="toc-num">7.</span>
+              <span class="toc-title">Basic Chess Rules</span>
+            </div>
+            <p class="toc-desc">Two players, taking turns, White moves first, and the standard starting position.</p>
+          </a>
+        </li>
+        <li>
+          <a href="pawn-08-chessmen-piece-values.html">
+            <div class="toc-row">
+              <span class="toc-num">8.</span>
+              <span class="toc-title">The Chessmen and Piece Values</span>
+            </div>
+            <p class="toc-desc">32 chessmen, 16 per side, and the beginner value of each piece.</p>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+    <footer class="lesson-footer">
+      <span class="chapter-name">Pawn Level</span>
+      <span>Beginner Module 1 · Coach Dinosaur Chess Course</span>
+    </footer>
+
+  </div>
+
+  <script>
+    function toggleTheme() {
+      var html = document.documentElement;
+      var next = html.dataset.theme === "dark" ? "light" : "dark";
+      html.dataset.theme = next;
+      try { window.localStorage.setItem("lesson-theme-v1", next); } catch (e) {}
+      var btn = document.getElementById("themeToggle");
+      if (btn) btn.textContent = next === "dark" ? "Light theme" : "Dark theme";
+    }
+    (function () {
+      try {
+        var t = document.documentElement.dataset.theme || "dark";
+        var btn = document.getElementById("themeToggle");
+        if (btn) btn.textContent = t === "dark" ? "Light theme" : "Dark theme";
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>

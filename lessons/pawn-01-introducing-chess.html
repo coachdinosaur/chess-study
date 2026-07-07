@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
+  <link rel="apple-touch-icon" href="../assets/pieces/app_icon.png">
+  <title>Introducing the Game of Chess — Pawn Level</title>
+  <meta name="description" content="Lesson 1: What chess is, where it came from, and why it is learned around the world.">
+  <script>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("lesson-theme-v1");
+        if (stored === "light" || stored === "dark") {
+          document.documentElement.dataset.theme = stored;
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="endgame-lesson.css">
+  <style>
+    .hero-image{width:100%;max-width:800px;margin:0 auto 20px;display:block;border-radius:10px;border:2px solid var(--hairline)}
+    .lesson-image{width:100%;max-width:720px;margin:20px auto;display:block;border-radius:8px;border:1px solid var(--hairline)}
+    .image-caption{text-align:center;font-size:13px;color:var(--ink-faint);margin:6px 0 20px;font-style:italic}
+    .chessboard-divider{height:12px;margin:28px 0;background:repeating-linear-gradient(90deg,var(--board-light) 0px,var(--board-light) 15px,var(--board-dark) 15px,var(--board-dark) 30px);border-radius:3px;opacity:0.5}
+  </style>
+</head>
+<body>
+  <div class="lesson-page">
+
+    <div class="toolbar no-print">
+      <a class="toolbar-button" href="pawn-index.html">&larr; Table of Contents</a>
+      <button type="button" id="themeToggle" onclick="toggleTheme()">Light theme</button>
+    </div>
+
+    <header class="hero">
+      <p class="eyebrow">Pawn Level &middot; Lesson 1</p>
+      <h1 class="chapter-title">Introducing the Game of Chess</h1>
+      <p class="chapter-subtitle">What chess is, where it came from, and why people all over the world love playing it.</p>
+    </header>
+
+    <img class="hero-image" src="stolen_images/hero-introducing-chess.png" alt="Kids playing chess around a chessboard">
+
+    <section class="goals">
+      <h2>In this lesson you will learn:</h2>
+      <ul>
+        <li>What chess is and why it matters</li>
+        <li>Where chess came from</li>
+        <li>How the modern game developed</li>
+        <li>Why chess is worth learning</li>
+      </ul>
+    </section>
+
+    <section class="lesson">
+      <div class="lesson-head">
+        <span class="lesson-number">1</span>
+        <h2 class="lesson-title">One of the World's Oldest Games</h2>
+      </div>
+      <p class="lesson-intro">
+        Chess is one of the oldest games in the world. It has been played for centuries and is still popular today. Millions of people play chess online and in tournaments across the globe.
+      </p>
+    </section>
+
+    <div class="chessboard-divider" aria-hidden="true"></div>
+
+    <section class="lesson">
+      <h2 class="lesson-title">A Journey Through Time</h2>
+      <p class="lesson-intro">
+        Chess has traveled across continents and centuries to become the game we know today.
+      </p>
+    </section>
+
+    <img class="lesson-image" src="stolen_images/history-600-india.png" alt="600 AD India - Chess began as chaturanga">
+    <p class="image-caption">Chess began in India around 600 AD as a game called <em>chaturanga</em>.</p>
+
+    <img class="lesson-image" src="stolen_images/history-800-persia.png" alt="800 AD Persia - The game became shatranj">
+    <p class="image-caption">The game spread to Persia where it became <em>shatranj</em>. Arabic scholars wrote the first strategy books.</p>
+
+    <img class="lesson-image" src="stolen_images/history-1000-europe.png" alt="1000 AD Europe - Chess arrived through trade routes">
+    <p class="image-caption">Chess arrived in Europe through trade routes and became a favorite pastime of kings and nobles.</p>
+
+    <img class="lesson-image" src="stolen_images/history-1475-modern.png" alt="1475 Southern Europe - The modern rules were born">
+    <p class="image-caption">The modern rules were born in Southern Europe. The queen and bishop gained their powerful moves.</p>
+
+    <img class="lesson-image" src="stolen_images/history-1886-championship.png" alt="1886 First World Championship - Wilhelm Steinitz">
+    <p class="image-caption">Wilhelm Steinitz became the first official World Chess Champion in 1886.</p>
+
+    <section class="lesson">
+      <h2 class="lesson-title">Why Learn Chess?</h2>
+      <p class="lesson-intro">
+        Chess has become a symbol of intelligence and strategic thinking. But it is not just for geniuses &mdash; it is easy to learn and fun to play at every level.
+      </p>
+    </section>
+
+    <img class="lesson-image" src="stolen_images/why-learn-chess.png" alt="Why Learn Chess - Think ahead, Solve problems, Stay focused, Enjoy a game for life">
+
+    <img class="lesson-image" src="stolen_images/did-you-know-checkmate.png" alt="Did You Know - Checkmate comes from the Persian phrase shah mat">
+
+    <section class="lesson">
+      <h2 class="lesson-title">World Champions</h2>
+      <p class="lesson-intro">
+        The first World Championship was held in 1886. Many great champions have enjoyed and loved the game of chess, and we hope that you will too!
+      </p>
+    </section>
+
+    <img class="lesson-image" src="stolen_images/did-you-know-fischer.png" alt="Did You Know - Bobby Fischer learned chess at age 6 and became World Champion at 29">
+
+    <img class="lesson-image" src="stolen_images/recap-remember.png" alt="Remember - Chess is over 1500 years old, originated in India, modern rules from 1475, first World Championship 1886">
+
+    <nav class="lesson-nav no-print" aria-label="Lesson navigation">
+      <a class="toolbar-link" href="pawn-index.html">&larr; Table of Contents</a>
+      <a class="toolbar-link" href="pawn-02-the-chessboard.html">Next: The Chessboard &rarr;</a>
+    </nav>
+
+    <footer class="lesson-footer">
+      <span class="chapter-name">Pawn Level</span>
+      <span>Beginner Module 1 &middot; Coach Dinosaur Chess Course</span>
+    </footer>
+
+  </div>
+
+  <script>
+    function toggleTheme() {
+      var html = document.documentElement;
+      var next = html.dataset.theme === "dark" ? "light" : "dark";
+      html.dataset.theme = next;
+      try { window.localStorage.setItem("lesson-theme-v1", next); } catch (e) {}
+      var btn = document.getElementById("themeToggle");
+      if (btn) btn.textContent = next === "dark" ? "Light theme" : "Dark theme";
+    }
+    (function () {
+      try {
+        var t = document.documentElement.dataset.theme || "dark";
+        var btn = document.getElementById("themeToggle");
+        if (btn) btn.textContent = t === "dark" ? "Light theme" : "Dark theme";
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>
