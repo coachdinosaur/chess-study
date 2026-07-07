@@ -145,6 +145,22 @@ body {
   cursor: pointer;
 }
 .toolbar button:hover { background: var(--btn-hover); }
+.toolbar-link {
+  font-family: var(--font-body);
+  font-size: clamp(13px, 0.3vw + 12px, 15px);
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--btn-ink);
+  background: var(--btn-bg);
+  border: 1px solid var(--rule-border);
+  border-radius: 8px;
+  padding: clamp(6px, 0.3vw + 5px, 8px) clamp(12px, 0.5vw + 10px, 16px);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+.toolbar-link:hover { background: var(--btn-hover); }
 
 /* ---------- Floating analysis popup (parent-level, draggable anywhere) --- */
 .analysis-popup {

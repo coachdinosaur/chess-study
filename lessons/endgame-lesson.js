@@ -19,7 +19,7 @@
   /* Cache-buster for embedded app iframes. Bump this when the app (index.html /
      app.js / styles.css) changes so browsers fetch fresh copies instead of
      serving stale cached HTML inside lesson-page iframes. */
-  var EMBED_CACHE_BUSTER = "20260706";
+  var EMBED_CACHE_BUSTER = "20260707";
 
   var PIECE_FILES = {
     K: "wK.svg", Q: "wQ.svg", R: "wR.svg", B: "wB.svg", N: "wN.svg", P: "wP.svg",

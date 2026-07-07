@@ -6497,12 +6497,12 @@ function elementPaddingInsetPx(element, axis) {
 }
 
 function capturedSizingMetricsFromStyles(styles) {
-  const cellDivisor = cssNumberToFloat(styles?.getPropertyValue('--captured-cell-divisor'), 15.5);
+  const cellDivisor = cssNumberToFloat(styles?.getPropertyValue('--captured-cell-divisor'), 12);
   return {
-    cellDivisor: cellDivisor > 0 ? cellDivisor : 15.5,
-    cellMin: cssLengthToPx(styles?.getPropertyValue('--captured-cell-min'), remToPx(0.95)),
-    cellMax: cssLengthToPx(styles?.getPropertyValue('--captured-cell-max'), remToPx(1.35)),
-    rowExtraHeight: cssLengthToPx(styles?.getPropertyValue('--captured-row-extra-height'), remToPx(0.56)),
+    cellDivisor: cellDivisor > 0 ? cellDivisor : 12,
+    cellMin: cssLengthToPx(styles?.getPropertyValue('--captured-cell-min'), remToPx(1.3)),
+    cellMax: cssLengthToPx(styles?.getPropertyValue('--captured-cell-max'), remToPx(1.85)),
+    rowExtraHeight: cssLengthToPx(styles?.getPropertyValue('--captured-row-extra-height'), remToPx(0.7)),
   };
 }
 
