@@ -939,18 +939,22 @@ body {
 }
 
 @media (max-width: 600px) {
+  /* Keep a little side padding for text/paragraphs (readability). */
   .lesson-page {
-    padding-left: 0;
-    padding-right: 0;
+    padding-left: 16px;
+    padding-right: 16px;
   }
   .position-body {
     padding-left: 0;
     padding-right: 0;
     gap: 12px;
   }
+  /* Only the chessboard breaks out to full-bleed (edge to edge). */
   .diagram {
     max-width: none;
     width: 100%;
+    margin-left: -16px;
+    margin-right: -16px;
   }
   .diagram .board {
     max-width: none;
@@ -958,6 +962,11 @@ body {
     border-radius: 0;
     border-left: none;
     border-right: none;
+  }
+  /* Re-indent the caption so it stays aligned with the body text. */
+  .diagram .caption {
+    padding-left: 16px;
+    padding-right: 16px;
   }
 }
 

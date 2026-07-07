@@ -3525,8 +3525,8 @@ body.is-embed .loading-overlay {
     position: sticky;
     top: 0;
     z-index: 30;
-    gap: 0.32rem;
-    padding: 0.18rem 0 0.24rem;
+    gap: 0.22rem;
+    padding: 0.12rem 0 0.16rem;
     border-bottom: 1px solid var(--section-divider-soft);
   }
 
@@ -3540,7 +3540,7 @@ body.is-embed .loading-overlay {
 
   .board-column {
     --board-frame-padding: 0;
-    --eval-rail-track-width: 0.3rem;
+    --eval-rail-track-width: 0.8rem;
     --turn-marker-size: 0.38rem;
     --turn-marker-gap: 0.12rem;
     --turn-marker-offset: 0.2rem;
@@ -3652,26 +3652,26 @@ body.is-embed .loading-overlay {
 
   .lesson-command-row {
     grid-template-columns: minmax(0, 1fr) auto auto auto;
-    gap: 0.26rem;
+    gap: 0.18rem;
   }
 
   .lesson-picker {
-    min-height: 2.25rem;
-    padding-inline: 0.48rem;
-    font-size: 0.8rem;
+    min-height: 1.75rem;
+    padding-inline: 0.3rem;
+    font-size: 0.72rem;
   }
 
   .lesson-actions-button,
   .header-analyze-button {
     min-width: auto;
-    min-height: 2.25rem;
-    padding: 0.34rem 0.5rem;
-    font-size: 0.75rem;
+    min-height: 1.75rem;
+    padding: 0.2rem 0.3rem;
+    font-size: 0.68rem;
   }
 
   .coord-rank,
   .coord-file {
-    font-size: 0.46rem;
+    font-size: 0.4rem;
     font-weight: 700;
   }
 
@@ -3693,10 +3693,28 @@ body.is-embed .loading-overlay {
     top: calc(var(--captured-row-height) + var(--captured-row-gap));
   }
 
+  /* Slim evaluation bar on mobile — reduced border-radius, no shadow. */
+  .eval-bar-track {
+    border-radius: 3px;
+    box-shadow: none;
+  }
+
+  /* Side-to-move marker hidden on portrait — the page title already states
+     "White to move" / "Black to move", so the floating square is redundant. */
+  .turn-side-marker {
+    display: none !important;
+  }
+
+  /* Bottom toolbar (FEN, meta-strip) hidden on portrait — duplicates
+     controls already available above the board. */
+  .board-stage-foot {
+    display: none !important;
+  }
+
   .header-analyze-button {
     position: relative;
-    width: 2.25rem;
-    min-width: 2.25rem;
+    width: 2rem;
+    min-width: 2rem;
     padding: 0;
     font-size: 0;
   }
@@ -3741,8 +3759,8 @@ body.is-embed .loading-overlay {
   }
 
   .lesson-overflow-trigger {
-    width: 2.25rem;
-    height: 2.25rem;
+    width: 1.75rem;
+    height: 1.75rem;
   }
 
   .lesson-overflow-menu {
@@ -3751,9 +3769,9 @@ body.is-embed .loading-overlay {
   }
 
   .lesson-overflow-item {
-    min-height: 2.25rem;
-    padding: 0.4rem 0.62rem;
-    font-size: 0.78rem;
+    min-height: 1.75rem;
+    padding: 0.28rem 0.44rem;
+    font-size: 0.7rem;
   }
 
   .play-section-title {
@@ -3787,6 +3805,131 @@ body.is-embed .loading-overlay {
 
   .play-clock-time {
     font-size: 1.08rem;
+  }
+
+  /* Slim scrollbar — thin, low-contrast, supports scrolling without competing
+     with the board. */
+  .control-pane-scroll::-webkit-scrollbar,
+  .guided-review-row-list::-webkit-scrollbar,
+  .lesson-overflow-menu::-webkit-scrollbar,
+  .custom-select-menu::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  .control-pane-scroll::-webkit-scrollbar-thumb,
+  .guided-review-row-list::-webkit-scrollbar-thumb,
+  .lesson-overflow-menu::-webkit-scrollbar-thumb,
+  .custom-select-menu::-webkit-scrollbar-thumb {
+    background: rgba(128, 128, 128, 0.25);
+    border-radius: 4px;
+  }
+
+  /* Tighter vertical rhythm — compress spacing between sections. */
+  .board-stage-card {
+    gap: 0.25rem;
+  }
+  .board-block {
+    gap: 0;
+  }
+}
+
+/* ---- Mobile-width tweaks (any orientation) ----
+   Mirrors the portrait block above so these also apply in landscape /
+   inside the lessons iframe, which may not report orientation: portrait. */
+@media (max-width: 760px) {
+  /* Higher-specificity selector so it also wins inside the landscape
+     media block (which sets min-width: 5.4rem on this button). */
+  .lesson-command-row .header-analyze-button {
+    position: relative;
+    width: 1rem;
+    min-width: 1rem;
+    min-height: 1rem;
+    padding: 0;
+    font-size: 0;
+  }
+  .lesson-command-row .header-analyze-button::before,
+  .lesson-command-row .header-analyze-button::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: block;
+    pointer-events: none;
+  }
+  .lesson-command-row .header-analyze-button::before {
+    width: 0.36rem;
+    height: 0.36rem;
+    border: 0.06rem solid currentColor;
+    border-radius: 50%;
+    transform: translate(-58%, -58%);
+  }
+  .lesson-command-row .header-analyze-button::after {
+    width: 0.21rem;
+    height: 0.06rem;
+    border-radius: 999px;
+    background: currentColor;
+    transform: translate(-5%, -5%) rotate(45deg);
+  }
+  .lesson-command-row .header-analyze-button.is-analyzing::before {
+    width: 0.37rem;
+    height: 0.37rem;
+    border: 0;
+    border-radius: 0.08rem;
+    background: currentColor;
+    transform: translate(-50%, -50%);
+  }
+  .lesson-command-row .header-analyze-button.is-analyzing::after {
+    display: none;
+  }
+
+  .coord-rank,
+  .coord-file {
+    font-size: 0.4rem;
+    font-weight: 700;
+  }
+  .coord-rank {
+    top: clamp(0.08rem, 0.3vw, 0.12rem);
+    left: clamp(0.08rem, 0.3vw, 0.12rem);
+  }
+  .coord-file {
+    right: clamp(0.08rem, 0.3vw, 0.12rem);
+    bottom: clamp(0.05rem, 0.2vw, 0.08rem);
+  }
+
+  /* Side-to-move marker: keep it a VISIBLE SQUARE (not a tiny dot), and show
+     it on the side to move — beside the top captured row when the top side is
+     to move, or beside the bottom captured row when the bottom side is to move
+     (mirrors the eval bar's own top/bottom turn logic). */
+  .eval-bar-wrap .turn-side-marker {
+    --turn-marker-size: 0.46rem;
+    --turn-marker-gap: 0.12rem;
+    top: calc(-1 * (var(--captured-row-gap) + (var(--captured-row-height) / 2) - (var(--turn-marker-size) / 2)));
+    bottom: auto;
+    left: calc(var(--eval-rail-track-width) + var(--eval-rail-gap));
+  }
+  .eval-bar-wrap[data-orientation='white'][data-turn-side='w'] .turn-side-marker,
+  .eval-bar-wrap[data-orientation='black'][data-turn-side='b'] .turn-side-marker {
+    top: auto;
+    bottom: calc(-1 * (var(--captured-row-gap) + (var(--captured-row-height) / 2) - (var(--turn-marker-size) / 2)));
+  }
+
+  /* Maximize chess board: 1 vw padding each side → board gets ~98 % width. */
+  .page-shell {
+    padding: 0 1vw;
+  }
+  .board-pane {
+    margin-inline: 0;
+    width: 100%;
+  }
+  .board-column {
+    width: 100%;
+    max-width: none;
+  }
+  .board-block {
+    grid-template-columns: 1fr;
+  }
+  .board-stage-card {
+    height: auto;
   }
 }
 
