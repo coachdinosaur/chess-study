@@ -1,3 +1,6 @@
+console.log("APP VERSION: board-debug-20260707");
+document.body.dataset.appVersion = "board-debug-20260707";
+
 import { Chess, DEFAULT_POSITION, validateFen } from './vendor/chess.js';
 import { buildPgnFromLessonTree, parsePgnToLessonTree, splitPgnGames, extractPgnHeaders } from './pgn.mjs';
 import { createGuidedReviewController } from './guided-review.mjs';
@@ -7021,12 +7024,34 @@ function syncBoardSize() {
     const evalRailWidth = cssLengthToPx(columnStyles.getPropertyValue('--eval-rail-track-width'), remToPx(0.8));
     const turnSize = cssLengthToPx(columnStyles.getPropertyValue('--turn-marker-size'), remToPx(1.0));
     const turnGap = cssLengthToPx(columnStyles.getPropertyValue('--turn-marker-gap'), remToPx(0.5));
-    const sideOffset = evalRailWidth + turnSize + turnGap;
-    const mobileBoardSize = Math.floor(Math.max(0, vw - sideOffset * 2 - (framePadding * 2) - 2));
+    // Only the eval rail reserves space beside the board; the turn marker
+    // is hidden in portrait (display: none), so its size + gap are excluded.
+    const mobileBoardSize = Math.floor(Math.max(0, vw - evalRailWidth));
+    console.log('[DEBUG syncBoardSize]', {
+      vw,
+      evalRailWidth,
+      turnSize,
+      turnGap,
+      framePadding,
+      mobileBoardSize,
+      boardSizeVar: dom.boardColumn.style.getPropertyValue('--board-size'),
+      containerWidth,
+      isMobilePortrait
+    });
     if (mobileBoardSize > 0) {
       dom.boardColumn.style.setProperty('--board-size', `${mobileBoardSize}px`);
       dom.rootElement.style.setProperty('--board-side-gap', '0px');
     }
+    // DEBUG: show formula values as a badge beside the board
+    const dbgId = 'board-size-debug';
+    let dbgEl = document.getElementById(dbgId);
+    if (!dbgEl) {
+      dbgEl = document.createElement('div');
+      dbgEl.id = dbgId;
+      dbgEl.style.cssText = 'position:fixed;bottom:4px;right:4px;z-index:9999;background:#000;color:#0f0;font:12px monospace;padding:4px 8px;border-radius:4px;pointer-events:none;opacity:0.9';
+      document.body.appendChild(dbgEl);
+    }
+    dbgEl.textContent = `board=${mobileBoardSize} vw=${vw} eval=${evalRailWidth} framePad=${framePadding}`;
     return;
   }
 
