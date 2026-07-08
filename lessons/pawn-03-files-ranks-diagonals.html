@@ -384,7 +384,7 @@
     .preview-square.file { box-shadow: inset 0 0 0 999px rgba(61,141,255,.38); }
     .preview-square.rank { box-shadow: inset 0 0 0 999px rgba(255,174,90,.38); }
     .preview-square.file.rank { box-shadow: inset 0 0 0 999px rgba(151,135,86,.48); }
-    .preview-star { font-size: clamp(1.1rem, 4vw, 2.1rem); line-height: 1; filter: drop-shadow(0 2px 2px rgba(0,0,0,.35)); }
+    .preview-star { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: clamp(1.1rem, 4vw, 2.1rem); line-height: 1; filter: drop-shadow(0 2px 2px rgba(0,0,0,.35)); }
     .preview-caption { color: var(--muted); text-align: center; margin: 0; font-weight: 750; }
 
     .concept-strip {
@@ -466,7 +466,10 @@
     .square.file-highlight::before { background: var(--blue-soft); box-shadow: inset 0 0 0 2px rgba(47,125,246,.58); }
     .square.rank-highlight::after { background: var(--orange-soft); box-shadow: inset 0 0 0 2px rgba(249,115,22,.45); }
     .star {
-      position: relative;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
       z-index: 3;
       font-size: clamp(1.15rem, 3.2vw, 2.1rem);
       line-height: 1;
@@ -587,6 +590,21 @@
       .legend, .mini-diagrams, .practice { break-inside: avoid; page-break-inside: avoid; }
     }
 
+  
+    /* Reusable app 0 SVG piece rendering (no Unicode glyphs). */
+    .lesson-piece-icon {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,.28));
+    }
+    .lesson-header-piece {
+      width: 1.6rem;
+      height: 1.6rem;
+      object-fit: contain;
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -595,7 +613,7 @@
   <header class="topbar">
     <div class="topbar-inner">
       <div class="brand" aria-label="Lesson title">
-        <div class="brand-icon" aria-hidden="true">♟</div>
+        <div class="brand-icon" aria-hidden="true"><img class="lesson-header-piece" src="../assets/pieces/mpchess/bP.svg" alt=""></div>
         <span>Pawn Level</span>
         <span>Files, Ranks, and Diagonals</span>
       </div>
@@ -2114,13 +2132,11 @@
               <p>Review the main ideas before moving to the next lesson.</p>
             </div>
           </div>
-          <div class="practice">
-<div class="practice-card"><h3>1. What is the blue file called?</h3><p>Answer: the <strong>b-file</strong>.</p></div>
-<div class="practice-card"><h3>2. What is the orange rank called?</h3><p>Answer: the <strong>7th rank</strong>.</p></div>
-<div class="practice-card"><h3>3. Which squares form the e1–h4 diagonal?</h3><p>Answer: <strong>e1, f2, g3, h4</strong>.</p></div>
-<div class="practice-card"><h3>4. Which diagonal goes from a1 to h8?</h3><p>Answer: the <strong>yellow-star diagonal</strong>.</p></div>
-</div>
-          <details class="quiz" style="margin-top:1rem;" open>
+          <details class="quiz"><summary>1. What is the blue file called?</summary><p>Answer: the <strong>b-file</strong>.</p></details>
+          <details class="quiz"><summary>2. What is the orange rank called?</summary><p>Answer: the <strong>7th rank</strong>.</p></details>
+          <details class="quiz"><summary>3. Which squares form the e1–h4 diagonal?</summary><p>Answer: <strong>e1, f2, g3, h4</strong>.</p></details>
+          <details class="quiz"><summary>4. Which diagonal goes from a1 to h8?</summary><p>Answer: the <strong>yellow-star diagonal</strong>.</p></details>
+          <details class="quiz">
             <summary>Why is this version safer than generated diagram images?</summary>
             <p>The squares and coordinates are coded directly in the HTML, so the b-file, 7th rank, a1 dark square, and h1 light square remain correct and easier to edit.</p>
           </details>

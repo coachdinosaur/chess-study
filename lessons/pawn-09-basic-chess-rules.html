@@ -413,19 +413,34 @@
     .callout-title { color: var(--gold); font-weight: 900; margin-bottom: .35rem; }
     details.quiz {
       border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 1rem;
       background: rgba(255,255,255,.055);
-      margin: .7rem 0;
+      border-radius: 16px;
+      padding: .9rem 1rem;
+      margin-top: .75rem;
     }
-    details.quiz summary { cursor: pointer; font-weight: 850; color: var(--text); }
-    details.quiz p { color: var(--muted); }
+    details.quiz summary { cursor: pointer; font-weight: 800; }
+    details.quiz p { color: var(--muted); margin-bottom: 0; }
     @media (max-width: 900px) {
       .rule-grid, .summary-grid, .review-grid { grid-template-columns: 1fr; }
       .turns { grid-template-columns: 1fr; }
       .arrow { transform: rotate(90deg); justify-self: center; }
     }
 
+  
+    /* Reusable app 0 SVG piece rendering (no Unicode glyphs). */
+    .lesson-piece-icon {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,.28));
+    }
+    .lesson-header-piece {
+      width: 1.6rem;
+      height: 1.6rem;
+      object-fit: contain;
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -433,7 +448,7 @@
 
   <header class="topbar">
     <div class="topbar-inner">
-      <div class="brand"><span class="brand-icon">♟</span><span>Pawn Level · Lesson 9</span></div>
+      <div class="brand"><span class="brand-icon"><img class="lesson-header-piece" src="../assets/pieces/mpchess/bP.svg" alt=""></span><span>Pawn Level · Lesson 9</span></div>
       <div class="top-actions">
         <a class="btn back-to-index" href="pawn-index.html">&larr; Back to Pawn Index</a>
         <button class="btn" id="themeToggle" type="button">Toggle theme</button>
@@ -458,7 +473,7 @@
       </div>
       <div class="hero-art" aria-hidden="true">
         <div class="poster-card">
-          <div class="poster-icon">♔ ↔ ♚</div>
+          <div class="poster-icon"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wK.svg" alt=""> ↔ <img class="lesson-piece-icon" src="../assets/pieces/mpchess/bK.svg" alt=""></div>
           <div class="poster-title">Two players. One move at a time.</div>
           <div class="poster-text">White moves first, Black replies, and every turn must be a legal move.</div>
         </div>
@@ -495,9 +510,9 @@
               </div>
             </div>
             <div class="turns" aria-label="White player versus Black player">
-              <div class="turn-card"><div class="piece">♔</div><strong>White</strong><p>White pieces</p></div>
+              <div class="turn-card"><div class="piece"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wK.svg" alt="" style="width:2em;height:2em;"></div><strong>White</strong><p>White pieces</p></div>
               <div class="arrow">↔</div>
-              <div class="turn-card"><div class="piece">♚</div><strong>Black</strong><p>Black pieces</p></div>
+              <div class="turn-card"><div class="piece"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/bK.svg" alt="" style="width:2em;height:2em;"></div><strong>Black</strong><p>Black pieces</p></div>
             </div>
           </div>
         </section>
@@ -519,9 +534,9 @@
               </div>
             </div>
             <div class="turns" aria-label="Turn order diagram">
-              <div class="turn-card"><div class="piece">♙</div><strong>White move</strong></div>
+              <div class="turn-card"><div class="piece"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wP.svg" alt="" style="width:2em;height:2em;"></div><strong>White move</strong></div>
               <div class="arrow">→</div>
-              <div class="turn-card"><div class="piece">♟</div><strong>Black move</strong></div>
+              <div class="turn-card"><div class="piece"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/bP.svg" alt="" style="width:2em;height:2em;"></div><strong>Black move</strong></div>
             </div>
           </div>
         </section>
@@ -549,21 +564,34 @@
                 .small{font:600 14px Arial,sans-serif;fill:#475569}
                 .pieceW{font:52px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#fff;stroke:#0f172a;stroke-width:1.4px;paint-order:stroke fill}
                 .pieceB{font:52px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827}
-              </style>
-              <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
-                <path d="M0,0 L0,6 L9,3 z" fill="#2563eb"/>
+              
+    /* Reusable app 0 SVG piece rendering (no Unicode glyphs). */
+    .lesson-piece-icon {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,.28));
+    }
+    .lesson-header-piece {
+      width: 1.6rem;
+      height: 1.6rem;
+      object-fit: contain;
+      display: block;
+    }
+  </style>
+              <marker id="arrowhead" viewBox="0 0 14 14" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto" markerUnits="userSpaceOnUse">
+                <path d="M0,0 L14,7 L0,14 Z" fill="#2563eb"/>
               </marker>
             </defs>
-            <rect x="0" y="0" width="360" height="240" rx="18" fill="#f8fafc"/>
+            <rect x="2" y="0" width="360" height="240" rx="18" fill="#f8fafc"/>
             <circle cx="90" cy="90" r="52" fill="#ffffff" stroke="#cbd5e1" stroke-width="3"/>
-            <text x="90" y="102" text-anchor="middle" dominant-baseline="middle" class="pieceW">♙</text>
+            <circle cx="270" cy="90" r="52" fill="#e2e8f0" stroke="#94a3b8" stroke-width="3"/>
+            <image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="72.5" y="77" width="31" height="31"/>
+            <image href="../assets/pieces/mpchess/bP.svg" xlink:href="../assets/pieces/mpchess/bP.svg" x="252.5" y="77" width="31" height="31"/>
+            <line x1="150" y1="90" x2="210" y2="90" stroke="#2563eb" stroke-width="8" stroke-linecap="round" marker-end="url(#arrowhead)"/>
             <text x="90" y="165" text-anchor="middle" class="label">White</text>
             <text x="90" y="188" text-anchor="middle" class="small">moves first</text>
-
-            <line x1="150" y1="90" x2="210" y2="90" stroke="#2563eb" stroke-width="8" stroke-linecap="round" marker-end="url(#arrowhead)"/>
-
-            <circle cx="270" cy="90" r="52" fill="#e2e8f0" stroke="#94a3b8" stroke-width="3"/>
-            <text x="270" y="102" text-anchor="middle" dominant-baseline="middle" class="pieceB">♟</text>
             <text x="270" y="165" text-anchor="middle" class="label">Black</text>
             <text x="270" y="188" text-anchor="middle" class="small">moves after White</text>
           </svg>
@@ -606,34 +634,49 @@
                 .pieceW{font:38px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill}
                 .pieceB{font:38px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827}
                 .zoneText{font:800 15px Arial,sans-serif;fill:#0f172a}
-              </style>
+              
+    /* Reusable app 0 SVG piece rendering (no Unicode glyphs). */
+    .lesson-piece-icon {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,.28));
+    }
+    .lesson-header-piece {
+      width: 1.6rem;
+      height: 1.6rem;
+      object-fit: contain;
+      display: block;
+    }
+  </style>
             </defs>
-            <rect x="0" y="0" width="420" height="420" rx="18" fill="#ffffff"/>
+            <rect x="2" y="0" width="420" height="420" rx="18" fill="#ffffff"/>
 
             <g transform="translate(58,32)">
               <!-- board -->
               <g>
-                <rect x="0" y="0" width="35" height="35" fill="#f0d9b5"/><rect x="35" y="0" width="35" height="35" fill="#b58863"/><rect x="70" y="0" width="35" height="35" fill="#f0d9b5"/><rect x="105" y="0" width="35" height="35" fill="#b58863"/><rect x="140" y="0" width="35" height="35" fill="#f0d9b5"/><rect x="175" y="0" width="35" height="35" fill="#b58863"/><rect x="210" y="0" width="35" height="35" fill="#f0d9b5"/><rect x="245" y="0" width="35" height="35" fill="#b58863"/>
-                <rect x="0" y="35" width="35" height="35" fill="#b58863"/><rect x="35" y="35" width="35" height="35" fill="#f0d9b5"/><rect x="70" y="35" width="35" height="35" fill="#b58863"/><rect x="105" y="35" width="35" height="35" fill="#f0d9b5"/><rect x="140" y="35" width="35" height="35" fill="#b58863"/><rect x="175" y="35" width="35" height="35" fill="#f0d9b5"/><rect x="210" y="35" width="35" height="35" fill="#b58863"/><rect x="245" y="35" width="35" height="35" fill="#f0d9b5"/>
-                <rect x="0" y="70" width="35" height="35" fill="#f0d9b5"/><rect x="35" y="70" width="35" height="35" fill="#b58863"/><rect x="70" y="70" width="35" height="35" fill="#f0d9b5"/><rect x="105" y="70" width="35" height="35" fill="#b58863"/><rect x="140" y="70" width="35" height="35" fill="#f0d9b5"/><rect x="175" y="70" width="35" height="35" fill="#b58863"/><rect x="210" y="70" width="35" height="35" fill="#f0d9b5"/><rect x="245" y="70" width="35" height="35" fill="#b58863"/>
-                <rect x="0" y="105" width="35" height="35" fill="#b58863"/><rect x="35" y="105" width="35" height="35" fill="#f0d9b5"/><rect x="70" y="105" width="35" height="35" fill="#b58863"/><rect x="105" y="105" width="35" height="35" fill="#f0d9b5"/><rect x="140" y="105" width="35" height="35" fill="#b58863"/><rect x="175" y="105" width="35" height="35" fill="#f0d9b5"/><rect x="210" y="105" width="35" height="35" fill="#b58863"/><rect x="245" y="105" width="35" height="35" fill="#f0d9b5"/>
-                <rect x="0" y="140" width="35" height="35" fill="#f0d9b5"/><rect x="35" y="140" width="35" height="35" fill="#b58863"/><rect x="70" y="140" width="35" height="35" fill="#f0d9b5"/><rect x="105" y="140" width="35" height="35" fill="#b58863"/><rect x="140" y="140" width="35" height="35" fill="#f0d9b5"/><rect x="175" y="140" width="35" height="35" fill="#b58863"/><rect x="210" y="140" width="35" height="35" fill="#f0d9b5"/><rect x="245" y="140" width="35" height="35" fill="#b58863"/>
-                <rect x="0" y="175" width="35" height="35" fill="#b58863"/><rect x="35" y="175" width="35" height="35" fill="#f0d9b5"/><rect x="70" y="175" width="35" height="35" fill="#b58863"/><rect x="105" y="175" width="35" height="35" fill="#f0d9b5"/><rect x="140" y="175" width="35" height="35" fill="#b58863"/><rect x="175" y="175" width="35" height="35" fill="#f0d9b5"/><rect x="210" y="175" width="35" height="35" fill="#b58863"/><rect x="245" y="175" width="35" height="35" fill="#f0d9b5"/>
-                <rect x="0" y="210" width="35" height="35" fill="#f0d9b5"/><rect x="35" y="210" width="35" height="35" fill="#b58863"/><rect x="70" y="210" width="35" height="35" fill="#f0d9b5"/><rect x="105" y="210" width="35" height="35" fill="#b58863"/><rect x="140" y="210" width="35" height="35" fill="#f0d9b5"/><rect x="175" y="210" width="35" height="35" fill="#b58863"/><rect x="210" y="210" width="35" height="35" fill="#f0d9b5"/><rect x="245" y="210" width="35" height="35" fill="#b58863"/>
-                <rect x="0" y="245" width="35" height="35" fill="#b58863"/><rect x="35" y="245" width="35" height="35" fill="#f0d9b5"/><rect x="70" y="245" width="35" height="35" fill="#b58863"/><rect x="105" y="245" width="35" height="35" fill="#f0d9b5"/><rect x="140" y="245" width="35" height="35" fill="#b58863"/><rect x="175" y="245" width="35" height="35" fill="#f0d9b5"/><rect x="210" y="245" width="35" height="35" fill="#b58863"/><rect x="245" y="245" width="35" height="35" fill="#f0d9b5"/>
+                <rect x="2" y="0" width="35" height="35" fill="#eee3cb"/><rect x="37" y="0" width="35" height="35" fill="#71925a"/><rect x="72" y="0" width="35" height="35" fill="#eee3cb"/><rect x="107" y="0" width="35" height="35" fill="#71925a"/><rect x="142" y="0" width="35" height="35" fill="#eee3cb"/><rect x="177" y="0" width="35" height="35" fill="#71925a"/><rect x="212" y="0" width="35" height="35" fill="#eee3cb"/><rect x="247" y="0" width="35" height="35" fill="#71925a"/>
+                <rect x="2" y="35" width="35" height="35" fill="#71925a"/><rect x="37" y="35" width="35" height="35" fill="#eee3cb"/><rect x="72" y="35" width="35" height="35" fill="#71925a"/><rect x="107" y="35" width="35" height="35" fill="#eee3cb"/><rect x="142" y="35" width="35" height="35" fill="#71925a"/><rect x="177" y="35" width="35" height="35" fill="#eee3cb"/><rect x="212" y="35" width="35" height="35" fill="#71925a"/><rect x="247" y="35" width="35" height="35" fill="#eee3cb"/>
+                <rect x="2" y="70" width="35" height="35" fill="#eee3cb"/><rect x="37" y="70" width="35" height="35" fill="#71925a"/><rect x="72" y="70" width="35" height="35" fill="#eee3cb"/><rect x="107" y="70" width="35" height="35" fill="#71925a"/><rect x="142" y="70" width="35" height="35" fill="#eee3cb"/><rect x="177" y="70" width="35" height="35" fill="#71925a"/><rect x="212" y="70" width="35" height="35" fill="#eee3cb"/><rect x="247" y="70" width="35" height="35" fill="#71925a"/>
+                <rect x="2" y="105" width="35" height="35" fill="#71925a"/><rect x="37" y="105" width="35" height="35" fill="#eee3cb"/><rect x="72" y="105" width="35" height="35" fill="#71925a"/><rect x="107" y="105" width="35" height="35" fill="#eee3cb"/><rect x="142" y="105" width="35" height="35" fill="#71925a"/><rect x="177" y="105" width="35" height="35" fill="#eee3cb"/><rect x="212" y="105" width="35" height="35" fill="#71925a"/><rect x="247" y="105" width="35" height="35" fill="#eee3cb"/>
+                <rect x="2" y="140" width="35" height="35" fill="#eee3cb"/><rect x="37" y="140" width="35" height="35" fill="#71925a"/><rect x="72" y="140" width="35" height="35" fill="#eee3cb"/><rect x="107" y="140" width="35" height="35" fill="#71925a"/><rect x="142" y="140" width="35" height="35" fill="#eee3cb"/><rect x="177" y="140" width="35" height="35" fill="#71925a"/><rect x="212" y="140" width="35" height="35" fill="#eee3cb"/><rect x="247" y="140" width="35" height="35" fill="#71925a"/>
+                <rect x="2" y="175" width="35" height="35" fill="#71925a"/><rect x="37" y="175" width="35" height="35" fill="#eee3cb"/><rect x="72" y="175" width="35" height="35" fill="#71925a"/><rect x="107" y="175" width="35" height="35" fill="#eee3cb"/><rect x="142" y="175" width="35" height="35" fill="#71925a"/><rect x="177" y="175" width="35" height="35" fill="#eee3cb"/><rect x="212" y="175" width="35" height="35" fill="#71925a"/><rect x="247" y="175" width="35" height="35" fill="#eee3cb"/>
+                <rect x="2" y="210" width="35" height="35" fill="#eee3cb"/><rect x="37" y="210" width="35" height="35" fill="#71925a"/><rect x="72" y="210" width="35" height="35" fill="#eee3cb"/><rect x="107" y="210" width="35" height="35" fill="#71925a"/><rect x="142" y="210" width="35" height="35" fill="#eee3cb"/><rect x="177" y="210" width="35" height="35" fill="#71925a"/><rect x="212" y="210" width="35" height="35" fill="#eee3cb"/><rect x="247" y="210" width="35" height="35" fill="#71925a"/>
+                <rect x="2" y="245" width="35" height="35" fill="#71925a"/><rect x="37" y="245" width="35" height="35" fill="#eee3cb"/><rect x="72" y="245" width="35" height="35" fill="#71925a"/><rect x="107" y="245" width="35" height="35" fill="#eee3cb"/><rect x="142" y="245" width="35" height="35" fill="#71925a"/><rect x="177" y="245" width="35" height="35" fill="#eee3cb"/><rect x="212" y="245" width="35" height="35" fill="#71925a"/><rect x="247" y="245" width="35" height="35" fill="#eee3cb"/>
               </g>
 
               <!-- zones -->
-              <rect x="0" y="0" width="280" height="70" fill="rgba(239,68,68,0.24)" stroke="#ef4444" stroke-width="3"/>
-              <rect x="0" y="210" width="280" height="70" fill="rgba(37,99,235,0.24)" stroke="#2563eb" stroke-width="3"/>
+              <rect x="2" y="0" width="280" height="70" fill="rgba(239,68,68,0.24)" stroke="#ef4444" stroke-width="3"/>
+              <rect x="2" y="210" width="280" height="70" fill="rgba(37,99,235,0.24)" stroke="#2563eb" stroke-width="3"/>
 
               <!-- black pieces -->
-              <text x="17.5" y="27" text-anchor="middle" dominant-baseline="middle" class="pieceB">♜</text><text x="52.5" y="27" text-anchor="middle" dominant-baseline="middle" class="pieceB">♞</text><text x="87.5" y="27" text-anchor="middle" dominant-baseline="middle" class="pieceB">♝</text><text x="122.5" y="27" text-anchor="middle" dominant-baseline="middle" class="pieceB">♛</text><text x="157.5" y="27" text-anchor="middle" dominant-baseline="middle" class="pieceB">♚</text><text x="192.5" y="27" text-anchor="middle" dominant-baseline="middle" class="pieceB">♝</text><text x="227.5" y="27" text-anchor="middle" dominant-baseline="middle" class="pieceB">♞</text><text x="262.5" y="27" text-anchor="middle" dominant-baseline="middle" class="pieceB">♜</text>
-              <text x="17.5" y="62" text-anchor="middle" dominant-baseline="middle" class="pieceB">♟</text><text x="52.5" y="62" text-anchor="middle" dominant-baseline="middle" class="pieceB">♟</text><text x="87.5" y="62" text-anchor="middle" dominant-baseline="middle" class="pieceB">♟</text><text x="122.5" y="62" text-anchor="middle" dominant-baseline="middle" class="pieceB">♟</text><text x="157.5" y="62" text-anchor="middle" dominant-baseline="middle" class="pieceB">♟</text><text x="192.5" y="62" text-anchor="middle" dominant-baseline="middle" class="pieceB">♟</text><text x="227.5" y="62" text-anchor="middle" dominant-baseline="middle" class="pieceB">♟</text><text x="262.5" y="62" text-anchor="middle" dominant-baseline="middle" class="pieceB">♟</text>
+              <image href="../assets/pieces/mpchess/bR.svg" xlink:href="../assets/pieces/mpchess/bR.svg" x="2" y="2" width="31" height="31"/><image href="../assets/pieces/mpchess/bN.svg" xlink:href="../assets/pieces/mpchess/bN.svg" x="37" y="2" width="31" height="31"/><image href="../assets/pieces/mpchess/bB.svg" xlink:href="../assets/pieces/mpchess/bB.svg" x="72" y="2" width="31" height="31"/><image href="../assets/pieces/mpchess/bQ.svg" xlink:href="../assets/pieces/mpchess/bQ.svg" x="107" y="2" width="31" height="31"/><image href="../assets/pieces/mpchess/bK.svg" xlink:href="../assets/pieces/mpchess/bK.svg" x="142" y="2" width="31" height="31"/><image href="../assets/pieces/mpchess/bB.svg" xlink:href="../assets/pieces/mpchess/bB.svg" x="177" y="2" width="31" height="31"/><image href="../assets/pieces/mpchess/bN.svg" xlink:href="../assets/pieces/mpchess/bN.svg" x="212" y="2" width="31" height="31"/><image href="../assets/pieces/mpchess/bR.svg" xlink:href="../assets/pieces/mpchess/bR.svg" x="247" y="2" width="31" height="31"/>
+              <image href="../assets/pieces/mpchess/bP.svg" xlink:href="../assets/pieces/mpchess/bP.svg" x="2" y="37" width="31" height="31"/><image href="../assets/pieces/mpchess/bP.svg" xlink:href="../assets/pieces/mpchess/bP.svg" x="37" y="37" width="31" height="31"/><image href="../assets/pieces/mpchess/bP.svg" xlink:href="../assets/pieces/mpchess/bP.svg" x="72" y="37" width="31" height="31"/><image href="../assets/pieces/mpchess/bP.svg" xlink:href="../assets/pieces/mpchess/bP.svg" x="107" y="37" width="31" height="31"/><image href="../assets/pieces/mpchess/bP.svg" xlink:href="../assets/pieces/mpchess/bP.svg" x="142" y="37" width="31" height="31"/><image href="../assets/pieces/mpchess/bP.svg" xlink:href="../assets/pieces/mpchess/bP.svg" x="177" y="37" width="31" height="31"/><image href="../assets/pieces/mpchess/bP.svg" xlink:href="../assets/pieces/mpchess/bP.svg" x="212" y="37" width="31" height="31"/><image href="../assets/pieces/mpchess/bP.svg" xlink:href="../assets/pieces/mpchess/bP.svg" x="247" y="37" width="31" height="31"/>
 
               <!-- white pieces -->
-              <text x="17.5" y="237" text-anchor="middle" dominant-baseline="middle" class="pieceW">♙</text><text x="52.5" y="237" text-anchor="middle" dominant-baseline="middle" class="pieceW">♙</text><text x="87.5" y="237" text-anchor="middle" dominant-baseline="middle" class="pieceW">♙</text><text x="122.5" y="237" text-anchor="middle" dominant-baseline="middle" class="pieceW">♙</text><text x="157.5" y="237" text-anchor="middle" dominant-baseline="middle" class="pieceW">♙</text><text x="192.5" y="237" text-anchor="middle" dominant-baseline="middle" class="pieceW">♙</text><text x="227.5" y="237" text-anchor="middle" dominant-baseline="middle" class="pieceW">♙</text><text x="262.5" y="237" text-anchor="middle" dominant-baseline="middle" class="pieceW">♙</text>
-              <text x="17.5" y="272" text-anchor="middle" dominant-baseline="middle" class="pieceW">♖</text><text x="52.5" y="272" text-anchor="middle" dominant-baseline="middle" class="pieceW">♘</text><text x="87.5" y="272" text-anchor="middle" dominant-baseline="middle" class="pieceW">♗</text><text x="122.5" y="272" text-anchor="middle" dominant-baseline="middle" class="pieceW">♕</text><text x="157.5" y="272" text-anchor="middle" dominant-baseline="middle" class="pieceW">♔</text><text x="192.5" y="272" text-anchor="middle" dominant-baseline="middle" class="pieceW">♗</text><text x="227.5" y="272" text-anchor="middle" dominant-baseline="middle" class="pieceW">♘</text><text x="262.5" y="272" text-anchor="middle" dominant-baseline="middle" class="pieceW">♖</text>
+              <image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="2" y="212" width="31" height="31"/><image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="37" y="212" width="31" height="31"/><image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="72" y="212" width="31" height="31"/><image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="107" y="212" width="31" height="31"/><image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="142" y="212" width="31" height="31"/><image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="177" y="212" width="31" height="31"/><image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="212" y="212" width="31" height="31"/><image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="247" y="212" width="31" height="31"/>
+              <image href="../assets/pieces/mpchess/wR.svg" xlink:href="../assets/pieces/mpchess/wR.svg" x="2" y="247" width="31" height="31"/><image href="../assets/pieces/mpchess/wN.svg" xlink:href="../assets/pieces/mpchess/wN.svg" x="37" y="247" width="31" height="31"/><image href="../assets/pieces/mpchess/wB.svg" xlink:href="../assets/pieces/mpchess/wB.svg" x="72" y="247" width="31" height="31"/><image href="../assets/pieces/mpchess/wQ.svg" xlink:href="../assets/pieces/mpchess/wQ.svg" x="107" y="247" width="31" height="31"/><image href="../assets/pieces/mpchess/wK.svg" xlink:href="../assets/pieces/mpchess/wK.svg" x="142" y="247" width="31" height="31"/><image href="../assets/pieces/mpchess/wB.svg" xlink:href="../assets/pieces/mpchess/wB.svg" x="177" y="247" width="31" height="31"/><image href="../assets/pieces/mpchess/wN.svg" xlink:href="../assets/pieces/mpchess/wN.svg" x="212" y="247" width="31" height="31"/><image href="../assets/pieces/mpchess/wR.svg" xlink:href="../assets/pieces/mpchess/wR.svg" x="247" y="247" width="31" height="31"/>
 
               <!-- coordinates -->
               <g class="coord">

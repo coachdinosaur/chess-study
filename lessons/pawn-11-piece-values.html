@@ -383,13 +383,13 @@
     .callout-title { color: var(--gold); font-weight: 900; margin-bottom: .35rem; }
     details.quiz {
       border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 1rem;
       background: rgba(255,255,255,.055);
-      margin: .7rem 0;
+      border-radius: 16px;
+      padding: .9rem 1rem;
+      margin-top: .75rem;
     }
-    details.quiz summary { cursor: pointer; font-weight: 850; color: var(--text); }
-    details.quiz p { color: var(--muted); }
+    details.quiz summary { cursor: pointer; font-weight: 800; }
+    details.quiz p { color: var(--muted); margin-bottom: 0; }
     .piece-strip {
       display: flex;
       flex-wrap: wrap;
@@ -506,6 +506,21 @@
       .rank-row { grid-template-columns: 1fr; }
     }
 
+  
+    /* Reusable app 0 SVG piece rendering (no Unicode glyphs). */
+    .lesson-piece-icon {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,.28));
+    }
+    .lesson-header-piece {
+      width: 1.6rem;
+      height: 1.6rem;
+      object-fit: contain;
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -513,7 +528,7 @@
 
   <header class="topbar">
     <div class="topbar-inner">
-      <div class="brand"><span class="brand-icon">♟</span><span>Pawn Level · Lesson 11</span></div>
+      <div class="brand"><span class="brand-icon"><img class="lesson-header-piece" src="../assets/pieces/mpchess/bP.svg" alt=""></span><span>Pawn Level · Lesson 11</span></div>
       <div class="top-actions">
         <a class="btn back-to-index" href="pawn-index.html">&larr; Back to Pawn Index</a>
         <button class="btn" id="themeToggle" type="button">Toggle theme</button>
@@ -538,7 +553,7 @@
       </div>
       <div class="hero-art" aria-hidden="true">
         <div class="poster-card">
-          <div class="poster-icon">♔ ♕ ♖ ♗ ♘ ♙</div>
+          <div class="poster-icon"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wK.svg" alt=""> <img class="lesson-piece-icon" src="../assets/pieces/mpchess/wQ.svg" alt=""> <img class="lesson-piece-icon" src="../assets/pieces/mpchess/wR.svg" alt=""> <img class="lesson-piece-icon" src="../assets/pieces/mpchess/wN.svg" alt=""> <img class="lesson-piece-icon" src="../assets/pieces/mpchess/wB.svg" alt=""> <img class="lesson-piece-icon" src="../assets/pieces/mpchess/wP.svg" alt=""></div>
           <div class="poster-title">Basic chess values</div>
           <div class="poster-text">King = the game. Queen = 9. Rook = 5. Bishop = 3. Knight = 3. Pawn = 1.</div>
         </div>
@@ -569,8 +584,8 @@
             <article class="piece-card">
 <div class="piece-top" style="background:#fee2e2; border-color:#dc262633;">
 <div class="symbols">
-<span class="white-piece">♔</span>
-<span class="black-piece">♚</span>
+<span class="white-piece"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wK.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"></span>
+<span class="black-piece"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/bK.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"></span>
 </div>
 <div>
 <h3>King</h3>
@@ -584,8 +599,8 @@
 </article><article class="piece-card">
 <div class="piece-top" style="background:#f3e8ff; border-color:#9333ea33;">
 <div class="symbols">
-<span class="white-piece">♕</span>
-<span class="black-piece">♛</span>
+<span class="white-piece"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wQ.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"></span>
+<span class="black-piece"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/bQ.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"></span>
 </div>
 <div>
 <h3>Queen</h3>
@@ -599,8 +614,8 @@
 </article><article class="piece-card">
 <div class="piece-top" style="background:#dbeafe; border-color:#2563eb33;">
 <div class="symbols">
-<span class="white-piece">♖</span>
-<span class="black-piece">♜</span>
+<span class="white-piece"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wR.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"></span>
+<span class="black-piece"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/bR.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"></span>
 </div>
 <div>
 <h3>Rook</h3>
@@ -614,8 +629,8 @@
 </article><article class="piece-card">
 <div class="piece-top" style="background:#dcfce7; border-color:#16a34a33;">
 <div class="symbols">
-<span class="white-piece">♗</span>
-<span class="black-piece">♝</span>
+<span class="white-piece"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wB.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"></span>
+<span class="black-piece"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/bB.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"></span>
 </div>
 <div>
 <h3>Bishop</h3>
@@ -629,8 +644,8 @@
 </article><article class="piece-card">
 <div class="piece-top" style="background:#ccfbf1; border-color:#0f766e33;">
 <div class="symbols">
-<span class="white-piece">♘</span>
-<span class="black-piece">♞</span>
+<span class="white-piece"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wN.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"></span>
+<span class="black-piece"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/bN.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"></span>
 </div>
 <div>
 <h3>Knight</h3>
@@ -644,8 +659,8 @@
 </article><article class="piece-card">
 <div class="piece-top" style="background:#fef3c7; border-color:#ca8a0433;">
 <div class="symbols">
-<span class="white-piece">♙</span>
-<span class="black-piece">♟</span>
+<span class="white-piece"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wP.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"></span>
+<span class="black-piece"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/bP.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"></span>
 </div>
 <div>
 <h3>Pawn</h3>
@@ -679,33 +694,48 @@
                 .num { font:900 20px Arial,sans-serif; fill:#0f172a; }
                 .pieceW { font:42px 'Segoe UI Symbol','Noto Sans Symbols 2',serif; fill:#fff; stroke:#0f172a; stroke-width:1.2px; paint-order:stroke fill; }
                 .pieceB { font:42px 'Segoe UI Symbol','Noto Sans Symbols 2',serif; fill:#111827; }
-              </style>
+              
+    /* Reusable app 0 SVG piece rendering (no Unicode glyphs). */
+    .lesson-piece-icon {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,.28));
+    }
+    .lesson-header-piece {
+      width: 1.6rem;
+      height: 1.6rem;
+      object-fit: contain;
+      display: block;
+    }
+  </style>
 </defs>
 <rect fill="#ffffff" height="360" rx="22" stroke="#cbd5e1" stroke-width="2" width="760" x="0" y="0"></rect>
 <text class="title" x="26" y="40">Basic Piece Values</text>
 <text class="small" x="26" y="66">Use these values to compare material during a game.</text>
 <g transform="translate(42,104)">
-<text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="0" y="32">♙</text>
+<image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="-17.5" y="14.5" width="35" height="35"/>
 <text class="label" x="48" y="32">Pawn</text>
 <rect fill="#fef3c7" height="32" rx="8" stroke="#fcd34d" width="48" x="140" y="12"></rect>
 <text class="num" text-anchor="middle" x="164" y="35">1</text>
-<text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="0" y="82">♘</text>
+<image href="../assets/pieces/mpchess/wN.svg" xlink:href="../assets/pieces/mpchess/wN.svg" x="-17.5" y="64.5" width="35" height="35"/>
 <text class="label" x="48" y="82">Knight</text>
 <rect fill="#ccfbf1" height="32" rx="8" stroke="#5eead4" width="144" x="140" y="62"></rect>
 <text class="num" text-anchor="middle" x="212" y="85">3</text>
-<text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="0" y="132">♗</text>
+<image href="../assets/pieces/mpchess/wB.svg" xlink:href="../assets/pieces/mpchess/wB.svg" x="-17.5" y="114.5" width="35" height="35"/>
 <text class="label" x="48" y="132">Bishop</text>
 <rect fill="#dcfce7" height="32" rx="8" stroke="#86efac" width="144" x="140" y="112"></rect>
 <text class="num" text-anchor="middle" x="212" y="135">3</text>
-<text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="0" y="182">♖</text>
+<image href="../assets/pieces/mpchess/wR.svg" xlink:href="../assets/pieces/mpchess/wR.svg" x="-17.5" y="164.5" width="35" height="35"/>
 <text class="label" x="48" y="182">Rook</text>
 <rect fill="#dbeafe" height="32" rx="8" stroke="#93c5fd" width="240" x="140" y="162"></rect>
 <text class="num" text-anchor="middle" x="260" y="185">5</text>
-<text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="0" y="232">♕</text>
+<image href="../assets/pieces/mpchess/wQ.svg" xlink:href="../assets/pieces/mpchess/wQ.svg" x="-17.5" y="214.5" width="35" height="35"/>
 <text class="label" x="48" y="232">Queen</text>
 <rect fill="#f3e8ff" height="32" rx="8" stroke="#d8b4fe" width="432" x="140" y="212"></rect>
 <text class="num" text-anchor="middle" x="356" y="235">9</text>
-<text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="0" y="282">♔</text>
+<image href="../assets/pieces/mpchess/wK.svg" xlink:href="../assets/pieces/mpchess/wK.svg" x="-17.5" y="264.5" width="35" height="35"/>
 <text class="label" x="48" y="282">King</text>
 <rect fill="#fee2e2" height="32" rx="8" stroke="#fca5a5" width="540" x="140" y="262"></rect>
 <text class="num" text-anchor="middle" x="410" y="285">The game</text>

@@ -21,8 +21,8 @@
       --orange: #ffae5a;
       --red: #ff6b6b;
       --purple: #b990ff;
-      --light-square: #f3e7c7;
-      --dark-square: #7fb38d;
+      --light-square: #eee3cb;
+      --dark-square: #71925a;
       --shadow: 0 22px 60px rgba(0,0,0,.35);
       --radius: 24px;
       --max: 1180px;
@@ -452,6 +452,21 @@
       .visual, svg { break-inside: avoid; page-break-inside: avoid; }
     }
 
+  
+    /* Reusable app 0 SVG piece rendering (no Unicode glyphs). */
+    .lesson-piece-icon {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,.28));
+    }
+    .lesson-header-piece {
+      width: 1.6rem;
+      height: 1.6rem;
+      object-fit: contain;
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -459,7 +474,7 @@
   <header class="topbar">
     <div class="topbar-inner">
       <div class="brand" aria-label="Lesson title">
-        <div class="brand-icon" aria-hidden="true">♘</div>
+        <div class="brand-icon" aria-hidden="true"><img class="lesson-header-piece" src="../assets/pieces/mpchess/wN.svg" alt=""></div>
         <span>Pawn Level</span>
         <span>Capturing a Piece</span>
       </div>
@@ -540,9 +555,7 @@
 <title id="before-title">Before Nxd3</title>
 <desc id="before-desc">White knight on f2 moves to d3 to capture a black bishop on d3.</desc>
 <defs>
-<marker id="arrow-before" markerheight="12" markerunits="strokeWidth" markerwidth="12" orient="auto" refx="10" refy="6">
-<path d="M 0 0 L 12 6 L 0 12 z" fill="#f59e0b"></path>
-</marker>
+<marker id="arrow-before" viewBox="0 0 14 14" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto" markerUnits="userSpaceOnUse"><path d="M 0 0 L 14 7 L 0 14 Z" fill="#f59e0b"></path></marker>
 <filter height="140%" id="piece-shadow" width="140%" x="-20%" y="-20%">
 <fedropshadow dx="0" dy="2" flood-color="#0f172a" flood-opacity="0.32" stddeviation="2"></fedropshadow>
 </filter>
@@ -565,9 +578,9 @@
 </g>
 <rect fill="rgba(239,68,68,.38)" height="40" stroke="#ef4444" stroke-width="3" width="40" x="120" y="200"></rect>
 <rect fill="rgba(56,189,248,.38)" height="40" stroke="#0284c7" stroke-width="3" width="40" x="200" y="240"></rect>
+<image href="../assets/pieces/mpchess/bB.svg" xlink:href="../assets/pieces/mpchess/bB.svg" x="122" y="202" width="36" height="36"/>
+<image href="../assets/pieces/mpchess/wN.svg" xlink:href="../assets/pieces/mpchess/wN.svg" x="202" y="242" width="36" height="36"/>
 <path d="M 220 260 Q 192 232 140 220" fill="none" marker-end="url(#arrow-before)" stroke="#f59e0b" stroke-linecap="round" stroke-width="8"></path>
-<text class="piece-black" dominant-baseline="central" filter="url(#piece-shadow)" text-anchor="middle" x="140" y="235">♝</text>
-<text class="piece-white" dominant-baseline="central" filter="url(#piece-shadow)" text-anchor="middle" x="220" y="276">♘</text>
 <!-- labels -->
 <g>
 <text class="coord" text-anchor="middle" x="-16" y="24">8</text><text class="coord" text-anchor="middle" x="-16" y="64">7</text><text class="coord" text-anchor="middle" x="-16" y="104">6</text><text class="coord" text-anchor="middle" x="-16" y="144">5</text><text class="coord" text-anchor="middle" x="-16" y="184">4</text><text class="coord" text-anchor="middle" x="-16" y="224">3</text><text class="coord" text-anchor="middle" x="-16" y="264">2</text><text class="coord" text-anchor="middle" x="-16" y="304">1</text>
@@ -607,7 +620,7 @@
 <rect fill="var(--dark-square)" height="40" width="40" x="0" y="280"></rect><rect fill="var(--light-square)" height="40" width="40" x="40" y="280"></rect><rect fill="var(--dark-square)" height="40" width="40" x="80" y="280"></rect><rect fill="var(--light-square)" height="40" width="40" x="120" y="280"></rect><rect fill="var(--dark-square)" height="40" width="40" x="160" y="280"></rect><rect fill="var(--light-square)" height="40" width="40" x="200" y="280"></rect><rect fill="var(--dark-square)" height="40" width="40" x="240" y="280"></rect><rect fill="var(--light-square)" height="40" width="40" x="280" y="280"></rect>
 </g>
 <rect fill="rgba(34,197,94,.38)" height="40" stroke="#16a34a" stroke-width="3" width="40" x="120" y="200"></rect>
-<text class="piece-white" dominant-baseline="central" filter="url(#piece-shadow-after)" text-anchor="middle" x="140" y="236">♘</text>
+<image href="../assets/pieces/mpchess/wN.svg" xlink:href="../assets/pieces/mpchess/wN.svg" x="122" y="202" width="36" height="36"/>
 <text class="square-name" text-anchor="middle" x="140" y="213">d3</text>
 <g>
 <text class="coord" text-anchor="middle" x="-16" y="24">8</text><text class="coord" text-anchor="middle" x="-16" y="64">7</text><text class="coord" text-anchor="middle" x="-16" y="104">6</text><text class="coord" text-anchor="middle" x="-16" y="144">5</text><text class="coord" text-anchor="middle" x="-16" y="184">4</text><text class="coord" text-anchor="middle" x="-16" y="224">3</text><text class="coord" text-anchor="middle" x="-16" y="264">2</text><text class="coord" text-anchor="middle" x="-16" y="304">1</text>
@@ -635,7 +648,7 @@
             <div class="token"><strong>d3</strong><span>landing square</span></div>
           </div>
           <div class="readout">
-            <div class="sound-icon">♘</div>
+            <div class="sound-icon"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wN.svg" alt="" style="width:1.5em;height:1.5em;"></div>
             <p><strong>Nxd3</strong> is read as: <strong>Knight takes d3.</strong></p>
           </div>
         </section>

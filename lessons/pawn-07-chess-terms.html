@@ -386,6 +386,21 @@
       svg { break-inside: avoid; page-break-inside: avoid; }
     }
 
+  
+    /* Reusable app 0 SVG piece rendering (no Unicode glyphs). */
+    .lesson-piece-icon {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,.28));
+    }
+    .lesson-header-piece {
+      width: 1.6rem;
+      height: 1.6rem;
+      object-fit: contain;
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -393,7 +408,7 @@
   <header class="topbar">
     <div class="topbar-inner">
       <div class="brand" aria-label="Lesson title">
-        <div class="brand-icon" aria-hidden="true">♟</div>
+        <div class="brand-icon" aria-hidden="true"><img class="lesson-header-piece" src="../assets/pieces/mpchess/bP.svg" alt=""></div>
         <span>Pawn Level</span>
         <span>Chess Terms</span>
       </div>

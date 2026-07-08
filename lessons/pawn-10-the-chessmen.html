@@ -382,13 +382,13 @@
     .callout-title { color: var(--gold); font-weight: 900; margin-bottom: .35rem; }
     details.quiz {
       border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 1rem;
       background: rgba(255,255,255,.055);
-      margin: .7rem 0;
+      border-radius: 16px;
+      padding: .9rem 1rem;
+      margin-top: .75rem;
     }
-    details.quiz summary { cursor: pointer; font-weight: 850; color: var(--text); }
-    details.quiz p { color: var(--muted); }
+    details.quiz summary { cursor: pointer; font-weight: 800; }
+    details.quiz p { color: var(--muted); margin-bottom: 0; }
     .piece-strip {
       display: flex;
       flex-wrap: wrap;
@@ -407,6 +407,21 @@
       .content-grid, .inventory-grid, .fact-grid, .summary-grid, .review-grid { grid-template-columns: 1fr; }
     }
 
+  
+    /* Reusable app 0 SVG piece rendering (no Unicode glyphs). */
+    .lesson-piece-icon {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,.28));
+    }
+    .lesson-header-piece {
+      width: 1.6rem;
+      height: 1.6rem;
+      object-fit: contain;
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -414,7 +429,7 @@
 
   <header class="topbar">
     <div class="topbar-inner">
-      <div class="brand"><span class="brand-icon">♟</span><span>Pawn Level · Lesson 10</span></div>
+      <div class="brand"><span class="brand-icon"><img class="lesson-header-piece" src="../assets/pieces/mpchess/bP.svg" alt=""></span><span>Pawn Level · Lesson 10</span></div>
       <div class="top-actions">
         <a class="btn back-to-index" href="pawn-index.html">&larr; Back to Pawn Index</a>
         <button class="btn" id="themeToggle" type="button">Toggle theme</button>
@@ -439,7 +454,7 @@
       </div>
       <div class="hero-art" aria-hidden="true">
         <div class="poster-card">
-          <div class="poster-icon">♔ ♕ ♖ ♘ ♗ ♙</div>
+          <div class="poster-icon"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wK.svg" alt=""> <img class="lesson-piece-icon" src="../assets/pieces/mpchess/wQ.svg" alt=""> <img class="lesson-piece-icon" src="../assets/pieces/mpchess/wR.svg" alt=""> <img class="lesson-piece-icon" src="../assets/pieces/mpchess/wN.svg" alt=""> <img class="lesson-piece-icon" src="../assets/pieces/mpchess/wB.svg" alt=""> <img class="lesson-piece-icon" src="../assets/pieces/mpchess/wP.svg" alt=""></div>
           <div class="poster-title">32 chessmen in one game</div>
           <div class="poster-text">White has 16. Black has 16. Each side begins with the same army.</div>
         </div>
@@ -476,7 +491,22 @@
           .mainTitle { font: 900 25px Arial, sans-serif; fill: #0f172a; }
           .label { font: 800 15px Arial, sans-serif; fill: #334155; }
           .bigNum { font: 900 42px Arial, sans-serif; fill:#2563eb; }
-        </style>
+        
+    /* Reusable app 0 SVG piece rendering (no Unicode glyphs). */
+    .lesson-piece-icon {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,.28));
+    }
+    .lesson-header-piece {
+      width: 1.6rem;
+      height: 1.6rem;
+      object-fit: contain;
+      display: block;
+    }
+  </style>
       </defs>
       <rect x="0" y="0" width="520" height="330" rx="22" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
       <text x="28" y="36" class="mainTitle">There are 32 chessmen</text>
@@ -485,7 +515,7 @@
       <rect x="26" y="174" width="468" height="106" rx="18" fill="#eff6ff" stroke="#bfdbfe"/>
       <text x="44" y="84" class="label">Black has 16</text>
       <text x="44" y="200" class="label">White has 16</text>
-      <text x="54" y="46" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♜</text><text x="106" y="46" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♞</text><text x="158" y="46" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♝</text><text x="210" y="46" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♛</text><text x="262" y="46" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♚</text><text x="314" y="46" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♝</text><text x="366" y="46" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♞</text><text x="418" y="46" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♜</text><text x="54" y="104" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♟</text><text x="106" y="104" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♟</text><text x="158" y="104" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♟</text><text x="210" y="104" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♟</text><text x="262" y="104" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♟</text><text x="314" y="104" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♟</text><text x="366" y="104" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♟</text><text x="418" y="104" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♟</text><text x="54" y="184" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♙</text><text x="106" y="184" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♙</text><text x="158" y="184" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♙</text><text x="210" y="184" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♙</text><text x="262" y="184" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♙</text><text x="314" y="184" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♙</text><text x="366" y="184" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♙</text><text x="418" y="184" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♙</text><text x="54" y="242" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♖</text><text x="106" y="242" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♘</text><text x="158" y="242" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♗</text><text x="210" y="242" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♕</text><text x="262" y="242" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♔</text><text x="314" y="242" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♗</text><text x="366" y="242" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♘</text><text x="418" y="242" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♖</text>
+      <image href="../assets/pieces/mpchess/bR.svg" xlink:href="../assets/pieces/mpchess/bR.svg" x="34" y="26" width="40" height="40"/><image href="../assets/pieces/mpchess/bN.svg" xlink:href="../assets/pieces/mpchess/bN.svg" x="86" y="26" width="40" height="40"/><image href="../assets/pieces/mpchess/bB.svg" xlink:href="../assets/pieces/mpchess/bB.svg" x="138" y="26" width="40" height="40"/><image href="../assets/pieces/mpchess/bQ.svg" xlink:href="../assets/pieces/mpchess/bQ.svg" x="190" y="26" width="40" height="40"/><image href="../assets/pieces/mpchess/bK.svg" xlink:href="../assets/pieces/mpchess/bK.svg" x="242" y="26" width="40" height="40"/><image href="../assets/pieces/mpchess/bB.svg" xlink:href="../assets/pieces/mpchess/bB.svg" x="294" y="26" width="40" height="40"/><image href="../assets/pieces/mpchess/bN.svg" xlink:href="../assets/pieces/mpchess/bN.svg" x="346" y="26" width="40" height="40"/><image href="../assets/pieces/mpchess/bR.svg" xlink:href="../assets/pieces/mpchess/bR.svg" x="398" y="26" width="40" height="40"/><image href="../assets/pieces/mpchess/bP.svg" xlink:href="../assets/pieces/mpchess/bP.svg" x="34" y="84" width="40" height="40"/><image href="../assets/pieces/mpchess/bP.svg" xlink:href="../assets/pieces/mpchess/bP.svg" x="86" y="84" width="40" height="40"/><image href="../assets/pieces/mpchess/bP.svg" xlink:href="../assets/pieces/mpchess/bP.svg" x="138" y="84" width="40" height="40"/><image href="../assets/pieces/mpchess/bP.svg" xlink:href="../assets/pieces/mpchess/bP.svg" x="190" y="84" width="40" height="40"/><image href="../assets/pieces/mpchess/bP.svg" xlink:href="../assets/pieces/mpchess/bP.svg" x="242" y="84" width="40" height="40"/><image href="../assets/pieces/mpchess/bP.svg" xlink:href="../assets/pieces/mpchess/bP.svg" x="294" y="84" width="40" height="40"/><image href="../assets/pieces/mpchess/bP.svg" xlink:href="../assets/pieces/mpchess/bP.svg" x="346" y="84" width="40" height="40"/><image href="../assets/pieces/mpchess/bP.svg" xlink:href="../assets/pieces/mpchess/bP.svg" x="398" y="84" width="40" height="40"/><image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="34" y="164" width="40" height="40"/><image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="86" y="164" width="40" height="40"/><image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="138" y="164" width="40" height="40"/><image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="190" y="164" width="40" height="40"/><image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="242" y="164" width="40" height="40"/><image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="294" y="164" width="40" height="40"/><image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="346" y="164" width="40" height="40"/><image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="398" y="164" width="40" height="40"/><image href="../assets/pieces/mpchess/wR.svg" xlink:href="../assets/pieces/mpchess/wR.svg" x="34" y="222" width="40" height="40"/><image href="../assets/pieces/mpchess/wN.svg" xlink:href="../assets/pieces/mpchess/wN.svg" x="86" y="222" width="40" height="40"/><image href="../assets/pieces/mpchess/wB.svg" xlink:href="../assets/pieces/mpchess/wB.svg" x="138" y="222" width="40" height="40"/><image href="../assets/pieces/mpchess/wQ.svg" xlink:href="../assets/pieces/mpchess/wQ.svg" x="190" y="222" width="40" height="40"/><image href="../assets/pieces/mpchess/wK.svg" xlink:href="../assets/pieces/mpchess/wK.svg" x="242" y="222" width="40" height="40"/><image href="../assets/pieces/mpchess/wB.svg" xlink:href="../assets/pieces/mpchess/wB.svg" x="294" y="222" width="40" height="40"/><image href="../assets/pieces/mpchess/wN.svg" xlink:href="../assets/pieces/mpchess/wN.svg" x="346" y="222" width="40" height="40"/><image href="../assets/pieces/mpchess/wR.svg" xlink:href="../assets/pieces/mpchess/wR.svg" x="398" y="222" width="40" height="40"/>
       <text x="260" y="307" text-anchor="middle" class="label">16 white + 16 black = 32 chessmen</text>
     </svg></div>
           </div>
@@ -520,17 +550,17 @@
               <h3>Pieces</h3>
               <p>The pieces are the king, queen, rooks, knights, and bishops.</p>
               <div class="piece-strip" aria-label="Piece examples">
-                <span class="piece-chip">♔ King</span>
-                <span class="piece-chip">♕ Queen</span>
-                <span class="piece-chip">♖ Rook</span>
-                <span class="piece-chip">♘ Knight</span>
-                <span class="piece-chip">♗ Bishop</span>
+                <span class="piece-chip"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wK.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"> </span>
+                <span class="piece-chip"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wQ.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"> </span>
+                <span class="piece-chip"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wR.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"> </span>
+                <span class="piece-chip"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wN.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"> </span>
+                <span class="piece-chip"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wB.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"> </span>
               </div>
               <h3 style="margin-top:1.2rem">Pawns</h3>
               <p>Pawns are chessmen too, but they are named separately from the pieces.</p>
               <div class="piece-strip" aria-label="Pawn examples">
-                <span class="piece-chip">♙ White pawn</span>
-                <span class="piece-chip">♟ Black pawn</span>
+                <span class="piece-chip"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wP.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"> </span>
+                <span class="piece-chip"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/bP.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"> </span>
               </div>
             </div>
             <div class="diagram-card">
@@ -542,7 +572,22 @@
           .small { font:700 14px Arial,sans-serif; fill:#475569; }
           .pieceW { font:54px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#fff;stroke:#0f172a;stroke-width:1.3px;paint-order:stroke fill; }
           .pieceB { font:54px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827; }
-        </style>
+        
+    /* Reusable app 0 SVG piece rendering (no Unicode glyphs). */
+    .lesson-piece-icon {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,.28));
+    }
+    .lesson-header-piece {
+      width: 1.6rem;
+      height: 1.6rem;
+      object-fit: contain;
+      display: block;
+    }
+  </style>
         <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
           <path d="M0,0 L0,6 L9,3 z" fill="#2563eb"/>
         </marker>
@@ -557,15 +602,15 @@
       <line x1="285" y1="130" x2="365" y2="180" stroke="#2563eb" stroke-width="5" stroke-linecap="round" marker-end="url(#arrow)"/>
 
       <rect x="44" y="180" width="190" height="70" rx="18" fill="#f8fafc" stroke="#e2e8f0"/>
-      <text x="78" y="220" text-anchor="middle" dominant-baseline="middle" class="pieceW">♔</text>
-      <text x="118" y="220" text-anchor="middle" dominant-baseline="middle" class="pieceB">♛</text>
-      <text x="158" y="220" text-anchor="middle" dominant-baseline="middle" class="pieceW">♖</text>
+      <image href="../assets/pieces/mpchess/wK.svg" xlink:href="../assets/pieces/mpchess/wK.svg" x="58" y="200" width="40" height="40"/>
+      <image href="../assets/pieces/mpchess/bQ.svg" xlink:href="../assets/pieces/mpchess/bQ.svg" x="98" y="200" width="40" height="40"/>
+      <image href="../assets/pieces/mpchess/wR.svg" xlink:href="../assets/pieces/mpchess/wR.svg" x="138" y="200" width="40" height="40"/>
       <text x="196" y="207" class="label">Piece</text>
       <text x="196" y="230" class="small">king, queen, rook,<tspan x="196" dy="17">knight, bishop</tspan></text>
 
       <rect x="286" y="180" width="190" height="70" rx="18" fill="#f8fafc" stroke="#e2e8f0"/>
-      <text x="330" y="220" text-anchor="middle" dominant-baseline="middle" class="pieceW">♙</text>
-      <text x="370" y="220" text-anchor="middle" dominant-baseline="middle" class="pieceB">♟</text>
+      <image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="310" y="200" width="40" height="40"/>
+      <image href="../assets/pieces/mpchess/bP.svg" xlink:href="../assets/pieces/mpchess/bP.svg" x="350" y="200" width="40" height="40"/>
       <text x="410" y="207" class="label">Pawn</text>
       <text x="410" y="230" class="small">8 for each player</text>
     </svg></div>
@@ -589,7 +634,22 @@
           .smallText { font: 700 15px Arial, sans-serif; fill: #475569; }
           .rowName { font: 800 18px Arial, sans-serif; fill: #1e293b; }
           .count { font: 900 22px Arial, sans-serif; fill: #2563eb; }
-        </style>
+        
+    /* Reusable app 0 SVG piece rendering (no Unicode glyphs). */
+    .lesson-piece-icon {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,.28));
+    }
+    .lesson-header-piece {
+      width: 1.6rem;
+      height: 1.6rem;
+      object-fit: contain;
+      display: block;
+    }
+  </style>
       </defs>
       <rect x="0" y="0" width="470" height="430" rx="22" fill="#eff6ff" stroke="#bfdbfe" stroke-width="2"/>
       <text x="24" y="36" class="svgTitle">White chessmen</text>
@@ -597,37 +657,37 @@
       
         <g transform="translate(0,72)">
           <rect x="20" y="-28" width="430" height="48" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
-          <text x="54" y="3" text-anchor="middle" dominant-baseline="middle" style="font:38px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.3px;paint-order:stroke fill;">♔</text>
+          <image href="../assets/pieces/mpchess/wK.svg" xlink:href="../assets/pieces/mpchess/wK.svg" x="34" y="-17" width="40" height="40"/>
           <text x="98" y="0" dominant-baseline="middle" class="rowName">King</text>
           <text x="405" y="0" text-anchor="middle" dominant-baseline="middle" class="count">1</text>
         </g>
         <g transform="translate(0,130)">
           <rect x="20" y="-28" width="430" height="48" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
-          <text x="54" y="3" text-anchor="middle" dominant-baseline="middle" style="font:38px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.3px;paint-order:stroke fill;">♕</text>
+          <image href="../assets/pieces/mpchess/wQ.svg" xlink:href="../assets/pieces/mpchess/wQ.svg" x="34" y="-17" width="40" height="40"/>
           <text x="98" y="0" dominant-baseline="middle" class="rowName">Queen</text>
           <text x="405" y="0" text-anchor="middle" dominant-baseline="middle" class="count">1</text>
         </g>
         <g transform="translate(0,188)">
           <rect x="20" y="-28" width="430" height="48" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
-          <text x="54" y="3" text-anchor="middle" dominant-baseline="middle" style="font:38px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.3px;paint-order:stroke fill;">♖</text>
+          <image href="../assets/pieces/mpchess/wR.svg" xlink:href="../assets/pieces/mpchess/wR.svg" x="34" y="-17" width="40" height="40"/>
           <text x="98" y="0" dominant-baseline="middle" class="rowName">Rooks</text>
           <text x="405" y="0" text-anchor="middle" dominant-baseline="middle" class="count">2</text>
         </g>
         <g transform="translate(0,246)">
           <rect x="20" y="-28" width="430" height="48" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
-          <text x="54" y="3" text-anchor="middle" dominant-baseline="middle" style="font:38px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.3px;paint-order:stroke fill;">♘</text>
+          <image href="../assets/pieces/mpchess/wN.svg" xlink:href="../assets/pieces/mpchess/wN.svg" x="34" y="-17" width="40" height="40"/>
           <text x="98" y="0" dominant-baseline="middle" class="rowName">Knights</text>
           <text x="405" y="0" text-anchor="middle" dominant-baseline="middle" class="count">2</text>
         </g>
         <g transform="translate(0,304)">
           <rect x="20" y="-28" width="430" height="48" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
-          <text x="54" y="3" text-anchor="middle" dominant-baseline="middle" style="font:38px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.3px;paint-order:stroke fill;">♗</text>
+          <image href="../assets/pieces/mpchess/wB.svg" xlink:href="../assets/pieces/mpchess/wB.svg" x="34" y="-17" width="40" height="40"/>
           <text x="98" y="0" dominant-baseline="middle" class="rowName">Bishops</text>
           <text x="405" y="0" text-anchor="middle" dominant-baseline="middle" class="count">2</text>
         </g>
         <g transform="translate(0,362)">
           <rect x="20" y="-28" width="430" height="48" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
-          <text x="54" y="3" text-anchor="middle" dominant-baseline="middle" style="font:38px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.3px;paint-order:stroke fill;">♙</text>
+          <image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="34" y="-17" width="40" height="40"/>
           <text x="98" y="0" dominant-baseline="middle" class="rowName">Pawns</text>
           <text x="405" y="0" text-anchor="middle" dominant-baseline="middle" class="count">8</text>
         </g>
@@ -654,7 +714,22 @@
           .smallText { font: 700 15px Arial, sans-serif; fill: #475569; }
           .rowName { font: 800 18px Arial, sans-serif; fill: #1e293b; }
           .count { font: 900 22px Arial, sans-serif; fill: #2563eb; }
-        </style>
+        
+    /* Reusable app 0 SVG piece rendering (no Unicode glyphs). */
+    .lesson-piece-icon {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,.28));
+    }
+    .lesson-header-piece {
+      width: 1.6rem;
+      height: 1.6rem;
+      object-fit: contain;
+      display: block;
+    }
+  </style>
       </defs>
       <rect x="0" y="0" width="470" height="430" rx="22" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
       <text x="24" y="36" class="svgTitle">Black chessmen</text>
@@ -662,37 +737,37 @@
       
         <g transform="translate(0,72)">
           <rect x="20" y="-28" width="430" height="48" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
-          <text x="54" y="3" text-anchor="middle" dominant-baseline="middle" style="font:38px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♚</text>
+          <image href="../assets/pieces/mpchess/bK.svg" xlink:href="../assets/pieces/mpchess/bK.svg" x="34" y="-17" width="40" height="40"/>
           <text x="98" y="0" dominant-baseline="middle" class="rowName">King</text>
           <text x="405" y="0" text-anchor="middle" dominant-baseline="middle" class="count">1</text>
         </g>
         <g transform="translate(0,130)">
           <rect x="20" y="-28" width="430" height="48" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
-          <text x="54" y="3" text-anchor="middle" dominant-baseline="middle" style="font:38px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♛</text>
+          <image href="../assets/pieces/mpchess/bQ.svg" xlink:href="../assets/pieces/mpchess/bQ.svg" x="34" y="-17" width="40" height="40"/>
           <text x="98" y="0" dominant-baseline="middle" class="rowName">Queen</text>
           <text x="405" y="0" text-anchor="middle" dominant-baseline="middle" class="count">1</text>
         </g>
         <g transform="translate(0,188)">
           <rect x="20" y="-28" width="430" height="48" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
-          <text x="54" y="3" text-anchor="middle" dominant-baseline="middle" style="font:38px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♜</text>
+          <image href="../assets/pieces/mpchess/bR.svg" xlink:href="../assets/pieces/mpchess/bR.svg" x="34" y="-17" width="40" height="40"/>
           <text x="98" y="0" dominant-baseline="middle" class="rowName">Rooks</text>
           <text x="405" y="0" text-anchor="middle" dominant-baseline="middle" class="count">2</text>
         </g>
         <g transform="translate(0,246)">
           <rect x="20" y="-28" width="430" height="48" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
-          <text x="54" y="3" text-anchor="middle" dominant-baseline="middle" style="font:38px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♞</text>
+          <image href="../assets/pieces/mpchess/bN.svg" xlink:href="../assets/pieces/mpchess/bN.svg" x="34" y="-17" width="40" height="40"/>
           <text x="98" y="0" dominant-baseline="middle" class="rowName">Knights</text>
           <text x="405" y="0" text-anchor="middle" dominant-baseline="middle" class="count">2</text>
         </g>
         <g transform="translate(0,304)">
           <rect x="20" y="-28" width="430" height="48" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
-          <text x="54" y="3" text-anchor="middle" dominant-baseline="middle" style="font:38px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♝</text>
+          <image href="../assets/pieces/mpchess/bB.svg" xlink:href="../assets/pieces/mpchess/bB.svg" x="34" y="-17" width="40" height="40"/>
           <text x="98" y="0" dominant-baseline="middle" class="rowName">Bishops</text>
           <text x="405" y="0" text-anchor="middle" dominant-baseline="middle" class="count">2</text>
         </g>
         <g transform="translate(0,362)">
           <rect x="20" y="-28" width="430" height="48" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
-          <text x="54" y="3" text-anchor="middle" dominant-baseline="middle" style="font:38px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♟</text>
+          <image href="../assets/pieces/mpchess/bP.svg" xlink:href="../assets/pieces/mpchess/bP.svg" x="34" y="-17" width="40" height="40"/>
           <text x="98" y="0" dominant-baseline="middle" class="rowName">Pawns</text>
           <text x="405" y="0" text-anchor="middle" dominant-baseline="middle" class="count">8</text>
         </g>
@@ -721,12 +796,12 @@
             </tr>
           </thead>
           <tbody>
-            <tr><td>King</td><td class="count">1</td><td>♔ / ♚</td></tr>
-            <tr><td>Queen</td><td class="count">1</td><td>♕ / ♛</td></tr>
-            <tr><td>Rooks</td><td class="count">2</td><td>♖♖ / ♜♜</td></tr>
-            <tr><td>Knights</td><td class="count">2</td><td>♘♘ / ♞♞</td></tr>
-            <tr><td>Bishops</td><td class="count">2</td><td>♗♗ / ♝♝</td></tr>
-            <tr><td>Pawns</td><td class="count">8</td><td>♙♙♙♙♙♙♙♙ / ♟♟♟♟♟♟♟♟</td></tr>
+            <tr><td>King</td><td class="count">1</td><td><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wK.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"> / <img class="lesson-piece-icon" src="../assets/pieces/mpchess/bK.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"></td></tr>
+            <tr><td>Queen</td><td class="count">1</td><td><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wQ.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"> / <img class="lesson-piece-icon" src="../assets/pieces/mpchess/bQ.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"></td></tr>
+            <tr><td>Rooks</td><td class="count">2</td><td><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wR.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wR.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"> / <img class="lesson-piece-icon" src="../assets/pieces/mpchess/bR.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/bR.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"></td></tr>
+            <tr><td>Knights</td><td class="count">2</td><td><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wN.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wN.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"> / <img class="lesson-piece-icon" src="../assets/pieces/mpchess/bN.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/bN.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"></td></tr>
+            <tr><td>Bishops</td><td class="count">2</td><td><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wB.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wB.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"> / <img class="lesson-piece-icon" src="../assets/pieces/mpchess/bB.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/bB.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"></td></tr>
+            <tr><td>Pawns</td><td class="count">8</td><td><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wP.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wP.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wP.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wP.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wP.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wP.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wP.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wP.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"> / <img class="lesson-piece-icon" src="../assets/pieces/mpchess/bP.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/bP.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/bP.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/bP.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/bP.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/bP.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/bP.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/bP.svg" alt="" style="width:1.2em;height:1.2em;vertical-align:middle;"></td></tr>
           </tbody>
         </table>
           </div>
