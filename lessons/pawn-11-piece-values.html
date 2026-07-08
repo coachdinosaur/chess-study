@@ -521,7 +521,38 @@
       object-fit: contain;
       display: block;
     }
-  </style>
+  
+.lesson-nav-row a {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: .55rem .9rem;
+      text-decoration: none;
+      transition: transform .18s ease, background .18s ease;
+    }
+
+
+
+
+
+    .lesson-nav-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .lesson-nav-row a {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: .55rem .9rem;
+      text-decoration: none;
+      transition: transform .18s ease, background .18s ease;
+    }
+    .lesson-nav-row a:hover { color: var(--text); background: var(--panel-strong); }
+</style>
 </head>
 <body>
   <a class="skip-link" href="#lesson">Skip to lesson</a>
@@ -709,7 +740,17 @@
       object-fit: contain;
       display: block;
     }
-  </style>
+  
+.lesson-nav-row a {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: .55rem .9rem;
+      text-decoration: none;
+      transition: transform .18s ease, background .18s ease;
+    }
+</style>
 </defs>
 <rect fill="#ffffff" height="360" rx="22" stroke="#cbd5e1" stroke-width="2" width="760" x="0" y="0"></rect>
 <text class="title" x="26" y="40">Basic Piece Values</text>
@@ -840,6 +881,7 @@
             <summary>Why is the king not worth points?</summary>
             <p>The king’s value is the game itself. If your king is checkmated, you lose.</p>
           </details>
+          <div class="lesson-nav-row"><a href="pawn-10-the-chessmen.html">&larr; Previous lesson</a><a href="pawn-m2-lesson-01-how-to-move-the-king.html">Next lesson &rarr;</a></div>
         </section>
       </main>
     </div>

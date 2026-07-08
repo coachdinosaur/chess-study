@@ -713,7 +713,7 @@
       color: var(--muted);
       font-weight: 800;
     }
-    .lesson-nav-row a:hover { color: var(--text); background: var(--panel-strong); }
+
     @media (max-width: 980px) {
       .direction-grid, .piece-rule-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .movement-hero-visual { min-height: 0; }
@@ -728,6 +728,23 @@
     @media print {
       .movement-hero-visual, .direction-card, .piece-rule { break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
     }
+
+    .lesson-nav-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .lesson-nav-row a {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: .55rem .9rem;
+      text-decoration: none;
+      transition: transform .18s ease, background .18s ease;
+    }
+    .lesson-nav-row a:hover { color: var(--text); background: var(--panel-strong); }
 </style>
 </head>
 <body>
@@ -875,7 +892,7 @@
             <summary>5. In the example, what piece is captured?</summary>
             <p>The White Rook captures the Black Bishop.</p>
           </details>
-          <div class="lesson-nav-row"><a href="pawn-m1-2-lesson-09-how-to-move-the-rook.html">&larr; Previous lesson</a><a href="pawn-m1-2-lesson-11-how-to-move-the-bishop.html">Next lesson &rarr;</a></div>
+          <div class="lesson-nav-row"><a href="pawn-m2-lesson-09-how-to-move-the-rook.html">&larr; Previous lesson</a><a href="pawn-m2-lesson-11-how-to-move-the-bishop.html">Next lesson &rarr;</a></div>
         </section>
       </main>
     </div>

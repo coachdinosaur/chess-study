@@ -651,6 +651,37 @@
       .king-cell img { width: 3.4rem; height: 3.4rem; }
       .direction-grid, .square-list { grid-template-columns: 1fr; }
     }
+
+.lesson-nav-row a {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: .55rem .9rem;
+      text-decoration: none;
+      transition: transform .18s ease, background .18s ease;
+    }
+
+
+
+
+
+    .lesson-nav-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .lesson-nav-row a {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: .55rem .9rem;
+      text-decoration: none;
+      transition: transform .18s ease, background .18s ease;
+    }
+    .lesson-nav-row a:hover { color: var(--text); background: var(--panel-strong); }
 </style>
 </head>
 <body>
@@ -813,7 +844,17 @@
       .hlMove{fill:rgba(61,141,255,.25);stroke:#2563eb;stroke-width:3;rx:7}
       .hlKing{fill:rgba(243,197,95,.35);stroke:#f59e0b;stroke-width:4;rx:8}
       .dot{fill:#16a34a;stroke:#ffffff;stroke-width:2}
-    </style>
+    
+.lesson-nav-row a {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: .55rem .9rem;
+      text-decoration: none;
+      transition: transform .18s ease, background .18s ease;
+    }
+</style>
   </defs>
   <rect x="0" y="0" width="360" height="360" fill="#ffffff" rx="14" />
   <g transform="translate(40,20)">
@@ -836,7 +877,17 @@
       .lbl{font:16px Arial,sans-serif;fill:#334155;font-weight:700}
       .hlFrom{fill:rgba(243,197,95,.30);stroke:#f59e0b;stroke-width:4;rx:8}
       .hlTo{fill:rgba(101,210,138,.28);stroke:#16a34a;stroke-width:4;rx:8}
-    </style>
+    
+.lesson-nav-row a {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: .55rem .9rem;
+      text-decoration: none;
+      transition: transform .18s ease, background .18s ease;
+    }
+</style>
     <marker id="kingArrow" viewBox="0 0 14 14" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L14,7 L0,14 Z" fill="#16a34a"/></marker>
   </defs>
   <rect x="0" y="0" width="360" height="360" fill="#ffffff" rx="14" />
@@ -903,6 +954,7 @@
             <summary>5. What happens if your King is checkmated?</summary>
             <p>You lose the game.</p>
           </details>
+          <div class="lesson-nav-row"><a href="pawn-11-piece-values.html">&larr; Previous lesson</a><a href="pawn-m2-lesson-02-how-to-capture-with-the-king.html">Next lesson &rarr;</a></div>
         </section>
       </main>
     </div>

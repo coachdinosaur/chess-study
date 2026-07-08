@@ -613,7 +613,38 @@
     }
 
   
-  </style>
+  
+.lesson-nav-row a {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: .55rem .9rem;
+      text-decoration: none;
+      transition: transform .18s ease, background .18s ease;
+    }
+
+
+
+
+
+    .lesson-nav-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .lesson-nav-row a {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: .55rem .9rem;
+      text-decoration: none;
+      transition: transform .18s ease, background .18s ease;
+    }
+    .lesson-nav-row a:hover { color: var(--text); background: var(--panel-strong); }
+</style>
 </head>
 <body>
   <a class="skip-link" href="#lesson">Skip to lesson</a>
@@ -782,7 +813,17 @@
           .label { font: 800 14px Arial, sans-serif; fill: #0f172a; }
           .small { font: 700 13px Arial, sans-serif; fill: #475569; }
           .checkWord { font: 900 18px Arial, sans-serif; fill: #dc2626; }
-        </style>
+        
+.lesson-nav-row a {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: .55rem .9rem;
+      text-decoration: none;
+      transition: transform .18s ease, background .18s ease;
+    }
+</style>
         <marker id="attackArrow" viewBox="0 0 10 10" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" refX="9" refY="4" orient="auto">
           <path d="M0,0 L0,8 L11,4 z" fill="#dc2626"/>
         </marker>
@@ -851,6 +892,7 @@
             <summary>4. What diagonal does the bishop attack along?</summary>
             <p>The bishop attacks along the diagonal b4–c3–d2–e1.</p>
           </details>
+          <div class="lesson-nav-row"><a href="pawn-m3-lesson-02-attack.html">&larr; Previous lesson</a><a href="pawn-m3-lesson-04-illegal-move.html">Next lesson &rarr;</a></div>
         </section>
       </main>
     </div>

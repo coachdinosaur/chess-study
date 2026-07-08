@@ -350,7 +350,28 @@
       object-fit: contain;
       display: block;
     }
-  </style>
+  
+
+
+
+
+    .lesson-nav-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .lesson-nav-row a {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: .55rem .9rem;
+      text-decoration: none;
+      transition: transform .18s ease, background .18s ease;
+    }
+    .lesson-nav-row a:hover { color: var(--text); background: var(--panel-strong); }
+</style>
 </head>
 <body>
   <a class="skip-link" href="#lesson">Skip to lesson</a>
@@ -589,6 +610,7 @@
           <details class="quiz"><summary>3. What changed around 1475?</summary><p>The modern rules developed in Southern Europe, and the queen and bishop gained their powerful moves.</p></details>
           <details class="quiz"><summary>4. What does “checkmate” mean?</summary><p>It comes from the Persian phrase <em>shāh māt</em>, meaning “the king is helpless.”</p></details>
           <details class="quiz"><summary>5. Why is chess worth learning?</summary><p>It helps you plan, solve problems, concentrate, and enjoy a lifelong game.</p></details>
+          <div class="lesson-nav-row"><a href="pawn-02-the-chessboard.html">Next lesson &rarr;</a></div>
         </section>
       </main>
     </div>

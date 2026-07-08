@@ -345,7 +345,28 @@
       object-fit: contain;
       display: block;
     }
-  </style>
+  
+
+
+
+
+    .lesson-nav-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .lesson-nav-row a {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: .55rem .9rem;
+      text-decoration: none;
+      transition: transform .18s ease, background .18s ease;
+    }
+    .lesson-nav-row a:hover { color: var(--text); background: var(--panel-strong); }
+</style>
 </head>
 <body>
   <a class="skip-link" href="#lesson">Skip to lesson</a>
@@ -1098,6 +1119,7 @@
             </div>
           </div>
           <div class="teacher-note"><strong>Image correction note:</strong> The original generated image set contained redundant d5 diagrams and some risky coordinate or label inconsistencies. This embedded version uses hand-built SVG diagrams so the important lesson squares are correct: <strong>d5</strong>, <strong>c4</strong>, <strong>h8</strong>, and <strong>e4</strong>.</div>
+          <div class="lesson-nav-row"><a href="pawn-03-files-ranks-diagonals.html">&larr; Previous lesson</a><a href="pawn-05-algebraic-notation-examples.html">Next lesson &rarr;</a></div>
         </section>
       </main>
     </div>
