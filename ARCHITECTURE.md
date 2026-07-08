@@ -2,9 +2,27 @@
 
 ## Overview
 
-A browser-based chess study and analysis single-page application. No framework —
-the app is pure ES modules with direct DOM manipulation. A single global state
-object drives rendering across six tabs.
+This repository is a **chess teaching platform** composed of three cooperating,
+framework-free subsystems:
+
+1. **Interactive Study SPA** (`index.html` + `app.js`) — a browser-based chess
+   study and analysis single-page application (endgame study, practice, puzzles,
+   Play-vs-Engine, board scanning, lesson tree). Pure ES modules with direct DOM
+   manipulation; a single global `state` object drives rendering across six tabs.
+2. **Pawn Level Lesson Site** (`lessons/pawn-*.html`, `lessons/pawn-m2-*.html`,
+   `lessons/pawn-m3-*.html`, `lessons/pawn-index.html`) — a beginner curriculum of
+   fully static, self-contained HTML lesson pages (no build step, no iframe to the
+   SPA). Three modules: **Module 1** (lessons 01–11, foundations), **Module 2**
+   (lessons 01–13, how the pieces move), and **Module 3** (lessons 01–12, the
+   tactics/check family).
+3. **Piece Asset Pipeline** (`mpchess-pieces/` → `assets/pieces/mpchess/*.svg`) — the
+   `mpchess` chess font is authored in MetaPost/LuaLaTeX and exported to the 12
+   Unicode-free SVG piece images used by both the SPA and the lesson pages.
+
+There is **no framework and no build step** for the SPA or lessons; dependencies
+are vendored. Lesson pages are plain HTML/CSS with inline SVG diagrams. The SPA is
+embedded via `<iframe>` only by the older *numbered endgame* lessons
+(`lessons/01-…07`), not by the Pawn Level pages.
 
 ---
 
@@ -12,17 +30,23 @@ object drives rendering across six tabs.
 
 ```
 chess-study/
-├── index.html                  Entry point — page shell, SVG overlays, modals
+├── index.html                  SPA entry point — page shell, SVG overlays, modals
 ├── app.js                      Main application (~11,340 lines)
-├── styles.css                  All styles (~4,430 lines)
+├── styles.css                  All SPA styles (~4,430 lines)
 ├── pgn.mjs                     PGN import/export with tree conversion
 ├── puzzle-api.mjs              Endgame puzzle generation (Stockfish worker)
 ├── guided-review.mjs           CSV/XLSX lesson-row review controller
 ├── text-normalization.mjs      Unicode repair and punctuation normalization
-├── lessons/
-│   ├── index.html              Lesson index / landing page (static HTML)
-│   ├── endgame-lesson.css      Shared lesson page styles (~1,116 lines)
-│   ├── endgame-lesson.js       Vanilla FEN→board renderer for lesson pages
+├── lessons/                    Published lesson pages (static HTML)
+│   ├── pawn-index.html         Pawn Level curriculum table of contents
+│   ├── pawn-01-…-pawn-11-…      Pawn Level MODULE 1 lessons (self-contained HTML)
+│   ├── pawn-m2-lesson-01-…      Pawn Level MODULE 2 lessons (self-contained HTML)
+│   │   └── … -lesson-13-…
+│   ├── pawn-m3-lesson-01-…      Pawn Level MODULE 3 lessons (self-contained HTML)
+│   │   └── … -lesson-12-…
+│   ├── index.html               (legacy) Endgame lesson index / landing page
+│   ├── endgame-lesson.css       Shared lesson page styles (~1,116 lines)
+│   ├── endgame-lesson.js        Vanilla FEN→board renderer for endgame pages
 │   ├── 01-king-pawn-rule-of-square.html
 │   ├── 02-pawn-on-the-6th-rank.html
 │   ├── 03-knights-pawn-and-key-squares.html
@@ -30,23 +54,64 @@ chess-study/
 │   ├── 05-rook-pawn-rule-rook-vs-bishop-knight.html
 │   ├── 06-separated-knight-corner-trap-kamsky-bacrot.html
 │   └── 07-basic-test-positions.html
+├── lesson_source/              Authored SOURCE manuscripts for Pawn Module 1
+├── lesson_source2/             Authored SOURCE manuscripts for Pawn Module 2
+│   ├── pawn-m1-2-lesson-01-how-to-move-the-king.html
+│   ├── pawn-m1-2-lesson-02-how-to-capture-with-the-king.html
+│   ├── pawn-m1-2-lesson-03-how-to-move-the-knight.html
+│   ├── pawn-m1-2-lesson-04-how-to-capture-with-the-knight.html
+│   ├── pawn-m1-2-lesson-05-how-to-move-the-pawn.html
+│   ├── pawn-m1-2-lesson-06-pawn-capture.html
+│   ├── pawn-m1-2-lesson-07-pawn-promotion.html
+│   ├── pawn-m1-2-lesson-08-activity-practice-moving-the-king-knight-and-pawn.html
+│   ├── pawn-m1-2-lesson-09-how-to-move-the-rook.html
+│   ├── pawn-m1-2-lesson-10-how-to-capture-with-the-rook.html
+│   ├── pawn-m1-2-lesson-11-how-to-move-the-bishop.html
+│   ├── pawn-m1-2-lesson-12-how-to-move-the-queen.html
+│   └── pawn-m1-2-lesson-13-activity-practice-moving-the-rook-bishop-and-queen.html
+├── lesson_source/              Authored SOURCE manuscripts for Pawn Module 1
+│   ├── introducing_game_of_chess_lesson.html
+│   ├── basic-chess-rules-following-introducing-format.html
+│   ├── capturing-a-piece-following-introducing-format.html
+│   ├── chess-terms-following-introducing-format.html
+│   ├── chessboard-lesson-following-introducing-format.html
+│   ├── lesson-3-files-ranks-diagonals-improved-following-introducing-format.html
+│   ├── pawn-lesson-4-scorekeeping-algebraic-notation-following-introducing-format.html
+│   ├── pawn-lesson-5-algebraic-notation-examples-following-introducing-format.html
+│   ├── piece-values-following-introducing-format.html
+│   ├── setting-up-chessboard-following-introducing-format.html
+│   └── the-chessmen-following-introducing-format.html
+├── lesson_source3/             Authored SOURCE manuscripts for Pawn Module 3
+│   ├── pawn-level-module-3-how-to-win-a-chess-game-formatted.html
+│   ├── pawn-level-module-3-lesson-2-attack-formatted.html
+│   ├── pawn-level-module-3-lesson-3-check-formatted.html
+│   ├── pawn-level-module-3-lesson-4-illegal-move-formatted.html
+│   ├── pawn-level-module-3-lesson-5-escaping-a-check-formatted.html
+│   ├── pawn-level-module-3-lesson-6-how-do-you-win-a-chess-game-formatted.html
+│   ├── pawn-level-module-3-lesson-7-stalemate-formatted.html
+│   ├── pawn-level-module-3-lesson-8-activity-check-the-king-formatted.html
+│   ├── pawn-level-module-3-lesson-9-activity-capture-the-checker-formatted.html
+│   ├── pawn-level-module-3-lesson-10-activity-block-the-check-formatted.html
+│   ├── pawn-level-module-3-lesson-11-activity-is-this-a-checkmate-formatted.html
+│   └── pawn-level-module-3-lesson-12-activity-is-this-a-stalemate-formatted.html
 ├── local_server.py             Python HTTP server with COOP/COEP headers
 ├── scanner_server.py           Chessboard image recognition HTTP server
 ├── scanner_predict.py          Image-to-FEN prediction logic
 ├── start-local.ps1             Windows deployment script
 ├── assets/
-│   ├── pieces/mpchess/         SVG piece images (wK.svg, bQ.svg, …)
+│   ├── pieces/mpchess/         SVG piece images (wK.svg, bQ.svg, …) — 12 files
 │   ├── openings.tsv            Opening book TSV (ECO, name, PGN, UCI, EPD)
 │   ├── Inter/                  Inter variable font (body text)
 │   ├── Manrope/                Manrope variable font (headings)
 │   └── social-preview.png      Open Graph / Twitter card image
+├── mpchess-pieces/             Piece font SOURCE (MetaPost + LuaLaTeX)
+│   ├── metapost/               MetaPost sources for each glyph
+│   ├── lualatex/               LuaLaTeX build scripts
+│   ├── svg/                    Exported SVG glyphs
+│   └── mpchess font.*          Compiled font binaries (ttf/otf/eot/svg)
 ├── vendor/
 │   ├── chess.js                Chess.js (PGN parser, move validation, FEN)
-│   ├── stockfish/              Stockfish browser bundles
-│   │   ├── stockfish-18.js + .wasm          Full multi-threaded
-│   │   ├── stockfish-18-single.js + .wasm   Full single-threaded
-│   │   ├── stockfish-18-lite.js + .wasm     Lite multi-threaded
-│   │   └── stockfish-18-lite-single.js + .wasm  Lite single-threaded
+│   ├── stockfish/              Stockfish browser bundles (4 variants)
 │   └── xlsx.full.min.js        XLSX parsing for Guided Review
 └── tools/
     ├── test-puzzle-api.mjs     Puzzle API unit tests
@@ -55,6 +120,8 @@ chess-study/
 ```
 
 ---
+
+# Subsystem A — Interactive Study SPA
 
 ## Module Architecture
 
@@ -82,11 +149,11 @@ index.html
 | `guided-review.mjs` | CSV/XLSX row parsing, field alias normalization (title, fen, difficulty, goalType, lessonText, mode, etc.), review progress persistence and restoration |
 | `text-normalization.mjs` | Multi-pass Unicode repair (mojibake, smart quotes, dashes, ellipsis) and whitespace normalization |
 | `chess.js` (vendor) | FEN parsing/validation, move execution, check/checkmate/stalemate detection, PGN parsing (Peggy-generated parser), board state queries |
-| `lessons/` | Standalone endgame lesson pages. Each chapter HTML loads `endgame-lesson.css` and `endgame-lesson.js` for static board rendering. An iframe on each page embeds the interactive SPA (`app.js`) at the bottom for hands-on practice. No framework, no build step. |
+| `lessons/` (numbered) | Standalone endgame lesson pages. Each chapter HTML loads `endgame-lesson.css` and `endgame-lesson.js` for static board rendering, and embeds the interactive SPA via an `<iframe>` at the bottom (`index.html?embed=1`) for hands-on practice. No framework, no build step. |
 
-### Lesson Pages
+### Lesson Pages (numbered endgame)
 
-The `lessons/` directory contains 7 chapter HTML files plus a landing index.
+The `lessons/01-…07` directory contains 7 chapter HTML files plus a landing index.
 Each chapter page:
 1. Renders static chess diagrams using `endgame-lesson.js` (a lightweight
    vanilla-JS FEN→board renderer that mirrors the SPA's board markup).
@@ -98,7 +165,7 @@ Each chapter page:
 
 ---
 
-## State Management
+## State Management (SPA)
 
 A single global `state` object (`app.js:649`) owns all application state. Every
 rendering function reads from `state`; every event handler writes to `state`
@@ -126,7 +193,7 @@ state from localStorage, then calls `renderAll()`.
 
 ---
 
-## Initialization Sequence
+## Initialization Sequence (SPA)
 
 ```javascript
 initializeColorTheme();          // Read persisted theme → set <html data-theme>
@@ -143,7 +210,7 @@ renderAll();                     // Full initial render
 
 ---
 
-## Rendering
+## Rendering (SPA)
 
 Rendering is imperative DOM manipulation — there is no virtual DOM.
 
@@ -151,16 +218,16 @@ Rendering is imperative DOM manipulation — there is no virtual DOM.
 
 ```
 user interaction → event handler → mutate state → renderAll()
-                                                    │
-                              ┌──────────────────────┼──────────────────────┐
-                              ▼                      ▼                      ▼
-                         renderBoard()         renderTabs()          renderPanels()
-                              │                      │
-                              ▼                      ▼
-                    buildBoardMarkup()     renderSetupPanel() (if active)
-                    renderAnnotationOverlay()  renderAnalysisPanel() (if active)
-                    renderCapturedPieces()      renderPlayPanel() (if active)
-                    syncBoardSize()             renderPuzzlePanel() (if active)
+                                                   │
+                               ┌──────────────────────┼──────────────────────┐
+                               ▼                      ▼                      ▼
+                          renderBoard()         renderTabs()          renderPanels()
+                               │                      │
+                               ▼                      ▼
+                     buildBoardMarkup()     renderSetupPanel() (if active)
+                     renderAnnotationOverlay()  renderAnalysisPanel() (if active)
+                     renderCapturedPieces()      renderPlayPanel() (if active)
+                     syncBoardSize()             renderPuzzlePanel() (if active)
 ```
 
 ### Targeted Rendering
@@ -260,7 +327,7 @@ the menu.
 
 ---
 
-## Event Handling
+## Event Handling (SPA)
 
 Delegated document-level listeners catch most user actions:
 
@@ -300,7 +367,7 @@ Major groups not detailed elsewhere in this document:
 
 ---
 
-## Tab System
+## Tab System (SPA)
 
 Six tabs controlled by `state.activeTab` and `data-active-tab` on the root
 element:
@@ -347,7 +414,7 @@ fail, a "Stockfish stalled" message is shown in the Play panel.
 
 ---
 
-## Embed Mode
+## Embed Mode (SPA)
 
 The app supports embedding as an interactive board inside lesson pages and third-party
 sites via the `?embed=1` query parameter.
@@ -378,7 +445,7 @@ The parent lesson page can display the real-time evaluation inline.
 
 ---
 
-## Engine Architecture
+## Engine Architecture (SPA)
 
 ### Stockfish Detection
 
@@ -428,7 +495,7 @@ There is no UCI-to-JSON wrapper. `parseInfoLine()` (`app.js:5324`) regex-parses
 
 ---
 
-## Tablebase Integration
+## Tablebase Integration (SPA)
 
 ### Eligibility Check
 
@@ -458,7 +525,7 @@ limits sequential API calls when building SAN continuation lines.
 
 ---
 
-## Lesson Tree
+## Lesson Tree (SPA)
 
 ### Node Structure
 
@@ -515,7 +582,7 @@ integrity, and cycle freedom on load.
 
 ---
 
-## Puzzle System
+## Puzzle System (SPA)
 
 ### Architecture
 
@@ -526,10 +593,10 @@ ensurePuzzleApi()               createEndgamePuzzleApi()
   └─ createEndgamePuzzleApi({     └─ owns a dedicated Stockfish Worker
        resolveWorkerPath            └─ generatePuzzle()
      })                                ├─ buildCandidate()       ← random placement
-                                       ├─ evaluateFen()         ← Stockfish eval
-                                       ├─ classifyCandidate()   ← match objective
-                                       ├─ verifyCandidate()     ← deeper search + optional tablebase
-                                       └─ makePuzzle()          ← build puzzle object
+                                        ├─ evaluateFen()         ← Stockfish eval
+                                        ├─ classifyCandidate()   ← match objective
+                                        ├─ verifyCandidate()     ← deeper search + optional tablebase
+                                        └─ makePuzzle()          ← build puzzle object
 ```
 
 ### Puzzle Board Instruction Banner
@@ -599,7 +666,7 @@ queue/history hydration, CSV import, `addPuzzleToQueue`, and `addPuzzleToHistory
 
 ---
 
-## Scan Board Feature
+## Scan Board Feature (SPA)
 
 The Setup panel includes a **Scan board** button (`data-action="scan-board"`,
 `app.js:8604`) that opens a file picker (`.png`, `.jpg`, `.jpeg`). The selected
@@ -610,7 +677,7 @@ setup board. Scan status is tracked in `state.scanStatus` / `state.scanStatusTyp
 
 ---
 
-## Setup Board Validation
+## Setup Board Validation (SPA)
 
 ### `sanitizeSetupState()` (`app.js:4320`)
 
@@ -631,7 +698,7 @@ Uses `Chess.isAttacked()` on both kings explicitly, not `game.isCheck()`
 
 ---
 
-## Persistence
+## Persistence (SPA)
 
 ### localStorage Keys
 
@@ -667,7 +734,7 @@ multi-lesson book structure.
 
 ---
 
-## Theme System
+## Theme System (SPA)
 
 CSS custom properties define light and dark variants:
 
@@ -682,7 +749,7 @@ via the three-dot menu. State is mirrored in `state.colorTheme`.
 
 ---
 
-## Opening Book
+## Opening Book (SPA)
 
 `loadOpeningBook()` (`app.js:989`) fetches `assets/openings.tsv` and builds two
 indexes:
@@ -696,7 +763,7 @@ in the lesson header via `syncOpeningInfoDisplay()`.
 
 ---
 
-## Annotations
+## Annotations (SPA)
 
 ### Data Model
 
@@ -720,7 +787,6 @@ Annotations are rendered in two layers:
 1. **Square-level** — HTML overlays inside each `.board-square` div
    (paint fills, circle outlines, star icons), generated by
    `annotationMarkupForSquare()` (`app.js:6503`)
-
 2. **Arrow layer** — SVG `<line>` + `<polygon>` in `#boardAnnotationOverlay`,
    generated by `buildAnnotationArrowMarkup()` (`app.js:6540`)
 
@@ -735,7 +801,7 @@ Annotations are rendered in two layers:
 
 ---
 
-## Guided Review
+## Guided Review (SPA)
 
 `createGuidedReviewController()` from `guided-review.mjs` manages a separate
 worksheet-review workflow:
@@ -749,7 +815,7 @@ worksheet-review workflow:
 
 ---
 
-## Dependencies
+## Dependencies (SPA)
 
 | Dependency | Integration |
 |---|---|
@@ -787,3 +853,234 @@ as ES modules or plain `<script>` tags.
 | `PUZZLE_WIN_MATERIAL_GAIN` | 3 | Pawns of gain for win objective |
 | `PUZZLE_HISTORY_MAX` | 300 | Max puzzle history entries |
 | `DRAW_OBJECTIVE_LOSING_THRESHOLD_CP` | -300 | Eval below this = solver losing |
+
+---
+
+# Subsystem B — Pawn Level Lesson Site
+
+A standalone beginner curriculum. Unlike the numbered endgame lessons, these
+pages are **fully static and self-contained**: each `pawn-*.html` / `pawn-m2-*.html`
+/ `pawn-m3-*.html` file carries its own `<style>` block and any inline SVG it
+needs, and does **not** embed the SPA. They share only the piece SVGs and (for
+the index page) the `endgame-lesson.css` stylesheet.
+
+## Modules
+
+| Module | Lessons | Topic |
+|---|---|---|
+| **Module 1** | `pawn-01` … `pawn-11` | Foundations: what chess is, the board, files/ranks/diagonals, notation, capturing, setup, rules, the chessmen, piece values |
+| **Module 2** | `pawn-m2-lesson-01` … `pawn-m2-lesson-13` | How the pieces move: king, knight, pawn (move/capture/promotion), rook, bishop, queen, and practice activities |
+| **Module 3** | `pawn-m3-lesson-01` … `pawn-m3-lesson-12` | How to win: attack, check, illegal moves, escaping check, stalemate, and hands-on check/stalemate/capture/block activities |
+
+## Page Shell (common to all Pawn Level pages)
+
+Every Pawn Level lesson page shares the same structural shell:
+
+- A sticky `.topbar` with the lesson title (brand), a **Back to Pawn Index** link,
+  a **theme toggle** button, and a **Print / Save PDF** button.
+- A hero section (title, lead paragraph, objective grid) followed by a two-column
+  `.layout` with a sticky table-of-contents (`<aside class="toc">`) and the lesson
+  `<main>` (numbered `.lesson-section` blocks).
+- Inline `<script>` at the end of `<body>` that wires the theme toggle and a
+  scroll-progress bar (`#progressBar`). Theme state is persisted to
+  `localStorage` under `chess-lesson-theme` (some pages use `lesson-theme-v1`).
+
+This shell is hand-authored per page (no templating engine), so visual/behavioral
+changes must be applied to each file individually.
+
+## Lesson Source Pipeline
+
+Authored manuscripts live in `lesson_source/` (Module 1), `lesson_source2/`
+(Module 2), and `lesson_source3/` (Module 3). They are the working copies; the
+**published** pages are the copies in `lessons/`. The naming transforms are:
+
+| Source file | Published file |
+|---|---|
+| `lesson_source/introducing_game_of_chess_lesson.html` | `lessons/pawn-01-introducing-the-game-of-chess.html` |
+| `lesson_source/*-following-introducing-format.html` | `lessons/pawn-02 … pawn-11` (per lesson) |
+| `lesson_source2/pawn-m1-2-lesson-NN-*.html` | `lessons/pawn-m2-lesson-NN-*.html` (rename + s/Module 1-2/Module 2/) |
+| `lesson_source3/pawn-level-module-3-*-formatted.html` | `lessons/pawn-m3-lesson-NN-*.html` |
+
+Publication is a manual copy/edit step (there is no build script in `tools/` that
+performs it). When updating lesson content, edit the source manuscript **and** the
+published `lessons/` copy, or re-sync them, to avoid drift.
+
+## Index Page
+
+`lessons/pawn-index.html` is the Pawn Level table of contents. It lists all three
+modules and links to every lesson. It reuses `endgame-lesson.css` for layout and
+exposes `data-piece-base`, `data-app-path`, and `data-orientation` attributes on
+`<html>` (the same hook contract the numbered endgame pages use), but it does not
+itself embed the SPA.
+
+---
+
+# Subsystem B — Lesson Diagram & Asset Conventions
+
+To keep the static lessons consistent and editable, the curriculum follows a set
+of shared diagram conventions. These were standardized so that every Pawn Level
+board diagram looks the same and every arrow/star renders reliably.
+
+## Board rendering styles
+
+Pawn Level lesson diagrams use **two** board styles:
+
+1. **HTML/CSS coordinate board** — used where the lesson teaches board geometry
+   (e.g. `pawn-03-files-ranks-diagonals.html`). An 8×8 CSS grid of `.square`
+   elements with `.light`/`.dark` classes, file/rank coordinate labels around the
+   edge, and `position: relative` squares so overlays can be absolutely centered.
+   Highlighted files/ranks use `::before`/`::after` pseudo-element washes.
+2. **Inline SVG board** — used for move/attack/capture diagrams (Module 1
+   `pawn-04`–`pawn-10`, and all Module 2 and Module 3 lessons). A hand-built
+   `<svg>` with a `<rect>` background, a `<g>` of square `<rect>`s, optional
+   highlight rects, `<image>` piece glyphs from `../assets/pieces/mpchess/`, and
+   an arrow overlay.
+
+Both styles orient the board with **rank 8 at the top, rank 1 at the bottom,
+files a→h left→right** (White at the bottom).
+
+## Star convention (coordinate boards)
+
+Diagonal/marker stars on the HTML/CSS boards are plain `★` text glyphs
+(`.star`, `.preview-star`) centered inside their square:
+
+```css
+.star {
+  position: absolute;        /* square is position: relative */
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);   /* exact square-center */
+  z-index: 3;
+  font-size: clamp(1.15rem, 3.2vw, 2.1rem);
+  line-height: 1;
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,.38));
+  -webkit-text-stroke: 1.4px #fff;
+  text-shadow: 0 0 10px rgba(0,0,0,.35);
+}
+```
+
+Color variants: `.star.neutral` (white, dark stroke), `.star.red`
+(`var(--red)`), `.star.blue` (`var(--blue)`), `.star.yellow` (`var(--yellow)`).
+Absolute `translate(-50%,-50%)` centering (rather than grid `place-items:center`)
+guarantees the glyph sits at the true square center regardless of font metrics,
+so diagonal star rows form a clean line.
+
+## Arrow convention (Module 3 is the source of truth)
+
+All Module 1 chessboard arrows were aligned to the Module 3 arrow implementation.
+A chessboard instructional arrow is:
+
+- A `<marker>` defined in `<defs>`, one per color used:
+  ```html
+  <marker id="arrowhead" viewBox="0 0 14 14" markerWidth="14" markerHeight="14"
+          refX="12" refY="7" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M0,0 L14,7 L0,14 Z" fill="#16a34a"/>
+  </marker>
+  ```
+  - `markerUnits="userSpaceOnUse"` keeps the head a **fixed 14px** (medium) size
+    regardless of stroke width.
+  - `refX="12"` places the tip near the line end; the path is a filled triangle.
+- A line/path referencing it: `marker-end="url(#arrowhead)"`, with
+  `stroke-linecap="round"` and **`stroke-width="5"`** (solid, or
+  `stroke-dasharray:10 8` for the "attack" red variant).
+- **Endpoint shortening:** arrows that point *to* an occupied square stop short of
+  the piece so the arrowhead is not hidden underneath it; arrows that *start* from
+  an occupied square begin at the piece's edge rather than its center.
+- **Layering order** within each board SVG: board squares → highlights → piece
+  images → arrow overlay → coordinate labels. Drawing the arrow *after* the pieces
+  keeps the head visible on top.
+
+Module 1 pages that contain board arrows and follow this convention:
+`pawn-04`, `pawn-05`, `pawn-06`, `pawn-09`, `pawn-10`. The HTML/CSS coordinate
+boards (e.g. `pawn-03`) have no move arrows.
+
+## Q&A collapsible pattern
+
+Every question-and-answer / review section across the Pawn Level lessons uses the
+same semantic, collapsible markup:
+
+```html
+<details class="quiz">
+  <summary>Question text here</summary>
+  <p>Answer text here.</p>
+</details>
+```
+
+with the canonical styling (identical in every lesson):
+
+```css
+details.quiz {
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.055);
+  border-radius: 16px;
+  padding: .9rem 1rem;
+  margin-top: .75rem;
+}
+details.quiz summary { cursor: pointer; font-weight: 800; }
+details.quiz p { color: var(--muted); margin-bottom: 0; }
+```
+
+The question stays visible in the collapsed state; the answer is revealed on
+expand. Practice-card style blocks were converted to this pattern so all Q&A is
+consistent.
+
+---
+
+# Subsystem C — Piece Asset Pipeline
+
+## Source: `mpchess-pieces/`
+
+The `mpchess` chess font is the single source of truth for piece artwork. It is
+authored as vector glyphs:
+
+- `mpchess-pieces/metapost/` — MetaPost source for each piece glyph.
+- `mpchess-pieces/lualatex/` — LuaLaTeX build scripts that compile the font.
+- `mpchess-pieces/svg/` — exported SVG glyphs.
+- `mpchess-pieces/mpchess font.*` — compiled font binaries (ttf/otf/eot/svg).
+
+A `LICENSE` sits alongside the font sources.
+
+## Output: `assets/pieces/mpchess/`
+
+The published, web-ready set is 12 SVG files, one per piece:
+
+```
+bB.svg bK.svg bN.svg bP.svg bQ.svg bR.svg
+wB.svg wK.svg wN.svg wP.svg wQ.svg wR.svg
+```
+
+These are referenced by:
+- the SPA board (`src="./assets/pieces/mpchess/wK.svg"`), and
+- the lesson pages (`src="../assets/pieces/mpchess/wK.svg"`).
+
+Because lessons consume the **same** SVGs as the SPA, piece artwork stays
+consistent across the whole site, and a change to the piece set only needs to land
+in `assets/pieces/mpchess/`.
+
+---
+
+## Cross-cutting: no-build philosophy
+
+- The SPA has **no framework and no bundler**; `app.js`, `styles.css`, and the
+  `vendor/*` modules are served as-is.
+- Lesson pages are **static HTML** with inline `<style>`/`<script>` and inline SVG
+  diagrams; no transpilation.
+- All third-party code (chess.js, Stockfish, xlsx) is **vendored** under
+  `vendor/`.
+- Shared visual identity is achieved through **convention** (the CSS variables,
+  board/star/arrow/Q&A rules above) rather than a shared component library, so
+  each lesson file remains independently openable.
+
+## Conventions checklist (for contributors)
+
+When editing Pawn Level lessons, preserve:
+
+- [ ] Board orientation: rank 8 top, rank 1 bottom, a–h left→right.
+- [ ] Stars: absolute `translate(-50%,-50%)` centering; use `.neutral/.red/.blue/.yellow`.
+- [ ] Arrows: `userSpaceOnUse` 14px filled-triangle marker; `stroke-width="5"`;
+      endpoints shortened so heads are never hidden under pieces; arrows drawn
+      after pieces.
+- [ ] Q&A: `<details class="quiz">` with the canonical `.quiz` CSS.
+- [ ] Page shell: topbar (back link, theme toggle, print), TOC, numbered sections.
+- [ ] Piece glyphs: only `../assets/pieces/mpchess/*.svg`.
+- [ ] Update both `lesson_source/` (or `lesson_source3/`) and `lessons/` when
+      changing lesson content.

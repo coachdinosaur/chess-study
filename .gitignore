@@ -11,3 +11,6 @@ vendor/stockfish/stockfish-18-single.js
 Endgame/_kb/
 Endgame/wtharvey_*.csv
 Endgame/wtharvey_*.log
+lesson_source/
+lesson_source2/
+lesson_source3/

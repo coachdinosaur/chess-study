@@ -3,11 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Check — Pawn Level Module 3</title>
-  <meta name="description" content="Pawn Level Module 3 lesson: learn what check means, why the king is never captured, and how a bishop can check the king along a diagonal.">
+  <title>How to Move the Knight — Pawn Level Module 2</title>
+  <meta name="description" content="Pawn Level Module 2 lesson: how the knight moves in an L-shape and jumps over pieces.">
   <style>
-
-
 
     :root {
       --bg: #07101e;
@@ -552,64 +550,197 @@
       .lesson-svg { max-width: 330px; }
     }
 
-    .attack-arrow {
-      width: 3.2rem;
-      height: 3.2rem;
-      border-radius: 999px;
-      display: grid;
-      place-items: center;
-      background: var(--red);
-      color: #fff;
-      font-size: 1.65rem;
-      font-weight: 1000;
-      box-shadow: 0 14px 34px rgba(255,107,107,.25);
+  
+    /* Reusable app 0 SVG piece rendering (no Unicode glyphs). */
+    .lesson-piece-icon {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,.28));
     }
-    .attack-ray {
-      height: .45rem;
-      border-radius: 999px;
-      background: repeating-linear-gradient(90deg, var(--red) 0 16px, transparent 16px 24px);
-      box-shadow: 0 0 22px rgba(255,107,107,.42);
-      margin: .75rem auto;
-      width: min(100%, 15rem);
-      position: relative;
-    }
-    .attack-ray::after {
-      content: "";
-      position: absolute;
-      right: -.18rem;
-      top: 50%;
-      transform: translateY(-50%);
-      border-left: .8rem solid var(--red);
-      border-top: .55rem solid transparent;
-      border-bottom: .55rem solid transparent;
-    }
-    .danger-box {
-      border: 1px solid color-mix(in srgb, var(--red) 45%, var(--line));
-      border-radius: 18px;
-      background: color-mix(in srgb, var(--red) 12%, var(--panel));
-      color: var(--text);
-      padding: .9rem 1rem;
-      font-weight: 800;
-      margin-top: 1rem;
-    }
-    .term-grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    @media (max-width: 720px) {
-      .term-grid.two { grid-template-columns: 1fr; }
+    .lesson-header-piece {
+      width: 1.6rem;
+      height: 1.6rem;
+      object-fit: contain;
+      display: block;
     }
 
-  
-  </style>
+
+    /* Module 2 movement lesson additions. */
+    .movement-hero-visual {
+      min-height: 420px;
+      display: grid;
+      align-content: center;
+      gap: 1rem;
+      padding: clamp(1.2rem, 4vw, 2rem);
+      background:
+        radial-gradient(circle at 15% 20%, rgba(243,197,95,.25), transparent 16rem),
+        radial-gradient(circle at 85% 80%, rgba(61,141,255,.22), transparent 16rem),
+        linear-gradient(135deg, rgba(255,255,255,.11), rgba(255,255,255,.035));
+    }
+    .hero-piece-stage {
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(0,0,0,.18);
+      min-height: 15rem;
+      display: grid;
+      place-items: center;
+      padding: 1.2rem;
+      text-align: center;
+    }
+    .hero-piece-stage img {
+      width: min(42vw, 8.5rem);
+      height: min(42vw, 8.5rem);
+      object-fit: contain;
+      filter: drop-shadow(0 18px 30px rgba(0,0,0,.34));
+      margin: 0 auto .75rem;
+    }
+    .hero-piece-stage strong {
+      display: block;
+      color: var(--gold);
+      font-size: clamp(1.25rem, 3vw, 1.8rem);
+      line-height: 1.1;
+    }
+    .hero-piece-stage span { color: var(--muted); font-weight: 800; }
+    .movement-map {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: .65rem;
+    }
+    .movement-cell {
+      min-height: 6.2rem;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(0,0,0,.16);
+      display: grid;
+      place-items: center;
+      padding: .65rem;
+      text-align: center;
+      color: var(--muted);
+      font-weight: 850;
+    }
+    .movement-cell.center {
+      background: color-mix(in srgb, var(--gold) 22%, rgba(0,0,0,.16));
+      border-color: color-mix(in srgb, var(--gold) 55%, var(--line));
+      color: var(--text);
+    }
+    .movement-cell img {
+      width: 3.7rem;
+      height: 3.7rem;
+      object-fit: contain;
+      filter: drop-shadow(0 12px 24px rgba(0,0,0,.3));
+    }
+    .direction-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .75rem;
+      margin-top: 1rem;
+    }
+    .direction-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.055);
+      padding: 1rem;
+      min-height: 7.5rem;
+    }
+    .direction-card strong {
+      display: block;
+      color: var(--gold);
+      margin-bottom: .35rem;
+    }
+    .square-list {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .6rem;
+      margin-top: 1rem;
+    }
+    .square-pill {
+      border: 1px solid color-mix(in srgb, var(--blue) 35%, var(--line));
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--blue) 14%, var(--panel));
+      color: var(--text);
+      font-weight: 950;
+      text-align: center;
+      padding: .55rem .7rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+    .piece-rule-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: .75rem;
+      margin-top: 1rem;
+    }
+    .piece-rule {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.055);
+      padding: 1rem;
+    }
+    .piece-rule strong { color: var(--gold); display: block; margin-bottom: .3rem; }
+    .piece-rule span { color: var(--muted); }
+    .piece-row {
+      display: flex;
+      gap: .55rem;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: .75rem;
+    }
+    .promotion-piece {
+      width: 3.2rem;
+      height: 3.2rem;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.08);
+      display: grid;
+      place-items: center;
+      padding: .35rem;
+    }
+    .promotion-piece img { width: 100%; height: 100%; object-fit: contain; }
+    .lesson-nav-row {
+      display: flex;
+      justify-content: space-between;
+      gap: .75rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .lesson-nav-row a {
+      text-decoration: none;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: .55rem .85rem;
+      background: var(--panel);
+      color: var(--muted);
+      font-weight: 800;
+    }
+    .lesson-nav-row a:hover { color: var(--text); background: var(--panel-strong); }
+    @media (max-width: 980px) {
+      .direction-grid, .piece-rule-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .movement-hero-visual { min-height: 0; }
+    }
+    @media (max-width: 720px) {
+      .movement-map { gap: .45rem; }
+      .movement-cell { min-height: 5.1rem; font-size: .86rem; }
+      .movement-cell img { width: 3rem; height: 3rem; }
+      .direction-grid, .square-list, .piece-rule-grid { grid-template-columns: 1fr; }
+      .hero-piece-stage { min-height: 11.5rem; }
+    }
+    @media print {
+      .movement-hero-visual, .direction-card, .piece-rule { break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
+    }
+</style>
 </head>
 <body>
   <a class="skip-link" href="#lesson">Skip to lesson</a>
   <header class="topbar">
     <div class="topbar-inner">
       <div class="brand" aria-label="Lesson title">
-        <div class="brand-icon" aria-hidden="true">♟</div>
+        <div class="brand-icon" aria-hidden="true"><img class="lesson-header-piece" src="../assets/pieces/mpchess/wN.svg" alt=""></div>
         <span>Pawn Level</span>
-        <span>Module 3 · Check</span>
+        <span>Module 2 · Movement of Chess Pieces</span>
       </div>
       <div class="top-actions">
+        <a class="btn back-to-index" href="pawn-index.html">&larr; Back to Pawn Index</a>
         <button class="btn" type="button" id="themeToggle">Toggle theme</button>
         <button class="btn" type="button" onclick="window.print()">Print / Save PDF</button>
       </div>
@@ -620,37 +751,14 @@
   <div class="page">
     <section class="hero" id="top">
       <div>
-        <p class="kicker">Module 3 · Lesson 3 · Beginner / Pawn Level</p>
-        <h1>Check</h1>
-        <p class="lead">A <strong class="gold">check</strong> is an attack on the enemy king. In this lesson, a black bishop attacks the white king along a diagonal, so the white king is under check.</p>
-        <div class="objective-grid" aria-label="Learning objectives">
-          <div class="objective"><strong>Check</strong><span>Learn that check means the king is being attacked.</span></div>
-          <div class="objective"><strong>King safety</strong><span>Understand that the king is never actually captured.</span></div>
-          <div class="objective"><strong>Checking line</strong><span>See how a bishop gives check along a diagonal.</span></div>
-          <div class="objective"><strong>Chess language</strong><span>Use the phrases “checked” and “under check” correctly.</span></div>
-        </div>
+        <p class="kicker">Module 2 · Lesson 3 · Beginner / Pawn Level</p>
+        <h1>How to Move the Knight</h1>
+        <p class="lead">The <strong class="gold">Knight</strong> has a special move. It moves in an <strong>L-shape</strong> and can <strong>jump over other pieces</strong>.</p>
+        <div class="objective-grid" aria-label="Learning objectives"><div class="objective"><strong>L-shape</strong><span>Learn the Knight’s special movement pattern.</span></div><div class="objective"><strong>Jumping</strong><span>Understand that the Knight can jump.</span></div><div class="objective"><strong>Landing square</strong><span>Know that the Knight lands only on its final square.</span></div><div class="objective"><strong>e4 example</strong><span>Practice the eight Knight moves from e4.</span></div></div>
       </div>
-      <figure class="hero-card" aria-label="Check lesson visual">
-        <div class="module-hero-visual">
-          <div class="capture-equation" aria-hidden="true">
-            <div class="capture-card">
-              <div>
-                <div class="capture-piece black">♝</div>
-                <span class="capture-label">Black bishop</span>
-                <span class="capture-square">on b4</span>
-              </div>
-            </div>
-            <div class="attack-arrow">➜</div>
-            <div class="capture-card">
-              <div>
-                <div class="capture-piece white">♔</div>
-                <span class="capture-label">White king</span>
-                <span class="capture-square">on e1</span>
-              </div>
-            </div>
-          </div>
-          <div class="attack-ray" aria-hidden="true"></div>
-          <p class="hero-note"><strong class="gold">Check</strong> means the king is under attack. The player must answer the check.</p>
+      <figure class="hero-card" aria-label="How to Move the Knight visual">
+        <div class="movement-hero-visual">
+          <div class="hero-piece-stage"><div><img src="../assets/pieces/mpchess/wN.svg" alt=""><strong>Knight</strong><span>Moves in an L-shape and can jump over pieces.</span></div></div><p class="hero-note"><strong class="gold">Special rule:</strong> The Knight is the only piece in this lesson that can jump over other pieces.</p>
         </div>
       </figure>
     </section>
@@ -658,191 +766,89 @@
     <div class="layout" id="lesson">
       <nav class="toc" aria-label="Lesson contents">
         <div class="toc-title">Contents</div>
-        <a href="#goal">1. Module Goal</a>
-        <a href="#definition">2. What Is Check?</a>
-        <a href="#words">3. Chess Words</a>
-        <a href="#ideas">4. Important Ideas</a>
-        <a href="#diagram">5. Board Diagram</a>
-        <a href="#remember">6. Remember</a>
+        <a href="#goal">1. Lesson Goal</a>
+<a href="#shape">2. The L-Shape</a>
+<a href="#example">3. Knight on e4</a>
+<a href="#diagram">4. Board Diagram</a>
+<a href="#remember">5. Remember</a>
         <a href="#check">Review Questions</a>
       </nav>
 
       <main>
-        <section class="lesson-section" id="goal">
-          <div class="section-head">
-            <div class="number">1</div>
-            <div class="section-text">
-              <h2>Module Goal</h2>
-              <p>Module 3 teaches the words students need in order to understand how a chess game is won. After learning capture and attack, the next important word is check.</p>
-            </div>
-          </div>
-          <div class="callout">
-            <div class="callout-title">Key idea</div>
-            Check is a special kind of attack because the attacked piece is the king.
-          </div>
-        </section>
-
-        <section class="lesson-section" id="definition">
-          <div class="section-head">
-            <div class="number">2</div>
-            <div class="section-text">
-              <h2>What Is Check?</h2>
-              <p>A check happens when a piece attacks the enemy king.</p>
-            </div>
-          </div>
-          <div class="notation-panel">
-            <div class="notation-big">CHECK</div>
-            <p class="lead" style="font-size:1.05rem;">The king is not captured. Instead, the king is said to be <strong>checked</strong> or <strong>under check</strong>.</p>
-          </div>
-          <div class="warning-box">For this beginner lesson, remember: pieces can give check to the enemy king, but the king itself is not used as the checking piece.</div>
-        </section>
-
-        <section class="lesson-section" id="words">
-          <div class="section-head">
-            <div class="number">3</div>
-            <div class="section-text">
-              <h2>Chess Words</h2>
-              <p>These two phrases mean that the king is being attacked.</p>
-            </div>
-          </div>
-          <div class="term-grid two">
-            <div class="term">
-              <span class="big">checked</span>
-              <span class="small">The king is being attacked.</span>
-            </div>
-            <div class="term">
-              <span class="big">under check</span>
-              <span class="small">The king is in danger and the player must respond.</span>
-            </div>
-          </div>
-        </section>
-
-        <section class="lesson-section" id="ideas">
-          <div class="section-head">
-            <div class="number">4</div>
-            <div class="section-text">
-              <h2>Important Ideas</h2>
-              <p>Check is an attack, but it has special rules because the king is involved.</p>
-            </div>
-          </div>
-          <div class="step-grid">
-            <article class="step-card">
-              <div class="step-badge">1</div>
-              <strong>Check is an attack</strong>
-              <p>The enemy king is being attacked by one of your pieces.</p>
-            </article>
-            <article class="step-card">
-              <div class="step-badge">2</div>
-              <strong>The king is special</strong>
-              <p>The king is never actually captured. A player must answer the check.</p>
-            </article>
-            <article class="step-card">
-              <div class="step-badge">3</div>
-              <strong>Bishop example</strong>
-              <p>A bishop can give check by attacking the king along a diagonal.</p>
-            </article>
-          </div>
-          <div class="danger-box">In the diagram, the black bishop attacks the white king.</div>
-        </section>
-
-        <section class="lesson-section" id="diagram">
-          <div class="section-head">
-            <div class="number">5</div>
-            <div class="section-text">
-              <h2>Board Diagram</h2>
-              <p>The black bishop on <strong>b4</strong> attacks along the diagonal <strong>b4–c3–d2–e1</strong>. The white king is on <strong>e1</strong>, so the white king is under check.</p>
-            </div>
-          </div>
-          <article class="board-panel">
-            <h3>Black bishop checks the white king</h3>
-            <p>The red arrow shows the bishop’s diagonal attack toward the white king.</p>
-            <div class="board-wrap">
-              <svg class="lesson-svg" viewBox="0 0 420 420" role="img" aria-label="Black bishop on b4 attacks the white king on e1, so the white king is in check">
-      <defs>
-        <style>
-          .coord { font: 700 16px Arial, sans-serif; fill: #334155; }
-          .pieceW { font: 46px 'Segoe UI Symbol','Noto Sans Symbols 2',serif; fill: #ffffff; stroke: #0f172a; stroke-width: 1.4px; paint-order: stroke fill; }
-          .pieceB { font: 46px 'Segoe UI Symbol','Noto Sans Symbols 2',serif; fill: #111827; }
-          .label { font: 800 14px Arial, sans-serif; fill: #0f172a; }
-          .small { font: 700 13px Arial, sans-serif; fill: #475569; }
-          .checkWord { font: 900 18px Arial, sans-serif; fill: #dc2626; }
-        </style>
-        <marker id="attackArrow" markerWidth="12" markerHeight="12" refX="9" refY="4" orient="auto">
-          <path d="M0,0 L0,8 L11,4 z" fill="#dc2626"/>
-        </marker>
-      </defs>
-
-      <rect x="0" y="0" width="420" height="420" rx="22" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
-      <g transform="translate(46,24)">
-        <rect x="0" y="0" width="40" height="40" fill="#b58863"/><rect x="40" y="0" width="40" height="40" fill="#f0d9b5"/><rect x="80" y="0" width="40" height="40" fill="#b58863"/><rect x="120" y="0" width="40" height="40" fill="#f0d9b5"/><rect x="160" y="0" width="40" height="40" fill="#b58863"/><rect x="200" y="0" width="40" height="40" fill="#f0d9b5"/><rect x="240" y="0" width="40" height="40" fill="#b58863"/><rect x="280" y="0" width="40" height="40" fill="#f0d9b5"/><rect x="0" y="40" width="40" height="40" fill="#f0d9b5"/><rect x="40" y="40" width="40" height="40" fill="#b58863"/><rect x="80" y="40" width="40" height="40" fill="#f0d9b5"/><rect x="120" y="40" width="40" height="40" fill="#b58863"/><rect x="160" y="40" width="40" height="40" fill="#f0d9b5"/><rect x="200" y="40" width="40" height="40" fill="#b58863"/><rect x="240" y="40" width="40" height="40" fill="#f0d9b5"/><rect x="280" y="40" width="40" height="40" fill="#b58863"/><rect x="0" y="80" width="40" height="40" fill="#b58863"/><rect x="40" y="80" width="40" height="40" fill="#f0d9b5"/><rect x="80" y="80" width="40" height="40" fill="#b58863"/><rect x="120" y="80" width="40" height="40" fill="#f0d9b5"/><rect x="160" y="80" width="40" height="40" fill="#b58863"/><rect x="200" y="80" width="40" height="40" fill="#f0d9b5"/><rect x="240" y="80" width="40" height="40" fill="#b58863"/><rect x="280" y="80" width="40" height="40" fill="#f0d9b5"/><rect x="0" y="120" width="40" height="40" fill="#f0d9b5"/><rect x="40" y="120" width="40" height="40" fill="#b58863"/><rect x="80" y="120" width="40" height="40" fill="#f0d9b5"/><rect x="120" y="120" width="40" height="40" fill="#b58863"/><rect x="160" y="120" width="40" height="40" fill="#f0d9b5"/><rect x="200" y="120" width="40" height="40" fill="#b58863"/><rect x="240" y="120" width="40" height="40" fill="#f0d9b5"/><rect x="280" y="120" width="40" height="40" fill="#b58863"/><rect x="0" y="160" width="40" height="40" fill="#b58863"/><rect x="40" y="160" width="40" height="40" fill="#f0d9b5"/><rect x="80" y="160" width="40" height="40" fill="#b58863"/><rect x="120" y="160" width="40" height="40" fill="#f0d9b5"/><rect x="160" y="160" width="40" height="40" fill="#b58863"/><rect x="200" y="160" width="40" height="40" fill="#f0d9b5"/><rect x="240" y="160" width="40" height="40" fill="#b58863"/><rect x="280" y="160" width="40" height="40" fill="#f0d9b5"/><rect x="0" y="200" width="40" height="40" fill="#f0d9b5"/><rect x="40" y="200" width="40" height="40" fill="#b58863"/><rect x="80" y="200" width="40" height="40" fill="#f0d9b5"/><rect x="120" y="200" width="40" height="40" fill="#b58863"/><rect x="160" y="200" width="40" height="40" fill="#f0d9b5"/><rect x="200" y="200" width="40" height="40" fill="#b58863"/><rect x="240" y="200" width="40" height="40" fill="#f0d9b5"/><rect x="280" y="200" width="40" height="40" fill="#b58863"/><rect x="0" y="240" width="40" height="40" fill="#b58863"/><rect x="40" y="240" width="40" height="40" fill="#f0d9b5"/><rect x="80" y="240" width="40" height="40" fill="#b58863"/><rect x="120" y="240" width="40" height="40" fill="#f0d9b5"/><rect x="160" y="240" width="40" height="40" fill="#b58863"/><rect x="200" y="240" width="40" height="40" fill="#f0d9b5"/><rect x="240" y="240" width="40" height="40" fill="#b58863"/><rect x="280" y="240" width="40" height="40" fill="#f0d9b5"/><rect x="0" y="280" width="40" height="40" fill="#f0d9b5"/><rect x="40" y="280" width="40" height="40" fill="#b58863"/><rect x="80" y="280" width="40" height="40" fill="#f0d9b5"/><rect x="120" y="280" width="40" height="40" fill="#b58863"/><rect x="160" y="280" width="40" height="40" fill="#f0d9b5"/><rect x="200" y="280" width="40" height="40" fill="#b58863"/><rect x="240" y="280" width="40" height="40" fill="#f0d9b5"/><rect x="280" y="280" width="40" height="40" fill="#b58863"/>
-        <rect x="42" y="162" width="36" height="36" rx="7" fill="rgba(239,68,68,0.20)" stroke="#ef4444" stroke-width="2"/><rect x="82" y="202" width="36" height="36" rx="7" fill="rgba(239,68,68,0.20)" stroke="#ef4444" stroke-width="2"/><rect x="122" y="242" width="36" height="36" rx="7" fill="rgba(239,68,68,0.20)" stroke="#ef4444" stroke-width="2"/><rect x="162" y="282" width="36" height="36" rx="7" fill="rgba(239,68,68,0.20)" stroke="#ef4444" stroke-width="2"/>
-
-        <line x1="60.0" y1="180.0" x2="180.0" y2="300.0" stroke="#dc2626" stroke-width="6" stroke-linecap="round" stroke-dasharray="10 8" marker-end="url(#attackArrow)"/>
-
-        <rect x="42" y="162" width="36" height="36" rx="8" fill="none" stroke="#7c3aed" stroke-width="4"/>
-        <rect x="162" y="282" width="36" height="36" rx="8" fill="none" stroke="#dc2626" stroke-width="4"/>
-
-        <text x="60.0" y="187.0" text-anchor="middle" dominant-baseline="middle" class="pieceB">♝</text>
-        <text x="180.0" y="307.0" text-anchor="middle" dominant-baseline="middle" class="pieceW">♔</text>
-
-        <g><text x="20.0" y="344" text-anchor="middle" class="coord">a</text><text x="60.0" y="344" text-anchor="middle" class="coord">b</text><text x="100.0" y="344" text-anchor="middle" class="coord">c</text><text x="140.0" y="344" text-anchor="middle" class="coord">d</text><text x="180.0" y="344" text-anchor="middle" class="coord">e</text><text x="220.0" y="344" text-anchor="middle" class="coord">f</text><text x="260.0" y="344" text-anchor="middle" class="coord">g</text><text x="300.0" y="344" text-anchor="middle" class="coord">h</text><text x="-18" y="25.0" text-anchor="middle" class="coord">8</text><text x="-18" y="65.0" text-anchor="middle" class="coord">7</text><text x="-18" y="105.0" text-anchor="middle" class="coord">6</text><text x="-18" y="145.0" text-anchor="middle" class="coord">5</text><text x="-18" y="185.0" text-anchor="middle" class="coord">4</text><text x="-18" y="225.0" text-anchor="middle" class="coord">3</text><text x="-18" y="265.0" text-anchor="middle" class="coord">2</text><text x="-18" y="305.0" text-anchor="middle" class="coord">1</text></g>
-      </g>
-
-      <rect x="46" y="366" width="328" height="34" rx="13" fill="#fee2e2" stroke="#fca5a5"/>
-      <text x="210" y="389" text-anchor="middle" class="checkWord">White king is under check</text>
-    </svg>
-            </div>
-            <div class="summary-box">Because the black bishop is attacking the white king, the white king is <strong>checked</strong> or <strong>under check</strong>.</div>
-          </article>
-        </section>
-
-        <section class="lesson-section" id="remember">
-          <div class="section-head">
-            <div class="number">6</div>
-            <div class="section-text">
-              <h2>Remember</h2>
-              <p>These are the key points from the lesson.</p>
-            </div>
-          </div>
-          <div class="remember-list">
-            <div class="remember-item"><strong>Check</strong>A check is an attack on the enemy king.</div>
-            <div class="remember-item"><strong>King rule</strong>The king is never actually captured.</div>
-            <div class="remember-item"><strong>Must respond</strong>When a king is in check, the player must answer the check.</div>
-            <div class="remember-item"><strong>Bishop line</strong>A bishop can give check along a diagonal.</div>
-          </div>
-        </section>
-
+        <section class="lesson-section" id="goal"><div class="section-head"><div class="number">1</div><div class="section-text"><h2>Lesson Goal</h2><p>Learn the Knight’s special L-shaped move.</p></div></div><div class="callout"><div class="callout-title">Key idea</div>The Knight moves two squares in one direction and then one square to the side, or one square in one direction and then two squares to the side.</div></section>
+        <section class="lesson-section" id="shape"><div class="section-head"><div class="number">2</div><div class="section-text"><h2>The L-Shape</h2><p>The Knight moves in an <strong>L-shape</strong>. It does not move like a Rook, Bishop, Queen, King, or Pawn.</p></div></div><div class="piece-rule-grid"><div class="piece-rule"><strong>Two then one</strong><span>Move two squares in one direction, then one square to the side.</span></div><div class="piece-rule"><strong>One then two</strong><span>Move one square in one direction, then two squares to the side.</span></div><div class="piece-rule"><strong>Jumps</strong><span>The Knight can jump over other pieces.</span></div></div></section>
+        <section class="lesson-section" id="example"><div class="section-head"><div class="number">3</div><div class="section-text"><h2>Knight on e4</h2><p>If the Knight is on <strong>e4</strong>, it can move to eight possible L-shaped squares.</p></div></div><div class="square-list"><div class="square-pill">c3</div><div class="square-pill">c5</div><div class="square-pill">d2</div><div class="square-pill">d6</div><div class="square-pill">f2</div><div class="square-pill">f6</div><div class="square-pill">g3</div><div class="square-pill">g5</div></div></section>
+        <section class="lesson-section" id="diagram"><div class="section-head"><div class="number">4</div><div class="section-text"><h2>Board Diagram</h2><p>The green dots show the Knight’s legal L-shaped moves from e4.</p></div></div><div class="board-grid">            <article class="board-panel">
+              <h3>Knight movement from e4</h3>
+              <p>The Knight on <strong>e4</strong> may jump to any highlighted square.</p>
+              <div class="board-wrap">
+                <svg class="lesson-svg" viewBox="0 0 360 360" role="img" aria-label="White knight on e4 with all L-shaped destination squares highlighted">
+  <defs>
+    <style>
+      .lbl{font:16px Arial,sans-serif;fill:#334155;font-weight:700}
+      .hlBlue{fill:rgba(61,141,255,.25);stroke:#2563eb;stroke-width:3;rx:7}
+      .hlGold{fill:rgba(243,197,95,.35);stroke:#f59e0b;stroke-width:4;rx:8}
+      .hlGreen{fill:rgba(101,210,138,.28);stroke:#16a34a;stroke-width:4;rx:8}
+      .hlRed{fill:rgba(255,107,107,.25);stroke:#dc2626;stroke-width:4;rx:8}
+      .hlPurple{fill:rgba(185,144,255,.24);stroke:#7c3aed;stroke-width:4;rx:8}
+      .dotGreen{fill:#16a34a;stroke:#ffffff;stroke-width:2}
+      .dotBlue{fill:#2563eb;stroke:#ffffff;stroke-width:2}
+      .dotRed{fill:#dc2626;stroke:#ffffff;stroke-width:2}
+      .labelText{font:14px Arial,sans-serif;fill:#0f172a;font-weight:900}
+    </style>
+    <marker id="knightMove" viewBox="0 0 14 14" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L14,7 L0,14 Z" fill="#16a34a"/></marker>
+    
+  </defs>
+  <rect x="0" y="0" width="360" height="360" fill="#ffffff" rx="14" />
+  <g transform="translate(40,20)">
+    <g><rect x="0" y="0" width="35" height="35" fill="#eee3cb"/><rect x="35" y="0" width="35" height="35" fill="#71925a"/><rect x="70" y="0" width="35" height="35" fill="#eee3cb"/><rect x="105" y="0" width="35" height="35" fill="#71925a"/><rect x="140" y="0" width="35" height="35" fill="#eee3cb"/><rect x="175" y="0" width="35" height="35" fill="#71925a"/><rect x="210" y="0" width="35" height="35" fill="#eee3cb"/><rect x="245" y="0" width="35" height="35" fill="#71925a"/><rect x="0" y="35" width="35" height="35" fill="#71925a"/><rect x="35" y="35" width="35" height="35" fill="#eee3cb"/><rect x="70" y="35" width="35" height="35" fill="#71925a"/><rect x="105" y="35" width="35" height="35" fill="#eee3cb"/><rect x="140" y="35" width="35" height="35" fill="#71925a"/><rect x="175" y="35" width="35" height="35" fill="#eee3cb"/><rect x="210" y="35" width="35" height="35" fill="#71925a"/><rect x="245" y="35" width="35" height="35" fill="#eee3cb"/><rect x="0" y="70" width="35" height="35" fill="#eee3cb"/><rect x="35" y="70" width="35" height="35" fill="#71925a"/><rect x="70" y="70" width="35" height="35" fill="#eee3cb"/><rect x="105" y="70" width="35" height="35" fill="#71925a"/><rect x="140" y="70" width="35" height="35" fill="#eee3cb"/><rect x="175" y="70" width="35" height="35" fill="#71925a"/><rect x="210" y="70" width="35" height="35" fill="#eee3cb"/><rect x="245" y="70" width="35" height="35" fill="#71925a"/><rect x="0" y="105" width="35" height="35" fill="#71925a"/><rect x="35" y="105" width="35" height="35" fill="#eee3cb"/><rect x="70" y="105" width="35" height="35" fill="#71925a"/><rect x="105" y="105" width="35" height="35" fill="#eee3cb"/><rect x="140" y="105" width="35" height="35" fill="#71925a"/><rect x="175" y="105" width="35" height="35" fill="#eee3cb"/><rect x="210" y="105" width="35" height="35" fill="#71925a"/><rect x="245" y="105" width="35" height="35" fill="#eee3cb"/><rect x="0" y="140" width="35" height="35" fill="#eee3cb"/><rect x="35" y="140" width="35" height="35" fill="#71925a"/><rect x="70" y="140" width="35" height="35" fill="#eee3cb"/><rect x="105" y="140" width="35" height="35" fill="#71925a"/><rect x="140" y="140" width="35" height="35" fill="#eee3cb"/><rect x="175" y="140" width="35" height="35" fill="#71925a"/><rect x="210" y="140" width="35" height="35" fill="#eee3cb"/><rect x="245" y="140" width="35" height="35" fill="#71925a"/><rect x="0" y="175" width="35" height="35" fill="#71925a"/><rect x="35" y="175" width="35" height="35" fill="#eee3cb"/><rect x="70" y="175" width="35" height="35" fill="#71925a"/><rect x="105" y="175" width="35" height="35" fill="#eee3cb"/><rect x="140" y="175" width="35" height="35" fill="#71925a"/><rect x="175" y="175" width="35" height="35" fill="#eee3cb"/><rect x="210" y="175" width="35" height="35" fill="#71925a"/><rect x="245" y="175" width="35" height="35" fill="#eee3cb"/><rect x="0" y="210" width="35" height="35" fill="#eee3cb"/><rect x="35" y="210" width="35" height="35" fill="#71925a"/><rect x="70" y="210" width="35" height="35" fill="#eee3cb"/><rect x="105" y="210" width="35" height="35" fill="#71925a"/><rect x="140" y="210" width="35" height="35" fill="#eee3cb"/><rect x="175" y="210" width="35" height="35" fill="#71925a"/><rect x="210" y="210" width="35" height="35" fill="#eee3cb"/><rect x="245" y="210" width="35" height="35" fill="#71925a"/><rect x="0" y="245" width="35" height="35" fill="#71925a"/><rect x="35" y="245" width="35" height="35" fill="#eee3cb"/><rect x="70" y="245" width="35" height="35" fill="#71925a"/><rect x="105" y="245" width="35" height="35" fill="#eee3cb"/><rect x="140" y="245" width="35" height="35" fill="#71925a"/><rect x="175" y="245" width="35" height="35" fill="#eee3cb"/><rect x="210" y="245" width="35" height="35" fill="#71925a"/><rect x="245" y="245" width="35" height="35" fill="#eee3cb"/></g>
+    <rect x="141" y="141" width="33" height="33" class="hlGold"/><rect x="71" y="176" width="33" height="33" class="hlBlue"/><rect x="71" y="106" width="33" height="33" class="hlBlue"/><rect x="106" y="211" width="33" height="33" class="hlBlue"/><rect x="106" y="71" width="33" height="33" class="hlBlue"/><rect x="176" y="211" width="33" height="33" class="hlBlue"/><rect x="176" y="71" width="33" height="33" class="hlBlue"/><rect x="211" y="176" width="33" height="33" class="hlBlue"/><rect x="211" y="106" width="33" height="33" class="hlBlue"/>
+    <circle cx="87.5" cy="192.5" r="5.5" class="dotGreen"/><circle cx="87.5" cy="122.5" r="5.5" class="dotGreen"/><circle cx="122.5" cy="227.5" r="5.5" class="dotGreen"/><circle cx="122.5" cy="87.5" r="5.5" class="dotGreen"/><circle cx="192.5" cy="227.5" r="5.5" class="dotGreen"/><circle cx="192.5" cy="87.5" r="5.5" class="dotGreen"/><circle cx="227.5" cy="192.5" r="5.5" class="dotGreen"/><circle cx="227.5" cy="122.5" r="5.5" class="dotGreen"/>
+    <image href="../assets/pieces/mpchess/wN.svg" x="140" y="140" width="35" height="35"/>
+    
+    <g class="lbl"><text x="17.5" y="301" text-anchor="middle">a</text><text x="52.5" y="301" text-anchor="middle">b</text><text x="87.5" y="301" text-anchor="middle">c</text><text x="122.5" y="301" text-anchor="middle">d</text><text x="157.5" y="301" text-anchor="middle">e</text><text x="192.5" y="301" text-anchor="middle">f</text><text x="227.5" y="301" text-anchor="middle">g</text><text x="262.5" y="301" text-anchor="middle">h</text><text x="-12" y="18" text-anchor="middle">8</text><text x="-12" y="53" text-anchor="middle">7</text><text x="-12" y="88" text-anchor="middle">6</text><text x="-12" y="123" text-anchor="middle">5</text><text x="-12" y="158" text-anchor="middle">4</text><text x="-12" y="193" text-anchor="middle">3</text><text x="-12" y="228" text-anchor="middle">2</text><text x="-12" y="263" text-anchor="middle">1</text></g>
+  </g>
+</svg>
+              </div>
+              
+            </article></div></section>
+        <section class="lesson-section" id="remember"><div class="section-head"><div class="number">5</div><div class="section-text"><h2>Remember</h2><p>The Knight has one of the most unusual moves in chess.</p></div></div><div class="remember-list"><div class="remember-item"><strong>L-shape</strong>The Knight moves in an L-shape.</div><div class="remember-item"><strong>Jumping</strong>The Knight can jump over other pieces.</div><div class="remember-item"><strong>Landing square</strong>The Knight only lands on the final square.</div><div class="remember-item"><strong>Capture later</strong>The Knight captures only the piece on the square where it lands.</div></div></section>
         <section class="lesson-section" id="check">
           <div class="section-head">
             <div class="number">✓</div>
             <div class="section-text">
               <h2>Review Questions</h2>
-              <p>Use these quick questions to check understanding.</p>
+              <p>Use these questions to check understanding.</p>
             </div>
           </div>
           <details class="quiz">
-            <summary>1. What is check?</summary>
-            <p>Check is an attack on the enemy king.</p>
+            <summary>1. How does the Knight move?</summary>
+            <p>The Knight moves in an L-shape.</p>
           </details>
           <details class="quiz">
-            <summary>2. Is the king actually captured during check?</summary>
-            <p>No. The king is never actually captured. The player must answer the check.</p>
+            <summary>2. Can the Knight jump over other pieces?</summary>
+            <p>Yes. The Knight can jump over other pieces.</p>
           </details>
           <details class="quiz">
-            <summary>3. In the diagram, which piece gives check?</summary>
-            <p>The black bishop gives check.</p>
+            <summary>3. If a Knight is on e4, can it move to g5?</summary>
+            <p>Yes. <strong>g5</strong> is one of the Knight’s L-shaped moves from e4.</p>
           </details>
           <details class="quiz">
-            <summary>4. What diagonal does the bishop attack along?</summary>
-            <p>The bishop attacks along the diagonal b4–c3–d2–e1.</p>
+            <summary>4. Does the Knight move diagonally like a Bishop?</summary>
+            <p>No. The Knight moves in an L-shape, not along a diagonal.</p>
           </details>
+          <details class="quiz">
+            <summary>5. Does the Knight capture pieces it jumps over?</summary>
+            <p>No. The Knight only captures on the square where it lands.</p>
+          </details>
+          <div class="lesson-nav-row"><a href="pawn-m1-2-lesson-02-how-to-capture-with-the-king.html">&larr; Previous lesson</a><a href="pawn-m1-2-lesson-04-how-to-capture-with-the-knight.html">Next lesson &rarr;</a></div>
         </section>
       </main>
     </div>
   </div>
 
   <footer class="footer">
-    <strong>End of Module 3 · Lesson 3:</strong> Check. Next lesson idea: how to get out of check.
+    <strong>End of Pawn Level Module 2 · Lesson 3:</strong> How to Move the Knight. Focus: Knight movement.
   </footer>
 
   <script>
