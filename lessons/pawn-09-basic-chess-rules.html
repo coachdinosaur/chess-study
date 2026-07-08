@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Basic Chess Rules — Pawn Level Lesson</title>
+  <meta name="description" content="Pawn level chess lesson about two players, turn order, White moving first, legal moves, and the standard starting position.">
+  <style>
+
+    :root {
+      --bg: #07101e;
+      --bg-2: #0c1930;
+      --panel: rgba(255,255,255,.075);
+      --panel-strong: rgba(255,255,255,.12);
+      --text: #f6f8fc;
+      --muted: #b9c6dc;
+      --line: rgba(255,255,255,.14);
+      --gold: #f3c55f;
+      --blue: #3d8dff;
+      --green: #65d28a;
+      --orange: #ffae5a;
+      --red: #ff6b6b;
+      --purple: #b990ff;
+      --shadow: 0 22px 60px rgba(0,0,0,.35);
+      --radius: 24px;
+      --max: 1180px;
+      --card: #f8fafc;
+      --ink: #172033;
+      --muted-dark: #475569;
+    }
+
+    [data-theme="light"] {
+      --bg: #f7f2e8;
+      --bg-2: #fffaf0;
+      --panel: rgba(255,255,255,.72);
+      --panel-strong: rgba(255,255,255,.92);
+      --text: #172033;
+      --muted: #526076;
+      --line: rgba(12,25,48,.15);
+      --shadow: 0 20px 50px rgba(22,30,46,.15);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      line-height: 1.55;
+      background:
+        radial-gradient(circle at top left, rgba(61,141,255,.35), transparent 35rem),
+        radial-gradient(circle at top right, rgba(243,197,95,.18), transparent 34rem),
+        linear-gradient(135deg, var(--bg), var(--bg-2));
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; }
+    button { font: inherit; }
+
+    .skip-link {
+      position: absolute;
+      left: -999px;
+      top: 1rem;
+      background: var(--gold);
+      color: #111827;
+      padding: .65rem 1rem;
+      border-radius: 999px;
+      z-index: 999;
+    }
+    .skip-link:focus { left: 1rem; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(16px);
+      background: rgba(7,16,30,.86);
+      border-bottom: 1px solid var(--line);
+    }
+    [data-theme="light"] .topbar { background: rgba(247,242,232,.86); }
+    .topbar-inner {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: .75rem 0;
+    }
+    .brand { display: flex; align-items: center; gap: .7rem; font-weight: 800; letter-spacing: .01em; }
+    .brand-icon {
+      width: 2.4rem;
+      height: 2.4rem;
+      border-radius: .8rem;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--gold), #fff0b2);
+      color: #13203a;
+      box-shadow: 0 10px 30px rgba(243,197,95,.25);
+    }
+    .top-actions { display: flex; gap: .5rem; flex-wrap: wrap; justify-content: flex-end; }
+    .btn {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: .55rem .9rem;
+      cursor: pointer;
+      transition: transform .18s ease, background .18s ease;
+    }
+    .btn:hover { transform: translateY(-1px); background: var(--panel-strong); }
+
+    .progress { height: 3px; background: rgba(255,255,255,.08); }
+    .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--gold), var(--green), var(--blue)); }
+
+    .page { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; }
+    .hero {
+      padding: clamp(2rem, 4vw, 4rem) 0 1.4rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 520px);
+      gap: clamp(1.25rem, 4vw, 3rem);
+      align-items: center;
+    }
+    .kicker {
+      color: var(--gold);
+      text-transform: uppercase;
+      font-weight: 850;
+      letter-spacing: .14em;
+      font-size: .85rem;
+      margin: 0 0 .75rem;
+    }
+    h1, h2, h3 { line-height: 1.08; margin: 0; }
+    h1 { font-size: clamp(2.35rem, 7vw, 5.7rem); letter-spacing: -.055em; }
+    h2 { font-size: clamp(1.65rem, 4vw, 3.15rem); letter-spacing: -.035em; }
+    h3 { font-size: clamp(1.18rem, 2.2vw, 1.55rem); letter-spacing: -.015em; }
+    .lead, .hero-lead { font-size: clamp(1.05rem, 1.9vw, 1.34rem); color: var(--muted); max-width: 64ch; }
+    .hero-card, .poster-card {
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--line);
+      background: var(--panel);
+    }
+    .poster-card {
+      min-height: 330px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: clamp(1.5rem, 4vw, 2.5rem);
+      background:
+        linear-gradient(135deg, rgba(61,141,255,.24), transparent 45%),
+        linear-gradient(315deg, rgba(101,210,138,.19), transparent 46%),
+        var(--panel);
+    }
+    .poster-icon { font-size: clamp(4.5rem, 11vw, 8rem); line-height: 1; color: var(--gold); text-shadow: 0 12px 40px rgba(0,0,0,.22); }
+    .poster-title { margin-top: 1rem; font-size: clamp(1.55rem, 3vw, 2.35rem); font-weight: 900; letter-spacing: -.04em; }
+    .poster-text { color: var(--muted); max-width: 32ch; margin: .6rem auto 0; }
+
+    .objective-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .8rem;
+      margin: 1rem 0 2rem;
+    }
+    .objective-grid > div {
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel);
+      min-height: 8rem;
+    }
+    .objective-grid strong { display: block; margin-bottom: .45rem; font-size: 1.03rem; }
+    .objective-grid span { color: var(--muted); font-size: .95rem; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 245px minmax(0, 1fr);
+      gap: 1.25rem;
+      align-items: start;
+      padding: 1rem 0 4rem;
+    }
+    .toc {
+      position: sticky;
+      top: 4.5rem;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--panel);
+      padding: 1rem;
+    }
+    .toc-title { font-weight: 850; margin-bottom: .7rem; color: var(--gold); }
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--muted);
+      padding: .55rem .65rem;
+      border-radius: 12px;
+      font-size: .95rem;
+    }
+    .toc a:hover { color: var(--text); background: var(--panel-strong); }
+
+    main { min-width: 0; }
+    .lesson-section {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: var(--radius);
+      padding: clamp(1rem, 3vw, 2rem);
+      margin-bottom: 1.1rem;
+      box-shadow: 0 14px 40px rgba(0,0,0,.14);
+      scroll-margin-top: 5.5rem;
+    }
+    .section-head { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1rem; }
+    .number {
+      flex: 0 0 auto;
+      width: 2.45rem;
+      height: 2.45rem;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      font-weight: 900;
+      color: #111827;
+      background: var(--gold);
+      box-shadow: 0 10px 22px rgba(243,197,95,.25);
+    }
+    .section-text p { color: var(--muted); margin: .75rem 0 0; }
+    .footer {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      padding: 2rem 0 3rem;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+    }
+
+    @media (max-width: 980px) {
+      .hero { grid-template-columns: 1fr; }
+      .layout { grid-template-columns: 1fr; }
+      .toc { position: static; overflow-x: auto; white-space: nowrap; }
+      .toc a { display: inline-block; }
+    }
+    @media (max-width: 720px) {
+      .topbar-inner, .page, .footer { width: min(100% - 22px, var(--max)); }
+      .topbar-inner { align-items: flex-start; }
+      .brand span:last-child { display: none; }
+      .objective-grid { grid-template-columns: 1fr; }
+      .lesson-section { border-radius: 18px; }
+      .section-head { gap: .75rem; }
+      .number { width: 2.15rem; height: 2.15rem; }
+    }
+    @media print {
+      :root, [data-theme="light"], [data-theme="dark"] {
+        --bg: #ffffff;
+        --bg-2: #ffffff;
+        --panel: #ffffff;
+        --panel-strong: #ffffff;
+        --text: #111827;
+        --muted: #374151;
+        --line: #d1d5db;
+        --shadow: none;
+      }
+      body { background: #ffffff; }
+      .topbar, .toc, .btn, .progress { display: none !important; }
+      .page, .footer { width: 100%; }
+      .hero { padding-top: 0; }
+      .layout { display: block; padding: 0; }
+      .lesson-section, .objective-grid > div, .rule-card, .diagram-card, .quiz { break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
+      svg { break-inside: avoid; page-break-inside: avoid; }
+    }
+
+
+    /* Lesson 9 basic-rules styles */
+    .rule-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .rule-card {
+      background: #f8fafc;
+      color: #172033;
+      border-radius: 20px;
+      border: 1px solid rgba(15,23,42,.12);
+      padding: 1rem;
+      box-shadow: 0 16px 38px rgba(0,0,0,.18);
+    }
+    .rule-card h3 { color: #0f172a; margin-bottom: .55rem; }
+    .rule-card p { color: #475569; margin: .55rem 0; }
+    .rule-card strong { color: #0f172a; }
+    .rule-line {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: .75rem;
+      align-items: start;
+      margin-top: .8rem;
+    }
+    .mini-badge {
+      width: 2.35rem;
+      height: 2.35rem;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background: #2563eb;
+      color: #fff;
+      font-weight: 900;
+    }
+    .rule-box {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: .85rem;
+    }
+    .turns {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: .75rem;
+      align-items: center;
+      margin-top: 1rem;
+    }
+    .turn-card {
+      border-radius: 16px;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      padding: 1rem;
+      text-align: center;
+    }
+    .turn-card .piece {
+      font-size: 3rem;
+      line-height: 1;
+      margin-bottom: .35rem;
+    }
+    .turn-card p { margin: .25rem 0 0; font-size: .95rem; }
+    .arrow {
+      font-size: 2rem;
+      color: #2563eb;
+      font-weight: 900;
+    }
+    .note {
+      margin-top: 1rem;
+      background: #dcfce7;
+      border: 1px solid #86efac;
+      color: #166534;
+      border-radius: 16px;
+      padding: .85rem;
+      font-weight: 800;
+    }
+    .diagram-card {
+      background: #f8fafc;
+      color: #172033;
+      border-radius: 20px;
+      padding: 1rem;
+      border: 1px solid rgba(15,23,42,.12);
+      box-shadow: 0 16px 38px rgba(0,0,0,.18);
+      margin-top: 1rem;
+    }
+    .board-shell {
+      background: #ffffff;
+      border: 1px solid #dbe3ef;
+      border-radius: 18px;
+      padding: .8rem;
+      overflow: auto;
+    }
+    .board-shell svg {
+      display: block;
+      width: min(100%, 560px);
+      height: auto;
+      margin: 0 auto;
+    }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .65rem;
+      margin-top: 1rem;
+      color: #334155;
+      font-size: .95rem;
+    }
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 999px;
+      padding: .45rem .7rem;
+    }
+    .dot {
+      width: .85rem;
+      height: .85rem;
+      border-radius: .25rem;
+      border: 1px solid rgba(0,0,0,.15);
+    }
+    .white-dot { background: rgba(37,99,235,.24); }
+    .black-dot { background: rgba(239,68,68,.24); }
+    .green-dot { background: #bbf7d0; }
+    .summary-grid, .review-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: .85rem;
+      margin-top: 1rem;
+    }
+    .summary-item, .review-item {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1rem;
+      background: rgba(255,255,255,.055);
+    }
+    .summary-item strong, .review-item strong { display: block; color: var(--gold); margin-bottom: .3rem; }
+    .summary-item span, .review-item span { color: var(--muted); }
+    .callout {
+      border: 1px solid rgba(243,197,95,.42);
+      border-radius: 20px;
+      padding: 1rem;
+      background: rgba(243,197,95,.10);
+      margin-top: 1rem;
+    }
+    .callout-title { color: var(--gold); font-weight: 900; margin-bottom: .35rem; }
+    details.quiz {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1rem;
+      background: rgba(255,255,255,.055);
+      margin: .7rem 0;
+    }
+    details.quiz summary { cursor: pointer; font-weight: 850; color: var(--text); }
+    details.quiz p { color: var(--muted); }
+    @media (max-width: 900px) {
+      .rule-grid, .summary-grid, .review-grid { grid-template-columns: 1fr; }
+      .turns { grid-template-columns: 1fr; }
+      .arrow { transform: rotate(90deg); justify-self: center; }
+    }
+
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#lesson">Skip to lesson</a>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand"><span class="brand-icon">♟</span><span>Pawn Level · Lesson 9</span></div>
+      <div class="top-actions">
+        <a class="btn back-to-index" href="pawn-index.html">&larr; Back to Pawn Index</a>
+        <button class="btn" id="themeToggle" type="button">Toggle theme</button>
+        <button class="btn" type="button" onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </div>
+    <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+  </header>
+
+  <div class="page">
+    <section class="hero" id="top">
+      <div class="hero-copy">
+        <p class="kicker">Lesson 9 · Beginner / Pawn Level</p>
+        <h1>Basic Chess Rules</h1>
+        <p class="hero-lead">Learn the first rules of a standard chess game: two players, taking turns, White moving first, making a move on your turn, and the correct starting position.</p>
+        <div class="objective-grid" aria-label="Lesson objectives">
+          <div><strong>Two players</strong><span>One side controls White, and the other side controls Black.</span></div>
+          <div><strong>Turn order</strong><span>White moves, then Black moves, then the turns continue.</span></div>
+          <div><strong>White starts</strong><span>White always makes the first move in standard chess.</span></div>
+          <div><strong>Starting position</strong><span>White begins on ranks 1–2; Black begins on ranks 7–8.</span></div>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="poster-card">
+          <div class="poster-icon">♔ ↔ ♚</div>
+          <div class="poster-title">Two players. One move at a time.</div>
+          <div class="poster-text">White moves first, Black replies, and every turn must be a legal move.</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="layout">
+      <aside class="toc" aria-label="Lesson contents">
+        <div class="toc-title">Lesson contents</div>
+        <a href="#players">1. Two Players</a>
+        <a href="#turns">2. Take Turns</a>
+        <a href="#white-first">3. White Moves First</a>
+        <a href="#must-move">4. You Must Move</a>
+        <a href="#starting-position">5. Starting Position</a>
+        <a href="#summary">6. Rule Summary</a>
+        <a href="#review">7. Review Questions</a>
+      </aside>
+
+      <main id="lesson" class="lesson-flow">
+        <section class="lesson-section" id="players">
+          <div class="section-head">
+            <div class="number">1</div>
+            <div class="section-text">
+              <h2>Two Players</h2>
+              <p>Chess is played between two players. One player controls the white pieces, and the other player controls the black pieces.</p>
+            </div>
+          </div>
+          <div class="rule-card">
+            <div class="rule-line">
+              <div class="mini-badge">1</div>
+              <div class="rule-box">
+                <p><strong>Chess is played between two players.</strong></p>
+                <p>One player controls White. The other player controls Black.</p>
+              </div>
+            </div>
+            <div class="turns" aria-label="White player versus Black player">
+              <div class="turn-card"><div class="piece">♔</div><strong>White</strong><p>White pieces</p></div>
+              <div class="arrow">↔</div>
+              <div class="turn-card"><div class="piece">♚</div><strong>Black</strong><p>Black pieces</p></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="turns">
+          <div class="section-head">
+            <div class="number">2</div>
+            <div class="section-text">
+              <h2>Take Turns</h2>
+              <p>Each player takes a turn to move. White moves, then Black moves, then White moves again, and so on.</p>
+            </div>
+          </div>
+          <div class="rule-card">
+            <div class="rule-line">
+              <div class="mini-badge">2</div>
+              <div class="rule-box">
+                <p><strong>Each player takes a turn to move.</strong></p>
+                <p>A game is played one move at a time, alternating between White and Black.</p>
+              </div>
+            </div>
+            <div class="turns" aria-label="Turn order diagram">
+              <div class="turn-card"><div class="piece">♙</div><strong>White move</strong></div>
+              <div class="arrow">→</div>
+              <div class="turn-card"><div class="piece">♟</div><strong>Black move</strong></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="white-first">
+          <div class="section-head">
+            <div class="number">3</div>
+            <div class="section-text">
+              <h2>White Moves First</h2>
+              <p>At the beginning of every standard chess game, the first move belongs to White.</p>
+            </div>
+          </div>
+          <div class="rule-card">
+            <div class="rule-line">
+              <div class="mini-badge">3</div>
+              <div class="rule-box"><p><strong>White always moves first.</strong></p><p>After White moves, Black makes the next move.</p></div>
+            </div>
+            <div class="note">Start of the game: White to move.</div>
+            <div class="diagram-card">
+              <div class="board-shell">
+                <svg viewBox="0 0 360 240" role="img" aria-label="White moves first diagram">
+            <defs>
+              <style>
+                .label{font:700 18px Arial,sans-serif;fill:#1e293b}
+                .small{font:600 14px Arial,sans-serif;fill:#475569}
+                .pieceW{font:52px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#fff;stroke:#0f172a;stroke-width:1.4px;paint-order:stroke fill}
+                .pieceB{font:52px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827}
+              </style>
+              <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L9,3 z" fill="#2563eb"/>
+              </marker>
+            </defs>
+            <rect x="0" y="0" width="360" height="240" rx="18" fill="#f8fafc"/>
+            <circle cx="90" cy="90" r="52" fill="#ffffff" stroke="#cbd5e1" stroke-width="3"/>
+            <text x="90" y="102" text-anchor="middle" dominant-baseline="middle" class="pieceW">♙</text>
+            <text x="90" y="165" text-anchor="middle" class="label">White</text>
+            <text x="90" y="188" text-anchor="middle" class="small">moves first</text>
+
+            <line x1="150" y1="90" x2="210" y2="90" stroke="#2563eb" stroke-width="8" stroke-linecap="round" marker-end="url(#arrowhead)"/>
+
+            <circle cx="270" cy="90" r="52" fill="#e2e8f0" stroke="#94a3b8" stroke-width="3"/>
+            <text x="270" y="102" text-anchor="middle" dominant-baseline="middle" class="pieceB">♟</text>
+            <text x="270" y="165" text-anchor="middle" class="label">Black</text>
+            <text x="270" y="188" text-anchor="middle" class="small">moves after White</text>
+          </svg>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="must-move">
+          <div class="section-head">
+            <div class="number">4</div>
+            <div class="section-text">
+              <h2>You Must Move</h2>
+              <p>When it is your turn, you must make a move. You cannot skip or pass your turn in chess.</p>
+            </div>
+          </div>
+          <div class="rule-card">
+            <div class="rule-line">
+              <div class="mini-badge">4</div>
+              <div class="rule-box"><p><strong>When it is your turn, you must make a legal move.</strong></p><p>No passing turns: every turn requires a legal move.</p></div>
+            </div>
+            <div class="note">If it is your turn, choose and play one legal move.</div>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="starting-position">
+          <div class="section-head">
+            <div class="number">5</div>
+            <div class="section-text">
+              <h2>The Starting Position</h2>
+              <p>The starting position of standard chess has White pieces on the 1st and 2nd ranks, and Black pieces on the 7th and 8th ranks.</p>
+            </div>
+          </div>
+          <div class="diagram-card">
+            <div class="board-shell">
+              <svg viewBox="0 0 420 420" role="img" aria-label="Starting position showing white pieces on ranks 1 and 2 and black pieces on ranks 7 and 8">
+            <defs>
+              <style>
+                .coord{font:700 15px Arial,sans-serif;fill:#334155}
+                .pieceW{font:38px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill}
+                .pieceB{font:38px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827}
+                .zoneText{font:800 15px Arial,sans-serif;fill:#0f172a}
+              </style>
+            </defs>
+            <rect x="0" y="0" width="420" height="420" rx="18" fill="#ffffff"/>
+
+            <g transform="translate(58,32)">
+              <!-- board -->
+              <g>
+                <rect x="0" y="0" width="35" height="35" fill="#f0d9b5"/><rect x="35" y="0" width="35" height="35" fill="#b58863"/><rect x="70" y="0" width="35" height="35" fill="#f0d9b5"/><rect x="105" y="0" width="35" height="35" fill="#b58863"/><rect x="140" y="0" width="35" height="35" fill="#f0d9b5"/><rect x="175" y="0" width="35" height="35" fill="#b58863"/><rect x="210" y="0" width="35" height="35" fill="#f0d9b5"/><rect x="245" y="0" width="35" height="35" fill="#b58863"/>
+                <rect x="0" y="35" width="35" height="35" fill="#b58863"/><rect x="35" y="35" width="35" height="35" fill="#f0d9b5"/><rect x="70" y="35" width="35" height="35" fill="#b58863"/><rect x="105" y="35" width="35" height="35" fill="#f0d9b5"/><rect x="140" y="35" width="35" height="35" fill="#b58863"/><rect x="175" y="35" width="35" height="35" fill="#f0d9b5"/><rect x="210" y="35" width="35" height="35" fill="#b58863"/><rect x="245" y="35" width="35" height="35" fill="#f0d9b5"/>
+                <rect x="0" y="70" width="35" height="35" fill="#f0d9b5"/><rect x="35" y="70" width="35" height="35" fill="#b58863"/><rect x="70" y="70" width="35" height="35" fill="#f0d9b5"/><rect x="105" y="70" width="35" height="35" fill="#b58863"/><rect x="140" y="70" width="35" height="35" fill="#f0d9b5"/><rect x="175" y="70" width="35" height="35" fill="#b58863"/><rect x="210" y="70" width="35" height="35" fill="#f0d9b5"/><rect x="245" y="70" width="35" height="35" fill="#b58863"/>
+                <rect x="0" y="105" width="35" height="35" fill="#b58863"/><rect x="35" y="105" width="35" height="35" fill="#f0d9b5"/><rect x="70" y="105" width="35" height="35" fill="#b58863"/><rect x="105" y="105" width="35" height="35" fill="#f0d9b5"/><rect x="140" y="105" width="35" height="35" fill="#b58863"/><rect x="175" y="105" width="35" height="35" fill="#f0d9b5"/><rect x="210" y="105" width="35" height="35" fill="#b58863"/><rect x="245" y="105" width="35" height="35" fill="#f0d9b5"/>
+                <rect x="0" y="140" width="35" height="35" fill="#f0d9b5"/><rect x="35" y="140" width="35" height="35" fill="#b58863"/><rect x="70" y="140" width="35" height="35" fill="#f0d9b5"/><rect x="105" y="140" width="35" height="35" fill="#b58863"/><rect x="140" y="140" width="35" height="35" fill="#f0d9b5"/><rect x="175" y="140" width="35" height="35" fill="#b58863"/><rect x="210" y="140" width="35" height="35" fill="#f0d9b5"/><rect x="245" y="140" width="35" height="35" fill="#b58863"/>
+                <rect x="0" y="175" width="35" height="35" fill="#b58863"/><rect x="35" y="175" width="35" height="35" fill="#f0d9b5"/><rect x="70" y="175" width="35" height="35" fill="#b58863"/><rect x="105" y="175" width="35" height="35" fill="#f0d9b5"/><rect x="140" y="175" width="35" height="35" fill="#b58863"/><rect x="175" y="175" width="35" height="35" fill="#f0d9b5"/><rect x="210" y="175" width="35" height="35" fill="#b58863"/><rect x="245" y="175" width="35" height="35" fill="#f0d9b5"/>
+                <rect x="0" y="210" width="35" height="35" fill="#f0d9b5"/><rect x="35" y="210" width="35" height="35" fill="#b58863"/><rect x="70" y="210" width="35" height="35" fill="#f0d9b5"/><rect x="105" y="210" width="35" height="35" fill="#b58863"/><rect x="140" y="210" width="35" height="35" fill="#f0d9b5"/><rect x="175" y="210" width="35" height="35" fill="#b58863"/><rect x="210" y="210" width="35" height="35" fill="#f0d9b5"/><rect x="245" y="210" width="35" height="35" fill="#b58863"/>
+                <rect x="0" y="245" width="35" height="35" fill="#b58863"/><rect x="35" y="245" width="35" height="35" fill="#f0d9b5"/><rect x="70" y="245" width="35" height="35" fill="#b58863"/><rect x="105" y="245" width="35" height="35" fill="#f0d9b5"/><rect x="140" y="245" width="35" height="35" fill="#b58863"/><rect x="175" y="245" width="35" height="35" fill="#f0d9b5"/><rect x="210" y="245" width="35" height="35" fill="#b58863"/><rect x="245" y="245" width="35" height="35" fill="#f0d9b5"/>
+              </g>
+
+              <!-- zones -->
+              <rect x="0" y="0" width="280" height="70" fill="rgba(239,68,68,0.24)" stroke="#ef4444" stroke-width="3"/>
+              <rect x="0" y="210" width="280" height="70" fill="rgba(37,99,235,0.24)" stroke="#2563eb" stroke-width="3"/>
+
+              <!-- black pieces -->
+              <text x="17.5" y="27" text-anchor="middle" dominant-baseline="middle" class="pieceB">♜</text><text x="52.5" y="27" text-anchor="middle" dominant-baseline="middle" class="pieceB">♞</text><text x="87.5" y="27" text-anchor="middle" dominant-baseline="middle" class="pieceB">♝</text><text x="122.5" y="27" text-anchor="middle" dominant-baseline="middle" class="pieceB">♛</text><text x="157.5" y="27" text-anchor="middle" dominant-baseline="middle" class="pieceB">♚</text><text x="192.5" y="27" text-anchor="middle" dominant-baseline="middle" class="pieceB">♝</text><text x="227.5" y="27" text-anchor="middle" dominant-baseline="middle" class="pieceB">♞</text><text x="262.5" y="27" text-anchor="middle" dominant-baseline="middle" class="pieceB">♜</text>
+              <text x="17.5" y="62" text-anchor="middle" dominant-baseline="middle" class="pieceB">♟</text><text x="52.5" y="62" text-anchor="middle" dominant-baseline="middle" class="pieceB">♟</text><text x="87.5" y="62" text-anchor="middle" dominant-baseline="middle" class="pieceB">♟</text><text x="122.5" y="62" text-anchor="middle" dominant-baseline="middle" class="pieceB">♟</text><text x="157.5" y="62" text-anchor="middle" dominant-baseline="middle" class="pieceB">♟</text><text x="192.5" y="62" text-anchor="middle" dominant-baseline="middle" class="pieceB">♟</text><text x="227.5" y="62" text-anchor="middle" dominant-baseline="middle" class="pieceB">♟</text><text x="262.5" y="62" text-anchor="middle" dominant-baseline="middle" class="pieceB">♟</text>
+
+              <!-- white pieces -->
+              <text x="17.5" y="237" text-anchor="middle" dominant-baseline="middle" class="pieceW">♙</text><text x="52.5" y="237" text-anchor="middle" dominant-baseline="middle" class="pieceW">♙</text><text x="87.5" y="237" text-anchor="middle" dominant-baseline="middle" class="pieceW">♙</text><text x="122.5" y="237" text-anchor="middle" dominant-baseline="middle" class="pieceW">♙</text><text x="157.5" y="237" text-anchor="middle" dominant-baseline="middle" class="pieceW">♙</text><text x="192.5" y="237" text-anchor="middle" dominant-baseline="middle" class="pieceW">♙</text><text x="227.5" y="237" text-anchor="middle" dominant-baseline="middle" class="pieceW">♙</text><text x="262.5" y="237" text-anchor="middle" dominant-baseline="middle" class="pieceW">♙</text>
+              <text x="17.5" y="272" text-anchor="middle" dominant-baseline="middle" class="pieceW">♖</text><text x="52.5" y="272" text-anchor="middle" dominant-baseline="middle" class="pieceW">♘</text><text x="87.5" y="272" text-anchor="middle" dominant-baseline="middle" class="pieceW">♗</text><text x="122.5" y="272" text-anchor="middle" dominant-baseline="middle" class="pieceW">♕</text><text x="157.5" y="272" text-anchor="middle" dominant-baseline="middle" class="pieceW">♔</text><text x="192.5" y="272" text-anchor="middle" dominant-baseline="middle" class="pieceW">♗</text><text x="227.5" y="272" text-anchor="middle" dominant-baseline="middle" class="pieceW">♘</text><text x="262.5" y="272" text-anchor="middle" dominant-baseline="middle" class="pieceW">♖</text>
+
+              <!-- coordinates -->
+              <g class="coord">
+                <text x="17.5" y="304" text-anchor="middle">a</text><text x="52.5" y="304" text-anchor="middle">b</text><text x="87.5" y="304" text-anchor="middle">c</text><text x="122.5" y="304" text-anchor="middle">d</text><text x="157.5" y="304" text-anchor="middle">e</text><text x="192.5" y="304" text-anchor="middle">f</text><text x="227.5" y="304" text-anchor="middle">g</text><text x="262.5" y="304" text-anchor="middle">h</text>
+                <text x="-16" y="18" text-anchor="middle">8</text><text x="-16" y="53" text-anchor="middle">7</text><text x="-16" y="88" text-anchor="middle">6</text><text x="-16" y="123" text-anchor="middle">5</text><text x="-16" y="158" text-anchor="middle">4</text><text x="-16" y="193" text-anchor="middle">3</text><text x="-16" y="228" text-anchor="middle">2</text><text x="-16" y="263" text-anchor="middle">1</text>
+              </g>
+
+              <text x="330" y="38" text-anchor="middle" class="zoneText">Black</text>
+              <text x="330" y="58" text-anchor="middle" class="zoneText">7th–8th</text>
+              <text x="330" y="238" text-anchor="middle" class="zoneText">White</text>
+              <text x="330" y="258" text-anchor="middle" class="zoneText">1st–2nd</text>
+            </g>
+          </svg>
+            </div>
+            <div class="legend" aria-label="Starting position legend">
+              <span><i class="dot white-dot"></i> White pieces: 1st and 2nd ranks</span>
+              <span><i class="dot black-dot"></i> Black pieces: 7th and 8th ranks</span>
+              <span><i class="dot green-dot"></i> White always moves first</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="summary">
+          <div class="section-head">
+            <div class="number">6</div>
+            <div class="section-text">
+              <h2>Basic Rule Summary</h2>
+              <p>Use these simple rules before starting full games and notation practice.</p>
+            </div>
+          </div>
+          <div class="summary-grid">
+            <div class="summary-item"><strong>Two players</strong><span>White and Black play against each other.</span></div>
+            <div class="summary-item"><strong>Take turns</strong><span>Only one side moves on each turn.</span></div>
+            <div class="summary-item"><strong>White starts</strong><span>White always moves first.</span></div>
+            <div class="summary-item"><strong>No skipping</strong><span>On your turn, you must make a legal move.</span></div>
+            <div class="summary-item"><strong>White setup</strong><span>White begins on ranks 1 and 2.</span></div>
+            <div class="summary-item"><strong>Black setup</strong><span>Black begins on ranks 7 and 8.</span></div>
+          </div>
+          <div class="callout"><div class="callout-title">Teacher note</div>Keep this lesson simple. Detailed legal-move rules, check, checkmate, stalemate, castling, and special moves can be taught in later lessons.</div>
+        </section>
+
+        <section class="lesson-section" id="review">
+          <div class="section-head">
+            <div class="number">7</div>
+            <div class="section-text">
+              <h2>Review Questions</h2>
+              <p>Check that students understand the most basic flow of a chess game.</p>
+            </div>
+          </div>
+          <details class="quiz"><summary>How many players play a chess game?</summary><p>Two players: one controls White and one controls Black.</p></details>
+          <details class="quiz"><summary>Who moves first in standard chess?</summary><p>White always moves first.</p></details>
+          <details class="quiz"><summary>Can a player skip a turn?</summary><p>No. When it is your turn, you must make a legal move.</p></details>
+          <details class="quiz"><summary>Where do the white pieces start?</summary><p>White pieces start on the 1st and 2nd ranks.</p></details>
+          <details class="quiz"><summary>Where do the black pieces start?</summary><p>Black pieces start on the 7th and 8th ranks.</p></details>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <footer class="footer">
+    Standalone embedded lesson page — no external image files required.
+  </footer>
+
+  <script>
+    const root = document.documentElement;
+    const savedTheme = localStorage.getItem("lesson-theme-v1");
+    if (savedTheme === "light" || savedTheme === "dark") root.dataset.theme = savedTheme;
+
+    document.getElementById("themeToggle").addEventListener("click", () => {
+      const next = root.dataset.theme === "dark" ? "light" : "dark";
+      root.dataset.theme = next;
+      localStorage.setItem("lesson-theme-v1", next);
+    });
+
+    const progressBar = document.getElementById("progressBar");
+    function updateProgress() {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      progressBar.style.width = Math.min(100, Math.max(0, progress)) + "%";
+    }
+    updateProgress();
+    window.addEventListener("scroll", updateProgress, { passive: true });
+  </script>
+</body>
+</html>

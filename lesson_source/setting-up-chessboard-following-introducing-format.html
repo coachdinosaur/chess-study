@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Setting Up the Chessboard — Pawn Level Lesson</title>
+  <meta name="description" content="Pawn level chess lesson: setting up the chessboard with kings, queens, rooks, knights, bishops, and pawns.">
+  <style>
+
+    :root {
+      --bg: #07101e;
+      --bg-2: #0c1930;
+      --panel: rgba(255,255,255,.075);
+      --panel-strong: rgba(255,255,255,.12);
+      --text: #f6f8fc;
+      --muted: #b9c6dc;
+      --line: rgba(255,255,255,.14);
+      --gold: #f3c55f;
+      --blue: #3d8dff;
+      --green: #65d28a;
+      --orange: #ffae5a;
+      --red: #ff6b6b;
+      --purple: #b990ff;
+      --shadow: 0 22px 60px rgba(0,0,0,.35);
+      --radius: 24px;
+      --max: 1180px;
+      --card: #f8fafc;
+      --ink: #172033;
+      --board-green: #81a96f;
+      --board-light: #f4e7c5;
+    }
+
+    [data-theme="light"] {
+      --bg: #f7f2e8;
+      --bg-2: #fffaf0;
+      --panel: rgba(255,255,255,.72);
+      --panel-strong: rgba(255,255,255,.92);
+      --text: #172033;
+      --muted: #526076;
+      --line: rgba(12,25,48,.15);
+      --shadow: 0 20px 50px rgba(22,30,46,.15);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      line-height: 1.55;
+      background:
+        radial-gradient(circle at top left, rgba(61,141,255,.35), transparent 35rem),
+        radial-gradient(circle at top right, rgba(243,197,95,.18), transparent 34rem),
+        linear-gradient(135deg, var(--bg), var(--bg-2));
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; }
+    button { font: inherit; }
+
+    .skip-link {
+      position: absolute;
+      left: -999px;
+      top: 1rem;
+      background: var(--gold);
+      color: #111827;
+      padding: .65rem 1rem;
+      border-radius: 999px;
+      z-index: 999;
+    }
+    .skip-link:focus { left: 1rem; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(16px);
+      background: color-mix(in srgb, var(--bg) 78%, transparent);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar-inner {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: .75rem 0;
+    }
+    .brand { display: flex; align-items: center; gap: .7rem; font-weight: 800; letter-spacing: .01em; }
+    .brand-icon {
+      width: 2.4rem;
+      height: 2.4rem;
+      border-radius: .8rem;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--gold), #fff0b2);
+      color: #13203a;
+      box-shadow: 0 10px 30px rgba(243,197,95,.25);
+    }
+    .top-actions { display: flex; gap: .5rem; flex-wrap: wrap; justify-content: flex-end; }
+    .btn {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: .55rem .9rem;
+      cursor: pointer;
+      transition: transform .18s ease, background .18s ease;
+    }
+    .btn:hover { transform: translateY(-1px); background: var(--panel-strong); }
+
+    .progress { height: 3px; background: rgba(255,255,255,.08); }
+    .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--gold), var(--green), var(--blue)); }
+
+    .page { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; }
+    .hero {
+      padding: clamp(2rem, 4vw, 4rem) 0 1.4rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 520px);
+      gap: clamp(1.25rem, 4vw, 3rem);
+      align-items: center;
+    }
+    .kicker {
+      color: var(--gold);
+      text-transform: uppercase;
+      font-weight: 850;
+      letter-spacing: .14em;
+      font-size: .85rem;
+      margin: 0 0 .75rem;
+    }
+    h1, h2, h3 { line-height: 1.08; margin: 0; }
+    h1 { font-size: clamp(2.35rem, 7vw, 5.7rem); letter-spacing: -.055em; }
+    h2 { font-size: clamp(1.65rem, 4vw, 3.15rem); letter-spacing: -.035em; }
+    h3 { font-size: clamp(1.18rem, 2.2vw, 1.55rem); letter-spacing: -.015em; }
+    .lead { font-size: clamp(1.05rem, 1.9vw, 1.34rem); color: var(--muted); max-width: 64ch; }
+    .hero-card {
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--line);
+      background: var(--panel);
+      padding: .8rem;
+    }
+
+    .objective-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .8rem;
+      margin: 1rem 0 2rem;
+    }
+    .objective {
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel);
+      min-height: 8rem;
+    }
+    .objective strong { display: block; margin-bottom: .45rem; font-size: 1.03rem; }
+    .objective span { color: var(--muted); font-size: .95rem; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 245px minmax(0, 1fr);
+      gap: 1.25rem;
+      align-items: start;
+      padding: 1rem 0 4rem;
+    }
+    .toc {
+      position: sticky;
+      top: 4.5rem;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--panel);
+      padding: 1rem;
+    }
+    .toc-title { font-weight: 850; margin-bottom: .7rem; color: var(--gold); }
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--muted);
+      padding: .55rem .65rem;
+      border-radius: 12px;
+      font-size: .95rem;
+    }
+    .toc a:hover { color: var(--text); background: var(--panel-strong); }
+
+    main { min-width: 0; }
+    .lesson-section {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: var(--radius);
+      padding: clamp(1rem, 3vw, 2rem);
+      margin-bottom: 1.1rem;
+      box-shadow: 0 14px 40px rgba(0,0,0,.14);
+      scroll-margin-top: 5.5rem;
+    }
+    .section-head { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1rem; }
+    .number {
+      flex: 0 0 auto;
+      width: 2.45rem;
+      height: 2.45rem;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      font-weight: 900;
+      color: #111827;
+      background: var(--gold);
+      box-shadow: 0 10px 22px rgba(243,197,95,.25);
+    }
+    .section-text p { color: var(--muted); margin: .75rem 0 0; }
+
+    .two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, .9fr); gap: 1rem; align-items: center; }
+    .diagram-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; align-items: start; }
+    .diagram-card {
+      background: #f8fafc;
+      color: #172033;
+      border-radius: 20px;
+      padding: 1rem;
+      border: 1px solid rgba(15, 23, 42, .12);
+      box-shadow: 0 16px 38px rgba(0,0,0,.18);
+    }
+    .diagram-card h3 {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      margin-bottom: .7rem;
+      color: #0f172a;
+    }
+    .diagram-card p {
+      margin: .65rem 0 0;
+      color: #475569;
+      font-size: .98rem;
+    }
+    .tag {
+      display: inline-grid;
+      place-items: center;
+      min-width: 38px;
+      height: 34px;
+      padding: 0 10px;
+      border-radius: 999px;
+      color: #fff;
+      background: #0ea5e9;
+      font-weight: 900;
+      font-size: .95rem;
+      flex: 0 0 auto;
+    }
+    .tag.purple { background: #7e22ce; }
+    .tag.green { background: #15803d; }
+    .tag.slate { background: #475569; }
+
+    .board-wrap {
+      background: #eef6ff;
+      border: 1px solid rgba(15, 23, 42, .12);
+      border-radius: 18px;
+      padding: .6rem;
+      overflow: hidden;
+    }
+    .board-svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .definition-list {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .85rem;
+      margin-top: 1rem;
+    }
+    .definition {
+      background: #f8fafc;
+      color: #172033;
+      border-radius: 18px;
+      padding: 1rem;
+      border: 1px solid rgba(15, 23, 42, .12);
+    }
+    .definition strong { display: block; margin-bottom: .4rem; font-size: 1.05rem; }
+    .definition span {
+      display: inline-block;
+      padding: .18rem .55rem;
+      border-radius: 999px;
+      background: #e0f2fe;
+      color: #075985;
+      font-weight: 850;
+      margin: .25rem .15rem 0 0;
+    }
+    .definition.purple span { background: #f3e8ff; color: #6b21a8; }
+    .definition.green span { background: #dcfce7; color: #166534; }
+    .definition.slate span { background: #e2e8f0; color: #334155; }
+
+    .memory-grid, .review-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .85rem;
+      margin-top: 1rem;
+    }
+    .memory, .review-item {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1rem;
+      background: rgba(255,255,255,.055);
+    }
+    .memory strong, .review-item strong { color: var(--gold); display: block; margin-bottom: .25rem; }
+    .memory p, .review-item span { color: var(--muted); margin: 0; }
+
+    .callout {
+      border: 1px solid color-mix(in srgb, var(--gold) 42%, var(--line));
+      border-radius: 20px;
+      padding: 1rem;
+      background: color-mix(in srgb, var(--gold) 12%, var(--panel));
+      margin-top: 1rem;
+    }
+    .callout-title { color: var(--gold); font-weight: 900; margin-bottom: .35rem; }
+
+    .footer {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      padding: 2rem 0 3rem;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+    }
+
+    .svg-label {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      font-weight: 950;
+      fill: #0f172a;
+      paint-order: stroke;
+      stroke: rgba(255,255,255,.78);
+      stroke-width: 5px;
+      stroke-linejoin: round;
+    }
+    .svg-label.big { font-size: 28px; letter-spacing: -1px; }
+    .svg-label.medium { font-size: 18px; letter-spacing: -.4px; }
+    .svg-label.small { font-size: 18px; font-weight: 850; }
+    .svg-chip {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      font-size: 20px;
+      font-weight: 950;
+      fill: #ffffff;
+    }
+    .svg-coord {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      font-size: 15px;
+      font-weight: 900;
+      fill: #334155;
+    }
+    .svg-coord.faint { opacity: .55; }
+
+    @media (max-width: 980px) {
+      .hero { grid-template-columns: 1fr; }
+      .layout { grid-template-columns: 1fr; }
+      .toc { position: static; overflow-x: auto; white-space: nowrap; }
+      .toc a { display: inline-block; }
+      .definition-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 720px) {
+      .topbar-inner, .page, .footer { width: min(100% - 22px, var(--max)); }
+      .topbar-inner { align-items: flex-start; }
+      .brand span:last-child { display: none; }
+      .objective-grid, .diagram-grid, .memory-grid, .review-grid, .two-col, .definition-list { grid-template-columns: 1fr; }
+      .lesson-section { border-radius: 18px; }
+      .section-head { gap: .75rem; }
+      .number { width: 2.15rem; height: 2.15rem; }
+      .board-wrap { padding: .35rem; }
+    }
+
+    @media print {
+      :root, [data-theme="light"], [data-theme="dark"] {
+        --bg: #ffffff;
+        --bg-2: #ffffff;
+        --panel: #ffffff;
+        --panel-strong: #ffffff;
+        --text: #111827;
+        --muted: #374151;
+        --line: #d1d5db;
+        --shadow: none;
+      }
+      body { background: #ffffff; }
+      .topbar, .toc, .btn, .progress { display: none !important; }
+      .page, .footer { width: 100%; }
+      .hero { padding-top: 0; }
+      .layout { display: block; padding: 0; }
+      .lesson-section, .objective, .diagram-card, .definition, .memory, .review-item { break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
+      svg { break-inside: avoid; page-break-inside: avoid; }
+    }
+
+  
+
+    /* Lesson 8 setup-specific styles */
+    .setup-overview {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .setup-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 1rem;
+    }
+    .setup-card strong { display: block; color: var(--text); margin-bottom: .3rem; }
+    .setup-card span { color: var(--muted); }
+    .setup-grid {
+      display: grid;
+      grid-template-columns: minmax(0, .95fr) minmax(300px, 1.05fr);
+      gap: 1.1rem;
+      align-items: start;
+    }
+    .instruction-panel {
+      background: color-mix(in srgb, var(--panel-strong) 74%, transparent);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 1rem;
+    }
+    .instruction-panel h3 { margin: 0 0 .6rem; }
+    .instruction-panel p { margin: .55rem 0; color: var(--muted); }
+    .instruction-panel ul { margin: .7rem 0 0 1.1rem; padding: 0; color: var(--muted); }
+    .instruction-panel li { margin: .35rem 0; }
+    code.inline, .inline-code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      background: color-mix(in srgb, var(--blue) 16%, transparent);
+      border: 1px solid color-mix(in srgb, var(--blue) 32%, transparent);
+      color: color-mix(in srgb, var(--text) 90%, var(--blue));
+      border-radius: .55rem;
+      padding: .12rem .42rem;
+      font-weight: 800;
+    }
+    [data-theme="light"] code.inline, [data-theme="light"] .inline-code { color: #1d4ed8; background: #eff6ff; border-color: #bfdbfe; }
+    .board-shell {
+      background: #f8fafc;
+      color: #172033;
+      border: 1px solid rgba(15,23,42,.13);
+      border-radius: 22px;
+      padding: 1rem;
+      box-shadow: 0 18px 42px rgba(0,0,0,.18);
+      overflow: auto;
+    }
+    .board-shell svg { display: block; width: min(100%, 430px); height: auto; margin: 0 auto; }
+    .setup-order {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: .7rem;
+      margin-top: 1rem;
+    }
+    .setup-order div {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: .85rem .7rem;
+      text-align: center;
+      font-weight: 800;
+    }
+    .setup-order span { display: block; color: var(--muted); font-weight: 700; font-size: .86rem; margin-top: .25rem; }
+    .remember-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+    .remember-list .remember-item {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 1rem;
+    }
+    .remember-list strong { display: block; margin-bottom: .35rem; color: var(--text); }
+    .remember-list span { color: var(--muted); }
+    @media (max-width: 900px) {
+      .setup-grid, .setup-overview, .remember-list { grid-template-columns: 1fr; }
+      .setup-order { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 560px) {
+      .board-shell { padding: .6rem; }
+      .setup-order { grid-template-columns: 1fr; }
+    }
+
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#lesson">Skip to lesson</a>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand"><span class="brand-icon">♟</span><span>Pawn Level · Lesson 8</span></div>
+      <div class="top-actions">
+        <button class="btn" id="themeToggle" type="button">Toggle theme</button>
+        <button class="btn" type="button" onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </div>
+    <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+  </header>
+
+  <div class="page">
+    <section class="hero" id="top">
+      <div class="hero-copy">
+        <p class="kicker">Lesson 8 · Beginner / Pawn Level</p>
+        <h1>Setting Up the Chessboard</h1>
+        <p class="hero-lead">Learn how to place each chess piece on its correct starting square: kings, queens, rooks, knights, bishops, and pawns.</p>
+        <div class="objective-grid" aria-label="Lesson objectives">
+          <div><strong>Board direction</strong><span>Remember “White on the right.”</span></div>
+          <div><strong>Kings and queens</strong><span>Place the central pieces correctly.</span></div>
+          <div><strong>Back rank order</strong><span>Rook, knight, bishop, queen, king, bishop, knight, rook.</span></div>
+          <div><strong>Pawns</strong><span>White on rank 2, black on rank 7.</span></div>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="poster-card">
+          <div class="poster-icon">♔</div>
+          <div class="poster-title">Set up correctly</div>
+          <div class="poster-text">White on the right. Queen on her own color. Pawns in front.</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="layout">
+      <aside class="toc" aria-label="Lesson contents">
+        <div class="toc-title">Lesson contents</div>
+        <a href="#orientation">1. Before placing pieces</a>
+        <a href="#kings">2. Place the Kings</a>
+        <a href="#queens">3. Place the Queens</a>
+        <a href="#rooks">4. Place the Rooks</a>
+        <a href="#knights">5. Place the Knights</a>
+        <a href="#bishops">6. Place the Bishops</a>
+        <a href="#pawns">7. Place the Pawns</a>
+        <a href="#remember">8. Remember</a>
+        <a href="#review">9. Review Questions</a>
+      </aside>
+
+      <main id="lesson" class="lesson-flow">
+        
+        <section class="lesson-section" id="orientation">
+          <div class="section-head">
+            <div class="number">1</div>
+            <div class="section-text">
+              <h2>Before placing the pieces</h2>
+              <p>Start with the board facing the correct direction, then build the starting position step by step.</p>
+            </div>
+          </div>
+          <div class="setup-overview">
+            <div class="setup-card"><strong>White on the right</strong><span>The bottom-right square from White’s side is <code class="inline">h1</code>, and it must be light.</span></div>
+            <div class="setup-card"><strong>Queen on her own color</strong><span>The white queen starts on the light square <code class="inline">d1</code>. The black queen starts on the dark square <code class="inline">d8</code>.</span></div>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="kings">
+          <div class="section-head">
+            <div class="number">2</div>
+            <div class="section-text">
+              <h2>Place the Kings</h2>
+              <p>Follow this board diagram and place the pieces on the named starting squares.</p>
+            </div>
+          </div>
+          <div class="setup-grid">
+            <div class="instruction-panel">
+              
+<h3>What to do</h3>
+<p>Place the kings on their starting squares.</p>
+<ul class="compact">
+<li><strong>White king:</strong> <code class="inline">e1</code></li>
+<li><strong>Black king:</strong> <code class="inline">e8</code></li>
+</ul>
+<p>The white king starts on <strong>e1</strong>, a <strong>dark</strong> square.</p>
+<p>The black king starts on <strong>e8</strong>, a <strong>light</strong> square.</p>
+
+            </div>
+            <div class="board-shell">
+              <svg aria-label="Step 1 chessboard with kings on e1 and e8" viewbox="0 0 360 360">
+<defs>
+<style>
+                  .lbl{font: 16px Arial, sans-serif; fill:#334155; font-weight:700}
+                  .pieceW{font: 40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif; fill:#ffffff; stroke:#0f172a; stroke-width:1.2px; paint-order:stroke fill;}
+                  .pieceB{font: 40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif; fill:#111827;}
+                  .hl{fill:none; stroke:#22c55e; stroke-width:4; rx:8}
+                </style>
+</defs>
+<rect fill="#ffffff" height="360" rx="14" width="360" x="0" y="0"></rect>
+<g transform="translate(40,20)">
+<g>
+<rect fill="#f0d9b5" height="35" width="35" x="0" y="0"></rect><rect fill="#b58863" height="35" width="35" x="35" y="0"></rect><rect fill="#f0d9b5" height="35" width="35" x="70" y="0"></rect><rect fill="#b58863" height="35" width="35" x="105" y="0"></rect><rect fill="#f0d9b5" height="35" width="35" x="140" y="0"></rect><rect fill="#b58863" height="35" width="35" x="175" y="0"></rect><rect fill="#f0d9b5" height="35" width="35" x="210" y="0"></rect><rect fill="#b58863" height="35" width="35" x="245" y="0"></rect>
+<rect fill="#b58863" height="35" width="35" x="0" y="35"></rect><rect fill="#f0d9b5" height="35" width="35" x="35" y="35"></rect><rect fill="#b58863" height="35" width="35" x="70" y="35"></rect><rect fill="#f0d9b5" height="35" width="35" x="105" y="35"></rect><rect fill="#b58863" height="35" width="35" x="140" y="35"></rect><rect fill="#f0d9b5" height="35" width="35" x="175" y="35"></rect><rect fill="#b58863" height="35" width="35" x="210" y="35"></rect><rect fill="#f0d9b5" height="35" width="35" x="245" y="35"></rect>
+<rect fill="#f0d9b5" height="35" width="35" x="0" y="70"></rect><rect fill="#b58863" height="35" width="35" x="35" y="70"></rect><rect fill="#f0d9b5" height="35" width="35" x="70" y="70"></rect><rect fill="#b58863" height="35" width="35" x="105" y="70"></rect><rect fill="#f0d9b5" height="35" width="35" x="140" y="70"></rect><rect fill="#b58863" height="35" width="35" x="175" y="70"></rect><rect fill="#f0d9b5" height="35" width="35" x="210" y="70"></rect><rect fill="#b58863" height="35" width="35" x="245" y="70"></rect>
+<rect fill="#b58863" height="35" width="35" x="0" y="105"></rect><rect fill="#f0d9b5" height="35" width="35" x="35" y="105"></rect><rect fill="#b58863" height="35" width="35" x="70" y="105"></rect><rect fill="#f0d9b5" height="35" width="35" x="105" y="105"></rect><rect fill="#b58863" height="35" width="35" x="140" y="105"></rect><rect fill="#f0d9b5" height="35" width="35" x="175" y="105"></rect><rect fill="#b58863" height="35" width="35" x="210" y="105"></rect><rect fill="#f0d9b5" height="35" width="35" x="245" y="105"></rect>
+<rect fill="#f0d9b5" height="35" width="35" x="0" y="140"></rect><rect fill="#b58863" height="35" width="35" x="35" y="140"></rect><rect fill="#f0d9b5" height="35" width="35" x="70" y="140"></rect><rect fill="#b58863" height="35" width="35" x="105" y="140"></rect><rect fill="#f0d9b5" height="35" width="35" x="140" y="140"></rect><rect fill="#b58863" height="35" width="35" x="175" y="140"></rect><rect fill="#f0d9b5" height="35" width="35" x="210" y="140"></rect><rect fill="#b58863" height="35" width="35" x="245" y="140"></rect>
+<rect fill="#b58863" height="35" width="35" x="0" y="175"></rect><rect fill="#f0d9b5" height="35" width="35" x="35" y="175"></rect><rect fill="#b58863" height="35" width="35" x="70" y="175"></rect><rect fill="#f0d9b5" height="35" width="35" x="105" y="175"></rect><rect fill="#b58863" height="35" width="35" x="140" y="175"></rect><rect fill="#f0d9b5" height="35" width="35" x="175" y="175"></rect><rect fill="#b58863" height="35" width="35" x="210" y="175"></rect><rect fill="#f0d9b5" height="35" width="35" x="245" y="175"></rect>
+<rect fill="#f0d9b5" height="35" width="35" x="0" y="210"></rect><rect fill="#b58863" height="35" width="35" x="35" y="210"></rect><rect fill="#f0d9b5" height="35" width="35" x="70" y="210"></rect><rect fill="#b58863" height="35" width="35" x="105" y="210"></rect><rect fill="#f0d9b5" height="35" width="35" x="140" y="210"></rect><rect fill="#b58863" height="35" width="35" x="175" y="210"></rect><rect fill="#f0d9b5" height="35" width="35" x="210" y="210"></rect><rect fill="#b58863" height="35" width="35" x="245" y="210"></rect>
+<rect fill="#b58863" height="35" width="35" x="0" y="245"></rect><rect fill="#f0d9b5" height="35" width="35" x="35" y="245"></rect><rect fill="#b58863" height="35" width="35" x="70" y="245"></rect><rect fill="#f0d9b5" height="35" width="35" x="105" y="245"></rect><rect fill="#b58863" height="35" width="35" x="140" y="245"></rect><rect fill="#f0d9b5" height="35" width="35" x="175" y="245"></rect><rect fill="#b58863" height="35" width="35" x="210" y="245"></rect><rect fill="#f0d9b5" height="35" width="35" x="245" y="245"></rect>
+</g>
+<rect class="hl" height="33" width="33" x="141" y="1"></rect>
+<rect class="hl" height="33" width="33" x="141" y="246"></rect>
+<text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="157.5" y="27">♚</text>
+<text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="157.5" y="272">♔</text>
+<g class="lbl">
+<text text-anchor="middle" x="17.5" y="301">a</text><text text-anchor="middle" x="52.5" y="301">b</text><text text-anchor="middle" x="87.5" y="301">c</text><text text-anchor="middle" x="122.5" y="301">d</text><text text-anchor="middle" x="157.5" y="301">e</text><text text-anchor="middle" x="192.5" y="301">f</text><text text-anchor="middle" x="227.5" y="301">g</text><text text-anchor="middle" x="262.5" y="301">h</text>
+<text text-anchor="middle" x="-12" y="18">8</text><text text-anchor="middle" x="-12" y="53">7</text><text text-anchor="middle" x="-12" y="88">6</text><text text-anchor="middle" x="-12" y="123">5</text><text text-anchor="middle" x="-12" y="158">4</text><text text-anchor="middle" x="-12" y="193">3</text><text text-anchor="middle" x="-12" y="228">2</text><text text-anchor="middle" x="-12" y="263">1</text>
+</g>
+</g>
+</svg>
+            </div>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="queens">
+          <div class="section-head">
+            <div class="number">3</div>
+            <div class="section-text">
+              <h2>Place the Queens</h2>
+              <p>Follow this board diagram and place the pieces on the named starting squares.</p>
+            </div>
+          </div>
+          <div class="setup-grid">
+            <div class="instruction-panel">
+              
+<h3>What to do</h3>
+<p>Place the queens on their starting squares.</p>
+<ul class="compact">
+<li><strong>White queen:</strong> <code class="inline">d1</code></li>
+<li><strong>Black queen:</strong> <code class="inline">d8</code></li>
+</ul>
+<p>The white queen starts on <strong>d1</strong>, a <strong>light</strong> square.</p>
+<p>The black queen starts on <strong>d8</strong>, a <strong>dark</strong> square.</p>
+<p><strong>Easy memory trick:</strong> the queens start on their own color.</p>
+
+            </div>
+            <div class="board-shell">
+              <svg aria-label="Step 2 chessboard with kings and queens on starting squares" viewbox="0 0 360 360">
+<defs>
+<style>
+                  .lbl{font: 16px Arial, sans-serif; fill:#334155; font-weight:700}
+                  .pieceW{font: 40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif; fill:#ffffff; stroke:#0f172a; stroke-width:1.2px; paint-order:stroke fill;}
+                  .pieceB{font: 40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif; fill:#111827;}
+                  .hl{fill:none; stroke:#eab308; stroke-width:4; rx:8}
+                </style>
+</defs>
+<rect fill="#ffffff" height="360" rx="14" width="360" x="0" y="0"></rect>
+<g transform="translate(40,20)">
+<g>
+<rect fill="#f0d9b5" height="35" width="35" x="0" y="0"></rect><rect fill="#b58863" height="35" width="35" x="35" y="0"></rect><rect fill="#f0d9b5" height="35" width="35" x="70" y="0"></rect><rect fill="#b58863" height="35" width="35" x="105" y="0"></rect><rect fill="#f0d9b5" height="35" width="35" x="140" y="0"></rect><rect fill="#b58863" height="35" width="35" x="175" y="0"></rect><rect fill="#f0d9b5" height="35" width="35" x="210" y="0"></rect><rect fill="#b58863" height="35" width="35" x="245" y="0"></rect>
+<rect fill="#b58863" height="35" width="35" x="0" y="35"></rect><rect fill="#f0d9b5" height="35" width="35" x="35" y="35"></rect><rect fill="#b58863" height="35" width="35" x="70" y="35"></rect><rect fill="#f0d9b5" height="35" width="35" x="105" y="35"></rect><rect fill="#b58863" height="35" width="35" x="140" y="35"></rect><rect fill="#f0d9b5" height="35" width="35" x="175" y="35"></rect><rect fill="#b58863" height="35" width="35" x="210" y="35"></rect><rect fill="#f0d9b5" height="35" width="35" x="245" y="35"></rect>
+<rect fill="#f0d9b5" height="35" width="35" x="0" y="70"></rect><rect fill="#b58863" height="35" width="35" x="35" y="70"></rect><rect fill="#f0d9b5" height="35" width="35" x="70" y="70"></rect><rect fill="#b58863" height="35" width="35" x="105" y="70"></rect><rect fill="#f0d9b5" height="35" width="35" x="140" y="70"></rect><rect fill="#b58863" height="35" width="35" x="175" y="70"></rect><rect fill="#f0d9b5" height="35" width="35" x="210" y="70"></rect><rect fill="#b58863" height="35" width="35" x="245" y="70"></rect>
+<rect fill="#b58863" height="35" width="35" x="0" y="105"></rect><rect fill="#f0d9b5" height="35" width="35" x="35" y="105"></rect><rect fill="#b58863" height="35" width="35" x="70" y="105"></rect><rect fill="#f0d9b5" height="35" width="35" x="105" y="105"></rect><rect fill="#b58863" height="35" width="35" x="140" y="105"></rect><rect fill="#f0d9b5" height="35" width="35" x="175" y="105"></rect><rect fill="#b58863" height="35" width="35" x="210" y="105"></rect><rect fill="#f0d9b5" height="35" width="35" x="245" y="105"></rect>
+<rect fill="#f0d9b5" height="35" width="35" x="0" y="140"></rect><rect fill="#b58863" height="35" width="35" x="35" y="140"></rect><rect fill="#f0d9b5" height="35" width="35" x="70" y="140"></rect><rect fill="#b58863" height="35" width="35" x="105" y="140"></rect><rect fill="#f0d9b5" height="35" width="35" x="140" y="140"></rect><rect fill="#b58863" height="35" width="35" x="175" y="140"></rect><rect fill="#f0d9b5" height="35" width="35" x="210" y="140"></rect><rect fill="#b58863" height="35" width="35" x="245" y="140"></rect>
+<rect fill="#b58863" height="35" width="35" x="0" y="175"></rect><rect fill="#f0d9b5" height="35" width="35" x="35" y="175"></rect><rect fill="#b58863" height="35" width="35" x="70" y="175"></rect><rect fill="#f0d9b5" height="35" width="35" x="105" y="175"></rect><rect fill="#b58863" height="35" width="35" x="140" y="175"></rect><rect fill="#f0d9b5" height="35" width="35" x="175" y="175"></rect><rect fill="#b58863" height="35" width="35" x="210" y="175"></rect><rect fill="#f0d9b5" height="35" width="35" x="245" y="175"></rect>
+<rect fill="#f0d9b5" height="35" width="35" x="0" y="210"></rect><rect fill="#b58863" height="35" width="35" x="35" y="210"></rect><rect fill="#f0d9b5" height="35" width="35" x="70" y="210"></rect><rect fill="#b58863" height="35" width="35" x="105" y="210"></rect><rect fill="#f0d9b5" height="35" width="35" x="140" y="210"></rect><rect fill="#b58863" height="35" width="35" x="175" y="210"></rect><rect fill="#f0d9b5" height="35" width="35" x="210" y="210"></rect><rect fill="#b58863" height="35" width="35" x="245" y="210"></rect>
+<rect fill="#b58863" height="35" width="35" x="0" y="245"></rect><rect fill="#f0d9b5" height="35" width="35" x="35" y="245"></rect><rect fill="#b58863" height="35" width="35" x="70" y="245"></rect><rect fill="#f0d9b5" height="35" width="35" x="105" y="245"></rect><rect fill="#b58863" height="35" width="35" x="140" y="245"></rect><rect fill="#f0d9b5" height="35" width="35" x="175" y="245"></rect><rect fill="#b58863" height="35" width="35" x="210" y="245"></rect><rect fill="#f0d9b5" height="35" width="35" x="245" y="245"></rect>
+</g>
+<rect class="hl" height="33" width="33" x="106" y="1"></rect><rect class="hl" height="33" width="33" x="106" y="246"></rect>
+<text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="122.5" y="27">♛</text>
+<text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="122.5" y="272">♕</text>
+<text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="157.5" y="27">♚</text>
+<text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="157.5" y="272">♔</text>
+<g class="lbl">
+<text text-anchor="middle" x="17.5" y="301">a</text><text text-anchor="middle" x="52.5" y="301">b</text><text text-anchor="middle" x="87.5" y="301">c</text><text text-anchor="middle" x="122.5" y="301">d</text><text text-anchor="middle" x="157.5" y="301">e</text><text text-anchor="middle" x="192.5" y="301">f</text><text text-anchor="middle" x="227.5" y="301">g</text><text text-anchor="middle" x="262.5" y="301">h</text>
+<text text-anchor="middle" x="-12" y="18">8</text><text text-anchor="middle" x="-12" y="53">7</text><text text-anchor="middle" x="-12" y="88">6</text><text text-anchor="middle" x="-12" y="123">5</text><text text-anchor="middle" x="-12" y="158">4</text><text text-anchor="middle" x="-12" y="193">3</text><text text-anchor="middle" x="-12" y="228">2</text><text text-anchor="middle" x="-12" y="263">1</text>
+</g>
+</g>
+</svg>
+            </div>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="rooks">
+          <div class="section-head">
+            <div class="number">4</div>
+            <div class="section-text">
+              <h2>Place the Rooks</h2>
+              <p>Follow this board diagram and place the pieces on the named starting squares.</p>
+            </div>
+          </div>
+          <div class="setup-grid">
+            <div class="instruction-panel">
+              
+<h3>What to do</h3>
+<p>Place the rooks on the corners of the board.</p>
+<ul class="compact">
+<li><strong>White rooks:</strong> <code class="inline">a1</code>, <code class="inline">h1</code></li>
+<li><strong>Black rooks:</strong> <code class="inline">a8</code>, <code class="inline">h8</code></li>
+</ul>
+<p>The rooks begin on the four corner squares.</p>
+
+            </div>
+            <div class="board-shell">
+              <svg aria-label="Step 3 chessboard with kings queens and rooks" viewbox="0 0 360 360">
+<defs><style>.lbl{font:16px Arial,sans-serif;fill:#334155;font-weight:700}.pieceW{font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill}.pieceB{font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827}.hl{fill:none;stroke:#f97316;stroke-width:4;rx:8}</style></defs>
+<rect fill="#ffffff" height="360" rx="14" width="360" x="0" y="0"></rect>
+<g transform="translate(40,20)">
+<g>
+<rect fill="#f0d9b5" height="35" width="35" x="0" y="0"></rect><rect fill="#b58863" height="35" width="35" x="35" y="0"></rect><rect fill="#f0d9b5" height="35" width="35" x="70" y="0"></rect><rect fill="#b58863" height="35" width="35" x="105" y="0"></rect><rect fill="#f0d9b5" height="35" width="35" x="140" y="0"></rect><rect fill="#b58863" height="35" width="35" x="175" y="0"></rect><rect fill="#f0d9b5" height="35" width="35" x="210" y="0"></rect><rect fill="#b58863" height="35" width="35" x="245" y="0"></rect>
+<rect fill="#b58863" height="35" width="35" x="0" y="35"></rect><rect fill="#f0d9b5" height="35" width="35" x="35" y="35"></rect><rect fill="#b58863" height="35" width="35" x="70" y="35"></rect><rect fill="#f0d9b5" height="35" width="35" x="105" y="35"></rect><rect fill="#b58863" height="35" width="35" x="140" y="35"></rect><rect fill="#f0d9b5" height="35" width="35" x="175" y="35"></rect><rect fill="#b58863" height="35" width="35" x="210" y="35"></rect><rect fill="#f0d9b5" height="35" width="35" x="245" y="35"></rect>
+<rect fill="#f0d9b5" height="35" width="35" x="0" y="70"></rect><rect fill="#b58863" height="35" width="35" x="35" y="70"></rect><rect fill="#f0d9b5" height="35" width="35" x="70" y="70"></rect><rect fill="#b58863" height="35" width="35" x="105" y="70"></rect><rect fill="#f0d9b5" height="35" width="35" x="140" y="70"></rect><rect fill="#b58863" height="35" width="35" x="175" y="70"></rect><rect fill="#f0d9b5" height="35" width="35" x="210" y="70"></rect><rect fill="#b58863" height="35" width="35" x="245" y="70"></rect>
+<rect fill="#b58863" height="35" width="35" x="0" y="105"></rect><rect fill="#f0d9b5" height="35" width="35" x="35" y="105"></rect><rect fill="#b58863" height="35" width="35" x="70" y="105"></rect><rect fill="#f0d9b5" height="35" width="35" x="105" y="105"></rect><rect fill="#b58863" height="35" width="35" x="140" y="105"></rect><rect fill="#f0d9b5" height="35" width="35" x="175" y="105"></rect><rect fill="#b58863" height="35" width="35" x="210" y="105"></rect><rect fill="#f0d9b5" height="35" width="35" x="245" y="105"></rect>
+<rect fill="#f0d9b5" height="35" width="35" x="0" y="140"></rect><rect fill="#b58863" height="35" width="35" x="35" y="140"></rect><rect fill="#f0d9b5" height="35" width="35" x="70" y="140"></rect><rect fill="#b58863" height="35" width="35" x="105" y="140"></rect><rect fill="#f0d9b5" height="35" width="35" x="140" y="140"></rect><rect fill="#b58863" height="35" width="35" x="175" y="140"></rect><rect fill="#f0d9b5" height="35" width="35" x="210" y="140"></rect><rect fill="#b58863" height="35" width="35" x="245" y="140"></rect>
+<rect fill="#b58863" height="35" width="35" x="0" y="175"></rect><rect fill="#f0d9b5" height="35" width="35" x="35" y="175"></rect><rect fill="#b58863" height="35" width="35" x="70" y="175"></rect><rect fill="#f0d9b5" height="35" width="35" x="105" y="175"></rect><rect fill="#b58863" height="35" width="35" x="140" y="175"></rect><rect fill="#f0d9b5" height="35" width="35" x="175" y="175"></rect><rect fill="#b58863" height="35" width="35" x="210" y="175"></rect><rect fill="#f0d9b5" height="35" width="35" x="245" y="175"></rect>
+<rect fill="#f0d9b5" height="35" width="35" x="0" y="210"></rect><rect fill="#b58863" height="35" width="35" x="35" y="210"></rect><rect fill="#f0d9b5" height="35" width="35" x="70" y="210"></rect><rect fill="#b58863" height="35" width="35" x="105" y="210"></rect><rect fill="#f0d9b5" height="35" width="35" x="140" y="210"></rect><rect fill="#b58863" height="35" width="35" x="175" y="210"></rect><rect fill="#f0d9b5" height="35" width="35" x="210" y="210"></rect><rect fill="#b58863" height="35" width="35" x="245" y="210"></rect>
+<rect fill="#b58863" height="35" width="35" x="0" y="245"></rect><rect fill="#f0d9b5" height="35" width="35" x="35" y="245"></rect><rect fill="#b58863" height="35" width="35" x="70" y="245"></rect><rect fill="#f0d9b5" height="35" width="35" x="105" y="245"></rect><rect fill="#b58863" height="35" width="35" x="140" y="245"></rect><rect fill="#f0d9b5" height="35" width="35" x="175" y="245"></rect><rect fill="#b58863" height="35" width="35" x="210" y="245"></rect><rect fill="#f0d9b5" height="35" width="35" x="245" y="245"></rect>
+</g>
+<rect class="hl" height="33" width="33" x="1" y="1"></rect><rect class="hl" height="33" width="33" x="246" y="1"></rect><rect class="hl" height="33" width="33" x="1" y="246"></rect><rect class="hl" height="33" width="33" x="246" y="246"></rect>
+<text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="17.5" y="27">♜</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="262.5" y="27">♜</text>
+<text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="17.5" y="272">♖</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="262.5" y="272">♖</text>
+<text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="122.5" y="27">♛</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="157.5" y="27">♚</text>
+<text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="122.5" y="272">♕</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="157.5" y="272">♔</text>
+<g class="lbl"><text text-anchor="middle" x="17.5" y="301">a</text><text text-anchor="middle" x="52.5" y="301">b</text><text text-anchor="middle" x="87.5" y="301">c</text><text text-anchor="middle" x="122.5" y="301">d</text><text text-anchor="middle" x="157.5" y="301">e</text><text text-anchor="middle" x="192.5" y="301">f</text><text text-anchor="middle" x="227.5" y="301">g</text><text text-anchor="middle" x="262.5" y="301">h</text><text text-anchor="middle" x="-12" y="18">8</text><text text-anchor="middle" x="-12" y="53">7</text><text text-anchor="middle" x="-12" y="88">6</text><text text-anchor="middle" x="-12" y="123">5</text><text text-anchor="middle" x="-12" y="158">4</text><text text-anchor="middle" x="-12" y="193">3</text><text text-anchor="middle" x="-12" y="228">2</text><text text-anchor="middle" x="-12" y="263">1</text></g>
+</g>
+</svg>
+            </div>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="knights">
+          <div class="section-head">
+            <div class="number">5</div>
+            <div class="section-text">
+              <h2>Place the Knights</h2>
+              <p>Follow this board diagram and place the pieces on the named starting squares.</p>
+            </div>
+          </div>
+          <div class="setup-grid">
+            <div class="instruction-panel">
+              
+<h3>What to do</h3>
+<p>Place the knights beside the rooks.</p>
+<ul class="compact">
+<li><strong>White knights:</strong> <code class="inline">b1</code>, <code class="inline">g1</code></li>
+<li><strong>Black knights:</strong> <code class="inline">b8</code>, <code class="inline">g8</code></li>
+</ul>
+
+            </div>
+            <div class="board-shell">
+              <svg aria-label="Step 4 chessboard with kings queens rooks and knights" viewbox="0 0 360 360">
+<defs><style>.lbl{font:16px Arial,sans-serif;fill:#334155;font-weight:700}.pieceW{font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill}.pieceB{font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827}.hl{fill:none;stroke:#8b5cf6;stroke-width:4;rx:8}</style></defs>
+<rect fill="#ffffff" height="360" rx="14" width="360" x="0" y="0"></rect>
+<g transform="translate(40,20)">
+<g>
+<rect fill="#f0d9b5" height="35" width="35" x="0" y="0"></rect><rect fill="#b58863" height="35" width="35" x="35" y="0"></rect><rect fill="#f0d9b5" height="35" width="35" x="70" y="0"></rect><rect fill="#b58863" height="35" width="35" x="105" y="0"></rect><rect fill="#f0d9b5" height="35" width="35" x="140" y="0"></rect><rect fill="#b58863" height="35" width="35" x="175" y="0"></rect><rect fill="#f0d9b5" height="35" width="35" x="210" y="0"></rect><rect fill="#b58863" height="35" width="35" x="245" y="0"></rect>
+<rect fill="#b58863" height="35" width="35" x="0" y="35"></rect><rect fill="#f0d9b5" height="35" width="35" x="35" y="35"></rect><rect fill="#b58863" height="35" width="35" x="70" y="35"></rect><rect fill="#f0d9b5" height="35" width="35" x="105" y="35"></rect><rect fill="#b58863" height="35" width="35" x="140" y="35"></rect><rect fill="#f0d9b5" height="35" width="35" x="175" y="35"></rect><rect fill="#b58863" height="35" width="35" x="210" y="35"></rect><rect fill="#f0d9b5" height="35" width="35" x="245" y="35"></rect>
+<rect fill="#f0d9b5" height="35" width="35" x="0" y="70"></rect><rect fill="#b58863" height="35" width="35" x="35" y="70"></rect><rect fill="#f0d9b5" height="35" width="35" x="70" y="70"></rect><rect fill="#b58863" height="35" width="35" x="105" y="70"></rect><rect fill="#f0d9b5" height="35" width="35" x="140" y="70"></rect><rect fill="#b58863" height="35" width="35" x="175" y="70"></rect><rect fill="#f0d9b5" height="35" width="35" x="210" y="70"></rect><rect fill="#b58863" height="35" width="35" x="245" y="70"></rect>
+<rect fill="#b58863" height="35" width="35" x="0" y="105"></rect><rect fill="#f0d9b5" height="35" width="35" x="35" y="105"></rect><rect fill="#b58863" height="35" width="35" x="70" y="105"></rect><rect fill="#f0d9b5" height="35" width="35" x="105" y="105"></rect><rect fill="#b58863" height="35" width="35" x="140" y="105"></rect><rect fill="#f0d9b5" height="35" width="35" x="175" y="105"></rect><rect fill="#b58863" height="35" width="35" x="210" y="105"></rect><rect fill="#f0d9b5" height="35" width="35" x="245" y="105"></rect>
+<rect fill="#f0d9b5" height="35" width="35" x="0" y="140"></rect><rect fill="#b58863" height="35" width="35" x="35" y="140"></rect><rect fill="#f0d9b5" height="35" width="35" x="70" y="140"></rect><rect fill="#b58863" height="35" width="35" x="105" y="140"></rect><rect fill="#f0d9b5" height="35" width="35" x="140" y="140"></rect><rect fill="#b58863" height="35" width="35" x="175" y="140"></rect><rect fill="#f0d9b5" height="35" width="35" x="210" y="140"></rect><rect fill="#b58863" height="35" width="35" x="245" y="140"></rect>
+<rect fill="#b58863" height="35" width="35" x="0" y="175"></rect><rect fill="#f0d9b5" height="35" width="35" x="35" y="175"></rect><rect fill="#b58863" height="35" width="35" x="70" y="175"></rect><rect fill="#f0d9b5" height="35" width="35" x="105" y="175"></rect><rect fill="#b58863" height="35" width="35" x="140" y="175"></rect><rect fill="#f0d9b5" height="35" width="35" x="175" y="175"></rect><rect fill="#b58863" height="35" width="35" x="210" y="175"></rect><rect fill="#f0d9b5" height="35" width="35" x="245" y="175"></rect>
+<rect fill="#f0d9b5" height="35" width="35" x="0" y="210"></rect><rect fill="#b58863" height="35" width="35" x="35" y="210"></rect><rect fill="#f0d9b5" height="35" width="35" x="70" y="210"></rect><rect fill="#b58863" height="35" width="35" x="105" y="210"></rect><rect fill="#f0d9b5" height="35" width="35" x="140" y="210"></rect><rect fill="#b58863" height="35" width="35" x="175" y="210"></rect><rect fill="#f0d9b5" height="35" width="35" x="210" y="210"></rect><rect fill="#b58863" height="35" width="35" x="245" y="210"></rect>
+<rect fill="#b58863" height="35" width="35" x="0" y="245"></rect><rect fill="#f0d9b5" height="35" width="35" x="35" y="245"></rect><rect fill="#b58863" height="35" width="35" x="70" y="245"></rect><rect fill="#f0d9b5" height="35" width="35" x="105" y="245"></rect><rect fill="#b58863" height="35" width="35" x="140" y="245"></rect><rect fill="#f0d9b5" height="35" width="35" x="175" y="245"></rect><rect fill="#b58863" height="35" width="35" x="210" y="245"></rect><rect fill="#f0d9b5" height="35" width="35" x="245" y="245"></rect>
+</g>
+<rect class="hl" height="33" width="33" x="36" y="1"></rect><rect class="hl" height="33" width="33" x="211" y="1"></rect><rect class="hl" height="33" width="33" x="36" y="246"></rect><rect class="hl" height="33" width="33" x="211" y="246"></rect>
+<text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="17.5" y="27">♜</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="52.5" y="27">♞</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="122.5" y="27">♛</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="157.5" y="27">♚</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="227.5" y="27">♞</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="262.5" y="27">♜</text>
+<text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="17.5" y="272">♖</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="52.5" y="272">♘</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="122.5" y="272">♕</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="157.5" y="272">♔</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="227.5" y="272">♘</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="262.5" y="272">♖</text>
+<g class="lbl"><text text-anchor="middle" x="17.5" y="301">a</text><text text-anchor="middle" x="52.5" y="301">b</text><text text-anchor="middle" x="87.5" y="301">c</text><text text-anchor="middle" x="122.5" y="301">d</text><text text-anchor="middle" x="157.5" y="301">e</text><text text-anchor="middle" x="192.5" y="301">f</text><text text-anchor="middle" x="227.5" y="301">g</text><text text-anchor="middle" x="262.5" y="301">h</text><text text-anchor="middle" x="-12" y="18">8</text><text text-anchor="middle" x="-12" y="53">7</text><text text-anchor="middle" x="-12" y="88">6</text><text text-anchor="middle" x="-12" y="123">5</text><text text-anchor="middle" x="-12" y="158">4</text><text text-anchor="middle" x="-12" y="193">3</text><text text-anchor="middle" x="-12" y="228">2</text><text text-anchor="middle" x="-12" y="263">1</text></g>
+</g>
+</svg>
+            </div>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="bishops">
+          <div class="section-head">
+            <div class="number">6</div>
+            <div class="section-text">
+              <h2>Place the Bishops</h2>
+              <p>Follow this board diagram and place the pieces on the named starting squares.</p>
+            </div>
+          </div>
+          <div class="setup-grid">
+            <div class="instruction-panel">
+              
+<h3>What to do</h3>
+<p>Place the bishops beside the knights.</p>
+<ul class="compact">
+<li><strong>White bishops:</strong> <code class="inline">c1</code>, <code class="inline">f1</code></li>
+<li><strong>Black bishops:</strong> <code class="inline">c8</code>, <code class="inline">f8</code></li>
+</ul>
+
+            </div>
+            <div class="board-shell">
+              <svg aria-label="Step 5 chessboard with bishops added" viewbox="0 0 360 360">
+<defs><style>.lbl{font:16px Arial,sans-serif;fill:#334155;font-weight:700}.pieceW{font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill}.pieceB{font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827}.hl{fill:none;stroke:#ef4444;stroke-width:4;rx:8}</style></defs>
+<rect fill="#ffffff" height="360" rx="14" width="360" x="0" y="0"></rect>
+<g transform="translate(40,20)">
+<g>
+<rect fill="#f0d9b5" height="35" width="35" x="0" y="0"></rect><rect fill="#b58863" height="35" width="35" x="35" y="0"></rect><rect fill="#f0d9b5" height="35" width="35" x="70" y="0"></rect><rect fill="#b58863" height="35" width="35" x="105" y="0"></rect><rect fill="#f0d9b5" height="35" width="35" x="140" y="0"></rect><rect fill="#b58863" height="35" width="35" x="175" y="0"></rect><rect fill="#f0d9b5" height="35" width="35" x="210" y="0"></rect><rect fill="#b58863" height="35" width="35" x="245" y="0"></rect>
+<rect fill="#b58863" height="35" width="35" x="0" y="35"></rect><rect fill="#f0d9b5" height="35" width="35" x="35" y="35"></rect><rect fill="#b58863" height="35" width="35" x="70" y="35"></rect><rect fill="#f0d9b5" height="35" width="35" x="105" y="35"></rect><rect fill="#b58863" height="35" width="35" x="140" y="35"></rect><rect fill="#f0d9b5" height="35" width="35" x="175" y="35"></rect><rect fill="#b58863" height="35" width="35" x="210" y="35"></rect><rect fill="#f0d9b5" height="35" width="35" x="245" y="35"></rect>
+<rect fill="#f0d9b5" height="35" width="35" x="0" y="70"></rect><rect fill="#b58863" height="35" width="35" x="35" y="70"></rect><rect fill="#f0d9b5" height="35" width="35" x="70" y="70"></rect><rect fill="#b58863" height="35" width="35" x="105" y="70"></rect><rect fill="#f0d9b5" height="35" width="35" x="140" y="70"></rect><rect fill="#b58863" height="35" width="35" x="175" y="70"></rect><rect fill="#f0d9b5" height="35" width="35" x="210" y="70"></rect><rect fill="#b58863" height="35" width="35" x="245" y="70"></rect>
+<rect fill="#b58863" height="35" width="35" x="0" y="105"></rect><rect fill="#f0d9b5" height="35" width="35" x="35" y="105"></rect><rect fill="#b58863" height="35" width="35" x="70" y="105"></rect><rect fill="#f0d9b5" height="35" width="35" x="105" y="105"></rect><rect fill="#b58863" height="35" width="35" x="140" y="105"></rect><rect fill="#f0d9b5" height="35" width="35" x="175" y="105"></rect><rect fill="#b58863" height="35" width="35" x="210" y="105"></rect><rect fill="#f0d9b5" height="35" width="35" x="245" y="105"></rect>
+<rect fill="#f0d9b5" height="35" width="35" x="0" y="140"></rect><rect fill="#b58863" height="35" width="35" x="35" y="140"></rect><rect fill="#f0d9b5" height="35" width="35" x="70" y="140"></rect><rect fill="#b58863" height="35" width="35" x="105" y="140"></rect><rect fill="#f0d9b5" height="35" width="35" x="140" y="140"></rect><rect fill="#b58863" height="35" width="35" x="175" y="140"></rect><rect fill="#f0d9b5" height="35" width="35" x="210" y="140"></rect><rect fill="#b58863" height="35" width="35" x="245" y="140"></rect>
+<rect fill="#b58863" height="35" width="35" x="0" y="175"></rect><rect fill="#f0d9b5" height="35" width="35" x="35" y="175"></rect><rect fill="#b58863" height="35" width="35" x="70" y="175"></rect><rect fill="#f0d9b5" height="35" width="35" x="105" y="175"></rect><rect fill="#b58863" height="35" width="35" x="140" y="175"></rect><rect fill="#f0d9b5" height="35" width="35" x="175" y="175"></rect><rect fill="#b58863" height="35" width="35" x="210" y="175"></rect><rect fill="#f0d9b5" height="35" width="35" x="245" y="175"></rect>
+<rect fill="#f0d9b5" height="35" width="35" x="0" y="210"></rect><rect fill="#b58863" height="35" width="35" x="35" y="210"></rect><rect fill="#f0d9b5" height="35" width="35" x="70" y="210"></rect><rect fill="#b58863" height="35" width="35" x="105" y="210"></rect><rect fill="#f0d9b5" height="35" width="35" x="140" y="210"></rect><rect fill="#b58863" height="35" width="35" x="175" y="210"></rect><rect fill="#f0d9b5" height="35" width="35" x="210" y="210"></rect><rect fill="#b58863" height="35" width="35" x="245" y="210"></rect>
+<rect fill="#b58863" height="35" width="35" x="0" y="245"></rect><rect fill="#f0d9b5" height="35" width="35" x="35" y="245"></rect><rect fill="#b58863" height="35" width="35" x="70" y="245"></rect><rect fill="#f0d9b5" height="35" width="35" x="105" y="245"></rect><rect fill="#b58863" height="35" width="35" x="140" y="245"></rect><rect fill="#f0d9b5" height="35" width="35" x="175" y="245"></rect><rect fill="#b58863" height="35" width="35" x="210" y="245"></rect><rect fill="#f0d9b5" height="35" width="35" x="245" y="245"></rect>
+</g>
+<rect class="hl" height="33" width="33" x="71" y="1"></rect><rect class="hl" height="33" width="33" x="176" y="1"></rect><rect class="hl" height="33" width="33" x="71" y="246"></rect><rect class="hl" height="33" width="33" x="176" y="246"></rect>
+<text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="17.5" y="27">♜</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="52.5" y="27">♞</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="87.5" y="27">♝</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="122.5" y="27">♛</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="157.5" y="27">♚</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="192.5" y="27">♝</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="227.5" y="27">♞</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="262.5" y="27">♜</text>
+<text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="17.5" y="272">♖</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="52.5" y="272">♘</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="87.5" y="272">♗</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="122.5" y="272">♕</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="157.5" y="272">♔</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="192.5" y="272">♗</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="227.5" y="272">♘</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="262.5" y="272">♖</text>
+<g class="lbl"><text text-anchor="middle" x="17.5" y="301">a</text><text text-anchor="middle" x="52.5" y="301">b</text><text text-anchor="middle" x="87.5" y="301">c</text><text text-anchor="middle" x="122.5" y="301">d</text><text text-anchor="middle" x="157.5" y="301">e</text><text text-anchor="middle" x="192.5" y="301">f</text><text text-anchor="middle" x="227.5" y="301">g</text><text text-anchor="middle" x="262.5" y="301">h</text><text text-anchor="middle" x="-12" y="18">8</text><text text-anchor="middle" x="-12" y="53">7</text><text text-anchor="middle" x="-12" y="88">6</text><text text-anchor="middle" x="-12" y="123">5</text><text text-anchor="middle" x="-12" y="158">4</text><text text-anchor="middle" x="-12" y="193">3</text><text text-anchor="middle" x="-12" y="228">2</text><text text-anchor="middle" x="-12" y="263">1</text></g>
+</g>
+</svg>
+            </div>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="pawns">
+          <div class="section-head">
+            <div class="number">7</div>
+            <div class="section-text">
+              <h2>Place the Pawns</h2>
+              <p>Follow this board diagram and place the pieces on the named starting squares.</p>
+            </div>
+          </div>
+          <div class="setup-grid">
+            <div class="instruction-panel">
+              
+<h3>What to do</h3>
+<p>Place the pawns in front of the other pieces.</p>
+<ul class="compact">
+<li><strong>White pawns:</strong> <code class="inline">a2, b2, c2, d2, e2, f2, g2, h2</code></li>
+<li><strong>Black pawns:</strong> <code class="inline">a7, b7, c7, d7, e7, f7, g7, h7</code></li>
+</ul>
+<p>Now the chessboard is fully set up and ready for play.</p>
+
+            </div>
+            <div class="board-shell">
+              <svg aria-label="Step 6 full starting chess position" viewbox="0 0 360 360">
+<defs><style>.lbl{font:16px Arial,sans-serif;fill:#334155;font-weight:700}.pieceW{font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill}.pieceB{font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827}.hl{fill:none;stroke:#16a34a;stroke-width:4;rx:8}</style></defs>
+<rect fill="#ffffff" height="360" rx="14" width="360" x="0" y="0"></rect>
+<g transform="translate(40,20)">
+<g>
+<rect fill="#f0d9b5" height="35" width="35" x="0" y="0"></rect><rect fill="#b58863" height="35" width="35" x="35" y="0"></rect><rect fill="#f0d9b5" height="35" width="35" x="70" y="0"></rect><rect fill="#b58863" height="35" width="35" x="105" y="0"></rect><rect fill="#f0d9b5" height="35" width="35" x="140" y="0"></rect><rect fill="#b58863" height="35" width="35" x="175" y="0"></rect><rect fill="#f0d9b5" height="35" width="35" x="210" y="0"></rect><rect fill="#b58863" height="35" width="35" x="245" y="0"></rect>
+<rect fill="#b58863" height="35" width="35" x="0" y="35"></rect><rect fill="#f0d9b5" height="35" width="35" x="35" y="35"></rect><rect fill="#b58863" height="35" width="35" x="70" y="35"></rect><rect fill="#f0d9b5" height="35" width="35" x="105" y="35"></rect><rect fill="#b58863" height="35" width="35" x="140" y="35"></rect><rect fill="#f0d9b5" height="35" width="35" x="175" y="35"></rect><rect fill="#b58863" height="35" width="35" x="210" y="35"></rect><rect fill="#f0d9b5" height="35" width="35" x="245" y="35"></rect>
+<rect fill="#f0d9b5" height="35" width="35" x="0" y="70"></rect><rect fill="#b58863" height="35" width="35" x="35" y="70"></rect><rect fill="#f0d9b5" height="35" width="35" x="70" y="70"></rect><rect fill="#b58863" height="35" width="35" x="105" y="70"></rect><rect fill="#f0d9b5" height="35" width="35" x="140" y="70"></rect><rect fill="#b58863" height="35" width="35" x="175" y="70"></rect><rect fill="#f0d9b5" height="35" width="35" x="210" y="70"></rect><rect fill="#b58863" height="35" width="35" x="245" y="70"></rect>
+<rect fill="#b58863" height="35" width="35" x="0" y="105"></rect><rect fill="#f0d9b5" height="35" width="35" x="35" y="105"></rect><rect fill="#b58863" height="35" width="35" x="70" y="105"></rect><rect fill="#f0d9b5" height="35" width="35" x="105" y="105"></rect><rect fill="#b58863" height="35" width="35" x="140" y="105"></rect><rect fill="#f0d9b5" height="35" width="35" x="175" y="105"></rect><rect fill="#b58863" height="35" width="35" x="210" y="105"></rect><rect fill="#f0d9b5" height="35" width="35" x="245" y="105"></rect>
+<rect fill="#f0d9b5" height="35" width="35" x="0" y="140"></rect><rect fill="#b58863" height="35" width="35" x="35" y="140"></rect><rect fill="#f0d9b5" height="35" width="35" x="70" y="140"></rect><rect fill="#b58863" height="35" width="35" x="105" y="140"></rect><rect fill="#f0d9b5" height="35" width="35" x="140" y="140"></rect><rect fill="#b58863" height="35" width="35" x="175" y="140"></rect><rect fill="#f0d9b5" height="35" width="35" x="210" y="140"></rect><rect fill="#b58863" height="35" width="35" x="245" y="140"></rect>
+<rect fill="#b58863" height="35" width="35" x="0" y="175"></rect><rect fill="#f0d9b5" height="35" width="35" x="35" y="175"></rect><rect fill="#b58863" height="35" width="35" x="70" y="175"></rect><rect fill="#f0d9b5" height="35" width="35" x="105" y="175"></rect><rect fill="#b58863" height="35" width="35" x="140" y="175"></rect><rect fill="#f0d9b5" height="35" width="35" x="175" y="175"></rect><rect fill="#b58863" height="35" width="35" x="210" y="175"></rect><rect fill="#f0d9b5" height="35" width="35" x="245" y="175"></rect>
+<rect fill="#f0d9b5" height="35" width="35" x="0" y="210"></rect><rect fill="#b58863" height="35" width="35" x="35" y="210"></rect><rect fill="#f0d9b5" height="35" width="35" x="70" y="210"></rect><rect fill="#b58863" height="35" width="35" x="105" y="210"></rect><rect fill="#f0d9b5" height="35" width="35" x="140" y="210"></rect><rect fill="#b58863" height="35" width="35" x="175" y="210"></rect><rect fill="#f0d9b5" height="35" width="35" x="210" y="210"></rect><rect fill="#b58863" height="35" width="35" x="245" y="210"></rect>
+<rect fill="#b58863" height="35" width="35" x="0" y="245"></rect><rect fill="#f0d9b5" height="35" width="35" x="35" y="245"></rect><rect fill="#b58863" height="35" width="35" x="70" y="245"></rect><rect fill="#f0d9b5" height="35" width="35" x="105" y="245"></rect><rect fill="#b58863" height="35" width="35" x="140" y="245"></rect><rect fill="#f0d9b5" height="35" width="35" x="175" y="245"></rect><rect fill="#b58863" height="35" width="35" x="210" y="245"></rect><rect fill="#f0d9b5" height="35" width="35" x="245" y="245"></rect>
+</g>
+<rect class="hl" height="33" width="278" x="1" y="36"></rect><rect class="hl" height="33" width="278" x="1" y="211"></rect>
+<text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="17.5" y="27">♜</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="52.5" y="27">♞</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="87.5" y="27">♝</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="122.5" y="27">♛</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="157.5" y="27">♚</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="192.5" y="27">♝</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="227.5" y="27">♞</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="262.5" y="27">♜</text>
+<text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="17.5" y="62">♟</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="52.5" y="62">♟</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="87.5" y="62">♟</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="122.5" y="62">♟</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="157.5" y="62">♟</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="192.5" y="62">♟</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="227.5" y="62">♟</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="262.5" y="62">♟</text>
+<text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="17.5" y="237">♙</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="52.5" y="237">♙</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="87.5" y="237">♙</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="122.5" y="237">♙</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="157.5" y="237">♙</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="192.5" y="237">♙</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="227.5" y="237">♙</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="262.5" y="237">♙</text>
+<text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="17.5" y="272">♖</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="52.5" y="272">♘</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="87.5" y="272">♗</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="122.5" y="272">♕</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="157.5" y="272">♔</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="192.5" y="272">♗</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="227.5" y="272">♘</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="262.5" y="272">♖</text>
+<g class="lbl"><text text-anchor="middle" x="17.5" y="301">a</text><text text-anchor="middle" x="52.5" y="301">b</text><text text-anchor="middle" x="87.5" y="301">c</text><text text-anchor="middle" x="122.5" y="301">d</text><text text-anchor="middle" x="157.5" y="301">e</text><text text-anchor="middle" x="192.5" y="301">f</text><text text-anchor="middle" x="227.5" y="301">g</text><text text-anchor="middle" x="262.5" y="301">h</text><text text-anchor="middle" x="-12" y="18">8</text><text text-anchor="middle" x="-12" y="53">7</text><text text-anchor="middle" x="-12" y="88">6</text><text text-anchor="middle" x="-12" y="123">5</text><text text-anchor="middle" x="-12" y="158">4</text><text text-anchor="middle" x="-12" y="193">3</text><text text-anchor="middle" x="-12" y="228">2</text><text text-anchor="middle" x="-12" y="263">1</text></g>
+</g>
+</svg>
+            </div>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="remember">
+          <div class="section-head">
+            <div class="number">8</div>
+            <div class="section-text">
+              <h2>Remember</h2>
+              <p>Use these rules to check the setup before starting a game.</p>
+            </div>
+          </div>
+          <div class="remember-list">
+            <div class="remember-item"><strong>White on the right</strong><span>The square <code class="inline">h1</code> is light from White’s side.</span></div>
+            <div class="remember-item"><strong>Queens on their color</strong><span>White queen on <code class="inline">d1</code>; black queen on <code class="inline">d8</code>.</span></div>
+            <div class="remember-item"><strong>Back rank order</strong><span>Rook, knight, bishop, queen, king, bishop, knight, rook.</span></div>
+            <div class="remember-item"><strong>Pawns in front</strong><span>White pawns start on rank 2; black pawns start on rank 7.</span></div>
+          </div>
+          <div class="setup-order" aria-label="Back rank piece order">
+            <div>Rook<span>a-file / h-file</span></div>
+            <div>Knight<span>b-file / g-file</span></div>
+            <div>Bishop<span>c-file / f-file</span></div>
+            <div>Queen<span>d-file</span></div>
+            <div>King<span>e-file</span></div>
+            <div>Pawns<span>2nd / 7th rank</span></div>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="review">
+          <div class="section-head">
+            <div class="number">9</div>
+            <div class="section-text">
+              <h2>Review Questions</h2>
+              <p>Check that students can name the correct starting squares.</p>
+            </div>
+          </div>
+          <details class="quiz"><summary>Where does the white king start?</summary><p>The white king starts on <strong>e1</strong>.</p></details>
+          <details class="quiz"><summary>Where does the black queen start?</summary><p>The black queen starts on <strong>d8</strong>.</p></details>
+          <details class="quiz"><summary>What is the memory rule for queens?</summary><p>Queens begin on their own color: white queen on a light square, black queen on a dark square.</p></details>
+          <details class="quiz"><summary>Where do the pawns start?</summary><p>White pawns start on the 2nd rank. Black pawns start on the 7th rank.</p></details>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <footer class="footer">
+    Standalone embedded lesson page — no external image files required.
+  </footer>
+
+  <script>
+    const root = document.documentElement;
+    const savedTheme = localStorage.getItem("lesson-theme-v1");
+    if (savedTheme === "light" || savedTheme === "dark") root.dataset.theme = savedTheme;
+
+    document.getElementById("themeToggle").addEventListener("click", () => {
+      const next = root.dataset.theme === "dark" ? "light" : "dark";
+      root.dataset.theme = next;
+      localStorage.setItem("lesson-theme-v1", next);
+    });
+
+    const progressBar = document.getElementById("progressBar");
+    function updateProgress() {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      progressBar.style.width = Math.min(100, Math.max(0, progress)) + "%";
+    }
+    updateProgress();
+    window.addEventListener("scroll", updateProgress, { passive: true });
+  </script>
+</body>
+</html>

@@ -1,0 +1,2157 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Files, Ranks, and Diagonals — Pawn Level Lesson</title>
+  <meta name="description" content="Pawn level chess lesson: files, ranks, and diagonals on the chessboard with accurate editable HTML/CSS diagrams.">
+  <style>
+    :root {
+      --bg: #07101e;
+      --bg-2: #0c1930;
+      --panel: rgba(255,255,255,.075);
+      --panel-strong: rgba(255,255,255,.12);
+      --text: #f6f8fc;
+      --muted: #b9c6dc;
+      --line: rgba(255,255,255,.14);
+      --gold: #f3c55f;
+      --blue: #3d8dff;
+      --green: #65d28a;
+      --orange: #ffae5a;
+      --red: #ff6b6b;
+      --purple: #b990ff;
+      --shadow: 0 22px 60px rgba(0,0,0,.35);
+      --radius: 24px;
+      --max: 1180px;
+    }
+
+    [data-theme="light"] {
+      --bg: #f7f2e8;
+      --bg-2: #fffaf0;
+      --panel: rgba(255,255,255,.72);
+      --panel-strong: rgba(255,255,255,.92);
+      --text: #172033;
+      --muted: #526076;
+      --line: rgba(12,25,48,.15);
+      --shadow: 0 20px 50px rgba(22,30,46,.15);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      line-height: 1.55;
+      background:
+        radial-gradient(circle at top left, rgba(61,141,255,.35), transparent 35rem),
+        radial-gradient(circle at top right, rgba(243,197,95,.18), transparent 34rem),
+        linear-gradient(135deg, var(--bg), var(--bg-2));
+      overflow-x: hidden;
+    }
+
+    img { max-width: 100%; height: auto; display: block; }
+    a { color: inherit; }
+    button { font: inherit; }
+
+    .skip-link {
+      position: absolute;
+      left: -999px;
+      top: 1rem;
+      background: var(--gold);
+      color: #111827;
+      padding: .65rem 1rem;
+      border-radius: 999px;
+      z-index: 999;
+    }
+    .skip-link:focus { left: 1rem; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(16px);
+      background: color-mix(in srgb, var(--bg) 78%, transparent);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar-inner {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: .75rem 0;
+    }
+    .brand { display: flex; align-items: center; gap: .7rem; font-weight: 800; letter-spacing: .01em; }
+    .brand-icon {
+      width: 2.4rem;
+      height: 2.4rem;
+      border-radius: .8rem;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--gold), #fff0b2);
+      color: #13203a;
+      box-shadow: 0 10px 30px rgba(243,197,95,.25);
+    }
+    .top-actions { display: flex; gap: .5rem; flex-wrap: wrap; justify-content: flex-end; }
+    .btn {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: .55rem .9rem;
+      cursor: pointer;
+      transition: transform .18s ease, background .18s ease;
+    }
+    .btn:hover { transform: translateY(-1px); background: var(--panel-strong); }
+
+    .progress { height: 3px; background: rgba(255,255,255,.08); }
+    .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--gold), var(--green), var(--blue)); }
+
+    .page { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; }
+    .hero {
+      padding: clamp(2rem, 4vw, 4rem) 0 1.4rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 520px);
+      gap: clamp(1.25rem, 4vw, 3rem);
+      align-items: center;
+    }
+    .kicker {
+      color: var(--gold);
+      text-transform: uppercase;
+      font-weight: 850;
+      letter-spacing: .14em;
+      font-size: .85rem;
+      margin: 0 0 .75rem;
+    }
+    h1, h2, h3 { line-height: 1.08; margin: 0; }
+    h1 { font-size: clamp(2.35rem, 7vw, 5.7rem); letter-spacing: -.055em; }
+    h2 { font-size: clamp(1.65rem, 4vw, 3.15rem); letter-spacing: -.035em; }
+    h3 { font-size: clamp(1.18rem, 2.2vw, 1.55rem); letter-spacing: -.015em; }
+    .lead { font-size: clamp(1.05rem, 1.9vw, 1.34rem); color: var(--muted); max-width: 64ch; }
+    .hero-card {
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--line);
+      background: var(--panel);
+    }
+    .hero-card img { width: 100%; }
+
+    .objective-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .8rem;
+      margin: 1rem 0 2rem;
+    }
+    .objective {
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel);
+      min-height: 8rem;
+    }
+    .objective strong { display: block; margin-bottom: .45rem; font-size: 1.03rem; }
+    .objective span { color: var(--muted); font-size: .95rem; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 245px minmax(0, 1fr);
+      gap: 1.25rem;
+      align-items: start;
+      padding: 1rem 0 4rem;
+    }
+    .toc {
+      position: sticky;
+      top: 4.5rem;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--panel);
+      padding: 1rem;
+    }
+    .toc-title { font-weight: 850; margin-bottom: .7rem; color: var(--gold); }
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--muted);
+      padding: .55rem .65rem;
+      border-radius: 12px;
+      font-size: .95rem;
+    }
+    .toc a:hover { color: var(--text); background: var(--panel-strong); }
+
+    main { min-width: 0; }
+    .lesson-section {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: var(--radius);
+      padding: clamp(1rem, 3vw, 2rem);
+      margin-bottom: 1.1rem;
+      box-shadow: 0 14px 40px rgba(0,0,0,.14);
+      scroll-margin-top: 5.5rem;
+    }
+    .section-head { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1rem; }
+    .number {
+      flex: 0 0 auto;
+      width: 2.45rem;
+      height: 2.45rem;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      font-weight: 900;
+      color: #111827;
+      background: var(--gold);
+      box-shadow: 0 10px 22px rgba(243,197,95,.25);
+    }
+    .section-text p { color: var(--muted); margin: .75rem 0 0; }
+    .figure {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(0,0,0,.18);
+      margin: 1.2rem 0 0;
+    }
+    .figure figcaption {
+      color: var(--muted);
+      font-size: .92rem;
+      padding: .8rem 1rem;
+      border-top: 1px solid var(--line);
+      background: rgba(0,0,0,.12);
+    }
+
+    .two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, .9fr); gap: 1rem; align-items: center; }
+    .callout {
+      border: 1px solid color-mix(in srgb, var(--gold) 42%, var(--line));
+      border-radius: 20px;
+      padding: 1rem;
+      background: color-mix(in srgb, var(--gold) 12%, var(--panel));
+    }
+    .callout-title { color: var(--gold); font-weight: 900; margin-bottom: .35rem; }
+    ul.clean { padding-left: 1.2rem; margin: .7rem 0 0; color: var(--muted); }
+    ul.clean li { margin: .35rem 0; }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: .75rem;
+      margin-top: 1rem;
+    }
+    .time-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.055);
+      padding: .9rem;
+      min-height: 10rem;
+    }
+    .time-card .date { color: var(--gold); font-weight: 900; font-size: 1.05rem; }
+    .time-card .place { font-weight: 850; margin: .25rem 0 .4rem; }
+    .time-card p { margin: 0; color: var(--muted); font-size: .94rem; }
+
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .mini-lesson {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      overflow: hidden;
+      background: rgba(0,0,0,.14);
+    }
+    .mini-lesson img { width: 100%; }
+    .mini-content { padding: 1rem; }
+    .mini-content h3 { margin-bottom: .35rem; }
+    .mini-content p { color: var(--muted); margin: 0; }
+
+    details.quiz {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.055);
+      border-radius: 16px;
+      padding: .9rem 1rem;
+      margin-top: .75rem;
+    }
+    details.quiz summary { cursor: pointer; font-weight: 800; }
+    details.quiz p { color: var(--muted); margin-bottom: 0; }
+
+    .remember-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .75rem;
+      margin-top: 1rem;
+    }
+    .remember-item {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1rem;
+      background: rgba(255,255,255,.055);
+    }
+    .remember-item strong { color: var(--gold); display: block; margin-bottom: .25rem; }
+
+    .footer {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      padding: 2rem 0 3rem;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+    }
+
+    @media (max-width: 980px) {
+      .hero { grid-template-columns: 1fr; }
+      .layout { grid-template-columns: 1fr; }
+      .toc { position: static; overflow-x: auto; white-space: nowrap; }
+      .toc a { display: inline-block; }
+      .timeline { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 720px) {
+      .topbar-inner, .page, .footer { width: min(100% - 22px, var(--max)); }
+      .topbar-inner { align-items: flex-start; }
+      .brand span:last-child { display: none; }
+      .objective-grid, .image-grid, .remember-list, .two-col { grid-template-columns: 1fr; }
+      .timeline { grid-template-columns: 1fr; }
+      .lesson-section { border-radius: 18px; }
+      .section-head { gap: .75rem; }
+      .number { width: 2.15rem; height: 2.15rem; }
+    }
+
+    @media print {
+      :root, [data-theme="light"], [data-theme="dark"] {
+        --bg: #ffffff;
+        --bg-2: #ffffff;
+        --panel: #ffffff;
+        --panel-strong: #ffffff;
+        --text: #111827;
+        --muted: #374151;
+        --line: #d1d5db;
+        --shadow: none;
+      }
+      body { background: #ffffff; }
+      .topbar, .toc, .btn, .progress { display: none !important; }
+      .page, .footer { width: 100%; }
+      .hero { padding-top: 0; }
+      .layout { display: block; padding: 0; }
+      .lesson-section, .objective, .time-card, .mini-lesson, .remember-item { break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
+      .figure, img { break-inside: avoid; page-break-inside: avoid; }
+    }
+  
+
+
+    /* Lesson 3 accurate editable board diagrams */
+    :root {
+      --paper: #fff8e8;
+      --dark-ink: #132033;
+      --board-light: #f7e7c2;
+      --board-dark: #8a633f;
+      --blue-soft: rgba(47,125,246,.45);
+      --orange-soft: rgba(249,115,22,.50);
+      --yellow: #ffd84c;
+      --teal: #14b8a6;
+    }
+    [data-theme="light"] {
+      --paper: #fff8e8;
+      --dark-ink: #172033;
+      --board-light: #f7e7c2;
+      --board-dark: #8a633f;
+      --blue-soft: rgba(47,125,246,.38);
+      --orange-soft: rgba(249,115,22,.42);
+    }
+    .lesson-preview {
+      padding: clamp(1rem, 3vw, 1.5rem);
+      min-height: 100%;
+      display: grid;
+      gap: 1rem;
+      background:
+        radial-gradient(circle at 20% 20%, color-mix(in srgb, var(--blue) 24%, transparent), transparent 42%),
+        radial-gradient(circle at 80% 20%, color-mix(in srgb, var(--gold) 22%, transparent), transparent 40%),
+        rgba(0,0,0,.12);
+    }
+    .preview-board {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      aspect-ratio: 1 / 1;
+      width: min(100%, 420px);
+      margin: 0 auto;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid color-mix(in srgb, var(--gold) 55%, var(--line));
+      box-shadow: 0 18px 45px rgba(0,0,0,.28);
+    }
+    .preview-square { position: relative; display: grid; place-items: center; }
+    .preview-square.light { background: var(--board-light); }
+    .preview-square.dark { background: var(--board-dark); }
+    .preview-square.file { box-shadow: inset 0 0 0 999px rgba(61,141,255,.38); }
+    .preview-square.rank { box-shadow: inset 0 0 0 999px rgba(255,174,90,.38); }
+    .preview-square.file.rank { box-shadow: inset 0 0 0 999px rgba(151,135,86,.48); }
+    .preview-star { font-size: clamp(1.1rem, 4vw, 2.1rem); line-height: 1; filter: drop-shadow(0 2px 2px rgba(0,0,0,.35)); }
+    .preview-caption { color: var(--muted); text-align: center; margin: 0; font-weight: 750; }
+
+    .concept-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: .8rem;
+      margin-top: 1rem;
+    }
+    .concept-pill {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.055);
+      padding: 1rem;
+    }
+    .concept-pill strong { display: block; margin-bottom: .35rem; }
+    .concept-pill span { color: var(--muted); font-size: .95rem; }
+    .term-line {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: .75rem;
+      align-items: start;
+      margin-top: .8rem;
+      color: var(--muted);
+    }
+    .term-badge {
+      min-width: 2.6rem;
+      height: 2.6rem;
+      display: grid;
+      place-items: center;
+      border-radius: .9rem;
+      font-weight: 950;
+      color: #081021;
+      background: var(--gold);
+    }
+    .board-stage {
+      background: rgba(8,16,31,.55);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: clamp(14px, 2.4vw, 22px);
+      margin-top: 1rem;
+    }
+    [data-theme="light"] .board-stage { background: rgba(255,255,255,.55); }
+    .coordinate-board {
+      --label: clamp(22px, 4.8vw, 34px);
+      width: min(100%, 680px);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: var(--label) repeat(8, minmax(0, 1fr)) var(--label);
+      grid-template-rows: var(--label) repeat(8, minmax(0, 1fr)) var(--label);
+      aspect-ratio: 1 / 1;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 2px solid color-mix(in srgb, var(--gold) 78%, transparent);
+      background: #0b1530;
+      box-shadow: 0 18px 45px rgba(0,0,0,.34);
+    }
+    .coord {
+      display: grid;
+      place-items: center;
+      background: #0b1530;
+      color: #f8fafc;
+      font-weight: 1000;
+      font-size: clamp(.86rem, 2vw, 1.15rem);
+      user-select: none;
+    }
+    .coord.is-highlighted-file { color: #93c5fd; text-shadow: 0 0 16px rgba(47,125,246,.9); }
+    .coord.is-highlighted-rank { color: #fed7aa; text-shadow: 0 0 16px rgba(249,115,22,.9); }
+    .square { position: relative; display: grid; place-items: center; min-width: 0; min-height: 0; }
+    .square.light { background: var(--board-light); }
+    .square.dark { background: var(--board-dark); }
+    .square.file-highlight::before,
+    .square.rank-highlight::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .square.file-highlight::before { background: var(--blue-soft); box-shadow: inset 0 0 0 2px rgba(47,125,246,.58); }
+    .square.rank-highlight::after { background: var(--orange-soft); box-shadow: inset 0 0 0 2px rgba(249,115,22,.45); }
+    .star {
+      position: relative;
+      z-index: 3;
+      font-size: clamp(1.15rem, 3.2vw, 2.1rem);
+      line-height: 1;
+      filter: drop-shadow(0 2px 2px rgba(0,0,0,.38));
+      -webkit-text-stroke: 1.4px #fff;
+      text-shadow: 0 0 10px rgba(0,0,0,.35);
+    }
+    .star.neutral { color: #ffffff; -webkit-text-stroke: 1.8px #111827; }
+    .star.red { color: var(--red); }
+    .star.blue { color: var(--blue); }
+    .star.yellow { color: var(--yellow); -webkit-text-stroke: 1.4px #7c4a03; }
+    .diagram-caption { margin: 12px auto 0; max-width: 680px; color: var(--muted); text-align: center; font-size: .95rem; }
+    .mini-board {
+      --label: 20px;
+      width: min(100%, 310px);
+      border-radius: 14px;
+      border-color: rgba(255,255,255,.25);
+      box-shadow: none;
+    }
+    .mini-board .coord { font-size: .8rem; }
+    .mini-board .star { font-size: clamp(.82rem, 5.2vw, 1.35rem); }
+    .mini-diagrams { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
+    .mini-card {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--line);
+    }
+    .mini-card h3 { font-size: 1.05rem; margin: 0 0 10px; }
+    .mini-card p { color: var(--muted); font-size: .9rem; margin: 10px 0 0; }
+    .legend { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 18px; }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid var(--line);
+      font-size: .93rem;
+      min-height: 72px;
+    }
+    .legend-star { font-size: 1.6rem; line-height: 1; filter: drop-shadow(0 2px 2px rgba(0,0,0,.3)); }
+    .legend-star.neutral { color: #fff; -webkit-text-stroke: 1.2px #111827; }
+    .legend-star.red { color: var(--red); -webkit-text-stroke: 1px #fff; }
+    .legend-star.blue { color: var(--blue); -webkit-text-stroke: 1px #fff; }
+    .legend-star.yellow { color: var(--yellow); -webkit-text-stroke: 1px #7c4a03; }
+    .accuracy-box {
+      margin-top: 16px;
+      padding: 16px;
+      border: 1px solid rgba(33,180,107,.38);
+      border-radius: 18px;
+      background: rgba(33,180,107,.08);
+      color: color-mix(in srgb, var(--text) 84%, var(--green));
+    }
+    .accuracy-box ul { margin: 8px 0 0; padding-left: 1.2rem; }
+    .accuracy-box li { margin: 4px 0; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      color: white;
+      font-weight: 1000;
+      padding: 0 .55rem;
+    }
+    .tag.blue { background: var(--blue); }
+    .tag.orange { background: var(--orange); }
+    .tag.green { background: var(--green); }
+    .example-box {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 18px;
+      color: var(--dark-ink);
+      background: var(--paper);
+      border: 1px solid rgba(248,200,78,.45);
+      font-weight: 800;
+    }
+    .practice {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .practice-card {
+      background: var(--paper);
+      color: var(--dark-ink);
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(248,200,78,.45);
+    }
+    .practice-card h3 { margin: 0 0 8px; }
+    .practice-card p { margin: 0; }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    @media (max-width: 980px) {
+      .concept-strip, .practice { grid-template-columns: 1fr; }
+      .mini-diagrams, .legend { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 560px) {
+      .coordinate-board { --label: 22px; border-radius: 14px; }
+      .mini-diagrams, .legend { grid-template-columns: 1fr; }
+      .legend-item { min-height: auto; }
+    }
+    @media print {
+      .board-stage, .mini-card, .practice-card { break-inside: avoid; page-break-inside: avoid; }
+      .legend, .mini-diagrams, .practice { break-inside: avoid; page-break-inside: avoid; }
+    }
+
+  </style>
+</head>
+<body>
+
+  <a class="skip-link" href="#lesson">Skip to lesson</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand" aria-label="Lesson title">
+        <div class="brand-icon" aria-hidden="true">♟</div>
+        <span>Pawn Level</span>
+        <span>Files, Ranks, and Diagonals</span>
+      </div>
+      <div class="top-actions">
+        <a class="btn back-to-index" href="pawn-index.html">&larr; Back to Pawn Index</a>
+        <button class="btn" type="button" id="themeToggle">Toggle theme</button>
+        <button class="btn" type="button" onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </div>
+    <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+  </header>
+
+  <div class="page">
+    <section class="hero" id="top">
+      <div>
+        <p class="kicker">Lesson 3 · Beginner / Pawn Level</p>
+        <h1>Files, Ranks, and Diagonals</h1>
+        <p class="lead">The chessboard is divided in three useful ways: vertical <strong>files</strong>, horizontal <strong>ranks</strong>, and slanting <strong>diagonals</strong>.</p>
+        <div class="objective-grid" aria-label="Learning objectives">
+          <div class="objective"><strong>Files</strong><span>Learn the vertical columns named a through h.</span></div>
+          <div class="objective"><strong>Ranks</strong><span>Learn the horizontal rows numbered 1 through 8.</span></div>
+          <div class="objective"><strong>Diagonals</strong><span>Find slanting connected squares across the board.</span></div>
+          <div class="objective"><strong>Accuracy</strong><span>Use editable HTML/CSS boards instead of unreliable generated diagrams.</span></div>
+        </div>
+      </div>
+      <figure class="hero-card">
+        <div class="lesson-preview">
+          <div class="preview-board" role="img" aria-label="Preview chessboard showing files, ranks, and diagonals">
+<div class="preview-square light">
+</div>
+<div class="preview-square dark file">
+</div>
+<div class="preview-square light">
+</div>
+<div class="preview-square dark">
+<span class="preview-star" aria-hidden="true">★</span>
+</div>
+<div class="preview-square light">
+</div>
+<div class="preview-square dark">
+</div>
+<div class="preview-square light">
+</div>
+<div class="preview-square dark">
+</div>
+<div class="preview-square dark rank">
+</div>
+<div class="preview-square light file rank">
+</div>
+<div class="preview-square dark rank">
+<span class="preview-star" aria-hidden="true">★</span>
+</div>
+<div class="preview-square light rank">
+</div>
+<div class="preview-square dark rank">
+</div>
+<div class="preview-square light rank">
+</div>
+<div class="preview-square dark rank">
+</div>
+<div class="preview-square light rank">
+</div>
+<div class="preview-square light">
+</div>
+<div class="preview-square dark file">
+<span class="preview-star" aria-hidden="true">★</span>
+</div>
+<div class="preview-square light">
+</div>
+<div class="preview-square dark">
+</div>
+<div class="preview-square light">
+</div>
+<div class="preview-square dark">
+</div>
+<div class="preview-square light">
+</div>
+<div class="preview-square dark">
+</div>
+<div class="preview-square dark">
+<span class="preview-star" aria-hidden="true">★</span>
+</div>
+<div class="preview-square light file">
+</div>
+<div class="preview-square dark">
+</div>
+<div class="preview-square light">
+</div>
+<div class="preview-square dark">
+</div>
+<div class="preview-square light">
+</div>
+<div class="preview-square dark">
+</div>
+<div class="preview-square light">
+</div>
+<div class="preview-square light">
+</div>
+<div class="preview-square dark file">
+</div>
+<div class="preview-square light">
+</div>
+<div class="preview-square dark">
+</div>
+<div class="preview-square light">
+</div>
+<div class="preview-square dark">
+</div>
+<div class="preview-square light">
+</div>
+<div class="preview-square dark">
+<span class="preview-star" aria-hidden="true">★</span>
+</div>
+<div class="preview-square dark">
+</div>
+<div class="preview-square light file">
+</div>
+<div class="preview-square dark">
+</div>
+<div class="preview-square light">
+</div>
+<div class="preview-square dark">
+</div>
+<div class="preview-square light">
+</div>
+<div class="preview-square dark">
+<span class="preview-star" aria-hidden="true">★</span>
+</div>
+<div class="preview-square light">
+</div>
+<div class="preview-square light">
+</div>
+<div class="preview-square dark file">
+</div>
+<div class="preview-square light">
+</div>
+<div class="preview-square dark">
+</div>
+<div class="preview-square light">
+</div>
+<div class="preview-square dark">
+<span class="preview-star" aria-hidden="true">★</span>
+</div>
+<div class="preview-square light">
+</div>
+<div class="preview-square dark">
+</div>
+<div class="preview-square dark">
+</div>
+<div class="preview-square light file">
+</div>
+<div class="preview-square dark">
+</div>
+<div class="preview-square light">
+</div>
+<div class="preview-square dark">
+<span class="preview-star" aria-hidden="true">★</span>
+</div>
+<div class="preview-square light">
+</div>
+<div class="preview-square dark">
+</div>
+<div class="preview-square light">
+</div>
+</div>
+          <p class="preview-caption">Blue = b-file, orange = 7th rank, stars = diagonal examples.</p>
+        </div>
+      </figure>
+    </section>
+
+    <div class="layout" id="lesson">
+      <aside class="toc" aria-label="Lesson contents">
+        <div class="toc-title">Lesson Contents</div>
+        <a href="#overview">1. Three board directions</a>
+        <a href="#main-map">2. Accurate board map</a>
+        <a href="#files">3. Files</a>
+        <a href="#ranks">4. Ranks</a>
+        <a href="#diagonals">5. Diagonals</a>
+        <a href="#remember">6. Remember</a>
+        <a href="#practice">7. Quick check</a>
+      </aside>
+
+      <main>
+        <section class="lesson-section" id="overview">
+          <div class="section-head">
+            <div class="number">1</div>
+            <div class="section-text">
+              <h2>Three Ways to Divide the Board</h2>
+              <p>A chessboard can be described by direction. This helps players name squares quickly and explain moves clearly.</p>
+            </div>
+          </div>
+          <div class="concept-strip">
+            <div class="concept-pill"><strong><span class="tag blue">F</span> Files</strong><span>Vertical columns named with letters: a, b, c, d, e, f, g, h.</span></div>
+            <div class="concept-pill"><strong><span class="tag orange">R</span> Ranks</strong><span>Horizontal rows numbered: 1, 2, 3, 4, 5, 6, 7, 8.</span></div>
+            <div class="concept-pill"><strong><span class="tag green">D</span> Diagonals</strong><span>Connected squares that run slanting across the board.</span></div>
+          </div>
+          <div class="callout" style="margin-top:1rem;">
+            <div class="callout-title">Improved visual format</div>
+            <p style="margin:0;color:var(--muted);">The teaching boards are built directly in HTML/CSS, so the b-file, 7th rank, and diagonal examples are accurate, editable, and not dependent on generated images.</p>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="main-map">
+          <div class="section-head">
+            <div class="number">2</div>
+            <div class="section-text">
+              <h2>Accurate Board Map</h2>
+              <p>Use this main board as the lesson’s reference visual. It shows the b-file, the 7th rank, and four diagonal examples together.</p>
+            </div>
+          </div>
+          <div class="board-stage" style="margin-top:18px;">
+<div aria-label="Accurate chessboard showing b-file, 7th rank, and four example diagonals" class="coordinate-board master" role="img">
+<div class="coord corner"></div>
+<div class="coord file-label top">a</div>
+<div class="coord file-label top is-highlighted-file">b</div>
+<div class="coord file-label top">c</div>
+<div class="coord file-label top">d</div>
+<div class="coord file-label top">e</div>
+<div class="coord file-label top">f</div>
+<div class="coord file-label top">g</div>
+<div class="coord file-label top">h</div>
+<div class="coord corner"></div>
+<div class="coord rank-label left">8</div>
+<div class="square light has-star star-red" data-square="a8" title="a8 light square">
+<span aria-hidden="true" class="star red">★</span><span class="sr-only">a8 red star</span>
+</div>
+<div class="square dark file-highlight" data-square="b8" title="b8 dark square">
+</div>
+<div class="square light" data-square="c8" title="c8 light square">
+</div>
+<div class="square dark has-star star-blue" data-square="d8" title="d8 dark square">
+<span aria-hidden="true" class="star blue">★</span><span class="sr-only">d8 blue star</span>
+</div>
+<div class="square light" data-square="e8" title="e8 light square">
+</div>
+<div class="square dark" data-square="f8" title="f8 dark square">
+</div>
+<div class="square light" data-square="g8" title="g8 light square">
+</div>
+<div class="square dark has-star star-yellow" data-square="h8" title="h8 dark square">
+<span aria-hidden="true" class="star yellow">★</span><span class="sr-only">h8 yellow star</span>
+</div>
+<div class="coord rank-label right">8</div>
+<div class="coord rank-label left is-highlighted-rank">7</div>
+<div class="square dark rank-highlight" data-square="a7" title="a7 dark square">
+</div>
+<div class="square light file-highlight rank-highlight has-star star-red" data-square="b7" title="b7 light square">
+<span aria-hidden="true" class="star red">★</span><span class="sr-only">b7 red star</span>
+</div>
+<div class="square dark rank-highlight has-star star-blue" data-square="c7" title="c7 dark square">
+<span aria-hidden="true" class="star blue">★</span><span class="sr-only">c7 blue star</span>
+</div>
+<div class="square light rank-highlight" data-square="d7" title="d7 light square">
+</div>
+<div class="square dark rank-highlight" data-square="e7" title="e7 dark square">
+</div>
+<div class="square light rank-highlight" data-square="f7" title="f7 light square">
+</div>
+<div class="square dark rank-highlight has-star star-yellow" data-square="g7" title="g7 dark square">
+<span aria-hidden="true" class="star yellow">★</span><span class="sr-only">g7 yellow star</span>
+</div>
+<div class="square light rank-highlight" data-square="h7" title="h7 light square">
+</div>
+<div class="coord rank-label right is-highlighted-rank">7</div>
+<div class="coord rank-label left">6</div>
+<div class="square light" data-square="a6" title="a6 light square">
+</div>
+<div class="square dark file-highlight has-star star-blue" data-square="b6" title="b6 dark square">
+<span aria-hidden="true" class="star blue">★</span><span class="sr-only">b6 blue star</span>
+</div>
+<div class="square light has-star star-red" data-square="c6" title="c6 light square">
+<span aria-hidden="true" class="star red">★</span><span class="sr-only">c6 red star</span>
+</div>
+<div class="square dark" data-square="d6" title="d6 dark square">
+</div>
+<div class="square light" data-square="e6" title="e6 light square">
+</div>
+<div class="square dark has-star star-yellow" data-square="f6" title="f6 dark square">
+<span aria-hidden="true" class="star yellow">★</span><span class="sr-only">f6 yellow star</span>
+</div>
+<div class="square light" data-square="g6" title="g6 light square">
+</div>
+<div class="square dark" data-square="h6" title="h6 dark square">
+</div>
+<div class="coord rank-label right">6</div>
+<div class="coord rank-label left">5</div>
+<div class="square dark has-star star-blue" data-square="a5" title="a5 dark square">
+<span aria-hidden="true" class="star blue">★</span><span class="sr-only">a5 blue star</span>
+</div>
+<div class="square light file-highlight" data-square="b5" title="b5 light square">
+</div>
+<div class="square dark" data-square="c5" title="c5 dark square">
+</div>
+<div class="square light has-star star-red" data-square="d5" title="d5 light square">
+<span aria-hidden="true" class="star red">★</span><span class="sr-only">d5 red star</span>
+</div>
+<div class="square dark has-star star-yellow" data-square="e5" title="e5 dark square">
+<span aria-hidden="true" class="star yellow">★</span><span class="sr-only">e5 yellow star</span>
+</div>
+<div class="square light" data-square="f5" title="f5 light square">
+</div>
+<div class="square dark" data-square="g5" title="g5 dark square">
+</div>
+<div class="square light" data-square="h5" title="h5 light square">
+</div>
+<div class="coord rank-label right">5</div>
+<div class="coord rank-label left">4</div>
+<div class="square light" data-square="a4" title="a4 light square">
+</div>
+<div class="square dark file-highlight" data-square="b4" title="b4 dark square">
+</div>
+<div class="square light" data-square="c4" title="c4 light square">
+</div>
+<div class="square dark has-star star-yellow" data-square="d4" title="d4 dark square">
+<span aria-hidden="true" class="star yellow">★</span><span class="sr-only">d4 yellow star</span>
+</div>
+<div class="square light has-star star-red" data-square="e4" title="e4 light square">
+<span aria-hidden="true" class="star red">★</span><span class="sr-only">e4 red star</span>
+</div>
+<div class="square dark" data-square="f4" title="f4 dark square">
+</div>
+<div class="square light" data-square="g4" title="g4 light square">
+</div>
+<div class="square dark has-star star-neutral" data-square="h4" title="h4 dark square">
+<span aria-hidden="true" class="star neutral">★</span><span class="sr-only">h4 neutral star</span>
+</div>
+<div class="coord rank-label right">4</div>
+<div class="coord rank-label left">3</div>
+<div class="square dark" data-square="a3" title="a3 dark square">
+</div>
+<div class="square light file-highlight" data-square="b3" title="b3 light square">
+</div>
+<div class="square dark has-star star-yellow" data-square="c3" title="c3 dark square">
+<span aria-hidden="true" class="star yellow">★</span><span class="sr-only">c3 yellow star</span>
+</div>
+<div class="square light" data-square="d3" title="d3 light square">
+</div>
+<div class="square dark" data-square="e3" title="e3 dark square">
+</div>
+<div class="square light has-star star-red" data-square="f3" title="f3 light square">
+<span aria-hidden="true" class="star red">★</span><span class="sr-only">f3 red star</span>
+</div>
+<div class="square dark has-star star-neutral" data-square="g3" title="g3 dark square">
+<span aria-hidden="true" class="star neutral">★</span><span class="sr-only">g3 neutral star</span>
+</div>
+<div class="square light" data-square="h3" title="h3 light square">
+</div>
+<div class="coord rank-label right">3</div>
+<div class="coord rank-label left">2</div>
+<div class="square light" data-square="a2" title="a2 light square">
+</div>
+<div class="square dark file-highlight has-star star-yellow" data-square="b2" title="b2 dark square">
+<span aria-hidden="true" class="star yellow">★</span><span class="sr-only">b2 yellow star</span>
+</div>
+<div class="square light" data-square="c2" title="c2 light square">
+</div>
+<div class="square dark" data-square="d2" title="d2 dark square">
+</div>
+<div class="square light" data-square="e2" title="e2 light square">
+</div>
+<div class="square dark has-star star-neutral" data-square="f2" title="f2 dark square">
+<span aria-hidden="true" class="star neutral">★</span><span class="sr-only">f2 neutral star</span>
+</div>
+<div class="square light has-star star-red" data-square="g2" title="g2 light square">
+<span aria-hidden="true" class="star red">★</span><span class="sr-only">g2 red star</span>
+</div>
+<div class="square dark" data-square="h2" title="h2 dark square">
+</div>
+<div class="coord rank-label right">2</div>
+<div class="coord rank-label left">1</div>
+<div class="square dark has-star star-yellow" data-square="a1" title="a1 dark square">
+<span aria-hidden="true" class="star yellow">★</span><span class="sr-only">a1 yellow star</span>
+</div>
+<div class="square light file-highlight" data-square="b1" title="b1 light square">
+</div>
+<div class="square dark" data-square="c1" title="c1 dark square">
+</div>
+<div class="square light" data-square="d1" title="d1 light square">
+</div>
+<div class="square dark has-star star-neutral" data-square="e1" title="e1 dark square">
+<span aria-hidden="true" class="star neutral">★</span><span class="sr-only">e1 neutral star</span>
+</div>
+<div class="square light" data-square="f1" title="f1 light square">
+</div>
+<div class="square dark" data-square="g1" title="g1 dark square">
+</div>
+<div class="square light has-star star-red" data-square="h1" title="h1 light square">
+<span aria-hidden="true" class="star red">★</span><span class="sr-only">h1 red star</span>
+</div>
+<div class="coord rank-label right">1</div>
+<div class="coord corner"></div>
+<div class="coord file-label bottom">a</div>
+<div class="coord file-label bottom is-highlighted-file">b</div>
+<div class="coord file-label bottom">c</div>
+<div class="coord file-label bottom">d</div>
+<div class="coord file-label bottom">e</div>
+<div class="coord file-label bottom">f</div>
+<div class="coord file-label bottom">g</div>
+<div class="coord file-label bottom">h</div>
+<div class="coord corner"></div>
+</div>
+<p class="diagram-caption">Accurate map: b-file in blue, 7th rank in orange, and four diagonal examples marked with stars.</p>
+<div aria-label="Diagram legend" class="legend">
+<div class="legend-item"><span class="legend-star neutral">★</span><span><strong>e1–h4</strong><br/>e1, f2, g3, h4</span></div>
+<div class="legend-item"><span class="legend-star red">★</span><span><strong>h1–a8</strong><br/>h1, g2, f3, e4, d5, c6, b7, a8</span></div>
+<div class="legend-item"><span class="legend-star blue">★</span><span><strong>a5–d8</strong><br/>a5, b6, c7, d8</span></div>
+<div class="legend-item"><span class="legend-star yellow">★</span><span><strong>a1–h8</strong><br/>a1, b2, c3, d4, e5, f6, g7, h8</span></div>
+</div>
+<div class="accuracy-box">
+<strong>Accuracy check:</strong>
+<ul>
+<li>The blue column is the <strong>b-file</strong>, from b1 to b8.</li>
+<li>The orange row is the <strong>7th rank</strong>, from a7 to h7.</li>
+<li>The board is oriented correctly: a1 is dark and h1 is light.</li>
+</ul>
+</div>
+</div>
+        </section>
+
+        <section class="lesson-section" id="files">
+          <div class="section-head">
+            <div class="number">3</div>
+            <div class="section-text">
+              <h2>Files</h2>
+              <p>Files are the vertical columns of the chessboard.</p>
+            </div>
+          </div>
+          <div class="two-col">
+            <div>
+              <div class="term-line"><span class="term-badge">↕</span><div><strong>File names</strong><br><span>Files are named with letters: <strong>a, b, c, d, e, f, g, h</strong>.</span></div></div>
+              <div class="example-box">Example: The blue vertical column is called the <strong>b-file</strong>.</div>
+            </div>
+            <div class="board-stage">
+<div aria-label="b-file highlighted in blue" class="coordinate-board mini-board master" role="img">
+<div class="coord corner"></div>
+<div class="coord file-label top">a</div>
+<div class="coord file-label top is-highlighted-file">b</div>
+<div class="coord file-label top">c</div>
+<div class="coord file-label top">d</div>
+<div class="coord file-label top">e</div>
+<div class="coord file-label top">f</div>
+<div class="coord file-label top">g</div>
+<div class="coord file-label top">h</div>
+<div class="coord corner"></div>
+<div class="coord rank-label left">8</div>
+<div class="square light" data-square="a8" title="a8 light square">
+</div>
+<div class="square dark file-highlight" data-square="b8" title="b8 dark square">
+</div>
+<div class="square light" data-square="c8" title="c8 light square">
+</div>
+<div class="square dark" data-square="d8" title="d8 dark square">
+</div>
+<div class="square light" data-square="e8" title="e8 light square">
+</div>
+<div class="square dark" data-square="f8" title="f8 dark square">
+</div>
+<div class="square light" data-square="g8" title="g8 light square">
+</div>
+<div class="square dark" data-square="h8" title="h8 dark square">
+</div>
+<div class="coord rank-label right">8</div>
+<div class="coord rank-label left">7</div>
+<div class="square dark" data-square="a7" title="a7 dark square">
+</div>
+<div class="square light file-highlight" data-square="b7" title="b7 light square">
+</div>
+<div class="square dark" data-square="c7" title="c7 dark square">
+</div>
+<div class="square light" data-square="d7" title="d7 light square">
+</div>
+<div class="square dark" data-square="e7" title="e7 dark square">
+</div>
+<div class="square light" data-square="f7" title="f7 light square">
+</div>
+<div class="square dark" data-square="g7" title="g7 dark square">
+</div>
+<div class="square light" data-square="h7" title="h7 light square">
+</div>
+<div class="coord rank-label right">7</div>
+<div class="coord rank-label left">6</div>
+<div class="square light" data-square="a6" title="a6 light square">
+</div>
+<div class="square dark file-highlight" data-square="b6" title="b6 dark square">
+</div>
+<div class="square light" data-square="c6" title="c6 light square">
+</div>
+<div class="square dark" data-square="d6" title="d6 dark square">
+</div>
+<div class="square light" data-square="e6" title="e6 light square">
+</div>
+<div class="square dark" data-square="f6" title="f6 dark square">
+</div>
+<div class="square light" data-square="g6" title="g6 light square">
+</div>
+<div class="square dark" data-square="h6" title="h6 dark square">
+</div>
+<div class="coord rank-label right">6</div>
+<div class="coord rank-label left">5</div>
+<div class="square dark" data-square="a5" title="a5 dark square">
+</div>
+<div class="square light file-highlight" data-square="b5" title="b5 light square">
+</div>
+<div class="square dark" data-square="c5" title="c5 dark square">
+</div>
+<div class="square light" data-square="d5" title="d5 light square">
+</div>
+<div class="square dark" data-square="e5" title="e5 dark square">
+</div>
+<div class="square light" data-square="f5" title="f5 light square">
+</div>
+<div class="square dark" data-square="g5" title="g5 dark square">
+</div>
+<div class="square light" data-square="h5" title="h5 light square">
+</div>
+<div class="coord rank-label right">5</div>
+<div class="coord rank-label left">4</div>
+<div class="square light" data-square="a4" title="a4 light square">
+</div>
+<div class="square dark file-highlight" data-square="b4" title="b4 dark square">
+</div>
+<div class="square light" data-square="c4" title="c4 light square">
+</div>
+<div class="square dark" data-square="d4" title="d4 dark square">
+</div>
+<div class="square light" data-square="e4" title="e4 light square">
+</div>
+<div class="square dark" data-square="f4" title="f4 dark square">
+</div>
+<div class="square light" data-square="g4" title="g4 light square">
+</div>
+<div class="square dark" data-square="h4" title="h4 dark square">
+</div>
+<div class="coord rank-label right">4</div>
+<div class="coord rank-label left">3</div>
+<div class="square dark" data-square="a3" title="a3 dark square">
+</div>
+<div class="square light file-highlight" data-square="b3" title="b3 light square">
+</div>
+<div class="square dark" data-square="c3" title="c3 dark square">
+</div>
+<div class="square light" data-square="d3" title="d3 light square">
+</div>
+<div class="square dark" data-square="e3" title="e3 dark square">
+</div>
+<div class="square light" data-square="f3" title="f3 light square">
+</div>
+<div class="square dark" data-square="g3" title="g3 dark square">
+</div>
+<div class="square light" data-square="h3" title="h3 light square">
+</div>
+<div class="coord rank-label right">3</div>
+<div class="coord rank-label left">2</div>
+<div class="square light" data-square="a2" title="a2 light square">
+</div>
+<div class="square dark file-highlight" data-square="b2" title="b2 dark square">
+</div>
+<div class="square light" data-square="c2" title="c2 light square">
+</div>
+<div class="square dark" data-square="d2" title="d2 dark square">
+</div>
+<div class="square light" data-square="e2" title="e2 light square">
+</div>
+<div class="square dark" data-square="f2" title="f2 dark square">
+</div>
+<div class="square light" data-square="g2" title="g2 light square">
+</div>
+<div class="square dark" data-square="h2" title="h2 dark square">
+</div>
+<div class="coord rank-label right">2</div>
+<div class="coord rank-label left">1</div>
+<div class="square dark" data-square="a1" title="a1 dark square">
+</div>
+<div class="square light file-highlight" data-square="b1" title="b1 light square">
+</div>
+<div class="square dark" data-square="c1" title="c1 dark square">
+</div>
+<div class="square light" data-square="d1" title="d1 light square">
+</div>
+<div class="square dark" data-square="e1" title="e1 dark square">
+</div>
+<div class="square light" data-square="f1" title="f1 light square">
+</div>
+<div class="square dark" data-square="g1" title="g1 dark square">
+</div>
+<div class="square light" data-square="h1" title="h1 light square">
+</div>
+<div class="coord rank-label right">1</div>
+<div class="coord corner"></div>
+<div class="coord file-label bottom">a</div>
+<div class="coord file-label bottom is-highlighted-file">b</div>
+<div class="coord file-label bottom">c</div>
+<div class="coord file-label bottom">d</div>
+<div class="coord file-label bottom">e</div>
+<div class="coord file-label bottom">f</div>
+<div class="coord file-label bottom">g</div>
+<div class="coord file-label bottom">h</div>
+<div class="coord corner"></div>
+</div>
+<p class="diagram-caption">The blue vertical column is the b-file.</p>
+</div>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="ranks">
+          <div class="section-head">
+            <div class="number">4</div>
+            <div class="section-text">
+              <h2>Ranks</h2>
+              <p>Ranks are the horizontal rows of the chessboard.</p>
+            </div>
+          </div>
+          <div class="two-col">
+            <div>
+              <div class="term-line"><span class="term-badge">↔</span><div><strong>Rank numbers</strong><br><span>Ranks are numbered: <strong>1, 2, 3, 4, 5, 6, 7, 8</strong>.</span></div></div>
+              <div class="example-box">Example: The orange horizontal row is called the <strong>7th rank</strong>.</div>
+            </div>
+            <div class="board-stage">
+<div aria-label="7th rank highlighted in orange" class="coordinate-board mini-board master" role="img">
+<div class="coord corner"></div>
+<div class="coord file-label top">a</div>
+<div class="coord file-label top">b</div>
+<div class="coord file-label top">c</div>
+<div class="coord file-label top">d</div>
+<div class="coord file-label top">e</div>
+<div class="coord file-label top">f</div>
+<div class="coord file-label top">g</div>
+<div class="coord file-label top">h</div>
+<div class="coord corner"></div>
+<div class="coord rank-label left">8</div>
+<div class="square light" data-square="a8" title="a8 light square">
+</div>
+<div class="square dark" data-square="b8" title="b8 dark square">
+</div>
+<div class="square light" data-square="c8" title="c8 light square">
+</div>
+<div class="square dark" data-square="d8" title="d8 dark square">
+</div>
+<div class="square light" data-square="e8" title="e8 light square">
+</div>
+<div class="square dark" data-square="f8" title="f8 dark square">
+</div>
+<div class="square light" data-square="g8" title="g8 light square">
+</div>
+<div class="square dark" data-square="h8" title="h8 dark square">
+</div>
+<div class="coord rank-label right">8</div>
+<div class="coord rank-label left is-highlighted-rank">7</div>
+<div class="square dark rank-highlight" data-square="a7" title="a7 dark square">
+</div>
+<div class="square light rank-highlight" data-square="b7" title="b7 light square">
+</div>
+<div class="square dark rank-highlight" data-square="c7" title="c7 dark square">
+</div>
+<div class="square light rank-highlight" data-square="d7" title="d7 light square">
+</div>
+<div class="square dark rank-highlight" data-square="e7" title="e7 dark square">
+</div>
+<div class="square light rank-highlight" data-square="f7" title="f7 light square">
+</div>
+<div class="square dark rank-highlight" data-square="g7" title="g7 dark square">
+</div>
+<div class="square light rank-highlight" data-square="h7" title="h7 light square">
+</div>
+<div class="coord rank-label right is-highlighted-rank">7</div>
+<div class="coord rank-label left">6</div>
+<div class="square light" data-square="a6" title="a6 light square">
+</div>
+<div class="square dark" data-square="b6" title="b6 dark square">
+</div>
+<div class="square light" data-square="c6" title="c6 light square">
+</div>
+<div class="square dark" data-square="d6" title="d6 dark square">
+</div>
+<div class="square light" data-square="e6" title="e6 light square">
+</div>
+<div class="square dark" data-square="f6" title="f6 dark square">
+</div>
+<div class="square light" data-square="g6" title="g6 light square">
+</div>
+<div class="square dark" data-square="h6" title="h6 dark square">
+</div>
+<div class="coord rank-label right">6</div>
+<div class="coord rank-label left">5</div>
+<div class="square dark" data-square="a5" title="a5 dark square">
+</div>
+<div class="square light" data-square="b5" title="b5 light square">
+</div>
+<div class="square dark" data-square="c5" title="c5 dark square">
+</div>
+<div class="square light" data-square="d5" title="d5 light square">
+</div>
+<div class="square dark" data-square="e5" title="e5 dark square">
+</div>
+<div class="square light" data-square="f5" title="f5 light square">
+</div>
+<div class="square dark" data-square="g5" title="g5 dark square">
+</div>
+<div class="square light" data-square="h5" title="h5 light square">
+</div>
+<div class="coord rank-label right">5</div>
+<div class="coord rank-label left">4</div>
+<div class="square light" data-square="a4" title="a4 light square">
+</div>
+<div class="square dark" data-square="b4" title="b4 dark square">
+</div>
+<div class="square light" data-square="c4" title="c4 light square">
+</div>
+<div class="square dark" data-square="d4" title="d4 dark square">
+</div>
+<div class="square light" data-square="e4" title="e4 light square">
+</div>
+<div class="square dark" data-square="f4" title="f4 dark square">
+</div>
+<div class="square light" data-square="g4" title="g4 light square">
+</div>
+<div class="square dark" data-square="h4" title="h4 dark square">
+</div>
+<div class="coord rank-label right">4</div>
+<div class="coord rank-label left">3</div>
+<div class="square dark" data-square="a3" title="a3 dark square">
+</div>
+<div class="square light" data-square="b3" title="b3 light square">
+</div>
+<div class="square dark" data-square="c3" title="c3 dark square">
+</div>
+<div class="square light" data-square="d3" title="d3 light square">
+</div>
+<div class="square dark" data-square="e3" title="e3 dark square">
+</div>
+<div class="square light" data-square="f3" title="f3 light square">
+</div>
+<div class="square dark" data-square="g3" title="g3 dark square">
+</div>
+<div class="square light" data-square="h3" title="h3 light square">
+</div>
+<div class="coord rank-label right">3</div>
+<div class="coord rank-label left">2</div>
+<div class="square light" data-square="a2" title="a2 light square">
+</div>
+<div class="square dark" data-square="b2" title="b2 dark square">
+</div>
+<div class="square light" data-square="c2" title="c2 light square">
+</div>
+<div class="square dark" data-square="d2" title="d2 dark square">
+</div>
+<div class="square light" data-square="e2" title="e2 light square">
+</div>
+<div class="square dark" data-square="f2" title="f2 dark square">
+</div>
+<div class="square light" data-square="g2" title="g2 light square">
+</div>
+<div class="square dark" data-square="h2" title="h2 dark square">
+</div>
+<div class="coord rank-label right">2</div>
+<div class="coord rank-label left">1</div>
+<div class="square dark" data-square="a1" title="a1 dark square">
+</div>
+<div class="square light" data-square="b1" title="b1 light square">
+</div>
+<div class="square dark" data-square="c1" title="c1 dark square">
+</div>
+<div class="square light" data-square="d1" title="d1 light square">
+</div>
+<div class="square dark" data-square="e1" title="e1 dark square">
+</div>
+<div class="square light" data-square="f1" title="f1 light square">
+</div>
+<div class="square dark" data-square="g1" title="g1 dark square">
+</div>
+<div class="square light" data-square="h1" title="h1 light square">
+</div>
+<div class="coord rank-label right">1</div>
+<div class="coord corner"></div>
+<div class="coord file-label bottom">a</div>
+<div class="coord file-label bottom">b</div>
+<div class="coord file-label bottom">c</div>
+<div class="coord file-label bottom">d</div>
+<div class="coord file-label bottom">e</div>
+<div class="coord file-label bottom">f</div>
+<div class="coord file-label bottom">g</div>
+<div class="coord file-label bottom">h</div>
+<div class="coord corner"></div>
+</div>
+<p class="diagram-caption">The orange horizontal row is the 7th rank.</p>
+</div>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="diagonals">
+          <div class="section-head">
+            <div class="number">5</div>
+            <div class="section-text">
+              <h2>Diagonals</h2>
+              <p>Diagonals are connected squares that run slanting across the board.</p>
+            </div>
+          </div>
+          <p style="color:var(--muted);margin-top:0;">These mini boards show each diagonal separately so students can check the examples clearly.</p>
+          <div class="mini-diagrams">
+<div class="mini-card"><h3>Neutral stars: e1–h4</h3><div aria-label="e1 to h4 diagonal" class="coordinate-board mini-board master" role="img">
+<div class="coord corner"></div>
+<div class="coord file-label top">a</div>
+<div class="coord file-label top">b</div>
+<div class="coord file-label top">c</div>
+<div class="coord file-label top">d</div>
+<div class="coord file-label top">e</div>
+<div class="coord file-label top">f</div>
+<div class="coord file-label top">g</div>
+<div class="coord file-label top">h</div>
+<div class="coord corner"></div>
+<div class="coord rank-label left">8</div>
+<div class="square light" data-square="a8" title="a8 light square">
+</div>
+<div class="square dark" data-square="b8" title="b8 dark square">
+</div>
+<div class="square light" data-square="c8" title="c8 light square">
+</div>
+<div class="square dark" data-square="d8" title="d8 dark square">
+</div>
+<div class="square light" data-square="e8" title="e8 light square">
+</div>
+<div class="square dark" data-square="f8" title="f8 dark square">
+</div>
+<div class="square light" data-square="g8" title="g8 light square">
+</div>
+<div class="square dark" data-square="h8" title="h8 dark square">
+</div>
+<div class="coord rank-label right">8</div>
+<div class="coord rank-label left">7</div>
+<div class="square dark" data-square="a7" title="a7 dark square">
+</div>
+<div class="square light" data-square="b7" title="b7 light square">
+</div>
+<div class="square dark" data-square="c7" title="c7 dark square">
+</div>
+<div class="square light" data-square="d7" title="d7 light square">
+</div>
+<div class="square dark" data-square="e7" title="e7 dark square">
+</div>
+<div class="square light" data-square="f7" title="f7 light square">
+</div>
+<div class="square dark" data-square="g7" title="g7 dark square">
+</div>
+<div class="square light" data-square="h7" title="h7 light square">
+</div>
+<div class="coord rank-label right">7</div>
+<div class="coord rank-label left">6</div>
+<div class="square light" data-square="a6" title="a6 light square">
+</div>
+<div class="square dark" data-square="b6" title="b6 dark square">
+</div>
+<div class="square light" data-square="c6" title="c6 light square">
+</div>
+<div class="square dark" data-square="d6" title="d6 dark square">
+</div>
+<div class="square light" data-square="e6" title="e6 light square">
+</div>
+<div class="square dark" data-square="f6" title="f6 dark square">
+</div>
+<div class="square light" data-square="g6" title="g6 light square">
+</div>
+<div class="square dark" data-square="h6" title="h6 dark square">
+</div>
+<div class="coord rank-label right">6</div>
+<div class="coord rank-label left">5</div>
+<div class="square dark" data-square="a5" title="a5 dark square">
+</div>
+<div class="square light" data-square="b5" title="b5 light square">
+</div>
+<div class="square dark" data-square="c5" title="c5 dark square">
+</div>
+<div class="square light" data-square="d5" title="d5 light square">
+</div>
+<div class="square dark" data-square="e5" title="e5 dark square">
+</div>
+<div class="square light" data-square="f5" title="f5 light square">
+</div>
+<div class="square dark" data-square="g5" title="g5 dark square">
+</div>
+<div class="square light" data-square="h5" title="h5 light square">
+</div>
+<div class="coord rank-label right">5</div>
+<div class="coord rank-label left">4</div>
+<div class="square light" data-square="a4" title="a4 light square">
+</div>
+<div class="square dark" data-square="b4" title="b4 dark square">
+</div>
+<div class="square light" data-square="c4" title="c4 light square">
+</div>
+<div class="square dark" data-square="d4" title="d4 dark square">
+</div>
+<div class="square light" data-square="e4" title="e4 light square">
+</div>
+<div class="square dark" data-square="f4" title="f4 dark square">
+</div>
+<div class="square light" data-square="g4" title="g4 light square">
+</div>
+<div class="square dark has-star star-neutral" data-square="h4" title="h4 dark square">
+<span aria-hidden="true" class="star neutral">★</span><span class="sr-only">h4 neutral star</span>
+</div>
+<div class="coord rank-label right">4</div>
+<div class="coord rank-label left">3</div>
+<div class="square dark" data-square="a3" title="a3 dark square">
+</div>
+<div class="square light" data-square="b3" title="b3 light square">
+</div>
+<div class="square dark" data-square="c3" title="c3 dark square">
+</div>
+<div class="square light" data-square="d3" title="d3 light square">
+</div>
+<div class="square dark" data-square="e3" title="e3 dark square">
+</div>
+<div class="square light" data-square="f3" title="f3 light square">
+</div>
+<div class="square dark has-star star-neutral" data-square="g3" title="g3 dark square">
+<span aria-hidden="true" class="star neutral">★</span><span class="sr-only">g3 neutral star</span>
+</div>
+<div class="square light" data-square="h3" title="h3 light square">
+</div>
+<div class="coord rank-label right">3</div>
+<div class="coord rank-label left">2</div>
+<div class="square light" data-square="a2" title="a2 light square">
+</div>
+<div class="square dark" data-square="b2" title="b2 dark square">
+</div>
+<div class="square light" data-square="c2" title="c2 light square">
+</div>
+<div class="square dark" data-square="d2" title="d2 dark square">
+</div>
+<div class="square light" data-square="e2" title="e2 light square">
+</div>
+<div class="square dark has-star star-neutral" data-square="f2" title="f2 dark square">
+<span aria-hidden="true" class="star neutral">★</span><span class="sr-only">f2 neutral star</span>
+</div>
+<div class="square light" data-square="g2" title="g2 light square">
+</div>
+<div class="square dark" data-square="h2" title="h2 dark square">
+</div>
+<div class="coord rank-label right">2</div>
+<div class="coord rank-label left">1</div>
+<div class="square dark" data-square="a1" title="a1 dark square">
+</div>
+<div class="square light" data-square="b1" title="b1 light square">
+</div>
+<div class="square dark" data-square="c1" title="c1 dark square">
+</div>
+<div class="square light" data-square="d1" title="d1 light square">
+</div>
+<div class="square dark has-star star-neutral" data-square="e1" title="e1 dark square">
+<span aria-hidden="true" class="star neutral">★</span><span class="sr-only">e1 neutral star</span>
+</div>
+<div class="square light" data-square="f1" title="f1 light square">
+</div>
+<div class="square dark" data-square="g1" title="g1 dark square">
+</div>
+<div class="square light" data-square="h1" title="h1 light square">
+</div>
+<div class="coord rank-label right">1</div>
+<div class="coord corner"></div>
+<div class="coord file-label bottom">a</div>
+<div class="coord file-label bottom">b</div>
+<div class="coord file-label bottom">c</div>
+<div class="coord file-label bottom">d</div>
+<div class="coord file-label bottom">e</div>
+<div class="coord file-label bottom">f</div>
+<div class="coord file-label bottom">g</div>
+<div class="coord file-label bottom">h</div>
+<div class="coord corner"></div>
+</div>
+<p class="diagram-caption">Neutral stars: e1, f2, g3, h4.</p></div>
+<div class="mini-card"><h3>Red stars: h1–a8</h3><div aria-label="h1 to a8 diagonal" class="coordinate-board mini-board master" role="img">
+<div class="coord corner"></div>
+<div class="coord file-label top">a</div>
+<div class="coord file-label top">b</div>
+<div class="coord file-label top">c</div>
+<div class="coord file-label top">d</div>
+<div class="coord file-label top">e</div>
+<div class="coord file-label top">f</div>
+<div class="coord file-label top">g</div>
+<div class="coord file-label top">h</div>
+<div class="coord corner"></div>
+<div class="coord rank-label left">8</div>
+<div class="square light has-star star-red" data-square="a8" title="a8 light square">
+<span aria-hidden="true" class="star red">★</span><span class="sr-only">a8 red star</span>
+</div>
+<div class="square dark" data-square="b8" title="b8 dark square">
+</div>
+<div class="square light" data-square="c8" title="c8 light square">
+</div>
+<div class="square dark" data-square="d8" title="d8 dark square">
+</div>
+<div class="square light" data-square="e8" title="e8 light square">
+</div>
+<div class="square dark" data-square="f8" title="f8 dark square">
+</div>
+<div class="square light" data-square="g8" title="g8 light square">
+</div>
+<div class="square dark" data-square="h8" title="h8 dark square">
+</div>
+<div class="coord rank-label right">8</div>
+<div class="coord rank-label left">7</div>
+<div class="square dark" data-square="a7" title="a7 dark square">
+</div>
+<div class="square light has-star star-red" data-square="b7" title="b7 light square">
+<span aria-hidden="true" class="star red">★</span><span class="sr-only">b7 red star</span>
+</div>
+<div class="square dark" data-square="c7" title="c7 dark square">
+</div>
+<div class="square light" data-square="d7" title="d7 light square">
+</div>
+<div class="square dark" data-square="e7" title="e7 dark square">
+</div>
+<div class="square light" data-square="f7" title="f7 light square">
+</div>
+<div class="square dark" data-square="g7" title="g7 dark square">
+</div>
+<div class="square light" data-square="h7" title="h7 light square">
+</div>
+<div class="coord rank-label right">7</div>
+<div class="coord rank-label left">6</div>
+<div class="square light" data-square="a6" title="a6 light square">
+</div>
+<div class="square dark" data-square="b6" title="b6 dark square">
+</div>
+<div class="square light has-star star-red" data-square="c6" title="c6 light square">
+<span aria-hidden="true" class="star red">★</span><span class="sr-only">c6 red star</span>
+</div>
+<div class="square dark" data-square="d6" title="d6 dark square">
+</div>
+<div class="square light" data-square="e6" title="e6 light square">
+</div>
+<div class="square dark" data-square="f6" title="f6 dark square">
+</div>
+<div class="square light" data-square="g6" title="g6 light square">
+</div>
+<div class="square dark" data-square="h6" title="h6 dark square">
+</div>
+<div class="coord rank-label right">6</div>
+<div class="coord rank-label left">5</div>
+<div class="square dark" data-square="a5" title="a5 dark square">
+</div>
+<div class="square light" data-square="b5" title="b5 light square">
+</div>
+<div class="square dark" data-square="c5" title="c5 dark square">
+</div>
+<div class="square light has-star star-red" data-square="d5" title="d5 light square">
+<span aria-hidden="true" class="star red">★</span><span class="sr-only">d5 red star</span>
+</div>
+<div class="square dark" data-square="e5" title="e5 dark square">
+</div>
+<div class="square light" data-square="f5" title="f5 light square">
+</div>
+<div class="square dark" data-square="g5" title="g5 dark square">
+</div>
+<div class="square light" data-square="h5" title="h5 light square">
+</div>
+<div class="coord rank-label right">5</div>
+<div class="coord rank-label left">4</div>
+<div class="square light" data-square="a4" title="a4 light square">
+</div>
+<div class="square dark" data-square="b4" title="b4 dark square">
+</div>
+<div class="square light" data-square="c4" title="c4 light square">
+</div>
+<div class="square dark" data-square="d4" title="d4 dark square">
+</div>
+<div class="square light has-star star-red" data-square="e4" title="e4 light square">
+<span aria-hidden="true" class="star red">★</span><span class="sr-only">e4 red star</span>
+</div>
+<div class="square dark" data-square="f4" title="f4 dark square">
+</div>
+<div class="square light" data-square="g4" title="g4 light square">
+</div>
+<div class="square dark" data-square="h4" title="h4 dark square">
+</div>
+<div class="coord rank-label right">4</div>
+<div class="coord rank-label left">3</div>
+<div class="square dark" data-square="a3" title="a3 dark square">
+</div>
+<div class="square light" data-square="b3" title="b3 light square">
+</div>
+<div class="square dark" data-square="c3" title="c3 dark square">
+</div>
+<div class="square light" data-square="d3" title="d3 light square">
+</div>
+<div class="square dark" data-square="e3" title="e3 dark square">
+</div>
+<div class="square light has-star star-red" data-square="f3" title="f3 light square">
+<span aria-hidden="true" class="star red">★</span><span class="sr-only">f3 red star</span>
+</div>
+<div class="square dark" data-square="g3" title="g3 dark square">
+</div>
+<div class="square light" data-square="h3" title="h3 light square">
+</div>
+<div class="coord rank-label right">3</div>
+<div class="coord rank-label left">2</div>
+<div class="square light" data-square="a2" title="a2 light square">
+</div>
+<div class="square dark" data-square="b2" title="b2 dark square">
+</div>
+<div class="square light" data-square="c2" title="c2 light square">
+</div>
+<div class="square dark" data-square="d2" title="d2 dark square">
+</div>
+<div class="square light" data-square="e2" title="e2 light square">
+</div>
+<div class="square dark" data-square="f2" title="f2 dark square">
+</div>
+<div class="square light has-star star-red" data-square="g2" title="g2 light square">
+<span aria-hidden="true" class="star red">★</span><span class="sr-only">g2 red star</span>
+</div>
+<div class="square dark" data-square="h2" title="h2 dark square">
+</div>
+<div class="coord rank-label right">2</div>
+<div class="coord rank-label left">1</div>
+<div class="square dark" data-square="a1" title="a1 dark square">
+</div>
+<div class="square light" data-square="b1" title="b1 light square">
+</div>
+<div class="square dark" data-square="c1" title="c1 dark square">
+</div>
+<div class="square light" data-square="d1" title="d1 light square">
+</div>
+<div class="square dark" data-square="e1" title="e1 dark square">
+</div>
+<div class="square light" data-square="f1" title="f1 light square">
+</div>
+<div class="square dark" data-square="g1" title="g1 dark square">
+</div>
+<div class="square light has-star star-red" data-square="h1" title="h1 light square">
+<span aria-hidden="true" class="star red">★</span><span class="sr-only">h1 red star</span>
+</div>
+<div class="coord rank-label right">1</div>
+<div class="coord corner"></div>
+<div class="coord file-label bottom">a</div>
+<div class="coord file-label bottom">b</div>
+<div class="coord file-label bottom">c</div>
+<div class="coord file-label bottom">d</div>
+<div class="coord file-label bottom">e</div>
+<div class="coord file-label bottom">f</div>
+<div class="coord file-label bottom">g</div>
+<div class="coord file-label bottom">h</div>
+<div class="coord corner"></div>
+</div>
+<p class="diagram-caption">Red stars: h1, g2, f3, e4, d5, c6, b7, a8.</p></div>
+<div class="mini-card"><h3>Blue stars: a5–d8</h3><div aria-label="a5 to d8 diagonal" class="coordinate-board mini-board master" role="img">
+<div class="coord corner"></div>
+<div class="coord file-label top">a</div>
+<div class="coord file-label top">b</div>
+<div class="coord file-label top">c</div>
+<div class="coord file-label top">d</div>
+<div class="coord file-label top">e</div>
+<div class="coord file-label top">f</div>
+<div class="coord file-label top">g</div>
+<div class="coord file-label top">h</div>
+<div class="coord corner"></div>
+<div class="coord rank-label left">8</div>
+<div class="square light" data-square="a8" title="a8 light square">
+</div>
+<div class="square dark" data-square="b8" title="b8 dark square">
+</div>
+<div class="square light" data-square="c8" title="c8 light square">
+</div>
+<div class="square dark has-star star-blue" data-square="d8" title="d8 dark square">
+<span aria-hidden="true" class="star blue">★</span><span class="sr-only">d8 blue star</span>
+</div>
+<div class="square light" data-square="e8" title="e8 light square">
+</div>
+<div class="square dark" data-square="f8" title="f8 dark square">
+</div>
+<div class="square light" data-square="g8" title="g8 light square">
+</div>
+<div class="square dark" data-square="h8" title="h8 dark square">
+</div>
+<div class="coord rank-label right">8</div>
+<div class="coord rank-label left">7</div>
+<div class="square dark" data-square="a7" title="a7 dark square">
+</div>
+<div class="square light" data-square="b7" title="b7 light square">
+</div>
+<div class="square dark has-star star-blue" data-square="c7" title="c7 dark square">
+<span aria-hidden="true" class="star blue">★</span><span class="sr-only">c7 blue star</span>
+</div>
+<div class="square light" data-square="d7" title="d7 light square">
+</div>
+<div class="square dark" data-square="e7" title="e7 dark square">
+</div>
+<div class="square light" data-square="f7" title="f7 light square">
+</div>
+<div class="square dark" data-square="g7" title="g7 dark square">
+</div>
+<div class="square light" data-square="h7" title="h7 light square">
+</div>
+<div class="coord rank-label right">7</div>
+<div class="coord rank-label left">6</div>
+<div class="square light" data-square="a6" title="a6 light square">
+</div>
+<div class="square dark has-star star-blue" data-square="b6" title="b6 dark square">
+<span aria-hidden="true" class="star blue">★</span><span class="sr-only">b6 blue star</span>
+</div>
+<div class="square light" data-square="c6" title="c6 light square">
+</div>
+<div class="square dark" data-square="d6" title="d6 dark square">
+</div>
+<div class="square light" data-square="e6" title="e6 light square">
+</div>
+<div class="square dark" data-square="f6" title="f6 dark square">
+</div>
+<div class="square light" data-square="g6" title="g6 light square">
+</div>
+<div class="square dark" data-square="h6" title="h6 dark square">
+</div>
+<div class="coord rank-label right">6</div>
+<div class="coord rank-label left">5</div>
+<div class="square dark has-star star-blue" data-square="a5" title="a5 dark square">
+<span aria-hidden="true" class="star blue">★</span><span class="sr-only">a5 blue star</span>
+</div>
+<div class="square light" data-square="b5" title="b5 light square">
+</div>
+<div class="square dark" data-square="c5" title="c5 dark square">
+</div>
+<div class="square light" data-square="d5" title="d5 light square">
+</div>
+<div class="square dark" data-square="e5" title="e5 dark square">
+</div>
+<div class="square light" data-square="f5" title="f5 light square">
+</div>
+<div class="square dark" data-square="g5" title="g5 dark square">
+</div>
+<div class="square light" data-square="h5" title="h5 light square">
+</div>
+<div class="coord rank-label right">5</div>
+<div class="coord rank-label left">4</div>
+<div class="square light" data-square="a4" title="a4 light square">
+</div>
+<div class="square dark" data-square="b4" title="b4 dark square">
+</div>
+<div class="square light" data-square="c4" title="c4 light square">
+</div>
+<div class="square dark" data-square="d4" title="d4 dark square">
+</div>
+<div class="square light" data-square="e4" title="e4 light square">
+</div>
+<div class="square dark" data-square="f4" title="f4 dark square">
+</div>
+<div class="square light" data-square="g4" title="g4 light square">
+</div>
+<div class="square dark" data-square="h4" title="h4 dark square">
+</div>
+<div class="coord rank-label right">4</div>
+<div class="coord rank-label left">3</div>
+<div class="square dark" data-square="a3" title="a3 dark square">
+</div>
+<div class="square light" data-square="b3" title="b3 light square">
+</div>
+<div class="square dark" data-square="c3" title="c3 dark square">
+</div>
+<div class="square light" data-square="d3" title="d3 light square">
+</div>
+<div class="square dark" data-square="e3" title="e3 dark square">
+</div>
+<div class="square light" data-square="f3" title="f3 light square">
+</div>
+<div class="square dark" data-square="g3" title="g3 dark square">
+</div>
+<div class="square light" data-square="h3" title="h3 light square">
+</div>
+<div class="coord rank-label right">3</div>
+<div class="coord rank-label left">2</div>
+<div class="square light" data-square="a2" title="a2 light square">
+</div>
+<div class="square dark" data-square="b2" title="b2 dark square">
+</div>
+<div class="square light" data-square="c2" title="c2 light square">
+</div>
+<div class="square dark" data-square="d2" title="d2 dark square">
+</div>
+<div class="square light" data-square="e2" title="e2 light square">
+</div>
+<div class="square dark" data-square="f2" title="f2 dark square">
+</div>
+<div class="square light" data-square="g2" title="g2 light square">
+</div>
+<div class="square dark" data-square="h2" title="h2 dark square">
+</div>
+<div class="coord rank-label right">2</div>
+<div class="coord rank-label left">1</div>
+<div class="square dark" data-square="a1" title="a1 dark square">
+</div>
+<div class="square light" data-square="b1" title="b1 light square">
+</div>
+<div class="square dark" data-square="c1" title="c1 dark square">
+</div>
+<div class="square light" data-square="d1" title="d1 light square">
+</div>
+<div class="square dark" data-square="e1" title="e1 dark square">
+</div>
+<div class="square light" data-square="f1" title="f1 light square">
+</div>
+<div class="square dark" data-square="g1" title="g1 dark square">
+</div>
+<div class="square light" data-square="h1" title="h1 light square">
+</div>
+<div class="coord rank-label right">1</div>
+<div class="coord corner"></div>
+<div class="coord file-label bottom">a</div>
+<div class="coord file-label bottom">b</div>
+<div class="coord file-label bottom">c</div>
+<div class="coord file-label bottom">d</div>
+<div class="coord file-label bottom">e</div>
+<div class="coord file-label bottom">f</div>
+<div class="coord file-label bottom">g</div>
+<div class="coord file-label bottom">h</div>
+<div class="coord corner"></div>
+</div>
+<p class="diagram-caption">Blue stars: a5, b6, c7, d8.</p></div>
+<div class="mini-card"><h3>Yellow stars: a1–h8</h3><div aria-label="a1 to h8 diagonal" class="coordinate-board mini-board master" role="img">
+<div class="coord corner"></div>
+<div class="coord file-label top">a</div>
+<div class="coord file-label top">b</div>
+<div class="coord file-label top">c</div>
+<div class="coord file-label top">d</div>
+<div class="coord file-label top">e</div>
+<div class="coord file-label top">f</div>
+<div class="coord file-label top">g</div>
+<div class="coord file-label top">h</div>
+<div class="coord corner"></div>
+<div class="coord rank-label left">8</div>
+<div class="square light" data-square="a8" title="a8 light square">
+</div>
+<div class="square dark" data-square="b8" title="b8 dark square">
+</div>
+<div class="square light" data-square="c8" title="c8 light square">
+</div>
+<div class="square dark" data-square="d8" title="d8 dark square">
+</div>
+<div class="square light" data-square="e8" title="e8 light square">
+</div>
+<div class="square dark" data-square="f8" title="f8 dark square">
+</div>
+<div class="square light" data-square="g8" title="g8 light square">
+</div>
+<div class="square dark has-star star-yellow" data-square="h8" title="h8 dark square">
+<span aria-hidden="true" class="star yellow">★</span><span class="sr-only">h8 yellow star</span>
+</div>
+<div class="coord rank-label right">8</div>
+<div class="coord rank-label left">7</div>
+<div class="square dark" data-square="a7" title="a7 dark square">
+</div>
+<div class="square light" data-square="b7" title="b7 light square">
+</div>
+<div class="square dark" data-square="c7" title="c7 dark square">
+</div>
+<div class="square light" data-square="d7" title="d7 light square">
+</div>
+<div class="square dark" data-square="e7" title="e7 dark square">
+</div>
+<div class="square light" data-square="f7" title="f7 light square">
+</div>
+<div class="square dark has-star star-yellow" data-square="g7" title="g7 dark square">
+<span aria-hidden="true" class="star yellow">★</span><span class="sr-only">g7 yellow star</span>
+</div>
+<div class="square light" data-square="h7" title="h7 light square">
+</div>
+<div class="coord rank-label right">7</div>
+<div class="coord rank-label left">6</div>
+<div class="square light" data-square="a6" title="a6 light square">
+</div>
+<div class="square dark" data-square="b6" title="b6 dark square">
+</div>
+<div class="square light" data-square="c6" title="c6 light square">
+</div>
+<div class="square dark" data-square="d6" title="d6 dark square">
+</div>
+<div class="square light" data-square="e6" title="e6 light square">
+</div>
+<div class="square dark has-star star-yellow" data-square="f6" title="f6 dark square">
+<span aria-hidden="true" class="star yellow">★</span><span class="sr-only">f6 yellow star</span>
+</div>
+<div class="square light" data-square="g6" title="g6 light square">
+</div>
+<div class="square dark" data-square="h6" title="h6 dark square">
+</div>
+<div class="coord rank-label right">6</div>
+<div class="coord rank-label left">5</div>
+<div class="square dark" data-square="a5" title="a5 dark square">
+</div>
+<div class="square light" data-square="b5" title="b5 light square">
+</div>
+<div class="square dark" data-square="c5" title="c5 dark square">
+</div>
+<div class="square light" data-square="d5" title="d5 light square">
+</div>
+<div class="square dark has-star star-yellow" data-square="e5" title="e5 dark square">
+<span aria-hidden="true" class="star yellow">★</span><span class="sr-only">e5 yellow star</span>
+</div>
+<div class="square light" data-square="f5" title="f5 light square">
+</div>
+<div class="square dark" data-square="g5" title="g5 dark square">
+</div>
+<div class="square light" data-square="h5" title="h5 light square">
+</div>
+<div class="coord rank-label right">5</div>
+<div class="coord rank-label left">4</div>
+<div class="square light" data-square="a4" title="a4 light square">
+</div>
+<div class="square dark" data-square="b4" title="b4 dark square">
+</div>
+<div class="square light" data-square="c4" title="c4 light square">
+</div>
+<div class="square dark has-star star-yellow" data-square="d4" title="d4 dark square">
+<span aria-hidden="true" class="star yellow">★</span><span class="sr-only">d4 yellow star</span>
+</div>
+<div class="square light" data-square="e4" title="e4 light square">
+</div>
+<div class="square dark" data-square="f4" title="f4 dark square">
+</div>
+<div class="square light" data-square="g4" title="g4 light square">
+</div>
+<div class="square dark" data-square="h4" title="h4 dark square">
+</div>
+<div class="coord rank-label right">4</div>
+<div class="coord rank-label left">3</div>
+<div class="square dark" data-square="a3" title="a3 dark square">
+</div>
+<div class="square light" data-square="b3" title="b3 light square">
+</div>
+<div class="square dark has-star star-yellow" data-square="c3" title="c3 dark square">
+<span aria-hidden="true" class="star yellow">★</span><span class="sr-only">c3 yellow star</span>
+</div>
+<div class="square light" data-square="d3" title="d3 light square">
+</div>
+<div class="square dark" data-square="e3" title="e3 dark square">
+</div>
+<div class="square light" data-square="f3" title="f3 light square">
+</div>
+<div class="square dark" data-square="g3" title="g3 dark square">
+</div>
+<div class="square light" data-square="h3" title="h3 light square">
+</div>
+<div class="coord rank-label right">3</div>
+<div class="coord rank-label left">2</div>
+<div class="square light" data-square="a2" title="a2 light square">
+</div>
+<div class="square dark has-star star-yellow" data-square="b2" title="b2 dark square">
+<span aria-hidden="true" class="star yellow">★</span><span class="sr-only">b2 yellow star</span>
+</div>
+<div class="square light" data-square="c2" title="c2 light square">
+</div>
+<div class="square dark" data-square="d2" title="d2 dark square">
+</div>
+<div class="square light" data-square="e2" title="e2 light square">
+</div>
+<div class="square dark" data-square="f2" title="f2 dark square">
+</div>
+<div class="square light" data-square="g2" title="g2 light square">
+</div>
+<div class="square dark" data-square="h2" title="h2 dark square">
+</div>
+<div class="coord rank-label right">2</div>
+<div class="coord rank-label left">1</div>
+<div class="square dark has-star star-yellow" data-square="a1" title="a1 dark square">
+<span aria-hidden="true" class="star yellow">★</span><span class="sr-only">a1 yellow star</span>
+</div>
+<div class="square light" data-square="b1" title="b1 light square">
+</div>
+<div class="square dark" data-square="c1" title="c1 dark square">
+</div>
+<div class="square light" data-square="d1" title="d1 light square">
+</div>
+<div class="square dark" data-square="e1" title="e1 dark square">
+</div>
+<div class="square light" data-square="f1" title="f1 light square">
+</div>
+<div class="square dark" data-square="g1" title="g1 dark square">
+</div>
+<div class="square light" data-square="h1" title="h1 light square">
+</div>
+<div class="coord rank-label right">1</div>
+<div class="coord corner"></div>
+<div class="coord file-label bottom">a</div>
+<div class="coord file-label bottom">b</div>
+<div class="coord file-label bottom">c</div>
+<div class="coord file-label bottom">d</div>
+<div class="coord file-label bottom">e</div>
+<div class="coord file-label bottom">f</div>
+<div class="coord file-label bottom">g</div>
+<div class="coord file-label bottom">h</div>
+<div class="coord corner"></div>
+</div>
+<p class="diagram-caption">Yellow stars: a1, b2, c3, d4, e5, f6, g7, h8.</p></div>
+</div>
+        </section>
+
+        <section class="lesson-section" id="remember">
+          <div class="section-head">
+            <div class="number">6</div>
+            <div class="section-text">
+              <h2>Remember</h2>
+              <p>Use direction words to describe the board correctly.</p>
+            </div>
+          </div>
+          <div class="remember-list">
+            <div class="remember-item"><strong>Files go up and down</strong>They are vertical and named with letters.</div>
+            <div class="remember-item"><strong>Ranks go left and right</strong>They are horizontal and named with numbers.</div>
+            <div class="remember-item"><strong>Diagonals are slanting</strong>Each square touches the next corner-to-corner.</div>
+            <div class="remember-item"><strong>Square names combine both</strong>For example, b7 is on the b-file and the 7th rank.</div>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="practice">
+          <div class="section-head">
+            <div class="number">7</div>
+            <div class="section-text">
+              <h2>Quick Check</h2>
+              <p>Review the main ideas before moving to the next lesson.</p>
+            </div>
+          </div>
+          <div class="practice">
+<div class="practice-card"><h3>1. What is the blue file called?</h3><p>Answer: the <strong>b-file</strong>.</p></div>
+<div class="practice-card"><h3>2. What is the orange rank called?</h3><p>Answer: the <strong>7th rank</strong>.</p></div>
+<div class="practice-card"><h3>3. Which squares form the e1–h4 diagonal?</h3><p>Answer: <strong>e1, f2, g3, h4</strong>.</p></div>
+<div class="practice-card"><h3>4. Which diagonal goes from a1 to h8?</h3><p>Answer: the <strong>yellow-star diagonal</strong>.</p></div>
+</div>
+          <details class="quiz" style="margin-top:1rem;" open>
+            <summary>Why is this version safer than generated diagram images?</summary>
+            <p>The squares and coordinates are coded directly in the HTML, so the b-file, 7th rank, a1 dark square, and h1 light square remain correct and easier to edit.</p>
+          </details>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <strong>End of Lesson:</strong> Files, Ranks, and Diagonals. Next lesson idea: naming squares and reading simple chess notation.
+  </footer>
+
+  <script>
+    const root = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const storedTheme = localStorage.getItem('chess-lesson-theme');
+    if (storedTheme === 'light' || storedTheme === 'dark') root.dataset.theme = storedTheme;
+    themeToggle.addEventListener('click', () => {
+      root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('chess-lesson-theme', root.dataset.theme);
+    });
+
+    const progressBar = document.getElementById('progressBar');
+    const updateProgress = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = max > 0 ? (window.scrollY / max) * 100 : 0;
+      progressBar.style.width = Math.min(100, Math.max(0, pct)) + '%';
+    };
+    updateProgress();
+    window.addEventListener('scroll', updateProgress, { passive: true });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chess Terms — Pawn Level Lesson</title>
+  <meta name="description" content="Pawn level chess lesson: kingside, queenside, whiteside, and blackside.">
+  <style>
+
+    :root {
+      --bg: #07101e;
+      --bg-2: #0c1930;
+      --panel: rgba(255,255,255,.075);
+      --panel-strong: rgba(255,255,255,.12);
+      --text: #f6f8fc;
+      --muted: #b9c6dc;
+      --line: rgba(255,255,255,.14);
+      --gold: #f3c55f;
+      --blue: #3d8dff;
+      --green: #65d28a;
+      --orange: #ffae5a;
+      --red: #ff6b6b;
+      --purple: #b990ff;
+      --shadow: 0 22px 60px rgba(0,0,0,.35);
+      --radius: 24px;
+      --max: 1180px;
+      --card: #f8fafc;
+      --ink: #172033;
+      --board-green: #81a96f;
+      --board-light: #f4e7c5;
+    }
+
+    [data-theme="light"] {
+      --bg: #f7f2e8;
+      --bg-2: #fffaf0;
+      --panel: rgba(255,255,255,.72);
+      --panel-strong: rgba(255,255,255,.92);
+      --text: #172033;
+      --muted: #526076;
+      --line: rgba(12,25,48,.15);
+      --shadow: 0 20px 50px rgba(22,30,46,.15);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      line-height: 1.55;
+      background:
+        radial-gradient(circle at top left, rgba(61,141,255,.35), transparent 35rem),
+        radial-gradient(circle at top right, rgba(243,197,95,.18), transparent 34rem),
+        linear-gradient(135deg, var(--bg), var(--bg-2));
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; }
+    button { font: inherit; }
+
+    .skip-link {
+      position: absolute;
+      left: -999px;
+      top: 1rem;
+      background: var(--gold);
+      color: #111827;
+      padding: .65rem 1rem;
+      border-radius: 999px;
+      z-index: 999;
+    }
+    .skip-link:focus { left: 1rem; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(16px);
+      background: color-mix(in srgb, var(--bg) 78%, transparent);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar-inner {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: .75rem 0;
+    }
+    .brand { display: flex; align-items: center; gap: .7rem; font-weight: 800; letter-spacing: .01em; }
+    .brand-icon {
+      width: 2.4rem;
+      height: 2.4rem;
+      border-radius: .8rem;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--gold), #fff0b2);
+      color: #13203a;
+      box-shadow: 0 10px 30px rgba(243,197,95,.25);
+    }
+    .top-actions { display: flex; gap: .5rem; flex-wrap: wrap; justify-content: flex-end; }
+    .btn {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: .55rem .9rem;
+      cursor: pointer;
+      transition: transform .18s ease, background .18s ease;
+    }
+    .btn:hover { transform: translateY(-1px); background: var(--panel-strong); }
+
+    .progress { height: 3px; background: rgba(255,255,255,.08); }
+    .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--gold), var(--green), var(--blue)); }
+
+    .page { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; }
+    .hero {
+      padding: clamp(2rem, 4vw, 4rem) 0 1.4rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 520px);
+      gap: clamp(1.25rem, 4vw, 3rem);
+      align-items: center;
+    }
+    .kicker {
+      color: var(--gold);
+      text-transform: uppercase;
+      font-weight: 850;
+      letter-spacing: .14em;
+      font-size: .85rem;
+      margin: 0 0 .75rem;
+    }
+    h1, h2, h3 { line-height: 1.08; margin: 0; }
+    h1 { font-size: clamp(2.35rem, 7vw, 5.7rem); letter-spacing: -.055em; }
+    h2 { font-size: clamp(1.65rem, 4vw, 3.15rem); letter-spacing: -.035em; }
+    h3 { font-size: clamp(1.18rem, 2.2vw, 1.55rem); letter-spacing: -.015em; }
+    .lead { font-size: clamp(1.05rem, 1.9vw, 1.34rem); color: var(--muted); max-width: 64ch; }
+    .hero-card {
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--line);
+      background: var(--panel);
+      padding: .8rem;
+    }
+
+    .objective-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .8rem;
+      margin: 1rem 0 2rem;
+    }
+    .objective {
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel);
+      min-height: 8rem;
+    }
+    .objective strong { display: block; margin-bottom: .45rem; font-size: 1.03rem; }
+    .objective span { color: var(--muted); font-size: .95rem; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 245px minmax(0, 1fr);
+      gap: 1.25rem;
+      align-items: start;
+      padding: 1rem 0 4rem;
+    }
+    .toc {
+      position: sticky;
+      top: 4.5rem;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--panel);
+      padding: 1rem;
+    }
+    .toc-title { font-weight: 850; margin-bottom: .7rem; color: var(--gold); }
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--muted);
+      padding: .55rem .65rem;
+      border-radius: 12px;
+      font-size: .95rem;
+    }
+    .toc a:hover { color: var(--text); background: var(--panel-strong); }
+
+    main { min-width: 0; }
+    .lesson-section {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: var(--radius);
+      padding: clamp(1rem, 3vw, 2rem);
+      margin-bottom: 1.1rem;
+      box-shadow: 0 14px 40px rgba(0,0,0,.14);
+      scroll-margin-top: 5.5rem;
+    }
+    .section-head { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1rem; }
+    .number {
+      flex: 0 0 auto;
+      width: 2.45rem;
+      height: 2.45rem;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      font-weight: 900;
+      color: #111827;
+      background: var(--gold);
+      box-shadow: 0 10px 22px rgba(243,197,95,.25);
+    }
+    .section-text p { color: var(--muted); margin: .75rem 0 0; }
+
+    .two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, .9fr); gap: 1rem; align-items: center; }
+    .diagram-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; align-items: start; }
+    .diagram-card {
+      background: #f8fafc;
+      color: #172033;
+      border-radius: 20px;
+      padding: 1rem;
+      border: 1px solid rgba(15, 23, 42, .12);
+      box-shadow: 0 16px 38px rgba(0,0,0,.18);
+    }
+    .diagram-card h3 {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      margin-bottom: .7rem;
+      color: #0f172a;
+    }
+    .diagram-card p {
+      margin: .65rem 0 0;
+      color: #475569;
+      font-size: .98rem;
+    }
+    .tag {
+      display: inline-grid;
+      place-items: center;
+      min-width: 38px;
+      height: 34px;
+      padding: 0 10px;
+      border-radius: 999px;
+      color: #fff;
+      background: #0ea5e9;
+      font-weight: 900;
+      font-size: .95rem;
+      flex: 0 0 auto;
+    }
+    .tag.purple { background: #7e22ce; }
+    .tag.green { background: #15803d; }
+    .tag.slate { background: #475569; }
+
+    .board-wrap {
+      background: #eef6ff;
+      border: 1px solid rgba(15, 23, 42, .12);
+      border-radius: 18px;
+      padding: .6rem;
+      overflow: hidden;
+    }
+    .board-svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .definition-list {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .85rem;
+      margin-top: 1rem;
+    }
+    .definition {
+      background: #f8fafc;
+      color: #172033;
+      border-radius: 18px;
+      padding: 1rem;
+      border: 1px solid rgba(15, 23, 42, .12);
+    }
+    .definition strong { display: block; margin-bottom: .4rem; font-size: 1.05rem; }
+    .definition span {
+      display: inline-block;
+      padding: .18rem .55rem;
+      border-radius: 999px;
+      background: #e0f2fe;
+      color: #075985;
+      font-weight: 850;
+      margin: .25rem .15rem 0 0;
+    }
+    .definition.purple span { background: #f3e8ff; color: #6b21a8; }
+    .definition.green span { background: #dcfce7; color: #166534; }
+    .definition.slate span { background: #e2e8f0; color: #334155; }
+
+    .memory-grid, .review-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .85rem;
+      margin-top: 1rem;
+    }
+    .memory, .review-item {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1rem;
+      background: rgba(255,255,255,.055);
+    }
+    .memory strong, .review-item strong { color: var(--gold); display: block; margin-bottom: .25rem; }
+    .memory p, .review-item span { color: var(--muted); margin: 0; }
+
+    .callout {
+      border: 1px solid color-mix(in srgb, var(--gold) 42%, var(--line));
+      border-radius: 20px;
+      padding: 1rem;
+      background: color-mix(in srgb, var(--gold) 12%, var(--panel));
+      margin-top: 1rem;
+    }
+    .callout-title { color: var(--gold); font-weight: 900; margin-bottom: .35rem; }
+
+    .footer {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      padding: 2rem 0 3rem;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+    }
+
+    .svg-label {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      font-weight: 950;
+      fill: #0f172a;
+      paint-order: stroke;
+      stroke: rgba(255,255,255,.78);
+      stroke-width: 5px;
+      stroke-linejoin: round;
+    }
+    .svg-label.big { font-size: 28px; letter-spacing: -1px; }
+    .svg-label.medium { font-size: 18px; letter-spacing: -.4px; }
+    .svg-label.small { font-size: 18px; font-weight: 850; }
+    .svg-chip {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      font-size: 20px;
+      font-weight: 950;
+      fill: #ffffff;
+    }
+    .svg-coord {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      font-size: 15px;
+      font-weight: 900;
+      fill: #334155;
+    }
+    .svg-coord.faint { opacity: .55; }
+
+    @media (max-width: 980px) {
+      .hero { grid-template-columns: 1fr; }
+      .layout { grid-template-columns: 1fr; }
+      .toc { position: static; overflow-x: auto; white-space: nowrap; }
+      .toc a { display: inline-block; }
+      .definition-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 720px) {
+      .topbar-inner, .page, .footer { width: min(100% - 22px, var(--max)); }
+      .topbar-inner { align-items: flex-start; }
+      .brand span:last-child { display: none; }
+      .objective-grid, .diagram-grid, .memory-grid, .review-grid, .two-col, .definition-list { grid-template-columns: 1fr; }
+      .lesson-section { border-radius: 18px; }
+      .section-head { gap: .75rem; }
+      .number { width: 2.15rem; height: 2.15rem; }
+      .board-wrap { padding: .35rem; }
+    }
+
+    @media print {
+      :root, [data-theme="light"], [data-theme="dark"] {
+        --bg: #ffffff;
+        --bg-2: #ffffff;
+        --panel: #ffffff;
+        --panel-strong: #ffffff;
+        --text: #111827;
+        --muted: #374151;
+        --line: #d1d5db;
+        --shadow: none;
+      }
+      body { background: #ffffff; }
+      .topbar, .toc, .btn, .progress { display: none !important; }
+      .page, .footer { width: 100%; }
+      .hero { padding-top: 0; }
+      .layout { display: block; padding: 0; }
+      .lesson-section, .objective, .diagram-card, .definition, .memory, .review-item { break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
+      svg { break-inside: avoid; page-break-inside: avoid; }
+    }
+
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#lesson">Skip to lesson</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand" aria-label="Lesson title">
+        <div class="brand-icon" aria-hidden="true">♟</div>
+        <span>Pawn Level</span>
+        <span>Chess Terms</span>
+      </div>
+      <div class="top-actions">
+        <button class="btn" type="button" id="themeToggle">Toggle theme</button>
+        <button class="btn" type="button" onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </div>
+    <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+  </header>
+
+  <div class="page">
+    <section class="hero" id="top">
+      <div>
+        <p class="kicker">Lesson 7 · Beginner / Pawn Level</p>
+        <h1>Chess Terms</h1>
+        <p class="lead">To study chess, you need to know the names of important board areas. This lesson explains <strong>kingside</strong>, <strong>queenside</strong>, <strong>whiteside</strong>, and <strong>blackside</strong> using files and ranks.</p>
+        <div class="objective-grid" aria-label="Learning objectives">
+          <div class="objective"><strong>Kingside</strong><span>Identify the board area made of the e-, f-, g-, and h-files.</span></div>
+          <div class="objective"><strong>Queenside</strong><span>Identify the board area made of the a-, b-, c-, and d-files.</span></div>
+          <div class="objective"><strong>Whiteside</strong><span>Recognize the lower half of the board: ranks 1–4.</span></div>
+          <div class="objective"><strong>Blackside</strong><span>Recognize the upper half of the board: ranks 5–8.</span></div>
+        </div>
+      </div>
+      <figure class="hero-card" aria-label="Board areas overview diagram">
+        <div class="board-wrap"><svg aria-label="Chessboard diagram showing split" class="board-svg" role="img" viewbox="0 0 444 434">
+<defs>
+<filter height="140%" id="softShadow-l7s1" width="140%" x="-20%" y="-20%"><fedropshadow dx="0" dy="8" flood-opacity="0.20" stddeviation="8"></fedropshadow></filter>
+</defs>
+<rect fill="#ffffff" filter="url(#softShadow-l7s1-l7s1)" height="382" rx="18" width="382" x="35" y="17"></rect>
+<rect fill="#ffffff" height="368" rx="10" width="368" x="42" y="24"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="42" y="24"></rect>
+<rect fill="#81a96f" height="46" width="46" x="88" y="24"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="134" y="24"></rect>
+<rect fill="#81a96f" height="46" width="46" x="180" y="24"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="226" y="24"></rect>
+<rect fill="#81a96f" height="46" width="46" x="272" y="24"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="318" y="24"></rect>
+<rect fill="#81a96f" height="46" width="46" x="364" y="24"></rect>
+<rect fill="#81a96f" height="46" width="46" x="42" y="70"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="88" y="70"></rect>
+<rect fill="#81a96f" height="46" width="46" x="134" y="70"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="180" y="70"></rect>
+<rect fill="#81a96f" height="46" width="46" x="226" y="70"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="272" y="70"></rect>
+<rect fill="#81a96f" height="46" width="46" x="318" y="70"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="364" y="70"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="42" y="116"></rect>
+<rect fill="#81a96f" height="46" width="46" x="88" y="116"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="134" y="116"></rect>
+<rect fill="#81a96f" height="46" width="46" x="180" y="116"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="226" y="116"></rect>
+<rect fill="#81a96f" height="46" width="46" x="272" y="116"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="318" y="116"></rect>
+<rect fill="#81a96f" height="46" width="46" x="364" y="116"></rect>
+<rect fill="#81a96f" height="46" width="46" x="42" y="162"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="88" y="162"></rect>
+<rect fill="#81a96f" height="46" width="46" x="134" y="162"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="180" y="162"></rect>
+<rect fill="#81a96f" height="46" width="46" x="226" y="162"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="272" y="162"></rect>
+<rect fill="#81a96f" height="46" width="46" x="318" y="162"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="364" y="162"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="42" y="208"></rect>
+<rect fill="#81a96f" height="46" width="46" x="88" y="208"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="134" y="208"></rect>
+<rect fill="#81a96f" height="46" width="46" x="180" y="208"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="226" y="208"></rect>
+<rect fill="#81a96f" height="46" width="46" x="272" y="208"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="318" y="208"></rect>
+<rect fill="#81a96f" height="46" width="46" x="364" y="208"></rect>
+<rect fill="#81a96f" height="46" width="46" x="42" y="254"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="88" y="254"></rect>
+<rect fill="#81a96f" height="46" width="46" x="134" y="254"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="180" y="254"></rect>
+<rect fill="#81a96f" height="46" width="46" x="226" y="254"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="272" y="254"></rect>
+<rect fill="#81a96f" height="46" width="46" x="318" y="254"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="364" y="254"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="42" y="300"></rect>
+<rect fill="#81a96f" height="46" width="46" x="88" y="300"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="134" y="300"></rect>
+<rect fill="#81a96f" height="46" width="46" x="180" y="300"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="226" y="300"></rect>
+<rect fill="#81a96f" height="46" width="46" x="272" y="300"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="318" y="300"></rect>
+<rect fill="#81a96f" height="46" width="46" x="364" y="300"></rect>
+<rect fill="#81a96f" height="46" width="46" x="42" y="346"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="88" y="346"></rect>
+<rect fill="#81a96f" height="46" width="46" x="134" y="346"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="180" y="346"></rect>
+<rect fill="#81a96f" height="46" width="46" x="226" y="346"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="272" y="346"></rect>
+<rect fill="#81a96f" height="46" width="46" x="318" y="346"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="364" y="346"></rect>
+<rect fill="#a855f7" height="368" opacity="0.42" rx="0" width="184" x="42" y="24"></rect>
+<rect fill="#38bdf8" height="368" opacity="0.40" rx="0" width="184" x="226" y="24"></rect>
+<line opacity="0.82" stroke="#0f172a" stroke-dasharray="10 7" stroke-width="5" x1="226" x2="226" y1="24" y2="392"></line>
+<text class="svg-label big" text-anchor="middle" x="134" y="198.0">QUEENSIDE</text>
+<text class="svg-label small" text-anchor="middle" x="134" y="232.0">a b c d</text>
+<text class="svg-label big" text-anchor="middle" x="318" y="198.0">KINGSIDE</text>
+<text class="svg-label small" text-anchor="middle" x="318" y="232.0">e f g h</text>
+<rect fill="none" height="368" rx="10" stroke="#1f2937" stroke-width="3" width="368" x="42" y="24"></rect>
+<text class="svg-coord" text-anchor="middle" x="24" y="52.0">8</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="52.0">8</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="98.0">7</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="98.0">7</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="144.0">6</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="144.0">6</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="190.0">5</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="190.0">5</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="236.0">4</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="236.0">4</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="282.0">3</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="282.0">3</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="328.0">2</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="328.0">2</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="374.0">1</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="374.0">1</text>
+<text class="svg-coord" text-anchor="middle" x="65.0" y="420">a</text>
+<text class="svg-coord" text-anchor="middle" x="111.0" y="420">b</text>
+<text class="svg-coord" text-anchor="middle" x="157.0" y="420">c</text>
+<text class="svg-coord" text-anchor="middle" x="203.0" y="420">d</text>
+<text class="svg-coord" text-anchor="middle" x="249.0" y="420">e</text>
+<text class="svg-coord" text-anchor="middle" x="295.0" y="420">f</text>
+<text class="svg-coord" text-anchor="middle" x="341.0" y="420">g</text>
+<text class="svg-coord" text-anchor="middle" x="387.0" y="420">h</text>
+</svg></div>
+      </figure>
+    </section>
+
+    <div class="layout" id="lesson">
+      <aside class="toc" aria-label="Lesson contents">
+        <div class="toc-title">Lesson contents</div>
+        <a href="#terms">1. The four terms</a>
+        <a href="#files-sides">2. Kingside and Queenside</a>
+        <a href="#rank-sides">3. Whiteside and Blackside</a>
+        <a href="#quadrants">4. Four areas together</a>
+        <a href="#remember">5. How to remember</a>
+        <a href="#review">6. Review</a>
+      </aside>
+
+      <main>
+        <section class="lesson-section" id="terms">
+          <div class="section-head">
+            <div class="number">1</div>
+            <div class="section-text">
+              <h2>The Four Terms</h2>
+              <p>Each term describes a part of the chessboard. Look at the file letters and rank numbers carefully.</p>
+            </div>
+          </div>
+          <div class="definition-list" aria-label="Four board area definitions">
+            <div class="definition">
+              <strong>Kingside</strong>
+              Files: <span>e</span><span>f</span><span>g</span><span>h</span>
+            </div>
+            <div class="definition purple">
+              <strong>Queenside</strong>
+              Files: <span>a</span><span>b</span><span>c</span><span>d</span>
+            </div>
+            <div class="definition green">
+              <strong>Whiteside</strong>
+              Ranks: <span>1</span><span>2</span><span>3</span><span>4</span>
+            </div>
+            <div class="definition slate">
+              <strong>Blackside</strong>
+              Ranks: <span>5</span><span>6</span><span>7</span><span>8</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="files-sides">
+          <div class="section-head">
+            <div class="number">2</div>
+            <div class="section-text">
+              <h2>Kingside and Queenside</h2>
+              <p>The kingside and queenside are based on <strong>files</strong>. Files are the vertical columns named a through h.</p>
+            </div>
+          </div>
+          <div class="diagram-grid">
+            <article class="diagram-card">
+              <h3><span class="tag">K</span>Kingside</h3>
+              <div class="board-wrap"><svg aria-label="Chessboard diagram showing kingside" class="board-svg" role="img" viewbox="0 0 444 434">
+<defs>
+<filter height="140%" id="softShadow-l7s2" width="140%" x="-20%" y="-20%"><fedropshadow dx="0" dy="8" flood-opacity="0.20" stddeviation="8"></fedropshadow></filter>
+</defs>
+<rect fill="#ffffff" filter="url(#softShadow-l7s2-l7s2)" height="382" rx="18" width="382" x="35" y="17"></rect>
+<rect fill="#ffffff" height="368" rx="10" width="368" x="42" y="24"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="42" y="24"></rect>
+<rect fill="#81a96f" height="46" width="46" x="88" y="24"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="134" y="24"></rect>
+<rect fill="#81a96f" height="46" width="46" x="180" y="24"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="226" y="24"></rect>
+<rect fill="#81a96f" height="46" width="46" x="272" y="24"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="318" y="24"></rect>
+<rect fill="#81a96f" height="46" width="46" x="364" y="24"></rect>
+<rect fill="#81a96f" height="46" width="46" x="42" y="70"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="88" y="70"></rect>
+<rect fill="#81a96f" height="46" width="46" x="134" y="70"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="180" y="70"></rect>
+<rect fill="#81a96f" height="46" width="46" x="226" y="70"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="272" y="70"></rect>
+<rect fill="#81a96f" height="46" width="46" x="318" y="70"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="364" y="70"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="42" y="116"></rect>
+<rect fill="#81a96f" height="46" width="46" x="88" y="116"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="134" y="116"></rect>
+<rect fill="#81a96f" height="46" width="46" x="180" y="116"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="226" y="116"></rect>
+<rect fill="#81a96f" height="46" width="46" x="272" y="116"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="318" y="116"></rect>
+<rect fill="#81a96f" height="46" width="46" x="364" y="116"></rect>
+<rect fill="#81a96f" height="46" width="46" x="42" y="162"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="88" y="162"></rect>
+<rect fill="#81a96f" height="46" width="46" x="134" y="162"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="180" y="162"></rect>
+<rect fill="#81a96f" height="46" width="46" x="226" y="162"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="272" y="162"></rect>
+<rect fill="#81a96f" height="46" width="46" x="318" y="162"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="364" y="162"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="42" y="208"></rect>
+<rect fill="#81a96f" height="46" width="46" x="88" y="208"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="134" y="208"></rect>
+<rect fill="#81a96f" height="46" width="46" x="180" y="208"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="226" y="208"></rect>
+<rect fill="#81a96f" height="46" width="46" x="272" y="208"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="318" y="208"></rect>
+<rect fill="#81a96f" height="46" width="46" x="364" y="208"></rect>
+<rect fill="#81a96f" height="46" width="46" x="42" y="254"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="88" y="254"></rect>
+<rect fill="#81a96f" height="46" width="46" x="134" y="254"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="180" y="254"></rect>
+<rect fill="#81a96f" height="46" width="46" x="226" y="254"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="272" y="254"></rect>
+<rect fill="#81a96f" height="46" width="46" x="318" y="254"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="364" y="254"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="42" y="300"></rect>
+<rect fill="#81a96f" height="46" width="46" x="88" y="300"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="134" y="300"></rect>
+<rect fill="#81a96f" height="46" width="46" x="180" y="300"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="226" y="300"></rect>
+<rect fill="#81a96f" height="46" width="46" x="272" y="300"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="318" y="300"></rect>
+<rect fill="#81a96f" height="46" width="46" x="364" y="300"></rect>
+<rect fill="#81a96f" height="46" width="46" x="42" y="346"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="88" y="346"></rect>
+<rect fill="#81a96f" height="46" width="46" x="134" y="346"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="180" y="346"></rect>
+<rect fill="#81a96f" height="46" width="46" x="226" y="346"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="272" y="346"></rect>
+<rect fill="#81a96f" height="46" width="46" x="318" y="346"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="364" y="346"></rect>
+<rect fill="#38bdf8" height="368" opacity="0.50" rx="0" width="184" x="226" y="24"></rect>
+<rect fill="none" height="358" rx="16" stroke="#0369a1" stroke-width="5" width="174" x="231" y="29"></rect>
+<circle cx="249.0" cy="47.0" fill="#075985" opacity="0.92" r="17"></circle>
+<text class="svg-chip" text-anchor="middle" x="249.0" y="53.0">e</text>
+<circle cx="295.0" cy="47.0" fill="#075985" opacity="0.92" r="17"></circle>
+<text class="svg-chip" text-anchor="middle" x="295.0" y="53.0">f</text>
+<circle cx="341.0" cy="47.0" fill="#075985" opacity="0.92" r="17"></circle>
+<text class="svg-chip" text-anchor="middle" x="341.0" y="53.0">g</text>
+<circle cx="387.0" cy="47.0" fill="#075985" opacity="0.92" r="17"></circle>
+<text class="svg-chip" text-anchor="middle" x="387.0" y="53.0">h</text>
+<text class="svg-label big" text-anchor="middle" x="318" y="216.0">KINGSIDE</text>
+<rect fill="none" height="368" rx="10" stroke="#1f2937" stroke-width="3" width="368" x="42" y="24"></rect>
+<text class="svg-coord" text-anchor="middle" x="24" y="52.0">8</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="52.0">8</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="98.0">7</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="98.0">7</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="144.0">6</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="144.0">6</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="190.0">5</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="190.0">5</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="236.0">4</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="236.0">4</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="282.0">3</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="282.0">3</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="328.0">2</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="328.0">2</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="374.0">1</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="374.0">1</text>
+<text class="svg-coord" text-anchor="middle" x="65.0" y="420">a</text>
+<text class="svg-coord" text-anchor="middle" x="111.0" y="420">b</text>
+<text class="svg-coord" text-anchor="middle" x="157.0" y="420">c</text>
+<text class="svg-coord" text-anchor="middle" x="203.0" y="420">d</text>
+<text class="svg-coord" text-anchor="middle" x="249.0" y="420">e</text>
+<text class="svg-coord" text-anchor="middle" x="295.0" y="420">f</text>
+<text class="svg-coord" text-anchor="middle" x="341.0" y="420">g</text>
+<text class="svg-coord" text-anchor="middle" x="387.0" y="420">h</text>
+</svg></div>
+              <p>The <strong>kingside</strong> is the part of the board from the <strong>e-file</strong> to the <strong>h-file</strong>. It includes files <strong>e, f, g, h</strong>.</p>
+            </article>
+            <article class="diagram-card">
+              <h3><span class="tag purple">Q</span>Queenside</h3>
+              <div class="board-wrap"><svg aria-label="Chessboard diagram showing queenside" class="board-svg" role="img" viewbox="0 0 444 434">
+<defs>
+<filter height="140%" id="softShadow-l7s3" width="140%" x="-20%" y="-20%"><fedropshadow dx="0" dy="8" flood-opacity="0.20" stddeviation="8"></fedropshadow></filter>
+</defs>
+<rect fill="#ffffff" filter="url(#softShadow-l7s3-l7s3)" height="382" rx="18" width="382" x="35" y="17"></rect>
+<rect fill="#ffffff" height="368" rx="10" width="368" x="42" y="24"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="42" y="24"></rect>
+<rect fill="#81a96f" height="46" width="46" x="88" y="24"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="134" y="24"></rect>
+<rect fill="#81a96f" height="46" width="46" x="180" y="24"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="226" y="24"></rect>
+<rect fill="#81a96f" height="46" width="46" x="272" y="24"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="318" y="24"></rect>
+<rect fill="#81a96f" height="46" width="46" x="364" y="24"></rect>
+<rect fill="#81a96f" height="46" width="46" x="42" y="70"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="88" y="70"></rect>
+<rect fill="#81a96f" height="46" width="46" x="134" y="70"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="180" y="70"></rect>
+<rect fill="#81a96f" height="46" width="46" x="226" y="70"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="272" y="70"></rect>
+<rect fill="#81a96f" height="46" width="46" x="318" y="70"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="364" y="70"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="42" y="116"></rect>
+<rect fill="#81a96f" height="46" width="46" x="88" y="116"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="134" y="116"></rect>
+<rect fill="#81a96f" height="46" width="46" x="180" y="116"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="226" y="116"></rect>
+<rect fill="#81a96f" height="46" width="46" x="272" y="116"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="318" y="116"></rect>
+<rect fill="#81a96f" height="46" width="46" x="364" y="116"></rect>
+<rect fill="#81a96f" height="46" width="46" x="42" y="162"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="88" y="162"></rect>
+<rect fill="#81a96f" height="46" width="46" x="134" y="162"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="180" y="162"></rect>
+<rect fill="#81a96f" height="46" width="46" x="226" y="162"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="272" y="162"></rect>
+<rect fill="#81a96f" height="46" width="46" x="318" y="162"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="364" y="162"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="42" y="208"></rect>
+<rect fill="#81a96f" height="46" width="46" x="88" y="208"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="134" y="208"></rect>
+<rect fill="#81a96f" height="46" width="46" x="180" y="208"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="226" y="208"></rect>
+<rect fill="#81a96f" height="46" width="46" x="272" y="208"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="318" y="208"></rect>
+<rect fill="#81a96f" height="46" width="46" x="364" y="208"></rect>
+<rect fill="#81a96f" height="46" width="46" x="42" y="254"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="88" y="254"></rect>
+<rect fill="#81a96f" height="46" width="46" x="134" y="254"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="180" y="254"></rect>
+<rect fill="#81a96f" height="46" width="46" x="226" y="254"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="272" y="254"></rect>
+<rect fill="#81a96f" height="46" width="46" x="318" y="254"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="364" y="254"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="42" y="300"></rect>
+<rect fill="#81a96f" height="46" width="46" x="88" y="300"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="134" y="300"></rect>
+<rect fill="#81a96f" height="46" width="46" x="180" y="300"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="226" y="300"></rect>
+<rect fill="#81a96f" height="46" width="46" x="272" y="300"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="318" y="300"></rect>
+<rect fill="#81a96f" height="46" width="46" x="364" y="300"></rect>
+<rect fill="#81a96f" height="46" width="46" x="42" y="346"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="88" y="346"></rect>
+<rect fill="#81a96f" height="46" width="46" x="134" y="346"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="180" y="346"></rect>
+<rect fill="#81a96f" height="46" width="46" x="226" y="346"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="272" y="346"></rect>
+<rect fill="#81a96f" height="46" width="46" x="318" y="346"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="364" y="346"></rect>
+<rect fill="#a855f7" height="368" opacity="0.48" rx="0" width="184" x="42" y="24"></rect>
+<rect fill="none" height="358" rx="16" stroke="#7e22ce" stroke-width="5" width="174" x="47" y="29"></rect>
+<circle cx="65.0" cy="47.0" fill="#581c87" opacity="0.92" r="17"></circle>
+<text class="svg-chip" text-anchor="middle" x="65.0" y="53.0">a</text>
+<circle cx="111.0" cy="47.0" fill="#581c87" opacity="0.92" r="17"></circle>
+<text class="svg-chip" text-anchor="middle" x="111.0" y="53.0">b</text>
+<circle cx="157.0" cy="47.0" fill="#581c87" opacity="0.92" r="17"></circle>
+<text class="svg-chip" text-anchor="middle" x="157.0" y="53.0">c</text>
+<circle cx="203.0" cy="47.0" fill="#581c87" opacity="0.92" r="17"></circle>
+<text class="svg-chip" text-anchor="middle" x="203.0" y="53.0">d</text>
+<text class="svg-label big" text-anchor="middle" x="134" y="216.0">QUEENSIDE</text>
+<rect fill="none" height="368" rx="10" stroke="#1f2937" stroke-width="3" width="368" x="42" y="24"></rect>
+<text class="svg-coord" text-anchor="middle" x="24" y="52.0">8</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="52.0">8</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="98.0">7</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="98.0">7</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="144.0">6</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="144.0">6</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="190.0">5</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="190.0">5</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="236.0">4</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="236.0">4</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="282.0">3</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="282.0">3</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="328.0">2</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="328.0">2</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="374.0">1</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="374.0">1</text>
+<text class="svg-coord" text-anchor="middle" x="65.0" y="420">a</text>
+<text class="svg-coord" text-anchor="middle" x="111.0" y="420">b</text>
+<text class="svg-coord" text-anchor="middle" x="157.0" y="420">c</text>
+<text class="svg-coord" text-anchor="middle" x="203.0" y="420">d</text>
+<text class="svg-coord" text-anchor="middle" x="249.0" y="420">e</text>
+<text class="svg-coord" text-anchor="middle" x="295.0" y="420">f</text>
+<text class="svg-coord" text-anchor="middle" x="341.0" y="420">g</text>
+<text class="svg-coord" text-anchor="middle" x="387.0" y="420">h</text>
+</svg></div>
+              <p>The <strong>queenside</strong> is the part of the board from the <strong>a-file</strong> to the <strong>d-file</strong>. It includes files <strong>a, b, c, d</strong>.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="rank-sides">
+          <div class="section-head">
+            <div class="number">3</div>
+            <div class="section-text">
+              <h2>Whiteside and Blackside</h2>
+              <p>The whiteside and blackside are based on <strong>ranks</strong>. Ranks are the horizontal rows numbered 1 through 8.</p>
+            </div>
+          </div>
+          <div class="diagram-card">
+            <h3><span class="tag green">W</span>Whiteside / Blackside Split</h3>
+            <div class="board-wrap"><svg aria-label="Chessboard diagram showing whiteblack" class="board-svg" role="img" viewbox="0 0 444 434">
+<defs>
+<filter height="140%" id="softShadow-l7s4" width="140%" x="-20%" y="-20%"><fedropshadow dx="0" dy="8" flood-opacity="0.20" stddeviation="8"></fedropshadow></filter>
+</defs>
+<rect fill="#ffffff" filter="url(#softShadow-l7s4-l7s4)" height="382" rx="18" width="382" x="35" y="17"></rect>
+<rect fill="#ffffff" height="368" rx="10" width="368" x="42" y="24"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="42" y="24"></rect>
+<rect fill="#81a96f" height="46" width="46" x="88" y="24"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="134" y="24"></rect>
+<rect fill="#81a96f" height="46" width="46" x="180" y="24"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="226" y="24"></rect>
+<rect fill="#81a96f" height="46" width="46" x="272" y="24"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="318" y="24"></rect>
+<rect fill="#81a96f" height="46" width="46" x="364" y="24"></rect>
+<rect fill="#81a96f" height="46" width="46" x="42" y="70"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="88" y="70"></rect>
+<rect fill="#81a96f" height="46" width="46" x="134" y="70"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="180" y="70"></rect>
+<rect fill="#81a96f" height="46" width="46" x="226" y="70"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="272" y="70"></rect>
+<rect fill="#81a96f" height="46" width="46" x="318" y="70"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="364" y="70"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="42" y="116"></rect>
+<rect fill="#81a96f" height="46" width="46" x="88" y="116"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="134" y="116"></rect>
+<rect fill="#81a96f" height="46" width="46" x="180" y="116"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="226" y="116"></rect>
+<rect fill="#81a96f" height="46" width="46" x="272" y="116"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="318" y="116"></rect>
+<rect fill="#81a96f" height="46" width="46" x="364" y="116"></rect>
+<rect fill="#81a96f" height="46" width="46" x="42" y="162"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="88" y="162"></rect>
+<rect fill="#81a96f" height="46" width="46" x="134" y="162"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="180" y="162"></rect>
+<rect fill="#81a96f" height="46" width="46" x="226" y="162"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="272" y="162"></rect>
+<rect fill="#81a96f" height="46" width="46" x="318" y="162"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="364" y="162"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="42" y="208"></rect>
+<rect fill="#81a96f" height="46" width="46" x="88" y="208"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="134" y="208"></rect>
+<rect fill="#81a96f" height="46" width="46" x="180" y="208"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="226" y="208"></rect>
+<rect fill="#81a96f" height="46" width="46" x="272" y="208"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="318" y="208"></rect>
+<rect fill="#81a96f" height="46" width="46" x="364" y="208"></rect>
+<rect fill="#81a96f" height="46" width="46" x="42" y="254"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="88" y="254"></rect>
+<rect fill="#81a96f" height="46" width="46" x="134" y="254"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="180" y="254"></rect>
+<rect fill="#81a96f" height="46" width="46" x="226" y="254"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="272" y="254"></rect>
+<rect fill="#81a96f" height="46" width="46" x="318" y="254"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="364" y="254"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="42" y="300"></rect>
+<rect fill="#81a96f" height="46" width="46" x="88" y="300"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="134" y="300"></rect>
+<rect fill="#81a96f" height="46" width="46" x="180" y="300"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="226" y="300"></rect>
+<rect fill="#81a96f" height="46" width="46" x="272" y="300"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="318" y="300"></rect>
+<rect fill="#81a96f" height="46" width="46" x="364" y="300"></rect>
+<rect fill="#81a96f" height="46" width="46" x="42" y="346"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="88" y="346"></rect>
+<rect fill="#81a96f" height="46" width="46" x="134" y="346"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="180" y="346"></rect>
+<rect fill="#81a96f" height="46" width="46" x="226" y="346"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="272" y="346"></rect>
+<rect fill="#81a96f" height="46" width="46" x="318" y="346"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="364" y="346"></rect>
+<rect fill="#475569" height="184" opacity="0.34" rx="0" width="368" x="42" y="24"></rect>
+<rect fill="#22c55e" height="184" opacity="0.37" rx="0" width="368" x="42" y="208"></rect>
+<line opacity="0.82" stroke="#0f172a" stroke-dasharray="10 7" stroke-width="5" x1="42" x2="410" y1="208" y2="208"></line>
+<text class="svg-label big" text-anchor="middle" x="226.0" y="108">BLACKSIDE</text>
+<text class="svg-label small" text-anchor="middle" x="226.0" y="140">ranks 5, 6, 7, 8</text>
+<text class="svg-label big" text-anchor="middle" x="226.0" y="292">WHITESIDE</text>
+<text class="svg-label small" text-anchor="middle" x="226.0" y="324">ranks 1, 2, 3, 4</text>
+<rect fill="none" height="368" rx="10" stroke="#1f2937" stroke-width="3" width="368" x="42" y="24"></rect>
+<text class="svg-coord" text-anchor="middle" x="24" y="52.0">8</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="52.0">8</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="98.0">7</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="98.0">7</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="144.0">6</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="144.0">6</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="190.0">5</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="190.0">5</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="236.0">4</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="236.0">4</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="282.0">3</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="282.0">3</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="328.0">2</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="328.0">2</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="374.0">1</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="374.0">1</text>
+<text class="svg-coord" text-anchor="middle" x="65.0" y="420">a</text>
+<text class="svg-coord" text-anchor="middle" x="111.0" y="420">b</text>
+<text class="svg-coord" text-anchor="middle" x="157.0" y="420">c</text>
+<text class="svg-coord" text-anchor="middle" x="203.0" y="420">d</text>
+<text class="svg-coord" text-anchor="middle" x="249.0" y="420">e</text>
+<text class="svg-coord" text-anchor="middle" x="295.0" y="420">f</text>
+<text class="svg-coord" text-anchor="middle" x="341.0" y="420">g</text>
+<text class="svg-coord" text-anchor="middle" x="387.0" y="420">h</text>
+</svg></div>
+            <p>The <strong>whiteside</strong> is ranks <strong>1, 2, 3, 4</strong>. The <strong>blackside</strong> is ranks <strong>5, 6, 7, 8</strong>.</p>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="quadrants">
+          <div class="section-head">
+            <div class="number">4</div>
+            <div class="section-text">
+              <h2>Four Board Areas Together</h2>
+              <p>You can combine the terms. For example, a square can be on the whiteside kingside or on the blackside queenside.</p>
+            </div>
+          </div>
+          <div class="diagram-card">
+            <h3><span class="tag slate">4</span>Combined board areas</h3>
+            <div class="board-wrap"><svg aria-label="Chessboard diagram showing quadrants" class="board-svg" role="img" viewbox="0 0 444 434">
+<defs>
+<filter height="140%" id="softShadow-l7s5" width="140%" x="-20%" y="-20%"><fedropshadow dx="0" dy="8" flood-opacity="0.20" stddeviation="8"></fedropshadow></filter>
+</defs>
+<rect fill="#ffffff" filter="url(#softShadow-l7s5-l7s5)" height="382" rx="18" width="382" x="35" y="17"></rect>
+<rect fill="#ffffff" height="368" rx="10" width="368" x="42" y="24"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="42" y="24"></rect>
+<rect fill="#81a96f" height="46" width="46" x="88" y="24"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="134" y="24"></rect>
+<rect fill="#81a96f" height="46" width="46" x="180" y="24"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="226" y="24"></rect>
+<rect fill="#81a96f" height="46" width="46" x="272" y="24"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="318" y="24"></rect>
+<rect fill="#81a96f" height="46" width="46" x="364" y="24"></rect>
+<rect fill="#81a96f" height="46" width="46" x="42" y="70"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="88" y="70"></rect>
+<rect fill="#81a96f" height="46" width="46" x="134" y="70"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="180" y="70"></rect>
+<rect fill="#81a96f" height="46" width="46" x="226" y="70"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="272" y="70"></rect>
+<rect fill="#81a96f" height="46" width="46" x="318" y="70"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="364" y="70"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="42" y="116"></rect>
+<rect fill="#81a96f" height="46" width="46" x="88" y="116"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="134" y="116"></rect>
+<rect fill="#81a96f" height="46" width="46" x="180" y="116"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="226" y="116"></rect>
+<rect fill="#81a96f" height="46" width="46" x="272" y="116"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="318" y="116"></rect>
+<rect fill="#81a96f" height="46" width="46" x="364" y="116"></rect>
+<rect fill="#81a96f" height="46" width="46" x="42" y="162"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="88" y="162"></rect>
+<rect fill="#81a96f" height="46" width="46" x="134" y="162"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="180" y="162"></rect>
+<rect fill="#81a96f" height="46" width="46" x="226" y="162"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="272" y="162"></rect>
+<rect fill="#81a96f" height="46" width="46" x="318" y="162"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="364" y="162"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="42" y="208"></rect>
+<rect fill="#81a96f" height="46" width="46" x="88" y="208"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="134" y="208"></rect>
+<rect fill="#81a96f" height="46" width="46" x="180" y="208"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="226" y="208"></rect>
+<rect fill="#81a96f" height="46" width="46" x="272" y="208"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="318" y="208"></rect>
+<rect fill="#81a96f" height="46" width="46" x="364" y="208"></rect>
+<rect fill="#81a96f" height="46" width="46" x="42" y="254"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="88" y="254"></rect>
+<rect fill="#81a96f" height="46" width="46" x="134" y="254"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="180" y="254"></rect>
+<rect fill="#81a96f" height="46" width="46" x="226" y="254"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="272" y="254"></rect>
+<rect fill="#81a96f" height="46" width="46" x="318" y="254"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="364" y="254"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="42" y="300"></rect>
+<rect fill="#81a96f" height="46" width="46" x="88" y="300"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="134" y="300"></rect>
+<rect fill="#81a96f" height="46" width="46" x="180" y="300"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="226" y="300"></rect>
+<rect fill="#81a96f" height="46" width="46" x="272" y="300"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="318" y="300"></rect>
+<rect fill="#81a96f" height="46" width="46" x="364" y="300"></rect>
+<rect fill="#81a96f" height="46" width="46" x="42" y="346"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="88" y="346"></rect>
+<rect fill="#81a96f" height="46" width="46" x="134" y="346"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="180" y="346"></rect>
+<rect fill="#81a96f" height="46" width="46" x="226" y="346"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="272" y="346"></rect>
+<rect fill="#81a96f" height="46" width="46" x="318" y="346"></rect>
+<rect fill="#f4e7c5" height="46" width="46" x="364" y="346"></rect>
+<rect fill="#475569" height="184" opacity="0.26" rx="0" width="184" x="42" y="24"></rect>
+<rect fill="#475569" height="184" opacity="0.26" rx="0" width="184" x="226" y="24"></rect>
+<rect fill="#22c55e" height="184" opacity="0.20" rx="0" width="184" x="42" y="208"></rect>
+<rect fill="#22c55e" height="184" opacity="0.20" rx="0" width="184" x="226" y="208"></rect>
+<line opacity="0.68" stroke="#0f172a" stroke-width="4" x1="226" x2="226" y1="24" y2="392"></line>
+<line opacity="0.68" stroke="#0f172a" stroke-width="4" x1="42" x2="410" y1="208" y2="208"></line>
+<text class="svg-label medium" text-anchor="middle" x="134" y="108">Blackside</text>
+<text class="svg-label medium" text-anchor="middle" x="134" y="138">Queenside</text>
+<text class="svg-label medium" text-anchor="middle" x="318" y="108">Blackside</text>
+<text class="svg-label medium" text-anchor="middle" x="318" y="138">Kingside</text>
+<text class="svg-label medium" text-anchor="middle" x="134" y="292">Whiteside</text>
+<text class="svg-label medium" text-anchor="middle" x="134" y="322">Queenside</text>
+<text class="svg-label medium" text-anchor="middle" x="318" y="292">Whiteside</text>
+<text class="svg-label medium" text-anchor="middle" x="318" y="322">Kingside</text>
+<rect fill="none" height="368" rx="10" stroke="#1f2937" stroke-width="3" width="368" x="42" y="24"></rect>
+<text class="svg-coord" text-anchor="middle" x="24" y="52.0">8</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="52.0">8</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="98.0">7</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="98.0">7</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="144.0">6</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="144.0">6</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="190.0">5</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="190.0">5</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="236.0">4</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="236.0">4</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="282.0">3</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="282.0">3</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="328.0">2</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="328.0">2</text>
+<text class="svg-coord" text-anchor="middle" x="24" y="374.0">1</text>
+<text class="svg-coord faint" text-anchor="middle" x="428" y="374.0">1</text>
+<text class="svg-coord" text-anchor="middle" x="65.0" y="420">a</text>
+<text class="svg-coord" text-anchor="middle" x="111.0" y="420">b</text>
+<text class="svg-coord" text-anchor="middle" x="157.0" y="420">c</text>
+<text class="svg-coord" text-anchor="middle" x="203.0" y="420">d</text>
+<text class="svg-coord" text-anchor="middle" x="249.0" y="420">e</text>
+<text class="svg-coord" text-anchor="middle" x="295.0" y="420">f</text>
+<text class="svg-coord" text-anchor="middle" x="341.0" y="420">g</text>
+<text class="svg-coord" text-anchor="middle" x="387.0" y="420">h</text>
+</svg></div>
+            <p>The vertical split gives kingside and queenside. The horizontal split gives whiteside and blackside.</p>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="remember">
+          <div class="section-head">
+            <div class="number">5</div>
+            <div class="section-text">
+              <h2>How to Remember</h2>
+              <p>Use these simple clues when looking at the board.</p>
+            </div>
+          </div>
+          <div class="memory-grid">
+            <div class="memory"><strong>King clue</strong><p>The king begins on the e-file. The side starting with the e-file is the kingside: e, f, g, h.</p></div>
+            <div class="memory"><strong>Queen clue</strong><p>The queen begins on the d-file. The side ending with the d-file is the queenside: a, b, c, d.</p></div>
+            <div class="memory"><strong>White clue</strong><p>White starts at the bottom of the board. The lower half is the whiteside: ranks 1–4.</p></div>
+            <div class="memory"><strong>Black clue</strong><p>Black starts at the top of the board. The upper half is the blackside: ranks 5–8.</p></div>
+          </div>
+          <div class="callout">
+            <div class="callout-title">Teacher note</div>
+            <div>“Whiteside” and “blackside” are classroom-friendly terms for the lower and upper halves of the board. Many chess books simply say “White’s half” and “Black’s half.”</div>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="review">
+          <div class="section-head">
+            <div class="number">6</div>
+            <div class="section-text">
+              <h2>Review</h2>
+              <p>Say the answer out loud before checking the files or ranks.</p>
+            </div>
+          </div>
+          <div class="review-grid">
+            <div class="review-item"><strong>Kingside</strong><span>e–h</span></div>
+            <div class="review-item"><strong>Queenside</strong><span>a–d</span></div>
+            <div class="review-item"><strong>Whiteside</strong><span>1–4</span></div>
+            <div class="review-item"><strong>Blackside</strong><span>5–8</span></div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <footer class="footer">
+    Standalone embedded lesson page — no external image files required.
+  </footer>
+
+  <script>
+    const root = document.documentElement;
+    const savedTheme = localStorage.getItem("lesson-theme-v1");
+    if (savedTheme === "light" || savedTheme === "dark") root.dataset.theme = savedTheme;
+
+    document.getElementById("themeToggle").addEventListener("click", () => {
+      const next = root.dataset.theme === "dark" ? "light" : "dark";
+      root.dataset.theme = next;
+      localStorage.setItem("lesson-theme-v1", next);
+    });
+
+    const progressBar = document.getElementById("progressBar");
+    function updateProgress() {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      progressBar.style.width = Math.min(100, Math.max(0, progress)) + "%";
+    }
+    updateProgress();
+    window.addEventListener("scroll", updateProgress, { passive: true });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Activity: Is This a Stalemate? — Pawn Level Module 3</title>
+  <meta name="description" content="Pawn Level Module 3 activity: decide whether each position is stalemate by checking for check and legal moves.">
+  <style>
+
+
+
+
+
+
+
+
+
+
+    :root {
+      --bg: #07101e;
+      --bg-2: #0c1930;
+      --panel: rgba(255,255,255,.075);
+      --panel-strong: rgba(255,255,255,.12);
+      --text: #f6f8fc;
+      --muted: #b9c6dc;
+      --line: rgba(255,255,255,.14);
+      --gold: #f3c55f;
+      --blue: #3d8dff;
+      --green: #65d28a;
+      --orange: #ffae5a;
+      --red: #ff6b6b;
+      --purple: #b990ff;
+      --shadow: 0 22px 60px rgba(0,0,0,.35);
+      --radius: 24px;
+      --max: 1180px;
+    }
+
+    [data-theme="light"] {
+      --bg: #f7f2e8;
+      --bg-2: #fffaf0;
+      --panel: rgba(255,255,255,.72);
+      --panel-strong: rgba(255,255,255,.92);
+      --text: #172033;
+      --muted: #526076;
+      --line: rgba(12,25,48,.15);
+      --shadow: 0 20px 50px rgba(22,30,46,.15);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      line-height: 1.55;
+      background:
+        radial-gradient(circle at top left, rgba(61,141,255,.35), transparent 35rem),
+        radial-gradient(circle at top right, rgba(243,197,95,.18), transparent 34rem),
+        linear-gradient(135deg, var(--bg), var(--bg-2));
+      overflow-x: hidden;
+    }
+
+    img { max-width: 100%; height: auto; display: block; }
+    a { color: inherit; }
+    button { font: inherit; }
+
+    .skip-link {
+      position: absolute;
+      left: -999px;
+      top: 1rem;
+      background: var(--gold);
+      color: #111827;
+      padding: .65rem 1rem;
+      border-radius: 999px;
+      z-index: 999;
+    }
+    .skip-link:focus { left: 1rem; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(16px);
+      background: color-mix(in srgb, var(--bg) 78%, transparent);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar-inner {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: .75rem 0;
+    }
+    .brand { display: flex; align-items: center; gap: .7rem; font-weight: 800; letter-spacing: .01em; }
+    .brand-icon {
+      width: 2.4rem;
+      height: 2.4rem;
+      border-radius: .8rem;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--gold), #fff0b2);
+      color: #13203a;
+      box-shadow: 0 10px 30px rgba(243,197,95,.25);
+    }
+    .top-actions { display: flex; gap: .5rem; flex-wrap: wrap; justify-content: flex-end; }
+    .btn {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: .55rem .9rem;
+      cursor: pointer;
+      transition: transform .18s ease, background .18s ease;
+    }
+    .btn:hover { transform: translateY(-1px); background: var(--panel-strong); }
+
+    .progress { height: 3px; background: rgba(255,255,255,.08); }
+    .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--gold), var(--green), var(--blue)); }
+
+    .page { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; }
+    .hero {
+      padding: clamp(2rem, 4vw, 4rem) 0 1.4rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 520px);
+      gap: clamp(1.25rem, 4vw, 3rem);
+      align-items: center;
+    }
+    .kicker {
+      color: var(--gold);
+      text-transform: uppercase;
+      font-weight: 850;
+      letter-spacing: .14em;
+      font-size: .85rem;
+      margin: 0 0 .75rem;
+    }
+    h1, h2, h3 { line-height: 1.08; margin: 0; }
+    h1 { font-size: clamp(2.35rem, 7vw, 5.7rem); letter-spacing: -.055em; }
+    h2 { font-size: clamp(1.65rem, 4vw, 3.15rem); letter-spacing: -.035em; }
+    h3 { font-size: clamp(1.18rem, 2.2vw, 1.55rem); letter-spacing: -.015em; }
+    .lead { font-size: clamp(1.05rem, 1.9vw, 1.34rem); color: var(--muted); max-width: 64ch; }
+    .hero-card {
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--line);
+      background: var(--panel);
+    }
+    .hero-card img { width: 100%; }
+
+    .objective-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .8rem;
+      margin: 1rem 0 2rem;
+    }
+    .objective {
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel);
+      min-height: 8rem;
+    }
+    .objective strong { display: block; margin-bottom: .45rem; font-size: 1.03rem; }
+    .objective span { color: var(--muted); font-size: .95rem; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 245px minmax(0, 1fr);
+      gap: 1.25rem;
+      align-items: start;
+      padding: 1rem 0 4rem;
+    }
+    .toc {
+      position: sticky;
+      top: 4.5rem;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--panel);
+      padding: 1rem;
+    }
+    .toc-title { font-weight: 850; margin-bottom: .7rem; color: var(--gold); }
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--muted);
+      padding: .55rem .65rem;
+      border-radius: 12px;
+      font-size: .95rem;
+    }
+    .toc a:hover { color: var(--text); background: var(--panel-strong); }
+
+    main { min-width: 0; }
+    .lesson-section {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: var(--radius);
+      padding: clamp(1rem, 3vw, 2rem);
+      margin-bottom: 1.1rem;
+      box-shadow: 0 14px 40px rgba(0,0,0,.14);
+      scroll-margin-top: 5.5rem;
+    }
+    .section-head { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1rem; }
+    .number {
+      flex: 0 0 auto;
+      width: 2.45rem;
+      height: 2.45rem;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      font-weight: 900;
+      color: #111827;
+      background: var(--gold);
+      box-shadow: 0 10px 22px rgba(243,197,95,.25);
+    }
+    .section-text p { color: var(--muted); margin: .75rem 0 0; }
+    .figure {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(0,0,0,.18);
+      margin: 1.2rem 0 0;
+    }
+    .figure figcaption {
+      color: var(--muted);
+      font-size: .92rem;
+      padding: .8rem 1rem;
+      border-top: 1px solid var(--line);
+      background: rgba(0,0,0,.12);
+    }
+
+    .two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, .9fr); gap: 1rem; align-items: center; }
+    .callout {
+      border: 1px solid color-mix(in srgb, var(--gold) 42%, var(--line));
+      border-radius: 20px;
+      padding: 1rem;
+      background: color-mix(in srgb, var(--gold) 12%, var(--panel));
+    }
+    .callout-title { color: var(--gold); font-weight: 900; margin-bottom: .35rem; }
+    ul.clean { padding-left: 1.2rem; margin: .7rem 0 0; color: var(--muted); }
+    ul.clean li { margin: .35rem 0; }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: .75rem;
+      margin-top: 1rem;
+    }
+    .time-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.055);
+      padding: .9rem;
+      min-height: 10rem;
+    }
+    .time-card .date { color: var(--gold); font-weight: 900; font-size: 1.05rem; }
+    .time-card .place { font-weight: 850; margin: .25rem 0 .4rem; }
+    .time-card p { margin: 0; color: var(--muted); font-size: .94rem; }
+
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .mini-lesson {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      overflow: hidden;
+      background: rgba(0,0,0,.14);
+    }
+    .mini-lesson img { width: 100%; }
+    .mini-content { padding: 1rem; }
+    .mini-content h3 { margin-bottom: .35rem; }
+    .mini-content p { color: var(--muted); margin: 0; }
+
+    details.quiz {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.055);
+      border-radius: 16px;
+      padding: .9rem 1rem;
+      margin-top: .75rem;
+    }
+    details.quiz summary { cursor: pointer; font-weight: 800; }
+    details.quiz p { color: var(--muted); margin-bottom: 0; }
+
+    .remember-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .75rem;
+      margin-top: 1rem;
+    }
+    .remember-item {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1rem;
+      background: rgba(255,255,255,.055);
+    }
+    .remember-item strong { color: var(--gold); display: block; margin-bottom: .25rem; }
+
+    .footer {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      padding: 2rem 0 3rem;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+    }
+
+    @media (max-width: 980px) {
+      .hero { grid-template-columns: 1fr; }
+      .layout { grid-template-columns: 1fr; }
+      .toc { position: static; overflow-x: auto; white-space: nowrap; }
+      .toc a { display: inline-block; }
+      .timeline { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 720px) {
+      .topbar-inner, .page, .footer { width: min(100% - 22px, var(--max)); }
+      .topbar-inner { align-items: flex-start; }
+      .brand span:last-child { display: none; }
+      .objective-grid, .image-grid, .remember-list, .two-col { grid-template-columns: 1fr; }
+      .timeline { grid-template-columns: 1fr; }
+      .lesson-section { border-radius: 18px; }
+      .section-head { gap: .75rem; }
+      .number { width: 2.15rem; height: 2.15rem; }
+    }
+
+    @media print {
+      :root, [data-theme="light"], [data-theme="dark"] {
+        --bg: #ffffff;
+        --bg-2: #ffffff;
+        --panel: #ffffff;
+        --panel-strong: #ffffff;
+        --text: #111827;
+        --muted: #374151;
+        --line: #d1d5db;
+        --shadow: none;
+      }
+      body { background: #ffffff; }
+      .topbar, .toc, .btn, .progress { display: none !important; }
+      .page, .footer { width: 100%; }
+      .hero { padding-top: 0; }
+      .layout { display: block; padding: 0; }
+      .lesson-section, .objective, .time-card, .mini-lesson, .remember-item { break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
+      .figure, img { break-inside: avoid; page-break-inside: avoid; }
+    }
+
+    /* Module 3 additions using the same visual system as the Introducing lesson. */
+    .gold { color: var(--gold); }
+    .blue { color: var(--blue); }
+    .green { color: var(--green); }
+    .red { color: var(--red); }
+    .orange { color: var(--orange); }
+
+    code.inline {
+      background: color-mix(in srgb, var(--blue) 14%, var(--panel));
+      border: 1px solid color-mix(in srgb, var(--blue) 35%, var(--line));
+      border-radius: 8px;
+      color: color-mix(in srgb, var(--blue) 82%, var(--text));
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: .98em;
+      font-weight: 850;
+      padding: .08rem .38rem;
+      white-space: nowrap;
+    }
+
+    .module-hero-visual {
+      min-height: 420px;
+      display: grid;
+      align-content: center;
+      gap: 1rem;
+      padding: clamp(1.2rem, 4vw, 2rem);
+      background:
+        radial-gradient(circle at 10% 15%, rgba(243,197,95,.25), transparent 16rem),
+        radial-gradient(circle at 90% 85%, rgba(101,210,138,.22), transparent 16rem),
+        linear-gradient(135deg, rgba(255,255,255,.11), rgba(255,255,255,.035));
+    }
+    .capture-equation {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: .75rem;
+      align-items: center;
+    }
+    .capture-card {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(0,0,0,.18);
+      padding: 1rem;
+      text-align: center;
+      min-height: 11rem;
+      display: grid;
+      place-items: center;
+    }
+    .capture-piece {
+      width: 4.6rem;
+      height: 4.6rem;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto .65rem;
+      font-size: 2.7rem;
+      box-shadow: 0 16px 38px rgba(0,0,0,.22);
+    }
+    .capture-piece.white { background: #fff7df; color: #121827; }
+    .capture-piece.black { background: #111827; color: #fff7df; border: 1px solid rgba(255,255,255,.25); }
+    .capture-label { color: var(--muted); font-weight: 800; }
+    .capture-square { display: block; color: var(--gold); font-weight: 950; font-size: 1.22rem; margin-top: .2rem; }
+    .capture-x {
+      width: 3.2rem;
+      height: 3.2rem;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: var(--gold);
+      color: #111827;
+      font-size: 2rem;
+      font-weight: 1000;
+      box-shadow: 0 14px 34px rgba(243,197,95,.25);
+    }
+    .hero-note {
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.055);
+      padding: .9rem 1rem;
+      margin: 0;
+    }
+
+    .step-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .85rem;
+      margin-top: 1rem;
+    }
+    .step-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.055);
+      padding: 1rem;
+    }
+    .step-badge {
+      width: 2.6rem;
+      height: 2.6rem;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      color: #111827;
+      background: var(--gold);
+      font-weight: 1000;
+      margin-bottom: .65rem;
+    }
+    .step-card strong { display: block; margin-bottom: .3rem; }
+    .step-card p { margin: 0; color: var(--muted); }
+
+    .notation-panel {
+      border: 1px solid color-mix(in srgb, var(--blue) 38%, var(--line));
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at top left, rgba(61,141,255,.22), transparent 18rem),
+        rgba(255,255,255,.055);
+      padding: clamp(1rem, 3vw, 1.4rem);
+      margin-top: 1rem;
+    }
+    .notation-big {
+      font-size: clamp(3rem, 9vw, 6rem);
+      line-height: .95;
+      font-weight: 1000;
+      letter-spacing: -.04em;
+      color: var(--gold);
+      margin-bottom: .9rem;
+    }
+    .term-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: .75rem;
+      margin-top: 1rem;
+    }
+    .term {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(0,0,0,.13);
+      padding: 1rem;
+      text-align: center;
+    }
+    .term .big {
+      display: block;
+      color: var(--gold);
+      font-size: 2rem;
+      font-weight: 1000;
+      line-height: 1;
+      margin-bottom: .35rem;
+    }
+    .term .small { color: var(--muted); font-weight: 750; }
+
+    .board-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .board-panel {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255,255,255,.055);
+      padding: 1rem;
+      overflow: hidden;
+    }
+    .board-panel h3 { margin-bottom: .45rem; }
+    .board-panel p { color: var(--muted); margin: .35rem 0 1rem; }
+    .board-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: auto;
+      padding: .7rem;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: #f8fafc;
+    }
+    .lesson-svg {
+      width: min(100%, 390px);
+      height: auto;
+      display: block;
+      flex: 0 0 auto;
+    }
+    .summary-box {
+      border: 1px solid color-mix(in srgb, var(--green) 42%, var(--line));
+      border-radius: 18px;
+      background: color-mix(in srgb, var(--green) 12%, var(--panel));
+      color: var(--text);
+      padding: .9rem 1rem;
+      font-weight: 800;
+      margin-top: 1rem;
+    }
+    .warning-box {
+      border: 1px solid color-mix(in srgb, var(--orange) 45%, var(--line));
+      border-radius: 18px;
+      background: color-mix(in srgb, var(--orange) 12%, var(--panel));
+      color: var(--text);
+      padding: .9rem 1rem;
+      font-weight: 800;
+      margin-top: 1rem;
+    }
+
+    @media (max-width: 980px) {
+      .board-grid, .step-grid { grid-template-columns: 1fr; }
+      .module-hero-visual { min-height: 0; }
+    }
+    @media (max-width: 720px) {
+      .capture-equation { grid-template-columns: 1fr; }
+      .capture-x { margin: 0 auto; }
+      .term-grid { grid-template-columns: 1fr; }
+      .hero-note { font-size: .95rem; }
+    }
+    @media print {
+      .module-hero-visual, .step-card, .term, .board-panel, .summary-box, .warning-box { break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
+      .board-wrap { overflow: visible; }
+      .lesson-svg { max-width: 330px; }
+    }
+
+    .attack-arrow {
+      width: 3.2rem;
+      height: 3.2rem;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: var(--red);
+      color: #fff;
+      font-size: 1.65rem;
+      font-weight: 1000;
+      box-shadow: 0 14px 34px rgba(255,107,107,.25);
+    }
+    .attack-ray {
+      height: .45rem;
+      border-radius: 999px;
+      background: repeating-linear-gradient(90deg, var(--red) 0 16px, transparent 16px 24px);
+      box-shadow: 0 0 22px rgba(255,107,107,.42);
+      margin: .75rem auto;
+      width: min(100%, 15rem);
+      position: relative;
+    }
+    .attack-ray::after {
+      content: "";
+      position: absolute;
+      right: -.18rem;
+      top: 50%;
+      transform: translateY(-50%);
+      border-left: .8rem solid var(--red);
+      border-top: .55rem solid transparent;
+      border-bottom: .55rem solid transparent;
+    }
+    .danger-box {
+      border: 1px solid color-mix(in srgb, var(--red) 45%, var(--line));
+      border-radius: 18px;
+      background: color-mix(in srgb, var(--red) 12%, var(--panel));
+      color: var(--text);
+      padding: .9rem 1rem;
+      font-weight: 800;
+      margin-top: 1rem;
+    }
+    .term-grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    @media (max-width: 720px) {
+      .term-grid.two { grid-template-columns: 1fr; }
+    }
+
+    .escape-hero-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: .8rem;
+      align-items: stretch;
+    }
+    .escape-card {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(0,0,0,.18);
+      padding: 1rem;
+      text-align: center;
+      display: grid;
+      align-content: center;
+      min-height: 11rem;
+    }
+    .escape-icon {
+      width: 4.35rem;
+      height: 4.35rem;
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      margin: 0 auto .65rem;
+      font-size: 2.45rem;
+      background: linear-gradient(135deg, var(--gold), #fff0b2);
+      color: #111827;
+      box-shadow: 0 16px 38px rgba(0,0,0,.22);
+    }
+    .escape-label { color: var(--text); font-weight: 950; display: block; }
+    .escape-caption { color: var(--muted); font-weight: 750; display: block; margin-top: .2rem; }
+    .method-grid.compact { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .method-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.055);
+      padding: 1rem;
+      min-height: 9.5rem;
+    }
+    .method-card .step-num {
+      margin-bottom: .7rem;
+    }
+    .method-card h3 { margin-bottom: .35rem; }
+    .method-card p { color: var(--muted); margin: 0; }
+    .board-grid.escape { align-items: start; }
+    .board-grid.escape .board-panel { min-width: 0; }
+    @media (max-width: 980px) {
+      .escape-hero-grid, .method-grid.compact { grid-template-columns: 1fr; }
+    }
+    @media print {
+      .escape-card, .method-card { break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
+    }
+
+    /* Lesson 6 additions */
+    .checkmate-hero-visual {
+      min-height: 100%;
+      padding: clamp(1rem, 3vw, 1.55rem);
+      display: grid;
+      align-content: center;
+      gap: 1rem;
+      background:
+        radial-gradient(circle at 22% 15%, rgba(255,107,107,.24), transparent 13rem),
+        radial-gradient(circle at 82% 80%, rgba(243,197,95,.2), transparent 14rem),
+        linear-gradient(135deg, rgba(255,255,255,.09), rgba(255,255,255,.035));
+    }
+    .mate-card-stack {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: .7rem;
+    }
+    .mate-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.065);
+      padding: .9rem;
+      text-align: center;
+    }
+    .mate-card .mate-icon {
+      width: 3rem;
+      height: 3rem;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      margin: 0 auto .55rem;
+      background: color-mix(in srgb, var(--red) 18%, transparent);
+      border: 1px solid color-mix(in srgb, var(--red) 35%, var(--line));
+      color: var(--red);
+      font-size: 1.5rem;
+      font-weight: 950;
+    }
+    .mate-card strong { display: block; color: var(--text); margin-bottom: .25rem; }
+    .mate-card span { color: var(--muted); font-size: .9rem; }
+    .formula-strip {
+      border: 1px solid color-mix(in srgb, var(--gold) 42%, var(--line));
+      border-radius: 20px;
+      background: color-mix(in srgb, var(--gold) 12%, var(--panel));
+      padding: 1rem;
+      text-align: center;
+      font-weight: 950;
+      color: var(--gold);
+      letter-spacing: .02em;
+    }
+    .cannot-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: .75rem;
+      margin-top: 1rem;
+    }
+    .cannot-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.055);
+      padding: 1rem;
+      text-align: center;
+    }
+    .cannot-card .xmark {
+      width: 2.5rem;
+      height: 2.5rem;
+      display: grid;
+      place-items: center;
+      margin: 0 auto .6rem;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--red) 18%, transparent);
+      color: var(--red);
+      border: 1px solid color-mix(in srgb, var(--red) 38%, var(--line));
+      font-weight: 1000;
+    }
+    .cannot-card h3 { margin-bottom: .35rem; }
+    .cannot-card p { color: var(--muted); margin: 0; }
+    .diagram-panel {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(0,0,0,.16);
+      padding: 1rem;
+      overflow: hidden;
+      margin-top: 1rem;
+    }
+    [data-theme="light"] .diagram-panel { background: rgba(255,255,255,.68); }
+    .diagram-panel svg {
+      width: min(100%, 620px);
+      height: auto;
+      margin: 0 auto;
+      display: block;
+      filter: drop-shadow(0 16px 32px rgba(0,0,0,.16));
+    }
+    .answer-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      margin-top: .75rem;
+    }
+    .answer-btn {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--panel);
+      color: var(--text);
+      padding: .55rem .8rem;
+      cursor: pointer;
+      font-weight: 800;
+    }
+    .answer-btn.correct { background: rgba(101,210,138,.2); border-color: rgba(101,210,138,.55); }
+    .answer-btn.wrong { background: rgba(255,107,107,.18); border-color: rgba(255,107,107,.55); }
+    #quizResult { color: var(--muted); font-weight: 750; min-height: 1.5rem; margin-top: .55rem; }
+    @media (max-width: 860px) {
+      .mate-card-stack, .cannot-grid { grid-template-columns: 1fr; }
+    }
+    @media print {
+      .answer-row, #quizResult { display: none !important; }
+      .diagram-panel, .cannot-card, .mate-card { break-inside: avoid; page-break-inside: avoid; }
+    }
+
+    /* Lesson 7 additions */
+    .score-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      margin-top: 1rem;
+      background: rgba(255,255,255,.06);
+    }
+    .score-table th,
+    .score-table td {
+      padding: .9rem 1rem;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      color: var(--text);
+    }
+    .score-table th {
+      background: color-mix(in srgb, var(--blue) 18%, var(--panel));
+      color: var(--text);
+      font-weight: 950;
+    }
+    .score-table tr:last-child td { border-bottom: none; }
+    .score-table .score {
+      font-weight: 950;
+      color: var(--gold);
+      text-align: center;
+    }
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .85rem;
+      margin-top: 1rem;
+    }
+    .compare-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.055);
+      padding: 1rem;
+    }
+    .compare-card strong {
+      display: block;
+      color: var(--gold);
+      font-size: 1.1rem;
+      margin-bottom: .35rem;
+    }
+    .compare-card p { color: var(--muted); margin: 0; }
+    @media (max-width: 720px) {
+      .compare-grid { grid-template-columns: 1fr; }
+      .score-table th, .score-table td { padding: .75rem; }
+    }
+
+    /* Activity lesson additions */
+    .activity-hero-visual {
+      min-height: 360px;
+      padding: clamp(1rem, 3vw, 1.6rem);
+      display: grid;
+      align-content: center;
+      gap: 1rem;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,107,107,.25), transparent 15rem),
+        radial-gradient(circle at 84% 16%, rgba(101,210,138,.17), transparent 15rem),
+        linear-gradient(135deg, rgba(255,255,255,.08), rgba(0,0,0,.12));
+    }
+    .activity-card-stack { display: grid; gap: .8rem; }
+    .activity-card {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255,255,255,.07);
+      padding: 1rem;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: .85rem;
+      align-items: center;
+    }
+    .activity-card .mate-icon {
+      width: 3rem;
+      height: 3rem;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      background: color-mix(in srgb, var(--gold) 18%, transparent);
+      border: 1px solid color-mix(in srgb, var(--gold) 34%, var(--line));
+      color: var(--gold);
+      font-size: 1.6rem;
+    }
+    .activity-card strong { display: block; font-size: 1.04rem; }
+    .activity-card span { color: var(--muted); font-size: .95rem; }
+    .activity-formula {
+      border: 1px solid color-mix(in srgb, var(--gold) 35%, var(--line));
+      border-radius: 18px;
+      padding: .85rem 1rem;
+      color: var(--gold);
+      font-weight: 950;
+      text-align: center;
+      background: color-mix(in srgb, var(--gold) 10%, transparent);
+    }
+    .activity-grid,
+    .answer-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .position-card,
+    .answer-card {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255,255,255,.055);
+      padding: 1rem;
+      box-shadow: 0 10px 28px rgba(0,0,0,.12);
+    }
+    .position-head {
+      display: flex;
+      gap: .75rem;
+      align-items: flex-start;
+      margin-bottom: .75rem;
+    }
+    .position-head p,
+    .answer-card p { color: var(--muted); margin: .3rem 0 0; }
+    .num,
+    .badge {
+      width: 2.4rem;
+      height: 2.4rem;
+      border-radius: 999px;
+      background: var(--gold);
+      color: #111827;
+      font-weight: 950;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      box-shadow: 0 10px 22px rgba(243,197,95,.18);
+    }
+    .instruction-list {
+      display: grid;
+      gap: .75rem;
+      margin-top: 1rem;
+    }
+    .instruction {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: .75rem;
+      align-items: start;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: .9rem;
+      background: rgba(255,255,255,.055);
+      color: var(--muted);
+    }
+    .instruction strong { color: var(--text); }
+    .board-wrap {
+      margin-top: .8rem;
+      background: rgba(255,255,255,.86);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: .7rem;
+      display: flex;
+      justify-content: center;
+      overflow-x: auto;
+    }
+    [data-theme="dark"] .board-wrap { background: rgba(255,255,255,.92); }
+    .small-board { background: rgba(255,255,255,.92); }
+    svg { max-width: 100%; height: auto; display: block; }
+    .question-box {
+      margin-top: .8rem;
+      border: 1px solid color-mix(in srgb, var(--gold) 42%, var(--line));
+      border-radius: 16px;
+      padding: .8rem;
+      color: var(--gold);
+      background: color-mix(in srgb, var(--gold) 12%, transparent);
+      text-align: center;
+      font-weight: 900;
+    }
+    .answer-title {
+      border: 1px solid color-mix(in srgb, var(--green) 45%, var(--line));
+      border-radius: 16px;
+      padding: .75rem .85rem;
+      background: color-mix(in srgb, var(--green) 13%, transparent);
+      color: var(--text);
+      font-weight: 950;
+      margin-bottom: .65rem;
+    }
+    .answer-title strong { color: var(--green); }
+    .accuracy-note {
+      border: 1px solid color-mix(in srgb, var(--red) 42%, var(--line));
+      border-radius: 18px;
+      padding: 1rem;
+      background: color-mix(in srgb, var(--red) 12%, transparent);
+      color: var(--text);
+      font-weight: 750;
+      margin-top: 1rem;
+    }
+    .activity-note-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .75rem;
+      margin-top: 1rem;
+    }
+    .activity-note {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: .9rem;
+      background: rgba(255,255,255,.055);
+    }
+    .activity-note strong { display: block; color: var(--gold); margin-bottom: .25rem; }
+    .activity-note span { color: var(--muted); }
+    code.inline {
+      border: 1px solid color-mix(in srgb, var(--blue) 35%, var(--line));
+      border-radius: 8px;
+      padding: .12rem .35rem;
+      background: color-mix(in srgb, var(--blue) 12%, transparent);
+      color: var(--blue);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .95em;
+      font-weight: 800;
+    }
+    @media (max-width: 980px) {
+      .activity-grid, .answer-grid { grid-template-columns: 1fr; }
+      .activity-note-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px) {
+      .activity-note-grid { grid-template-columns: 1fr; }
+      .position-card, .answer-card { padding: .8rem; }
+      .board-wrap { padding: .45rem; }
+    }
+    @media print {
+      .position-card, .answer-card, .activity-note, .instruction { break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
+      .answer-row, #quizResult { display: none !important; }
+    }
+
+  
+  
+
+    .block-formula { color: var(--gold); }
+
+  
+
+    .answer-title.yes {
+      background: color-mix(in srgb, var(--green) 18%, transparent);
+      border: 1px solid color-mix(in srgb, var(--green) 45%, var(--line));
+    }
+    .answer-title.no {
+      background: color-mix(in srgb, var(--red) 18%, transparent);
+      border: 1px solid color-mix(in srgb, var(--red) 45%, var(--line));
+    }
+    .answer-title.yes strong { color: var(--green); }
+    .answer-title.no strong { color: var(--red); }
+    .answer-card ul {
+      margin: .75rem 0 0;
+      padding-left: 1.25rem;
+      color: var(--muted);
+    }
+    .answer-card li { margin: .25rem 0; }
+    .stalemate-formula { font-size: clamp(1rem, 2vw, 1.25rem); }
+
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#lesson">Skip to lesson</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand" aria-label="Lesson title">
+        <div class="brand-icon" aria-hidden="true">♟</div>
+        <span>Pawn Level · Module 3</span>
+        <span>Activity: Is This a Stalemate?</span>
+      </div>
+      <div class="top-actions">
+        <button class="btn" id="themeToggle" type="button">Toggle theme</button>
+        <button class="btn" type="button" onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </div>
+    <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+  </header>
+
+  <div class="page">
+    <section class="hero" id="top">
+      <div>
+        <p class="kicker">Module 3 · Lesson 12 · Beginner / Pawn Level</p>
+        <h1>Activity: Is This a Stalemate?</h1>
+        <p class="lead"><strong class="gold">Question:</strong> White to move. Is this a stalemate? Answer each position with <strong>YES</strong> or <strong>NO</strong>.</p>
+        <div class="objective-grid" aria-label="Learning objectives">
+          <div class="objective"><strong>Check the king first</strong><span>If the king is in check, the position is not stalemate.</span></div>
+          <div class="objective"><strong>Look for legal moves</strong><span>If White has any legal move, the position is not stalemate.</span></div>
+          <div class="objective"><strong>Use the rule</strong><span>Stalemate means not in check, but no legal move.</span></div>
+          <div class="objective"><strong>Answer clearly</strong><span>Write YES for stalemate and NO if any legal move exists.</span></div>
+        </div>
+      </div>
+      <figure class="hero-card" aria-label="Stalemate activity lesson visual">
+        <div class="activity-hero-visual">
+          <div class="activity-card-stack" aria-hidden="true">
+            <div class="activity-card"><div class="mate-icon">♔</div><div><strong>White to move</strong><span>Study the white king and nearby squares.</span></div></div>
+            <div class="activity-card"><div class="mate-icon">?</div><div><strong>In check?</strong><span>If the king is attacked, answer NO.</span></div></div>
+            <div class="activity-card"><div class="mate-icon">0</div><div><strong>No legal move?</strong><span>If White has no legal move, answer YES.</span></div></div>
+          </div>
+          <div class="activity-formula stalemate-formula">STALEMATE = NOT IN CHECK + NO LEGAL MOVE</div>
+        </div>
+      </figure>
+    </section>
+
+    <div class="layout" id="lesson">
+      <nav class="toc" aria-label="Lesson contents">
+        <div class="toc-title">Contents</div>
+        <a href="#goal">1. Activity Goal</a>
+        <a href="#howto">2. How to Check</a>
+        <a href="#positions">3. Try the Positions</a>
+        <a href="#answers">4. Answer Key</a>
+        <a href="#remember">5. Remember</a>
+        <a href="#check">Review Questions</a>
+      </nav>
+
+      <main>
+        <section class="lesson-section" id="goal">
+          <div class="section-head">
+            <div class="number">1</div>
+            <div class="section-text">
+              <h2>Activity Goal</h2>
+              <p>This activity checks whether students can tell the difference between stalemate and non-stalemate positions.</p>
+            </div>
+          </div>
+          <div class="callout">
+            <div class="callout-title">Lesson focus</div>
+            A stalemate happens only when the side to move is <strong>not in check</strong> and has <strong>no legal move</strong>.
+          </div>
+        </section>
+
+        <section class="lesson-section" id="howto">
+          <div class="section-head">
+            <div class="number">2</div>
+            <div class="section-text">
+              <h2>How to Check for Stalemate</h2>
+              <p>Follow these steps before looking at the answer key.</p>
+            </div>
+          </div>
+          <div class="instruction-list">
+<div class="instruction">
+<div class="badge">1</div>
+<div><strong>Check the king first.</strong><br/>If the king is in check, it is not stalemate.</div>
+</div>
+<div class="instruction">
+<div class="badge">2</div>
+<div><strong>Look for legal moves.</strong><br/>If the player has any legal move, it is not stalemate.</div>
+</div>
+<div class="instruction">
+<div class="badge">3</div>
+<div><strong>Use the stalemate rule.</strong><br/>Stalemate means the king is not in check, but the player has no legal move.</div>
+</div>
+</div>
+        </section>
+
+        <section class="lesson-section" id="positions">
+          <div class="section-head">
+            <div class="number">3</div>
+            <div class="section-text">
+              <h2>Try the Positions</h2>
+              <p>For each position, decide if White is stalemated.</p>
+            </div>
+          </div>
+          <div class="activity-grid">
+            <article class="position-card">
+<div class="position-head">
+<div class="num">1</div>
+<div>
+<h3>Position 1</h3>
+<p>White king: h1 · Black king: g3 · Black queen: f2</p>
+</div>
+</div>
+<div class="board-wrap">
+<svg aria-label="Chess stalemate activity position" role="img" viewBox="0 0 370 372">
+<defs>
+<style>
+          .coord { font:700 15px Arial,sans-serif; fill:#334155; }
+          .pieceW { font:41px 'Segoe UI Symbol','Noto Sans Symbols 2',serif; fill:#ffffff; stroke:#0f172a; stroke-width:1.2px; paint-order:stroke fill; }
+          .pieceB { font:41px 'Segoe UI Symbol','Noto Sans Symbols 2',serif; fill:#111827; }
+          .dangerLabel { font:800 11px Arial,sans-serif; fill:#b91c1c; }
+          .moveLabel { font:800 11px Arial,sans-serif; fill:#166534; }
+        </style>
+<marker id="dangerHead" markerHeight="10" markerWidth="10" orient="auto" refX="8" refY="3">
+<path d="M0,0 L0,6 L9,3 z" fill="#ef4444"></path>
+</marker>
+<marker id="moveHead" markerHeight="10" markerWidth="10" orient="auto" refX="8" refY="3">
+<path d="M0,0 L0,6 L9,3 z" fill="#16a34a"></path>
+</marker>
+</defs>
+<rect fill="#ffffff" height="372" rx="14" width="370" x="0" y="0"></rect>
+<g transform="translate(44,20)">
+<rect fill="#b58863" height="36" width="36" x="0" y="0"></rect><rect fill="#f0d9b5" height="36" width="36" x="36" y="0"></rect><rect fill="#b58863" height="36" width="36" x="72" y="0"></rect><rect fill="#f0d9b5" height="36" width="36" x="108" y="0"></rect><rect fill="#b58863" height="36" width="36" x="144" y="0"></rect><rect fill="#f0d9b5" height="36" width="36" x="180" y="0"></rect><rect fill="#b58863" height="36" width="36" x="216" y="0"></rect><rect fill="#f0d9b5" height="36" width="36" x="252" y="0"></rect><rect fill="#f0d9b5" height="36" width="36" x="0" y="36"></rect><rect fill="#b58863" height="36" width="36" x="36" y="36"></rect><rect fill="#f0d9b5" height="36" width="36" x="72" y="36"></rect><rect fill="#b58863" height="36" width="36" x="108" y="36"></rect><rect fill="#f0d9b5" height="36" width="36" x="144" y="36"></rect><rect fill="#b58863" height="36" width="36" x="180" y="36"></rect><rect fill="#f0d9b5" height="36" width="36" x="216" y="36"></rect><rect fill="#b58863" height="36" width="36" x="252" y="36"></rect><rect fill="#b58863" height="36" width="36" x="0" y="72"></rect><rect fill="#f0d9b5" height="36" width="36" x="36" y="72"></rect><rect fill="#b58863" height="36" width="36" x="72" y="72"></rect><rect fill="#f0d9b5" height="36" width="36" x="108" y="72"></rect><rect fill="#b58863" height="36" width="36" x="144" y="72"></rect><rect fill="#f0d9b5" height="36" width="36" x="180" y="72"></rect><rect fill="#b58863" height="36" width="36" x="216" y="72"></rect><rect fill="#f0d9b5" height="36" width="36" x="252" y="72"></rect><rect fill="#f0d9b5" height="36" width="36" x="0" y="108"></rect><rect fill="#b58863" height="36" width="36" x="36" y="108"></rect><rect fill="#f0d9b5" height="36" width="36" x="72" y="108"></rect><rect fill="#b58863" height="36" width="36" x="108" y="108"></rect><rect fill="#f0d9b5" height="36" width="36" x="144" y="108"></rect><rect fill="#b58863" height="36" width="36" x="180" y="108"></rect><rect fill="#f0d9b5" height="36" width="36" x="216" y="108"></rect><rect fill="#b58863" height="36" width="36" x="252" y="108"></rect><rect fill="#b58863" height="36" width="36" x="0" y="144"></rect><rect fill="#f0d9b5" height="36" width="36" x="36" y="144"></rect><rect fill="#b58863" height="36" width="36" x="72" y="144"></rect><rect fill="#f0d9b5" height="36" width="36" x="108" y="144"></rect><rect fill="#b58863" height="36" width="36" x="144" y="144"></rect><rect fill="#f0d9b5" height="36" width="36" x="180" y="144"></rect><rect fill="#b58863" height="36" width="36" x="216" y="144"></rect><rect fill="#f0d9b5" height="36" width="36" x="252" y="144"></rect><rect fill="#f0d9b5" height="36" width="36" x="0" y="180"></rect><rect fill="#b58863" height="36" width="36" x="36" y="180"></rect><rect fill="#f0d9b5" height="36" width="36" x="72" y="180"></rect><rect fill="#b58863" height="36" width="36" x="108" y="180"></rect><rect fill="#f0d9b5" height="36" width="36" x="144" y="180"></rect><rect fill="#b58863" height="36" width="36" x="180" y="180"></rect><rect fill="#f0d9b5" height="36" width="36" x="216" y="180"></rect><rect fill="#b58863" height="36" width="36" x="252" y="180"></rect><rect fill="#b58863" height="36" width="36" x="0" y="216"></rect><rect fill="#f0d9b5" height="36" width="36" x="36" y="216"></rect><rect fill="#b58863" height="36" width="36" x="72" y="216"></rect><rect fill="#f0d9b5" height="36" width="36" x="108" y="216"></rect><rect fill="#b58863" height="36" width="36" x="144" y="216"></rect><rect fill="#f0d9b5" height="36" width="36" x="180" y="216"></rect><rect fill="#b58863" height="36" width="36" x="216" y="216"></rect><rect fill="#f0d9b5" height="36" width="36" x="252" y="216"></rect><rect fill="#f0d9b5" height="36" width="36" x="0" y="252"></rect><rect fill="#b58863" height="36" width="36" x="36" y="252"></rect><rect fill="#f0d9b5" height="36" width="36" x="72" y="252"></rect><rect fill="#b58863" height="36" width="36" x="108" y="252"></rect><rect fill="#f0d9b5" height="36" width="36" x="144" y="252"></rect><rect fill="#b58863" height="36" width="36" x="180" y="252"></rect><rect fill="#f0d9b5" height="36" width="36" x="216" y="252"></rect><rect fill="#b58863" height="36" width="36" x="252" y="252"></rect>
+<rect fill="none" height="32" rx="7" stroke="#2563eb" stroke-width="4" width="32" x="254" y="254"></rect><rect fill="none" height="32" rx="7" stroke="#7c3aed" stroke-width="4" width="32" x="218" y="182"></rect><rect fill="none" height="32" rx="7" stroke="#7c3aed" stroke-width="4" width="32" x="182" y="218"></rect><rect fill="rgba(239,68,68,0.14)" height="32" rx="7" stroke="#ef4444" stroke-width="4" width="32" x="218" y="254"></rect><rect fill="rgba(239,68,68,0.14)" height="32" rx="7" stroke="#ef4444" stroke-width="4" width="32" x="218" y="218"></rect><rect fill="rgba(239,68,68,0.14)" height="32" rx="7" stroke="#ef4444" stroke-width="4" width="32" x="254" y="218"></rect>
+<line marker-end="url(#dangerHead)" stroke="#ef4444" stroke-dasharray="9 7" stroke-linecap="round" stroke-width="4.5" x1="198.0" x2="234.0" y1="234.0" y2="270.0"></line><text class="dangerLabel" text-anchor="middle" x="216.0" y="245.0">no</text><line marker-end="url(#dangerHead)" stroke="#ef4444" stroke-dasharray="9 7" stroke-linecap="round" stroke-width="4.5" x1="198.0" x2="270.0" y1="234.0" y2="234.0"></line><text class="dangerLabel" text-anchor="middle" x="234.0" y="227.0">no</text><line marker-end="url(#dangerHead)" stroke="#f97316" stroke-dasharray="9 7" stroke-linecap="round" stroke-width="4.5" x1="234.0" x2="234.0" y1="198.0" y2="234.0"></line><text class="dangerLabel" text-anchor="middle" x="234.0" y="209.0">no</text>
+<text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="270.0" y="277.0">♔</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="234.0" y="205.0">♚</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="198.0" y="241.0">♛</text>
+<text class="coord" text-anchor="middle" x="18.0" y="310">a</text><text class="coord" text-anchor="middle" x="54.0" y="310">b</text><text class="coord" text-anchor="middle" x="90.0" y="310">c</text><text class="coord" text-anchor="middle" x="126.0" y="310">d</text><text class="coord" text-anchor="middle" x="162.0" y="310">e</text><text class="coord" text-anchor="middle" x="198.0" y="310">f</text><text class="coord" text-anchor="middle" x="234.0" y="310">g</text><text class="coord" text-anchor="middle" x="270.0" y="310">h</text><text class="coord" text-anchor="middle" x="-14" y="23.0">8</text><text class="coord" text-anchor="middle" x="-14" y="59.0">7</text><text class="coord" text-anchor="middle" x="-14" y="95.0">6</text><text class="coord" text-anchor="middle" x="-14" y="131.0">5</text><text class="coord" text-anchor="middle" x="-14" y="167.0">4</text><text class="coord" text-anchor="middle" x="-14" y="203.0">3</text><text class="coord" text-anchor="middle" x="-14" y="239.0">2</text><text class="coord" text-anchor="middle" x="-14" y="275.0">1</text>
+</g>
+<rect fill="#eff6ff" height="26" rx="11" stroke="#bfdbfe" width="302" x="34" y="334"></rect>
+<text style="font:800 13px Arial,sans-serif; fill:#1d4ed8;" text-anchor="middle" x="185" y="352">White to move: is this stalemate?</text>
+</svg>
+</div>
+<div class="question-box">Is this stalemate? Answer: <strong>YES</strong> or <strong>NO</strong></div>
+</article><article class="position-card">
+<div class="position-head">
+<div class="num">2</div>
+<div>
+<h3>Position 2</h3>
+<p>White king: h1 · Black king: g3 · Black pawn: f2</p>
+</div>
+</div>
+<div class="board-wrap">
+<svg aria-label="Chess stalemate activity position" role="img" viewBox="0 0 370 372">
+<defs>
+<style>
+          .coord { font:700 15px Arial,sans-serif; fill:#334155; }
+          .pieceW { font:41px 'Segoe UI Symbol','Noto Sans Symbols 2',serif; fill:#ffffff; stroke:#0f172a; stroke-width:1.2px; paint-order:stroke fill; }
+          .pieceB { font:41px 'Segoe UI Symbol','Noto Sans Symbols 2',serif; fill:#111827; }
+          .dangerLabel { font:800 11px Arial,sans-serif; fill:#b91c1c; }
+          .moveLabel { font:800 11px Arial,sans-serif; fill:#166534; }
+        </style>
+<marker id="dangerHead" markerHeight="10" markerWidth="10" orient="auto" refX="8" refY="3">
+<path d="M0,0 L0,6 L9,3 z" fill="#ef4444"></path>
+</marker>
+<marker id="moveHead" markerHeight="10" markerWidth="10" orient="auto" refX="8" refY="3">
+<path d="M0,0 L0,6 L9,3 z" fill="#16a34a"></path>
+</marker>
+</defs>
+<rect fill="#ffffff" height="372" rx="14" width="370" x="0" y="0"></rect>
+<g transform="translate(44,20)">
+<rect fill="#b58863" height="36" width="36" x="0" y="0"></rect><rect fill="#f0d9b5" height="36" width="36" x="36" y="0"></rect><rect fill="#b58863" height="36" width="36" x="72" y="0"></rect><rect fill="#f0d9b5" height="36" width="36" x="108" y="0"></rect><rect fill="#b58863" height="36" width="36" x="144" y="0"></rect><rect fill="#f0d9b5" height="36" width="36" x="180" y="0"></rect><rect fill="#b58863" height="36" width="36" x="216" y="0"></rect><rect fill="#f0d9b5" height="36" width="36" x="252" y="0"></rect><rect fill="#f0d9b5" height="36" width="36" x="0" y="36"></rect><rect fill="#b58863" height="36" width="36" x="36" y="36"></rect><rect fill="#f0d9b5" height="36" width="36" x="72" y="36"></rect><rect fill="#b58863" height="36" width="36" x="108" y="36"></rect><rect fill="#f0d9b5" height="36" width="36" x="144" y="36"></rect><rect fill="#b58863" height="36" width="36" x="180" y="36"></rect><rect fill="#f0d9b5" height="36" width="36" x="216" y="36"></rect><rect fill="#b58863" height="36" width="36" x="252" y="36"></rect><rect fill="#b58863" height="36" width="36" x="0" y="72"></rect><rect fill="#f0d9b5" height="36" width="36" x="36" y="72"></rect><rect fill="#b58863" height="36" width="36" x="72" y="72"></rect><rect fill="#f0d9b5" height="36" width="36" x="108" y="72"></rect><rect fill="#b58863" height="36" width="36" x="144" y="72"></rect><rect fill="#f0d9b5" height="36" width="36" x="180" y="72"></rect><rect fill="#b58863" height="36" width="36" x="216" y="72"></rect><rect fill="#f0d9b5" height="36" width="36" x="252" y="72"></rect><rect fill="#f0d9b5" height="36" width="36" x="0" y="108"></rect><rect fill="#b58863" height="36" width="36" x="36" y="108"></rect><rect fill="#f0d9b5" height="36" width="36" x="72" y="108"></rect><rect fill="#b58863" height="36" width="36" x="108" y="108"></rect><rect fill="#f0d9b5" height="36" width="36" x="144" y="108"></rect><rect fill="#b58863" height="36" width="36" x="180" y="108"></rect><rect fill="#f0d9b5" height="36" width="36" x="216" y="108"></rect><rect fill="#b58863" height="36" width="36" x="252" y="108"></rect><rect fill="#b58863" height="36" width="36" x="0" y="144"></rect><rect fill="#f0d9b5" height="36" width="36" x="36" y="144"></rect><rect fill="#b58863" height="36" width="36" x="72" y="144"></rect><rect fill="#f0d9b5" height="36" width="36" x="108" y="144"></rect><rect fill="#b58863" height="36" width="36" x="144" y="144"></rect><rect fill="#f0d9b5" height="36" width="36" x="180" y="144"></rect><rect fill="#b58863" height="36" width="36" x="216" y="144"></rect><rect fill="#f0d9b5" height="36" width="36" x="252" y="144"></rect><rect fill="#f0d9b5" height="36" width="36" x="0" y="180"></rect><rect fill="#b58863" height="36" width="36" x="36" y="180"></rect><rect fill="#f0d9b5" height="36" width="36" x="72" y="180"></rect><rect fill="#b58863" height="36" width="36" x="108" y="180"></rect><rect fill="#f0d9b5" height="36" width="36" x="144" y="180"></rect><rect fill="#b58863" height="36" width="36" x="180" y="180"></rect><rect fill="#f0d9b5" height="36" width="36" x="216" y="180"></rect><rect fill="#b58863" height="36" width="36" x="252" y="180"></rect><rect fill="#b58863" height="36" width="36" x="0" y="216"></rect><rect fill="#f0d9b5" height="36" width="36" x="36" y="216"></rect><rect fill="#b58863" height="36" width="36" x="72" y="216"></rect><rect fill="#f0d9b5" height="36" width="36" x="108" y="216"></rect><rect fill="#b58863" height="36" width="36" x="144" y="216"></rect><rect fill="#f0d9b5" height="36" width="36" x="180" y="216"></rect><rect fill="#b58863" height="36" width="36" x="216" y="216"></rect><rect fill="#f0d9b5" height="36" width="36" x="252" y="216"></rect><rect fill="#f0d9b5" height="36" width="36" x="0" y="252"></rect><rect fill="#b58863" height="36" width="36" x="36" y="252"></rect><rect fill="#f0d9b5" height="36" width="36" x="72" y="252"></rect><rect fill="#b58863" height="36" width="36" x="108" y="252"></rect><rect fill="#f0d9b5" height="36" width="36" x="144" y="252"></rect><rect fill="#b58863" height="36" width="36" x="180" y="252"></rect><rect fill="#f0d9b5" height="36" width="36" x="216" y="252"></rect><rect fill="#b58863" height="36" width="36" x="252" y="252"></rect>
+<rect fill="none" height="32" rx="7" stroke="#2563eb" stroke-width="4" width="32" x="254" y="254"></rect><rect fill="none" height="32" rx="7" stroke="#7c3aed" stroke-width="4" width="32" x="218" y="182"></rect><rect fill="none" height="32" rx="7" stroke="#7c3aed" stroke-width="4" width="32" x="182" y="218"></rect><rect fill="rgba(239,68,68,0.14)" height="32" rx="7" stroke="#ef4444" stroke-width="4" width="32" x="218" y="254"></rect><rect fill="rgba(239,68,68,0.14)" height="32" rx="7" stroke="#ef4444" stroke-width="4" width="32" x="218" y="218"></rect><rect fill="rgba(239,68,68,0.14)" height="32" rx="7" stroke="#ef4444" stroke-width="4" width="32" x="254" y="218"></rect>
+<line marker-end="url(#dangerHead)" stroke="#ef4444" stroke-dasharray="9 7" stroke-linecap="round" stroke-width="4.5" x1="198.0" x2="234.0" y1="234.0" y2="270.0"></line><text class="dangerLabel" text-anchor="middle" x="216.0" y="245.0">no</text><line marker-end="url(#dangerHead)" stroke="#f97316" stroke-dasharray="9 7" stroke-linecap="round" stroke-width="4.5" x1="234.0" x2="234.0" y1="198.0" y2="234.0"></line><text class="dangerLabel" text-anchor="middle" x="234.0" y="209.0">no</text><line marker-end="url(#dangerHead)" stroke="#f97316" stroke-dasharray="9 7" stroke-linecap="round" stroke-width="4.5" x1="234.0" x2="270.0" y1="198.0" y2="234.0"></line><text class="dangerLabel" text-anchor="middle" x="252.0" y="209.0">no</text>
+<text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="270.0" y="277.0">♔</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="234.0" y="205.0">♚</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="198.0" y="241.0">♟</text>
+<text class="coord" text-anchor="middle" x="18.0" y="310">a</text><text class="coord" text-anchor="middle" x="54.0" y="310">b</text><text class="coord" text-anchor="middle" x="90.0" y="310">c</text><text class="coord" text-anchor="middle" x="126.0" y="310">d</text><text class="coord" text-anchor="middle" x="162.0" y="310">e</text><text class="coord" text-anchor="middle" x="198.0" y="310">f</text><text class="coord" text-anchor="middle" x="234.0" y="310">g</text><text class="coord" text-anchor="middle" x="270.0" y="310">h</text><text class="coord" text-anchor="middle" x="-14" y="23.0">8</text><text class="coord" text-anchor="middle" x="-14" y="59.0">7</text><text class="coord" text-anchor="middle" x="-14" y="95.0">6</text><text class="coord" text-anchor="middle" x="-14" y="131.0">5</text><text class="coord" text-anchor="middle" x="-14" y="167.0">4</text><text class="coord" text-anchor="middle" x="-14" y="203.0">3</text><text class="coord" text-anchor="middle" x="-14" y="239.0">2</text><text class="coord" text-anchor="middle" x="-14" y="275.0">1</text>
+</g>
+<rect fill="#eff6ff" height="26" rx="11" stroke="#bfdbfe" width="302" x="34" y="334"></rect>
+<text style="font:800 13px Arial,sans-serif; fill:#1d4ed8;" text-anchor="middle" x="185" y="352">White to move: is this stalemate?</text>
+</svg>
+</div>
+<div class="question-box">Is this stalemate? Answer: <strong>YES</strong> or <strong>NO</strong></div>
+</article><article class="position-card">
+<div class="position-head">
+<div class="num">3</div>
+<div>
+<h3>Position 3</h3>
+<p>White king: h1 · White bishop: g1 · Black king: g3 · Black rook: a1</p>
+</div>
+</div>
+<div class="board-wrap">
+<svg aria-label="Chess stalemate activity position" role="img" viewBox="0 0 370 372">
+<defs>
+<style>
+          .coord { font:700 15px Arial,sans-serif; fill:#334155; }
+          .pieceW { font:41px 'Segoe UI Symbol','Noto Sans Symbols 2',serif; fill:#ffffff; stroke:#0f172a; stroke-width:1.2px; paint-order:stroke fill; }
+          .pieceB { font:41px 'Segoe UI Symbol','Noto Sans Symbols 2',serif; fill:#111827; }
+          .dangerLabel { font:800 11px Arial,sans-serif; fill:#b91c1c; }
+          .moveLabel { font:800 11px Arial,sans-serif; fill:#166534; }
+        </style>
+<marker id="dangerHead" markerHeight="10" markerWidth="10" orient="auto" refX="8" refY="3">
+<path d="M0,0 L0,6 L9,3 z" fill="#ef4444"></path>
+</marker>
+<marker id="moveHead" markerHeight="10" markerWidth="10" orient="auto" refX="8" refY="3">
+<path d="M0,0 L0,6 L9,3 z" fill="#16a34a"></path>
+</marker>
+</defs>
+<rect fill="#ffffff" height="372" rx="14" width="370" x="0" y="0"></rect>
+<g transform="translate(44,20)">
+<rect fill="#b58863" height="36" width="36" x="0" y="0"></rect><rect fill="#f0d9b5" height="36" width="36" x="36" y="0"></rect><rect fill="#b58863" height="36" width="36" x="72" y="0"></rect><rect fill="#f0d9b5" height="36" width="36" x="108" y="0"></rect><rect fill="#b58863" height="36" width="36" x="144" y="0"></rect><rect fill="#f0d9b5" height="36" width="36" x="180" y="0"></rect><rect fill="#b58863" height="36" width="36" x="216" y="0"></rect><rect fill="#f0d9b5" height="36" width="36" x="252" y="0"></rect><rect fill="#f0d9b5" height="36" width="36" x="0" y="36"></rect><rect fill="#b58863" height="36" width="36" x="36" y="36"></rect><rect fill="#f0d9b5" height="36" width="36" x="72" y="36"></rect><rect fill="#b58863" height="36" width="36" x="108" y="36"></rect><rect fill="#f0d9b5" height="36" width="36" x="144" y="36"></rect><rect fill="#b58863" height="36" width="36" x="180" y="36"></rect><rect fill="#f0d9b5" height="36" width="36" x="216" y="36"></rect><rect fill="#b58863" height="36" width="36" x="252" y="36"></rect><rect fill="#b58863" height="36" width="36" x="0" y="72"></rect><rect fill="#f0d9b5" height="36" width="36" x="36" y="72"></rect><rect fill="#b58863" height="36" width="36" x="72" y="72"></rect><rect fill="#f0d9b5" height="36" width="36" x="108" y="72"></rect><rect fill="#b58863" height="36" width="36" x="144" y="72"></rect><rect fill="#f0d9b5" height="36" width="36" x="180" y="72"></rect><rect fill="#b58863" height="36" width="36" x="216" y="72"></rect><rect fill="#f0d9b5" height="36" width="36" x="252" y="72"></rect><rect fill="#f0d9b5" height="36" width="36" x="0" y="108"></rect><rect fill="#b58863" height="36" width="36" x="36" y="108"></rect><rect fill="#f0d9b5" height="36" width="36" x="72" y="108"></rect><rect fill="#b58863" height="36" width="36" x="108" y="108"></rect><rect fill="#f0d9b5" height="36" width="36" x="144" y="108"></rect><rect fill="#b58863" height="36" width="36" x="180" y="108"></rect><rect fill="#f0d9b5" height="36" width="36" x="216" y="108"></rect><rect fill="#b58863" height="36" width="36" x="252" y="108"></rect><rect fill="#b58863" height="36" width="36" x="0" y="144"></rect><rect fill="#f0d9b5" height="36" width="36" x="36" y="144"></rect><rect fill="#b58863" height="36" width="36" x="72" y="144"></rect><rect fill="#f0d9b5" height="36" width="36" x="108" y="144"></rect><rect fill="#b58863" height="36" width="36" x="144" y="144"></rect><rect fill="#f0d9b5" height="36" width="36" x="180" y="144"></rect><rect fill="#b58863" height="36" width="36" x="216" y="144"></rect><rect fill="#f0d9b5" height="36" width="36" x="252" y="144"></rect><rect fill="#f0d9b5" height="36" width="36" x="0" y="180"></rect><rect fill="#b58863" height="36" width="36" x="36" y="180"></rect><rect fill="#f0d9b5" height="36" width="36" x="72" y="180"></rect><rect fill="#b58863" height="36" width="36" x="108" y="180"></rect><rect fill="#f0d9b5" height="36" width="36" x="144" y="180"></rect><rect fill="#b58863" height="36" width="36" x="180" y="180"></rect><rect fill="#f0d9b5" height="36" width="36" x="216" y="180"></rect><rect fill="#b58863" height="36" width="36" x="252" y="180"></rect><rect fill="#b58863" height="36" width="36" x="0" y="216"></rect><rect fill="#f0d9b5" height="36" width="36" x="36" y="216"></rect><rect fill="#b58863" height="36" width="36" x="72" y="216"></rect><rect fill="#f0d9b5" height="36" width="36" x="108" y="216"></rect><rect fill="#b58863" height="36" width="36" x="144" y="216"></rect><rect fill="#f0d9b5" height="36" width="36" x="180" y="216"></rect><rect fill="#b58863" height="36" width="36" x="216" y="216"></rect><rect fill="#f0d9b5" height="36" width="36" x="252" y="216"></rect><rect fill="#f0d9b5" height="36" width="36" x="0" y="252"></rect><rect fill="#b58863" height="36" width="36" x="36" y="252"></rect><rect fill="#f0d9b5" height="36" width="36" x="72" y="252"></rect><rect fill="#b58863" height="36" width="36" x="108" y="252"></rect><rect fill="#f0d9b5" height="36" width="36" x="144" y="252"></rect><rect fill="#b58863" height="36" width="36" x="180" y="252"></rect><rect fill="#f0d9b5" height="36" width="36" x="216" y="252"></rect><rect fill="#b58863" height="36" width="36" x="252" y="252"></rect>
+<rect fill="none" height="32" rx="7" stroke="#2563eb" stroke-width="4" width="32" x="254" y="254"></rect><rect fill="none" height="32" rx="7" stroke="#2563eb" stroke-width="4" width="32" x="218" y="254"></rect><rect fill="none" height="32" rx="7" stroke="#7c3aed" stroke-width="4" width="32" x="218" y="182"></rect><rect fill="none" height="32" rx="7" stroke="#7c3aed" stroke-width="4" width="32" x="2" y="254"></rect><rect fill="rgba(239,68,68,0.14)" height="32" rx="7" stroke="#ef4444" stroke-width="4" width="32" x="254" y="218"></rect><rect fill="rgba(239,68,68,0.14)" height="32" rx="7" stroke="#ef4444" stroke-width="4" width="32" x="218" y="218"></rect>
+<line marker-end="url(#dangerHead)" stroke="#ef4444" stroke-dasharray="9 7" stroke-linecap="round" stroke-width="4.5" x1="18.0" x2="234.0" y1="270.0" y2="270.0"></line><text class="dangerLabel" text-anchor="middle" x="126.0" y="263.0">blocked</text><line marker-end="url(#dangerHead)" stroke="#f97316" stroke-dasharray="9 7" stroke-linecap="round" stroke-width="4.5" x1="234.0" x2="270.0" y1="198.0" y2="234.0"></line><text class="dangerLabel" text-anchor="middle" x="252.0" y="209.0">no</text><line marker-end="url(#dangerHead)" stroke="#f97316" stroke-dasharray="9 7" stroke-linecap="round" stroke-width="4.5" x1="234.0" x2="234.0" y1="198.0" y2="234.0"></line><text class="dangerLabel" text-anchor="middle" x="234.0" y="209.0">no</text>
+<text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="270.0" y="277.0">♔</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="234.0" y="277.0">♗</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="234.0" y="205.0">♚</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="18.0" y="277.0">♜</text>
+<text class="coord" text-anchor="middle" x="18.0" y="310">a</text><text class="coord" text-anchor="middle" x="54.0" y="310">b</text><text class="coord" text-anchor="middle" x="90.0" y="310">c</text><text class="coord" text-anchor="middle" x="126.0" y="310">d</text><text class="coord" text-anchor="middle" x="162.0" y="310">e</text><text class="coord" text-anchor="middle" x="198.0" y="310">f</text><text class="coord" text-anchor="middle" x="234.0" y="310">g</text><text class="coord" text-anchor="middle" x="270.0" y="310">h</text><text class="coord" text-anchor="middle" x="-14" y="23.0">8</text><text class="coord" text-anchor="middle" x="-14" y="59.0">7</text><text class="coord" text-anchor="middle" x="-14" y="95.0">6</text><text class="coord" text-anchor="middle" x="-14" y="131.0">5</text><text class="coord" text-anchor="middle" x="-14" y="167.0">4</text><text class="coord" text-anchor="middle" x="-14" y="203.0">3</text><text class="coord" text-anchor="middle" x="-14" y="239.0">2</text><text class="coord" text-anchor="middle" x="-14" y="275.0">1</text>
+</g>
+<rect fill="#eff6ff" height="26" rx="11" stroke="#bfdbfe" width="302" x="34" y="334"></rect>
+<text style="font:800 13px Arial,sans-serif; fill:#1d4ed8;" text-anchor="middle" x="185" y="352">White to move: is this stalemate?</text>
+</svg>
+</div>
+<div class="question-box">Is this stalemate? Answer: <strong>YES</strong> or <strong>NO</strong></div>
+</article><article class="position-card">
+<div class="position-head">
+<div class="num">4</div>
+<div>
+<h3>Position 4</h3>
+<p>White king: h1 · White pawn: a2 · Black king: g3 · Black bishop: c5</p>
+</div>
+</div>
+<div class="board-wrap">
+<svg aria-label="Chess stalemate activity position" role="img" viewBox="0 0 370 372">
+<defs>
+<style>
+          .coord { font:700 15px Arial,sans-serif; fill:#334155; }
+          .pieceW { font:41px 'Segoe UI Symbol','Noto Sans Symbols 2',serif; fill:#ffffff; stroke:#0f172a; stroke-width:1.2px; paint-order:stroke fill; }
+          .pieceB { font:41px 'Segoe UI Symbol','Noto Sans Symbols 2',serif; fill:#111827; }
+          .dangerLabel { font:800 11px Arial,sans-serif; fill:#b91c1c; }
+          .moveLabel { font:800 11px Arial,sans-serif; fill:#166534; }
+        </style>
+<marker id="dangerHead" markerHeight="10" markerWidth="10" orient="auto" refX="8" refY="3">
+<path d="M0,0 L0,6 L9,3 z" fill="#ef4444"></path>
+</marker>
+<marker id="moveHead" markerHeight="10" markerWidth="10" orient="auto" refX="8" refY="3">
+<path d="M0,0 L0,6 L9,3 z" fill="#16a34a"></path>
+</marker>
+</defs>
+<rect fill="#ffffff" height="372" rx="14" width="370" x="0" y="0"></rect>
+<g transform="translate(44,20)">
+<rect fill="#b58863" height="36" width="36" x="0" y="0"></rect><rect fill="#f0d9b5" height="36" width="36" x="36" y="0"></rect><rect fill="#b58863" height="36" width="36" x="72" y="0"></rect><rect fill="#f0d9b5" height="36" width="36" x="108" y="0"></rect><rect fill="#b58863" height="36" width="36" x="144" y="0"></rect><rect fill="#f0d9b5" height="36" width="36" x="180" y="0"></rect><rect fill="#b58863" height="36" width="36" x="216" y="0"></rect><rect fill="#f0d9b5" height="36" width="36" x="252" y="0"></rect><rect fill="#f0d9b5" height="36" width="36" x="0" y="36"></rect><rect fill="#b58863" height="36" width="36" x="36" y="36"></rect><rect fill="#f0d9b5" height="36" width="36" x="72" y="36"></rect><rect fill="#b58863" height="36" width="36" x="108" y="36"></rect><rect fill="#f0d9b5" height="36" width="36" x="144" y="36"></rect><rect fill="#b58863" height="36" width="36" x="180" y="36"></rect><rect fill="#f0d9b5" height="36" width="36" x="216" y="36"></rect><rect fill="#b58863" height="36" width="36" x="252" y="36"></rect><rect fill="#b58863" height="36" width="36" x="0" y="72"></rect><rect fill="#f0d9b5" height="36" width="36" x="36" y="72"></rect><rect fill="#b58863" height="36" width="36" x="72" y="72"></rect><rect fill="#f0d9b5" height="36" width="36" x="108" y="72"></rect><rect fill="#b58863" height="36" width="36" x="144" y="72"></rect><rect fill="#f0d9b5" height="36" width="36" x="180" y="72"></rect><rect fill="#b58863" height="36" width="36" x="216" y="72"></rect><rect fill="#f0d9b5" height="36" width="36" x="252" y="72"></rect><rect fill="#f0d9b5" height="36" width="36" x="0" y="108"></rect><rect fill="#b58863" height="36" width="36" x="36" y="108"></rect><rect fill="#f0d9b5" height="36" width="36" x="72" y="108"></rect><rect fill="#b58863" height="36" width="36" x="108" y="108"></rect><rect fill="#f0d9b5" height="36" width="36" x="144" y="108"></rect><rect fill="#b58863" height="36" width="36" x="180" y="108"></rect><rect fill="#f0d9b5" height="36" width="36" x="216" y="108"></rect><rect fill="#b58863" height="36" width="36" x="252" y="108"></rect><rect fill="#b58863" height="36" width="36" x="0" y="144"></rect><rect fill="#f0d9b5" height="36" width="36" x="36" y="144"></rect><rect fill="#b58863" height="36" width="36" x="72" y="144"></rect><rect fill="#f0d9b5" height="36" width="36" x="108" y="144"></rect><rect fill="#b58863" height="36" width="36" x="144" y="144"></rect><rect fill="#f0d9b5" height="36" width="36" x="180" y="144"></rect><rect fill="#b58863" height="36" width="36" x="216" y="144"></rect><rect fill="#f0d9b5" height="36" width="36" x="252" y="144"></rect><rect fill="#f0d9b5" height="36" width="36" x="0" y="180"></rect><rect fill="#b58863" height="36" width="36" x="36" y="180"></rect><rect fill="#f0d9b5" height="36" width="36" x="72" y="180"></rect><rect fill="#b58863" height="36" width="36" x="108" y="180"></rect><rect fill="#f0d9b5" height="36" width="36" x="144" y="180"></rect><rect fill="#b58863" height="36" width="36" x="180" y="180"></rect><rect fill="#f0d9b5" height="36" width="36" x="216" y="180"></rect><rect fill="#b58863" height="36" width="36" x="252" y="180"></rect><rect fill="#b58863" height="36" width="36" x="0" y="216"></rect><rect fill="#f0d9b5" height="36" width="36" x="36" y="216"></rect><rect fill="#b58863" height="36" width="36" x="72" y="216"></rect><rect fill="#f0d9b5" height="36" width="36" x="108" y="216"></rect><rect fill="#b58863" height="36" width="36" x="144" y="216"></rect><rect fill="#f0d9b5" height="36" width="36" x="180" y="216"></rect><rect fill="#b58863" height="36" width="36" x="216" y="216"></rect><rect fill="#f0d9b5" height="36" width="36" x="252" y="216"></rect><rect fill="#f0d9b5" height="36" width="36" x="0" y="252"></rect><rect fill="#b58863" height="36" width="36" x="36" y="252"></rect><rect fill="#f0d9b5" height="36" width="36" x="72" y="252"></rect><rect fill="#b58863" height="36" width="36" x="108" y="252"></rect><rect fill="#f0d9b5" height="36" width="36" x="144" y="252"></rect><rect fill="#b58863" height="36" width="36" x="180" y="252"></rect><rect fill="#f0d9b5" height="36" width="36" x="216" y="252"></rect><rect fill="#b58863" height="36" width="36" x="252" y="252"></rect>
+<rect fill="none" height="32" rx="7" stroke="#2563eb" stroke-width="4" width="32" x="254" y="254"></rect><rect fill="none" height="32" rx="7" stroke="#2563eb" stroke-width="4" width="32" x="2" y="218"></rect><rect fill="none" height="32" rx="7" stroke="#7c3aed" stroke-width="4" width="32" x="218" y="182"></rect><rect fill="none" height="32" rx="7" stroke="#7c3aed" stroke-width="4" width="32" x="74" y="110"></rect><rect fill="rgba(239,68,68,0.14)" height="32" rx="7" stroke="#ef4444" stroke-width="4" width="32" x="218" y="254"></rect><rect fill="rgba(239,68,68,0.14)" height="32" rx="7" stroke="#ef4444" stroke-width="4" width="32" x="218" y="218"></rect><rect fill="rgba(239,68,68,0.14)" height="32" rx="7" stroke="#ef4444" stroke-width="4" width="32" x="254" y="218"></rect><rect fill="rgba(22,163,74,0.15)" height="32" rx="7" stroke="#16a34a" stroke-width="4" width="32" x="2" y="182"></rect><rect fill="rgba(22,163,74,0.15)" height="32" rx="7" stroke="#16a34a" stroke-width="4" width="32" x="2" y="146"></rect>
+<line marker-end="url(#dangerHead)" stroke="#ef4444" stroke-dasharray="9 7" stroke-linecap="round" stroke-width="4.5" x1="90.0" x2="234.0" y1="126.0" y2="270.0"></line><text class="dangerLabel" text-anchor="middle" x="162.0" y="191.0">no</text><line marker-end="url(#dangerHead)" stroke="#f97316" stroke-dasharray="9 7" stroke-linecap="round" stroke-width="4.5" x1="234.0" x2="234.0" y1="198.0" y2="234.0"></line><text class="dangerLabel" text-anchor="middle" x="234.0" y="209.0">no</text><line marker-end="url(#dangerHead)" stroke="#f97316" stroke-dasharray="9 7" stroke-linecap="round" stroke-width="4.5" x1="234.0" x2="270.0" y1="198.0" y2="234.0"></line><text class="dangerLabel" text-anchor="middle" x="252.0" y="209.0">no</text><line marker-end="url(#moveHead)" stroke="#16a34a" stroke-linecap="round" stroke-width="4.5" x1="18.0" x2="18.0" y1="234.0" y2="198.0"></line><text class="moveLabel" text-anchor="middle" x="18.0" y="209.0">a3</text>
+<text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="270.0" y="277.0">♔</text><text class="pieceW" dominant-baseline="middle" text-anchor="middle" x="18.0" y="241.0">♙</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="234.0" y="205.0">♚</text><text class="pieceB" dominant-baseline="middle" text-anchor="middle" x="90.0" y="133.0">♝</text>
+<text class="coord" text-anchor="middle" x="18.0" y="310">a</text><text class="coord" text-anchor="middle" x="54.0" y="310">b</text><text class="coord" text-anchor="middle" x="90.0" y="310">c</text><text class="coord" text-anchor="middle" x="126.0" y="310">d</text><text class="coord" text-anchor="middle" x="162.0" y="310">e</text><text class="coord" text-anchor="middle" x="198.0" y="310">f</text><text class="coord" text-anchor="middle" x="234.0" y="310">g</text><text class="coord" text-anchor="middle" x="270.0" y="310">h</text><text class="coord" text-anchor="middle" x="-14" y="23.0">8</text><text class="coord" text-anchor="middle" x="-14" y="59.0">7</text><text class="coord" text-anchor="middle" x="-14" y="95.0">6</text><text class="coord" text-anchor="middle" x="-14" y="131.0">5</text><text class="coord" text-anchor="middle" x="-14" y="167.0">4</text><text class="coord" text-anchor="middle" x="-14" y="203.0">3</text><text class="coord" text-anchor="middle" x="-14" y="239.0">2</text><text class="coord" text-anchor="middle" x="-14" y="275.0">1</text>
+</g>
+<rect fill="#eff6ff" height="26" rx="11" stroke="#bfdbfe" width="302" x="34" y="334"></rect>
+<text style="font:800 13px Arial,sans-serif; fill:#1d4ed8;" text-anchor="middle" x="185" y="352">White to move: is this stalemate?</text>
+</svg>
+</div>
+<div class="question-box">Is this stalemate? Answer: <strong>YES</strong> or <strong>NO</strong></div>
+</article>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="answers">
+          <div class="section-head">
+            <div class="number">4</div>
+            <div class="section-text">
+              <h2>Answer Key</h2>
+              <p>Use this section after trying the activity first.</p>
+            </div>
+          </div>
+          <div class="note">A position is stalemate only when White is <strong>not in check</strong> and White has <strong>no legal move</strong>.</div>
+          <div class="answer-grid">
+            <article class="answer-card">
+<div class="answer-title yes">Position 1: <strong>YES</strong></div>
+<p>This is stalemate. The white king is not in check on h1, but it cannot move to g1, g2, or h2.</p>
+<ul><li>White is not in check.</li><li>White has no legal king move.</li><li>White has no other piece or pawn to move.</li></ul>
+</article><article class="answer-card">
+<div class="answer-title yes">Position 2: <strong>YES</strong></div>
+<p>This is stalemate. The black pawn on f2 attacks g1, and the black king controls g2 and h2. The white king is not in check on h1.</p>
+<ul><li>White is not in check.</li><li>The pawn attacks g1.</li><li>The black king controls g2 and h2.</li></ul>
+</article><article class="answer-card">
+<div class="answer-title yes">Position 3: <strong>YES</strong></div>
+<p>This is stalemate. The white bishop on g1 blocks the rook, so the white king is not in check. But the bishop cannot move because moving it would expose the king to the rook.</p>
+<ul><li>White is not in check because the bishop blocks the rook.</li><li>The king cannot move safely.</li><li>The bishop is pinned and has no legal move.</li></ul>
+</article><article class="answer-card">
+<div class="answer-title no">Position 4: <strong>NO</strong></div>
+<p>This is not stalemate. The white king cannot move, but White still has a legal pawn move: a3 or a4.</p>
+<ul><li>White is not in check.</li><li>The king has no safe square.</li><li>But White can move the pawn to a3 or a4.</li></ul>
+</article>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="remember">
+          <div class="section-head">
+            <div class="number">5</div>
+            <div class="section-text">
+              <h2>Remember</h2>
+              <p>Use the stalemate test in the correct order.</p>
+            </div>
+          </div>
+          <div class="remember-list">
+            <div class="remember-item"><strong>Check first</strong><span>A checked king means it is not stalemate.</span></div>
+            <div class="remember-item"><strong>Legal moves matter</strong><span>Any legal move means it is not stalemate.</span></div>
+            <div class="remember-item"><strong>No legal move</strong><span>If the king is safe but cannot move and no other move exists, it is stalemate.</span></div>
+            <div class="remember-item"><strong>Stalemate is a draw</strong><span>No player wins a stalemated game.</span></div>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="check">
+          <div class="section-head">
+            <div class="number">✓</div>
+            <div class="section-text">
+              <h2>Review Questions</h2>
+              <p>Check the main ideas from this activity.</p>
+            </div>
+          </div>
+          <details class="quiz">
+            <summary>What two things must be true for stalemate?</summary>
+            <p>The side to move must not be in check, and the side to move must have no legal move.</p>
+          </details>
+          <details class="quiz">
+            <summary>If the king is in check, can it be stalemate?</summary>
+            <p>No. If the king is in check, the position is not stalemate.</p>
+          </details>
+          <details class="quiz">
+            <summary>Why is Position 4 not stalemate?</summary>
+            <p>White still has a legal pawn move: a3 or a4.</p>
+          </details>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <footer class="footer">Pawn Level · Module 3 · Activity: Is This a Stalemate?</footer>
+
+  <script>
+    const root = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const progressBar = document.getElementById('progressBar');
+
+    try {
+      const stored = localStorage.getItem('lesson-theme-v1');
+      if (stored === 'light' || stored === 'dark') root.dataset.theme = stored;
+    } catch (error) {}
+
+    themeToggle?.addEventListener('click', () => {
+      const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      root.dataset.theme = next;
+      try { localStorage.setItem('lesson-theme-v1', next); } catch (error) {}
+    });
+
+    function updateProgress() {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? Math.min(100, Math.max(0, (scrollTop / docHeight) * 100)) : 0;
+      if (progressBar) progressBar.style.width = progress + '%';
+    }
+
+    updateProgress();
+    window.addEventListener('scroll', updateProgress, { passive: true });
+  </script>
+</body>
+</html>

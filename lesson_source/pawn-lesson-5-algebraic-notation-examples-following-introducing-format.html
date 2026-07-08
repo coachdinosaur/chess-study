@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Algebraic Notation Examples — Pawn Level Lesson</title>
+  <meta name="description" content="Pawn level chess lesson: examples of algebraic notation including Kf2, Nd3, g5, pawn notation, piece letters, and the one-piece-per-turn rule.">
+  <style>
+    :root {
+      --bg: #07101e;
+      --bg-2: #0c1930;
+      --panel: rgba(255,255,255,.075);
+      --panel-strong: rgba(255,255,255,.12);
+      --text: #f6f8fc;
+      --muted: #b9c6dc;
+      --line: rgba(255,255,255,.14);
+      --gold: #f3c55f;
+      --blue: #3d8dff;
+      --green: #65d28a;
+      --orange: #ffae5a;
+      --red: #ff6b6b;
+      --purple: #b990ff;
+      --shadow: 0 22px 60px rgba(0,0,0,.35);
+      --radius: 24px;
+      --max: 1180px;
+    }
+
+    [data-theme="light"] {
+      --bg: #f7f2e8;
+      --bg-2: #fffaf0;
+      --panel: rgba(255,255,255,.72);
+      --panel-strong: rgba(255,255,255,.92);
+      --text: #172033;
+      --muted: #526076;
+      --line: rgba(12,25,48,.15);
+      --shadow: 0 20px 50px rgba(22,30,46,.15);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      line-height: 1.55;
+      background:
+        radial-gradient(circle at top left, rgba(61,141,255,.32), transparent 35rem),
+        radial-gradient(circle at top right, rgba(243,197,95,.18), transparent 34rem),
+        radial-gradient(circle at 70% 88%, rgba(101,210,138,.14), transparent 34rem),
+        linear-gradient(135deg, var(--bg), var(--bg-2));
+      overflow-x: hidden;
+    }
+
+    img, svg { max-width: 100%; height: auto; display: block; }
+    a { color: inherit; }
+    button { font: inherit; }
+
+    .skip-link {
+      position: absolute;
+      left: -999px;
+      top: 1rem;
+      background: var(--gold);
+      color: #111827;
+      padding: .65rem 1rem;
+      border-radius: 999px;
+      z-index: 999;
+    }
+    .skip-link:focus { left: 1rem; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(16px);
+      background: color-mix(in srgb, var(--bg) 78%, transparent);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar-inner {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: .75rem 0;
+    }
+    .brand { display: flex; align-items: center; gap: .7rem; font-weight: 800; letter-spacing: .01em; }
+    .brand-icon {
+      width: 2.4rem;
+      height: 2.4rem;
+      border-radius: .8rem;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--gold), #fff0b2);
+      color: #13203a;
+      box-shadow: 0 10px 30px rgba(243,197,95,.25);
+    }
+    .top-actions { display: flex; gap: .5rem; flex-wrap: wrap; justify-content: flex-end; }
+    .btn {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: .55rem .9rem;
+      cursor: pointer;
+      transition: transform .18s ease, background .18s ease;
+    }
+    .btn:hover { transform: translateY(-1px); background: var(--panel-strong); }
+
+    .progress { height: 3px; background: rgba(255,255,255,.08); }
+    .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--gold), var(--green), var(--blue)); }
+
+    .page { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; }
+    .hero {
+      padding: clamp(2rem, 4vw, 4rem) 0 1.4rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 500px);
+      gap: clamp(1.25rem, 4vw, 3rem);
+      align-items: center;
+    }
+    .kicker {
+      color: var(--gold);
+      text-transform: uppercase;
+      font-weight: 850;
+      letter-spacing: .14em;
+      font-size: .85rem;
+      margin: 0 0 .75rem;
+    }
+    h1, h2, h3 { line-height: 1.08; margin: 0; }
+    h1 { font-size: clamp(2.35rem, 7vw, 5.55rem); letter-spacing: -.055em; }
+    h2 { font-size: clamp(1.65rem, 4vw, 3.15rem); letter-spacing: -.035em; }
+    h3 { font-size: clamp(1.18rem, 2.2vw, 1.55rem); letter-spacing: -.015em; }
+    .lead { font-size: clamp(1.05rem, 1.9vw, 1.34rem); color: var(--muted); max-width: 64ch; }
+    .hero-card {
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--line);
+      background: var(--panel);
+      padding: .85rem;
+    }
+    .hero-note {
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: .94rem;
+      padding: .85rem .95rem .15rem;
+    }
+
+    .notation-preview {
+      min-height: 315px;
+      display: grid;
+      align-content: center;
+      gap: 1rem;
+      padding: clamp(1.1rem, 3vw, 2rem);
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(243,197,95,.24), transparent 12rem),
+        linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.035));
+    }
+    .preview-title {
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-weight: 900;
+      font-size: .85rem;
+    }
+    .preview-moves {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .75rem;
+    }
+    .preview-moves span {
+      display: inline-grid;
+      place-items: center;
+      min-width: 5.1rem;
+      padding: .75rem .9rem;
+      border-radius: 18px;
+      background: color-mix(in srgb, var(--gold) 18%, var(--panel));
+      border: 1px solid color-mix(in srgb, var(--gold) 38%, var(--line));
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: clamp(1.4rem, 4vw, 2.35rem);
+      font-weight: 950;
+    }
+    .preview-rule {
+      display: grid;
+      gap: .25rem;
+      color: var(--text);
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      border-radius: 18px;
+      padding: 1rem;
+    }
+    .preview-rule small { color: var(--muted); }
+
+    .objective-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .8rem;
+      margin: 1rem 0 2rem;
+    }
+    .objective {
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel);
+      min-height: 8rem;
+    }
+    .objective strong { display: block; margin-bottom: .45rem; font-size: 1.03rem; }
+    .objective span { color: var(--muted); font-size: .95rem; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 245px minmax(0, 1fr);
+      gap: 1.25rem;
+      align-items: start;
+      padding: 1rem 0 4rem;
+    }
+    .toc {
+      position: sticky;
+      top: 4.5rem;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--panel);
+      padding: 1rem;
+    }
+    .toc-title { font-weight: 850; margin-bottom: .7rem; color: var(--gold); }
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--muted);
+      padding: .55rem .65rem;
+      border-radius: 12px;
+      font-size: .95rem;
+    }
+    .toc a:hover { color: var(--text); background: var(--panel-strong); }
+
+    main { min-width: 0; }
+    .lesson-section {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: var(--radius);
+      padding: clamp(1rem, 3vw, 2rem);
+      margin-bottom: 1.1rem;
+      box-shadow: 0 14px 40px rgba(0,0,0,.14);
+      scroll-margin-top: 5.5rem;
+    }
+    .section-head { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1rem; }
+    .number {
+      flex: 0 0 auto;
+      width: 2.45rem;
+      height: 2.45rem;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      font-weight: 900;
+      color: #111827;
+      background: var(--gold);
+      box-shadow: 0 10px 22px rgba(243,197,95,.25);
+    }
+    .section-text p { color: var(--muted); margin: .75rem 0 0; }
+
+    .callout {
+      border: 1px solid color-mix(in srgb, var(--gold) 42%, var(--line));
+      border-radius: 20px;
+      padding: 1rem;
+      background: color-mix(in srgb, var(--gold) 12%, var(--panel));
+    }
+    .callout-title { color: var(--gold); font-weight: 900; margin-bottom: .35rem; }
+    .formula {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: .45rem;
+      align-items: center;
+      margin-top: .75rem;
+      color: var(--text);
+      font-weight: 900;
+      font-size: 1.1rem;
+    }
+    .formula span {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.07);
+      border-radius: 999px;
+      padding: .4rem .7rem;
+    }
+
+    .move-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .move-card {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(0,0,0,.14);
+      overflow: hidden;
+    }
+    .move-copy { padding: 1rem; }
+    .move-code {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 4.8rem;
+      padding: .45rem .7rem;
+      border-radius: 14px;
+      background: rgba(101,210,138,.16);
+      color: var(--green);
+      border: 1px solid rgba(101,210,138,.32);
+      font-size: 1.35rem;
+      line-height: 1;
+      font-weight: 950;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+    .move-copy h3 { margin: .7rem 0 .35rem; }
+    .move-copy p { margin: 0; color: var(--muted); }
+    .visual {
+      border-top: 1px solid var(--line);
+      background: rgba(255,255,255,.9);
+      padding: .7rem;
+    }
+    [data-theme="dark"] .visual { background: rgba(255,255,255,.92); }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, .9fr);
+      gap: 1rem;
+      align-items: stretch;
+      margin-top: 1rem;
+    }
+    .rule-card {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 1rem;
+      background: rgba(255,255,255,.055);
+    }
+    .rule-card p { color: var(--muted); margin: .65rem 0 0; }
+    .examples {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .6rem;
+      margin-top: .9rem;
+    }
+    .example-chip {
+      display: inline-flex;
+      border: 1px solid var(--line);
+      background: var(--panel-strong);
+      border-radius: 999px;
+      padding: .55rem .75rem;
+      font-weight: 850;
+    }
+    .letter-list {
+      display: grid;
+      gap: .65rem;
+      margin-top: .9rem;
+    }
+    .letter-row {
+      display: grid;
+      grid-template-columns: 2.4rem 2.4rem 1fr;
+      gap: .7rem;
+      align-items: center;
+      padding: .75rem;
+      border-radius: 16px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid var(--line);
+    }
+    .piece-icon { font-size: 1.8rem; line-height: 1; }
+    .piece-letter {
+      font-size: 1.45rem;
+      font-weight: 950;
+      color: var(--orange);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+    .piece-name { font-weight: 850; }
+
+    .turn-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .turn-card {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(0,0,0,.14);
+      overflow: hidden;
+    }
+    .turn-card.good { border-top: 7px solid var(--green); }
+    .turn-card.bad { border-top: 7px solid var(--red); }
+    .turn-copy { padding: 1rem; }
+    .turn-copy p { color: var(--muted); margin: .35rem 0 0; }
+
+    details.quiz {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.055);
+      border-radius: 16px;
+      padding: .9rem 1rem;
+      margin-top: .75rem;
+    }
+    details.quiz summary { cursor: pointer; font-weight: 800; }
+    details.quiz p { color: var(--muted); margin-bottom: 0; }
+
+    .remember-list {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .75rem;
+      margin-top: 1rem;
+    }
+    .remember-item {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1rem;
+      background: rgba(255,255,255,.055);
+    }
+    .remember-item strong { color: var(--gold); display: block; margin-bottom: .25rem; }
+    .remember-item span { color: var(--muted); }
+
+    .footer {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      padding: 2rem 0 3rem;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+    }
+
+    /* Preserved SVG-board styles from the source lesson */
+    .board-svg { width: 100%; height: auto; display: block; border-radius: 14px; }
+    .coord { font: 700 13px Inter, Arial, sans-serif; fill: #26324a; }
+    .piece { font: 36px "Segoe UI Symbol", "Noto Sans Symbols 2", "DejaVu Sans", serif; fill: #152033; paint-order: stroke; stroke: rgba(255,255,255,.7); stroke-width: 2px; }
+    .square-label { font: 900 13px Inter, Arial, sans-serif; fill: rgba(13,122,55,.16); }
+    .board-caption { font: 800 13px Inter, Arial, sans-serif; fill: #334155; }
+    .move-arrow { color: #0d7a37; filter: drop-shadow(0 2px 1px rgba(255,255,255,.75)); }
+
+    @media (max-width: 980px) {
+      .hero { grid-template-columns: 1fr; }
+      .layout { grid-template-columns: 1fr; }
+      .toc { position: static; overflow-x: auto; white-space: nowrap; }
+      .toc a { display: inline-block; }
+      .objective-grid, .move-grid, .remember-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 720px) {
+      .topbar-inner, .page, .footer { width: min(100% - 22px, var(--max)); }
+      .topbar-inner { align-items: flex-start; }
+      .brand span:last-child { display: none; }
+      .objective-grid, .move-grid, .remember-list, .two-col, .turn-grid { grid-template-columns: 1fr; }
+      .lesson-section { border-radius: 18px; }
+      .section-head { gap: .75rem; }
+      .number { width: 2.15rem; height: 2.15rem; }
+    }
+
+    @media print {
+      :root, [data-theme="light"], [data-theme="dark"] {
+        --bg: #ffffff;
+        --bg-2: #ffffff;
+        --panel: #ffffff;
+        --panel-strong: #ffffff;
+        --text: #111827;
+        --muted: #374151;
+        --line: #d1d5db;
+        --shadow: none;
+      }
+      body { background: #ffffff; }
+      .topbar, .toc, .btn, .progress { display: none !important; }
+      .page, .footer { width: 100%; }
+      .hero { padding-top: 0; }
+      .layout { display: block; padding: 0; }
+      .lesson-section, .objective, .move-card, .rule-card, .turn-card, .remember-item { break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
+      svg { break-inside: avoid; page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#lesson">Skip to lesson</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand" aria-label="Lesson title">
+        <div class="brand-icon" aria-hidden="true">♟</div>
+        <span>Pawn Level</span>
+        <span>Algebraic Notation Examples</span>
+      </div>
+      <div class="top-actions">
+        <button class="btn" type="button" id="themeToggle">Toggle theme</button>
+        <button class="btn" type="button" onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </div>
+    <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+  </header>
+
+  <div class="page">
+    <section class="hero" id="top">
+      <div>
+        <p class="kicker">Lesson 5 · Beginner / Pawn Level</p>
+        <h1>Algebraic Notation Examples</h1>
+        <p class="lead">Practice reading simple chess moves: <strong>Kf2</strong>, <strong>Nd3</strong>, and <strong>g5</strong>. Learn why pieces use capital letters, why pawns do not use the letter P, and why only one piece moves per turn.</p>
+        <div class="objective-grid" aria-label="Learning objectives">
+          <div class="objective"><strong>Read Kf2</strong><span>Understand that K means King and f2 is the destination square.</span></div>
+          <div class="objective"><strong>Read Nd3</strong><span>Understand that N means Knight and d3 is the destination square.</span></div>
+          <div class="objective"><strong>Write pawn moves</strong><span>Use only the destination square for pawns, such as g5, e4, and d5.</span></div>
+          <div class="objective"><strong>Move one piece</strong><span>Remember that one normal chess turn moves only one piece.</span></div>
+        </div>
+      </div>
+      <figure class="hero-card">
+        <div class="notation-preview" aria-label="Notation preview">
+          <div class="preview-title">Example notation</div>
+          <div class="preview-moves">
+            <span>Kf2</span>
+            <span>Nd3</span>
+            <span>g5</span>
+          </div>
+          <div class="preview-rule">
+            <strong>Piece letter + destination square</strong>
+            <small>Pawns skip the piece letter.</small>
+          </div>
+        </div>
+        <figcaption class="hero-note">Preview: read the piece letter first, then the destination square.</figcaption>
+      </figure>
+    </section>
+
+    <div class="layout" id="lesson">
+      <aside class="toc" aria-label="Lesson contents">
+        <div class="toc-title">Lesson contents</div>
+        <a href="#notation">Notation idea</a>
+        <a href="#example-moves">Example moves</a>
+        <a href="#pawns">Pawn rule</a>
+        <a href="#piece-letters">Piece letters</a>
+        <a href="#one-piece">One piece per turn</a>
+        <a href="#review">Review</a>
+      </aside>
+
+      <main>
+        <section class="lesson-section" id="notation">
+          <div class="section-head">
+            <div class="number">1</div>
+            <div class="section-text">
+              <h2>What these examples show</h2>
+              <p>Algebraic notation is the chess language used to write moves. In this lesson, each example tells you which piece moves and which square it moves to.</p>
+            </div>
+          </div>
+          <div class="callout">
+            <div class="callout-title">Simple move pattern</div>
+            <div class="formula"><span>Piece letter</span><span>+</span><span>destination square</span><span>= written move</span></div>
+            <p class="lead" style="margin:.8rem 0 0; font-size:1rem;">For pawns, the piece letter is skipped, so a pawn moving to g5 is written simply as <strong>g5</strong>.</p>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="example-moves">
+          <div class="section-head">
+            <div class="number">2</div>
+            <div class="section-text">
+              <h2>Example moves</h2>
+              <p>Read each move by identifying the piece letter first, then the destination square.</p>
+            </div>
+          </div>
+          <div class="move-grid" aria-label="Example moves in algebraic notation">
+            <article class="move-card">
+              <div class="move-copy">
+                <span class="move-code">Kf2</span>
+                <h3>The king moves from f1 to f2.</h3>
+                <p>The capital <strong>K</strong> means King. The square <strong>f2</strong> is where the king moves.</p>
+              </div>
+              <div class="visual"><svg class="board-svg" viewBox="0 0 328 342" role="img" aria-label="Kf2: King from f1 to f2">
+<defs>
+<marker id="arrow-kf2-0" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#0d7a37"/></marker>
+</defs>
+<rect x="0" y="0" width="328" height="342" rx="16" fill="rgba(255,255,255,.62)"/>
+<rect x="34" y="26" width="272" height="272" rx="4" fill="#fff" stroke="rgba(34,54,90,.32)" stroke-width="2"/>
+<rect x="34" y="26" width="34" height="34" fill="#f7efd2"/>
+<rect x="68" y="26" width="34" height="34" fill="#8fbc63"/>
+<rect x="102" y="26" width="34" height="34" fill="#f7efd2"/>
+<rect x="136" y="26" width="34" height="34" fill="#8fbc63"/>
+<rect x="170" y="26" width="34" height="34" fill="#f7efd2"/>
+<rect x="204" y="26" width="34" height="34" fill="#8fbc63"/>
+<rect x="238" y="26" width="34" height="34" fill="#f7efd2"/>
+<rect x="272" y="26" width="34" height="34" fill="#8fbc63"/>
+<rect x="34" y="60" width="34" height="34" fill="#8fbc63"/>
+<rect x="68" y="60" width="34" height="34" fill="#f7efd2"/>
+<rect x="102" y="60" width="34" height="34" fill="#8fbc63"/>
+<rect x="136" y="60" width="34" height="34" fill="#f7efd2"/>
+<rect x="170" y="60" width="34" height="34" fill="#8fbc63"/>
+<rect x="204" y="60" width="34" height="34" fill="#f7efd2"/>
+<rect x="238" y="60" width="34" height="34" fill="#8fbc63"/>
+<rect x="272" y="60" width="34" height="34" fill="#f7efd2"/>
+<rect x="34" y="94" width="34" height="34" fill="#f7efd2"/>
+<rect x="68" y="94" width="34" height="34" fill="#8fbc63"/>
+<rect x="102" y="94" width="34" height="34" fill="#f7efd2"/>
+<rect x="136" y="94" width="34" height="34" fill="#8fbc63"/>
+<rect x="170" y="94" width="34" height="34" fill="#f7efd2"/>
+<rect x="204" y="94" width="34" height="34" fill="#8fbc63"/>
+<rect x="238" y="94" width="34" height="34" fill="#f7efd2"/>
+<rect x="272" y="94" width="34" height="34" fill="#8fbc63"/>
+<rect x="34" y="128" width="34" height="34" fill="#8fbc63"/>
+<rect x="68" y="128" width="34" height="34" fill="#f7efd2"/>
+<rect x="102" y="128" width="34" height="34" fill="#8fbc63"/>
+<rect x="136" y="128" width="34" height="34" fill="#f7efd2"/>
+<rect x="170" y="128" width="34" height="34" fill="#8fbc63"/>
+<rect x="204" y="128" width="34" height="34" fill="#f7efd2"/>
+<rect x="238" y="128" width="34" height="34" fill="#8fbc63"/>
+<rect x="272" y="128" width="34" height="34" fill="#f7efd2"/>
+<rect x="34" y="162" width="34" height="34" fill="#f7efd2"/>
+<rect x="68" y="162" width="34" height="34" fill="#8fbc63"/>
+<rect x="102" y="162" width="34" height="34" fill="#f7efd2"/>
+<rect x="136" y="162" width="34" height="34" fill="#8fbc63"/>
+<rect x="170" y="162" width="34" height="34" fill="#f7efd2"/>
+<rect x="204" y="162" width="34" height="34" fill="#8fbc63"/>
+<rect x="238" y="162" width="34" height="34" fill="#f7efd2"/>
+<rect x="272" y="162" width="34" height="34" fill="#8fbc63"/>
+<rect x="34" y="196" width="34" height="34" fill="#8fbc63"/>
+<rect x="68" y="196" width="34" height="34" fill="#f7efd2"/>
+<rect x="102" y="196" width="34" height="34" fill="#8fbc63"/>
+<rect x="136" y="196" width="34" height="34" fill="#f7efd2"/>
+<rect x="170" y="196" width="34" height="34" fill="#8fbc63"/>
+<rect x="204" y="196" width="34" height="34" fill="#f7efd2"/>
+<rect x="238" y="196" width="34" height="34" fill="#8fbc63"/>
+<rect x="272" y="196" width="34" height="34" fill="#f7efd2"/>
+<rect x="34" y="230" width="34" height="34" fill="#f7efd2"/>
+<rect x="68" y="230" width="34" height="34" fill="#8fbc63"/>
+<rect x="102" y="230" width="34" height="34" fill="#f7efd2"/>
+<rect x="136" y="230" width="34" height="34" fill="#8fbc63"/>
+<rect x="170" y="230" width="34" height="34" fill="#f7efd2"/>
+<rect x="204" y="230" width="34" height="34" fill="#8fbc63"/>
+<rect x="238" y="230" width="34" height="34" fill="#f7efd2"/>
+<rect x="272" y="230" width="34" height="34" fill="#8fbc63"/>
+<rect x="34" y="264" width="34" height="34" fill="#8fbc63"/>
+<rect x="68" y="264" width="34" height="34" fill="#f7efd2"/>
+<rect x="102" y="264" width="34" height="34" fill="#8fbc63"/>
+<rect x="136" y="264" width="34" height="34" fill="#f7efd2"/>
+<rect x="170" y="264" width="34" height="34" fill="#8fbc63"/>
+<rect x="204" y="264" width="34" height="34" fill="#f7efd2"/>
+<rect x="238" y="264" width="34" height="34" fill="#8fbc63"/>
+<rect x="272" y="264" width="34" height="34" fill="#f7efd2"/>
+<rect x="206.0" y="232.0" width="30" height="30" rx="7" fill="none" stroke="#0d7a37" stroke-width="4"/>
+<text x="221.0" y="253.0" text-anchor="middle" class="square-label">f2</text>
+<text x="51.0" y="320" text-anchor="middle" class="coord">a</text>
+<text x="85.0" y="320" text-anchor="middle" class="coord">b</text>
+<text x="119.0" y="320" text-anchor="middle" class="coord">c</text>
+<text x="153.0" y="320" text-anchor="middle" class="coord">d</text>
+<text x="187.0" y="320" text-anchor="middle" class="coord">e</text>
+<text x="221.0" y="320" text-anchor="middle" class="coord">f</text>
+<text x="255.0" y="320" text-anchor="middle" class="coord">g</text>
+<text x="289.0" y="320" text-anchor="middle" class="coord">h</text>
+<text x="20" y="47.0" text-anchor="middle" class="coord">8</text>
+<text x="20" y="81.0" text-anchor="middle" class="coord">7</text>
+<text x="20" y="115.0" text-anchor="middle" class="coord">6</text>
+<text x="20" y="149.0" text-anchor="middle" class="coord">5</text>
+<text x="20" y="183.0" text-anchor="middle" class="coord">4</text>
+<text x="20" y="217.0" text-anchor="middle" class="coord">3</text>
+<text x="20" y="251.0" text-anchor="middle" class="coord">2</text>
+<text x="20" y="285.0" text-anchor="middle" class="coord">1</text>
+<line x1="221.0" y1="275.0" x2="221.0" y2="253.0" stroke="#0d7a37" stroke-width="6" stroke-linecap="round" marker-end="url(#arrow-kf2-0)" class="move-arrow"/>
+<text x="221.0" y="293.0" text-anchor="middle" class="piece">♔</text>
+<text x="164.0" y="334" text-anchor="middle" class="board-caption">Kf2: King from f1 to f2</text>
+</svg></div>
+            </article>
+
+            <article class="move-card">
+              <div class="move-copy">
+                <span class="move-code">Nd3</span>
+                <h3>The knight moves from c1 to d3.</h3>
+                <p>The capital <strong>N</strong> means Knight. The square <strong>d3</strong> is the destination square.</p>
+              </div>
+              <div class="visual"><svg class="board-svg" viewBox="0 0 328 342" role="img" aria-label="Nd3: Knight from c1 to d3">
+<defs>
+<marker id="arrow-nd3-0" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#0d7a37"/></marker>
+</defs>
+<rect x="0" y="0" width="328" height="342" rx="16" fill="rgba(255,255,255,.62)"/>
+<rect x="34" y="26" width="272" height="272" rx="4" fill="#fff" stroke="rgba(34,54,90,.32)" stroke-width="2"/>
+<rect x="34" y="26" width="34" height="34" fill="#f7efd2"/>
+<rect x="68" y="26" width="34" height="34" fill="#8fbc63"/>
+<rect x="102" y="26" width="34" height="34" fill="#f7efd2"/>
+<rect x="136" y="26" width="34" height="34" fill="#8fbc63"/>
+<rect x="170" y="26" width="34" height="34" fill="#f7efd2"/>
+<rect x="204" y="26" width="34" height="34" fill="#8fbc63"/>
+<rect x="238" y="26" width="34" height="34" fill="#f7efd2"/>
+<rect x="272" y="26" width="34" height="34" fill="#8fbc63"/>
+<rect x="34" y="60" width="34" height="34" fill="#8fbc63"/>
+<rect x="68" y="60" width="34" height="34" fill="#f7efd2"/>
+<rect x="102" y="60" width="34" height="34" fill="#8fbc63"/>
+<rect x="136" y="60" width="34" height="34" fill="#f7efd2"/>
+<rect x="170" y="60" width="34" height="34" fill="#8fbc63"/>
+<rect x="204" y="60" width="34" height="34" fill="#f7efd2"/>
+<rect x="238" y="60" width="34" height="34" fill="#8fbc63"/>
+<rect x="272" y="60" width="34" height="34" fill="#f7efd2"/>
+<rect x="34" y="94" width="34" height="34" fill="#f7efd2"/>
+<rect x="68" y="94" width="34" height="34" fill="#8fbc63"/>
+<rect x="102" y="94" width="34" height="34" fill="#f7efd2"/>
+<rect x="136" y="94" width="34" height="34" fill="#8fbc63"/>
+<rect x="170" y="94" width="34" height="34" fill="#f7efd2"/>
+<rect x="204" y="94" width="34" height="34" fill="#8fbc63"/>
+<rect x="238" y="94" width="34" height="34" fill="#f7efd2"/>
+<rect x="272" y="94" width="34" height="34" fill="#8fbc63"/>
+<rect x="34" y="128" width="34" height="34" fill="#8fbc63"/>
+<rect x="68" y="128" width="34" height="34" fill="#f7efd2"/>
+<rect x="102" y="128" width="34" height="34" fill="#8fbc63"/>
+<rect x="136" y="128" width="34" height="34" fill="#f7efd2"/>
+<rect x="170" y="128" width="34" height="34" fill="#8fbc63"/>
+<rect x="204" y="128" width="34" height="34" fill="#f7efd2"/>
+<rect x="238" y="128" width="34" height="34" fill="#8fbc63"/>
+<rect x="272" y="128" width="34" height="34" fill="#f7efd2"/>
+<rect x="34" y="162" width="34" height="34" fill="#f7efd2"/>
+<rect x="68" y="162" width="34" height="34" fill="#8fbc63"/>
+<rect x="102" y="162" width="34" height="34" fill="#f7efd2"/>
+<rect x="136" y="162" width="34" height="34" fill="#8fbc63"/>
+<rect x="170" y="162" width="34" height="34" fill="#f7efd2"/>
+<rect x="204" y="162" width="34" height="34" fill="#8fbc63"/>
+<rect x="238" y="162" width="34" height="34" fill="#f7efd2"/>
+<rect x="272" y="162" width="34" height="34" fill="#8fbc63"/>
+<rect x="34" y="196" width="34" height="34" fill="#8fbc63"/>
+<rect x="68" y="196" width="34" height="34" fill="#f7efd2"/>
+<rect x="102" y="196" width="34" height="34" fill="#8fbc63"/>
+<rect x="136" y="196" width="34" height="34" fill="#f7efd2"/>
+<rect x="170" y="196" width="34" height="34" fill="#8fbc63"/>
+<rect x="204" y="196" width="34" height="34" fill="#f7efd2"/>
+<rect x="238" y="196" width="34" height="34" fill="#8fbc63"/>
+<rect x="272" y="196" width="34" height="34" fill="#f7efd2"/>
+<rect x="34" y="230" width="34" height="34" fill="#f7efd2"/>
+<rect x="68" y="230" width="34" height="34" fill="#8fbc63"/>
+<rect x="102" y="230" width="34" height="34" fill="#f7efd2"/>
+<rect x="136" y="230" width="34" height="34" fill="#8fbc63"/>
+<rect x="170" y="230" width="34" height="34" fill="#f7efd2"/>
+<rect x="204" y="230" width="34" height="34" fill="#8fbc63"/>
+<rect x="238" y="230" width="34" height="34" fill="#f7efd2"/>
+<rect x="272" y="230" width="34" height="34" fill="#8fbc63"/>
+<rect x="34" y="264" width="34" height="34" fill="#8fbc63"/>
+<rect x="68" y="264" width="34" height="34" fill="#f7efd2"/>
+<rect x="102" y="264" width="34" height="34" fill="#8fbc63"/>
+<rect x="136" y="264" width="34" height="34" fill="#f7efd2"/>
+<rect x="170" y="264" width="34" height="34" fill="#8fbc63"/>
+<rect x="204" y="264" width="34" height="34" fill="#f7efd2"/>
+<rect x="238" y="264" width="34" height="34" fill="#8fbc63"/>
+<rect x="272" y="264" width="34" height="34" fill="#f7efd2"/>
+<rect x="138.0" y="198.0" width="30" height="30" rx="7" fill="none" stroke="#0d7a37" stroke-width="4"/>
+<text x="153.0" y="219.0" text-anchor="middle" class="square-label">d3</text>
+<text x="51.0" y="320" text-anchor="middle" class="coord">a</text>
+<text x="85.0" y="320" text-anchor="middle" class="coord">b</text>
+<text x="119.0" y="320" text-anchor="middle" class="coord">c</text>
+<text x="153.0" y="320" text-anchor="middle" class="coord">d</text>
+<text x="187.0" y="320" text-anchor="middle" class="coord">e</text>
+<text x="221.0" y="320" text-anchor="middle" class="coord">f</text>
+<text x="255.0" y="320" text-anchor="middle" class="coord">g</text>
+<text x="289.0" y="320" text-anchor="middle" class="coord">h</text>
+<text x="20" y="47.0" text-anchor="middle" class="coord">8</text>
+<text x="20" y="81.0" text-anchor="middle" class="coord">7</text>
+<text x="20" y="115.0" text-anchor="middle" class="coord">6</text>
+<text x="20" y="149.0" text-anchor="middle" class="coord">5</text>
+<text x="20" y="183.0" text-anchor="middle" class="coord">4</text>
+<text x="20" y="217.0" text-anchor="middle" class="coord">3</text>
+<text x="20" y="251.0" text-anchor="middle" class="coord">2</text>
+<text x="20" y="285.0" text-anchor="middle" class="coord">1</text>
+<line x1="121.7" y1="275.6" x2="150.3" y2="218.4" stroke="#0d7a37" stroke-width="6" stroke-linecap="round" marker-end="url(#arrow-nd3-0)" class="move-arrow"/>
+<text x="119.0" y="293.0" text-anchor="middle" class="piece">♘</text>
+<text x="164.0" y="334" text-anchor="middle" class="board-caption">Nd3: Knight from c1 to d3</text>
+</svg></div>
+            </article>
+
+            <article class="move-card">
+              <div class="move-copy">
+                <span class="move-code">g5</span>
+                <h3>The pawn moves from g4 to g5.</h3>
+                <p>A pawn move does not begin with P. The move is written as the destination square: <strong>g5</strong>.</p>
+              </div>
+              <div class="visual"><svg class="board-svg" viewBox="0 0 328 342" role="img" aria-label="g5: Pawn from g4 to g5">
+<defs>
+<marker id="arrow-g5-0" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#0d7a37"/></marker>
+</defs>
+<rect x="0" y="0" width="328" height="342" rx="16" fill="rgba(255,255,255,.62)"/>
+<rect x="34" y="26" width="272" height="272" rx="4" fill="#fff" stroke="rgba(34,54,90,.32)" stroke-width="2"/>
+<rect x="34" y="26" width="34" height="34" fill="#f7efd2"/>
+<rect x="68" y="26" width="34" height="34" fill="#8fbc63"/>
+<rect x="102" y="26" width="34" height="34" fill="#f7efd2"/>
+<rect x="136" y="26" width="34" height="34" fill="#8fbc63"/>
+<rect x="170" y="26" width="34" height="34" fill="#f7efd2"/>
+<rect x="204" y="26" width="34" height="34" fill="#8fbc63"/>
+<rect x="238" y="26" width="34" height="34" fill="#f7efd2"/>
+<rect x="272" y="26" width="34" height="34" fill="#8fbc63"/>
+<rect x="34" y="60" width="34" height="34" fill="#8fbc63"/>
+<rect x="68" y="60" width="34" height="34" fill="#f7efd2"/>
+<rect x="102" y="60" width="34" height="34" fill="#8fbc63"/>
+<rect x="136" y="60" width="34" height="34" fill="#f7efd2"/>
+<rect x="170" y="60" width="34" height="34" fill="#8fbc63"/>
+<rect x="204" y="60" width="34" height="34" fill="#f7efd2"/>
+<rect x="238" y="60" width="34" height="34" fill="#8fbc63"/>
+<rect x="272" y="60" width="34" height="34" fill="#f7efd2"/>
+<rect x="34" y="94" width="34" height="34" fill="#f7efd2"/>
+<rect x="68" y="94" width="34" height="34" fill="#8fbc63"/>
+<rect x="102" y="94" width="34" height="34" fill="#f7efd2"/>
+<rect x="136" y="94" width="34" height="34" fill="#8fbc63"/>
+<rect x="170" y="94" width="34" height="34" fill="#f7efd2"/>
+<rect x="204" y="94" width="34" height="34" fill="#8fbc63"/>
+<rect x="238" y="94" width="34" height="34" fill="#f7efd2"/>
+<rect x="272" y="94" width="34" height="34" fill="#8fbc63"/>
+<rect x="34" y="128" width="34" height="34" fill="#8fbc63"/>
+<rect x="68" y="128" width="34" height="34" fill="#f7efd2"/>
+<rect x="102" y="128" width="34" height="34" fill="#8fbc63"/>
+<rect x="136" y="128" width="34" height="34" fill="#f7efd2"/>
+<rect x="170" y="128" width="34" height="34" fill="#8fbc63"/>
+<rect x="204" y="128" width="34" height="34" fill="#f7efd2"/>
+<rect x="238" y="128" width="34" height="34" fill="#8fbc63"/>
+<rect x="272" y="128" width="34" height="34" fill="#f7efd2"/>
+<rect x="34" y="162" width="34" height="34" fill="#f7efd2"/>
+<rect x="68" y="162" width="34" height="34" fill="#8fbc63"/>
+<rect x="102" y="162" width="34" height="34" fill="#f7efd2"/>
+<rect x="136" y="162" width="34" height="34" fill="#8fbc63"/>
+<rect x="170" y="162" width="34" height="34" fill="#f7efd2"/>
+<rect x="204" y="162" width="34" height="34" fill="#8fbc63"/>
+<rect x="238" y="162" width="34" height="34" fill="#f7efd2"/>
+<rect x="272" y="162" width="34" height="34" fill="#8fbc63"/>
+<rect x="34" y="196" width="34" height="34" fill="#8fbc63"/>
+<rect x="68" y="196" width="34" height="34" fill="#f7efd2"/>
+<rect x="102" y="196" width="34" height="34" fill="#8fbc63"/>
+<rect x="136" y="196" width="34" height="34" fill="#f7efd2"/>
+<rect x="170" y="196" width="34" height="34" fill="#8fbc63"/>
+<rect x="204" y="196" width="34" height="34" fill="#f7efd2"/>
+<rect x="238" y="196" width="34" height="34" fill="#8fbc63"/>
+<rect x="272" y="196" width="34" height="34" fill="#f7efd2"/>
+<rect x="34" y="230" width="34" height="34" fill="#f7efd2"/>
+<rect x="68" y="230" width="34" height="34" fill="#8fbc63"/>
+<rect x="102" y="230" width="34" height="34" fill="#f7efd2"/>
+<rect x="136" y="230" width="34" height="34" fill="#8fbc63"/>
+<rect x="170" y="230" width="34" height="34" fill="#f7efd2"/>
+<rect x="204" y="230" width="34" height="34" fill="#8fbc63"/>
+<rect x="238" y="230" width="34" height="34" fill="#f7efd2"/>
+<rect x="272" y="230" width="34" height="34" fill="#8fbc63"/>
+<rect x="34" y="264" width="34" height="34" fill="#8fbc63"/>
+<rect x="68" y="264" width="34" height="34" fill="#f7efd2"/>
+<rect x="102" y="264" width="34" height="34" fill="#8fbc63"/>
+<rect x="136" y="264" width="34" height="34" fill="#f7efd2"/>
+<rect x="170" y="264" width="34" height="34" fill="#8fbc63"/>
+<rect x="204" y="264" width="34" height="34" fill="#f7efd2"/>
+<rect x="238" y="264" width="34" height="34" fill="#8fbc63"/>
+<rect x="272" y="264" width="34" height="34" fill="#f7efd2"/>
+<rect x="240.0" y="130.0" width="30" height="30" rx="7" fill="none" stroke="#0d7a37" stroke-width="4"/>
+<text x="255.0" y="151.0" text-anchor="middle" class="square-label">g5</text>
+<text x="51.0" y="320" text-anchor="middle" class="coord">a</text>
+<text x="85.0" y="320" text-anchor="middle" class="coord">b</text>
+<text x="119.0" y="320" text-anchor="middle" class="coord">c</text>
+<text x="153.0" y="320" text-anchor="middle" class="coord">d</text>
+<text x="187.0" y="320" text-anchor="middle" class="coord">e</text>
+<text x="221.0" y="320" text-anchor="middle" class="coord">f</text>
+<text x="255.0" y="320" text-anchor="middle" class="coord">g</text>
+<text x="289.0" y="320" text-anchor="middle" class="coord">h</text>
+<text x="20" y="47.0" text-anchor="middle" class="coord">8</text>
+<text x="20" y="81.0" text-anchor="middle" class="coord">7</text>
+<text x="20" y="115.0" text-anchor="middle" class="coord">6</text>
+<text x="20" y="149.0" text-anchor="middle" class="coord">5</text>
+<text x="20" y="183.0" text-anchor="middle" class="coord">4</text>
+<text x="20" y="217.0" text-anchor="middle" class="coord">3</text>
+<text x="20" y="251.0" text-anchor="middle" class="coord">2</text>
+<text x="20" y="285.0" text-anchor="middle" class="coord">1</text>
+<line x1="255.0" y1="173.0" x2="255.0" y2="151.0" stroke="#0d7a37" stroke-width="6" stroke-linecap="round" marker-end="url(#arrow-g5-0)" class="move-arrow"/>
+<text x="255.0" y="191.0" text-anchor="middle" class="piece">♙</text>
+<text x="164.0" y="334" text-anchor="middle" class="board-caption">g5: Pawn from g4 to g5</text>
+</svg></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="pawns">
+          <div class="section-head">
+            <div class="number">3</div>
+            <div class="section-text">
+              <h2>Important rule: no letter P for pawns</h2>
+              <p>We do not use the letter P when a pawn moves. For pawns, simply write the square the pawn moves to.</p>
+            </div>
+          </div>
+          <div class="rule-card">
+            <h3>Pawn examples</h3>
+            <p>These are pawn moves written correctly:</p>
+            <div class="examples" aria-label="Pawn notation examples">
+              <span class="example-chip">Pawn to g5 = <strong>&nbsp;g5</strong></span>
+              <span class="example-chip">Pawn to e4 = <strong>&nbsp;e4</strong></span>
+              <span class="example-chip">Pawn to d5 = <strong>&nbsp;d5</strong></span>
+            </div>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="piece-letters">
+          <div class="section-head">
+            <div class="number">4</div>
+            <div class="section-text">
+              <h2>Piece letters</h2>
+              <p>We use capital letters for pieces. In this lesson, the two piece letters are K and N.</p>
+            </div>
+          </div>
+          <div class="two-col">
+            <div class="rule-card">
+              <h3>Letters used here</h3>
+              <div class="letter-list">
+                <div class="letter-row"><span class="piece-icon">♔</span><span class="piece-letter">K</span><span class="piece-name">= King</span></div>
+                <div class="letter-row"><span class="piece-icon">♘</span><span class="piece-letter">N</span><span class="piece-name">= Knight</span></div>
+              </div>
+            </div>
+            <div class="callout">
+              <div class="callout-title">Remember</div>
+              <p class="lead" style="font-size:1rem; margin:0;">Piece letters are capital letters. Pawns have no letter in simple pawn moves.</p>
+              <div class="formula"><span>Kf2</span><span>Nd3</span><span>g5</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="one-piece">
+          <div class="section-head">
+            <div class="number">5</div>
+            <div class="section-text">
+              <h2>Only one piece per turn</h2>
+              <p>You can move only one piece per turn. The diagrams below contrast a correct one-piece move with an incorrect two-piece move.</p>
+            </div>
+          </div>
+          <div class="turn-grid" aria-label="One piece per turn examples">
+            <article class="turn-card good">
+              <div class="turn-copy">
+                <h3>Correct</h3>
+                <p>One chess turn moves one piece.</p>
+              </div>
+              <div class="visual"><svg class="board-svg" viewBox="0 0 328 342" role="img" aria-label="Correct: one piece moves">
+<defs>
+<marker id="arrow-one-correct-0" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#0d7a37"/></marker>
+</defs>
+<rect x="0" y="0" width="328" height="342" rx="16" fill="rgba(255,255,255,.62)"/>
+<rect x="34" y="26" width="272" height="272" rx="4" fill="#fff" stroke="rgba(34,54,90,.32)" stroke-width="2"/>
+<rect x="34" y="26" width="34" height="34" fill="#f7efd2"/>
+<rect x="68" y="26" width="34" height="34" fill="#8fbc63"/>
+<rect x="102" y="26" width="34" height="34" fill="#f7efd2"/>
+<rect x="136" y="26" width="34" height="34" fill="#8fbc63"/>
+<rect x="170" y="26" width="34" height="34" fill="#f7efd2"/>
+<rect x="204" y="26" width="34" height="34" fill="#8fbc63"/>
+<rect x="238" y="26" width="34" height="34" fill="#f7efd2"/>
+<rect x="272" y="26" width="34" height="34" fill="#8fbc63"/>
+<rect x="34" y="60" width="34" height="34" fill="#8fbc63"/>
+<rect x="68" y="60" width="34" height="34" fill="#f7efd2"/>
+<rect x="102" y="60" width="34" height="34" fill="#8fbc63"/>
+<rect x="136" y="60" width="34" height="34" fill="#f7efd2"/>
+<rect x="170" y="60" width="34" height="34" fill="#8fbc63"/>
+<rect x="204" y="60" width="34" height="34" fill="#f7efd2"/>
+<rect x="238" y="60" width="34" height="34" fill="#8fbc63"/>
+<rect x="272" y="60" width="34" height="34" fill="#f7efd2"/>
+<rect x="34" y="94" width="34" height="34" fill="#f7efd2"/>
+<rect x="68" y="94" width="34" height="34" fill="#8fbc63"/>
+<rect x="102" y="94" width="34" height="34" fill="#f7efd2"/>
+<rect x="136" y="94" width="34" height="34" fill="#8fbc63"/>
+<rect x="170" y="94" width="34" height="34" fill="#f7efd2"/>
+<rect x="204" y="94" width="34" height="34" fill="#8fbc63"/>
+<rect x="238" y="94" width="34" height="34" fill="#f7efd2"/>
+<rect x="272" y="94" width="34" height="34" fill="#8fbc63"/>
+<rect x="34" y="128" width="34" height="34" fill="#8fbc63"/>
+<rect x="68" y="128" width="34" height="34" fill="#f7efd2"/>
+<rect x="102" y="128" width="34" height="34" fill="#8fbc63"/>
+<rect x="136" y="128" width="34" height="34" fill="#f7efd2"/>
+<rect x="170" y="128" width="34" height="34" fill="#8fbc63"/>
+<rect x="204" y="128" width="34" height="34" fill="#f7efd2"/>
+<rect x="238" y="128" width="34" height="34" fill="#8fbc63"/>
+<rect x="272" y="128" width="34" height="34" fill="#f7efd2"/>
+<rect x="34" y="162" width="34" height="34" fill="#f7efd2"/>
+<rect x="68" y="162" width="34" height="34" fill="#8fbc63"/>
+<rect x="102" y="162" width="34" height="34" fill="#f7efd2"/>
+<rect x="136" y="162" width="34" height="34" fill="#8fbc63"/>
+<rect x="170" y="162" width="34" height="34" fill="#f7efd2"/>
+<rect x="204" y="162" width="34" height="34" fill="#8fbc63"/>
+<rect x="238" y="162" width="34" height="34" fill="#f7efd2"/>
+<rect x="272" y="162" width="34" height="34" fill="#8fbc63"/>
+<rect x="34" y="196" width="34" height="34" fill="#8fbc63"/>
+<rect x="68" y="196" width="34" height="34" fill="#f7efd2"/>
+<rect x="102" y="196" width="34" height="34" fill="#8fbc63"/>
+<rect x="136" y="196" width="34" height="34" fill="#f7efd2"/>
+<rect x="170" y="196" width="34" height="34" fill="#8fbc63"/>
+<rect x="204" y="196" width="34" height="34" fill="#f7efd2"/>
+<rect x="238" y="196" width="34" height="34" fill="#8fbc63"/>
+<rect x="272" y="196" width="34" height="34" fill="#f7efd2"/>
+<rect x="34" y="230" width="34" height="34" fill="#f7efd2"/>
+<rect x="68" y="230" width="34" height="34" fill="#8fbc63"/>
+<rect x="102" y="230" width="34" height="34" fill="#f7efd2"/>
+<rect x="136" y="230" width="34" height="34" fill="#8fbc63"/>
+<rect x="170" y="230" width="34" height="34" fill="#f7efd2"/>
+<rect x="204" y="230" width="34" height="34" fill="#8fbc63"/>
+<rect x="238" y="230" width="34" height="34" fill="#f7efd2"/>
+<rect x="272" y="230" width="34" height="34" fill="#8fbc63"/>
+<rect x="34" y="264" width="34" height="34" fill="#8fbc63"/>
+<rect x="68" y="264" width="34" height="34" fill="#f7efd2"/>
+<rect x="102" y="264" width="34" height="34" fill="#8fbc63"/>
+<rect x="136" y="264" width="34" height="34" fill="#f7efd2"/>
+<rect x="170" y="264" width="34" height="34" fill="#8fbc63"/>
+<rect x="204" y="264" width="34" height="34" fill="#f7efd2"/>
+<rect x="238" y="264" width="34" height="34" fill="#8fbc63"/>
+<rect x="272" y="264" width="34" height="34" fill="#f7efd2"/>
+<rect x="240.0" y="130.0" width="30" height="30" rx="7" fill="none" stroke="#0d7a37" stroke-width="4"/>
+<text x="255.0" y="151.0" text-anchor="middle" class="square-label">g5</text>
+<text x="51.0" y="320" text-anchor="middle" class="coord">a</text>
+<text x="85.0" y="320" text-anchor="middle" class="coord">b</text>
+<text x="119.0" y="320" text-anchor="middle" class="coord">c</text>
+<text x="153.0" y="320" text-anchor="middle" class="coord">d</text>
+<text x="187.0" y="320" text-anchor="middle" class="coord">e</text>
+<text x="221.0" y="320" text-anchor="middle" class="coord">f</text>
+<text x="255.0" y="320" text-anchor="middle" class="coord">g</text>
+<text x="289.0" y="320" text-anchor="middle" class="coord">h</text>
+<text x="20" y="47.0" text-anchor="middle" class="coord">8</text>
+<text x="20" y="81.0" text-anchor="middle" class="coord">7</text>
+<text x="20" y="115.0" text-anchor="middle" class="coord">6</text>
+<text x="20" y="149.0" text-anchor="middle" class="coord">5</text>
+<text x="20" y="183.0" text-anchor="middle" class="coord">4</text>
+<text x="20" y="217.0" text-anchor="middle" class="coord">3</text>
+<text x="20" y="251.0" text-anchor="middle" class="coord">2</text>
+<text x="20" y="285.0" text-anchor="middle" class="coord">1</text>
+<line x1="123.2" y1="276.8" x2="250.8" y2="149.2" stroke="#0d7a37" stroke-width="6" stroke-linecap="round" marker-end="url(#arrow-one-correct-0)" class="move-arrow"/>
+<text x="119.0" y="293.0" text-anchor="middle" class="piece">♗</text>
+<text x="164.0" y="334" text-anchor="middle" class="board-caption">Correct: one piece moves</text>
+</svg></div>
+            </article>
+            <article class="turn-card bad">
+              <div class="turn-copy">
+                <h3>Incorrect</h3>
+                <p>Do not move two pieces in the same turn.</p>
+              </div>
+              <div class="visual"><svg class="board-svg" viewBox="0 0 328 342" role="img" aria-label="Incorrect: two pieces move">
+<defs>
+<marker id="arrow-one-wrong-0" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#d23b32"/></marker>
+<marker id="arrow-one-wrong-1" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#d23b32"/></marker>
+</defs>
+<rect x="0" y="0" width="328" height="342" rx="16" fill="rgba(255,255,255,.62)"/>
+<rect x="34" y="26" width="272" height="272" rx="4" fill="#fff" stroke="rgba(34,54,90,.32)" stroke-width="2"/>
+<rect x="34" y="26" width="34" height="34" fill="#f7efd2"/>
+<rect x="68" y="26" width="34" height="34" fill="#a9b3c7"/>
+<rect x="102" y="26" width="34" height="34" fill="#f7efd2"/>
+<rect x="136" y="26" width="34" height="34" fill="#a9b3c7"/>
+<rect x="170" y="26" width="34" height="34" fill="#f7efd2"/>
+<rect x="204" y="26" width="34" height="34" fill="#a9b3c7"/>
+<rect x="238" y="26" width="34" height="34" fill="#f7efd2"/>
+<rect x="272" y="26" width="34" height="34" fill="#a9b3c7"/>
+<rect x="34" y="60" width="34" height="34" fill="#a9b3c7"/>
+<rect x="68" y="60" width="34" height="34" fill="#f7efd2"/>
+<rect x="102" y="60" width="34" height="34" fill="#a9b3c7"/>
+<rect x="136" y="60" width="34" height="34" fill="#f7efd2"/>
+<rect x="170" y="60" width="34" height="34" fill="#a9b3c7"/>
+<rect x="204" y="60" width="34" height="34" fill="#f7efd2"/>
+<rect x="238" y="60" width="34" height="34" fill="#a9b3c7"/>
+<rect x="272" y="60" width="34" height="34" fill="#f7efd2"/>
+<rect x="34" y="94" width="34" height="34" fill="#f7efd2"/>
+<rect x="68" y="94" width="34" height="34" fill="#a9b3c7"/>
+<rect x="102" y="94" width="34" height="34" fill="#f7efd2"/>
+<rect x="136" y="94" width="34" height="34" fill="#a9b3c7"/>
+<rect x="170" y="94" width="34" height="34" fill="#f7efd2"/>
+<rect x="204" y="94" width="34" height="34" fill="#a9b3c7"/>
+<rect x="238" y="94" width="34" height="34" fill="#f7efd2"/>
+<rect x="272" y="94" width="34" height="34" fill="#a9b3c7"/>
+<rect x="34" y="128" width="34" height="34" fill="#a9b3c7"/>
+<rect x="68" y="128" width="34" height="34" fill="#f7efd2"/>
+<rect x="102" y="128" width="34" height="34" fill="#a9b3c7"/>
+<rect x="136" y="128" width="34" height="34" fill="#f7efd2"/>
+<rect x="170" y="128" width="34" height="34" fill="#a9b3c7"/>
+<rect x="204" y="128" width="34" height="34" fill="#f7efd2"/>
+<rect x="238" y="128" width="34" height="34" fill="#a9b3c7"/>
+<rect x="272" y="128" width="34" height="34" fill="#f7efd2"/>
+<rect x="34" y="162" width="34" height="34" fill="#f7efd2"/>
+<rect x="68" y="162" width="34" height="34" fill="#a9b3c7"/>
+<rect x="102" y="162" width="34" height="34" fill="#f7efd2"/>
+<rect x="136" y="162" width="34" height="34" fill="#a9b3c7"/>
+<rect x="170" y="162" width="34" height="34" fill="#f7efd2"/>
+<rect x="204" y="162" width="34" height="34" fill="#a9b3c7"/>
+<rect x="238" y="162" width="34" height="34" fill="#f7efd2"/>
+<rect x="272" y="162" width="34" height="34" fill="#a9b3c7"/>
+<rect x="34" y="196" width="34" height="34" fill="#a9b3c7"/>
+<rect x="68" y="196" width="34" height="34" fill="#f7efd2"/>
+<rect x="102" y="196" width="34" height="34" fill="#a9b3c7"/>
+<rect x="136" y="196" width="34" height="34" fill="#f7efd2"/>
+<rect x="170" y="196" width="34" height="34" fill="#a9b3c7"/>
+<rect x="204" y="196" width="34" height="34" fill="#f7efd2"/>
+<rect x="238" y="196" width="34" height="34" fill="#a9b3c7"/>
+<rect x="272" y="196" width="34" height="34" fill="#f7efd2"/>
+<rect x="34" y="230" width="34" height="34" fill="#f7efd2"/>
+<rect x="68" y="230" width="34" height="34" fill="#a9b3c7"/>
+<rect x="102" y="230" width="34" height="34" fill="#f7efd2"/>
+<rect x="136" y="230" width="34" height="34" fill="#a9b3c7"/>
+<rect x="170" y="230" width="34" height="34" fill="#f7efd2"/>
+<rect x="204" y="230" width="34" height="34" fill="#a9b3c7"/>
+<rect x="238" y="230" width="34" height="34" fill="#f7efd2"/>
+<rect x="272" y="230" width="34" height="34" fill="#a9b3c7"/>
+<rect x="34" y="264" width="34" height="34" fill="#a9b3c7"/>
+<rect x="68" y="264" width="34" height="34" fill="#f7efd2"/>
+<rect x="102" y="264" width="34" height="34" fill="#a9b3c7"/>
+<rect x="136" y="264" width="34" height="34" fill="#f7efd2"/>
+<rect x="170" y="264" width="34" height="34" fill="#a9b3c7"/>
+<rect x="204" y="264" width="34" height="34" fill="#f7efd2"/>
+<rect x="238" y="264" width="34" height="34" fill="#a9b3c7"/>
+<rect x="272" y="264" width="34" height="34" fill="#f7efd2"/>
+<rect x="240.0" y="130.0" width="30" height="30" rx="7" fill="none" stroke="#0d7a37" stroke-width="4"/>
+<text x="255.0" y="151.0" text-anchor="middle" class="square-label">g5</text>
+<rect x="240.0" y="164.0" width="30" height="30" rx="7" fill="none" stroke="#0d7a37" stroke-width="4"/>
+<text x="255.0" y="185.0" text-anchor="middle" class="square-label">g4</text>
+<text x="51.0" y="320" text-anchor="middle" class="coord">a</text>
+<text x="85.0" y="320" text-anchor="middle" class="coord">b</text>
+<text x="119.0" y="320" text-anchor="middle" class="coord">c</text>
+<text x="153.0" y="320" text-anchor="middle" class="coord">d</text>
+<text x="187.0" y="320" text-anchor="middle" class="coord">e</text>
+<text x="221.0" y="320" text-anchor="middle" class="coord">f</text>
+<text x="255.0" y="320" text-anchor="middle" class="coord">g</text>
+<text x="289.0" y="320" text-anchor="middle" class="coord">h</text>
+<text x="20" y="47.0" text-anchor="middle" class="coord">8</text>
+<text x="20" y="81.0" text-anchor="middle" class="coord">7</text>
+<text x="20" y="115.0" text-anchor="middle" class="coord">6</text>
+<text x="20" y="149.0" text-anchor="middle" class="coord">5</text>
+<text x="20" y="183.0" text-anchor="middle" class="coord">4</text>
+<text x="20" y="217.0" text-anchor="middle" class="coord">3</text>
+<text x="20" y="251.0" text-anchor="middle" class="coord">2</text>
+<text x="20" y="285.0" text-anchor="middle" class="coord">1</text>
+<line x1="123.2" y1="276.8" x2="250.8" y2="149.2" stroke="#d23b32" stroke-width="6" stroke-linecap="round" marker-end="url(#arrow-one-wrong-0)" class="move-arrow"/>
+<line x1="255.0" y1="241.0" x2="255.0" y2="185.0" stroke="#d23b32" stroke-width="6" stroke-linecap="round" marker-end="url(#arrow-one-wrong-1)" class="move-arrow"/>
+<text x="119.0" y="293.0" text-anchor="middle" class="piece">♗</text>
+<text x="255.0" y="259.0" text-anchor="middle" class="piece">♙</text>
+<text x="164.0" y="334" text-anchor="middle" class="board-caption">Incorrect: two pieces move</text>
+</svg></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="review">
+          <div class="section-head">
+            <div class="number">6</div>
+            <div class="section-text">
+              <h2>Lesson review</h2>
+              <p>Use these quick checks to review the main ideas from the lesson.</p>
+            </div>
+          </div>
+          <div class="remember-list">
+            <div class="remember-item"><strong>Kf2</strong><span>King to f2.</span></div>
+            <div class="remember-item"><strong>Nd3</strong><span>Knight to d3.</span></div>
+            <div class="remember-item"><strong>g5</strong><span>Pawn to g5.</span></div>
+            <div class="remember-item"><strong>No P</strong><span>Pawns use only the destination square.</span></div>
+          </div>
+          <details class="quiz">
+            <summary>Quick check: What does N mean in Nd3?</summary>
+            <p>N means Knight. The move Nd3 means the knight moves to d3.</p>
+          </details>
+          <details class="quiz">
+            <summary>Quick check: How do you write a pawn moving to e4?</summary>
+            <p>Write only the destination square: e4. Do not write Pe4 in this beginner notation rule.</p>
+          </details>
+          <details class="quiz">
+            <summary>Quick check: Can two pieces move in one normal turn?</summary>
+            <p>No. One normal turn moves only one piece.</p>
+          </details>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <footer class="footer">
+    Pawn Level · Lesson 5 · Algebraic Notation Examples
+  </footer>
+
+  <script>
+    const root = document.documentElement;
+    const storedTheme = localStorage.getItem("lesson-theme-v1");
+    if (storedTheme === "light" || storedTheme === "dark") {
+      root.dataset.theme = storedTheme;
+    }
+
+    document.getElementById("themeToggle").addEventListener("click", () => {
+      const next = root.dataset.theme === "dark" ? "light" : "dark";
+      root.dataset.theme = next;
+      localStorage.setItem("lesson-theme-v1", next);
+    });
+
+    const progressBar = document.getElementById("progressBar");
+    const updateProgress = () => {
+      const doc = document.documentElement;
+      const scrollTop = doc.scrollTop || document.body.scrollTop;
+      const scrollHeight = doc.scrollHeight - doc.clientHeight;
+      const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+      progressBar.style.width = `${progress}%`;
+    };
+    document.addEventListener("scroll", updateProgress, { passive: true });
+    updateProgress();
+  </script>
+</body>
+</html>

@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Chessmen — Pawn Level Lesson</title>
+  <meta name="description" content="Pawn level chess lesson about the 32 chessmen, pieces, pawns, and each player's starting army.">
+  <style>
+:root {
+      --bg: #07101e;
+      --bg-2: #0c1930;
+      --panel: rgba(255,255,255,.075);
+      --panel-strong: rgba(255,255,255,.12);
+      --text: #f6f8fc;
+      --muted: #b9c6dc;
+      --line: rgba(255,255,255,.14);
+      --gold: #f3c55f;
+      --blue: #3d8dff;
+      --green: #65d28a;
+      --orange: #ffae5a;
+      --red: #ff6b6b;
+      --purple: #b990ff;
+      --shadow: 0 22px 60px rgba(0,0,0,.35);
+      --radius: 24px;
+      --max: 1180px;
+      --card: #f8fafc;
+      --ink: #172033;
+      --muted-dark: #475569;
+    }
+
+    [data-theme="light"] {
+      --bg: #f7f2e8;
+      --bg-2: #fffaf0;
+      --panel: rgba(255,255,255,.72);
+      --panel-strong: rgba(255,255,255,.92);
+      --text: #172033;
+      --muted: #526076;
+      --line: rgba(12,25,48,.15);
+      --shadow: 0 20px 50px rgba(22,30,46,.15);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      line-height: 1.55;
+      background:
+        radial-gradient(circle at top left, rgba(61,141,255,.35), transparent 35rem),
+        radial-gradient(circle at top right, rgba(243,197,95,.18), transparent 34rem),
+        linear-gradient(135deg, var(--bg), var(--bg-2));
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; }
+    button { font: inherit; }
+
+    .skip-link {
+      position: absolute;
+      left: -999px;
+      top: 1rem;
+      background: var(--gold);
+      color: #111827;
+      padding: .65rem 1rem;
+      border-radius: 999px;
+      z-index: 999;
+    }
+    .skip-link:focus { left: 1rem; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(16px);
+      background: rgba(7,16,30,.86);
+      border-bottom: 1px solid var(--line);
+    }
+    [data-theme="light"] .topbar { background: rgba(247,242,232,.86); }
+    .topbar-inner {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: .75rem 0;
+    }
+    .brand { display: flex; align-items: center; gap: .7rem; font-weight: 800; letter-spacing: .01em; }
+    .brand-icon {
+      width: 2.4rem;
+      height: 2.4rem;
+      border-radius: .8rem;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--gold), #fff0b2);
+      color: #13203a;
+      box-shadow: 0 10px 30px rgba(243,197,95,.25);
+    }
+    .top-actions { display: flex; gap: .5rem; flex-wrap: wrap; justify-content: flex-end; }
+    .btn {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: .55rem .9rem;
+      cursor: pointer;
+      transition: transform .18s ease, background .18s ease;
+    }
+    .btn:hover { transform: translateY(-1px); background: var(--panel-strong); }
+
+    .progress { height: 3px; background: rgba(255,255,255,.08); }
+    .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--gold), var(--green), var(--blue)); }
+
+    .page { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; }
+    .hero {
+      padding: clamp(2rem, 4vw, 4rem) 0 1.4rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 520px);
+      gap: clamp(1.25rem, 4vw, 3rem);
+      align-items: center;
+    }
+    .kicker {
+      color: var(--gold);
+      text-transform: uppercase;
+      font-weight: 850;
+      letter-spacing: .14em;
+      font-size: .85rem;
+      margin: 0 0 .75rem;
+    }
+    h1, h2, h3 { line-height: 1.08; margin: 0; }
+    h1 { font-size: clamp(2.35rem, 7vw, 5.7rem); letter-spacing: -.055em; }
+    h2 { font-size: clamp(1.65rem, 4vw, 3.15rem); letter-spacing: -.035em; }
+    h3 { font-size: clamp(1.18rem, 2.2vw, 1.55rem); letter-spacing: -.015em; }
+    .lead, .hero-lead { font-size: clamp(1.05rem, 1.9vw, 1.34rem); color: var(--muted); max-width: 64ch; }
+    .hero-card, .poster-card {
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--line);
+      background: var(--panel);
+    }
+    .poster-card {
+      min-height: 330px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: clamp(1.5rem, 4vw, 2.5rem);
+      background:
+        linear-gradient(135deg, rgba(61,141,255,.24), transparent 45%),
+        linear-gradient(315deg, rgba(101,210,138,.19), transparent 46%),
+        var(--panel);
+    }
+    .poster-icon { font-size: clamp(4.5rem, 11vw, 8rem); line-height: 1; color: var(--gold); text-shadow: 0 12px 40px rgba(0,0,0,.22); }
+    .poster-title { margin-top: 1rem; font-size: clamp(1.55rem, 3vw, 2.35rem); font-weight: 900; letter-spacing: -.04em; }
+    .poster-text { color: var(--muted); max-width: 32ch; margin: .6rem auto 0; }
+
+    .objective-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .8rem;
+      margin: 1rem 0 2rem;
+    }
+    .objective-grid > div {
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel);
+      min-height: 8rem;
+    }
+    .objective-grid strong { display: block; margin-bottom: .45rem; font-size: 1.03rem; }
+    .objective-grid span { color: var(--muted); font-size: .95rem; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 245px minmax(0, 1fr);
+      gap: 1.25rem;
+      align-items: start;
+      padding: 1rem 0 4rem;
+    }
+    .toc {
+      position: sticky;
+      top: 4.5rem;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--panel);
+      padding: 1rem;
+    }
+    .toc-title { font-weight: 850; margin-bottom: .7rem; color: var(--gold); }
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--muted);
+      padding: .55rem .65rem;
+      border-radius: 12px;
+      font-size: .95rem;
+    }
+    .toc a:hover { color: var(--text); background: var(--panel-strong); }
+
+    main { min-width: 0; }
+    .lesson-section {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: var(--radius);
+      padding: clamp(1rem, 3vw, 2rem);
+      margin-bottom: 1.1rem;
+      box-shadow: 0 14px 40px rgba(0,0,0,.14);
+      scroll-margin-top: 5.5rem;
+    }
+    .section-head { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1rem; }
+    .number {
+      flex: 0 0 auto;
+      width: 2.45rem;
+      height: 2.45rem;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      font-weight: 900;
+      color: #111827;
+      background: var(--gold);
+      box-shadow: 0 10px 22px rgba(243,197,95,.25);
+    }
+    .section-text p { color: var(--muted); margin: .75rem 0 0; }
+    .footer {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      padding: 2rem 0 3rem;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+    }
+
+    @media (max-width: 980px) {
+      .hero { grid-template-columns: 1fr; }
+      .layout { grid-template-columns: 1fr; }
+      .toc { position: static; overflow-x: auto; white-space: nowrap; }
+      .toc a { display: inline-block; }
+    }
+    @media (max-width: 720px) {
+      .topbar-inner, .page, .footer { width: min(100% - 22px, var(--max)); }
+      .topbar-inner { align-items: flex-start; }
+      .brand span:last-child { display: none; }
+      .objective-grid { grid-template-columns: 1fr; }
+      .lesson-section { border-radius: 18px; }
+      .section-head { gap: .75rem; }
+      .number { width: 2.15rem; height: 2.15rem; }
+    }
+    @media print {
+      :root, [data-theme="light"], [data-theme="dark"] {
+        --bg: #ffffff;
+        --bg-2: #ffffff;
+        --panel: #ffffff;
+        --panel-strong: #ffffff;
+        --text: #111827;
+        --muted: #374151;
+        --line: #d1d5db;
+        --shadow: none;
+      }
+      body { background: #ffffff; }
+      .topbar, .toc, .btn, .progress { display: none !important; }
+      .page, .footer { width: 100%; }
+      .hero { padding-top: 0; }
+      .layout { display: block; padding: 0; }
+      .lesson-section, .objective-grid > div, .rule-card, .diagram-card, .quiz { break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
+      svg { break-inside: avoid; page-break-inside: avoid; }
+    }
+
+
+    /* Lesson 10 chessmen styles */
+    .fact-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: .85rem;
+      margin-top: 1rem;
+    }
+    .fact-card {
+      background: rgba(255,255,255,.055);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 1rem;
+    }
+    .fact-number {
+      display: inline-grid;
+      place-items: center;
+      min-width: 3rem;
+      min-height: 3rem;
+      padding: .35rem;
+      border-radius: 999px;
+      background: var(--gold);
+      color: #111827;
+      font-weight: 950;
+      font-size: 1.25rem;
+      margin-bottom: .65rem;
+    }
+    .fact-card strong { display: block; margin-bottom: .35rem; color: var(--text); }
+    .fact-card span { color: var(--muted); }
+    .content-grid {
+      display: grid;
+      grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr);
+      gap: 1rem;
+      align-items: start;
+      margin-top: 1rem;
+    }
+    .info-card, .diagram-card, .table-card {
+      background: #f8fafc;
+      color: #172033;
+      border-radius: 20px;
+      border: 1px solid rgba(15,23,42,.12);
+      padding: 1rem;
+      box-shadow: 0 16px 38px rgba(0,0,0,.18);
+    }
+    .info-card p, .diagram-card p, .table-card p { color: #475569; margin: .55rem 0; }
+    .info-card strong, .diagram-card strong, .table-card strong { color: #0f172a; }
+    .board-shell {
+      background: #ffffff;
+      border: 1px solid #dbe3ef;
+      border-radius: 18px;
+      padding: .8rem;
+      overflow: auto;
+      margin-top: .85rem;
+    }
+    .board-shell svg {
+      display: block;
+      width: min(100%, 680px);
+      height: auto;
+      margin: 0 auto;
+    }
+    .board-shell.compact svg { width: min(100%, 560px); }
+    .inventory-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .mini-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      overflow: hidden;
+      border: 1px solid #dbe3ef;
+      border-radius: 16px;
+      margin-top: .85rem;
+      background: #ffffff;
+    }
+    .mini-table th, .mini-table td {
+      padding: .85rem;
+      border-bottom: 1px solid #e2e8f0;
+      text-align: left;
+      color: #172033;
+    }
+    .mini-table th {
+      background: #eff6ff;
+      color: #1e3a8a;
+      font-weight: 950;
+    }
+    .mini-table tr:last-child td { border-bottom: none; }
+    .mini-table .count {
+      font-weight: 950;
+      color: #2563eb;
+      text-align: center;
+    }
+    .summary-grid, .review-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: .85rem;
+      margin-top: 1rem;
+    }
+    .summary-item, .review-item {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1rem;
+      background: rgba(255,255,255,.055);
+    }
+    .summary-item strong, .review-item strong { display: block; color: var(--gold); margin-bottom: .3rem; }
+    .summary-item span, .review-item span { color: var(--muted); }
+    .callout {
+      border: 1px solid rgba(243,197,95,.42);
+      border-radius: 20px;
+      padding: 1rem;
+      background: rgba(243,197,95,.10);
+      margin-top: 1rem;
+    }
+    .callout-title { color: var(--gold); font-weight: 900; margin-bottom: .35rem; }
+    details.quiz {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1rem;
+      background: rgba(255,255,255,.055);
+      margin: .7rem 0;
+    }
+    details.quiz summary { cursor: pointer; font-weight: 850; color: var(--text); }
+    details.quiz p { color: var(--muted); }
+    .piece-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      margin-top: .85rem;
+    }
+    .piece-chip {
+      border: 1px solid rgba(15,23,42,.12);
+      background: #fff;
+      color: #0f172a;
+      border-radius: 999px;
+      padding: .5rem .75rem;
+      font-weight: 850;
+    }
+    @media (max-width: 900px) {
+      .content-grid, .inventory-grid, .fact-grid, .summary-grid, .review-grid { grid-template-columns: 1fr; }
+    }
+
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#lesson">Skip to lesson</a>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand"><span class="brand-icon">♟</span><span>Pawn Level · Lesson 10</span></div>
+      <div class="top-actions">
+        <a class="btn back-to-index" href="pawn-index.html">&larr; Back to Pawn Index</a>
+        <button class="btn" id="themeToggle" type="button">Toggle theme</button>
+        <button class="btn" type="button" onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </div>
+    <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+  </header>
+
+  <div class="page">
+    <section class="hero" id="top">
+      <div class="hero-copy">
+        <p class="kicker">Lesson 10 · Beginner / Pawn Level</p>
+        <h1>The Chessmen</h1>
+        <p class="hero-lead">Learn how many chessmen are used in a standard game, how they are divided between White and Black, and which chessmen are pieces or pawns.</p>
+        <div class="objective-grid" aria-label="Lesson objectives">
+          <div><strong>32 chessmen</strong><span>A standard game begins with 32 total chessmen.</span></div>
+          <div><strong>16 each</strong><span>White has 16 chessmen and Black has 16 chessmen.</span></div>
+          <div><strong>Pieces and pawns</strong><span>A chessman is either a piece or a pawn.</span></div>
+          <div><strong>Player inventory</strong><span>Each player has the same starting set of chessmen.</span></div>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="poster-card">
+          <div class="poster-icon">♔ ♕ ♖ ♘ ♗ ♙</div>
+          <div class="poster-title">32 chessmen in one game</div>
+          <div class="poster-text">White has 16. Black has 16. Each side begins with the same army.</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="layout">
+      <aside class="toc" aria-label="Lesson contents">
+        <div class="toc-title">Lesson contents</div>
+        <a href="#all-chessmen">1. All Chessmen</a>
+        <a href="#important-facts">2. Important Facts</a>
+        <a href="#piece-or-pawn">3. Piece or Pawn</a>
+        <a href="#white-chessmen">4. White Chessmen</a>
+        <a href="#black-chessmen">5. Black Chessmen</a>
+        <a href="#each-player">6. Each Player Has</a>
+        <a href="#summary">7. Summary</a>
+        <a href="#review">8. Review Questions</a>
+      </aside>
+
+      <main id="lesson" class="lesson-flow">
+        <section class="lesson-section" id="all-chessmen">
+          <div class="section-head">
+            <div class="number">1</div>
+            <div class="section-text">
+              <h2>All Chessmen in One Game</h2>
+              <p>A standard chess game begins with 32 chessmen: 16 for White and 16 for Black.</p>
+            </div>
+          </div>
+          <div class="diagram-card">
+            <p>Use this overview to show that both players start with equal material.</p>
+            <div class="board-shell"><svg viewBox="0 0 520 330" role="img" aria-label="All 32 chessmen in a game of chess">
+      <defs>
+        <style>
+          .mainTitle { font: 900 25px Arial, sans-serif; fill: #0f172a; }
+          .label { font: 800 15px Arial, sans-serif; fill: #334155; }
+          .bigNum { font: 900 42px Arial, sans-serif; fill:#2563eb; }
+        </style>
+      </defs>
+      <rect x="0" y="0" width="520" height="330" rx="22" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+      <text x="28" y="36" class="mainTitle">There are 32 chessmen</text>
+      <text x="410" y="44" class="bigNum">32</text>
+      <rect x="26" y="58" width="468" height="106" rx="18" fill="#fef2f2" stroke="#fecaca"/>
+      <rect x="26" y="174" width="468" height="106" rx="18" fill="#eff6ff" stroke="#bfdbfe"/>
+      <text x="44" y="84" class="label">Black has 16</text>
+      <text x="44" y="200" class="label">White has 16</text>
+      <text x="54" y="46" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♜</text><text x="106" y="46" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♞</text><text x="158" y="46" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♝</text><text x="210" y="46" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♛</text><text x="262" y="46" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♚</text><text x="314" y="46" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♝</text><text x="366" y="46" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♞</text><text x="418" y="46" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♜</text><text x="54" y="104" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♟</text><text x="106" y="104" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♟</text><text x="158" y="104" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♟</text><text x="210" y="104" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♟</text><text x="262" y="104" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♟</text><text x="314" y="104" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♟</text><text x="366" y="104" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♟</text><text x="418" y="104" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♟</text><text x="54" y="184" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♙</text><text x="106" y="184" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♙</text><text x="158" y="184" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♙</text><text x="210" y="184" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♙</text><text x="262" y="184" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♙</text><text x="314" y="184" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♙</text><text x="366" y="184" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♙</text><text x="418" y="184" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♙</text><text x="54" y="242" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♖</text><text x="106" y="242" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♘</text><text x="158" y="242" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♗</text><text x="210" y="242" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♕</text><text x="262" y="242" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♔</text><text x="314" y="242" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♗</text><text x="366" y="242" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♘</text><text x="418" y="242" text-anchor="middle" dominant-baseline="middle" style="font:40px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.2px;paint-order:stroke fill;">♖</text>
+      <text x="260" y="307" text-anchor="middle" class="label">16 white + 16 black = 32 chessmen</text>
+    </svg></div>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="important-facts">
+          <div class="section-head">
+            <div class="number">2</div>
+            <div class="section-text">
+              <h2>Important Facts</h2>
+              <p>Students should remember these three counts before studying piece movement.</p>
+            </div>
+          </div>
+          <div class="fact-grid">
+            <div class="fact-card"><div class="fact-number">32</div><strong>Total chessmen</strong><span>There are 32 chessmen in one game.</span></div>
+            <div class="fact-card"><div class="fact-number">16</div><strong>White chessmen</strong><span>White has 16 chessmen.</span></div>
+            <div class="fact-card"><div class="fact-number">16</div><strong>Black chessmen</strong><span>Black has 16 chessmen.</span></div>
+          </div>
+          <div class="callout"><div class="callout-title">Teacher note</div>In this lesson, the word <strong>piece</strong> means king, queen, rook, knight, or bishop. Pawns are counted separately as pawns.</div>
+        </section>
+
+        <section class="lesson-section" id="piece-or-pawn">
+          <div class="section-head">
+            <div class="number">3</div>
+            <div class="section-text">
+              <h2>Piece or Pawn?</h2>
+              <p>A chessman can be a piece or a pawn.</p>
+            </div>
+          </div>
+          <div class="content-grid">
+            <div class="info-card">
+              <h3>Pieces</h3>
+              <p>The pieces are the king, queen, rooks, knights, and bishops.</p>
+              <div class="piece-strip" aria-label="Piece examples">
+                <span class="piece-chip">♔ King</span>
+                <span class="piece-chip">♕ Queen</span>
+                <span class="piece-chip">♖ Rook</span>
+                <span class="piece-chip">♘ Knight</span>
+                <span class="piece-chip">♗ Bishop</span>
+              </div>
+              <h3 style="margin-top:1.2rem">Pawns</h3>
+              <p>Pawns are chessmen too, but they are named separately from the pieces.</p>
+              <div class="piece-strip" aria-label="Pawn examples">
+                <span class="piece-chip">♙ White pawn</span>
+                <span class="piece-chip">♟ Black pawn</span>
+              </div>
+            </div>
+            <div class="diagram-card">
+              <div class="board-shell compact"><svg viewBox="0 0 520 280" role="img" aria-label="A chessman can be a piece or a pawn">
+      <defs>
+        <style>
+          .title { font:900 24px Arial,sans-serif; fill:#0f172a; }
+          .label { font:800 18px Arial,sans-serif; fill:#1e293b; }
+          .small { font:700 14px Arial,sans-serif; fill:#475569; }
+          .pieceW { font:54px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#fff;stroke:#0f172a;stroke-width:1.3px;paint-order:stroke fill; }
+          .pieceB { font:54px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827; }
+        </style>
+        <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L9,3 z" fill="#2563eb"/>
+        </marker>
+      </defs>
+      <rect x="0" y="0" width="520" height="280" rx="22" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+      <text x="26" y="38" class="title">A chessman is either a piece or a pawn</text>
+
+      <rect x="190" y="64" width="140" height="64" rx="18" fill="#eff6ff" stroke="#bfdbfe"/>
+      <text x="260" y="103" text-anchor="middle" class="label">Chessman</text>
+
+      <line x1="235" y1="130" x2="155" y2="180" stroke="#2563eb" stroke-width="5" stroke-linecap="round" marker-end="url(#arrow)"/>
+      <line x1="285" y1="130" x2="365" y2="180" stroke="#2563eb" stroke-width="5" stroke-linecap="round" marker-end="url(#arrow)"/>
+
+      <rect x="44" y="180" width="190" height="70" rx="18" fill="#f8fafc" stroke="#e2e8f0"/>
+      <text x="78" y="220" text-anchor="middle" dominant-baseline="middle" class="pieceW">♔</text>
+      <text x="118" y="220" text-anchor="middle" dominant-baseline="middle" class="pieceB">♛</text>
+      <text x="158" y="220" text-anchor="middle" dominant-baseline="middle" class="pieceW">♖</text>
+      <text x="196" y="207" class="label">Piece</text>
+      <text x="196" y="230" class="small">king, queen, rook,<tspan x="196" dy="17">knight, bishop</tspan></text>
+
+      <rect x="286" y="180" width="190" height="70" rx="18" fill="#f8fafc" stroke="#e2e8f0"/>
+      <text x="330" y="220" text-anchor="middle" dominant-baseline="middle" class="pieceW">♙</text>
+      <text x="370" y="220" text-anchor="middle" dominant-baseline="middle" class="pieceB">♟</text>
+      <text x="410" y="207" class="label">Pawn</text>
+      <text x="410" y="230" class="small">8 for each player</text>
+    </svg></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="white-chessmen">
+          <div class="section-head">
+            <div class="number">4</div>
+            <div class="section-text">
+              <h2>White Has 16 Chessmen</h2>
+              <p>White begins with one complete army.</p>
+            </div>
+          </div>
+          <div class="diagram-card">
+            <div class="board-shell compact"><svg viewBox="0 0 470 430" role="img" aria-label="White chessmen inventory">
+      <defs>
+        <style>
+          .svgTitle { font: 800 24px Arial, sans-serif; fill: #0f172a; }
+          .smallText { font: 700 15px Arial, sans-serif; fill: #475569; }
+          .rowName { font: 800 18px Arial, sans-serif; fill: #1e293b; }
+          .count { font: 900 22px Arial, sans-serif; fill: #2563eb; }
+        </style>
+      </defs>
+      <rect x="0" y="0" width="470" height="430" rx="22" fill="#eff6ff" stroke="#bfdbfe" stroke-width="2"/>
+      <text x="24" y="36" class="svgTitle">White chessmen</text>
+      <text x="390" y="36" text-anchor="middle" class="smallText">Count</text>
+      
+        <g transform="translate(0,72)">
+          <rect x="20" y="-28" width="430" height="48" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
+          <text x="54" y="3" text-anchor="middle" dominant-baseline="middle" style="font:38px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.3px;paint-order:stroke fill;">♔</text>
+          <text x="98" y="0" dominant-baseline="middle" class="rowName">King</text>
+          <text x="405" y="0" text-anchor="middle" dominant-baseline="middle" class="count">1</text>
+        </g>
+        <g transform="translate(0,130)">
+          <rect x="20" y="-28" width="430" height="48" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
+          <text x="54" y="3" text-anchor="middle" dominant-baseline="middle" style="font:38px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.3px;paint-order:stroke fill;">♕</text>
+          <text x="98" y="0" dominant-baseline="middle" class="rowName">Queen</text>
+          <text x="405" y="0" text-anchor="middle" dominant-baseline="middle" class="count">1</text>
+        </g>
+        <g transform="translate(0,188)">
+          <rect x="20" y="-28" width="430" height="48" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
+          <text x="54" y="3" text-anchor="middle" dominant-baseline="middle" style="font:38px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.3px;paint-order:stroke fill;">♖</text>
+          <text x="98" y="0" dominant-baseline="middle" class="rowName">Rooks</text>
+          <text x="405" y="0" text-anchor="middle" dominant-baseline="middle" class="count">2</text>
+        </g>
+        <g transform="translate(0,246)">
+          <rect x="20" y="-28" width="430" height="48" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
+          <text x="54" y="3" text-anchor="middle" dominant-baseline="middle" style="font:38px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.3px;paint-order:stroke fill;">♘</text>
+          <text x="98" y="0" dominant-baseline="middle" class="rowName">Knights</text>
+          <text x="405" y="0" text-anchor="middle" dominant-baseline="middle" class="count">2</text>
+        </g>
+        <g transform="translate(0,304)">
+          <rect x="20" y="-28" width="430" height="48" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
+          <text x="54" y="3" text-anchor="middle" dominant-baseline="middle" style="font:38px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.3px;paint-order:stroke fill;">♗</text>
+          <text x="98" y="0" dominant-baseline="middle" class="rowName">Bishops</text>
+          <text x="405" y="0" text-anchor="middle" dominant-baseline="middle" class="count">2</text>
+        </g>
+        <g transform="translate(0,362)">
+          <rect x="20" y="-28" width="430" height="48" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
+          <text x="54" y="3" text-anchor="middle" dominant-baseline="middle" style="font:38px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#ffffff;stroke:#0f172a;stroke-width:1.3px;paint-order:stroke fill;">♙</text>
+          <text x="98" y="0" dominant-baseline="middle" class="rowName">Pawns</text>
+          <text x="405" y="0" text-anchor="middle" dominant-baseline="middle" class="count">8</text>
+        </g>
+      <rect x="20" y="374" width="430" height="38" rx="14" fill="#dcfce7" stroke="#86efac"/>
+      <text x="40" y="398" class="smallText" style="fill:#166534;">Total chessmen</text>
+      <text x="405" y="398" text-anchor="middle" class="count" style="fill:#166534;">16</text>
+    </svg></div>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="black-chessmen">
+          <div class="section-head">
+            <div class="number">5</div>
+            <div class="section-text">
+              <h2>Black Has 16 Chessmen</h2>
+              <p>Black begins with the same number of chessmen as White.</p>
+            </div>
+          </div>
+          <div class="diagram-card">
+            <div class="board-shell compact"><svg viewBox="0 0 470 430" role="img" aria-label="Black chessmen inventory">
+      <defs>
+        <style>
+          .svgTitle { font: 800 24px Arial, sans-serif; fill: #0f172a; }
+          .smallText { font: 700 15px Arial, sans-serif; fill: #475569; }
+          .rowName { font: 800 18px Arial, sans-serif; fill: #1e293b; }
+          .count { font: 900 22px Arial, sans-serif; fill: #2563eb; }
+        </style>
+      </defs>
+      <rect x="0" y="0" width="470" height="430" rx="22" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+      <text x="24" y="36" class="svgTitle">Black chessmen</text>
+      <text x="390" y="36" text-anchor="middle" class="smallText">Count</text>
+      
+        <g transform="translate(0,72)">
+          <rect x="20" y="-28" width="430" height="48" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
+          <text x="54" y="3" text-anchor="middle" dominant-baseline="middle" style="font:38px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♚</text>
+          <text x="98" y="0" dominant-baseline="middle" class="rowName">King</text>
+          <text x="405" y="0" text-anchor="middle" dominant-baseline="middle" class="count">1</text>
+        </g>
+        <g transform="translate(0,130)">
+          <rect x="20" y="-28" width="430" height="48" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
+          <text x="54" y="3" text-anchor="middle" dominant-baseline="middle" style="font:38px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♛</text>
+          <text x="98" y="0" dominant-baseline="middle" class="rowName">Queen</text>
+          <text x="405" y="0" text-anchor="middle" dominant-baseline="middle" class="count">1</text>
+        </g>
+        <g transform="translate(0,188)">
+          <rect x="20" y="-28" width="430" height="48" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
+          <text x="54" y="3" text-anchor="middle" dominant-baseline="middle" style="font:38px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♜</text>
+          <text x="98" y="0" dominant-baseline="middle" class="rowName">Rooks</text>
+          <text x="405" y="0" text-anchor="middle" dominant-baseline="middle" class="count">2</text>
+        </g>
+        <g transform="translate(0,246)">
+          <rect x="20" y="-28" width="430" height="48" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
+          <text x="54" y="3" text-anchor="middle" dominant-baseline="middle" style="font:38px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♞</text>
+          <text x="98" y="0" dominant-baseline="middle" class="rowName">Knights</text>
+          <text x="405" y="0" text-anchor="middle" dominant-baseline="middle" class="count">2</text>
+        </g>
+        <g transform="translate(0,304)">
+          <rect x="20" y="-28" width="430" height="48" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
+          <text x="54" y="3" text-anchor="middle" dominant-baseline="middle" style="font:38px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♝</text>
+          <text x="98" y="0" dominant-baseline="middle" class="rowName">Bishops</text>
+          <text x="405" y="0" text-anchor="middle" dominant-baseline="middle" class="count">2</text>
+        </g>
+        <g transform="translate(0,362)">
+          <rect x="20" y="-28" width="430" height="48" rx="14" fill="#ffffff" stroke="#e2e8f0"/>
+          <text x="54" y="3" text-anchor="middle" dominant-baseline="middle" style="font:38px 'Segoe UI Symbol','Noto Sans Symbols 2',serif;fill:#111827;">♟</text>
+          <text x="98" y="0" dominant-baseline="middle" class="rowName">Pawns</text>
+          <text x="405" y="0" text-anchor="middle" dominant-baseline="middle" class="count">8</text>
+        </g>
+      <rect x="20" y="374" width="430" height="38" rx="14" fill="#dcfce7" stroke="#86efac"/>
+      <text x="40" y="398" class="smallText" style="fill:#166534;">Total chessmen</text>
+      <text x="405" y="398" text-anchor="middle" class="count" style="fill:#166534;">16</text>
+    </svg></div>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="each-player">
+          <div class="section-head">
+            <div class="number">6</div>
+            <div class="section-text">
+              <h2>Each Player Has</h2>
+              <p>Each player starts the game with the same set of chessmen.</p>
+            </div>
+          </div>
+          <div class="table-card">
+            <table class="mini-table" aria-label="Each player's chessmen count">
+          <thead>
+            <tr>
+              <th>Chessman</th>
+              <th>Count for each player</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>King</td><td class="count">1</td><td>♔ / ♚</td></tr>
+            <tr><td>Queen</td><td class="count">1</td><td>♕ / ♛</td></tr>
+            <tr><td>Rooks</td><td class="count">2</td><td>♖♖ / ♜♜</td></tr>
+            <tr><td>Knights</td><td class="count">2</td><td>♘♘ / ♞♞</td></tr>
+            <tr><td>Bishops</td><td class="count">2</td><td>♗♗ / ♝♝</td></tr>
+            <tr><td>Pawns</td><td class="count">8</td><td>♙♙♙♙♙♙♙♙ / ♟♟♟♟♟♟♟♟</td></tr>
+          </tbody>
+        </table>
+          </div>
+        </section>
+
+        <section class="lesson-section" id="summary">
+          <div class="section-head">
+            <div class="number">7</div>
+            <div class="section-text">
+              <h2>Lesson Summary</h2>
+              <p>Use this checklist to remember the chessmen in one game.</p>
+            </div>
+          </div>
+          <div class="summary-grid">
+            <div class="summary-item"><strong>1 king</strong><span>Each player has one king.</span></div>
+            <div class="summary-item"><strong>1 queen</strong><span>Each player has one queen.</span></div>
+            <div class="summary-item"><strong>2 rooks</strong><span>Each player has two rooks.</span></div>
+            <div class="summary-item"><strong>2 knights</strong><span>Each player has two knights.</span></div>
+            <div class="summary-item"><strong>2 bishops</strong><span>Each player has two bishops.</span></div>
+            <div class="summary-item"><strong>8 pawns</strong><span>Each player has eight pawns.</span></div>
+          </div>
+          <div class="callout"><div class="callout-title">Main idea</div>Each player has 1 king, 1 queen, 2 rooks, 2 knights, 2 bishops, and 8 pawns.</div>
+        </section>
+
+        <section class="lesson-section" id="review">
+          <div class="section-head">
+            <div class="number">8</div>
+            <div class="section-text">
+              <h2>Review Questions</h2>
+              <p>Check that students understand the counts and categories.</p>
+            </div>
+          </div>
+          <details class="quiz"><summary>How many chessmen are there in one game?</summary><p>There are 32 chessmen.</p></details>
+          <details class="quiz"><summary>How many chessmen does White have?</summary><p>White has 16 chessmen.</p></details>
+          <details class="quiz"><summary>How many chessmen does Black have?</summary><p>Black has 16 chessmen.</p></details>
+          <details class="quiz"><summary>Is a pawn counted as a piece in this lesson?</summary><p>No. A chessman is either a piece or a pawn. Pieces are king, queen, rook, knight, and bishop.</p></details>
+          <details class="quiz"><summary>How many pawns does each player have?</summary><p>Each player has 8 pawns.</p></details>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <footer class="footer">
+    Standalone embedded lesson page — no external image files required.
+  </footer>
+
+  <script>
+    const root = document.documentElement;
+    const savedTheme = localStorage.getItem("lesson-theme-v1");
+    if (savedTheme === "light" || savedTheme === "dark") root.dataset.theme = savedTheme;
+
+    document.getElementById("themeToggle").addEventListener("click", () => {
+      const next = root.dataset.theme === "dark" ? "light" : "dark";
+      root.dataset.theme = next;
+      localStorage.setItem("lesson-theme-v1", next);
+    });
+
+    const progressBar = document.getElementById("progressBar");
+    function updateProgress() {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      progressBar.style.width = Math.min(100, Math.max(0, progress)) + "%";
+    }
+    updateProgress();
+    window.addEventListener("scroll", updateProgress, { passive: true });
+  </script>
+</body>
+</html>
