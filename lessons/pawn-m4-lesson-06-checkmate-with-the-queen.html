@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Checkmate with the Queen — Pawn Level Module 4</title>
+  <meta name="description" content="Pawn Level Module 4 lesson: checkmate with the queen using the shrinking box method.">
+  <style>
+    :root {
+      --bg: #071012; --bg-2: #0b1517; --panel: rgba(27, 42, 46, 0.92); --panel-strong: rgba(28, 43, 48, 0.98);
+      --text: #f7faf5; --muted: #b9c6c3; --line: rgba(52, 74, 78, 0.92); --gold: #8ad8b7; --blue: #3d8dff;
+      --green: #65d28a; --orange: #ffae5a; --red: #ff6b6b; --purple: #b990ff;
+      --shadow: 0 22px 60px rgba(0,0,0,.45); --radius: 24px; --max: 1180px;
+    }
+    [data-theme="light"] {
+      --bg: #f6f7f8; --bg-2: #edf1f3; --panel: rgba(255, 255, 255, 0.94); --panel-strong: rgba(255, 255, 255, 0.98);
+      --text: #172127; --muted: #52606a; --line: rgba(190, 202, 207, 0.9); --shadow: 0 20px 50px rgba(17,28,35,0.16); --gold: #1d6f78;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; color: var(--text); font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; line-height: 1.55; background: radial-gradient(circle at top left, rgba(61,141,255,.35), transparent 35rem), radial-gradient(circle at top right, rgba(243,197,95,.18), transparent 34rem), linear-gradient(135deg, var(--bg), var(--bg-2)); overflow-x: hidden; }
+    img { max-width: 100%; height: auto; display: block; }
+    a { color: inherit; } button { font: inherit; }
+    .skip-link { position: absolute; left: -999px; top: 1rem; background: var(--gold); color: #111827; padding: .65rem 1rem; border-radius: 999px; z-index: 999; }
+    .skip-link:focus { left: 1rem; }
+    .topbar { position: sticky; top: 0; z-index: 20; backdrop-filter: blur(16px); background: color-mix(in srgb, var(--bg) 78%, transparent); border-bottom: 1px solid var(--line); }
+    .topbar-inner { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .75rem 0; }
+    .brand { display: flex; align-items: center; gap: .7rem; font-weight: 800; letter-spacing: .01em; }
+    .brand-icon { width: 2.4rem; height: 2.4rem; border-radius: .8rem; display: grid; place-items: center; background: linear-gradient(135deg, var(--gold), color-mix(in srgb, var(--gold) 30%, transparent)); color: #13203a; box-shadow: 0 10px 30px color-mix(in srgb, var(--gold) 25%, transparent); }
+    .top-actions { display: flex; gap: .5rem; flex-wrap: wrap; justify-content: flex-end; }
+    .btn { border: 1px solid var(--line); color: var(--text); background: var(--panel); border-radius: 999px; padding: .55rem .9rem; cursor: pointer; transition: transform .18s ease, background .18s ease; }
+    .btn:hover { transform: translateY(-1px); background: var(--panel-strong); }
+    .progress { height: 3px; background: rgba(255,255,255,.08); }
+    .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--gold), var(--green), var(--blue)); }
+    .page { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; }
+    .hero { padding: clamp(2rem, 4vw, 4rem) 0 1.4rem; display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 520px); gap: clamp(1.25rem, 4vw, 3rem); align-items: center; }
+    .kicker { color: var(--gold); text-transform: uppercase; font-weight: 850; letter-spacing: .14em; font-size: .85rem; margin: 0 0 .75rem; }
+    h1, h2, h3 { line-height: 1.08; margin: 0; }
+    h1 { font-size: clamp(2.35rem, 7vw, 5.7rem); letter-spacing: -.055em; }
+    h2 { font-size: clamp(1.65rem, 4vw, 3.15rem); letter-spacing: -.035em; }
+    h3 { font-size: clamp(1.18rem, 2.2vw, 1.55rem); letter-spacing: -.015em; }
+    .lead { font-size: clamp(1.05rem, 1.9vw, 1.34rem); color: var(--muted); max-width: 64ch; }
+    .hero-card { border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--line); background: var(--panel); }
+    .objective-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .8rem; margin: 1rem 0 2rem; }
+    .objective { padding: 1rem; border: 1px solid var(--line); border-radius: 18px; background: var(--panel); min-height: 8rem; }
+    .objective strong { display: block; margin-bottom: .45rem; font-size: 1.03rem; }
+    .objective span { color: var(--muted); font-size: .95rem; }
+    .layout { display: grid; grid-template-columns: 245px minmax(0, 1fr); gap: 1.25rem; align-items: start; padding: 1rem 0 4rem; }
+    .toc { position: sticky; top: 4.5rem; border: 1px solid var(--line); border-radius: 20px; background: var(--panel); padding: 1rem; }
+    .toc-title { font-weight: 850; margin-bottom: .7rem; color: var(--gold); }
+    .toc a { display: block; text-decoration: none; color: var(--muted); padding: .55rem .65rem; border-radius: 12px; font-size: .95rem; }
+    .toc a:hover { color: var(--text); background: var(--panel-strong); }
+    main { min-width: 0; }
+    .lesson-section { border: 1px solid var(--line); background: var(--panel); border-radius: var(--radius); padding: clamp(1rem, 3vw, 2rem); margin-bottom: 1.1rem; box-shadow: 0 14px 40px rgba(0,0,0,.14); scroll-margin-top: 5.5rem; }
+    .section-head { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1rem; }
+    .number { flex: 0 0 auto; width: 2.45rem; height: 2.45rem; display: grid; place-items: center; border-radius: 999px; font-weight: 900; color: #111827; background: var(--gold); box-shadow: 0 10px 22px rgba(243,197,95,.25); }
+    .section-text p { color: var(--muted); margin: .75rem 0 0; }
+    figure { margin: 0; }
+    .two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, .9fr); gap: 1rem; align-items: center; }
+    .callout { border: 1px solid color-mix(in srgb, var(--gold) 42%, var(--line)); border-radius: 20px; padding: 1rem; background: color-mix(in srgb, var(--gold) 12%, var(--panel)); }
+    .callout-title { color: var(--gold); font-weight: 900; margin-bottom: .35rem; }
+    ul.clean { padding-left: 1.2rem; margin: .7rem 0 0; color: var(--muted); }
+    ul.clean li { margin: .35rem 0; }
+    details.quiz { border: 1px solid var(--line); background: rgba(255,255,255,.055); border-radius: 16px; padding: .9rem 1rem; margin-top: .75rem; }
+    details.quiz summary { cursor: pointer; font-weight: 800; }
+    details.quiz p { color: var(--muted); margin-bottom: 0; }
+    .footer { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; padding: 2rem 0 3rem; color: var(--muted); border-top: 1px solid var(--line); }
+    @media (max-width: 980px) { .hero { grid-template-columns: 1fr; } .layout { grid-template-columns: 1fr; } .toc { position: static; overflow-x: auto; white-space: nowrap; } .toc a { display: inline-block; } }
+    @media (max-width: 720px) { .topbar-inner, .page, .footer { width: min(100% - 22px, var(--max)); } .topbar-inner { align-items: flex-start; } .brand span:last-child { display: none; } .objective-grid, .two-col { grid-template-columns: 1fr; } .lesson-section { border-radius: 18px; } .section-head { gap: .75rem; } .number { width: 2.15rem; height: 2.15rem; } }
+    @media print { :root, [data-theme="light"], [data-theme="dark"] { --bg: #ffffff; --bg-2: #ffffff; --panel: #ffffff; --panel-strong: #ffffff; --text: #111827; --muted: #374151; --line: #d1d5db; --shadow: none; } body { background: #ffffff; } .topbar, .toc, .btn, .progress { display: none !important; } .page, .footer { width: 100%; } .hero { padding-top: 0; } .layout { display: block; padding: 0; } .lesson-section, .objective { break-inside: avoid; box-shadow: none; } }
+    .gold { color: var(--gold); }
+    .blue { color: var(--blue); }
+    .red { color: var(--red); }
+    code.inline { background: color-mix(in srgb, var(--blue) 14%, var(--panel)); border: 1px solid color-mix(in srgb, var(--blue) 35%, var(--line)); border-radius: 8px; color: color-mix(in srgb, var(--blue) 82%, var(--text)); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace font-size: .98em; font-weight: 850; padding: .08rem .38rem; white-space: nowrap; }
+    .module-hero-visual { min-height: 420px; display: grid; align-content: center; gap: 1rem; padding: clamp(1.2rem, 4vw, 2rem); background: radial-gradient(circle at 10% 15%, rgba(243,197,95,.25), transparent 16rem), radial-gradient(circle at 90% 85%, rgba(101,210,138,.22), transparent 16rem), linear-gradient(135deg, rgba(255,255,255,.11), rgba(255,255,255,.035)); }
+    .hero-note { color: var(--muted); border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,.055); padding: .9rem 1rem; margin: 0; }
+    .board-panel { border: 1px solid var(--line); border-radius: 22px; background: rgba(255,255,255,.055); padding: 1rem; overflow: hidden; margin-top: 1rem; }
+    .board-panel h3 { margin-bottom: .45rem; }
+    .board-panel p { color: var(--muted); margin: .35rem 0 1rem; }
+    .board-wrap { display: flex; justify-content: center; align-items: center; overflow-x: auto; padding: .7rem; border-radius: 18px; border: 1px solid var(--line); background: #f8fafc; }
+    .lesson-svg { width: min(100%, 390px); height: auto; display: block; flex: 0 0 auto; }
+    .summary-box { border: 1px solid color-mix(in srgb, var(--green) 42%, var(--line)); border-radius: 18px; background: color-mix(in srgb, var(--green) 12%, var(--panel)); color: var(--text); padding: .9rem 1rem; font-weight: 800; margin-top: 1rem; }
+    @media print { .board-panel, .summary-box { break-inside: avoid; box-shadow: none; } .board-wrap { overflow: visible; } .lesson-svg { max-width: 330px; } }
+    .lesson-piece-icon { width: 100%; height: 100%; object-fit: contain; display: block; filter: drop-shadow(0 8px 18px rgba(0,0,0,.28)); }
+    .lesson-nav-row { display: flex; justify-content: space-between; gap: 1rem; margin-top: 1.5rem; }
+    .lesson-nav-row a { border: 1px solid var(--line); color: var(--text); background: var(--panel); border-radius: 999px; padding: .55rem .9rem; text-decoration: none; transition: transform .18s ease, background .18s ease; }
+    .lesson-nav-row a:hover { color: var(--text); background: var(--panel-strong); }
+    .box-line { fill: none; stroke: #2563eb; stroke-width: 2.5; stroke-dasharray: 6,4; }
+  </style>
+  <link rel="stylesheet" href="endgame-lesson.css">
+  <link rel="stylesheet" href="pawn-teacher-board.css?v=20260709-teacher-setup8">
+</head>
+<body>
+  <a class="skip-link" href="#lesson">Skip to lesson</a>
+  <div class="index-header no-print">
+    <div class="index-header-inner">
+      <div class="index-brand">
+        <div class="index-brand-icon" aria-hidden="true">♟</div>
+        <div>
+          <div class="index-brand-label">Pawn Level</div>
+          <div class="index-brand-title">Checkmate with the Queen</div>
+        </div>
+      </div>
+      <div class="index-top-actions">
+        <a class="toolbar-link" href="pawn-index.html">&larr; Back to Pawn Index</a>
+        <button class="toolbar-link" type="button" id="themeToggle">Toggle theme</button>
+        <button class="toolbar-link" type="button" onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </div>
+  </div>
+  <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+  <div class="page">
+    <section class="hero" id="top">
+      <div>
+        <p class="kicker">Pawn Level &middot; Module 4 &middot; Lesson 6</p>
+        <h1>Checkmate with the Queen</h1>
+        <p class="lead">The queen is powerful, so checkmate is easier than with a rook. But you must be careful not to stalemate.</p>
+        <div class="objective-grid" aria-label="Learning objectives">
+          <div class="objective"><strong>Queen power</strong><span>Understand why the queen is strong.</span></div>
+          <div class="objective"><strong>Shrinking box</strong><span>Use the same box method.</span></div>
+          <div class="objective"><strong>Stalemate danger</strong><span>Avoid trapping the king without check.</span></div>
+          <div class="objective"><strong>Four mates</strong><span>Find several final checkmates.</span></div>
+        </div>
+      </div>
+      <figure class="hero-card" aria-label="Queen checkmate visual">
+        <div class="module-hero-visual">
+          <div style="text-align:center;padding:1rem;">
+            <p class="hero-note"><strong class="gold">Shrinking box</strong> &mdash; the queen cuts off the king easily.</p>
+          </div>
+        </div>
+      </figure>
+    </section>
+    <div class="layout" id="lesson">
+      <nav class="toc" aria-label="Lesson contents">
+        <div class="toc-title">Contents</div>
+        <a href="#start">1. Starting Position</a>
+        <a href="#box">2. Set Up the Box</a>
+        <a href="#continuation">3. Continuation</a>
+        <a href="#second-row">4. Put the Queen on the Second Row</a>
+        <a href="#king-in">5. Bring the King In</a>
+        <a href="#four-mates">6. Four Checkmates</a>
+        <a href="#quiz">Review Questions</a>
+      </nav>
+      <main>
+        <section class="lesson-section" id="start">
+          <div class="section-head"><div class="number">1</div><div class="section-text"><h2>Starting Position</h2><p>Once you know how to mate with the rook, doing it with the queen is easier. You can still use the shrinking box method.</p></div></div>
+          <p style="color:var(--muted);">White to move. White: king h4, queen d2. Black: king f6.</p>
+          <div class="board-panel">
+            <div class="board-wrap">
+              <svg class="lesson-svg" viewBox="0 0 360 360" role="img" aria-label="Starting position: White king h4, queen d2, Black king f6">
+                <defs><style>.lbl{font:14px Arial,sans-serif;fill:#334155;font-weight:700}</style></defs>
+                <rect x="0" y="0" width="360" height="360" fill="#ffffff" rx="14"/>
+                <g transform="translate(40,20)">
+                  <g>
+                    <rect x="0" y="0" width="35" height="35" fill="#eee3cb"/><rect x="35" y="0" width="35" height="35" fill="#71925a"/><rect x="70" y="0" width="35" height="35" fill="#eee3cb"/><rect x="105" y="0" width="35" height="35" fill="#71925a"/><rect x="140" y="0" width="35" height="35" fill="#eee3cb"/><rect x="175" y="0" width="35" height="35" fill="#71925a"/><rect x="210" y="0" width="35" height="35" fill="#eee3cb"/><rect x="245" y="0" width="35" height="35" fill="#71925a"/>
+                    <rect x="0" y="35" width="35" height="35" fill="#71925a"/><rect x="35" y="35" width="35" height="35" fill="#eee3cb"/><rect x="70" y="35" width="35" height="35" fill="#71925a"/><rect x="105" y="35" width="35" height="35" fill="#eee3cb"/><rect x="140" y="35" width="35" height="35" fill="#71925a"/><rect x="175" y="35" width="35" height="35" fill="#eee3cb"/><rect x="210" y="35" width="35" height="35" fill="#71925a"/><rect x="245" y="35" width="35" height="35" fill="#eee3cb"/>
+                    <rect x="0" y="70" width="35" height="35" fill="#eee3cb"/><rect x="35" y="70" width="35" height="35" fill="#71925a"/><rect x="70" y="70" width="35" height="35" fill="#eee3cb"/><rect x="105" y="70" width="35" height="35" fill="#71925a"/><rect x="140" y="70" width="35" height="35" fill="#eee3cb"/><rect x="175" y="70" width="35" height="35" fill="#71925a"/><rect x="210" y="70" width="35" height="35" fill="#eee3cb"/><rect x="245" y="70" width="35" height="35" fill="#71925a"/>
+                    <rect x="0" y="105" width="35" height="35" fill="#71925a"/><rect x="35" y="105" width="35" height="35" fill="#eee3cb"/><rect x="70" y="105" width="35" height="35" fill="#71925a"/><rect x="105" y="105" width="35" height="35" fill="#eee3cb"/><rect x="140" y="105" width="35" height="35" fill="#71925a"/><rect x="175" y="105" width="35" height="35" fill="#eee3cb"/><rect x="210" y="105" width="35" height="35" fill="#71925a"/><rect x="245" y="105" width="35" height="35" fill="#eee3cb"/>
+                    <rect x="0" y="140" width="35" height="35" fill="#eee3cb"/><rect x="35" y="140" width="35" height="35" fill="#71925a"/><rect x="70" y="140" width="35" height="35" fill="#eee3cb"/><rect x="105" y="140" width="35" height="35" fill="#71925a"/><rect x="140" y="140" width="35" height="35" fill="#eee3cb"/><rect x="175" y="140" width="35" height="35" fill="#71925a"/><rect x="210" y="140" width="35" height="35" fill="#eee3cb"/><rect x="245" y="140" width="35" height="35" fill="#71925a"/>
+                    <rect x="0" y="175" width="35" height="35" fill="#71925a"/><rect x="35" y="175" width="35" height="35" fill="#eee3cb"/><rect x="70" y="175" width="35" height="35" fill="#71925a"/><rect x="105" y="175" width="35" height="35" fill="#eee3cb"/><rect x="140" y="175" width="35" height="35" fill="#71925a"/><rect x="175" y="175" width="35" height="35" fill="#eee3cb"/><rect x="210" y="175" width="35" height="35" fill="#71925a"/><rect x="245" y="175" width="35" height="35" fill="#eee3cb"/>
+                    <rect x="0" y="210" width="35" height="35" fill="#eee3cb"/><rect x="35" y="210" width="35" height="35" fill="#71925a"/><rect x="70" y="210" width="35" height="35" fill="#eee3cb"/><rect x="105" y="210" width="35" height="35" fill="#71925a"/><rect x="140" y="210" width="35" height="35" fill="#eee3cb"/><rect x="175" y="210" width="35" height="35" fill="#71925a"/><rect x="210" y="210" width="35" height="35" fill="#eee3cb"/><rect x="245" y="210" width="35" height="35" fill="#71925a"/>
+                    <rect x="0" y="245" width="35" height="35" fill="#71925a"/><rect x="35" y="245" width="35" height="35" fill="#eee3cb"/><rect x="70" y="245" width="35" height="35" fill="#71925a"/><rect x="105" y="245" width="35" height="35" fill="#eee3cb"/><rect x="140" y="245" width="35" height="35" fill="#71925a"/><rect x="175" y="245" width="35" height="35" fill="#eee3cb"/><rect x="210" y="245" width="35" height="35" fill="#71925a"/><rect x="245" y="245" width="35" height="35" fill="#eee3cb"/>
+                  </g>
+                  <image href="../assets/pieces/mpchess/wK.svg" x="245" y="140" width="35" height="35"/>
+                  <image href="../assets/pieces/mpchess/wQ.svg" x="105" y="245" width="35" height="35"/>
+                  <image href="../assets/pieces/mpchess/bK.svg" x="175" y="70" width="35" height="35"/>
+                  <g class="lbl">
+                    <text x="17.5" y="301" text-anchor="middle">a</text><text x="52.5" y="301" text-anchor="middle">b</text><text x="87.5" y="301" text-anchor="middle">c</text><text x="122.5" y="301" text-anchor="middle">d</text><text x="157.5" y="301" text-anchor="middle">e</text><text x="192.5" y="301" text-anchor="middle">f</text><text x="227.5" y="301" text-anchor="middle">g</text><text x="262.5" y="301" text-anchor="middle">h</text>
+                    <text x="-12" y="18" text-anchor="middle">8</text><text x="-12" y="53" text-anchor="middle">7</text><text x="-12" y="88" text-anchor="middle">6</text><text x="-12" y="123" text-anchor="middle">5</text><text x="-12" y="158" text-anchor="middle">4</text><text x="-12" y="193" text-anchor="middle">3</text><text x="-12" y="228" text-anchor="middle">2</text><text x="-12" y="263" text-anchor="middle">1</text>
+                  </g>
+                </g>
+              </svg>
+            </div>
+          </div>
+        </section>
+        <section class="lesson-section" id="box">
+          <div class="section-head"><div class="number">2</div><div class="section-text"><h2>Set Up the Box</h2><p>Qd5 sets up the box and pushes the king toward h8.</p></div></div>
+          <p style="color:var(--muted);">Move: <code class="inline">1. Qd5!</code></p>
+          <div class="board-panel">
+            <div class="board-wrap">
+              <svg class="lesson-svg" viewBox="0 0 360 360" role="img" aria-label="After 1. Qd5, queen on d5 with box lines">
+                <defs><style>.lbl{font:14px Arial,sans-serif;fill:#334155;font-weight:700}</style></defs>
+                <rect x="0" y="0" width="360" height="360" fill="#ffffff" rx="14"/>
+                <g transform="translate(40,20)">
+                  <g>
+                    <rect x="0" y="0" width="35" height="35" fill="#eee3cb"/><rect x="35" y="0" width="35" height="35" fill="#71925a"/><rect x="70" y="0" width="35" height="35" fill="#eee3cb"/><rect x="105" y="0" width="35" height="35" fill="#71925a"/><rect x="140" y="0" width="35" height="35" fill="#eee3cb"/><rect x="175" y="0" width="35" height="35" fill="#71925a"/><rect x="210" y="0" width="35" height="35" fill="#eee3cb"/><rect x="245" y="0" width="35" height="35" fill="#71925a"/>
+                    <rect x="0" y="35" width="35" height="35" fill="#71925a"/><rect x="35" y="35" width="35" height="35" fill="#eee3cb"/><rect x="70" y="35" width="35" height="35" fill="#71925a"/><rect x="105" y="35" width="35" height="35" fill="#eee3cb"/><rect x="140" y="35" width="35" height="35" fill="#71925a"/><rect x="175" y="35" width="35" height="35" fill="#eee3cb"/><rect x="210" y="35" width="35" height="35" fill="#71925a"/><rect x="245" y="35" width="35" height="35" fill="#eee3cb"/>
+                    <rect x="0" y="70" width="35" height="35" fill="#eee3cb"/><rect x="35" y="70" width="35" height="35" fill="#71925a"/><rect x="70" y="70" width="35" height="35" fill="#eee3cb"/><rect x="105" y="70" width="35" height="35" fill="#71925a"/><rect x="140" y="70" width="35" height="35" fill="#eee3cb"/><rect x="175" y="70" width="35" height="35" fill="#71925a"/><rect x="210" y="70" width="35" height="35" fill="#eee3cb"/><rect x="245" y="70" width="35" height="35" fill="#71925a"/>
+                    <rect x="0" y="105" width="35" height="35" fill="#71925a"/><rect x="35" y="105" width="35" height="35" fill="#eee3cb"/><rect x="70" y="105" width="35" height="35" fill="#71925a"/><rect x="105" y="105" width="35" height="35" fill="#eee3cb"/><rect x="140" y="105" width="35" height="35" fill="#71925a"/><rect x="175" y="105" width="35" height="35" fill="#eee3cb"/><rect x="210" y="105" width="35" height="35" fill="#71925a"/><rect x="245" y="105" width="35" height="35" fill="#eee3cb"/>
+                    <rect x="0" y="140" width="35" height="35" fill="#eee3cb"/><rect x="35" y="140" width="35" height="35" fill="#71925a"/><rect x="70" y="140" width="35" height="35" fill="#eee3cb"/><rect x="105" y="140" width="35" height="35" fill="#71925a"/><rect x="140" y="140" width="35" height="35" fill="#eee3cb"/><rect x="175" y="140" width="35" height="35" fill="#71925a"/><rect x="210" y="140" width="35" height="35" fill="#eee3cb"/><rect x="245" y="140" width="35" height="35" fill="#71925a"/>
+                    <rect x="0" y="175" width="35" height="35" fill="#71925a"/><rect x="35" y="175" width="35" height="35" fill="#eee3cb"/><rect x="70" y="175" width="35" height="35" fill="#71925a"/><rect x="105" y="175" width="35" height="35" fill="#eee3cb"/><rect x="140" y="175" width="35" height="35" fill="#71925a"/><rect x="175" y="175" width="35" height="35" fill="#eee3cb"/><rect x="210" y="175" width="35" height="35" fill="#71925a"/><rect x="245" y="175" width="35" height="35" fill="#eee3cb"/>
+                    <rect x="0" y="210" width="35" height="35" fill="#eee3cb"/><rect x="35" y="210" width="35" height="35" fill="#71925a"/><rect x="70" y="210" width="35" height="35" fill="#eee3cb"/><rect x="105" y="210" width="35" height="35" fill="#71925a"/><rect x="140" y="210" width="35" height="35" fill="#eee3cb"/><rect x="175" y="210" width="35" height="35" fill="#71925a"/><rect x="210" y="210" width="35" height="35" fill="#eee3cb"/><rect x="245" y="210" width="35" height="35" fill="#71925a"/>
+                    <rect x="0" y="245" width="35" height="35" fill="#71925a"/><rect x="35" y="245" width="35" height="35" fill="#eee3cb"/><rect x="70" y="245" width="35" height="35" fill="#71925a"/><rect x="105" y="245" width="35" height="35" fill="#eee3cb"/><rect x="140" y="245" width="35" height="35" fill="#71925a"/><rect x="175" y="245" width="35" height="35" fill="#eee3cb"/><rect x="210" y="245" width="35" height="35" fill="#71925a"/><rect x="245" y="245" width="35" height="35" fill="#eee3cb"/>
+                  </g>
+                  <image href="../assets/pieces/mpchess/wQ.svg" x="105" y="140" width="35" height="35"/>
+                  <image href="../assets/pieces/mpchess/wK.svg" x="245" y="140" width="35" height="35"/>
+                  <image href="../assets/pieces/mpchess/bK.svg" x="175" y="70" width="35" height="35"/>
+                  <rect class="box-line" x="105" y="140" width="175" height="105" stroke-width="2.5"/>
+                  <g class="lbl">
+                    <text x="17.5" y="301" text-anchor="middle">a</text><text x="52.5" y="301" text-anchor="middle">b</text><text x="87.5" y="301" text-anchor="middle">c</text><text x="122.5" y="301" text-anchor="middle">d</text><text x="157.5" y="301" text-anchor="middle">e</text><text x="192.5" y="301" text-anchor="middle">f</text><text x="227.5" y="301" text-anchor="middle">g</text><text x="262.5" y="301" text-anchor="middle">h</text>
+                    <text x="-7" y="18" text-anchor="middle">8</text><text x="-7" y="53" text-anchor="middle">7</text><text x="-7" y="88" text-anchor="middle">6</text><text x="-7" y="123" text-anchor="middle">5</text><text x="-7" y="158" text-anchor="middle">4</text><text x="-7" y="193" text-anchor="middle">3</text><text x="-7" y="228" text-anchor="middle">2</text><text x="-7" y="263" text-anchor="middle">1</text>
+                  </g>
+                </g>
+              </svg>
+            </div>
+          </div>
+        </section>
+        <section class="lesson-section" id="continuation">
+          <div class="section-head"><div class="number">3</div><div class="section-text"><h2>Continuation</h2><p>This shrinks the box to 10 squares.</p></div></div>
+          <p style="color:var(--muted);">Possible line: <code class="inline">1... Ke7</code></p>
+          <p style="color:var(--muted);">Another line: <code class="inline">1... Kg6</code> <code class="inline">2. Qe6+ Kg7</code> <code class="inline">3. Kg5 Kf8</code> <code class="inline">4. Qd7!</code></p>
+          <p style="color:var(--muted);">Main line: <code class="inline">2. Qc6</code></p>
+          <p style="color:var(--muted);">Both lines: <code class="inline">2... Kd8</code> <code class="inline">3. Qb7!</code> &nbsp; <code class="inline">2... Kf8</code> <code class="inline">3. Qd7!</code></p>
+        </section>
+        <section class="lesson-section" id="second-row">
+          <div class="section-head"><div class="number">4</div><div class="section-text"><h2>Put the Queen on the Second Row</h2><p>As soon as the king goes to the side of the board, it is best to place your queen along the second row right away. This avoids the risk of stalemate.</p></div></div>
+          <p style="color:var(--muted);"><code class="inline">2... Kf7</code> <code class="inline">3. Qd6 Ke8</code></p>
+          <p style="color:var(--muted);">If: <code class="inline">3... Kg7</code> <code class="inline">4. Qe6</code></p>
+          <p style="color:var(--muted);">If: <code class="inline">3... Kg8</code> <code class="inline">4. Qe7</code></p>
+          <p style="color:var(--muted);">Main idea: <code class="inline">4. Qc7!</code></p>
+        </section>
+        <section class="lesson-section" id="king-in">
+          <div class="section-head"><div class="number">5</div><div class="section-text"><h2>Bring the King In</h2><p>There is no need to drive the king to the corner, though White could do that with: <code class="inline">5. Qd7 Kg8</code> <code class="inline">6. Qe7</code></p></div></div>
+          <p style="color:var(--muted);"><code class="inline">4... Kf8</code> <code class="inline">5. Kg5</code></p>
+          <p style="color:var(--muted);">Main line: <code class="inline">5... Ke8</code> <code class="inline">6. Kf6 Kf8</code></p>
+          <div class="board-panel">
+            <div class="board-wrap">
+              <svg class="lesson-svg" viewBox="0 0 360 360" role="img" aria-label="Final position: White king f6, queen c7, Black king f8, White to move">
+                <defs><style>.lbl{font:14px Arial,sans-serif;fill:#334155;font-weight:700}</style></defs>
+                <rect x="0" y="0" width="360" height="360" fill="#ffffff" rx="14"/>
+                <g transform="translate(40,20)">
+                  <g>
+                    <rect x="0" y="0" width="35" height="35" fill="#eee3cb"/><rect x="35" y="0" width="35" height="35" fill="#71925a"/><rect x="70" y="0" width="35" height="35" fill="#eee3cb"/><rect x="105" y="0" width="35" height="35" fill="#71925a"/><rect x="140" y="0" width="35" height="35" fill="#eee3cb"/><rect x="175" y="0" width="35" height="35" fill="#71925a"/><rect x="210" y="0" width="35" height="35" fill="#eee3cb"/><rect x="245" y="0" width="35" height="35" fill="#71925a"/>
+                    <rect x="0" y="35" width="35" height="35" fill="#71925a"/><rect x="35" y="35" width="35" height="35" fill="#eee3cb"/><rect x="70" y="35" width="35" height="35" fill="#71925a"/><rect x="105" y="35" width="35" height="35" fill="#eee3cb"/><rect x="140" y="35" width="35" height="35" fill="#71925a"/><rect x="175" y="35" width="35" height="35" fill="#eee3cb"/><rect x="210" y="35" width="35" height="35" fill="#71925a"/><rect x="245" y="35" width="35" height="35" fill="#eee3cb"/>
+                    <rect x="0" y="70" width="35" height="35" fill="#eee3cb"/><rect x="35" y="70" width="35" height="35" fill="#71925a"/><rect x="70" y="70" width="35" height="35" fill="#eee3cb"/><rect x="105" y="70" width="35" height="35" fill="#71925a"/><rect x="140" y="70" width="35" height="35" fill="#eee3cb"/><rect x="175" y="70" width="35" height="35" fill="#71925a"/><rect x="210" y="70" width="35" height="35" fill="#eee3cb"/><rect x="245" y="70" width="35" height="35" fill="#71925a"/>
+                    <rect x="0" y="105" width="35" height="35" fill="#71925a"/><rect x="35" y="105" width="35" height="35" fill="#eee3cb"/><rect x="70" y="105" width="35" height="35" fill="#71925a"/><rect x="105" y="105" width="35" height="35" fill="#eee3cb"/><rect x="140" y="105" width="35" height="35" fill="#71925a"/><rect x="175" y="105" width="35" height="35" fill="#eee3cb"/><rect x="210" y="105" width="35" height="35" fill="#71925a"/><rect x="245" y="105" width="35" height="35" fill="#eee3cb"/>
+                    <rect x="0" y="140" width="35" height="35" fill="#eee3cb"/><rect x="35" y="140" width="35" height="35" fill="#71925a"/><rect x="70" y="140" width="35" height="35" fill="#eee3cb"/><rect x="105" y="140" width="35" height="35" fill="#71925a"/><rect x="140" y="140" width="35" height="35" fill="#eee3cb"/><rect x="175" y="140" width="35" height="35" fill="#71925a"/><rect x="210" y="140" width="35" height="35" fill="#eee3cb"/><rect x="245" y="140" width="35" height="35" fill="#71925a"/>
+                    <rect x="0" y="175" width="35" height="35" fill="#71925a"/><rect x="35" y="175" width="35" height="35" fill="#eee3cb"/><rect x="70" y="175" width="35" height="35" fill="#71925a"/><rect x="105" y="175" width="35" height="35" fill="#eee3cb"/><rect x="140" y="175" width="35" height="35" fill="#71925a"/><rect x="175" y="175" width="35" height="35" fill="#eee3cb"/><rect x="210" y="175" width="35" height="35" fill="#71925a"/><rect x="245" y="175" width="35" height="35" fill="#eee3cb"/>
+                    <rect x="0" y="210" width="35" height="35" fill="#eee3cb"/><rect x="35" y="210" width="35" height="35" fill="#71925a"/><rect x="70" y="210" width="35" height="35" fill="#eee3cb"/><rect x="105" y="210" width="35" height="35" fill="#71925a"/><rect x="140" y="210" width="35" height="35" fill="#eee3cb"/><rect x="175" y="210" width="35" height="35" fill="#71925a"/><rect x="210" y="210" width="35" height="35" fill="#eee3cb"/><rect x="245" y="210" width="35" height="35" fill="#71925a"/>
+                    <rect x="0" y="245" width="35" height="35" fill="#71925a"/><rect x="35" y="245" width="35" height="35" fill="#eee3cb"/><rect x="70" y="245" width="35" height="35" fill="#71925a"/><rect x="105" y="245" width="35" height="35" fill="#eee3cb"/><rect x="140" y="245" width="35" height="35" fill="#71925a"/><rect x="175" y="245" width="35" height="35" fill="#eee3cb"/><rect x="210" y="245" width="35" height="35" fill="#71925a"/><rect x="245" y="245" width="35" height="35" fill="#eee3cb"/>
+                  </g>
+                  <image href="../assets/pieces/mpchess/wQ.svg" x="70" y="35" width="35" height="35"/>
+                  <image href="../assets/pieces/mpchess/wK.svg" x="175" y="70" width="35" height="35"/>
+                  <image href="../assets/pieces/mpchess/bK.svg" x="175" y="0" width="35" height="35"/>
+                  <g class="lbl">
+                    <text x="17.5" y="301" text-anchor="middle">a</text><text x="52.5" y="301" text-anchor="middle">b</text><text x="87.5" y="301" text-anchor="middle">c</text><text x="122.5" y="301" text-anchor="middle">d</text><text x="157.5" y="301" text-anchor="middle">e</text><text x="192.5" y="301" text-anchor="middle">f</text><text x="227.5" y="301" text-anchor="middle">g</text><text x="262.5" y="301" text-anchor="middle">h</text>
+                    <text x="-7" y="18" text-anchor="middle">8</text><text x="-7" y="53" text-anchor="middle">7</text><text x="-7" y="88" text-anchor="middle">6</text><text x="-7" y="123" text-anchor="middle">5</text><text x="-7" y="158" text-anchor="middle">4</text><text x="-7" y="193" text-anchor="middle">3</text><text x="-7" y="228" text-anchor="middle">2</text><text x="-7" y="263" text-anchor="middle">1</text>
+                  </g>
+                </g>
+              </svg>
+            </div>
+          </div>
+        </section>
+        <section class="lesson-section" id="four-mates">
+          <div class="section-head"><div class="number">6</div><div class="section-text"><h2>Four Checkmates</h2><p>White has four checkmates: <code class="inline">7. Qf7#</code> <code class="inline">7. Qb8#</code> <code class="inline">7. Qc8#</code> <code class="inline">7. Qd8#</code></p></div></div>
+          <div class="callout">
+            <div class="callout-title">Stalemate danger</div>
+            <p>Sometimes the queen is too powerful. She might stalemate the king if you are not careful.</p>
+          </div>
+        </section>
+        <section class="lesson-section" id="quiz">
+          <div class="section-head"><div class="number">&check;</div><div class="section-text"><h2>Review Questions</h2><p>Use these questions to check understanding.</p></div></div>
+          <details class="quiz"><summary>What method can you use for queen mate?</summary><p>The shrinking box method.</p></details>
+          <details class="quiz"><summary>Why must you be careful with the queen?</summary><p>The queen controls many squares and can accidentally stalemate the enemy king.</p></details>
+          <details class="quiz"><summary>Name one checkmate from the final position.</summary><p>Qf7#, Qb8#, Qc8#, or Qd8#.</p></details>
+          <div class="lesson-nav-row">
+            <a href="pawn-m4-lesson-05-rook-mate-example-2.html">&larr; Previous lesson</a>
+            <a href="pawn-m4-lesson-07-mate-with-the-double-rook.html">Next lesson &rarr;</a>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+  <footer class="footer"><strong>End of Pawn Level Module 4 &middot; Lesson 6:</strong> Checkmate with the Queen.</footer>
+  <script>
+    const root = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const storedTheme = localStorage.getItem('chess-lesson-theme');
+    if (storedTheme === 'light' || storedTheme === 'dark') root.dataset.theme = storedTheme;
+    themeToggle.addEventListener('click', () => { root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark'; localStorage.setItem('chess-lesson-theme', root.dataset.theme); });
+    const progressBar = document.getElementById('progressBar');
+    const updateProgress = () => { const max = document.documentElement.scrollHeight - window.innerHeight; const pct = max > 0 ? (window.scrollY / max) * 100 : 0; progressBar.style.width = Math.min(100, Math.max(0, pct)) + '%'; };
+    updateProgress();
+    window.addEventListener('scroll', updateProgress, { passive: true });
+  </script>
+  <script src="endgame-lesson.js" defer></script>
+  <script src="pawn-teacher-board.js?v=20260709-teacher-setup8" defer></script>
+</body>
+</html>
