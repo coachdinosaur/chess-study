@@ -3310,7 +3310,38 @@ code {
 
 /* ---------- Embed mode (app loaded inside a lesson page iframe) ---------- */
 body.is-embed {
-  background: transparent;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(138, 216, 183, 0.16), transparent 34%),
+    radial-gradient(circle at 82% 88%, rgba(228, 196, 107, 0.12), transparent 38%),
+    linear-gradient(145deg, rgba(14, 29, 31, 0.92), rgba(5, 14, 15, 0.98));
+}
+body.is-embed .page-shell,
+html[data-embed="1"] .page-shell {
+  padding: clamp(0.55rem, 1.2vw, 1rem);
+}
+body.is-embed .board-stage-card,
+html[data-embed="1"] .board-stage-card {
+  border: 1px solid rgba(138, 216, 183, 0.18);
+  background:
+    linear-gradient(145deg, rgba(27, 42, 46, 0.72), rgba(7, 16, 18, 0.82)),
+    radial-gradient(circle at 22% 18%, rgba(138, 216, 183, 0.12), transparent 34%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.025),
+    0 18px 60px rgba(0, 0, 0, 0.34);
+}
+body.is-embed .board-block,
+html[data-embed="1"] .board-block {
+  padding: clamp(0.45rem, 1vw, 0.85rem);
+}
+body.is-embed .board-frame,
+html[data-embed="1"] .board-frame {
+  border-color: rgba(190, 202, 207, 0.48);
+  background:
+    linear-gradient(145deg, rgba(255, 247, 223, 0.18), rgba(138, 216, 183, 0.13)),
+    rgba(7, 16, 18, 0.78);
+  box-shadow:
+    0 20px 46px rgba(0, 0, 0, 0.36),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
 }
 body.is-embed .focus-mode-button[data-action="exit-focus-mode"] {
   display: none;
@@ -3360,6 +3391,142 @@ html[data-embed="1"] .captured-piece-count {
   font-size: 0.78rem;
   min-width: 1.25rem;
   height: 1.25rem;
+}
+
+/* Board-only teacher popup mode: keep the app to board + optional setup tools. */
+html[data-board-only="1"],
+html[data-board-only="1"] body {
+  overflow: hidden;
+}
+
+body.is-board-only .board-stage-head,
+body.is-board-only .board-stage-foot,
+body.is-board-only .lesson-header,
+body.is-board-only .tab-nav,
+body.is-board-only .lesson-notation,
+body.is-board-only .mobile-engine-lines-slot,
+body.is-board-only .puzzle-instruction-container,
+body.is-board-only .focus-mode-controls,
+body.is-board-only .eval-bar-wrap,
+html[data-board-only="1"] .board-stage-head,
+html[data-board-only="1"] .board-stage-foot,
+html[data-board-only="1"] .lesson-header,
+html[data-board-only="1"] .tab-nav,
+html[data-board-only="1"] .lesson-notation,
+html[data-board-only="1"] .mobile-engine-lines-slot,
+html[data-board-only="1"] .puzzle-instruction-container,
+html[data-board-only="1"] .focus-mode-controls,
+html[data-board-only="1"] .eval-bar-wrap {
+  display: none !important;
+}
+
+.page-shell.is-board-only.is-focus-mode {
+  --focus-padding: clamp(0.35rem, 1.1vw, 0.8rem);
+  --captured-cell-min: 0.8rem;
+  --captured-cell-divisor: 20;
+  --captured-cell-max: 1.12rem;
+  --captured-row-extra-height: 0.22rem;
+  --captured-row-gap: clamp(0.12rem, calc(var(--board-size, 42rem) / 260), 0.22rem);
+  --captured-row-height: calc(var(--captured-cell-size) + var(--captured-row-extra-height) + 2px);
+  padding: var(--focus-padding);
+}
+
+.page-shell.is-board-only.is-focus-mode .workspace {
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(0.45rem, 1vw, 0.8rem);
+}
+
+.page-shell.is-board-only.is-focus-mode .board-column {
+  --captured-cell-min: 0.8rem;
+  --captured-cell-divisor: 20;
+  --captured-cell-max: 1.12rem;
+  --captured-row-extra-height: 0.22rem;
+  --captured-row-gap: clamp(0.12rem, calc(var(--board-size, 42rem) / 260), 0.22rem);
+  --captured-cell-size: clamp(var(--captured-cell-min), calc(var(--board-size, 42rem) / var(--captured-cell-divisor)), var(--captured-cell-max));
+  --captured-row-height: calc(var(--captured-cell-size) + var(--captured-row-extra-height) + 2px);
+  width: min(100%, calc(var(--board-size) + (var(--board-frame-padding) * 2) + 2px));
+}
+
+.page-shell.is-board-only.is-focus-mode .board-frame,
+.page-shell.is-board-only.is-focus-mode .captured-row {
+  margin-left: 0;
+  padding-right: var(--board-frame-padding);
+}
+
+.page-shell.is-board-only.is-focus-mode .captured-row {
+  box-shadow: none;
+}
+
+.page-shell.is-board-only.is-focus-mode .captured-piece,
+.page-shell.is-board-only.is-focus-mode .captured-piece-placeholder {
+  width: calc(var(--captured-cell-size) * 0.82);
+  height: calc(var(--captured-cell-size) * 0.82);
+}
+
+.page-shell.is-board-only.is-focus-mode .captured-piece-count {
+  min-width: 0.95rem;
+  height: 0.95rem;
+  font-size: 0.62rem;
+}
+
+.page-shell.is-board-only.is-focus-mode.is-board-only-setup-open .workspace {
+  grid-template-columns: minmax(0, 1fr) minmax(17rem, 22rem);
+  align-items: stretch;
+}
+
+.page-shell.is-board-only.is-board-only-setup-open .control-pane {
+  display: block;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+.page-shell.is-board-only.is-board-only-setup-open .control-pane-scroll {
+  max-height: 100%;
+  min-height: 0;
+  padding: 0;
+  overflow: auto;
+  scrollbar-gutter: stable;
+}
+
+.page-shell.is-board-only.is-board-only-setup-open .workspace-tools {
+  display: block;
+  border-top: 0;
+  padding: 0;
+}
+
+.page-shell.is-board-only.is-board-only-setup-open .workspace-tools[hidden] {
+  display: none !important;
+}
+
+.page-shell.is-board-only .setup-board-section,
+.page-shell.is-board-only .setup-palette-panel,
+.page-shell.is-board-only .lesson-section {
+  border-radius: 8px;
+}
+
+@media (max-width: 760px) {
+  .page-shell.is-board-only.is-focus-mode {
+    overflow: auto;
+    align-items: stretch;
+    justify-content: stretch;
+  }
+
+  .page-shell.is-board-only.is-focus-mode.is-board-only-setup-open {
+    height: auto;
+    min-height: var(--app-height);
+  }
+
+  .page-shell.is-board-only.is-focus-mode.is-board-only-setup-open .workspace {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    place-items: stretch;
+  }
+
+  .page-shell.is-board-only.is-board-only-setup-open .control-pane {
+    height: auto;
+    max-height: 42vh;
+  }
 }
 
 @media (max-width: 1100px) {

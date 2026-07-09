@@ -654,6 +654,10 @@ const state = {
   colorTheme: document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light',
   focusMode: false,
   embedMode: false,
+  boardOnlyMode: false,
+  boardOnlySetupVisible: false,
+  boardOnlyTeacherSetupActive: false,
+  boardOnlyInitialFen: DEFAULT_POSITION,
   boardOrientation: 'white',
   activeTab: TAB_PLAY,
   previousNonLessonTab: TAB_PLAY,
@@ -2914,6 +2918,16 @@ function syncFocusModeControls() {
 function syncFocusModeUi() {
   dom.pageShell?.classList.toggle('is-focus-mode', state.focusMode);
   syncFocusModeControls();
+}
+
+function syncBoardOnlyUi() {
+  dom.rootElement?.toggleAttribute('data-board-only', state.boardOnlyMode);
+  dom.rootElement?.toggleAttribute('data-board-only-setup-open', state.boardOnlyMode && state.boardOnlySetupVisible);
+  dom.rootElement?.toggleAttribute('data-board-only-teacher-setup', state.boardOnlyMode && state.boardOnlyTeacherSetupActive);
+  document.body?.classList.toggle('is-board-only', state.boardOnlyMode);
+  dom.pageShell?.classList.toggle('is-board-only', state.boardOnlyMode);
+  dom.pageShell?.classList.toggle('is-board-only-setup-open', state.boardOnlyMode && state.boardOnlySetupVisible);
+  dom.pageShell?.classList.toggle('is-board-only-teacher-setup', state.boardOnlyMode && state.boardOnlyTeacherSetupActive);
 }
 
 function setFocusMode(isActive, options = {}) {
@@ -8071,11 +8085,16 @@ function renderWorkspaceTools() {
   if (!dom.workspaceTools) {
     return;
   }
+  if (state.boardOnlyMode) {
+    dom.workspaceTools.hidden = !state.boardOnlySetupVisible;
+    return;
+  }
   dom.workspaceTools.hidden = state.guidedReview.active || !state.toolsExpanded;
 }
 
 function renderAll() {
   syncFocusModeUi();
+  syncBoardOnlyUi();
   renderPuzzleBoardInstruction();
   renderBoard();
   renderHeaderMeta();
@@ -8132,7 +8151,11 @@ function handleBoardClick(event) {
       const piece = state.setup.pieces[square];
       state.setup.armedPiece = piece;
       state.setup.paletteColor = piece === piece.toLowerCase() ? 'b' : 'w';
-      renderSetupPanel();
+      if (state.boardOnlyMode && state.boardOnlyTeacherSetupActive) {
+        renderBoard();
+      } else {
+        renderSetupPanel();
+      }
     }
     return;
   }
@@ -11364,22 +11387,189 @@ function renderPuzzlePanel() {
   });
 }
 
+function setBoardOnlySetupVisible(visible) {
+  if (!state.boardOnlyMode) {
+    return;
+  }
+  state.boardOnlySetupVisible = Boolean(visible);
+  state.boardOnlyTeacherSetupActive = false;
+  state.activeTab = state.boardOnlySetupVisible ? TAB_SETUP : TAB_ANALYSIS;
+  state.toolsExpanded = state.boardOnlySetupVisible;
+  if (state.boardOnlySetupVisible) {
+    setAnnotateMode(false);
+  }
+  renderAll();
+  window.requestAnimationFrame(syncBoardSize);
+}
+
+function setBoardOnlyTeacherSetupActive(active) {
+  if (!state.boardOnlyMode) {
+    return;
+  }
+  state.boardOnlySetupVisible = false;
+  state.boardOnlyTeacherSetupActive = Boolean(active);
+  state.toolsExpanded = false;
+  state.activeTab = state.boardOnlyTeacherSetupActive ? TAB_SETUP : TAB_ANALYSIS;
+  if (state.boardOnlyTeacherSetupActive) {
+    setAnnotateMode(false);
+  } else {
+    state.setup.armedPiece = null;
+  }
+  renderAll();
+  window.requestAnimationFrame(syncBoardSize);
+}
+
+function commitBoardOnlyFenInput(value, options = {}) {
+  const { render = true } = options;
+  const parsed = parseFenLike(String(value || '').trim());
+  if (!parsed.ok) {
+    return false;
+  }
+  commitSetupState(parsed.pieces, parsed.meta, { syncFenInput: true, resetAnalysis: true });
+  if (render) {
+    renderAll();
+  }
+  return true;
+}
+
+function resetBoardOnlyToStartFen() {
+  commitStrictFenInput(DEFAULT_POSITION, { render: true, showError: false });
+  if (state.boardOnlyMode) {
+    state.activeTab = state.boardOnlyTeacherSetupActive ? TAB_SETUP : TAB_ANALYSIS;
+    renderAll();
+  }
+}
+
+function resetBoardOnlyToInitialFen() {
+  const fen = String(state.boardOnlyInitialFen || DEFAULT_POSITION).trim() || DEFAULT_POSITION;
+  if (!commitBoardOnlyFenInput(fen, { render: true })) {
+    commitStrictFenInput(DEFAULT_POSITION, { render: true, showError: false });
+  }
+  if (state.boardOnlyMode) {
+    state.activeTab = (state.boardOnlySetupVisible || state.boardOnlyTeacherSetupActive) ? TAB_SETUP : TAB_ANALYSIS;
+    renderAll();
+  }
+}
+
+function clearBoardOnlyTeacherSetup() {
+  const nextMeta = {
+    ...DEFAULT_META,
+    activeColor: state.setup.meta.activeColor === 'b' ? 'b' : 'w',
+    castling: '-',
+    enPassant: '-',
+    halfmove: 0,
+    fullmove: 1,
+  };
+  commitSetupState({}, nextMeta, { syncFenInput: true, resetAnalysis: true });
+  if (state.boardOnlyMode) {
+    state.activeTab = state.boardOnlyTeacherSetupActive ? TAB_SETUP : TAB_ANALYSIS;
+    state.setup.armedPiece = null;
+    renderAll();
+  }
+}
+
+function selectBoardOnlyTeacherPiece(piece) {
+  if (!state.boardOnlyMode || !state.boardOnlyTeacherSetupActive) {
+    return;
+  }
+  const value = String(piece || '').trim();
+  if (value !== 'eraser' && !PIECE_ASSETS[value]) {
+    return;
+  }
+  state.setup.armedPiece = value;
+  if (value !== 'eraser') {
+    state.setup.paletteColor = value === value.toLowerCase() ? 'b' : 'w';
+  }
+  state.activeTab = TAB_SETUP;
+  renderBoard();
+}
+
+function handleTeacherBoardAction(action, data = {}) {
+  if (!state.boardOnlyMode) {
+    return;
+  }
+  switch (action) {
+    case 'enterTeacherSetup':
+      setBoardOnlyTeacherSetupActive(true);
+      break;
+    case 'exitTeacherSetup':
+      setBoardOnlyTeacherSetupActive(false);
+      break;
+    case 'selectTeacherPiece':
+      selectBoardOnlyTeacherPiece(data.piece);
+      break;
+    case 'emptyTeacherBoard':
+      clearBoardOnlyTeacherSetup();
+      break;
+    case 'startTeacherBoard':
+      resetBoardOnlyToStartFen();
+      break;
+    case 'lessonTeacherBoard':
+      resetBoardOnlyToInitialFen();
+      break;
+    case 'showSetup':
+      setBoardOnlySetupVisible(true);
+      break;
+    case 'hideSetup':
+      setBoardOnlySetupVisible(false);
+      break;
+    case 'toggleSetup':
+      setBoardOnlySetupVisible(!state.boardOnlySetupVisible);
+      break;
+    case 'toggleAnnotate':
+      if (state.boardOnlySetupVisible || state.boardOnlyTeacherSetupActive) {
+        setBoardOnlySetupVisible(false);
+        state.boardOnlyTeacherSetupActive = false;
+        state.setup.armedPiece = null;
+      }
+      setAnnotateMode(!state.annotations.enabled);
+      break;
+    case 'clearAnnotations':
+      commitAnnotationRender(clearAllAnnotations());
+      break;
+    case 'flip':
+      flipBoard();
+      break;
+    case 'reset':
+      resetBoardOnlyToInitialFen();
+      break;
+    default:
+      break;
+  }
+}
+
 function applyEmbedDeepLink() {
   try {
     const params = new URLSearchParams(window.location.search);
     const fen = (params.get('fen') || '').trim();
     const embed = (params.get('embed') || '').trim();
+    const boardOnly = (params.get('boardOnly') || '').trim();
+    const setupPanel = (params.get('setupPanel') || 'hidden').trim();
     if (embed === '1' || embed === 'true') {
       state.embedMode = true;
-      state.activeTab = TAB_ANALYSIS;
+      state.boardOnlyMode = boardOnly === '1' || boardOnly === 'true';
+      state.boardOnlySetupVisible = state.boardOnlyMode && setupPanel === 'open';
+      state.activeTab = state.boardOnlySetupVisible ? TAB_SETUP : TAB_ANALYSIS;
       state.previousNonLessonTab = TAB_ANALYSIS;
+      state.toolsExpanded = state.boardOnlySetupVisible;
       document.body?.classList.add('is-embed');
+      if (state.boardOnlyMode) {
+        document.body?.classList.add('is-board-only');
+      }
     }
     if (fen) {
-      commitStrictFenInput(fen, { render: false, showError: false });
+      if (state.boardOnlyMode) {
+        commitBoardOnlyFenInput(fen, { render: false });
+        state.boardOnlyInitialFen = state.setupFen;
+      } else {
+        commitStrictFenInput(fen, { render: false, showError: false });
+      }
+    } else if (state.boardOnlyMode) {
+      state.boardOnlyInitialFen = state.setupFen;
     }
     if (state.embedMode) {
       setFocusMode(true, { restoreFocus: false });
+      syncBoardOnlyUi();
     }
   } catch (error) {
     console.warn('[Embed deep-link] failed to apply', error);
@@ -11398,7 +11588,12 @@ function bindEmbedMessageListener() {
     if (data.type === 'loadFen' && typeof data.fen === 'string') {
       const fen = data.fen.trim();
       if (fen) {
-        commitStrictFenInput(fen, { render: true, showError: false });
+        if (state.boardOnlyMode) {
+          commitBoardOnlyFenInput(fen, { render: true });
+          state.boardOnlyInitialFen = state.setupFen;
+        } else {
+          commitStrictFenInput(fen, { render: true, showError: false });
+        }
         if (Array.isArray(data.mark)) {
           applyEmbedAnnotations(data.mark);
         }
@@ -11408,6 +11603,8 @@ function bindEmbedMessageListener() {
       renderBoard();
     } else if (data.type === 'setAnnotations') {
       applyEmbedAnnotations(Array.isArray(data.mark) ? data.mark : []);
+    } else if ((data.type === 'teacherBoardAction' || data.type === 'boardOnlyAction') && typeof data.action === 'string') {
+      handleTeacherBoardAction(data.action, data);
     }
   });
 }

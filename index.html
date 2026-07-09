@@ -51,10 +51,16 @@
         if (params.get('embed') === '1' || params.get('embed') === 'true') {
           document.documentElement.dataset.embed = '1';
         }
+        if (params.get('boardOnly') === '1' || params.get('boardOnly') === 'true') {
+          document.documentElement.dataset.boardOnly = '1';
+          if (params.get('setupPanel') === 'open') {
+            document.documentElement.dataset.boardOnlySetupOpen = '1';
+          }
+        }
       } catch {}
     })();
   </script>
-  <link rel="stylesheet" href="./styles.css?v=20260707c">
+  <link rel="stylesheet" href="./styles.css?v=20260709-teacher-setup6">
 </head>
 <body class="loading">
   <div id="loadingOverlay" class="loading-overlay">
@@ -498,7 +504,7 @@
   </div>
 
   <script src="./vendor/xlsx.full.min.js"></script>
-  <script type="module" src="./app.js"></script>
+  <script type="module" src="./app.js?v=20260709-teacher-setup6"></script>
 
 <script>
   window.addEventListener('load', function () {

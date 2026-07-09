@@ -398,7 +398,15 @@
       box-shadow: 0 16px 38px rgba(0,0,0,.22);
     }
     .capture-piece.white { background: #fff7df; color: #121827; }
-    .capture-piece.black { background: #111827; color: #fff7df; border: 1px solid rgba(255,255,255,.25); }
+    .capture-piece.black {
+      background: linear-gradient(145deg, #fff7df, #d9e6df);
+      color: #0a0f16;
+      border: 1px solid rgba(255,255,255,.62);
+      box-shadow: 0 16px 38px rgba(0,0,0,.22), inset 0 0 0 1px rgba(17,24,39,.08);
+    }
+    .capture-piece.black .lesson-piece-icon {
+      filter: drop-shadow(0 7px 12px rgba(0,0,0,.34));
+    }
     .capture-label { color: var(--muted); font-weight: 800; }
     .capture-square { display: block; color: var(--gold); font-weight: 950; font-size: 1.22rem; margin-top: .2rem; }
     .capture-x {
@@ -649,6 +657,7 @@
 .lesson-nav-row a:hover { color: var(--text); background: var(--panel-strong); }
 </style>
 <link rel="stylesheet" href="endgame-lesson.css">
+  <link rel="stylesheet" href="pawn-teacher-board.css?v=20260709-teacher-setup8">
 </head>
 <body>
   <a class="skip-link" href="#lesson">Skip to lesson</a>
@@ -986,5 +995,6 @@
   
   </script>
 <script src="endgame-lesson.js" defer></script>
+  <script src="pawn-teacher-board.js?v=20260709-teacher-setup8" defer></script>
 </body>
 </html>
