@@ -224,18 +224,18 @@
 
   function openLightbox(img) {
     var overlay = document.createElement("div");
-    overlay.className = "lightbox-overlay";
+    overlay.className = "lesson-lightbox";
     overlay.setAttribute("role", "dialog");
     overlay.setAttribute("aria-modal", "true");
-    overlay.setAttribute("aria-label", "Enlarged image");
+    overlay.setAttribute("aria-label", "Enlarged lesson image");
 
     var closeBtn = document.createElement("button");
-    closeBtn.className = "lightbox-close";
+    closeBtn.className = "lesson-lightbox__close";
     closeBtn.setAttribute("aria-label", "Close enlarged image");
     closeBtn.textContent = "\u00d7";
 
     var enlarged = document.createElement("img");
-    enlarged.className = "lightbox-img";
+    enlarged.className = "lesson-lightbox__image";
     enlarged.src = img.src;
     enlarged.alt = img.alt || "";
 

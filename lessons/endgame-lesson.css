@@ -1159,7 +1159,7 @@ body {
   }
 }
 
-/* ---------- Image lightbox ------------------------------------------------ */
+/* ---------- Image lightbox (opt-in via .lesson-zoomable) ------------------- */
 .lesson-zoomable {
   cursor: zoom-in;
   transition: transform .18s ease, box-shadow .18s ease;
@@ -1173,7 +1173,7 @@ body {
   border-radius: 4px;
 }
 
-.lightbox-overlay {
+.lesson-lightbox {
   position: fixed;
   inset: 0;
   z-index: 1000;
@@ -1184,19 +1184,20 @@ body {
   backdrop-filter: blur(4px);
   padding: 16px;
 }
-.lightbox-overlay[hidden] { display: none; }
+.lesson-lightbox[hidden] { display: none; }
 
-.lightbox-img {
-  max-width: 90vw;
-  max-height: 85vh;
+.lesson-lightbox__image {
+  max-width: 92vw;
+  max-height: 88vh;
   width: auto;
   height: auto;
   object-fit: contain;
+  display: block;
   border-radius: 12px;
   box-shadow: 0 24px 80px rgba(0,0,0,.5);
 }
 
-.lightbox-close {
+.lesson-lightbox__close {
   position: absolute;
   top: 16px;
   right: 16px;
@@ -1213,10 +1214,10 @@ body {
   line-height: 1;
   transition: background .15s ease;
 }
-.lightbox-close:hover { background: rgba(255,255,255,.3); }
+.lesson-lightbox__close:hover { background: rgba(255,255,255,.3); }
 
 @media print {
-  .lightbox-overlay { display: none !important; }
+  .lesson-lightbox { display: none !important; }
 }
 
 @media print {
