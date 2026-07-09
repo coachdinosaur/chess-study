@@ -8254,15 +8254,15 @@ function handleBoardMouseDown(event) {
     if (!annotationsVisible()) {
       return;
     }
+    if (annotateModeActive()) {
+      event.preventDefault();
+      state.annotations.suppressBoardClickUntil = Date.now() + 400;
+      return;
+    }
     if (hasAnyAnnotations()) {
       event.preventDefault();
       state.annotations.suppressBoardClickUntil = Date.now() + 400;
       commitAnnotationRender(clearAllAnnotations());
-      return;
-    }
-    if (annotateModeActive()) {
-      event.preventDefault();
-      state.annotations.suppressBoardClickUntil = Date.now() + 400;
       return;
     }
     return;
@@ -8336,6 +8336,12 @@ function handleDocumentMouseUp(event) {
 }
 
 function handleDocumentContextMenu(event) {
+  if (state.boardOnlyMode && event.shiftKey) {
+    event.preventDefault();
+    event.stopPropagation();
+    state.annotations.suppressContextMenu = false;
+    return;
+  }
   const square = squareFromEventTarget(event.target);
   if (annotationsVisible() && square) {
     event.preventDefault();

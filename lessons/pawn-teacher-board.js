@@ -129,7 +129,7 @@
       '</div>',
       '<div class="teacher-board-tools" aria-label="Teacher board tools">',
       '  <button type="button" class="teacher-board-tool" data-teacher-action="setup" aria-pressed="false" title="Open the quick piece setup tray">Setup</button>',
-      '  <button type="button" class="teacher-board-tool" data-teacher-action="annotate" aria-pressed="false" title="Right-click marks squares. Alt+right-drag draws arrows. Ctrl+right-click stars.">Annotate</button>',
+      '  <button type="button" class="teacher-board-tool" data-teacher-action="annotate" aria-pressed="false" title="Keep marks while left-clicking. Right-click marks squares. Alt+right-drag draws arrows.">Annotate</button>',
       '  <button type="button" class="teacher-board-tool" data-teacher-action="clear-marks">Clear marks</button>',
       '  <button type="button" class="teacher-board-tool" data-teacher-action="flip">Flip</button>',
       '  <button type="button" class="teacher-board-tool" data-teacher-action="reset">Reset</button>',
@@ -138,7 +138,16 @@
 
     iframe = panel.querySelector(".teacher-board-frame");
     panel.addEventListener("click", handlePanelClick);
+    panel.addEventListener("contextmenu", handlePanelContextMenu, true);
     document.body.appendChild(panel);
+  }
+
+  function handlePanelContextMenu(event) {
+    if (!event.shiftKey) {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
   }
 
   function ensurePanel() {

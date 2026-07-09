@@ -849,7 +849,8 @@ use the theme-driven green CSS variables (`--annotation-paint`,
 | Ctrl modifier | Orange annotation color |
 | Shift modifier | Blue annotation color |
 | Ctrl + Shift + right-click | Places a star (blue under the current modifier rule) |
-| Left-click (annotation mode) | Clears all annotations |
+| Left-click while annotation mode is active | Consumes the click and preserves annotations |
+| Left-click while annotation mode is inactive | Clears existing annotations |
 
 ---
 
@@ -960,6 +961,11 @@ minimized, or maximized:
   stronger modal-style shadow.
 - The `Max` header button toggles to `Restore`; closing or minimizing clears the
   maximized state.
+- The `Annotate` tool toggles the embedded board's annotation mode. Its practical
+  effect is that left-clicking the board no longer clears existing marks while
+  it is active; with Annotate inactive, the board keeps the normal left-click
+  behavior of clearing current annotation marks. `Clear marks` remains the
+  explicit always-clear command.
 
 ## Lesson Source Pipeline
 
