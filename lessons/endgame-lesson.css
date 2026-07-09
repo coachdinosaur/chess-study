@@ -438,6 +438,104 @@ body {
   }
 }
 
+/* ---------- Table-of-contents module (shared by index pages) ------------- */
+.module {
+  margin-top: 36px;
+}
+.module-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--hairline);
+  margin-bottom: 6px;
+}
+.module-name {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(20px, 1vw + 16px, 26px);
+  color: var(--ink);
+}
+.module-topic {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(14px, 0.5vw + 12px, 16px);
+  color: var(--accent);
+}
+.module-status {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.toc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: toc;
+}
+.toc-list li {
+  position: relative;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--hairline);
+}
+.toc-list li:last-child { border-bottom: none; }
+.toc-list a.toc-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+.toc-list a.toc-link:hover .toc-title { color: var(--accent); }
+.toc-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.toc-num {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(15px, 0.4vw + 14px, 17px);
+  color: var(--accent);
+  min-width: 30px;
+  flex-shrink: 0;
+}
+.toc-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(16px, 0.6vw + 14px, 19px);
+  color: var(--ink);
+}
+.toc-desc {
+  margin: 4px 0 0 42px;
+  font-size: clamp(14px, 0.4vw + 13px, 15px);
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+.module-soon {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.module-soon li {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--hairline);
+  color: var(--ink-soft);
+  font-style: italic;
+}
+.module-soon li:last-child { border-bottom: none; }
+
+@media print {
+  .toc-list li, .module-soon li, .module-head { break-inside: avoid; }
+}
+@media (max-width: 520px) {
+  .module-status { margin-left: 0; width: 100%; }
+  .toc-desc { margin-left: 0; }
+}
+
 /* ---------- Hero --------------------------------------------------------- */
 .hero {
   margin: 8px 0 28px;
@@ -931,52 +1029,6 @@ body {
   line-height: 1.5;
 }
 
-/* ---------- Lesson index (lessons/ directory landing page) -------------- */
-.lesson-index {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-  gap: 20px;
-}
-.lesson-index-card {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 18px 20px;
-  border: 1px solid var(--hairline);
-  border-radius: 8px;
-  background: var(--panel-bg);
-  text-decoration: none;
-  color: inherit;
-  transition: border-color 0.15s, transform 0.15s;
-}
-.lesson-index-card:hover {
-  border-color: var(--accent);
-  transform: translateY(-2px);
-}
-.lesson-index-number {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-.lesson-index-title {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: clamp(16px, 0.5vw + 14px, 18px);
-  line-height: 1.25;
-  color: var(--ink);
-}
-.lesson-index-desc {
-  font-size: 14px;
-  color: var(--ink-soft);
-  line-height: 1.45;
-}
-@media print {
-  .lesson-index-card { break-inside: avoid; }
-}
-
 /* ---------- Footer ------------------------------------------------------- */
 .lesson-footer {
   margin-top: 48px;
@@ -1025,10 +1077,6 @@ body {
   .index-header-inner {
     padding-left: 16px;
     padding-right: 16px;
-  }
-
-  .lesson-index {
-    grid-template-columns: 1fr;
   }
 
   .lesson-footer {
