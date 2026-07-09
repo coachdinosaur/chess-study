@@ -18,6 +18,7 @@
   var selectedPiece = "";
   var setupColor = "w";
   var boardMenuOpen = false;
+  var maximized = false;
 
   function teacherFen() {
     var explicit = document.documentElement.getAttribute("data-teacher-fen") ||
@@ -111,6 +112,7 @@
       '<div class="teacher-board-head">',
       '  <div class="teacher-board-title">Teacher Board</div>',
       '  <button type="button" class="teacher-board-icon-button" data-teacher-action="minimize" aria-label="Minimize teacher board" title="Minimize">_</button>',
+      '  <button type="button" class="teacher-board-icon-button teacher-board-max-button" data-teacher-action="maximize" aria-label="Maximize teacher board" title="Maximize">Max</button>',
       '  <button type="button" class="teacher-board-icon-button" data-teacher-action="close" aria-label="Close teacher board" title="Close">x</button>',
       '</div>',
       '<div class="teacher-board-body">',
@@ -211,12 +213,27 @@
     panel.classList.remove("is-minimized");
   }
 
+  function setMaximized(value) {
+    maximized = Boolean(value);
+    if (!panel) {
+      return;
+    }
+    panel.classList.toggle("is-maximized", maximized);
+    var button = panel.querySelector('[data-teacher-action="maximize"]');
+    if (button) {
+      button.textContent = maximized ? "Restore" : "Max";
+      button.setAttribute("aria-label", maximized ? "Restore teacher board" : "Maximize teacher board");
+      button.setAttribute("title", maximized ? "Restore" : "Maximize");
+    }
+  }
+
   function closePanel() {
     if (!panel) {
       return;
     }
     panel.hidden = true;
     panel.classList.remove("is-minimized");
+    setMaximized(false);
     setupOpen = false;
     annotateOpen = false;
     selectedPiece = "";
@@ -230,6 +247,9 @@
   function toggleMinimize() {
     if (!panel) {
       return;
+    }
+    if (maximized) {
+      setMaximized(false);
     }
     panel.classList.toggle("is-minimized");
   }
@@ -274,6 +294,13 @@
     }
     if (action === "minimize") {
       toggleMinimize();
+      return;
+    }
+    if (action === "maximize") {
+      if (panel.classList.contains("is-minimized")) {
+        panel.classList.remove("is-minimized");
+      }
+      setMaximized(!maximized);
       return;
     }
     if (action === "setup") {

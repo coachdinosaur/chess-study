@@ -884,6 +884,14 @@ code {
   background: var(--annotation-paint);
 }
 
+.board-annotation-paint.is-orange {
+  background: rgba(226, 126, 49, 0.78);
+}
+
+.board-annotation-paint.is-blue {
+  background: rgba(51, 122, 220, 0.72);
+}
+
 .board-annotation-circle {
   position: absolute;
   inset: 0;
@@ -892,6 +900,14 @@ code {
   box-sizing: border-box;
   border: 4px solid var(--annotation-ring);
   border-radius: 50%;
+}
+
+.board-annotation-circle.is-orange {
+  border-color: rgba(226, 126, 49, 0.96);
+}
+
+.board-annotation-circle.is-blue {
+  border-color: rgba(51, 122, 220, 0.96);
 }
 
 .board-annotation-star {
@@ -913,6 +929,14 @@ code {
   );
 }
 
+.board-annotation-star.is-orange {
+  background: rgba(226, 126, 49, 0.96);
+}
+
+.board-annotation-star.is-blue {
+  background: rgba(51, 122, 220, 0.96);
+}
+
 .board-annotation-arrow {
   fill: none;
   stroke: var(--annotation-arrow);
@@ -925,12 +949,28 @@ code {
   opacity: 0.72;
 }
 
+.board-annotation-arrow.is-orange {
+  stroke: rgba(226, 126, 49, 0.96);
+}
+
+.board-annotation-arrow.is-blue {
+  stroke: rgba(51, 122, 220, 0.96);
+}
+
 .board-annotation-arrow-head {
   fill: var(--annotation-arrow);
 }
 
 .board-annotation-arrow-head.is-preview {
   opacity: 0.72;
+}
+
+.board-annotation-arrow-head.is-orange {
+  fill: rgba(226, 126, 49, 0.96);
+}
+
+.board-annotation-arrow-head.is-blue {
+  fill: rgba(51, 122, 220, 0.96);
 }
 
 .last-move-arrow-outline,
@@ -3444,7 +3484,13 @@ html[data-board-only="1"] .eval-bar-wrap {
   --captured-row-gap: clamp(0.12rem, calc(var(--board-size, 42rem) / 260), 0.22rem);
   --captured-cell-size: clamp(var(--captured-cell-min), calc(var(--board-size, 42rem) / var(--captured-cell-divisor)), var(--captured-cell-max));
   --captured-row-height: calc(var(--captured-cell-size) + var(--captured-row-extra-height) + 2px);
+  --focus-board-shell-width: calc(var(--board-size) + (var(--board-frame-padding) * 2) + 2px);
   width: min(100%, calc(var(--board-size) + (var(--board-frame-padding) * 2) + 2px));
+  max-height: calc(
+    var(--focus-board-shell-width)
+    + (var(--captured-row-height) * 2)
+    + (var(--captured-row-gap) * 2)
+  );
 }
 
 .page-shell.is-board-only.is-focus-mode .board-frame,

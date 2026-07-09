@@ -1091,7 +1091,14 @@ body {
     max-width: none !important;
     width: 100%;
   }
-  .diagram { width: 100%; max-width: var(--board-max); }
+  .diagram {
+    width: min(100%, 760px);
+    max-width: 100%;
+  }
+  .diagram .board {
+    max-width: none;
+    aspect-ratio: 1 / 1.18;
+  }
 
   .test-grid {
     grid-template-columns: 1fr;
@@ -1157,7 +1164,7 @@ body {
   /* Only the chessboard breaks out to full-bleed (edge to edge). */
   .diagram {
     max-width: none;
-    width: 100%;
+    width: calc(100% + 32px);
     margin-left: -16px;
     margin-right: -16px;
   }

@@ -23,6 +23,14 @@ const BOARD_VIEWBOX_SIZE = 800;
 const BOARD_CELL_SIZE = BOARD_VIEWBOX_SIZE / 8;
 const ANNOTATION_ARROW_HEAD_LENGTH = 30;
 const ANNOTATION_ARROW_HEAD_WIDTH = 40;
+const ANNOTATION_COLOR_GREEN = 'green';
+const ANNOTATION_COLOR_ORANGE = 'orange';
+const ANNOTATION_COLOR_BLUE = 'blue';
+const ANNOTATION_COLORS = new Set([
+  ANNOTATION_COLOR_GREEN,
+  ANNOTATION_COLOR_ORANGE,
+  ANNOTATION_COLOR_BLUE,
+]);
 const LAST_MOVE_ARROW_START_INSET = 30;
 const LAST_MOVE_ARROW_TIP_INSET = 30;
 const LAST_MOVE_ARROW_HEAD_LENGTH = 24;
@@ -756,9 +764,9 @@ const state = {
   },
   annotations: {
     enabled: false,
-    paintedSquares: new Set(),
-    circledSquares: new Set(),
-    starredSquares: new Set(),
+    paintedSquares: new Map(),
+    circledSquares: new Map(),
+    starredSquares: new Map(),
     arrows: [],
     gesture: createEmptyAnnotationGestureState(),
     suppressBoardClickUntil: 0,
@@ -1197,6 +1205,7 @@ function createEmptyAnnotationGestureState() {
     active: false,
     button: null,
     mode: '',
+    color: ANNOTATION_COLOR_GREEN,
     startSquare: '',
     lastSquare: '',
     dragged: false,
@@ -1954,15 +1963,49 @@ function queueEngineSearchForFen(fen, options = {}) {
   }
 }
 
-function normalizeAnnotationSquares(value) {
-  if (!Array.isArray(value)) {
-    return new Set();
+function normalizeAnnotationColor(value) {
+  const color = String(value || '').trim().toLowerCase();
+  return ANNOTATION_COLORS.has(color) ? color : ANNOTATION_COLOR_GREEN;
+}
+
+function annotationColorFromEvent(event) {
+  if (event.shiftKey) {
+    return ANNOTATION_COLOR_BLUE;
   }
-  return new Set(
-    value
-      .map((square) => String(square || '').trim().toLowerCase())
-      .filter((square) => SQUARE_PATTERN.test(square)),
-  );
+  if (event.ctrlKey) {
+    return ANNOTATION_COLOR_ORANGE;
+  }
+  return ANNOTATION_COLOR_GREEN;
+}
+
+function normalizeAnnotationSquares(value) {
+  if (value instanceof Map) {
+    const squares = new Map();
+    value.forEach((color, square) => {
+      const normalizedSquare = String(square || '').trim().toLowerCase();
+      if (SQUARE_PATTERN.test(normalizedSquare)) {
+        squares.set(normalizedSquare, normalizeAnnotationColor(color));
+      }
+    });
+    return squares;
+  }
+  if (value instanceof Set) {
+    return normalizeAnnotationSquares(Array.from(value));
+  }
+  if (!Array.isArray(value)) {
+    return new Map();
+  }
+  const squares = new Map();
+  value.forEach((entry) => {
+    const square = typeof entry === 'string'
+      ? String(entry || '').trim().toLowerCase()
+      : String(entry?.square || '').trim().toLowerCase();
+    if (!SQUARE_PATTERN.test(square)) {
+      return;
+    }
+    squares.set(square, normalizeAnnotationColor(entry?.color));
+  });
+  return squares;
 }
 
 function normalizeAnnotationState(value) {
@@ -1974,13 +2017,27 @@ function normalizeAnnotationState(value) {
   };
 }
 
-function buildAnnotationPayload() {
+function serializeAnnotationState(annotationState) {
+  const normalized = normalizeAnnotationState(annotationState);
+  const serializeSquares = (squares) => Array.from(squares.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([square, color]) => (
+      color === ANNOTATION_COLOR_GREEN ? square : { square, color }
+    ));
   return {
-    paintedSquares: Array.from(state.annotations.paintedSquares).sort(),
-    circledSquares: Array.from(state.annotations.circledSquares).sort(),
-    starredSquares: Array.from(state.annotations.starredSquares).sort(),
-    arrows: state.annotations.arrows.map((arrow) => ({ from: arrow.from, to: arrow.to })),
+    paintedSquares: serializeSquares(normalized.paintedSquares),
+    circledSquares: serializeSquares(normalized.circledSquares),
+    starredSquares: serializeSquares(normalized.starredSquares),
+    arrows: normalized.arrows.map((arrow) => (
+      arrow.color && arrow.color !== ANNOTATION_COLOR_GREEN
+        ? { from: arrow.from, to: arrow.to, color: arrow.color }
+        : { from: arrow.from, to: arrow.to }
+    )),
   };
+}
+
+function buildAnnotationPayload() {
+  return serializeAnnotationState(state.annotations);
 }
 
 function normalizeAnnotationArrows(value) {
@@ -2001,7 +2058,7 @@ function normalizeAnnotationArrows(value) {
       return;
     }
     seen.add(key);
-    arrows.push({ from, to });
+    arrows.push({ from, to, color: normalizeAnnotationColor(entry?.color) });
   });
   return arrows;
 }
@@ -3026,7 +3083,7 @@ function serializeLessonState(lessonState) {
     currentNodeId: normalized.analysis.currentNodeId,
     rootId: normalized.analysis.rootId,
     nodes: cloneAnalysisNodes(normalized.analysis.nodes),
-    annotations: normalizeAnnotationState(normalized.annotations),
+    annotations: serializeAnnotationState(normalized.annotations),
     note: normalizeNoteState(normalized.note),
   };
 }
@@ -3891,9 +3948,9 @@ function applyLessonState(lessonState, options = {}) {
   state.note = normalizeNoteState(lessonState.note);
   state.practice = createEmptyPracticeState();
   state.annotations.enabled = false;
-  state.annotations.paintedSquares = new Set(lessonState.annotations?.paintedSquares || []);
-  state.annotations.circledSquares = new Set(lessonState.annotations?.circledSquares || []);
-  state.annotations.starredSquares = new Set(lessonState.annotations?.starredSquares || []);
+  state.annotations.paintedSquares = normalizeAnnotationSquares(lessonState.annotations?.paintedSquares);
+  state.annotations.circledSquares = normalizeAnnotationSquares(lessonState.annotations?.circledSquares);
+  state.annotations.starredSquares = normalizeAnnotationSquares(lessonState.annotations?.starredSquares);
   state.annotations.arrows = normalizeAnnotationArrows(lessonState.annotations?.arrows);
   state.annotations.suppressContextMenu = false;
   state.annotations.gesture = createEmptyAnnotationGestureState();
@@ -6572,14 +6629,15 @@ function annotationMarkupForSquare(square) {
     return '';
   }
   const layers = [];
+  const colorClass = (color) => `is-${normalizeAnnotationColor(color)}`;
   if (state.annotations.paintedSquares.has(square)) {
-    layers.push('<span class="board-annotation board-annotation-paint" aria-hidden="true"></span>');
+    layers.push(`<span class="board-annotation board-annotation-paint ${colorClass(state.annotations.paintedSquares.get(square))}" aria-hidden="true"></span>`);
   }
   if (state.annotations.circledSquares.has(square)) {
-    layers.push('<span class="board-annotation board-annotation-circle" aria-hidden="true"></span>');
+    layers.push(`<span class="board-annotation board-annotation-circle ${colorClass(state.annotations.circledSquares.get(square))}" aria-hidden="true"></span>`);
   }
   if (state.annotations.starredSquares.has(square)) {
-    layers.push('<span class="board-annotation board-annotation-star" aria-hidden="true"></span>');
+    layers.push(`<span class="board-annotation board-annotation-star ${colorClass(state.annotations.starredSquares.get(square))}" aria-hidden="true"></span>`);
   }
   return layers.join('');
 }
@@ -6605,7 +6663,7 @@ function squareCenterPoint(square, orientation = state.boardOrientation) {
 }
 
 function buildAnnotationArrowMarkup(from, to, options = {}) {
-  const { preview = false } = options;
+  const { preview = false, color = ANNOTATION_COLOR_GREEN } = options;
   const start = squareCenterPoint(from);
   const end = squareCenterPoint(to);
   if (!start || !end || (start.x === end.x && start.y === end.y)) {
@@ -6630,8 +6688,9 @@ function buildAnnotationArrowMarkup(from, to, options = {}) {
   const leftY = headBaseY + (perpendicularY * headHalfWidth);
   const rightX = headBaseX - (perpendicularX * headHalfWidth);
   const rightY = headBaseY - (perpendicularY * headHalfWidth);
-  const className = `board-annotation-arrow ${preview ? 'is-preview' : ''}`.trim();
-  const headClassName = `board-annotation-arrow-head ${preview ? 'is-preview' : ''}`.trim();
+  const colorClass = `is-${normalizeAnnotationColor(color)}`;
+  const className = `board-annotation-arrow ${colorClass} ${preview ? 'is-preview' : ''}`.trim();
+  const headClassName = `board-annotation-arrow-head ${colorClass} ${preview ? 'is-preview' : ''}`.trim();
   return `
     <g>
       <line
@@ -6732,6 +6791,7 @@ function currentPreviewArrow() {
   return {
     from: gesture.startSquare,
     to: gesture.lastSquare,
+    color: gesture.color,
   };
 }
 
@@ -6745,11 +6805,11 @@ function renderAnnotationOverlay() {
   }
 
   const savedArrows = state.annotations.arrows
-    .map((arrow) => buildAnnotationArrowMarkup(arrow.from, arrow.to))
+    .map((arrow) => buildAnnotationArrowMarkup(arrow.from, arrow.to, { color: arrow.color }))
     .join('');
   const previewArrow = currentPreviewArrow();
   const previewMarkup = previewArrow
-    ? buildAnnotationArrowMarkup(previewArrow.from, previewArrow.to, { preview: true })
+    ? buildAnnotationArrowMarkup(previewArrow.from, previewArrow.to, { preview: true, color: previewArrow.color })
     : '';
 
   if (!savedArrows && !previewMarkup) {
@@ -6784,11 +6844,12 @@ function cancelAnnotationGesture() {
   }
 }
 
-function paintAnnotationSquare(square) {
-  if (!SQUARE_PATTERN.test(square) || state.annotations.paintedSquares.has(square)) {
+function paintAnnotationSquare(square, color = ANNOTATION_COLOR_GREEN) {
+  const normalizedColor = normalizeAnnotationColor(color);
+  if (!SQUARE_PATTERN.test(square) || state.annotations.paintedSquares.get(square) === normalizedColor) {
     return false;
   }
-  state.annotations.paintedSquares.add(square);
+  state.annotations.paintedSquares.set(square, normalizedColor);
   return true;
 }
 
@@ -6803,39 +6864,51 @@ function clearAllAnnotations() {
   return true;
 }
 
-function toggleAnnotationCircle(square) {
+function toggleAnnotationCircle(square, color = ANNOTATION_COLOR_GREEN) {
   if (!SQUARE_PATTERN.test(square)) {
     return false;
   }
-  if (state.annotations.circledSquares.has(square)) {
+  const normalizedColor = normalizeAnnotationColor(color);
+  if (state.annotations.circledSquares.get(square) === normalizedColor) {
     state.annotations.circledSquares.delete(square);
   } else {
-    state.annotations.circledSquares.add(square);
+    state.annotations.circledSquares.set(square, normalizedColor);
   }
   return true;
 }
 
-function toggleAnnotationStar(square) {
+function toggleAnnotationStar(square, color = ANNOTATION_COLOR_GREEN) {
   if (!SQUARE_PATTERN.test(square)) {
     return false;
   }
-  if (state.annotations.starredSquares.has(square)) {
+  const normalizedColor = normalizeAnnotationColor(color);
+  if (state.annotations.starredSquares.get(square) === normalizedColor) {
     state.annotations.starredSquares.delete(square);
   } else {
-    state.annotations.starredSquares.add(square);
+    state.annotations.starredSquares.set(square, normalizedColor);
   }
   return true;
 }
 
-function addAnnotationArrow(from, to) {
+function addAnnotationArrow(from, to, color = ANNOTATION_COLOR_GREEN) {
   if (!SQUARE_PATTERN.test(from) || !SQUARE_PATTERN.test(to) || from === to) {
     return false;
   }
-  const arrowExists = state.annotations.arrows.some((arrow) => annotationArrowKey(arrow.from, arrow.to) === annotationArrowKey(from, to));
-  if (arrowExists) {
+  const normalizedColor = normalizeAnnotationColor(color);
+  let changed = false;
+  const nextArrows = state.annotations.arrows.map((arrow) => {
+    if (annotationArrowKey(arrow.from, arrow.to) !== annotationArrowKey(from, to)) {
+      return arrow;
+    }
+    changed = arrow.color !== normalizedColor;
+    return { ...arrow, color: normalizedColor };
+  });
+  if (!changed && nextArrows.some((arrow) => annotationArrowKey(arrow.from, arrow.to) === annotationArrowKey(from, to))) {
     return false;
   }
-  state.annotations.arrows = [...state.annotations.arrows, { from, to }];
+  state.annotations.arrows = changed
+    ? nextArrows
+    : [...state.annotations.arrows, { from, to, color: normalizedColor }];
   return true;
 }
 
@@ -6873,9 +6946,9 @@ function applyAnnotationGestureSquare(square) {
     if (gesture.mode === 'paint') {
       if (!gesture.dragged) {
         gesture.dragged = true;
-        changed = paintAnnotationSquare(gesture.startSquare) || changed;
+        changed = paintAnnotationSquare(gesture.startSquare, gesture.color) || changed;
       }
-      changed = paintAnnotationSquare(square) || changed;
+      changed = paintAnnotationSquare(square, gesture.color) || changed;
     } else if (gesture.mode === 'arrow') {
       gesture.dragged = true;
     } else if (gesture.mode === 'star') {
@@ -7041,31 +7114,10 @@ function syncBoardSize() {
     // Only the eval rail reserves space beside the board; the turn marker
     // is hidden in portrait (display: none), so its size + gap are excluded.
     const mobileBoardSize = Math.floor(Math.max(0, vw - evalRailWidth));
-    console.log('[DEBUG syncBoardSize]', {
-      vw,
-      evalRailWidth,
-      turnSize,
-      turnGap,
-      framePadding,
-      mobileBoardSize,
-      boardSizeVar: dom.boardColumn.style.getPropertyValue('--board-size'),
-      containerWidth,
-      isMobilePortrait
-    });
     if (mobileBoardSize > 0) {
       dom.boardColumn.style.setProperty('--board-size', `${mobileBoardSize}px`);
       dom.rootElement.style.setProperty('--board-side-gap', '0px');
     }
-    // DEBUG: show formula values as a badge beside the board
-    const dbgId = 'board-size-debug';
-    let dbgEl = document.getElementById(dbgId);
-    if (!dbgEl) {
-      dbgEl = document.createElement('div');
-      dbgEl.id = dbgId;
-      dbgEl.style.cssText = 'position:fixed;bottom:4px;right:4px;z-index:9999;background:#000;color:#0f0;font:12px monospace;padding:4px 8px;border-radius:4px;pointer-events:none;opacity:0.9';
-      document.body.appendChild(dbgEl);
-    }
-    dbgEl.textContent = `board=${mobileBoardSize} vw=${vw} eval=${evalRailWidth} framePad=${framePadding}`;
     return;
   }
 
@@ -8181,11 +8233,11 @@ function handleBoardContextMenu(event) {
 }
 
 function annotationGestureModeFromEvent(event) {
+  if (event.button === 2 && event.ctrlKey && event.shiftKey) {
+    return 'star';
+  }
   if (event.button === 2 && event.altKey) {
     return 'arrow';
-  }
-  if (event.button === 2 && event.ctrlKey) {
-    return 'star';
   }
   return 'paint';
 }
@@ -8230,6 +8282,7 @@ function handleBoardMouseDown(event) {
     active: true,
     button: event.button,
     mode: annotationGestureModeFromEvent(event),
+    color: annotationColorFromEvent(event),
     startSquare: square,
     lastSquare: square,
     dragged: false,
@@ -8258,11 +8311,11 @@ function handleDocumentMouseUp(event) {
   let changed = false;
   if (gesture.button === 2) {
     if (gesture.mode === 'paint' && !gesture.dragged && releaseSquare === gesture.startSquare) {
-      changed = toggleAnnotationCircle(gesture.startSquare);
+      changed = toggleAnnotationCircle(gesture.startSquare, gesture.color);
     } else if (gesture.mode === 'star' && !gesture.dragged && releaseSquare === gesture.startSquare) {
-      changed = toggleAnnotationStar(gesture.startSquare);
+      changed = toggleAnnotationStar(gesture.startSquare, gesture.color);
     } else if (gesture.mode === 'arrow' && releaseSquare && releaseSquare !== gesture.startSquare) {
-      changed = addAnnotationArrow(gesture.startSquare, releaseSquare);
+      changed = addAnnotationArrow(gesture.startSquare, releaseSquare, gesture.color);
     }
   }
 
@@ -8789,6 +8842,10 @@ function handleDocumentClick(event) {
         dom.lessonFileInput.value = '';
         dom.lessonFileInput.click();
       }
+      break;
+    case 'open-lesson-index':
+      closeLessonActionsMenu();
+      window.location.href = './lessons/index.html';
       break;
     case 'save-lesson':
       closeLessonActionsMenu();
@@ -11610,13 +11667,13 @@ function bindEmbedMessageListener() {
 }
 
 function applyEmbedAnnotations(marks) {
-  state.annotations.paintedSquares = new Set();
-  state.annotations.circledSquares = new Set();
-  state.annotations.starredSquares = new Set();
+  state.annotations.paintedSquares = new Map();
+  state.annotations.circledSquares = new Map();
+  state.annotations.starredSquares = new Map();
   if (Array.isArray(marks)) {
     for (const sq of marks) {
       if (typeof sq === 'string' && /^[a-h][1-8]$/.test(sq)) {
-        state.annotations.paintedSquares.add(sq);
+        state.annotations.paintedSquares.set(sq, ANNOTATION_COLOR_GREEN);
       }
     }
   }

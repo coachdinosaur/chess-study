@@ -5,16 +5,23 @@
 This repository is a **chess teaching platform** composed of three cooperating,
 framework-free subsystems:
 
+**2026-07-09 update:** the Pawn Level lesson site now also includes Module 4
+(`lessons/pawn-m4-lesson-*.html`) and uses shared floating teacher-board assets
+(`lessons/pawn-teacher-board.js` / `.css`) across the Pawn lessons. The SPA
+annotation system now stores per-annotation colors (`green`, `orange`, `blue`)
+instead of treating all markings as one theme-colored layer.
+
 1. **Interactive Study SPA** (`index.html` + `app.js`) — a browser-based chess
    study and analysis single-page application (endgame study, practice, puzzles,
    Play-vs-Engine, board scanning, lesson tree). Pure ES modules with direct DOM
    manipulation; a single global `state` object drives rendering across six tabs.
 2. **Pawn Level Lesson Site** (`lessons/pawn-*.html`, `lessons/pawn-m2-*.html`,
-   `lessons/pawn-m3-*.html`, `lessons/pawn-index.html`) — a beginner curriculum of
-   fully static, self-contained HTML lesson pages (no build step, no iframe to the
-   SPA). Three modules: **Module 1** (lessons 01–11, foundations), **Module 2**
-   (lessons 01–13, how the pieces move), and **Module 3** (lessons 01–12, the
-   tactics/check family).
+   `lessons/pawn-m3-*.html`, `lessons/pawn-m4-*.html`, `lessons/pawn-index.html`)
+   — a beginner curriculum of static HTML lesson pages (no build step, no iframe
+   to the SPA). The pages carry local lesson content and diagrams, plus shared
+   lesson helpers. Four modules are published: Module 1 foundations, Module 2
+   piece movement, Module 3 attack/check/stalemate, and Module 4 rook/queen
+   checkmates and checkmate-vs-stalemate practice.
 3. **Piece Asset Pipeline** (`mpchess-pieces/` → `assets/pieces/mpchess/*.svg`) — the
    `mpchess` chess font is authored in MetaPost/LuaLaTeX and exported to the 12
    Unicode-free SVG piece images used by both the SPA and the lesson pages.
@@ -119,6 +126,12 @@ chess-study/
     └── generate_openings.mjs   Opening book generator
 ```
 
+Directory note: the published `lessons/` folder now also includes
+`pawn-m4-lesson-01-...-10` and the shared `pawn-teacher-board.js` /
+`pawn-teacher-board.css` files used by the Pawn lesson pages. The tree above is
+kept as a broad map; the Pawn section below is the current source of truth for
+module coverage and shared lesson helpers.
+
 ---
 
 # Subsystem A — Interactive Study SPA
@@ -162,6 +175,12 @@ Each chapter page:
 3. Shares `endgame-lesson.css` for layout, typography, and print/PDF output
    styles (the print stylesheet in that file is designed for
    [Paged.js](https://pagedjs.org/) paginated export).
+
+Recent responsive CSS updates in `endgame-lesson.css` keep lesson diagrams from
+collapsing on narrow screens: `.diagram` is capped with `width: min(100%, 760px)`
+in the general responsive path, the nested `.board` uses a stable aspect ratio,
+and the narrowest breakpoint lets diagrams bleed slightly wider than the content
+column for edge-to-edge board readability.
 
 ---
 
@@ -248,6 +267,11 @@ When focus mode is active (`state.focusMode`, `app.js:2911`):
 4. Pressing Escape exits focus mode.
 5. In `?embed=1` mode, focus mode is entered automatically on load.
 
+In board-only focus mode, `.page-shell.is-board-only.is-focus-mode .board-column`
+also constrains its max height to the board shell plus captured-piece rows. This
+prevents the maximized board view from growing past the viewport when captured
+rows are visible.
+
 ### Board Rendering
 
 The board is an 8×8 `<div>` grid inside `#boardGrid`. Each square is:
@@ -295,6 +319,11 @@ const boardSize    = Math.floor(Math.max(0, vw - sideOffset * 2 - framePadding *
 
 The `sideOffset * 2` subtraction leaves equal gaps on the left (where the
 sidebar sits) and the right (visual balance), centering the board.
+
+Current mobile portrait sizing hides the turn marker, so only the eval rail
+reserves horizontal space. The active formula computes `mobileBoardSize` from
+the viewport width minus `evalRailWidth`; temporary debug logging and the old
+on-screen board-size badge were removed.
 
 ### Mobile Engine Lines Slot
 
@@ -747,6 +776,15 @@ The theme is set by an inline `<script>` in `index.html` before any rendering
 (to prevent flash), read from `localStorage` (`color-theme-v1`), and toggled
 via the three-dot menu. State is mirrored in `state.colorTheme`.
 
+### Three-Dot Menu Navigation
+
+The main lesson overflow menu (`#lessonActionsMenu`) groups file/lesson, view,
+engine/PGN, and toggle actions. It also includes a top-level **Lesson index**
+entry in the File & Lesson submenu (`data-action="open-lesson-index"`), which
+navigates the SPA to `./lessons/index.html`. This is a normal menu action handled
+by the central `handleDocumentClick()` action switch rather than a separate link
+component.
+
 ---
 
 ## Opening Book (SPA)
@@ -770,15 +808,21 @@ in the lesson header via `syncOpeningInfoDisplay()`.
 ```javascript
 state.annotations = {
   enabled: false,
-  paintedSquares: Set(['e2', 'e4', …]),
-  circledSquares: Set(['d5']),
-  starredSquares: Set(['f3']),
-  arrows: [{ from: 'e2', to: 'e4', color: 'green' }, …],
-  gesture: { active, type, startSquare, currentUci, … },
+  paintedSquares: Map([['e2', 'green'], ['e4', 'orange']]),
+  circledSquares: Map([['d5', 'blue']]),
+  starredSquares: Map([['f3', 'blue']]),
+  arrows: [{ from: 'e2', to: 'e4', color: 'green' }, ...],
+  gesture: { active, button, mode, color, startSquare, lastSquare, dragged },
   suppressBoardClickUntil: 0,
   suppressContextMenu: false,
 };
 ```
+
+Current square annotations are `Map<Square, Color>` internally. `green` is the
+default color, `ctrlKey` selects `orange`, and `shiftKey` selects `blue`.
+Lesson payloads remain backward-compatible with legacy arrays of square strings;
+non-green square marks serialize as `{ square, color }`, while arrows serialize
+as `{ from, to, color }` and may omit `color` for default green.
 
 ### SVG Overlay
 
@@ -790,13 +834,21 @@ Annotations are rendered in two layers:
 2. **Arrow layer** — SVG `<line>` + `<polygon>` in `#boardAnnotationOverlay`,
    generated by `buildAnnotationArrowMarkup()` (`app.js:6540`)
 
+Color is applied by adding `is-orange` or `is-blue` classes to the square overlay,
+arrow stroke, and arrowhead elements. The unclassified/default path continues to
+use the theme-driven green CSS variables (`--annotation-paint`,
+`--annotation-ring`, `--annotation-star`, `--annotation-arrow`).
+
 ### Gesture Recognition
 
 | Gesture | Annotation |
 |---|---|
-| Right-click + drag | Paints a highlighted square |
+| Right-click + drag | Paints highlighted squares |
+| Right-click release on same square | Toggles a circle |
 | Alt + right-click + drag | Draws an arrow |
-| Ctrl + right-click | Places a star |
+| Ctrl modifier | Orange annotation color |
+| Shift modifier | Blue annotation color |
+| Ctrl + Shift + right-click | Places a star (blue under the current modifier rule) |
 | Left-click (annotation mode) | Clears all annotations |
 
 ---
@@ -859,10 +911,16 @@ as ES modules or plain `<script>` tags.
 # Subsystem B — Pawn Level Lesson Site
 
 A standalone beginner curriculum. Unlike the numbered endgame lessons, these
-pages are **fully static and self-contained**: each `pawn-*.html` / `pawn-m2-*.html`
-/ `pawn-m3-*.html` file carries its own `<style>` block and any inline SVG it
-needs, and does **not** embed the SPA. They share only the piece SVGs and (for
-the index page) the `endgame-lesson.css` stylesheet.
+pages are static lesson documents: each `pawn-*.html` / `pawn-m2-*.html` /
+`pawn-m3-*.html` / `pawn-m4-*.html` file carries its own lesson content,
+lesson-local `<style>` block, and any inline SVG it needs, and does **not** embed
+the SPA. They share the piece SVGs plus common lesson helper CSS/JS.
+
+Current Pawn Level pages also load shared lesson helpers:
+`endgame-lesson.css`, `endgame-lesson.js`, `pawn-teacher-board.css`, and
+`pawn-teacher-board.js`. The teacher-board assets provide the floating board
+overlay used across the lesson pages; cache-busted `?v=20260709-teacher-max1`
+references indicate the maximize-capable version.
 
 ## Modules
 
@@ -871,6 +929,7 @@ the index page) the `endgame-lesson.css` stylesheet.
 | **Module 1** | `pawn-01` … `pawn-11` | Foundations: what chess is, the board, files/ranks/diagonals, notation, capturing, setup, rules, the chessmen, piece values |
 | **Module 2** | `pawn-m2-lesson-01` … `pawn-m2-lesson-13` | How the pieces move: king, knight, pawn (move/capture/promotion), rook, bishop, queen, and practice activities |
 | **Module 3** | `pawn-m3-lesson-01` … `pawn-m3-lesson-12` | How to win: attack, check, illegal moves, escaping check, stalemate, and hands-on check/stalemate/capture/block activities |
+| **Module 4** | `pawn-m4-lesson-01` … `pawn-m4-lesson-10` | Rook and queen checkmates, double-rook mate, stalemate examples, and checkmate-or-stalemate practice |
 
 ## Page Shell (common to all Pawn Level pages)
 
@@ -887,6 +946,20 @@ Every Pawn Level lesson page shares the same structural shell:
 
 This shell is hand-authored per page (no templating engine), so visual/behavioral
 changes must be applied to each file individually.
+
+## Floating Teacher Board
+
+Pawn lesson pages load `pawn-teacher-board.js` and `pawn-teacher-board.css` as a
+shared floating board overlay. The script reads lesson-level attributes such as
+`data-teacher-fen`, `data-piece-base`, and orientation hooks, then creates a
+movable panel with setup and annotation tools. The panel can be closed,
+minimized, or maximized:
+
+- `is-minimized` hides the body/setup/tool regions while leaving the header.
+- `is-maximized` expands the panel to the viewport with responsive insets and a
+  stronger modal-style shadow.
+- The `Max` header button toggles to `Restore`; closing or minimizing clears the
+  maximized state.
 
 ## Lesson Source Pipeline
 
@@ -907,7 +980,7 @@ published `lessons/` copy, or re-sync them, to avoid drift.
 
 ## Index Page
 
-`lessons/pawn-index.html` is the Pawn Level table of contents. It lists all three
+`lessons/pawn-index.html` is the Pawn Level table of contents. It lists all four
 modules and links to every lesson. It reuses `endgame-lesson.css` for layout and
 exposes `data-piece-base`, `data-app-path`, and `data-orientation` attributes on
 `<html>` (the same hook contract the numbered endgame pages use), but it does not
@@ -931,7 +1004,7 @@ Pawn Level lesson diagrams use **two** board styles:
    edge, and `position: relative` squares so overlays can be absolutely centered.
    Highlighted files/ranks use `::before`/`::after` pseudo-element washes.
 2. **Inline SVG board** — used for move/attack/capture diagrams (Module 1
-   `pawn-04`–`pawn-10`, and all Module 2 and Module 3 lessons). A hand-built
+   `pawn-04`–`pawn-10`, and all Module 2, Module 3, and Module 4 lessons). A hand-built
    `<svg>` with a `<rect>` background, a `<g>` of square `<rect>`s, optional
    highlight rects, `<image>` piece glyphs from `../assets/pieces/mpchess/`, and
    an arrow overlay.
