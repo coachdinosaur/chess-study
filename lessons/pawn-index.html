@@ -95,19 +95,6 @@
       color: var(--ink-soft);
       line-height: 1.5;
     }
-    .toc-badge {
-      display: inline-block;
-      margin: 8px 0 0 42px;
-      padding: 2px 10px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--accent, #3a7d44);
-      background: color-mix(in srgb, var(--accent, #3a7d44) 14%, transparent);
-      border: 1px solid color-mix(in srgb, var(--accent, #3a7d44) 40%, transparent);
-    }
     .module-soon {
       list-style: none;
       margin: 0;
@@ -126,7 +113,7 @@
     }
     @media (max-width: 520px) {
       .module-status { margin-left: 0; width: 100%; }
-      .toc-desc, .toc-badge { margin-left: 0; }
+      .toc-desc { margin-left: 0; }
     }
   </style>
 </head>
@@ -164,7 +151,6 @@
               <span class="toc-title">Introducing the Game of Chess</span>
             </div>
             <p class="toc-desc">What chess is, where it came from, and why it is learned around the world.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -174,7 +160,6 @@
               <span class="toc-title">The Chessboard</span>
             </div>
             <p class="toc-desc">64 squares, alternating colors, and the rule: white square on the right.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -184,7 +169,6 @@
               <span class="toc-title">Files, Ranks, and Diagonals</span>
             </div>
             <p class="toc-desc">Learn the three ways the board is divided and how squares are grouped.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -194,7 +178,6 @@
               <span class="toc-title">Scorekeeping: Algebraic Notation</span>
             </div>
             <p class="toc-desc">Learn square names, move notation, captures, and examples like Kf2, Nd3, and Nxd3.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -204,7 +187,6 @@
               <span class="toc-title">Algebraic Notation Examples</span>
             </div>
             <p class="toc-desc">See real example moves and the rule that pawns have no letter in notation.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -214,7 +196,6 @@
               <span class="toc-title">Capturing a Piece</span>
             </div>
             <p class="toc-desc">How a capture works, how to read Nxd3, and why captures matter.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -224,7 +205,6 @@
               <span class="toc-title">Chess Terms</span>
             </div>
             <p class="toc-desc">Kingside, queenside, whiteside, and blackside — the four board areas.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -234,7 +214,6 @@
               <span class="toc-title">Setting Up the Chessboard</span>
             </div>
             <p class="toc-desc">Place kings, queens, rooks, knights, bishops, and pawns in the correct starting squares.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -244,7 +223,6 @@
               <span class="toc-title">Basic Chess Rules</span>
             </div>
             <p class="toc-desc">Two players, taking turns, White moves first, and the standard starting position.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -254,7 +232,6 @@
               <span class="toc-title">The Chessmen</span>
             </div>
             <p class="toc-desc">32 chessmen, 16 per side, and the difference between a piece and a pawn.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -264,7 +241,6 @@
               <span class="toc-title">Piece Values</span>
             </div>
             <p class="toc-desc">The beginner point value of each piece and why the king has none.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
       </ol>
@@ -286,7 +262,6 @@
               <span class="toc-title">How to Move the King</span>
             </div>
             <p class="toc-desc">Understand why the King is the most important piece and how it moves one square in any direction.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -296,7 +271,6 @@
               <span class="toc-title">How to Capture with the King</span>
             </div>
             <p class="toc-desc">Learn how the King captures one square away from any position on the board.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -306,7 +280,6 @@
               <span class="toc-title">How to Move the Knight</span>
             </div>
             <p class="toc-desc">Learn how the knight moves in an L-shape and is the only piece that jumps over others.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -316,7 +289,6 @@
               <span class="toc-title">How to Capture with the Knight</span>
             </div>
             <p class="toc-desc">Learn how the knight captures with an L-shaped move, written as Nxe4.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -326,7 +298,6 @@
               <span class="toc-title">How to Move the Pawn</span>
             </div>
             <p class="toc-desc">Learn how pawns move one square forward, or two squares from their starting position.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -336,7 +307,6 @@
               <span class="toc-title">Pawn Capture</span>
             </div>
             <p class="toc-desc">Learn how pawns capture one square diagonally forward, not straight ahead.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -346,7 +316,6 @@
               <span class="toc-title">Pawn Promotion</span>
             </div>
             <p class="toc-desc">Learn how a pawn promotes to a queen, rook, bishop, or knight upon reaching the final rank.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -356,7 +325,6 @@
               <span class="toc-title">Activity: Practice Moving the King, Knight, and Pawn</span>
             </div>
             <p class="toc-desc">Practice finding legal moves with the king, knight, and pawn.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -366,7 +334,6 @@
               <span class="toc-title">How to Move the Rook</span>
             </div>
             <p class="toc-desc">Learn how the rook moves in straight lines along files and ranks.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -376,7 +343,6 @@
               <span class="toc-title">How to Capture with the Rook</span>
             </div>
             <p class="toc-desc">Learn how the rook captures in a straight line, written as Rxe6.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -386,7 +352,6 @@
               <span class="toc-title">How to Move the Bishop</span>
             </div>
             <p class="toc-desc">Learn how the bishop moves diagonally and always stays on the same color square.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -396,7 +361,6 @@
               <span class="toc-title">How to Move the Queen</span>
             </div>
             <p class="toc-desc">Learn how the queen moves like a rook and bishop combined in any direction.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -406,7 +370,6 @@
               <span class="toc-title">Activity: Practice Moving the Rook, Bishop, and Queen</span>
             </div>
             <p class="toc-desc">Practice finding legal moves and captures with the rook, bishop, and queen.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
       </ol>
@@ -428,7 +391,6 @@
               <span class="toc-title">How to Win a Chess Game</span>
             </div>
             <p class="toc-desc">How a chess game is won, and why capturing is the path to victory.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -438,7 +400,6 @@
               <span class="toc-title">Attack</span>
             </div>
             <p class="toc-desc">What an attack is, how Qe3 attacks the black queen on e8, and how attack differs from capture.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -448,7 +409,6 @@
               <span class="toc-title">Check</span>
             </div>
             <p class="toc-desc">What check means, why the king is never captured, and how a bishop can check along a diagonal.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -458,7 +418,6 @@
               <span class="toc-title">Illegal Move</span>
             </div>
             <p class="toc-desc">Illegal moves, the king rule, and why Ke3 is illegal when it moves into check.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -468,7 +427,6 @@
               <span class="toc-title">Escaping a Check</span>
             </div>
             <p class="toc-desc">Three beginner ways to escape check: capture, block, or run away.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -478,7 +436,6 @@
               <span class="toc-title">How Do You Win a Chess Game?</span>
             </div>
             <p class="toc-desc">Checkmate, how to win a game, and why the enemy king must have no escape.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -488,7 +445,6 @@
               <span class="toc-title">Stalemate</span>
             </div>
             <p class="toc-desc">What stalemate means, how it differs from checkmate, and why stalemate is a draw.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -498,7 +454,6 @@
               <span class="toc-title">Activity: Check the King</span>
             </div>
             <p class="toc-desc">Activity: find Black's checking move in each position.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -508,7 +463,6 @@
               <span class="toc-title">Activity: Capture the Checker</span>
             </div>
             <p class="toc-desc">Activity: find the move that captures the checking bishop and escapes check.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -518,7 +472,6 @@
               <span class="toc-title">Activity: Block the Check</span>
             </div>
             <p class="toc-desc">Activity: find the move that blocks the checking bishop line and escapes check.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -528,7 +481,6 @@
               <span class="toc-title">Activity: Is This a Checkmate?</span>
             </div>
             <p class="toc-desc">Activity: decide whether each position is checkmate by checking for check and legal escapes.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
         <li>
@@ -538,7 +490,6 @@
               <span class="toc-title">Activity: Is This a Stalemate?</span>
             </div>
             <p class="toc-desc">Activity: decide whether each position is stalemate by checking for check and legal moves.</p>
-            <span class="toc-badge">Ready</span>
           </a>
         </li>
       </ol>
