@@ -615,7 +615,7 @@ body {
   padding: 8px;
   text-align: center;
 }
-.board-grid {
+.board .board-grid {
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(8, 1fr);
@@ -1109,6 +1109,66 @@ body {
     font-size: 9pt;
     color: #6b7280;
   }
+}
+
+/* ---------- Image lightbox ------------------------------------------------ */
+.lesson-zoomable {
+  cursor: zoom-in;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.lesson-zoomable:hover {
+  transform: scale(1.04);
+}
+.lesson-zoomable:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, .72);
+  backdrop-filter: blur(4px);
+  padding: 16px;
+}
+.lightbox-overlay[hidden] { display: none; }
+
+.lightbox-img {
+  max-width: 90vw;
+  max-height: 85vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 24px 80px rgba(0,0,0,.5);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255,255,255,.15);
+  color: #fff;
+  font-size: 1.8rem;
+  cursor: pointer;
+  line-height: 1;
+  transition: background .15s ease;
+}
+.lightbox-close:hover { background: rgba(255,255,255,.3); }
+
+@media print {
+  .lightbox-overlay { display: none !important; }
 }
 
 @media print {

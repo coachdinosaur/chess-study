@@ -509,21 +509,28 @@
     }
     .lesson-nav-row a:hover { color: var(--text); background: var(--panel-strong); }
 </style>
+<link rel="stylesheet" href="endgame-lesson.css">
 </head>
 <body>
   <a class="skip-link" href="#lesson">Skip to lesson</a>
 
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand"><span class="brand-icon">♟</span><span>Pawn Level · Lesson 8</span></div>
-      <div class="top-actions">
-        <a class="btn back-to-index" href="pawn-index.html">&larr; Back to Pawn Index</a>
-        <button class="btn" id="themeToggle" type="button">Toggle theme</button>
-        <button class="btn" type="button" onclick="window.print()">Print / Save PDF</button>
+  <div class="index-header no-print">
+    <div class="index-header-inner">
+      <div class="index-brand">
+        <div class="index-brand-icon" aria-hidden="true">♟</div>
+        <div>
+          <div class="index-brand-label">Pawn Level</div>
+          <div class="index-brand-title">Setting Up the Chessboard</div>
+        </div>
+      </div>
+      <div class="index-top-actions">
+        <a class="toolbar-link" href="pawn-index.html">&larr; Back to Pawn Index</a>
+        <button class="toolbar-link" type="button" id="themeToggle">Toggle theme</button>
+        <button class="toolbar-link" type="button" onclick="window.print()">Print / Save PDF</button>
       </div>
     </div>
-    <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
-  </header>
+  </div>
+  <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
 
   <div class="page">
     <section class="hero" id="top">
@@ -1002,5 +1009,6 @@
     updateProgress();
     window.addEventListener("scroll", updateProgress, { passive: true });
   </script>
+<script src="endgame-lesson.js" defer></script>
 </body>
 </html>

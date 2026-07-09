@@ -215,3 +215,68 @@
     init();
   }
 })();
+
+/* ==========================================================================
+   Image lightbox — opens .lesson-zoomable images in a same-page overlay.
+   ========================================================================== */
+(function () {
+  "use strict";
+
+  function openLightbox(img) {
+    var overlay = document.createElement("div");
+    overlay.className = "lightbox-overlay";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-label", "Enlarged image");
+
+    var closeBtn = document.createElement("button");
+    closeBtn.className = "lightbox-close";
+    closeBtn.setAttribute("aria-label", "Close enlarged image");
+    closeBtn.textContent = "\u00d7";
+
+    var enlarged = document.createElement("img");
+    enlarged.className = "lightbox-img";
+    enlarged.src = img.src;
+    enlarged.alt = img.alt || "";
+
+    overlay.appendChild(closeBtn);
+    overlay.appendChild(enlarged);
+    document.body.appendChild(overlay);
+
+    function close() {
+      overlay.remove();
+    }
+
+    closeBtn.addEventListener("click", close);
+    overlay.addEventListener("click", function (e) {
+      if (e.target === overlay) close();
+    });
+
+    function escHandler(e) {
+      if (e.key === "Escape") {
+        close();
+        document.removeEventListener("keydown", escHandler);
+      }
+    }
+    document.addEventListener("keydown", escHandler);
+
+    closeBtn.focus();
+  }
+
+  function init() {
+    var imgs = document.querySelectorAll(".lesson-zoomable");
+    for (var i = 0; i < imgs.length; i++) {
+      imgs[i].addEventListener("click", function () {
+        openLightbox(this);
+      });
+      imgs[i].setAttribute("tabindex", "0");
+      imgs[i].setAttribute("role", "button");
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();

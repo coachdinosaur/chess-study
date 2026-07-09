@@ -1057,24 +1057,27 @@
     }
     .lesson-nav-row a:hover { color: var(--text); background: var(--panel-strong); }
 </style>
+<link rel="stylesheet" href="endgame-lesson.css">
 </head>
 <body>
   <a class="skip-link" href="#lesson">Skip to lesson</a>
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand" aria-label="Lesson title">
-        <div class="brand-icon" aria-hidden="true"><img class="lesson-header-piece" src="../assets/pieces/mpchess/bP.svg" alt=""></div>
-        <span>Pawn Level · Module 3</span>
-        <span>Activity: Block the Check</span>
+  <div class="index-header no-print">
+    <div class="index-header-inner">
+      <div class="index-brand">
+        <div class="index-brand-icon" aria-hidden="true">♟</div>
+        <div>
+          <div class="index-brand-label">Pawn Level</div>
+          <div class="index-brand-title">Activity: Block the Check</div>
+        </div>
       </div>
-      <div class="top-actions">
-        <a class="btn back-to-index" href="pawn-index.html">&larr; Back to Pawn Index</a>
-        <button class="btn" type="button" id="themeToggle">Toggle theme</button>
-        <button class="btn" type="button" onclick="window.print()">Print / Save PDF</button>
+      <div class="index-top-actions">
+        <a class="toolbar-link" href="pawn-index.html">&larr; Back to Pawn Index</a>
+        <button class="toolbar-link" type="button" id="themeToggle">Toggle theme</button>
+        <button class="toolbar-link" type="button" onclick="window.print()">Print / Save PDF</button>
       </div>
     </div>
-    <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
-  </header>
+  </div>
+  <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
 
   <div class="page">
     <section class="hero" id="top">
@@ -1092,7 +1095,7 @@
       <figure class="hero-card" aria-label="Activity lesson visual">
         <div class="activity-hero-visual">
           <div class="activity-card-stack" aria-hidden="true">
-            <div class="activity-card"><div class="mate-icon"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wK.svg" alt=""></div><div><strong>King is checked</strong><span>The bishop attacks the white king on a diagonal.</span></div></div>
+            <div class="activity-card"><div class="mate-icon"><img class="lesson-piece-icon lesson-zoomable" src="../assets/pieces/mpchess/wK.svg" alt=""></div><div><strong>King is checked</strong><span>The bishop attacks the white king on a diagonal.</span></div></div>
             <div class="activity-card"><div class="mate-icon">╱</div><div><strong>Find the line</strong><span>Trace the bishop’s checking diagonal.</span></div></div>
             <div class="activity-card"><div class="mate-icon">▣</div><div><strong>Block it</strong><span>Move a white piece onto a blocking square.</span></div></div>
           </div>
@@ -1595,5 +1598,6 @@
     updateProgress();
     window.addEventListener('scroll', updateProgress, { passive: true });
   </script>
+<script src="endgame-lesson.js" defer></script>
 </body>
 </html>

@@ -52,13 +52,23 @@
     <div class="analysis-popup-body" id="analysisPopupBody"></div>
   </div>
 
-  <div class="lesson-page">
-
-    <div class="toolbar no-print">
-      <a href="index.html" class="toolbar-link">&larr; Lesson Index</a>
-      <button type="button" id="themeToggle" onclick="toggleTheme()">Light theme</button>
-      <button type="button" onclick="window.print()">Print / Save as PDF</button>
+  <div class="index-header no-print">
+    <div class="index-header-inner">
+      <div class="index-brand">
+        <div class="index-brand-icon" aria-hidden="true">♟</div>
+        <div>
+          <div class="index-brand-label">Chess Study</div>
+          <div class="index-brand-title">The Pawn on the 6th Rank</div>
+        </div>
+      </div>
+      <div class="index-top-actions">
+        <a href="index.html" class="toolbar-link">&larr; Lesson Index</a>
+        <button type="button" id="themeToggle" onclick="toggleTheme()" class="toolbar-link">Light theme</button>
+        <button type="button" onclick="window.print()" class="toolbar-link">Print / Save as PDF</button>
+      </div>
     </div>
+  </div>
+  <div class="lesson-page">
 
     <!-- ============================ Hero ============================ -->
     <header class="hero">

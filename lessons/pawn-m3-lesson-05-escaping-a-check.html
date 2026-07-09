@@ -697,26 +697,29 @@
       text-decoration: none;
       transition: transform .18s ease, background .18s ease;
     }
-    .lesson-nav-row a:hover { color: var(--text); background: var(--panel-strong); }
+.lesson-nav-row a:hover { color: var(--text); background: var(--panel-strong); }
 </style>
+<link rel="stylesheet" href="endgame-lesson.css">
 </head>
 <body>
   <a class="skip-link" href="#lesson">Skip to lesson</a>
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand" aria-label="Lesson title">
-        <div class="brand-icon" aria-hidden="true"><img class="lesson-header-piece" src="../assets/pieces/mpchess/bP.svg" alt=""></div>
-        <span>Pawn Level</span>
-        <span>Module 3 · Escaping a Check</span>
+  <div class="index-header no-print">
+    <div class="index-header-inner">
+      <div class="index-brand">
+        <div class="index-brand-icon" aria-hidden="true">♟</div>
+        <div>
+          <div class="index-brand-label">Pawn Level</div>
+          <div class="index-brand-title">Escaping a Check</div>
+        </div>
       </div>
-      <div class="top-actions">
-        <a class="btn back-to-index" href="pawn-index.html">&larr; Back to Pawn Index</a>
-        <button class="btn" type="button" id="themeToggle">Toggle theme</button>
-        <button class="btn" type="button" onclick="window.print()">Print / Save PDF</button>
+      <div class="index-top-actions">
+        <a class="toolbar-link" href="pawn-index.html">&larr; Back to Pawn Index</a>
+        <button class="toolbar-link" type="button" id="themeToggle">Toggle theme</button>
+        <button class="toolbar-link" type="button" onclick="window.print()">Print / Save PDF</button>
       </div>
     </div>
-    <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
-  </header>
+  </div>
+  <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
 
   <div class="page">
     <section class="hero" id="top">
@@ -735,17 +738,17 @@
         <div class="module-hero-visual">
           <div class="escape-hero-grid" aria-hidden="true">
             <div class="escape-card">
-              <div class="escape-icon"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wB.svg" alt="">×</div>
+              <div class="escape-icon"><img class="lesson-piece-icon lesson-zoomable" src="../assets/pieces/mpchess/wB.svg" alt="">×</div>
               <span class="escape-label">Capture</span>
               <span class="escape-caption">Bxa1 removes the checker</span>
             </div>
             <div class="escape-card">
-              <div class="escape-icon"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wB.svg" alt=""></div>
+              <div class="escape-icon"><img class="lesson-piece-icon lesson-zoomable" src="../assets/pieces/mpchess/wB.svg" alt=""></div>
               <span class="escape-label">Block</span>
               <span class="escape-caption">Be1 stops the rook line</span>
             </div>
             <div class="escape-card">
-              <div class="escape-icon"><img class="lesson-piece-icon" src="../assets/pieces/mpchess/wK.svg" alt=""></div>
+              <div class="escape-icon"><img class="lesson-piece-icon lesson-zoomable" src="../assets/pieces/mpchess/wK.svg" alt=""></div>
               <span class="escape-label">Run away</span>
               <span class="escape-caption">Kh2 moves to safety</span>
             </div>
@@ -1140,5 +1143,6 @@
   
   
   </script>
+<script src="endgame-lesson.js" defer></script>
 </body>
 </html>
