@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Queenside Castling — Pawn Level Module 5</title>
+  <meta name="description" content="Pawn Level Module 5 lesson: learn queenside castling and how it differs from kingside.">
+  <style>
+    :root {
+      --bg: #071012; --bg-2: #0b1517; --panel: rgba(27, 42, 46, 0.92); --panel-strong: rgba(28, 43, 48, 0.98);
+      --text: #f7faf5; --muted: #b9c6c3; --line: rgba(52, 74, 78, 0.92); --gold: #8ad8b7; --blue: #3d8dff;
+      --green: #65d28a; --orange: #ffae5a; --red: #ff6b6b; --purple: #b990ff;
+      --shadow: 0 22px 60px rgba(0,0,0,.45); --radius: 24px; --max: 1180px;
+    }
+    [data-theme="light"] {
+      --bg: #f6f7f8; --bg-2: #edf1f3; --panel: rgba(255, 255, 255, 0.94); --panel-strong: rgba(255, 255, 255, 0.98);
+      --text: #172127; --muted: #52606a; --line: rgba(190, 202, 207, 0.9); --shadow: 0 20px 50px rgba(17,28,35,0.16); --gold: #1d6f78;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; color: var(--text); font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; line-height: 1.55; background: radial-gradient(circle at top left, rgba(61,141,255,.35), transparent 35rem), radial-gradient(circle at top right, rgba(243,197,95,.18), transparent 34rem), linear-gradient(135deg, var(--bg), var(--bg-2)); overflow-x: hidden; }
+    img { max-width: 100%; height: auto; display: block; }
+    a { color: inherit; } button { font: inherit; }
+    .skip-link { position: absolute; left: -999px; top: 1rem; background: var(--gold); color: #111827; padding: .65rem 1rem; border-radius: 999px; z-index: 999; }
+    .skip-link:focus { left: 1rem; }
+    .progress { height: 3px; background: rgba(255,255,255,.08); }
+    .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--gold), var(--green), var(--blue)); }
+    .page { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; }
+    .hero { padding: clamp(2rem, 4vw, 4rem) 0 1.4rem; display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 520px); gap: clamp(1.25rem, 4vw, 3rem); align-items: center; }
+    .kicker { color: var(--gold); text-transform: uppercase; font-weight: 850; letter-spacing: .14em; font-size: .85rem; margin: 0 0 .75rem; }
+    h1, h2, h3 { line-height: 1.08; margin: 0; }
+    h1 { font-size: clamp(2.35rem, 7vw, 5.7rem); letter-spacing: -.055em; }
+    h2 { font-size: clamp(1.65rem, 4vw, 3.15rem); letter-spacing: -.035em; }
+    h3 { font-size: clamp(1.18rem, 2.2vw, 1.55rem); letter-spacing: -.015em; }
+    .lead { font-size: clamp(1.05rem, 1.9vw, 1.34rem); color: var(--muted); max-width: 64ch; }
+    .hero-card { border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--line); background: var(--panel); }
+    .objective-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .8rem; margin: 1rem 0 2rem; }
+    .objective { padding: 1rem; border: 1px solid var(--line); border-radius: 18px; background: var(--panel); min-height: 8rem; }
+    .objective strong { display: block; margin-bottom: .45rem; font-size: 1.03rem; }
+    .objective span { color: var(--muted); font-size: .95rem; }
+    .layout { display: grid; grid-template-columns: 245px minmax(0, 1fr); gap: 1.25rem; align-items: start; padding: 1rem 0 4rem; }
+    .toc { position: sticky; top: 4.5rem; border: 1px solid var(--line); border-radius: 20px; background: var(--panel); padding: 1rem; }
+    .toc-title { font-weight: 850; margin-bottom: .7rem; color: var(--gold); }
+    .toc a { display: block; text-decoration: none; color: var(--muted); padding: .55rem .65rem; border-radius: 12px; font-size: .95rem; }
+    .toc a:hover { color: var(--text); background: var(--panel-strong); }
+    main { min-width: 0; }
+    .lesson-section { border: 1px solid var(--line); background: var(--panel); border-radius: var(--radius); padding: clamp(1rem, 3vw, 2rem); margin-bottom: 1.1rem; box-shadow: 0 14px 40px rgba(0,0,0,.14); scroll-margin-top: 5.5rem; }
+    .section-head { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1rem; }
+    .number { flex: 0 0 auto; width: 2.45rem; height: 2.45rem; display: grid; place-items: center; border-radius: 999px; font-weight: 900; color: #111827; background: var(--gold); box-shadow: 0 10px 22px rgba(243,197,95,.25); }
+    .section-text p { color: var(--muted); margin: .75rem 0 0; }
+    figure { margin: 0; }
+    .two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, .9fr); gap: 1rem; align-items: center; }
+    .callout { border: 1px solid color-mix(in srgb, var(--gold) 42%, var(--line)); border-radius: 20px; padding: 1rem; background: color-mix(in srgb, var(--gold) 12%, var(--panel)); }
+    .callout-title { color: var(--gold); font-weight: 900; margin-bottom: .35rem; }
+    ul.clean { padding-left: 1.2rem; margin: .7rem 0 0; color: var(--muted); }
+    ul.clean li { margin: .35rem 0; }
+    details.quiz { border: 1px solid var(--line); background: rgba(255,255,255,.055); border-radius: 16px; padding: .9rem 1rem; margin-top: .75rem; }
+    details.quiz summary { cursor: pointer; font-weight: 800; }
+    details.quiz p { color: var(--muted); margin-bottom: 0; }
+    .footer { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; padding: 2rem 0 3rem; color: var(--muted); border-top: 1px solid var(--line); }
+    @media (max-width: 980px) { .hero { grid-template-columns: 1fr; } .layout { grid-template-columns: 1fr; } .toc { position: static; overflow-x: auto; white-space: nowrap; } .toc a { display: inline-block; } }
+    @media (max-width: 720px) { .page, .footer { width: min(100% - 22px, var(--max)); } .objective-grid, .two-col { grid-template-columns: 1fr; } .lesson-section { border-radius: 18px; } .section-head { gap: .75rem; } .number { width: 2.15rem; height: 2.15rem; } }
+    @media print { :root, [data-theme="light"], [data-theme="dark"] { --bg: #ffffff; --bg-2: #ffffff; --panel: #ffffff; --panel-strong: #ffffff; --text: #111827; --muted: #374151; --line: #d1d5db; --shadow: none; } body { background: #ffffff; } .toc, .btn, .progress { display: none !important; } .page, .footer { width: 100%; } .hero { padding-top: 0; } .layout { display: block; padding: 0; } .lesson-section, .objective { break-inside: avoid; box-shadow: none; } }
+    .gold { color: var(--gold); }
+    code.inline { background: color-mix(in srgb, var(--blue) 14%, var(--panel)); border: 1px solid color-mix(in srgb, var(--blue) 35%, var(--line)); border-radius: 8px; color: color-mix(in srgb, var(--blue) 82%, var(--text)); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: .98em; font-weight: 850; padding: .08rem .38rem; white-space: nowrap; }
+    .module-hero-visual { min-height: 420px; display: grid; align-content: center; gap: 1rem; padding: clamp(1.2rem, 4vw, 2rem); background: radial-gradient(circle at 10% 15%, rgba(243,197,95,.25), transparent 16rem), radial-gradient(circle at 90% 85%, rgba(101,210,138,.22), transparent 16rem), linear-gradient(135deg, rgba(255,255,255,.11), rgba(255,255,255,.035)); }
+    .hero-note { color: var(--muted); border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,.055); padding: .9rem 1rem; margin: 0; }
+    .board-panel { border: 1px solid var(--line); border-radius: 22px; background: rgba(255,255,255,.055); padding: 1rem; overflow: hidden; margin-top: 1rem; }
+    .board-panel h3 { margin-bottom: .45rem; }
+    .board-panel p { color: var(--muted); margin: .35rem 0 1rem; }
+    .board-wrap { display: flex; justify-content: center; align-items: center; overflow-x: auto; padding: .7rem; border-radius: 18px; border: 1px solid var(--line); background: #f8fafc; }
+    .lesson-svg { width: min(100%, 390px); height: auto; display: block; flex: 0 0 auto; }
+    .summary-box { border: 1px solid color-mix(in srgb, var(--green) 42%, var(--line)); border-radius: 18px; background: color-mix(in srgb, var(--green) 12%, var(--panel)); color: var(--text); padding: .9rem 1rem; font-weight: 800; margin-top: 1rem; }
+    @media print { .board-panel, .summary-box { break-inside: avoid; box-shadow: none; } .board-wrap { overflow: visible; } .lesson-svg { max-width: 330px; } }
+    .lesson-nav-row { display: flex; justify-content: space-between; gap: 1rem; margin-top: 1.5rem; }
+    .lesson-nav-row a { border: 1px solid var(--line); color: var(--text); background: var(--panel); border-radius: 999px; padding: .55rem .9rem; text-decoration: none; transition: transform .18s ease, background .18s ease; }
+    .lesson-nav-row a:hover { color: var(--text); background: var(--panel-strong); }
+  </style>
+  <link rel="stylesheet" href="endgame-lesson.css">
+  <link rel="stylesheet" href="pawn-teacher-board.css?v=20260709-teacher-max1">
+</head>
+<body>
+  <a class="skip-link" href="#lesson">Skip to lesson</a>
+  <div class="index-header no-print">
+    <div class="index-header-inner">
+      <div class="index-brand">
+        <div class="index-brand-icon" aria-hidden="true">♟</div>
+        <div>
+          <div class="index-brand-label">Pawn Level</div>
+          <div class="index-brand-title">Queenside Castling</div>
+        </div>
+      </div>
+      <div class="index-top-actions">
+        <a class="toolbar-link" href="pawn-index.html">&larr; Back to Pawn Index</a>
+        <button class="toolbar-link" type="button" id="themeToggle">Toggle theme</button>
+        <button class="toolbar-link" type="button" onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </div>
+  </div>
+  <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+  <div class="page">
+    <section class="hero" id="top">
+      <div>
+        <p class="kicker">Pawn Level &middot; Module 5 &middot; Lesson 2</p>
+        <h1>Queenside Castling</h1>
+        <p class="lead">Queenside castling, also called "long castling," moves the king toward the queenside rook. It is written as O-O-O.</p>
+        <div class="objective-grid" aria-label="Learning objectives">
+          <div class="objective"><strong>Queenside castling</strong><span>Learn how queenside castling works.</span></div>
+          <div class="objective"><strong>O-O-O notation</strong><span>Understand the notation for queenside castling.</span></div>
+          <div class="objective"><strong>Difference</strong><span>See how it differs from kingside castling.</span></div>
+          <div class="objective"><strong>When to use</strong><span>Learn when to choose queenside castling.</span></div>
+        </div>
+      </div>
+      <figure class="hero-card" aria-label="Queenside castling visual">
+        <div class="module-hero-visual">
+          <div style="text-align:center;padding:1rem;">
+            <img src="../assets/pieces/mpchess/wK.svg" alt="" style="width:3.6rem;height:3.6rem;display:inline-block;">
+            <img src="../assets/pieces/mpchess/wQ.svg" alt="" style="width:3.6rem;height:3.6rem;display:inline-block;margin-left:.5rem;">
+            <p class="hero-note"><strong class="gold">O-O-O</strong> &mdash; queenside castling.</p>
+          </div>
+        </div>
+      </figure>
+    </section>
+    <div class="layout" id="lesson">
+      <nav class="toc" aria-label="Lesson contents">
+        <div class="toc-title">Contents</div>
+        <a href="#what">1. What Is Queenside Castling?</a>
+        <a href="#diagram">2. The Move</a>
+        <a href="#compare">3. Kingside vs Queenside</a>
+        <a href="#check">Review Questions</a>
+      </nav>
+      <main>
+        <section class="lesson-section" id="what">
+          <div class="section-head"><div class="number">1</div><div class="section-text"><h2>What Is Queenside Castling?</h2><p>Queenside castling is the second type of castling. The king moves toward the queenside rook (the a-file rook).</p></div></div>
+          <p style="color:var(--muted);">White's king moves from e1 to c1, and the a1 rook moves from a1 to d1. For Black, the king moves from e8 to c8, and the a8 rook moves to d8.</p>
+          <div class="callout">
+            <div class="callout-title">Notation</div>
+            Queenside castling is written as <code class="inline">O-O-O</code> (three Os with dashes).
+          </div>
+        </section>
+        <section class="lesson-section" id="diagram">
+          <div class="section-head"><div class="number">2</div><div class="section-text"><h2>The Move</h2><p>Here is how queenside castling looks for White from the starting position.</p></div></div>
+          <div class="board-panel">
+            <div class="board-wrap">
+              <svg class="lesson-svg" viewBox="0 0 360 360" role="img" aria-label="Queenside castling diagram">
+                <defs><style>.lbl{font:14px Arial,sans-serif;fill:#334155;font-weight:700}.arr{fill:none;stroke:#ef4444;stroke-width:2.5;stroke-linecap:round}</style></defs>
+                <rect x="0" y="0" width="360" height="360" fill="#ffffff" rx="14"/>
+                <g transform="translate(40,20)">
+                  <rect x="0" y="0" width="35" height="35" fill="#eee3cb"/><rect x="35" y="0" width="35" height="35" fill="#71925a"/><rect x="70" y="0" width="35" height="35" fill="#eee3cb"/><rect x="105" y="0" width="35" height="35" fill="#71925a"/><rect x="140" y="0" width="35" height="35" fill="#eee3cb"/><rect x="175" y="0" width="35" height="35" fill="#71925a"/><rect x="210" y="0" width="35" height="35" fill="#eee3cb"/><rect x="245" y="0" width="35" height="35" fill="#71925a"/>
+                  <rect x="0" y="35" width="35" height="35" fill="#71925a"/><rect x="35" y="35" width="35" height="35" fill="#eee3cb"/><rect x="70" y="35" width="35" height="35" fill="#71925a"/><rect x="105" y="35" width="35" height="35" fill="#eee3cb"/><rect x="140" y="35" width="35" height="35" fill="#71925a"/><rect x="175" y="35" width="35" height="35" fill="#eee3cb"/><rect x="210" y="35" width="35" height="35" fill="#71925a"/><rect x="245" y="35" width="35" height="35" fill="#eee3cb"/>
+                  <rect x="0" y="70" width="35" height="35" fill="#eee3cb"/><rect x="35" y="70" width="35" height="35" fill="#71925a"/><rect x="70" y="70" width="35" height="35" fill="#eee3cb"/><rect x="105" y="70" width="35" height="35" fill="#71925a"/><rect x="140" y="70" width="35" height="35" fill="#eee3cb"/><rect x="175" y="70" width="35" height="35" fill="#71925a"/><rect x="210" y="70" width="35" height="35" fill="#eee3cb"/><rect x="245" y="70" width="35" height="35" fill="#71925a"/>
+                  <rect x="0" y="105" width="35" height="35" fill="#71925a"/><rect x="35" y="105" width="35" height="35" fill="#eee3cb"/><rect x="70" y="105" width="35" height="35" fill="#71925a"/><rect x="105" y="105" width="35" height="35" fill="#eee3cb"/><rect x="140" y="105" width="35" height="35" fill="#71925a"/><rect x="175" y="105" width="35" height="35" fill="#eee3cb"/><rect x="210" y="105" width="35" height="35" fill="#71925a"/><rect x="245" y="105" width="35" height="35" fill="#eee3cb"/>
+                  <rect x="0" y="140" width="35" height="35" fill="#eee3cb"/><rect x="35" y="140" width="35" height="35" fill="#71925a"/><rect x="70" y="140" width="35" height="35" fill="#eee3cb"/><rect x="105" y="140" width="35" height="35" fill="#71925a"/><rect x="140" y="140" width="35" height="35" fill="#eee3cb"/><rect x="175" y="140" width="35" height="35" fill="#71925a"/><rect x="210" y="140" width="35" height="35" fill="#eee3cb"/><rect x="245" y="140" width="35" height="35" fill="#71925a"/>
+                  <rect x="0" y="175" width="35" height="35" fill="#71925a"/><rect x="35" y="175" width="35" height="35" fill="#eee3cb"/><rect x="70" y="175" width="35" height="35" fill="#71925a"/><rect x="105" y="175" width="35" height="35" fill="#eee3cb"/><rect x="140" y="175" width="35" height="35" fill="#71925a"/><rect x="175" y="175" width="35" height="35" fill="#eee3cb"/><rect x="210" y="175" width="35" height="35" fill="#71925a"/><rect x="245" y="175" width="35" height="35" fill="#eee3cb"/>
+                  <rect x="0" y="210" width="35" height="35" fill="#eee3cb"/><rect x="35" y="210" width="35" height="35" fill="#71925a"/><rect x="70" y="210" width="35" height="35" fill="#eee3cb"/><rect x="105" y="210" width="35" height="35" fill="#71925a"/><rect x="140" y="210" width="35" height="35" fill="#eee3cb"/><rect x="175" y="210" width="35" height="35" fill="#71925a"/><rect x="210" y="210" width="35" height="35" fill="#eee3cb"/><rect x="245" y="210" width="35" height="35" fill="#71925a"/>
+                  <rect x="0" y="245" width="35" height="35" fill="#71925a"/><rect x="35" y="245" width="35" height="35" fill="#eee3cb"/><rect x="70" y="245" width="35" height="35" fill="#71925a"/><rect x="105" y="245" width="35" height="35" fill="#eee3cb"/><rect x="140" y="245" width="35" height="35" fill="#71925a"/><rect x="175" y="245" width="35" height="35" fill="#eee3cb"/><rect x="210" y="245" width="35" height="35" fill="#71925a"/><rect x="245" y="245" width="35" height="35" fill="#eee3cb"/>
+                  <image href="../assets/pieces/mpchess/wK.svg" x="140" y="210" width="35" height="35"/>
+                  <image href="../assets/pieces/mpchess/wR.svg" x="0" y="210" width="35" height="35"/>
+                  <image href="../assets/pieces/mpchess/wR.svg" x="245" y="210" width="35" height="35"/>
+                  <path class="arr" d="M157.5,192 L122.5,192"/>
+                  <path class="arr" d="M17.5,192 L52.5,192"/>
+                  <text x="105" y="202" class="lbl" fill="#ef4444" font-size="11">O-O-O</text>
+                  <g class="lbl">
+                    <text x="17.5" y="301" text-anchor="middle">a</text><text x="52.5" y="301" text-anchor="middle">b</text><text x="87.5" y="301" text-anchor="middle">c</text><text x="122.5" y="301" text-anchor="middle">d</text><text x="157.5" y="301" text-anchor="middle">e</text><text x="192.5" y="301" text-anchor="middle">f</text><text x="227.5" y="301" text-anchor="middle">g</text><text x="262.5" y="301" text-anchor="middle">h</text>
+                    <text x="-12" y="18" text-anchor="middle">8</text><text x="-12" y="53" text-anchor="middle">7</text><text x="-12" y="88" text-anchor="middle">6</text><text x="-12" y="123" text-anchor="middle">5</text><text x="-12" y="158" text-anchor="middle">4</text><text x="-12" y="193" text-anchor="middle">3</text><text x="-12" y="228" text-anchor="middle">2</text><text x="-12" y="263" text-anchor="middle">1</text>
+                  </g>
+                </g>
+              </svg>
+            </div>
+            <figcaption style="color:var(--muted);font-size:.92rem;padding:.8rem 1rem;border-top:1px solid var(--line);background:rgba(0,0,0,.12);">White queenside castling: king e1&rarr;c1, rook a1&rarr;d1.</figcaption>
+          </div>
+          <figure class="figure">
+            <img src="../pawn_m5/pawn_m5_2.png" alt="Supplementary illustration for queenside castling">
+            <figcaption>Example of queenside castling with the king moving toward the a-file rook.</figcaption>
+          </figure>
+        </section>
+        <section class="lesson-section" id="compare">
+          <div class="section-head"><div class="number">3</div><div class="section-text"><h2>Kingside vs Queenside</h2><p>The main difference is which rook you use and where the king ends up.</p></div></div>
+          <ul class="clean">
+            <li><strong class="gold">Kingside (O-O):</strong> King goes to g1/g8. Rook goes to f1/f8. The king is closer to the edge.</li>
+            <li><strong class="gold">Queenside (O-O-O):</strong> King goes to c1/c8. Rook goes to d1/d8. The king is closer to the center.</li>
+            <li>In queenside castling, the king moves three squares, not two. The rook moves two squares.</li>
+          </ul>
+          <div class="summary-box">Both types of castling are useful. Choose based on which side is safer for your king.</div>
+        </section>
+        <section class="lesson-section" id="check">
+          <div class="section-head"><div class="number">&check;</div><div class="section-text"><h2>Review Questions</h2><p>Use these questions to check understanding.</p></div></div>
+          <details class="quiz"><summary>In queenside castling, where does the White king move to?</summary><p>From e1 to c1.</p></details>
+          <details class="quiz"><summary>What is the notation for queenside castling?</summary><p>O-O-O.</p></details>
+          <details class="quiz"><summary>What is the main difference between kingside and queenside castling?</summary><p>Which rook is used and where the king ends up. Queenside uses the a-file rook and the king ends on c1/c8.</p></details>
+          <div class="lesson-nav-row">
+            <a href="pawn-m5-lesson-01-castling-keeping-your-king-safe.html">&larr; Previous lesson</a>
+            <a href="pawn-m5-lesson-03-when-castling-is-not-allowed.html">Next lesson &rarr;</a>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+  <footer class="footer"><strong>End of Pawn Level Module 5 &middot; Lesson 2:</strong> Queenside Castling.</footer>
+  <script>
+    const root = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const storedTheme = localStorage.getItem('chess-lesson-theme');
+    if (storedTheme === 'light' || storedTheme === 'dark') root.dataset.theme = storedTheme;
+    themeToggle.addEventListener('click', () => { root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark'; localStorage.setItem('chess-lesson-theme', root.dataset.theme); });
+    const progressBar = document.getElementById('progressBar');
+    const updateProgress = () => { const max = document.documentElement.scrollHeight - window.innerHeight; const pct = max > 0 ? (window.scrollY / max) * 100 : 0; progressBar.style.width = Math.min(100, Math.max(0, pct)) + '%'; };
+    updateProgress();
+    window.addEventListener('scroll', updateProgress, { passive: true });
+  </script>
+  <script src="endgame-lesson.js" defer></script>
+  <script src="pawn-teacher-board.js?v=20260709-teacher-max1" defer></script>
+</body>
+</html>

@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>En Passant — Pawn Level Module 5</title>
+  <meta name="description" content="Pawn Level Module 5 lesson: learn the special en passant pawn capture and the three conditions required to perform it.">
+  <style>
+
+    :root {
+      --bg: #071012;
+      --bg-2: #0b1517;
+      --panel: rgba(27, 42, 46, 0.92);
+      --panel-strong: rgba(28, 43, 48, 0.98);
+      --text: #f7faf5;
+      --muted: #b9c6c3;
+      --line: rgba(52, 74, 78, 0.92);
+      --gold: #8ad8b7;
+      --blue: #3d8dff;
+      --green: #65d28a;
+      --orange: #ffae5a;
+      --red: #ff6b6b;
+      --purple: #b990ff;
+      --shadow: 0 22px 60px rgba(0,0,0,.45);
+      --radius: 24px;
+      --max: 1180px;
+    }
+
+    [data-theme="light"] {
+      --bg: #f6f7f8;
+      --bg-2: #edf1f3;
+      --panel: rgba(255, 255, 255, 0.94);
+      --panel-strong: rgba(255, 255, 255, 0.98);
+      --text: #172127;
+      --muted: #52606a;
+      --line: rgba(190, 202, 207, 0.9);
+      --shadow: 0 20px 50px rgba(17,28,35,0.16);
+      --gold: #1d6f78;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      line-height: 1.55;
+      background:
+        radial-gradient(circle at top left, rgba(61,141,255,.35), transparent 35rem),
+        radial-gradient(circle at top right, rgba(243,197,95,.18), transparent 34rem),
+        linear-gradient(135deg, var(--bg), var(--bg-2));
+      overflow-x: hidden;
+    }
+
+    img { max-width: 100%; height: auto; display: block; }
+    a { color: inherit; }
+    button { font: inherit; }
+
+    .skip-link {
+      position: absolute;
+      left: -999px;
+      top: 1rem;
+      background: var(--gold);
+      color: #111827;
+      padding: .65rem 1rem;
+      border-radius: 999px;
+      z-index: 999;
+    }
+    .skip-link:focus { left: 1rem; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(16px);
+      background: color-mix(in srgb, var(--bg) 78%, transparent);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar-inner {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: .75rem 0;
+    }
+    .brand { display: flex; align-items: center; gap: .7rem; font-weight: 800; letter-spacing: .01em; }
+    .brand-icon {
+      width: 2.4rem;
+      height: 2.4rem;
+      border-radius: .8rem;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--gold), color-mix(in srgb, var(--gold) 30%, transparent));
+      color: #13203a;
+      box-shadow: 0 10px 30px color-mix(in srgb, var(--gold) 25%, transparent);
+    }
+    .top-actions { display: flex; gap: .5rem; flex-wrap: wrap; justify-content: flex-end; }
+    .btn {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: .55rem .9rem;
+      cursor: pointer;
+      transition: transform .18s ease, background .18s ease;
+    }
+    .btn:hover { transform: translateY(-1px); background: var(--panel-strong); }
+
+    .progress { height: 3px; background: rgba(255,255,255,.08); }
+    .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--gold), var(--green), var(--blue)); }
+
+    .page { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; }
+    .hero {
+      padding: clamp(2rem, 4vw, 4rem) 0 1.4rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 520px);
+      gap: clamp(1.25rem, 4vw, 3rem);
+      align-items: center;
+    }
+    .kicker {
+      color: var(--gold);
+      text-transform: uppercase;
+      font-weight: 850;
+      letter-spacing: .14em;
+      font-size: .85rem;
+      margin: 0 0 .75rem;
+    }
+    h1, h2, h3 { line-height: 1.08; margin: 0; }
+    h1 { font-size: clamp(2.35rem, 7vw, 5.7rem); letter-spacing: -.055em; }
+    h2 { font-size: clamp(1.65rem, 4vw, 3.15rem); letter-spacing: -.035em; }
+    h3 { font-size: clamp(1.18rem, 2.2vw, 1.55rem); letter-spacing: -.015em; }
+    .lead { font-size: clamp(1.05rem, 1.9vw, 1.34rem); color: var(--muted); max-width: 64ch; }
+    .hero-card {
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--line);
+      background: var(--panel);
+    }
+    .hero-card img { width: 100%; }
+
+    .objective-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .8rem;
+      margin: 1rem 0 2rem;
+    }
+    .objective {
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel);
+      min-height: 8rem;
+    }
+    .objective strong { display: block; margin-bottom: .45rem; font-size: 1.03rem; }
+    .objective span { color: var(--muted); font-size: .95rem; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 245px minmax(0, 1fr);
+      gap: 1.25rem;
+      align-items: start;
+      padding: 1rem 0 4rem;
+    }
+    .toc {
+      position: sticky;
+      top: 4.5rem;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--panel);
+      padding: 1rem;
+    }
+    .toc-title { font-weight: 850; margin-bottom: .7rem; color: var(--gold); }
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--muted);
+      padding: .55rem .65rem;
+      border-radius: 12px;
+      font-size: .95rem;
+    }
+    .toc a:hover { color: var(--text); background: var(--panel-strong); }
+
+    main { min-width: 0; }
+    .lesson-section {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: var(--radius);
+      padding: clamp(1rem, 3vw, 2rem);
+      margin-bottom: 1.1rem;
+      box-shadow: 0 14px 40px rgba(0,0,0,.14);
+      scroll-margin-top: 5.5rem;
+    }
+    .section-head { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1rem; }
+    .number {
+      flex: 0 0 auto;
+      width: 2.45rem;
+      height: 2.45rem;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      font-weight: 900;
+      color: #111827;
+      background: var(--gold);
+      box-shadow: 0 10px 22px rgba(243,197,95,.25);
+    }
+    .section-text p { color: var(--muted); margin: .75rem 0 0; }
+    .two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, .9fr); gap: 1rem; align-items: center; }
+    .callout {
+      border: 1px solid color-mix(in srgb, var(--gold) 42%, var(--line));
+      border-radius: 20px;
+      padding: 1rem;
+      background: color-mix(in srgb, var(--gold) 12%, var(--panel));
+    }
+    .callout-title { color: var(--gold); font-weight: 900; margin-bottom: .35rem; }
+    ul.clean { padding-left: 1.2rem; margin: .7rem 0 0; color: var(--muted); }
+    ul.clean li { margin: .35rem 0; }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: .75rem;
+      margin-top: 1rem;
+    }
+    .time-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.055);
+      padding: .9rem;
+      min-height: 10rem;
+    }
+    .time-card .date { color: var(--gold); font-weight: 900; font-size: 1.05rem; }
+    .time-card .place { font-weight: 850; margin: .25rem 0 .4rem; }
+    .time-card p { margin: 0; color: var(--muted); font-size: .94rem; }
+
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .mini-lesson {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      overflow: hidden;
+      background: rgba(0,0,0,.14);
+    }
+    .mini-lesson img { width: 100%; }
+    .mini-content { padding: 1rem; }
+    .mini-content h3 { margin-bottom: .35rem; }
+    .mini-content p { color: var(--muted); margin: 0; }
+
+    details.quiz {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.055);
+      border-radius: 16px;
+      padding: .9rem 1rem;
+      margin-top: .75rem;
+    }
+    details.quiz summary { cursor: pointer; font-weight: 800; }
+    details.quiz p { color: var(--muted); margin-bottom: 0; }
+
+    .remember-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .75rem;
+      margin-top: 1rem;
+    }
+    .remember-item {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1rem;
+      background: rgba(255,255,255,.055);
+    }
+    .remember-item strong { color: var(--gold); display: block; margin-bottom: .25rem; }
+
+    .footer {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      padding: 2rem 0 3rem;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+    }
+
+    @media (max-width: 980px) {
+      .hero { grid-template-columns: 1fr; }
+      .layout { grid-template-columns: 1fr; }
+      .toc { position: static; overflow-x: auto; white-space: nowrap; }
+      .toc a { display: inline-block; }
+      .timeline { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 720px) {
+      .topbar-inner, .page, .footer { width: min(100% - 22px, var(--max)); }
+      .topbar-inner { align-items: flex-start; }
+      .brand span:last-child { display: none; }
+      .objective-grid, .image-grid, .remember-list, .two-col { grid-template-columns: 1fr; }
+      .timeline { grid-template-columns: 1fr; }
+      .lesson-section { border-radius: 18px; }
+      .section-head { gap: .75rem; }
+      .number { width: 2.15rem; height: 2.15rem; }
+    }
+
+    @media print {
+      :root, [data-theme="light"], [data-theme="dark"] {
+        --bg: #ffffff;
+        --bg-2: #ffffff;
+        --panel: #ffffff;
+        --panel-strong: #ffffff;
+        --text: #111827;
+        --muted: #374151;
+        --line: #d1d5db;
+        --shadow: none;
+      }
+      body { background: #ffffff; }
+      .topbar, .toc, .btn, .progress { display: none !important; }
+      .page, .footer { width: 100%; }
+      .hero { padding-top: 0; }
+      .layout { display: block; padding: 0; }
+      .lesson-section, .objective, .time-card, .mini-lesson, .remember-item { break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
+      .figure, img { break-inside: avoid; page-break-inside: avoid; }
+    }
+
+    .gold { color: var(--gold); }
+    .blue { color: var(--blue); }
+    .green { color: var(--green); }
+    .red { color: var(--red); }
+    .orange { color: var(--orange); }
+
+    code.inline {
+      background: color-mix(in srgb, var(--blue) 14%, var(--panel));
+      border: 1px solid color-mix(in srgb, var(--blue) 35%, var(--line));
+      border-radius: 8px;
+      color: color-mix(in srgb, var(--blue) 82%, var(--text));
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: .98em;
+      font-weight: 850;
+      padding: .08rem .38rem;
+      white-space: nowrap;
+    }
+
+    .module-hero-visual {
+      min-height: 420px;
+      display: grid;
+      align-content: center;
+      gap: 1rem;
+      padding: clamp(1.2rem, 4vw, 2rem);
+      background:
+        radial-gradient(circle at 10% 15%, rgba(243,197,95,.25), transparent 16rem),
+        radial-gradient(circle at 90% 85%, rgba(101,210,138,.22), transparent 16rem),
+        linear-gradient(135deg, rgba(255,255,255,.11), rgba(255,255,255,.035));
+    }
+    .capture-equation {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: .75rem;
+      align-items: center;
+    }
+    .capture-card {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(0,0,0,.18);
+      padding: 1rem;
+      text-align: center;
+      min-height: 11rem;
+      display: grid;
+      place-items: center;
+    }
+    .capture-piece {
+      width: 4.6rem;
+      height: 4.6rem;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto .65rem;
+      font-size: 2.7rem;
+      box-shadow: 0 16px 38px rgba(0,0,0,.22);
+    }
+    .capture-piece.white { background: #fff7df; color: #121827; }
+    .capture-piece.black {
+      background: linear-gradient(145deg, #fff7df, #d9e6df);
+      color: #0a0f16;
+      border: 1px solid rgba(255,255,255,.62);
+      box-shadow: 0 16px 38px rgba(0,0,0,.22), inset 0 0 0 1px rgba(17,24,39,.08);
+    }
+    .capture-piece.black .lesson-piece-icon {
+      filter: drop-shadow(0 7px 12px rgba(0,0,0,.34));
+    }
+    .capture-label { color: var(--muted); font-weight: 800; }
+    .capture-square { display: block; color: var(--gold); font-weight: 950; font-size: 1.22rem; margin-top: .2rem; }
+    .capture-x {
+      width: 3.2rem;
+      height: 3.2rem;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: var(--gold);
+      color: #111827;
+      font-size: 2rem;
+      font-weight: 1000;
+      box-shadow: 0 14px 34px rgba(243,197,95,.25);
+    }
+    .hero-note {
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.055);
+      padding: .9rem 1rem;
+      margin: 0;
+    }
+
+    .step-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .85rem;
+      margin-top: 1rem;
+    }
+    .step-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.055);
+      padding: 1rem;
+    }
+    .step-badge {
+      width: 2.6rem;
+      height: 2.6rem;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      color: #111827;
+      background: var(--gold);
+      font-weight: 1000;
+      margin-bottom: .65rem;
+    }
+    .step-card strong { display: block; margin-bottom: .3rem; }
+    .step-card p { margin: 0; color: var(--muted); }
+
+    .notation-panel {
+      border: 1px solid color-mix(in srgb, var(--blue) 38%, var(--line));
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at top left, rgba(61,141,255,.22), transparent 18rem),
+        rgba(255,255,255,.055);
+      padding: clamp(1rem, 3vw, 1.4rem);
+      margin-top: 1rem;
+    }
+    .notation-big {
+      font-size: clamp(3rem, 9vw, 6rem);
+      line-height: .95;
+      font-weight: 1000;
+      letter-spacing: -.04em;
+      color: var(--gold);
+      margin-bottom: .9rem;
+    }
+    .term-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: .75rem;
+      margin-top: 1rem;
+    }
+    .term {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(0,0,0,.13);
+      padding: 1rem;
+      text-align: center;
+    }
+    .term .big {
+      display: block;
+      color: var(--gold);
+      font-size: 2rem;
+      font-weight: 1000;
+      line-height: 1;
+      margin-bottom: .35rem;
+    }
+    .term .small { color: var(--muted); font-weight: 750; }
+
+    .board-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .board-panel {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255,255,255,.055);
+      padding: 1rem;
+      overflow: hidden;
+    }
+    .board-panel h3 { margin-bottom: .45rem; }
+    .board-panel p { color: var(--muted); margin: .35rem 0 1rem; }
+    .board-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: auto;
+      padding: .7rem;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: #f8fafc;
+    }
+    .lesson-svg {
+      width: min(100%, 390px);
+      height: auto;
+      display: block;
+      flex: 0 0 auto;
+    }
+    .summary-box {
+      border: 1px solid color-mix(in srgb, var(--green) 42%, var(--line));
+      border-radius: 18px;
+      background: color-mix(in srgb, var(--green) 12%, var(--panel));
+      color: var(--text);
+      padding: .9rem 1rem;
+      font-weight: 800;
+      margin-top: 1rem;
+    }
+    .warning-box {
+      border: 1px solid color-mix(in srgb, var(--orange) 45%, var(--line));
+      border-radius: 18px;
+      background: color-mix(in srgb, var(--orange) 12%, var(--panel));
+      color: var(--text);
+      padding: .9rem 1rem;
+      font-weight: 800;
+      margin-top: 1rem;
+    }
+
+    @media (max-width: 980px) {
+      .board-grid, .step-grid { grid-template-columns: 1fr; }
+      .module-hero-visual { min-height: 0; }
+    }
+    @media (max-width: 720px) {
+      .capture-equation { grid-template-columns: 1fr; }
+      .capture-x { margin: 0 auto; }
+      .term-grid { grid-template-columns: 1fr; }
+      .hero-note { font-size: .95rem; }
+    }
+    @media print {
+      .module-hero-visual, .step-card, .term, .board-panel, .summary-box, .warning-box { break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
+      .board-wrap { overflow: visible; }
+      .lesson-svg { max-width: 330px; }
+    }
+
+    .lesson-piece-icon {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,.28));
+    }
+    .lesson-header-piece {
+      width: 1.6rem;
+      height: 1.6rem;
+      object-fit: contain;
+      display: block;
+    }
+
+    .lesson-nav-row a {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: .55rem .9rem;
+      text-decoration: none;
+      transition: transform .18s ease, background .18s ease;
+    }
+
+    .lesson-nav-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .lesson-nav-row a {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: .55rem .9rem;
+      text-decoration: none;
+      transition: transform .18s ease, background .18s ease;
+    }
+    .lesson-nav-row a:hover { color: var(--text); background: var(--panel-strong); }
+
+    .overlay-star { fill: #ef4444; opacity: 0.85; }
+    .overlay-x { stroke: #ef4444; stroke-width: 3; stroke-linecap: round; }
+
+    .ep-arrow {
+      fill: none;
+      stroke: #ef4444;
+      stroke-width: 3.5;
+      stroke-linecap: round;
+      marker-end: url(#arrowhead);
+    }
+    .ep-ghost {
+      opacity: 0.35;
+    }
+    .ep-label {
+      font: bold 16px ui-sans-serif, system-ui, sans-serif;
+      fill: #ef4444;
+      text-anchor: middle;
+    }
+    .ep-highlight {
+      fill: rgba(239, 68, 68, 0.18);
+      stroke: #ef4444;
+      stroke-width: 2;
+    }
+  </style>
+  <link rel="stylesheet" href="endgame-lesson.css">
+  <link rel="stylesheet" href="pawn-teacher-board.css?v=20260709-teacher-max1">
+</head>
+<body>
+  <a class="skip-link" href="#lesson">Skip to lesson</a>
+  <div class="index-header no-print">
+    <div class="index-header-inner">
+      <div class="index-brand">
+        <div class="index-brand-icon" aria-hidden="true">♟</div>
+        <div>
+          <div class="index-brand-label">Pawn Level</div>
+          <div class="index-brand-title">En Passant</div>
+        </div>
+      </div>
+      <div class="index-top-actions">
+        <a class="toolbar-link" href="pawn-index.html">&larr; Back to Pawn Index</a>
+        <button class="toolbar-link" type="button" id="themeToggle">Toggle theme</button>
+        <button class="toolbar-link" type="button" onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </div>
+  </div>
+  <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+
+  <div class="page">
+    <section class="hero" id="top">
+      <div>
+        <p class="kicker">Pawn Level &middot; Module 5 &middot; Lesson 5</p>
+        <h1>En Passant</h1>
+        <p class="lead">En passant is a special pawn capture that allows a pawn to capture an enemy pawn that just advanced two squares, as if it had only moved one square.</p>
+        <div class="objective-grid" aria-label="Learning objectives">
+          <div class="objective"><strong>What it means</strong><span>Understand that &ldquo;en passant&rdquo; is French for &ldquo;in passing.&rdquo;</span></div>
+          <div class="objective"><strong>Three conditions</strong><span>Learn the three conditions that must all be true for an en passant capture.</span></div>
+          <div class="objective"><strong>How it looks</strong><span>See a diagram of en passant on the board.</span></div>
+          <div class="objective"><strong>Notation</strong><span>Learn how to write en passant using algebraic notation with &ldquo;e.p.&rdquo;</span></div>
+        </div>
+      </div>
+      <figure class="hero-card" aria-label="En passant visual">
+        <div class="module-hero-visual">
+          <div style="text-align:center;padding:1rem;">
+            <img src="../assets/pieces/mpchess/wP.svg" alt="" style="width:4.6rem;height:4.6rem;display:inline-block;margin-bottom:.5rem;">
+            <img src="../assets/pieces/mpchess/bP.svg" alt="" style="width:4.6rem;height:4.6rem;display:inline-block;margin-bottom:.5rem;">
+            <p class="hero-note">A pawn captures <strong class="gold">in passing</strong> when the opponent's pawn jumps two squares.</p>
+          </div>
+        </div>
+      </figure>
+    </section>
+
+    <div class="layout" id="lesson">
+      <nav class="toc" aria-label="Lesson contents">
+        <div class="toc-title">Contents</div>
+        <a href="#what">1. What is En Passant?</a>
+        <a href="#conditions">2. The Three Conditions</a>
+        <a href="#diagram">3. Example Diagram</a>
+        <a href="#notation">4. Notation</a>
+        <a href="#check">Review Questions</a>
+      </nav>
+
+      <main>
+        <section class="lesson-section" id="what">
+          <div class="section-head">
+            <div class="number">1</div>
+            <div class="section-text">
+              <h2>What is En Passant?</h2>
+              <p>En passant is a special pawn capture in chess.</p>
+            </div>
+          </div>
+          <p style="color:var(--muted);">The term <strong>en passant</strong> comes from French and means <strong>&ldquo;in passing.&rdquo;</strong> When an enemy pawn moves two squares forward from its starting square and lands next to your pawn, your pawn can capture it as if it had only moved one square forward. Your pawn moves diagonally to the square the enemy pawn passed through, and the enemy pawn is removed from the board.</p>
+          <div class="callout">
+            <div class="callout-title">Key idea</div>
+            En passant captures the enemy pawn &ldquo;in passing&rdquo; &mdash; as it moves past your pawn.
+          </div>
+        </section>
+
+        <section class="lesson-section" id="conditions">
+          <div class="section-head">
+            <div class="number">2</div>
+            <div class="section-text">
+              <h2>The Three Conditions</h2>
+              <p>All three conditions must be met for an en passant capture to be legal.</p>
+            </div>
+          </div>
+          <ol class="clean">
+            <li><strong>The enemy pawn must have just moved two squares forward</strong> from its starting square. If it moved only one square, en passant is not possible.</li>
+            <li><strong>Your pawn must be on the fifth rank</strong> (for White) or the fourth rank (for Black). Your pawn must be on the adjacent file, next to the square the enemy pawn landed on.</li>
+            <li><strong>You must capture immediately</strong> on the very next move. If you make any other move first, the right to capture en passant is lost forever.</li>
+          </ol>
+          <div class="summary-box">Condition 3 is the most commonly forgotten rule: the en passant capture is only available on the immediate next turn!</div>
+        </section>
+
+        <section class="lesson-section" id="diagram">
+          <div class="section-head">
+            <div class="number">3</div>
+            <div class="section-text">
+              <h2>Example Diagram</h2>
+              <p>A white pawn on e5 and a black pawn on d7 advances two squares to d5. White can capture en passant.</p>
+            </div>
+          </div>
+          <figure class="figure">
+            <div style="padding:1rem;display:flex;justify-content:center;">
+              <svg class="lesson-svg" viewBox="0 0 360 360" role="img" aria-label="En passant diagram: white pawn on e5 captures black pawn on d5 en passant">
+                <defs>
+                  <style>
+                    .lbl{font:14px Arial,sans-serif;fill:#334155;font-weight:700}
+                  </style>
+                  <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="#ef4444" />
+                  </marker>
+                </defs>
+                <rect x="0" y="0" width="360" height="360" fill="#ffffff" rx="14" />
+                <g transform="translate(40,20)">
+                  <g>
+                    <rect x="0" y="0" width="35" height="35" fill="#eee3cb"/><rect x="35" y="0" width="35" height="35" fill="#71925a"/><rect x="70" y="0" width="35" height="35" fill="#eee3cb"/><rect x="105" y="0" width="35" height="35" fill="#71925a"/><rect x="140" y="0" width="35" height="35" fill="#eee3cb"/><rect x="175" y="0" width="35" height="35" fill="#71925a"/><rect x="210" y="0" width="35" height="35" fill="#eee3cb"/><rect x="245" y="0" width="35" height="35" fill="#71925a"/>
+                    <rect x="0" y="35" width="35" height="35" fill="#71925a"/><rect x="35" y="35" width="35" height="35" fill="#eee3cb"/><rect x="70" y="35" width="35" height="35" fill="#71925a"/><rect x="105" y="35" width="35" height="35" fill="#eee3cb"/><rect x="140" y="35" width="35" height="35" fill="#71925a"/><rect x="175" y="35" width="35" height="35" fill="#eee3cb"/><rect x="210" y="35" width="35" height="35" fill="#71925a"/><rect x="245" y="35" width="35" height="35" fill="#eee3cb"/>
+                    <rect x="0" y="70" width="35" height="35" fill="#eee3cb"/><rect x="35" y="70" width="35" height="35" fill="#71925a"/><rect x="70" y="70" width="35" height="35" fill="#eee3cb"/><rect x="105" y="70" width="35" height="35" fill="#71925a"/><rect x="140" y="70" width="35" height="35" fill="#eee3cb"/><rect x="175" y="70" width="35" height="35" fill="#71925a"/><rect x="210" y="70" width="35" height="35" fill="#eee3cb"/><rect x="245" y="70" width="35" height="35" fill="#71925a"/>
+                    <rect x="0" y="105" width="35" height="35" fill="#71925a"/><rect x="35" y="105" width="35" height="35" fill="#eee3cb"/><rect x="70" y="105" width="35" height="35" fill="#71925a"/><rect x="105" y="105" width="35" height="35" fill="#eee3cb"/><rect x="140" y="105" width="35" height="35" fill="#71925a"/><rect x="175" y="105" width="35" height="35" fill="#eee3cb"/><rect x="210" y="105" width="35" height="35" fill="#71925a"/><rect x="245" y="105" width="35" height="35" fill="#eee3cb"/>
+                    <rect x="0" y="140" width="35" height="35" fill="#eee3cb"/><rect x="35" y="140" width="35" height="35" fill="#71925a"/><rect x="70" y="140" width="35" height="35" fill="#eee3cb"/><rect x="105" y="140" width="35" height="35" fill="#71925a"/><rect x="140" y="140" width="35" height="35" fill="#eee3cb"/><rect x="175" y="140" width="35" height="35" fill="#71925a"/><rect x="210" y="140" width="35" height="35" fill="#eee3cb"/><rect x="245" y="140" width="35" height="35" fill="#71925a"/>
+                    <rect x="0" y="175" width="35" height="35" fill="#71925a"/><rect x="35" y="175" width="35" height="35" fill="#eee3cb"/><rect x="70" y="175" width="35" height="35" fill="#71925a"/><rect x="105" y="175" width="35" height="35" fill="#eee3cb"/><rect x="140" y="175" width="35" height="35" fill="#71925a"/><rect x="175" y="175" width="35" height="35" fill="#eee3cb"/><rect x="210" y="175" width="35" height="35" fill="#71925a"/><rect x="245" y="175" width="35" height="35" fill="#eee3cb"/>
+                    <rect x="0" y="210" width="35" height="35" fill="#eee3cb"/><rect x="35" y="210" width="35" height="35" fill="#71925a"/><rect x="70" y="210" width="35" height="35" fill="#eee3cb"/><rect x="105" y="210" width="35" height="35" fill="#71925a"/><rect x="140" y="210" width="35" height="35" fill="#eee3cb"/><rect x="175" y="210" width="35" height="35" fill="#71925a"/><rect x="210" y="210" width="35" height="35" fill="#eee3cb"/><rect x="245" y="210" width="35" height="35" fill="#71925a"/>
+                    <rect x="0" y="245" width="35" height="35" fill="#71925a"/><rect x="35" y="245" width="35" height="35" fill="#eee3cb"/><rect x="70" y="245" width="35" height="35" fill="#71925a"/><rect x="105" y="245" width="35" height="35" fill="#eee3cb"/><rect x="140" y="245" width="35" height="35" fill="#71925a"/><rect x="175" y="245" width="35" height="35" fill="#eee3cb"/><rect x="210" y="245" width="35" height="35" fill="#71925a"/><rect x="245" y="245" width="35" height="35" fill="#eee3cb"/>
+                  </g>
+                  <g class="lbl">
+                    <text x="17.5" y="301" text-anchor="middle">a</text><text x="52.5" y="301" text-anchor="middle">b</text><text x="87.5" y="301" text-anchor="middle">c</text><text x="122.5" y="301" text-anchor="middle">d</text><text x="157.5" y="301" text-anchor="middle">e</text><text x="192.5" y="301" text-anchor="middle">f</text><text x="227.5" y="301" text-anchor="middle">g</text><text x="262.5" y="301" text-anchor="middle">h</text>
+                    <text x="-12" y="18" text-anchor="middle">8</text><text x="-12" y="53" text-anchor="middle">7</text><text x="-12" y="88" text-anchor="middle">6</text><text x="-12" y="123" text-anchor="middle">5</text><text x="-12" y="158" text-anchor="middle">4</text><text x="-12" y="193" text-anchor="middle">3</text><text x="-12" y="228" text-anchor="middle">2</text><text x="-12" y="263" text-anchor="middle">1</text>
+                  </g>
+                  <rect class="ep-highlight" x="105" y="70" width="35" height="35" rx="4" />
+                  <image href="../assets/pieces/mpchess/wP.svg" x="140" y="105" width="35" height="35" />
+                  <image href="../assets/pieces/mpchess/bP.svg" x="105" y="35" width="35" height="35" class="ep-ghost" />
+                  <image href="../assets/pieces/mpchess/bP.svg" x="105" y="105" width="35" height="35" />
+                  <path class="ep-arrow" d="M 157.5,122.5 L 122.5,87.5" />
+                  <text class="ep-label" x="157.5" y="145">e5</text>
+                  <text class="ep-label" x="140" y="50">d7</text>
+                  <text class="ep-label" x="122.5" y="155">d5</text>
+                  <text class="ep-label" x="122.5" y="90">captures on d6</text>
+                </g>
+              </svg>
+            </div>
+            <figcaption>White pawn on e5 captures the black pawn on d5 en passant. The white pawn moves to d6 and the black pawn is removed. The ghost pawn on d7 shows where the black pawn started.</figcaption>
+          </figure>
+          <figure class="figure">
+            <img src="../pawn_m5/pawn_m5_5.png" alt="Supplementary illustration for en passant">
+            <figcaption>Supplementary diagram showing an en passant capture position.</figcaption>
+          </figure>
+        </section>
+
+        <section class="lesson-section" id="notation">
+          <div class="section-head">
+            <div class="number">4</div>
+            <div class="section-text">
+              <h2>Notation</h2>
+              <p>En passant is written in standard algebraic notation.</p>
+            </div>
+          </div>
+          <p style="color:var(--muted);">The en passant capture is notated just like a normal pawn capture, followed by the optional annotation <code class="inline">e.p.</code> to indicate it was an en passant capture. The destination square is the square the capturing pawn moves to (the square the enemy pawn passed through), not the square the enemy pawn occupied.</p>
+          <div class="notation-panel">
+            <div class="notation-big">exd6 e.p.</div>
+            <p style="color:var(--muted);">In this example, <strong>e</strong> is the file of the capturing pawn, <strong>x</strong> means captures, <strong>d6</strong> is the destination square, and <strong>e.p.</strong> indicates the capture was en passant. Some players omit the <code class="inline">e.p.</code> and simply write <code class="inline">exd6</code>, but adding <code class="inline">e.p.</code> helps avoid confusion.</p>
+          </div>
+          <div class="callout" style="margin-top:1rem;">
+            <div class="callout-title">Remember</div>
+            The capturing pawn does <strong>not</strong> move to the square where the enemy pawn sits. It moves to the square the enemy pawn passed through.
+          </div>
+        </section>
+
+        <section class="lesson-section" id="check">
+          <div class="section-head">
+            <div class="number">&check;</div>
+            <div class="section-text">
+              <h2>Review Questions</h2>
+              <p>Use these questions to check understanding.</p>
+            </div>
+          </div>
+          <details class="quiz">
+            <summary>What does &ldquo;en passant&rdquo; mean in French?</summary>
+            <p>&ldquo;In passing.&rdquo;</p>
+          </details>
+          <details class="quiz">
+            <summary>How many squares must the enemy pawn move for en passant to be possible?</summary>
+            <p>Two squares forward from its starting square.</p>
+          </details>
+          <details class="quiz">
+            <summary>On which move must you capture en passant?</summary>
+            <p>Immediately on the very next move. If you make any other move first, the right is lost.</p>
+          </details>
+          <details class="quiz">
+            <summary>What square does the capturing pawn move to in en passant?</summary>
+            <p>The square the enemy pawn passed through (not the square where the enemy pawn landed).</p>
+          </details>
+          <div class="lesson-nav-row">
+            <a href="pawn-m5-lesson-04-activity-is-castling-allowed.html">&larr; Previous lesson</a>
+            <a href="pawn-m5-lesson-06-activity-en-passant.html">Next lesson &rarr;</a>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <strong>End of Pawn Level Module 5 &middot; Lesson 5:</strong> En Passant.
+  </footer>
+
+  <script>
+    const root = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const storedTheme = localStorage.getItem('chess-lesson-theme');
+    if (storedTheme === 'light' || storedTheme === 'dark') root.dataset.theme = storedTheme;
+    themeToggle.addEventListener('click', () => {
+      root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('chess-lesson-theme', root.dataset.theme);
+    });
+
+    const progressBar = document.getElementById('progressBar');
+    const updateProgress = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = max > 0 ? (window.scrollY / max) * 100 : 0;
+      progressBar.style.width = Math.min(100, Math.max(0, pct)) + '%';
+    };
+    updateProgress();
+    window.addEventListener('scroll', updateProgress, { passive: true });
+  </script>
+  <script src="endgame-lesson.js" defer></script>
+  <script src="pawn-teacher-board.js?v=20260709-teacher-max1" defer></script>
+</body>
+</html>

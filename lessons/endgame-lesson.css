@@ -1,3 +1,19 @@
+/* Shared figure/image styles for lesson artwork */
+.figure {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(0,0,0,.18);
+  margin: 1.2rem 0 0;
+}
+.figure figcaption {
+  color: var(--muted);
+  font-size: .92rem;
+  padding: .8rem 1rem;
+  border-top: 1px solid var(--line);
+  background: rgba(0,0,0,.12);
+}
+
 /* ==========================================================================
    endgame-lesson.css
    Shared layout + print styles for chess endgame lesson pages.

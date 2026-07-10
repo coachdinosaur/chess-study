@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>When Castling Is Not Allowed — Pawn Level Module 5</title>
+  <meta name="description" content="Pawn Level Module 5 lesson: learn the four conditions that prevent castling.">
+  <style>
+    :root {
+      --bg: #071012; --bg-2: #0b1517; --panel: rgba(27, 42, 46, 0.92); --panel-strong: rgba(28, 43, 48, 0.98);
+      --text: #f7faf5; --muted: #b9c6c3; --line: rgba(52, 74, 78, 0.92); --gold: #8ad8b7; --blue: #3d8dff;
+      --green: #65d28a; --orange: #ffae5a; --red: #ff6b6b; --purple: #b990ff;
+      --shadow: 0 22px 60px rgba(0,0,0,.45); --radius: 24px; --max: 1180px;
+    }
+    [data-theme="light"] {
+      --bg: #f6f7f8; --bg-2: #edf1f3; --panel: rgba(255, 255, 255, 0.94); --panel-strong: rgba(255, 255, 255, 0.98);
+      --text: #172127; --muted: #52606a; --line: rgba(190, 202, 207, 0.9); --shadow: 0 20px 50px rgba(17,28,35,0.16); --gold: #1d6f78;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; color: var(--text); font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; line-height: 1.55; background: radial-gradient(circle at top left, rgba(61,141,255,.35), transparent 35rem), radial-gradient(circle at top right, rgba(243,197,95,.18), transparent 34rem), linear-gradient(135deg, var(--bg), var(--bg-2)); overflow-x: hidden; }
+    img { max-width: 100%; height: auto; display: block; }
+    a { color: inherit; } button { font: inherit; }
+    .skip-link { position: absolute; left: -999px; top: 1rem; background: var(--gold); color: #111827; padding: .65rem 1rem; border-radius: 999px; z-index: 999; }
+    .skip-link:focus { left: 1rem; }
+    .progress { height: 3px; background: rgba(255,255,255,.08); }
+    .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--gold), var(--green), var(--blue)); }
+    .page { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; }
+    .hero { padding: clamp(2rem, 4vw, 4rem) 0 1.4rem; display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 520px); gap: clamp(1.25rem, 4vw, 3rem); align-items: center; }
+    .kicker { color: var(--gold); text-transform: uppercase; font-weight: 850; letter-spacing: .14em; font-size: .85rem; margin: 0 0 .75rem; }
+    h1, h2, h3 { line-height: 1.08; margin: 0; }
+    h1 { font-size: clamp(2.35rem, 7vw, 5.7rem); letter-spacing: -.055em; }
+    h2 { font-size: clamp(1.65rem, 4vw, 3.15rem); letter-spacing: -.035em; }
+    h3 { font-size: clamp(1.18rem, 2.2vw, 1.55rem); letter-spacing: -.015em; }
+    .lead { font-size: clamp(1.05rem, 1.9vw, 1.34rem); color: var(--muted); max-width: 64ch; }
+    .hero-card { border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--line); background: var(--panel); }
+    .objective-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .8rem; margin: 1rem 0 2rem; }
+    .objective { padding: 1rem; border: 1px solid var(--line); border-radius: 18px; background: var(--panel); min-height: 8rem; }
+    .objective strong { display: block; margin-bottom: .45rem; font-size: 1.03rem; }
+    .objective span { color: var(--muted); font-size: .95rem; }
+    .layout { display: grid; grid-template-columns: 245px minmax(0, 1fr); gap: 1.25rem; align-items: start; padding: 1rem 0 4rem; }
+    .toc { position: sticky; top: 4.5rem; border: 1px solid var(--line); border-radius: 20px; background: var(--panel); padding: 1rem; }
+    .toc-title { font-weight: 850; margin-bottom: .7rem; color: var(--gold); }
+    .toc a { display: block; text-decoration: none; color: var(--muted); padding: .55rem .65rem; border-radius: 12px; font-size: .95rem; }
+    .toc a:hover { color: var(--text); background: var(--panel-strong); }
+    main { min-width: 0; }
+    .lesson-section { border: 1px solid var(--line); background: var(--panel); border-radius: var(--radius); padding: clamp(1rem, 3vw, 2rem); margin-bottom: 1.1rem; box-shadow: 0 14px 40px rgba(0,0,0,.14); scroll-margin-top: 5.5rem; }
+    .section-head { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1rem; }
+    .number { flex: 0 0 auto; width: 2.45rem; height: 2.45rem; display: grid; place-items: center; border-radius: 999px; font-weight: 900; color: #111827; background: var(--gold); box-shadow: 0 10px 22px rgba(243,197,95,.25); }
+    .section-text p { color: var(--muted); margin: .75rem 0 0; }
+    figure { margin: 0; }
+    .callout { border: 1px solid color-mix(in srgb, var(--gold) 42%, var(--line)); border-radius: 20px; padding: 1rem; background: color-mix(in srgb, var(--gold) 12%, var(--panel)); }
+    .callout-title { color: var(--gold); font-weight: 900; margin-bottom: .35rem; }
+    ul.clean { padding-left: 1.2rem; margin: .7rem 0 0; color: var(--muted); }
+    ul.clean li { margin: .35rem 0; }
+    details.quiz { border: 1px solid var(--line); background: rgba(255,255,255,.055); border-radius: 16px; padding: .9rem 1rem; margin-top: .75rem; }
+    details.quiz summary { cursor: pointer; font-weight: 800; }
+    details.quiz p { color: var(--muted); margin-bottom: 0; }
+    .footer { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; padding: 2rem 0 3rem; color: var(--muted); border-top: 1px solid var(--line); }
+    @media (max-width: 980px) { .hero { grid-template-columns: 1fr; } .layout { grid-template-columns: 1fr; } .toc { position: static; overflow-x: auto; white-space: nowrap; } .toc a { display: inline-block; } }
+    @media (max-width: 720px) { .page, .footer { width: min(100% - 22px, var(--max)); } .objective-grid { grid-template-columns: 1fr; } .lesson-section { border-radius: 18px; } .section-head { gap: .75rem; } .number { width: 2.15rem; height: 2.15rem; } }
+    @media print { :root, [data-theme="light"], [data-theme="dark"] { --bg: #ffffff; --bg-2: #ffffff; --panel: #ffffff; --panel-strong: #ffffff; --text: #111827; --muted: #374151; --line: #d1d5db; --shadow: none; } body { background: #ffffff; } .toc, .btn, .progress { display: none !important; } .page, .footer { width: 100%; } .hero { padding-top: 0; } .layout { display: block; padding: 0; } .lesson-section, .objective { break-inside: avoid; box-shadow: none; } }
+    .gold { color: var(--gold); }
+    .red { color: var(--red); }
+    code.inline { background: color-mix(in srgb, var(--blue) 14%, var(--panel)); border: 1px solid color-mix(in srgb, var(--blue) 35%, var(--line)); border-radius: 8px; color: color-mix(in srgb, var(--blue) 82%, var(--text)); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: .98em; font-weight: 850; padding: .08rem .38rem; white-space: nowrap; }
+    .module-hero-visual { min-height: 420px; display: grid; align-content: center; gap: 1rem; padding: clamp(1.2rem, 4vw, 2rem); background: radial-gradient(circle at 10% 15%, rgba(243,197,95,.25), transparent 16rem), radial-gradient(circle at 90% 85%, rgba(101,210,138,.22), transparent 16rem), linear-gradient(135deg, rgba(255,255,255,.11), rgba(255,255,255,.035)); }
+    .hero-note { color: var(--muted); border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,.055); padding: .9rem 1rem; margin: 0; }
+    .board-panel { border: 1px solid var(--line); border-radius: 22px; background: rgba(255,255,255,.055); padding: 1rem; overflow: hidden; margin-top: 1rem; }
+    .board-panel h3 { margin-bottom: .45rem; }
+    .board-panel p { color: var(--muted); margin: .35rem 0 1rem; }
+    .board-wrap { display: flex; justify-content: center; align-items: center; overflow-x: auto; padding: .7rem; border-radius: 18px; border: 1px solid var(--line); background: #f8fafc; }
+    .lesson-svg { width: min(100%, 390px); height: auto; display: block; flex: 0 0 auto; }
+    .summary-box { border: 1px solid color-mix(in srgb, var(--green) 42%, var(--line)); border-radius: 18px; background: color-mix(in srgb, var(--green) 12%, var(--panel)); color: var(--text); padding: .9rem 1rem; font-weight: 800; margin-top: 1rem; }
+    .warning-box { border: 1px solid color-mix(in srgb, var(--orange) 45%, var(--line)); border-radius: 18px; background: color-mix(in srgb, var(--orange) 12%, var(--panel)); color: var(--text); padding: .9rem 1rem; font-weight: 800; margin-top: 1rem; }
+    @media print { .board-panel, .summary-box, .warning-box { break-inside: avoid; box-shadow: none; } .board-wrap { overflow: visible; } .lesson-svg { max-width: 330px; } }
+    .lesson-nav-row { display: flex; justify-content: space-between; gap: 1rem; margin-top: 1.5rem; }
+    .lesson-nav-row a { border: 1px solid var(--line); color: var(--text); background: var(--panel); border-radius: 999px; padding: .55rem .9rem; text-decoration: none; transition: transform .18s ease, background .18s ease; }
+    .lesson-nav-row a:hover { color: var(--text); background: var(--panel-strong); }
+  </style>
+  <link rel="stylesheet" href="endgame-lesson.css">
+  <link rel="stylesheet" href="pawn-teacher-board.css?v=20260709-teacher-max1">
+</head>
+<body>
+  <a class="skip-link" href="#lesson">Skip to lesson</a>
+  <div class="index-header no-print">
+    <div class="index-header-inner">
+      <div class="index-brand">
+        <div class="index-brand-icon" aria-hidden="true">♟</div>
+        <div>
+          <div class="index-brand-label">Pawn Level</div>
+          <div class="index-brand-title">When Castling Is Not Allowed</div>
+        </div>
+      </div>
+      <div class="index-top-actions">
+        <a class="toolbar-link" href="pawn-index.html">&larr; Back to Pawn Index</a>
+        <button class="toolbar-link" type="button" id="themeToggle">Toggle theme</button>
+        <button class="toolbar-link" type="button" onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </div>
+  </div>
+  <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+  <div class="page">
+    <section class="hero" id="top">
+      <div>
+        <p class="kicker">Pawn Level &middot; Module 5 &middot; Lesson 3</p>
+        <h1>When Castling Is Not Allowed</h1>
+        <p class="lead">Castling is a special move, and there are four conditions that prevent you from using it.</p>
+        <div class="objective-grid" aria-label="Learning objectives">
+          <div class="objective"><strong>King moved</strong><span>You cannot castle if the king has already moved.</span></div>
+          <div class="objective"><strong>Rook moved</strong><span>You cannot castle with a rook that has moved.</span></div>
+          <div class="objective"><strong>King in check</strong><span>You cannot castle out of check.</span></div>
+          <div class="objective"><strong>Through check</strong><span>The king cannot pass through a square under attack.</span></div>
+        </div>
+      </div>
+      <figure class="hero-card" aria-label="Castling rules visual">
+        <div class="module-hero-visual">
+          <div style="text-align:center;padding:1rem;">
+            <p class="hero-note"><strong class="gold">Four rules</strong> &mdash; know when castling is illegal.</p>
+          </div>
+        </div>
+      </figure>
+    </section>
+    <div class="layout" id="lesson">
+      <nav class="toc" aria-label="Lesson contents">
+        <div class="toc-title">Contents</div>
+        <a href="#rule1">1. King or Rook Moved</a>
+        <a href="#rule2">2. King in Check</a>
+        <a href="#rule3">3. Through Check</a>
+        <a href="#blocked">4. Pieces in the Way</a>
+        <a href="#check">Review Questions</a>
+      </nav>
+      <main>
+        <section class="lesson-section" id="rule1">
+          <div class="section-head"><div class="number">1</div><div class="section-text"><h2>King or Rook Has Moved</h2><p>Once the king has moved, you lose the right to castle for the entire game.</p></div></div>
+          <p style="color:var(--muted);">Similarly, if a rook has moved, you cannot castle with that rook. The other rook may still be available if it has not moved.</p>
+          <div class="warning-box">If you move your king and then move it back, castling is still not allowed. The right is lost forever once the king moves.</div>
+          <figure class="figure">
+            <img src="../pawn_m5/pawn_m5_3.png" alt="Supplementary illustration for illegal castling conditions">
+            <figcaption>Board position illustrating one of the conditions that make castling illegal.</figcaption>
+          </figure>
+        </section>
+        <section class="lesson-section" id="rule2">
+          <div class="section-head"><div class="number">2</div><div class="section-text"><h2>King in Check</h2><p>You cannot castle if your king is in check.</p></div></div>
+          <p style="color:var(--muted);">You must first escape the check by moving the king, blocking, or capturing. After the check is resolved, you might castle later if the king has not moved.</p>
+        </section>
+        <section class="lesson-section" id="rule3">
+          <div class="section-head"><div class="number">3</div><div class="section-text"><h2>Through Check</h2><p>The king cannot pass through a square that is attacked by an enemy piece.</p></div></div>
+          <p style="color:var(--muted);">For kingside castling, the f1 square (or f8 for Black) must be safe. For queenside castling, the d1 and c1 squares (or d8 and c8) must be safe.</p>
+          <div class="callout">
+            <div class="callout-title">Important</div>
+            Only the king's path matters. The rook can pass through an attacked square. For example, in queenside castling, the rook passes over b1, which may be under attack &mdash; that is allowed.
+          </div>
+        </section>
+        <section class="lesson-section" id="blocked">
+          <div class="section-head"><div class="number">4</div><div class="section-text"><h2>Pieces in the Way</h2><p>There must be no pieces between the king and the rook you want to castle with.</p></div></div>
+          <p style="color:var(--muted);">For kingside castling, the f1 and g1 squares (or f8 and g8) must be empty. For queenside castling, the b1, c1, and d1 squares (or b8, c8, d8) must be empty.</p>
+          <div class="summary-box">All four conditions must be met for castling to be legal: 1) King has not moved. 2) Rook has not moved. 3) King is not in check. 4) King does not pass through check. 5) No pieces between king and rook.</div>
+        </section>
+        <section class="lesson-section" id="check">
+          <div class="section-head"><div class="number">&check;</div><div class="section-text"><h2>Review Questions</h2><p>Use these questions to check understanding.</p></div></div>
+          <details class="quiz"><summary>If your king has moved once, can you castle later?</summary><p>No. Once the king moves, castling is lost for the whole game.</p></details>
+          <details class="quiz"><summary>Can you castle if your king is in check?</summary><p>No. You must deal with the check first.</p></details>
+          <details class="quiz"><summary>Does the rook have to avoid attacked squares during castling?</summary><p>No. Only the king must avoid moving through check. The rook can pass through an attacked square.</p></details>
+          <div class="lesson-nav-row">
+            <a href="pawn-m5-lesson-02-queenside-castling.html">&larr; Previous lesson</a>
+            <a href="pawn-m5-lesson-04-activity-is-castling-allowed.html">Next lesson &rarr;</a>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+  <footer class="footer"><strong>End of Pawn Level Module 5 &middot; Lesson 3:</strong> When Castling Is Not Allowed.</footer>
+  <script>
+    const root = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const storedTheme = localStorage.getItem('chess-lesson-theme');
+    if (storedTheme === 'light' || storedTheme === 'dark') root.dataset.theme = storedTheme;
+    themeToggle.addEventListener('click', () => { root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark'; localStorage.setItem('chess-lesson-theme', root.dataset.theme); });
+    const progressBar = document.getElementById('progressBar');
+    const updateProgress = () => { const max = document.documentElement.scrollHeight - window.innerHeight; const pct = max > 0 ? (window.scrollY / max) * 100 : 0; progressBar.style.width = Math.min(100, Math.max(0, pct)) + '%'; };
+    updateProgress();
+    window.addEventListener('scroll', updateProgress, { passive: true });
+  </script>
+  <script src="endgame-lesson.js" defer></script>
+  <script src="pawn-teacher-board.js?v=20260709-teacher-max1" defer></script>
+</body>
+</html>
