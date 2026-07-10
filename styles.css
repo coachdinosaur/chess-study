@@ -1235,7 +1235,6 @@ code {
 }
 
 .control-pane-scroll,
-.guided-review-row-list,
 .lesson-overflow-menu,
 .custom-select-menu {
   scrollbar-width: thin;
@@ -1243,7 +1242,6 @@ code {
 }
 
 .control-pane-scroll::-webkit-scrollbar,
-.guided-review-row-list::-webkit-scrollbar,
 .lesson-overflow-menu::-webkit-scrollbar,
 .custom-select-menu::-webkit-scrollbar {
   width: 8px;
@@ -1251,7 +1249,6 @@ code {
 }
 
 .control-pane-scroll::-webkit-scrollbar-thumb,
-.guided-review-row-list::-webkit-scrollbar-thumb,
 .lesson-overflow-menu::-webkit-scrollbar-thumb,
 .custom-select-menu::-webkit-scrollbar-thumb {
   border-radius: 4px;
@@ -1259,14 +1256,12 @@ code {
 }
 
 .control-pane-scroll::-webkit-scrollbar-track,
-.guided-review-row-list::-webkit-scrollbar-track,
 .lesson-overflow-menu::-webkit-scrollbar-track,
 .custom-select-menu::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.control-pane-scroll,
-.guided-review-row-list {
+.control-pane-scroll {
   scrollbar-gutter: stable;
 }
 
@@ -2250,8 +2245,7 @@ code {
   display: none;
 }
 
-#fenInput,
-.guided-review-fen-input {
+#fenInput {
   min-height: 2.6rem;
   height: 2.6rem;
   padding: 0.52rem 0.6rem;
@@ -2632,204 +2626,6 @@ code {
   border-color: var(--banner-danger-border);
   background: var(--banner-danger-bg);
   color: var(--banner-danger-text);
-}
-
-.guided-review-panel {
-  display: grid;
-  gap: 0.9rem;
-}
-
-.guided-review-analysis-panel {
-  display: grid;
-  gap: 0.9rem;
-}
-
-.guided-review-panel[hidden] {
-  display: none;
-}
-
-.guided-review-analysis-panel[hidden] {
-  display: none;
-}
-
-.guided-review-panel-inner {
-  display: grid;
-  gap: 0.9rem;
-}
-
-.guided-review-meta-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.55rem;
-}
-
-.guided-review-status-pill,
-.guided-review-draft-pill {
-  display: inline-flex;
-  align-items: center;
-  min-height: 2rem;
-  padding: 0.35rem 0.65rem;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--chip-border);
-  background: var(--chip-bg);
-  color: var(--text-muted);
-  font-size: 0.78rem;
-  font-weight: 700;
-}
-
-.guided-review-status-pill.is-done {
-  border-color: var(--banner-success-border);
-  background: var(--banner-success-bg);
-  color: var(--banner-success-text);
-}
-
-.guided-review-status-pill.is-needs-review {
-  border-color: var(--banner-warning-border);
-  background: var(--banner-warning-bg);
-  color: var(--banner-warning-text);
-}
-
-.guided-review-draft-pill {
-  border-color: var(--focus-border);
-  background: var(--accent-soft);
-  color: var(--accent-strong);
-}
-
-.guided-review-editor-grid {
-  display: grid;
-  gap: 0.85rem;
-}
-
-.guided-review-two-col {
-  align-items: start;
-}
-
-.guided-review-label-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-}
-
-.guided-review-small-button {
-  min-height: 3rem;
-  padding: 0.42rem 0.7rem;
-  font-size: 0.82rem;
-}
-
-.guided-review-fen-input {
-  min-height: 2.6rem;
-  height: 2.6rem;
-  padding: 0.52rem 0.6rem;
-  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
-  font-size: 0.82rem;
-  line-height: 1.25;
-}
-
-.guided-review-textarea {
-  min-height: 13rem;
-}
-
-.guided-review-inline-warning {
-  min-height: 1.15rem;
-  margin: 0;
-  color: var(--banner-warning-text);
-  font-size: 0.82rem;
-  line-height: 1.4;
-}
-
-.guided-review-inline-warning:empty {
-  display: none;
-}
-
-.guided-review-actions {
-  padding-top: 0.2rem;
-}
-
-.guided-review-row-nav {
-  min-height: 0;
-}
-
-.guided-review-row-list {
-  display: grid;
-  gap: 0.45rem;
-  max-height: 22rem;
-  overflow: auto;
-  padding-inline-end: max(0.25rem, 8px);
-}
-
-.guided-review-row-item {
-  display: grid;
-  grid-template-columns: 2.4rem minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 0.55rem;
-  width: 100%;
-  min-height: 3rem;
-  padding: 0.48rem 0.6rem;
-  border-radius: var(--radius-card);
-  border: 1px solid var(--control-border);
-  background: var(--control-bg);
-  color: var(--text);
-  text-align: left;
-  transition: border-color var(--ease), background-color var(--ease), box-shadow var(--ease);
-}
-
-.guided-review-row-item:hover,
-.guided-review-row-item:focus-visible {
-  outline: none;
-  border-color: var(--focus-border);
-  box-shadow: 0 0 0 3px var(--focus-ring);
-}
-
-.guided-review-row-item.is-current {
-  border-color: var(--tab-active-border);
-  background: var(--accent-soft);
-}
-
-.guided-review-row-item.is-done {
-  border-color: var(--banner-success-border);
-}
-
-.guided-review-row-item.is-needs-review {
-  border-color: var(--banner-warning-border);
-}
-
-.guided-review-row-item.has-unsaved-draft .guided-review-row-number {
-  border-color: var(--focus-border);
-  color: var(--accent-strong);
-}
-
-.guided-review-row-number {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 2rem;
-  height: 2rem;
-  border-radius: 1rem;
-  border: 1px solid var(--move-index-border);
-  background: var(--move-index-bg);
-  color: var(--text-muted);
-  font-size: 0.78rem;
-  font-weight: 700;
-}
-
-.guided-review-row-title {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-weight: 700;
-}
-
-.guided-review-row-status {
-  max-width: 9rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: var(--text-muted);
-  font-size: 0.78rem;
-  font-weight: 700;
 }
 
 .status-grid {
@@ -3838,8 +3634,7 @@ html[data-board-only="1"] .eval-bar-wrap {
   }
 
   .lesson-notation,
-  .guided-review-analysis-panel,
-  .guided-review-panel {
+  .lesson-position-builder-panel {
     order: 4;
   }
 
@@ -4052,14 +3847,12 @@ html[data-board-only="1"] .eval-bar-wrap {
   /* Slim scrollbar — thin, low-contrast, supports scrolling without competing
      with the board. */
   .control-pane-scroll::-webkit-scrollbar,
-  .guided-review-row-list::-webkit-scrollbar,
   .lesson-overflow-menu::-webkit-scrollbar,
   .custom-select-menu::-webkit-scrollbar {
     width: 4px;
     height: 4px;
   }
   .control-pane-scroll::-webkit-scrollbar-thumb,
-  .guided-review-row-list::-webkit-scrollbar-thumb,
   .lesson-overflow-menu::-webkit-scrollbar-thumb,
   .custom-select-menu::-webkit-scrollbar-thumb {
     background: rgba(128, 128, 128, 0.25);
@@ -4893,5 +4686,188 @@ html[data-board-only="1"] .eval-bar-wrap {
 .last-move-arrow-outline,
 .last-move-arrow-head-outline {
   display: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Lesson Position Builder
+   ═══════════════════════════════════════════════════════════ */
+
+.lesson-position-builder-panel {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.lesson-position-builder-panel[hidden] {
+  display: none;
+}
+
+.lesson-builder-inner {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.lesson-builder-header {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.lesson-builder-file-actions {
+  flex-wrap: wrap;
+}
+
+.lesson-builder-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.9rem;
+}
+
+@media (min-width: 640px) {
+  .lesson-builder-layout {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.lesson-builder-list-panel {
+  min-width: 0;
+}
+
+.lesson-builder-position-list {
+  display: grid;
+  gap: 0.45rem;
+  max-height: 24rem;
+  overflow-y: auto;
+  padding-inline-end: max(0.25rem, 8px);
+}
+
+.lesson-builder-position-item {
+  display: grid;
+  grid-template-columns: 2.4rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.48rem 0.6rem;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--control-border);
+  background: var(--control-bg);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--ease), background-color var(--ease), box-shadow var(--ease);
+}
+
+.lesson-builder-position-item:hover,
+.lesson-builder-position-item:focus-visible {
+  outline: none;
+  border-color: var(--focus-border);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.lesson-builder-position-item.is-selected {
+  border-color: var(--tab-active-border);
+  background: var(--accent-soft);
+}
+
+.lesson-builder-position-item.has-error {
+  border-color: var(--banner-danger-border);
+  background: var(--banner-danger-bg);
+}
+
+.lesson-builder-position-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+  border-radius: 1rem;
+  border: 1px solid var(--move-index-border);
+  background: var(--move-index-bg);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.lesson-builder-position-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+.lesson-builder-position-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.lesson-builder-default-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--radius-pill);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-size: 0.72rem;
+  font-weight: 700;
+  border: 1px solid var(--accent-border);
+}
+
+.lesson-builder-error-indicator {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--radius-pill);
+  background: var(--banner-danger-bg);
+  color: var(--banner-danger-text);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.lesson-builder-editor {
+  display: grid;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.lesson-builder-field {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.lesson-builder-fen-input {
+  min-height: 2.6rem;
+  height: 2.6rem;
+  padding: 0.52rem 0.6rem;
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: 0.82rem;
+  line-height: 1.25;
+}
+
+.lesson-builder-note-input {
+  min-height: 5rem;
+}
+
+.lesson-builder-actions {
+  flex-wrap: wrap;
+  padding-top: 0.2rem;
+}
+
+.lesson-builder-validation-summary {
+  margin-top: 0.25rem;
+}
+
+/* Guided review mobile `order` fix — reused for builder panel */
+@media (max-width: 639px) {
+  .lesson-position-builder-panel {
+    order: 4;
+  }
+  .lesson-builder-position-list {
+    max-height: 16rem;
+  }
 }
 

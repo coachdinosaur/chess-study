@@ -60,7 +60,7 @@
       } catch {}
     })();
   </script>
-  <link rel="stylesheet" href="./styles.css?v=20260709-teacher-setup7">
+  <link rel="stylesheet" href="./styles.css?v=20260710-lesson-builder1">
 </head>
 <body class="loading">
   <div id="loadingOverlay" class="loading-overlay">
@@ -321,7 +321,7 @@
             </div>
             <input id="lessonFileInput" type="file" accept=".json,.lesson.json,application/json" hidden>
             <input id="pgnFileInput" type="file" accept=".pgn,.txt,text/plain,application/x-chess-pgn" hidden>
-            <input id="guidedReviewFileInput" type="file" accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" hidden>
+            <input id="lessonPositionFileInput" type="file" accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" hidden>
             <input id="scanBoardInput" type="file" accept=".png,.jpg,.jpeg" hidden>
             <input id="puzzleCsvFileInput" type="file" accept=".csv,text/csv" hidden>
             <span id="engineReadyLabel" class="sr-only">Stockfish idle</span>
@@ -335,8 +335,7 @@
             <button class="tab-chip" type="button" data-action="set-tab" data-tab="puzzle">Puzzle</button>
             <button class="tab-chip" type="button" data-action="set-tab" data-tab="lessons">Lessons</button>
           </nav>
-          <section id="guidedReviewAnalysisPanel" class="guided-review-analysis-panel" aria-label="Guided review analysis" hidden></section>
-          <section id="guidedReviewPanel" class="guided-review-panel" aria-label="Guided lesson row review" hidden></section>
+          <section id="lessonPositionBuilderPanel" class="lesson-position-builder-panel" aria-label="Lesson Position Builder" hidden></section>
 
           <section class="lesson-notation" aria-label="Lesson notation">
             <p id="notationSummary" class="sr-only" aria-live="polite">Play moves from the board to build the lesson tree.</p>
@@ -505,7 +504,7 @@
   </div>
 
   <script src="./vendor/xlsx.full.min.js"></script>
-  <script type="module" src="./app.js?v=20260709-teacher-setup6"></script>
+  <script type="module" src="./app.js?v=20260710-teacher-lesson-csv1"></script>
 
 <script>
   window.addEventListener('load', function () {

@@ -3,7 +3,7 @@ document.body.dataset.appVersion = "board-debug-20260707";
 
 import { Chess, DEFAULT_POSITION, validateFen } from './vendor/chess.js';
 import { buildPgnFromLessonTree, parsePgnToLessonTree, splitPgnGames, extractPgnHeaders } from './pgn.mjs';
-import { createGuidedReviewController } from './guided-review.mjs';
+import { createLessonPositionBuilder } from './lesson-position-builder.mjs';
 import { normalizeEditableText } from './text-normalization.mjs';
 import {
   createEndgamePuzzleApi,
@@ -590,7 +590,6 @@ const dom = {
   lessonActionsMenu: document.getElementById('lessonActionsMenu'),
   openLessonButton: document.getElementById('openLessonButton'),
   saveLessonButton: document.getElementById('saveLessonButton'),
-  guidedReviewButton: document.getElementById('guidedReviewButton'),
   importPgnButton: document.getElementById('importPgnButton'),
   exportPgnButton: document.getElementById('exportPgnButton'),
   togglePgnCommentsMenuButton: document.getElementById('togglePgnCommentsMenuButton'),
@@ -611,14 +610,13 @@ const dom = {
   deleteLessonButton: document.getElementById('deleteLessonButton'),
   lessonFileInput: document.getElementById('lessonFileInput'),
   pgnFileInput: document.getElementById('pgnFileInput'),
-  guidedReviewFileInput: document.getElementById('guidedReviewFileInput'),
+  lessonPositionFileInput: document.getElementById('lessonPositionFileInput'),
   scanBoardInput: document.getElementById('scanBoardInput'),
   puzzleCsvFileInput: document.getElementById('puzzleCsvFileInput'),
   lessonFileStatus: document.getElementById('lessonFileStatus'),
   heroBanner: document.getElementById('heroBanner'),
   controlPaneScroll: document.querySelector('.control-pane-scroll'),
-  guidedReviewAnalysisPanel: document.getElementById('guidedReviewAnalysisPanel'),
-  guidedReviewPanel: document.getElementById('guidedReviewPanel'),
+  lessonPositionBuilderPanel: document.getElementById('lessonPositionBuilderPanel'),
   notationSection: document.querySelector('.lesson-notation'),
   notationSummary: document.getElementById('notationSummary'),
   notationPanel: document.getElementById('notationPanel'),
@@ -711,7 +709,7 @@ const state = {
   pgnCommentsVisible: true,
   lastMoveArrowVisible: true,
   toolsExpanded: true,
-  guidedReview: {
+  lessonPositionBuilder: {
     active: false,
   },
   pvLinesVisible: true,
@@ -840,7 +838,7 @@ const state = {
   },
 };
 
-let guidedReviewController = null;
+let lessonPositionBuilder = null;
 let setupDragPreviewEl = null;
 
 function isFenInsufficientMaterialDraw(fen) {
@@ -2493,7 +2491,7 @@ function activateLessonById(lessonId) {
     renderLessonBookControls();
     return;
   }
-  state.guidedReview.active = false;
+  state.lessonPositionBuilder.active = false;
   state.lessonBook.activeLessonId = nextEntry.id;
   applyLessonState(cloneLessonState(nextEntry.lessonState));
   syncAnalysisGameFromTree();
@@ -2510,7 +2508,7 @@ function addLessonToBook(lessonState) {
     lessonState: cloneLessonState(lessonState),
   });
   state.lessonBook.activeLessonId = lessonId;
-  state.guidedReview.active = false;
+  state.lessonPositionBuilder.active = false;
   applyLessonState(cloneLessonState(lessonState));
   syncAnalysisGameFromTree();
   renderAll();
@@ -2548,7 +2546,7 @@ function deleteCurrentLesson() {
   state.lessonBook.lessons.splice(currentIndex, 1);
   const nextIndex = Math.min(currentIndex, state.lessonBook.lessons.length - 1);
   const nextEntry = state.lessonBook.lessons[nextIndex];
-  state.guidedReview.active = false;
+  state.lessonPositionBuilder.active = false;
   state.lessonBook.activeLessonId = nextEntry.id;
   applyLessonState(cloneLessonState(nextEntry.lessonState));
   syncAnalysisGameFromTree();
@@ -3202,7 +3200,7 @@ function buildDraftPayload() {
   return {
     ...buildLessonBookPayload(),
     practiceKindPreference: state.practicePreferenceKind,
-    guidedReviewActive: state.guidedReview.active,
+    lessonPositionBuilderActive: state.lessonPositionBuilder.active,
   };
 }
 
@@ -3985,17 +3983,19 @@ function hydrateDraft() {
   }
   try {
     const draft = JSON.parse(raw);
-    const guidedReviewActive = Boolean(draft?.guidedReviewActive);
+    const lessonPositionBuilderActive = 'lessonPositionBuilderActive' in (draft ?? {})
+      ? Boolean(draft?.lessonPositionBuilderActive)
+      : Boolean(draft?.guidedReviewActive);
     state.practicePreferenceKind = normalizePracticeKind(draft?.practiceKindPreference);
     if (draft?.version === LESSON_BOOK_FILE_VERSION && Array.isArray(draft?.lessons)) {
       applyLessonBookState(validateAndNormalizeLessonBookPayload(draft));
-      state.guidedReview.active = guidedReviewActive;
+      state.lessonPositionBuilder.active = lessonPositionBuilderActive;
       return;
     }
     if (draft && typeof draft === 'object' && !Array.isArray(draft) && draft.nodes && draft.rootId) {
       applyLessonState(validateAndNormalizeLessonPayload(draft));
       ensureLessonBookInitialized();
-      state.guidedReview.active = guidedReviewActive;
+      state.lessonPositionBuilder.active = lessonPositionBuilderActive;
       return;
     }
 
@@ -4038,7 +4038,7 @@ function hydrateDraft() {
       note: normalizeNoteState(draft?.note),
     });
     ensureLessonBookInitialized();
-    state.guidedReview.active = guidedReviewActive;
+    state.lessonPositionBuilder.active = lessonPositionBuilderActive;
   } catch (error) {
     console.warn('Unable to restore draft.', error);
     ensureLessonBookInitialized();
@@ -4092,7 +4092,7 @@ async function openLessonFile(file) {
     applyLessonState(lessonState);
     state.lessonBook = createSingleLessonBookState(lessonState);
   }
-  state.guidedReview.active = false;
+  state.lessonPositionBuilder.active = false;
   syncAnalysisGameFromTree();
   renderAll();
   schedulePersist();
@@ -4350,11 +4350,10 @@ async function loadSelectedPgnGame(gamePgnText, fileName, gameNumber) {
   }
 }
 
-function renderGuidedReviewVisibility() {
-  const active = Boolean(state.guidedReview.active);
-  renderGuidedReviewAnalysisPanel();
-  if (dom.guidedReviewPanel) {
-    dom.guidedReviewPanel.hidden = !active;
+function renderLessonPositionBuilderVisibility() {
+  const active = Boolean(state.lessonPositionBuilder.active);
+  if (dom.lessonPositionBuilderPanel) {
+    dom.lessonPositionBuilderPanel.hidden = !active;
   }
   if (dom.notationSection) {
     dom.notationSection.hidden = active;
@@ -4362,40 +4361,47 @@ function renderGuidedReviewVisibility() {
   renderWorkspaceTools();
 }
 
-function setGuidedReviewActive(active) {
-  state.guidedReview.active = Boolean(active);
-  if (state.guidedReview.active) {
-    if (state.activeTab !== TAB_LESSONS) {
-      state.previousNonLessonTab = state.activeTab;
-    }
-    state.activeTab = TAB_LESSONS;
-  } else {
-    state.activeTab = state.previousNonLessonTab || TAB_PLAY;
-  }
-  renderGuidedReviewVisibility();
+function setLessonPositionBuilderActive(active) {
+  state.lessonPositionBuilder.active = Boolean(active);
+  renderLessonPositionBuilderVisibility();
   schedulePersist();
   renderAll();
 }
 
-function updateGuidedReviewTitle(title) {
-  state.title = normalizeEditableText(title || '');
-  if (dom.titleInput) {
-    dom.titleInput.value = state.title;
-  }
-  renderLessonBookControls();
-  if (dom.boardTitleDisplay) {
-    dom.boardTitleDisplay.textContent = state.title.trim() || 'Untitled position';
-  }
-  schedulePersist();
+function getLessonBuilderCurrentFen() {
+  return currentBoardFenLabel();
 }
 
-function loadGuidedReviewFenToBoard(fen) {
+function getLessonBuilderOrientation() {
+  return state.boardOrientation === 'black' ? 'black' : 'white';
+}
+
+function validateLessonBuilderFen(fen) {
   const normalizedFen = String(fen || '').trim().replace(/\s+/g, ' ');
   if (!normalizedFen) {
-    return { ok: false, error: 'This row has no FEN value.' };
+    return { ok: false, error: 'FEN is empty.' };
   }
 
   const validation = validateFen(normalizedFen);
+  if (!validation.ok) {
+    return { ok: false, error: validation.error || 'FEN is invalid.' };
+  }
+
+  try {
+    const game = new Chess(normalizedFen);
+    return { ok: true, fen: game.fen() };
+  } catch (error) {
+    return { ok: false, error: error?.message || 'Unable to parse FEN.' };
+  }
+}
+
+function loadLessonBuilderFenToBoard(fen) {
+  const normalizedFen = String(fen || '').trim().replace(/\s+/g, ' ');
+  if (!normalizedFen) {
+    return { ok: false, error: 'FEN is empty.' };
+  }
+
+  const validation = validateLessonBuilderFen(normalizedFen);
   if (!validation.ok) {
     return { ok: false, error: validation.error || 'FEN is invalid.' };
   }
@@ -4406,12 +4412,10 @@ function loadGuidedReviewFenToBoard(fen) {
     if (!parsed.ok) {
       return { ok: false, error: parsed.error };
     }
-    state.activeTab = TAB_ANALYSIS;
     commitSetupState(parsed.pieces, parsed.meta, { syncFenInput: true, resetAnalysis: true });
     renderBoard();
     renderHeaderMeta();
     renderHeroBanner();
-    renderAnalysisPanel();
     renderPromotionModal();
     return { ok: true, fen: state.setupFen };
   } catch (error) {
@@ -4419,61 +4423,25 @@ function loadGuidedReviewFenToBoard(fen) {
   }
 }
 
-function guidedReviewAnalysisContext(fen) {
-  const rowFen = normalizeFenForTablebase(fen);
-  const currentFen = normalizeFenForTablebase(state.analysis.currentFen);
-  if (!rowFen || !currentFen || rowFen !== currentFen) {
-    return {};
-  }
-
-  const parsed = parseFenLike(rowFen);
-  const tablebaseResult = currentTablebaseResultForDisplay();
-  const tablebaseLines = tablebaseResult?.moves?.length
-    ? tablebaseResult.moves
-      .filter((entry) => entry.line || entry.san)
-      .map((entry) => `TB ${entry.index}: ${entry.line || entry.san} (${entry.evalLabel || entry.resultLabel || 'Tablebase'})`)
-    : [];
-  const engineLines = hasVisibleEnginePvLines()
-    ? state.engine.pvLines
-      .filter((entry) => entry.line)
-      .map((entry) => `PV ${entry.index}: ${entry.line} (${entry.evalLabel || 'no eval'}, depth ${entry.depth ?? 'unknown'})`)
-    : [];
-  const stockfishBestMove = state.engine.bestMove
-    ? (uciMovesToSan(rowFen, [state.engine.bestMove])[0] || state.engine.bestMove)
-    : '';
-  const stockfishSummary = !tablebaseResult && (engineLines.length || stockfishBestMove)
-    ? [
-        state.engine.summary,
-        stockfishBestMove ? `Best move: ${stockfishBestMove}` : '',
-        ...engineLines,
-      ].filter(Boolean).join(' | ')
-    : '';
-  const tablebaseSummary = tablebaseResult
-    ? [
-        tablebaseResult.summary,
-        ...tablebaseLines,
-      ].filter(Boolean).join(' | ')
-    : '';
-
-  return {
-    side_to_move: parsed.ok ? parsed.meta.activeColor : '',
-    best_move: tablebaseResult?.moves?.[0]?.line || tablebaseResult?.moves?.[0]?.san || stockfishBestMove,
-    stockfish_summary: stockfishSummary,
-    tablebase_summary: tablebaseSummary,
-  };
+function setLessonBuilderOrientation(orientation) {
+  state.boardOrientation = orientation === 'black' ? 'black' : 'white';
+  renderBoard();
+  schedulePersist();
 }
 
-function initializeGuidedReviewController() {
-  guidedReviewController = createGuidedReviewController({
-    host: dom.guidedReviewPanel,
-    fileInput: dom.guidedReviewFileInput,
+function initializeLessonPositionBuilder() {
+  lessonPositionBuilder = createLessonPositionBuilder({
+    host: dom.lessonPositionBuilderPanel,
+    fileInput: dom.lessonPositionFileInput,
     callbacks: {
-      setActive: setGuidedReviewActive,
-      loadFenToBoard: loadGuidedReviewFenToBoard,
-      updateTitle: updateGuidedReviewTitle,
+      setActive: setLessonPositionBuilderActive,
+      getCurrentFen: getLessonBuilderCurrentFen,
+      getBoardOrientation: getLessonBuilderOrientation,
+      loadFenToBoard: loadLessonBuilderFenToBoard,
+      setBoardOrientation: setLessonBuilderOrientation,
+      validateFen: validateLessonBuilderFen,
       downloadText: downloadTextFile,
       setStatus: syncLessonFileStatus,
-      getAnalysisContext: guidedReviewAnalysisContext,
     },
   });
 }
@@ -5347,55 +5315,6 @@ function renderPvLineListMarkup() {
   `;
 }
 
-function renderGuidedReviewAnalysisPanel() {
-  if (!dom.guidedReviewAnalysisPanel) {
-    return;
-  }
-
-  const hasBoard = Boolean(state.analysis.game);
-  const shouldShow = Boolean(
-    state.guidedReview.active
-    && hasBoard
-    && !state.practice.active
-    && state.pvLinesVisible
-    && (
-      state.tablebase.probing
-      || state.engine.loading
-      || state.engine.stopping
-      || state.engine.analyzing
-      || hasVisibleAnalysisLines()
-    ),
-  );
-
-  dom.guidedReviewAnalysisPanel.hidden = !shouldShow;
-  if (!shouldShow) {
-    dom.guidedReviewAnalysisPanel.innerHTML = '';
-    return;
-  }
-
-  const title = tablebaseDisplayActive() ? 'Tablebase moves' : 'Engine lines';
-
-  dom.guidedReviewAnalysisPanel.innerHTML = `
-    <article class="lesson-section guided-review-analysis-card">
-      <div class="lesson-section-header">
-        <div>
-          <h3 class="lesson-section-title">${escapeHtml(title)}</h3>
-        </div>
-      </div>
-      ${renderAnalysisStatusGridMarkup()}
-      <div class="stack-grid">
-        <div class="banner ${analysisStatusBannerKind(hasBoard)}">
-          <div>
-            <strong>${escapeHtml(analysisStatusBannerTitle(hasBoard))}</strong>
-            <div>${escapeHtml(analysisStatusSummary())}</div>
-          </div>
-        </div>
-        ${renderPvLineListMarkup()}
-      </div>
-    </article>
-  `;
-}
-
 function renderEmbedAnalysisPanel() {
   if (!state.embedMode) {
     return;
@@ -6126,8 +6045,8 @@ async function startTablebaseAnalysisForFen(fen, options = {}) {
 }
 
 async function toggleAnalysis() {
-  if (state.guidedReview.active) {
-    state.guidedReview.active = false;
+  if (state.lessonPositionBuilder.active) {
+    lessonPositionBuilder?.close();
   }
   if (state.play.active) {
     stopPlayGame({ reason: 'Game ended by enabling analysis.' });
@@ -8029,7 +7948,6 @@ function renderAnalysisPanel() {
     ${renderLineNavigationSection()}
     ${renderPracticeToolSection()}
   `;
-  renderGuidedReviewAnalysisPanel();
   renderEmbedAnalysisPanel();
 }
 
@@ -8141,7 +8059,7 @@ function renderWorkspaceTools() {
     dom.workspaceTools.hidden = !state.boardOnlySetupVisible;
     return;
   }
-  dom.workspaceTools.hidden = state.guidedReview.active || !state.toolsExpanded;
+  dom.workspaceTools.hidden = state.lessonPositionBuilder.active || !state.toolsExpanded;
 }
 
 function renderAll() {
@@ -8155,7 +8073,7 @@ function renderAll() {
   renderTabs();
   renderActiveToolPanel();
   renderWorkspaceTools();
-  renderGuidedReviewVisibility();
+  renderLessonPositionBuilderVisibility();
   renderEmbedAnalysisPanel();
   syncLessonVisibilityMenuState();
   syncFullscreenMenuState();
@@ -8539,7 +8457,7 @@ function handleDocumentClick(event) {
   if (!actionEl) {
     return;
   }
-  if (guidedReviewController?.handleAction(actionEl)) {
+  if (lessonPositionBuilder?.handleAction(actionEl)) {
     return;
   }
   const { action } = actionEl.dataset;
@@ -8638,14 +8556,15 @@ function handleDocumentClick(event) {
         cancelPuzzleGeneration();
       }
 
-      // Handle transition to/from lessons (Guided Review)
+      // Handle transition to/from lessons (Lesson Position Builder)
       if (targetTab === TAB_LESSONS) {
-        if (!state.guidedReview.active) {
-          guidedReviewController?.openGuidedReviewMode();
+        if (!state.lessonPositionBuilder.active) {
+          state.previousNonLessonTab = state.previousNonLessonTab || state.activeTab;
+          lessonPositionBuilder?.open();
         }
       } else {
-        if (state.guidedReview.active) {
-          guidedReviewController?.closeGuidedReviewMode();
+        if (state.lessonPositionBuilder.active) {
+          lessonPositionBuilder?.close();
         }
         state.previousNonLessonTab = targetTab;
       }
@@ -8857,10 +8776,6 @@ function handleDocumentClick(event) {
       closeLessonActionsMenu();
       saveLessonFile();
       break;
-    case 'open-guided-review':
-      closeLessonActionsMenu();
-      guidedReviewController?.openGuidedReviewMode();
-      break;
     case 'import-pgn':
       closeLessonActionsMenu();
       if (dom.pgnFileInput) {
@@ -8989,7 +8904,7 @@ function handleDocumentInput(event) {
     updatePuzzleSkill(event.target.value, { skipRender: true });
     return;
   }
-  if (dom.guidedReviewPanel?.contains(event.target) && guidedReviewController?.handleInput(event)) {
+  if (dom.lessonPositionBuilderPanel?.contains(event.target) && lessonPositionBuilder?.handleInput(event)) {
     return;
   }
   if (event.target === dom.titleInput) {
@@ -9027,14 +8942,14 @@ function handleDocumentInput(event) {
 }
 
 function handleDocumentChange(event) {
-  if (event.target === dom.guidedReviewFileInput) {
+  if (event.target === dom.lessonPositionFileInput) {
     const file = event.target.files?.[0];
     if (!file) {
       return;
     }
-    Promise.resolve(guidedReviewController?.importLessonRows(file)).finally(() => {
-      if (dom.guidedReviewFileInput) {
-        dom.guidedReviewFileInput.value = '';
+    Promise.resolve(lessonPositionBuilder?.importFile(file)).finally(() => {
+      if (dom.lessonPositionFileInput) {
+        dom.lessonPositionFileInput.value = '';
       }
     });
     return;
@@ -11648,18 +11563,47 @@ function bindEmbedMessageListener() {
     if (!data || typeof data !== 'object') {
       return;
     }
+
+    const isSameOriginParent = event.source === window.parent && event.origin === window.location.origin;
+    if (data.type === 'teacherBoardPing') {
+      if (isSameOriginParent) {
+        event.source.postMessage({ type: 'teacherBoardReady' }, event.origin);
+      }
+      return;
+    }
+
     if (data.type === 'loadFen' && typeof data.fen === 'string') {
+      const hasRequestId = Object.prototype.hasOwnProperty.call(data, 'requestId');
+      if (hasRequestId && !isSameOriginParent) {
+        return;
+      }
       const fen = data.fen.trim();
+      let committed = false;
       if (fen) {
         if (state.boardOnlyMode) {
-          commitBoardOnlyFenInput(fen, { render: true });
-          state.boardOnlyInitialFen = state.setupFen;
+          committed = commitBoardOnlyFenInput(fen, { render: true });
+          if (committed) {
+            state.boardOnlyInitialFen = state.setupFen;
+          }
         } else {
-          commitStrictFenInput(fen, { render: true, showError: false });
+          committed = commitStrictFenInput(fen, { render: true, showError: false });
         }
-        if (Array.isArray(data.mark)) {
-          applyEmbedAnnotations(data.mark);
-        }
+      }
+      if (committed && Array.isArray(data.mark)) {
+        applyEmbedAnnotations(data.mark);
+      }
+      if (hasRequestId) {
+        event.source.postMessage(committed ? {
+          type: 'teacherBoardLoadResult',
+          requestId: data.requestId,
+          ok: true,
+          fen: state.setupFen,
+        } : {
+          type: 'teacherBoardLoadResult',
+          requestId: data.requestId,
+          ok: false,
+          error: 'Invalid FEN.',
+        }, event.origin);
       }
     } else if (data.type === 'setOrientation' && (data.orientation === 'black' || data.orientation === 'white')) {
       state.boardOrientation = data.orientation;
@@ -11739,7 +11683,7 @@ function bindEvents() {
   document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
   document.addEventListener('webkitfullscreenerror', handleFullscreenError);
   window.addEventListener('beforeunload', () => {
-    guidedReviewController?.saveReviewProgress();
+    lessonPositionBuilder?.saveState();
     if (!state.embedMode) {
       persistDraft();
     }
@@ -11764,11 +11708,11 @@ hydratePuzzleState();
 // Developer helper for issuing premium activation keys from the console.
 window.__endgamePuzzlePremium = Object.freeze({ generateKey: generatePremiumKey });
 syncAnalysisGameFromTree();
-initializeGuidedReviewController();
+initializeLessonPositionBuilder();
 bindEvents();
 bindEmbedMessageListener();
 loadOpeningBook();
 renderAll();
-if (state.guidedReview.active) {
-  guidedReviewController?.openGuidedReviewMode();
+if (state.lessonPositionBuilder.active) {
+  lessonPositionBuilder?.open();
 }
