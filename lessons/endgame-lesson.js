@@ -162,6 +162,21 @@
     return iframe;
   }
 
+  function initializeInteractiveBoard(el, screen, print, fen, orientation, markSet) {
+    if (el.dataset.boardInteractiveState === "initialized") return;
+    el.dataset.boardInteractiveState = "initialized";
+
+    var iframe = buildIframe(fen, orientation, markSet);
+    iframe.style.visibility = "hidden";
+    iframe.addEventListener("load", function () {
+      screen.removeAttribute("role");
+      screen.removeAttribute("aria-label");
+      print.style.display = "none";
+      iframe.style.visibility = "visible";
+    });
+    screen.appendChild(iframe);
+  }
+
   function renderBoard(el, base) {
     var fen = el.getAttribute("data-fen") || "";
     var orientation = (el.getAttribute("data-orientation") ||
@@ -190,23 +205,64 @@
       return;
     }
 
-    var screen = document.createElement("div");
-    screen.className = "board-screen";
-    screen.appendChild(buildIframe(fen, orientation, markSet));
-    el.appendChild(screen);
-
     var print = document.createElement("div");
     print.className = "board-static";
     print.innerHTML = buildStaticGrid(grid, base, orientation, markSet);
+    print.style.display = "block";
+    print.setAttribute("aria-hidden", "true");
     el.appendChild(print);
+
+    var screen = document.createElement("div");
+    screen.className = "board-screen";
+    screen.setAttribute("role", "img");
+    screen.setAttribute("aria-label", "Interactive chess board: " + fen);
+    el.appendChild(screen);
+
+    el.dataset.boardInteractiveState = "pending";
+    return function () {
+      initializeInteractiveBoard(el, screen, print, fen, orientation, markSet);
+    };
+  }
+
+  function initInteractiveBoards(boardInitializers) {
+    if (!boardInitializers.length) return;
+
+    if (!("IntersectionObserver" in window)) {
+      for (var i = 0; i < boardInitializers.length; i++) {
+        boardInitializers[i].initialize();
+      }
+      return;
+    }
+
+    var initializers = new WeakMap();
+    var observer = new IntersectionObserver(function (entries) {
+      for (var i = 0; i < entries.length; i++) {
+        if (entries[i].isIntersecting) {
+          var board = entries[i].target;
+          initializers.get(board)();
+          initializers.delete(board);
+          observer.unobserve(board);
+        }
+      }
+    }, { rootMargin: "500px 0px" });
+
+    for (var j = 0; j < boardInitializers.length; j++) {
+      initializers.set(boardInitializers[j].el, boardInitializers[j].initialize);
+      observer.observe(boardInitializers[j].el);
+    }
   }
 
   function init() {
     var base = resolvePieceBase();
     var boards = document.querySelectorAll(".board[data-fen]");
+    var boardInitializers = [];
     for (var i = 0; i < boards.length; i++) {
-      renderBoard(boards[i], base);
+      var initialize = renderBoard(boards[i], base);
+      if (initialize) {
+        boardInitializers.push({ el: boards[i], initialize: initialize });
+      }
     }
+    initInteractiveBoards(boardInitializers);
   }
 
   if (document.readyState === "loading") {
