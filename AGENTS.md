@@ -70,16 +70,20 @@ It contains:
   Relative path from `lessons/` is `../assets/pieces/mpchess/`.
 - **SVG pieces:** Centered by `image` x/y based on square size. Do not stretch
   boards or pieces.
-- **Arrows:** `userSpaceOnUse` 14px filled-triangle marker, `stroke-width="5"`,
-  endpoints shortened so heads are never hidden under pieces, arrows drawn after
-  pieces.
-- **Stars:** Absolute `translate(-50%,-50%)` centering; use
-  `.neutral`/`.red`/`.blue`/`.yellow` classes.
+- **Arrows:** For inline SVG instructional arrows, preserve established marker
+  geometry (`userSpaceOnUse` 14px filled-triangle marker, `stroke-width="5"`,
+  endpoint shortening, layering after pieces). Do not introduce arrows into a
+  lesson that does not already have them.
+- **Stars:** For existing star overlays, preserve absolute
+  `translate(-50%,-50%)` centering and color classes
+  (`.neutral`/`.red`/`.blue`/`.yellow`). Do not add stars where none exist.
 - **Annotations (SPA):** Green default, Ctrl→orange, Shift→blue.
 - Distinguish static instructional SVG diagrams (inline in lesson HTML) from
   JS-rendered FEN boards (`data-fen` attribute + `endgame-lesson.js`).
 - Arrows, highlights, stars, overlays, and labels must remain aligned with
   the board squares.
+- Do not introduce arrows, stars, FEN boards, or quizzes into a lesson that
+  does not already require them.
 
 ## Pawn Lesson Conventions
 
@@ -95,9 +99,11 @@ It contains:
   Supports minimize/maximize/annotate/clear modes. Activated by data attributes
   on the `<html>` element.
 - **Navigation:** Each lesson has Back to Pawn Index link and sequential
-  Back/Next lesson links (wraparound).
-- **Image assets:** Module 1 images inline (base64 or SVG), Module 2–5 images
-  in `lessons/` assets or `pawn_m5/` root directory.
+  Back/Next lesson links; the last lesson of Module 3 links to Module 4 (the
+  series spans modules). Validate all navigation links after editing.
+- **Image assets:** Module 1 images inline (base64 or SVG), Module 2–4 images
+  stored inside `lessons/`, Module 5 images in the repository root `pawn_m5/`
+  directory (referenced from lesson HTML as `../pawn_m5/...`).
 - **Page shell:** Sticky topbar (brand, back link, theme toggle, print),
   hero section, two-column layout (TOC aside + main), collapsible Q&A sections.
 
@@ -105,15 +111,19 @@ It contains:
 
 - **Table of contents:** `lessons/bishop-index.html`
 - **Naming pattern:** `bishop-m1-lesson-{NN}-*.html`
-- **Published Module 1 (**5 lessons):**
+- **Published Module 1 (5 lessons):**
   1. `bishop-m1-lesson-01-building-a-strong-foundation.html`
   2. `bishop-m1-lesson-02-components-of-a-chess-foundation.html`
   3. `bishop-m1-lesson-03-opening-principles-and-the-goal-of-chess.html`
   4. `bishop-m1-lesson-04-the-point-system.html`
   5. `bishop-m1-lesson-05-the-five-core-thinking-principles.html`
 - **Image assets:** `lessons/bishop_m1/` — PNG files with `intermediate-m1-` prefix
-- **Styling:** Same shared helpers as Pawn Level (`endgame-lesson.css`/`.js`)
-- **Navigation:** Back to Bishop Index, sequential lesson links
+- **Styling:** Pages are primarily self-contained with inline `<style>` blocks
+  and inline scripts. Shared `endgame-lesson.css` and `endgame-lesson.js` are
+  loaded only by lessons that use the dynamic FEN board renderer (currently
+  Lesson 5). Do not assume every Bishop lesson uses shared board helpers.
+- **Navigation:** Preserve the existing Back-to-Bishop-Index and sequential
+  lesson links; validate all links after editing.
 
 ## Lesson Position Builder Conventions
 

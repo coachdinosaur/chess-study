@@ -18,11 +18,11 @@ framework-free subsystems:
    Module 2 piece movement, Module 3 attack/check/stalemate, Module 4 basic
    checkmate and stalemate, and Module 5 castling and en passant.
 3. **Bishop Level Lesson Site** (`lessons/bishop-index.html`,
-   `lessons/bishop-m1-lesson-*.html`) — a post-beginner curriculum of static
-   HTML lesson pages following the same conventions as Pawn Level. Module 1
-   covers building a chess foundation: building a strong foundation, components
-   of a chess foundation, opening principles and the goal of chess, the point
-   system, and the five core thinking principles.
+   `lessons/bishop-m1-lesson-*.html`) — a post-beginner curriculum of primarily
+   self-contained static HTML lesson pages. Module 1 covers building a chess
+   foundation: building a strong foundation, components of a chess foundation,
+   opening principles and the goal of chess, the point system, and the five core
+   thinking principles.
 4. **Piece Asset Pipeline** (`mpchess-pieces/` → `assets/pieces/mpchess/*.svg`) — the
    `mpchess` chess font is authored in MetaPost/LuaLaTeX and exported to the 12
    Unicode-free SVG piece images used by both the SPA and the lesson pages.
@@ -176,7 +176,7 @@ column for edge-to-edge board readability.
 
 ## State Management (SPA)
 
-A single global `state` object (`app.js:649`) owns all application state. Every
+A single global `state` object owns all application state. Every
 rendering function reads from `state`; every event handler writes to `state`
 then calls `renderAll()` or a targeted render function.
 
@@ -197,7 +197,7 @@ then calls `renderAll()` or a targeted render function.
 | `state.lessonPositionBuilder` | Lesson Position Builder active flag (`{ active: bool }`) |
 
 There is no immutable state library or proxy — state is mutated directly. The
-initialization sequence (`app.js:11327`) sets up all defaults, hydrates persisted
+initialization sequence sets up all defaults, hydrates persisted
 state from localStorage, then calls `renderAll()`.
 
 ---
@@ -249,13 +249,13 @@ Most handlers call `renderAll()` for simplicity. High-frequency operations
 
 ### Focus Mode
 
-When focus mode is active (`state.focusMode`, `app.js:2911`):
+When focus mode is active (`state.focusMode`):
 
 1. The page shell gets `class="is-focus-mode"`, which CSS uses to hide the control
    pane, lesson header, tabs, and board foot — only the board remains visible.
-2. A floating **focus mode controls bar** (`#focusModeControls`, `index.html:382`)
+2. A floating **focus mode controls bar** (`#focusModeControls`)
    appears in the top-right with an Analyze button and an Exit (×) button.
-3. A **brand watermark** (`#focusModeBrand`, `index.html:411`) shows the app icon
+3. A **brand watermark** (`#focusModeBrand`) shows the app icon
    in the bottom-right corner of the viewport.
 4. Pressing Escape exits focus mode.
 5. In `?embed=1` mode, focus mode is entered automatically on load.
@@ -286,7 +286,7 @@ circle, star) are rendered as HTML inside the square div.
 
 ### Responsive Board Sizing
 
-`syncBoardSize()` (`app.js:6974`) computes `--board-size` (a pixel CSS custom
+`syncBoardSize()` computes `--board-size` (a pixel CSS custom
 property) so the board-square grid, eval bar, turn marker, captured-piece rows,
 and frame all scale proportionally.
 
@@ -297,33 +297,32 @@ the captured-row heights that depend on it.  The result is capped at 42 rem
 (56 rem in Focus mode).
 
 **Mobile portrait** (`(max-width: 760px) and (orientation: portrait)`):
-The board spans nearly the full viewport width.  The sizing accounts for the
-eval-bar sidebar (eval rail + turn-marker badge + gap) so that the board +
-sidebar fits without horizontal overflow:
+The board spans nearly the full viewport width. The turn marker is hidden
+(`display: none`), so only the eval rail reserves horizontal space beside
+the board:
 
 ```javascript
 // app.js — syncBoardSize() mobile portrait path
+const vw = currentViewportWidth();
 const evalRailWidth = cssLengthToPx(columnStyles.getPropertyValue('--eval-rail-track-width'), …);
 const turnSize     = cssLengthToPx(columnStyles.getPropertyValue('--turn-marker-size'), …);
 const turnGap      = cssLengthToPx(columnStyles.getPropertyValue('--turn-marker-gap'), …);
-const sideOffset   = evalRailWidth + turnSize + turnGap;
-const boardSize    = Math.floor(Math.max(0, vw - sideOffset * 2 - framePadding * 2 - 2));
+// Only the eval rail reserves space; the turn marker is hidden in portrait,
+// so its size + gap are excluded from the subtraction.
+const mobileBoardSize = Math.floor(Math.max(0, vw - evalRailWidth));
 ```
 
-The `sideOffset * 2` subtraction leaves equal gaps on the left (where the
-sidebar sits) and the right (visual balance), centering the board.
-
-Current mobile portrait sizing hides the turn marker, so only the eval rail
-reserves horizontal space. The active formula computes `mobileBoardSize` from
-the viewport width minus `evalRailWidth`; temporary debug logging and the old
-on-screen board-size badge were removed.
+The eval rail width and turn marker dimensions are read from CSS custom
+properties but only `evalRailWidth` is subtracted — the turn marker's size
+and gap are ignored because it is not displayed in portrait mode.
+`--board-side-gap` is set to `0px` since the board stretches edge to edge.
 
 ### Mobile Engine Lines Slot
 
 On mobile viewports, engine PV lines are rendered into a dedicated
-`#mobileEngineLinesSlot` div (`index.html:137`) placed below the board in DOM
+`#mobileEngineLinesSlot` div placed below the board in DOM
 order. The slot is hidden via CSS on desktop and shown on mobile. The rendering
-code (`app.js:7441, 7456`) populates both the desktop notation panel and this
+code populates both the desktop notation panel and this
 mobile slot so engine output is always visible below the board on small screens.
 
 **Mobile CSS** (`styles.css` media query) flattens the outer board enclosure:
@@ -341,8 +340,8 @@ mobile slot so engine output is always visible below the board on small screens.
 Settings panels (Play, Puzzle, Setup) use a custom select widget for choices like
 time control, side, skill level, and objective. The widget consists of a trigger
 button (`data-action="toggle-custom-select"`) and a popup menu. On toggle,
-`app.js:8440` positions the menu upward or downward based on available viewport
-space. Selecting an option (`data-action="select-custom-option"`, `app.js:8474`)
+the menu is positioned upward or downward based on available viewport
+space. Selecting an option (`data-action="select-custom-option"`)
 dispatches a synthetic `change` event on a hidden native `<select>` element so
 existing `change` handlers can process the value. Click-outside detection closes
 the menu.
@@ -372,7 +371,7 @@ for piece movement and drag-and-drop from the palette.
 
 ### Action Handlers (data-action)
 
-The `handleDocumentClick` switch (`app.js:8438`) dispatches ~70 named actions.
+The `handleDocumentClick` switch dispatches ~70 named actions.
 Major groups not detailed elsewhere in this document:
 
 | Group | Actions | Purpose |
@@ -407,7 +406,7 @@ element:
 updates `data-active-tab` on the root element, which CSS uses to show/hide
 panels and the tab-chip `.is-active` class.
 
-**Tab switch side effects** (`set-tab` handler, `app.js:8458`):
+**Tab switch side effects** (`set-tab` handler,`):
 - Switching away from Play while a game is active stops the game (with reason
   `'Game abandoned by switching tabs.'`)
 - Switching to Setup while a puzzle session is active saves the puzzle position
@@ -418,14 +417,14 @@ panels and the tab-chip `.is-active` class.
 
 ### Play Clock System
 
-During an active Play-vs-Engine game, `startPlayClock()` (`app.js:9958`) starts a
-100 ms interval timer. Each tick (`tickPlayClock()`, `app.js:9990`):
+During an active Play-vs-Engine game, `startPlayClock()` starts a
+100 ms interval timer. Each tick (`tickPlayClock()`):
 1. Decrements the active side's remaining time by 100 ms.
-2. Formats both clocks via `formatTime()` (`app.js:10021`) as `M:SS.t`.
+2. Formats both clocks via `formatTime()` as `M:SS.t`.
 3. Highlights the active clock with `class="play-clock is-active"`.
 4. Checks for flag fall (time ≤ 0) and ends the game if detected.
 
-`stopPlayClock()` (`app.js:9967`) clears the interval when the game ends.
+`stopPlayClock()` clears the interval when the game ends.
 
 ### Engine Stall Watchdog
 
@@ -445,13 +444,13 @@ sites via the `?embed=1` query parameter.
 
 An inline `<script>` in `index.html` reads `?embed=1` or `?embed=true` from the URL
 before app.js loads and sets `<html data-embed="1">`. `applyEmbedDeepLink()`
-(`app.js:11342`) then sets `state.embedMode`, applies an optional `?fen=...` deep-link,
+(`) then sets `state.embedMode`, applies an optional `?fen=...` deep-link,
 and enters Focus mode.
 
 ### PostMessage Protocol
 
 A `window.addEventListener('message', …)` listener (`bindEmbedMessageListener()`,
-`app.js:11364`) accepts:
+`) accepts:
 
 | `data.type` | Payload | Effect |
 |---|---|---|
@@ -461,7 +460,7 @@ A `window.addEventListener('message', …)` listener (`bindEmbedMessageListener(
 
 ### Analysis Relay
 
-When analysis results change, `postEmbedAnalysisMessage()` (`app.js:5356`) sends a
+When analysis results change, `postEmbedAnalysisMessage()` sends a
 message to the parent frame with `{ visible, title, evalLabel, summary, pvHtml }`.
 The parent lesson page can display the real-time evaluation inline.
 
@@ -471,8 +470,8 @@ The parent lesson page can display the real-time evaluation inline.
 
 ### Stockfish Detection
 
-`ENGINE_BUNDLE_CANDIDATES` (`app.js:46`) defines four possible Stockfish
-bundles. `resolveStockfishBundleCandidate()` (`app.js:5418`) tests which files
+`ENGINE_BUNDLE_CANDIDATES` defines four possible Stockfish
+bundles. `resolveStockfishBundleCandidate()` tests which files
 exist on disk and selects the strongest usable bundle, preferring single-threaded
 variants on mobile (coarse-pointer devices).
 
@@ -512,7 +511,7 @@ puzzle generation never interferes with active analysis.
 ### Communication Protocol
 
 All engine communication uses raw UCI text over `postMessage`/`onmessage`.
-There is no UCI-to-JSON wrapper. `parseInfoLine()` (`app.js:5324`) regex-parses
+There is no UCI-to-JSON wrapper. `parseInfoLine()` regex-parses
 `info` lines for score, depth, MultiPV, PV, and node count fields.
 
 ---
@@ -521,7 +520,7 @@ There is no UCI-to-JSON wrapper. `parseInfoLine()` (`app.js:5324`) regex-parses
 
 ### Eligibility Check
 
-`tablebaseEligibilityForFen(fen)` (`app.js:1267`):
+`tablebaseEligibilityForFen(fen)`:
 - Valid FEN
 - No castling rights
 - ≤7 total pieces
@@ -579,7 +578,7 @@ Each position in the lesson tree is a node:
 ### PGN Game Picker
 
 When a PGN file containing multiple games is imported, the parser stores the game
-list in `state.pendingPgnGames` (`app.js:815`). A container below the lesson header
+list in `state.pendingPgnGames`. A container below the lesson header
 shows the filename and game count with two buttons:
 
 - **Browse Games** (`data-action="browse-pgn-games"`) — opens a modal
@@ -592,7 +591,7 @@ The game-picker modal also has a "Clear Imported PGN Games" button for batch cle
 ### Persistence
 
 The tree is serialized as part of the lesson JSON (`.lesson.json` or
-`.lesson-book.json`). `validateAndNormalizeLessonNodes()` (`app.js:3639`)
+`.lesson-book.json`). `validateAndNormalizeLessonNodes()`
 validates reachability, move legality, FEN consistency, parent/child link
 integrity, and cycle freedom on load.
 
@@ -623,15 +622,15 @@ ensurePuzzleApi()               createEndgamePuzzleApi()
 
 ### Puzzle Board Instruction Banner
 
-During an active puzzle session, `renderPuzzleBoardInstruction()` (`app.js:11144`)
+During an active puzzle session, `renderPuzzleBoardInstruction()`
 shows a contextual instruction banner (`#puzzleBoardInstruction`) above the board
-foot. The text is generated by `puzzleObjectiveInstruction()` (`app.js:10615`) and
+foot. The text is generated by `puzzleObjectiveInstruction()` and
 describes the solver's side, the objective, and the available mate distance or
 material goal (e.g. "You play White. Checkmate Stockfish — mate in 2 is available.").
 
 ### Default Puzzles
 
-20 built-in puzzles (`DEFAULT_ENDGAME_PUZZLES`, `app.js:95`) serve as the
+20 built-in puzzles (`DEFAULT_ENDGAME_PUZZLES`) serve as the
 initial queue. Each is a static object with FEN, objective, best move, and
 evaluation metadata. All were verified against the Syzygy tablebase.
 
@@ -663,26 +662,26 @@ board after the puzzle session ends.
 
 ### Win Objective Checking
 
-`checkPuzzleMaterialObjective()` (`app.js:10761`) compares current material
+`checkPuzzleMaterialObjective()` compares current material
 balance against the puzzle's `startBalance`. If the solver has gained ≥3 pawns
 of material (`PUZZLE_WIN_MATERIAL_GAIN`), the puzzle is solved.
 
 ### Draw Objective Checking
 
-`evaluatePuzzleOutcome()` (`app.js:10840`) detects:
+`evaluatePuzzleOutcome()` detects:
 - Legal draw (stalemate, insufficient material, threefold, 50-move)
 - Solver falling below a losing threshold (`DRAW_OBJECTIVE_LOSING_THRESHOLD_CP` = -300)
 
 ### Puzzle Key Checksum
 
-`puzzleKeyChecksum()` (`app.js:10238`) validates premium activation keys (format
+`puzzleKeyChecksum()` validates premium activation keys (format
 `CHESS-XXXX-XXXX-CC`). The checksum is a deterministic offline algorithm — no
 server or network call is involved. The generator is exposed as
 `window.__endgamePuzzlePremium.generateKey()`.
 
 ### Legality Gate
 
-`isPuzzleFenIllegal()` (`app.js:10336`) rejects any FEN where the side to move
+`isPuzzleFenIllegal()` rejects any FEN where the side to move
 is checking the opponent's king. This runs on all puzzle ingestion paths:
 queue/history hydration, CSV import, `addPuzzleToQueue`, and `addPuzzleToHistory`.
 
@@ -691,17 +690,17 @@ queue/history hydration, CSV import, `addPuzzleToQueue`, and `addPuzzleToHistory
 ## Scan Board Feature (SPA)
 
 The Setup panel includes a **Scan board** button (`data-action="scan-board"`,
-`app.js:8604`) that opens a file picker (`.png`, `.jpg`, `.jpeg`). The selected
+`) that opens a file picker (`.png`, `.jpg`, `.jpeg`). The selected
 image is sent to `http://127.0.0.1:8765/predict-fen` (the local scanner helper
 server, `scanner_server.py`). The response is parsed and applied as a FEN to the
 setup board. Scan status is tracked in `state.scanStatus` / `state.scanStatusType`
-(`app.js:668`) and rendered as success/danger/warning banners in the Setup panel.
+(`) and rendered as success/danger/warning banners in the Setup panel.
 
 ---
 
 ## Setup Board Validation (SPA)
 
-### `sanitizeSetupState()` (`app.js:4320`)
+### `sanitizeSetupState()`
 
 Validates and normalizes the setup position:
 1. Enforces one king per side
@@ -709,7 +708,7 @@ Validates and normalizes the setup position:
 3. Castling rights match king/rook positions
 4. Builds canonical FEN
 
-### `isIllegalSetupPosition()` (`app.js:3441`)
+### `isIllegalSetupPosition()`
 
 Checks both directions:
 - Solver king is not in check by the opponent
@@ -737,20 +736,20 @@ Uses `Chess.isAttacked()` on both kings explicitly, not `game.isCheck()`
 
 ### Draft Save
 
-`persistDraft()` (`app.js:3927`) serializes the full lesson state to
+`persistDraft()` serializes the full lesson state to
 `setup-analysis-draft-v1` on `beforeunload` and on significant state changes
 via a debounced `state.persistTimer`.
 
 ### Lesson File Status
 
-After save/open/import operations, `syncLessonFileStatus()` (`app.js:2305`) updates
-a transient status line (`#lessonFileStatus`, `index.html:300`) with a message
+After save/open/import operations, `syncLessonFileStatus()` updates
+a transient status line (`#lessonFileStatus`) with a message
 (e.g. "Lesson saved", "Lesson opened", "PGN imported"). The status auto-clears on
 the next non-persistence action.
 
 ### Draft Hydration
 
-`hydrateDraft()` (`app.js:3885`) reads the saved draft, validates the lesson
+`hydrateDraft()` reads the saved draft, validates the lesson
 tree, restores state, and migrates legacy single-lesson formats to the
 multi-lesson book structure.
 
@@ -782,13 +781,13 @@ component.
 
 ## Opening Book (SPA)
 
-`loadOpeningBook()` (`app.js:989`) fetches `assets/openings.tsv` and builds two
+`loadOpeningBook()` fetches `assets/openings.tsv` and builds two
 indexes:
 
 - **`byUci`** (`Map<UCI prefix, row>`): longest-prefix match for move sequences
 - **`byEpd`** (`Map<EPD, row>`): exact-position fallback
 
-`identifyOpeningFromMoves()` (`app.js:1037`) queries both indexes and merges
+`identifyOpeningFromMoves()` queries both indexes and merges
 PGN header data (ECO, Opening, Variation) when available. The result is displayed
 in the lesson header via `syncOpeningInfoDisplay()`.
 
@@ -823,9 +822,9 @@ Annotations are rendered in two layers:
 
 1. **Square-level** — HTML overlays inside each `.board-square` div
    (paint fills, circle outlines, star icons), generated by
-   `annotationMarkupForSquare()` (`app.js:6503`)
+   `annotationMarkupForSquare()`
 2. **Arrow layer** — SVG `<line>` + `<polygon>` in `#boardAnnotationOverlay`,
-   generated by `buildAnnotationArrowMarkup()` (`app.js:6540`)
+   generated by `buildAnnotationArrowMarkup()`
 
 Color is applied by adding `is-orange` or `is-blue` classes to the square overlay,
 arrow stroke, and arrowhead elements. The unclassified/default path continues to
@@ -900,10 +899,10 @@ as ES modules or plain `<script>` tags.
 
 | Function | Purpose |
 |---|---|
-| `escapeHtml(value)` (`app.js:895`) | XSS-safe HTML escaping for all dynamic text |
-| `downloadTextFile(fileName, text, mimeType)` (`app.js:3974`) | Triggers a browser file download for lesson/CSV/PNG exports |
-| `withPreservedScroll(container, fn)` (`app.js:11337`) | Wraps a DOM mutation so scroll position is restored after re-render |
-| `scheduleBoardLayoutSync()` (`app.js:2883`) | Debounced (rAF) re-layout of board size on viewport resize; also handles `visualViewport` resize on mobile |
+| `escapeHtml(value)` | XSS-safe HTML escaping for all dynamic text |
+| `downloadTextFile(fileName, text, mimeType)` | Triggers a browser file download for lesson/CSV/PNG exports |
+| `withPreservedScroll(container, fn)` | Wraps a DOM mutation so scroll position is restored after re-render |
+| `scheduleBoardLayoutSync()` | Debounced (rAF) re-layout of board size on viewport resize; also handles `visualViewport` resize on mobile |
 
 ---
 
@@ -1029,10 +1028,13 @@ Pawn Level lesson diagrams use **two** board styles:
    edge, and `position: relative` squares so overlays can be absolutely centered.
    Highlighted files/ranks use `::before`/`::after` pseudo-element washes.
 2. **Inline SVG board** — used for move/attack/capture diagrams (Module 1
-   `pawn-04`–`pawn-10`, and all Module 2, Module 3, and Module 4 lessons). A hand-built
+   `pawn-04`–`pawn-10`, and Modules 2 through 5). A hand-built
    `<svg>` with a `<rect>` background, a `<g>` of square `<rect>`s, optional
    highlight rects, `<image>` piece glyphs from `../assets/pieces/mpchess/`, and
-   an arrow overlay.
+   an arrow overlay. Module 5 lessons also include supplementary PNG/WebP
+   images (from the `pawn_m5/` root directory) alongside the inline SVG
+   instructional boards, and load the Teacher Board overlay and shared
+   `endgame-lesson.css`/`.js` helpers.
 
 Both styles orient the board with **rank 8 at the top, rank 1 at the bottom,
 files a→h left→right** (White at the bottom).
@@ -1170,18 +1172,26 @@ in `assets/pieces/mpchess/`.
 
 ## Conventions checklist (for contributors)
 
-When editing Pawn Level or Bishop Level lessons, preserve:
+Rules apply only where relevant to the specific lesson being edited:
 
-- [ ] Board orientation: rank 8 top, rank 1 bottom, a–h left→right.
-- [ ] Stars: absolute `translate(-50%,-50%)` centering; use `.neutral/.red/.blue/.yellow`.
-- [ ] Arrows: `userSpaceOnUse` 14px filled-triangle marker; `stroke-width="5"`;
-      endpoints shortened so heads are never hidden under pieces; arrows drawn
-      after pieces.
-- [ ] Q&A: `<details class="quiz">` with the canonical `.quiz` CSS.
-- [ ] Page shell: topbar (back link, theme toggle, print), TOC, numbered sections.
-- [ ] Piece glyphs: only `../assets/pieces/mpchess/*.svg`.
-- [ ] Update both the `lesson_source/` / `lesson_source2/` / `lesson_source3/`
-      manuscript and the `lessons/` published copy when changing lesson content.
+- [ ] When a lesson contains a chessboard, preserve board orientation (rank 8 top,
+      rank 1 bottom, a–h left→right) and square parity (a8 and h1 light).
+- [ ] When a lesson uses SVG piece images, use the project mpchess assets
+      (`../assets/pieces/mpchess/*.svg` from `lessons/`; `./assets/pieces/mpchess/*.svg`
+      from the root).
+- [ ] When a lesson contains arrows, preserve the established marker geometry
+      (`userSpaceOnUse` 14px filled-triangle, `stroke-width="5"`, endpoint
+      shortening so heads are not hidden under pieces, arrows drawn after pieces).
+- [ ] When a lesson contains star overlays, preserve absolute
+      `translate(-50%,-50%)` centering and existing color classes
+      (`.neutral`/`.red`/`.blue`/`.yellow`).
+- [ ] When a lesson contains Q&A sections, use the established collapsible
+      `<details class="quiz">` pattern for that lesson family.
+- [ ] Preserve the existing page shell (topbar, back link, theme toggle, print) and
+      navigation pattern of the specific lesson series being edited.
+- [ ] When editing a lesson that has a source manuscript in `lesson_source/`,
+      `lesson_source2/`, or `lesson_source3/`, update both the manuscript and the
+      published `lessons/` copy.
 
 ## Maintenance rule
 
