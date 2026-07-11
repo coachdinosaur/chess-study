@@ -305,16 +305,10 @@ the board:
 // app.js — syncBoardSize() mobile portrait path
 const vw = currentViewportWidth();
 const evalRailWidth = cssLengthToPx(columnStyles.getPropertyValue('--eval-rail-track-width'), …);
-const turnSize     = cssLengthToPx(columnStyles.getPropertyValue('--turn-marker-size'), …);
-const turnGap      = cssLengthToPx(columnStyles.getPropertyValue('--turn-marker-gap'), …);
-// Only the eval rail reserves space; the turn marker is hidden in portrait,
-// so its size + gap are excluded from the subtraction.
+// Turn marker is hidden in portrait — only the eval rail reserves space.
 const mobileBoardSize = Math.floor(Math.max(0, vw - evalRailWidth));
 ```
 
-The eval rail width and turn marker dimensions are read from CSS custom
-properties but only `evalRailWidth` is subtracted — the turn marker's size
-and gap are ignored because it is not displayed in portrait mode.
 `--board-side-gap` is set to `0px` since the board stretches edge to edge.
 
 ### Mobile Engine Lines Slot
@@ -406,7 +400,7 @@ element:
 updates `data-active-tab` on the root element, which CSS uses to show/hide
 panels and the tab-chip `.is-active` class.
 
-**Tab switch side effects** (`set-tab` handler,`):
+**Tab switch side effects** (`set-tab` handler):
 - Switching away from Play while a game is active stops the game (with reason
   `'Game abandoned by switching tabs.'`)
 - Switching to Setup while a puzzle session is active saves the puzzle position
@@ -443,14 +437,12 @@ sites via the `?embed=1` query parameter.
 ### Detection
 
 An inline `<script>` in `index.html` reads `?embed=1` or `?embed=true` from the URL
-before app.js loads and sets `<html data-embed="1">`. `applyEmbedDeepLink()`
-(`) then sets `state.embedMode`, applies an optional `?fen=...` deep-link,
+before app.js loads and sets `<html data-embed="1">`. `applyEmbedDeepLink()` then sets `state.embedMode`, applies an optional `?fen=...` deep link,
 and enters Focus mode.
 
 ### PostMessage Protocol
 
-A `window.addEventListener('message', …)` listener (`bindEmbedMessageListener()`,
-`) accepts:
+A `window.addEventListener('message', …)` listener (`bindEmbedMessageListener()`) accepts:
 
 | `data.type` | Payload | Effect |
 |---|---|---|
@@ -689,12 +681,10 @@ queue/history hydration, CSV import, `addPuzzleToQueue`, and `addPuzzleToHistory
 
 ## Scan Board Feature (SPA)
 
-The Setup panel includes a **Scan board** button (`data-action="scan-board"`,
-`) that opens a file picker (`.png`, `.jpg`, `.jpeg`). The selected
+The Setup panel includes a **Scan board** button (`data-action="scan-board"`) that opens a file picker (`.png`, `.jpg`, `.jpeg`). The selected
 image is sent to `http://127.0.0.1:8765/predict-fen` (the local scanner helper
 server, `scanner_server.py`). The response is parsed and applied as a FEN to the
-setup board. Scan status is tracked in `state.scanStatus` / `state.scanStatusType`
-(`) and rendered as success/danger/warning banners in the Setup panel.
+setup board. Scan status is tracked in `state.scanStatus` / `state.scanStatusType` and rendered as success/danger/warning banners in the Setup panel.
 
 ---
 
