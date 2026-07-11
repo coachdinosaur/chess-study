@@ -519,10 +519,10 @@
       background: #f8fafc;
     }
     .lesson-svg {
-      width: min(100%, 390px);
+      width: 100%;
       height: auto;
       display: block;
-      flex: 0 0 auto;
+      flex-shrink: 0;
     }
     .summary-box {
       border: 1px solid color-mix(in srgb, var(--green) 42%, var(--line));
@@ -778,7 +778,7 @@
               <h3>Before White moves</h3>
               <p>White has a pawn on <strong>d4</strong>. Black has a pawn on <strong>e5</strong>.</p>
               <div class="board-wrap">
-                <svg class="lesson-svg" viewBox="0 0 360 360" role="img" aria-label="Before white moves, white pawn on d4 and black pawn on e5">
+                <svg class="lesson-svg" viewBox="0 0 316 316" role="img" aria-label="Before white moves, white pawn on d4 and black pawn on e5">
                 <defs>
                   <style>
                     .lbl{font:16px Arial,sans-serif;fill:#334155;font-weight:700}
@@ -800,7 +800,7 @@
                   <marker id="arrowhead" viewBox="0 0 14 14" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L14,7 L0,14 Z" fill="#16a34a"/></marker>
                 </defs>
                 <rect x="0" y="0" width="360" height="360" fill="#ffffff" rx="14" />
-                <g transform="translate(40,20)">
+                <g transform="translate(16,10)">
                   <g>
                     <rect x="0" y="0" width="35" height="35" fill="#eee3cb"/><rect x="35" y="0" width="35" height="35" fill="#71925a"/><rect x="70" y="0" width="35" height="35" fill="#eee3cb"/><rect x="105" y="0" width="35" height="35" fill="#71925a"/><rect x="140" y="0" width="35" height="35" fill="#eee3cb"/><rect x="175" y="0" width="35" height="35" fill="#71925a"/><rect x="210" y="0" width="35" height="35" fill="#eee3cb"/><rect x="245" y="0" width="35" height="35" fill="#71925a"/>
                     <rect x="0" y="35" width="35" height="35" fill="#71925a"/><rect x="35" y="35" width="35" height="35" fill="#eee3cb"/><rect x="70" y="35" width="35" height="35" fill="#71925a"/><rect x="105" y="35" width="35" height="35" fill="#eee3cb"/><rect x="140" y="35" width="35" height="35" fill="#71925a"/><rect x="175" y="35" width="35" height="35" fill="#eee3cb"/><rect x="210" y="35" width="35" height="35" fill="#71925a"/><rect x="245" y="35" width="35" height="35" fill="#eee3cb"/>
@@ -817,8 +817,8 @@
                   <image href="../assets/pieces/mpchess/bP.svg" xlink:href="../assets/pieces/mpchess/bP.svg" x="140" y="105" width="35" height="35"/>
                   <line x1="130" y1="151" x2="151" y2="130" stroke="#16a34a" stroke-width="5" stroke-linecap="round" marker-end="url(#arrowhead)"></line>
                   <g class="lbl">
-                    <text x="17.5" y="301" text-anchor="middle">a</text><text x="52.5" y="301" text-anchor="middle">b</text><text x="87.5" y="301" text-anchor="middle">c</text><text x="122.5" y="301" text-anchor="middle">d</text><text x="157.5" y="301" text-anchor="middle">e</text><text x="192.5" y="301" text-anchor="middle">f</text><text x="227.5" y="301" text-anchor="middle">g</text><text x="262.5" y="301" text-anchor="middle">h</text>
-                    <text x="-12" y="18" text-anchor="middle">8</text><text x="-12" y="53" text-anchor="middle">7</text><text x="-12" y="88" text-anchor="middle">6</text><text x="-12" y="123" text-anchor="middle">5</text><text x="-12" y="158" text-anchor="middle">4</text><text x="-12" y="193" text-anchor="middle">3</text><text x="-12" y="228" text-anchor="middle">2</text><text x="-12" y="263" text-anchor="middle">1</text>
+                    <text x="17.5" y="295" text-anchor="middle">a</text><text x="52.5" y="295" text-anchor="middle">b</text><text x="87.5" y="295" text-anchor="middle">c</text><text x="122.5" y="295" text-anchor="middle">d</text><text x="157.5" y="295" text-anchor="middle">e</text><text x="192.5" y="295" text-anchor="middle">f</text><text x="227.5" y="295" text-anchor="middle">g</text><text x="262.5" y="295" text-anchor="middle">h</text>
+                    <text x="-10" y="18" text-anchor="middle">8</text><text x="-10" y="53" text-anchor="middle">7</text><text x="-10" y="88" text-anchor="middle">6</text><text x="-10" y="123" text-anchor="middle">5</text><text x="-10" y="158" text-anchor="middle">4</text><text x="-10" y="193" text-anchor="middle">3</text><text x="-10" y="228" text-anchor="middle">2</text><text x="-10" y="263" text-anchor="middle">1</text>
                   </g>
                 </g>
               </svg>
@@ -828,7 +828,7 @@
               <h3>After White plays <code class="inline">dxe5</code></h3>
               <p>The white pawn moves from <strong>d4</strong> to <strong>e5</strong> and captures the black pawn.</p>
               <div class="board-wrap">
-                <svg class="lesson-svg" viewBox="0 0 360 360" role="img" aria-label="After dxe5, white pawn on e5 and black pawn removed">
+                <svg class="lesson-svg" viewBox="0 0 316 316" role="img" aria-label="After dxe5, white pawn on e5 and black pawn removed">
                 <defs>
                   <style>
                     .lbl{font:16px Arial,sans-serif;fill:#334155;font-weight:700}
@@ -847,7 +847,7 @@
 </style>
                 </defs>
                 <rect x="0" y="0" width="360" height="360" fill="#ffffff" rx="14" />
-                <g transform="translate(40,20)">
+                <g transform="translate(16,10)">
                   <g>
                     <rect x="0" y="0" width="35" height="35" fill="#eee3cb"/><rect x="35" y="0" width="35" height="35" fill="#71925a"/><rect x="70" y="0" width="35" height="35" fill="#eee3cb"/><rect x="105" y="0" width="35" height="35" fill="#71925a"/><rect x="140" y="0" width="35" height="35" fill="#eee3cb"/><rect x="175" y="0" width="35" height="35" fill="#71925a"/><rect x="210" y="0" width="35" height="35" fill="#eee3cb"/><rect x="245" y="0" width="35" height="35" fill="#71925a"/>
                     <rect x="0" y="35" width="35" height="35" fill="#71925a"/><rect x="35" y="35" width="35" height="35" fill="#eee3cb"/><rect x="70" y="35" width="35" height="35" fill="#71925a"/><rect x="105" y="35" width="35" height="35" fill="#eee3cb"/><rect x="140" y="35" width="35" height="35" fill="#71925a"/><rect x="175" y="35" width="35" height="35" fill="#eee3cb"/><rect x="210" y="35" width="35" height="35" fill="#71925a"/><rect x="245" y="35" width="35" height="35" fill="#eee3cb"/>
@@ -861,8 +861,8 @@
                   <rect x="141" y="106" width="33" height="33" class="hlWhite"/>
                   <image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="140" y="105" width="35" height="35"/>
                   <g class="lbl">
-                    <text x="17.5" y="301" text-anchor="middle">a</text><text x="52.5" y="301" text-anchor="middle">b</text><text x="87.5" y="301" text-anchor="middle">c</text><text x="122.5" y="301" text-anchor="middle">d</text><text x="157.5" y="301" text-anchor="middle">e</text><text x="192.5" y="301" text-anchor="middle">f</text><text x="227.5" y="301" text-anchor="middle">g</text><text x="262.5" y="301" text-anchor="middle">h</text>
-                    <text x="-12" y="18" text-anchor="middle">8</text><text x="-12" y="53" text-anchor="middle">7</text><text x="-12" y="88" text-anchor="middle">6</text><text x="-12" y="123" text-anchor="middle">5</text><text x="-12" y="158" text-anchor="middle">4</text><text x="-12" y="193" text-anchor="middle">3</text><text x="-12" y="228" text-anchor="middle">2</text><text x="-12" y="263" text-anchor="middle">1</text>
+                    <text x="17.5" y="295" text-anchor="middle">a</text><text x="52.5" y="295" text-anchor="middle">b</text><text x="87.5" y="295" text-anchor="middle">c</text><text x="122.5" y="295" text-anchor="middle">d</text><text x="157.5" y="295" text-anchor="middle">e</text><text x="192.5" y="295" text-anchor="middle">f</text><text x="227.5" y="295" text-anchor="middle">g</text><text x="262.5" y="295" text-anchor="middle">h</text>
+                    <text x="-10" y="18" text-anchor="middle">8</text><text x="-10" y="53" text-anchor="middle">7</text><text x="-10" y="88" text-anchor="middle">6</text><text x="-10" y="123" text-anchor="middle">5</text><text x="-10" y="158" text-anchor="middle">4</text><text x="-10" y="193" text-anchor="middle">3</text><text x="-10" y="228" text-anchor="middle">2</text><text x="-10" y="263" text-anchor="middle">1</text>
                   </g>
                 </g>
               </svg>

@@ -520,10 +520,10 @@
       background: #f8fafc;
     }
     .lesson-svg {
-      width: min(100%, 390px);
+      width: 100%;
       height: auto;
       display: block;
-      flex: 0 0 auto;
+      flex-shrink: 0;
     }
     .summary-box {
       border: 1px solid color-mix(in srgb, var(--green) 42%, var(--line));
@@ -819,7 +819,7 @@
               <h3>Before White moves</h3>
               <p>The black queen is <strong>not</strong> under attack.</p>
               <div class="board-wrap">
-                <svg aria-label="Before White moves, white queen on d3 and black queen on e8, black queen not under attack" class="lesson-svg" role="img" viewbox="0 0 360 360">
+                <svg aria-label="Before White moves, white queen on d3 and black queen on e8, black queen not under attack" class="lesson-svg" role="img" viewBox="0 0 316 316">
 <defs>
 <style>
                     .lbl{font:16px Arial,sans-serif;fill:#334155;font-weight:700}
@@ -841,7 +841,7 @@
 <marker id="arrowhead" viewBox="0 0 14 14" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L14,7 L0,14 Z" fill="#16a34a"/></marker>
 </defs>
 <rect fill="#ffffff" height="360" rx="14" width="360" x="0" y="0"></rect>
-<g transform="translate(40,20)">
+<g transform="translate(16,10)">
 <g>
 <rect fill="#eee3cb" height="35" width="35" x="0" y="0"></rect><rect fill="#71925a" height="35" width="35" x="35" y="0"></rect><rect fill="#eee3cb" height="35" width="35" x="70" y="0"></rect><rect fill="#71925a" height="35" width="35" x="105" y="0"></rect><rect fill="#eee3cb" height="35" width="35" x="140" y="0"></rect><rect fill="#71925a" height="35" width="35" x="175" y="0"></rect><rect fill="#eee3cb" height="35" width="35" x="210" y="0"></rect><rect fill="#71925a" height="35" width="35" x="245" y="0"></rect>
 <rect fill="#71925a" height="35" width="35" x="0" y="35"></rect><rect fill="#eee3cb" height="35" width="35" x="35" y="35"></rect><rect fill="#71925a" height="35" width="35" x="70" y="35"></rect><rect fill="#eee3cb" height="35" width="35" x="105" y="35"></rect><rect fill="#71925a" height="35" width="35" x="140" y="35"></rect><rect fill="#eee3cb" height="35" width="35" x="175" y="35"></rect><rect fill="#71925a" height="35" width="35" x="210" y="35"></rect><rect fill="#eee3cb" height="35" width="35" x="245" y="35"></rect>
@@ -858,8 +858,8 @@
 <image href="../assets/pieces/mpchess/bQ.svg" xlink:href="../assets/pieces/mpchess/bQ.svg" x="140" y="0" width="35" height="35"/>
 <line marker-end="url(#arrowhead)" stroke="#16a34a" stroke-linecap="round" stroke-width="5" x1="130" x2="150" y1="193" y2="193"></line>
 <g class="lbl">
-<text text-anchor="middle" x="17.5" y="301">a</text><text text-anchor="middle" x="52.5" y="301">b</text><text text-anchor="middle" x="87.5" y="301">c</text><text text-anchor="middle" x="122.5" y="301">d</text><text text-anchor="middle" x="157.5" y="301">e</text><text text-anchor="middle" x="192.5" y="301">f</text><text text-anchor="middle" x="227.5" y="301">g</text><text text-anchor="middle" x="262.5" y="301">h</text>
-<text text-anchor="middle" x="-12" y="18">8</text><text text-anchor="middle" x="-12" y="53">7</text><text text-anchor="middle" x="-12" y="88">6</text><text text-anchor="middle" x="-12" y="123">5</text><text text-anchor="middle" x="-12" y="158">4</text><text text-anchor="middle" x="-12" y="193">3</text><text text-anchor="middle" x="-12" y="228">2</text><text text-anchor="middle" x="-12" y="263">1</text>
+<text text-anchor="middle" x="17.5" y="295">a</text><text text-anchor="middle" x="52.5" y="295">b</text><text text-anchor="middle" x="87.5" y="295">c</text><text text-anchor="middle" x="122.5" y="295">d</text><text text-anchor="middle" x="157.5" y="295">e</text><text text-anchor="middle" x="192.5" y="295">f</text><text text-anchor="middle" x="227.5" y="295">g</text><text text-anchor="middle" x="262.5" y="295">h</text>
+<text text-anchor="middle" x="-10" y="18">8</text><text text-anchor="middle" x="-10" y="53">7</text><text text-anchor="middle" x="-10" y="88">6</text><text text-anchor="middle" x="-10" y="123">5</text><text text-anchor="middle" x="-10" y="158">4</text><text text-anchor="middle" x="-10" y="193">3</text><text text-anchor="middle" x="-10" y="228">2</text><text text-anchor="middle" x="-10" y="263">1</text>
 </g>
 </g>
 </svg>
@@ -869,7 +869,7 @@
               <h3>After White plays <code class="inline">Qe3</code></h3>
               <p>The white queen moves to <strong>e3</strong> and attacks the black queen on <strong>e8</strong>.</p>
               <div class="board-wrap">
-                <svg aria-label="After Qe3, white queen on e3 attacks black queen on e8" class="lesson-svg" role="img" viewbox="0 0 360 360">
+                <svg aria-label="After Qe3, white queen on e3 attacks black queen on e8" class="lesson-svg" role="img" viewBox="0 0 316 316">
 <defs>
 <style>
                     .lbl{font:16px Arial,sans-serif;fill:#334155;font-weight:700}
@@ -892,7 +892,7 @@
 <marker id="attackHead" viewBox="0 0 14 14" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L14,7 L0,14 Z" fill="#ef4444"/></marker>
 </defs>
 <rect fill="#ffffff" height="360" rx="14" width="360" x="0" y="0"></rect>
-<g transform="translate(40,20)">
+<g transform="translate(16,10)">
 <g>
 <rect fill="#eee3cb" height="35" width="35" x="0" y="0"></rect><rect fill="#71925a" height="35" width="35" x="35" y="0"></rect><rect fill="#eee3cb" height="35" width="35" x="70" y="0"></rect><rect fill="#71925a" height="35" width="35" x="105" y="0"></rect><rect fill="#eee3cb" height="35" width="35" x="140" y="0"></rect><rect fill="#71925a" height="35" width="35" x="175" y="0"></rect><rect fill="#eee3cb" height="35" width="35" x="210" y="0"></rect><rect fill="#71925a" height="35" width="35" x="245" y="0"></rect>
 <rect fill="#71925a" height="35" width="35" x="0" y="35"></rect><rect fill="#eee3cb" height="35" width="35" x="35" y="35"></rect><rect fill="#71925a" height="35" width="35" x="70" y="35"></rect><rect fill="#eee3cb" height="35" width="35" x="105" y="35"></rect><rect fill="#71925a" height="35" width="35" x="140" y="35"></rect><rect fill="#eee3cb" height="35" width="35" x="175" y="35"></rect><rect fill="#71925a" height="35" width="35" x="210" y="35"></rect><rect fill="#eee3cb" height="35" width="35" x="245" y="35"></rect>
@@ -909,8 +909,8 @@
 <image href="../assets/pieces/mpchess/bQ.svg" xlink:href="../assets/pieces/mpchess/bQ.svg" x="140" y="0" width="35" height="35"/>
 <line class="attack" marker-end="url(#attackHead)" x1="157.5" x2="157.5" y1="185" y2="42"></line>
 <g class="lbl">
-<text text-anchor="middle" x="17.5" y="301">a</text><text text-anchor="middle" x="52.5" y="301">b</text><text text-anchor="middle" x="87.5" y="301">c</text><text text-anchor="middle" x="122.5" y="301">d</text><text text-anchor="middle" x="157.5" y="301">e</text><text text-anchor="middle" x="192.5" y="301">f</text><text text-anchor="middle" x="227.5" y="301">g</text><text text-anchor="middle" x="262.5" y="301">h</text>
-<text text-anchor="middle" x="-12" y="18">8</text><text text-anchor="middle" x="-12" y="53">7</text><text text-anchor="middle" x="-12" y="88">6</text><text text-anchor="middle" x="-12" y="123">5</text><text text-anchor="middle" x="-12" y="158">4</text><text text-anchor="middle" x="-12" y="193">3</text><text text-anchor="middle" x="-12" y="228">2</text><text text-anchor="middle" x="-12" y="263">1</text>
+<text text-anchor="middle" x="17.5" y="295">a</text><text text-anchor="middle" x="52.5" y="295">b</text><text text-anchor="middle" x="87.5" y="295">c</text><text text-anchor="middle" x="122.5" y="295">d</text><text text-anchor="middle" x="157.5" y="295">e</text><text text-anchor="middle" x="192.5" y="295">f</text><text text-anchor="middle" x="227.5" y="295">g</text><text text-anchor="middle" x="262.5" y="295">h</text>
+<text text-anchor="middle" x="-10" y="18">8</text><text text-anchor="middle" x="-10" y="53">7</text><text text-anchor="middle" x="-10" y="88">6</text><text text-anchor="middle" x="-10" y="123">5</text><text text-anchor="middle" x="-10" y="158">4</text><text text-anchor="middle" x="-10" y="193">3</text><text text-anchor="middle" x="-10" y="228">2</text><text text-anchor="middle" x="-10" y="263">1</text>
 </g>
 </g>
 </svg>

@@ -78,7 +78,7 @@
     .board-panel h3 { margin-bottom: .45rem; }
     .board-panel p { color: var(--muted); margin: .35rem 0 1rem; }
     .board-wrap { display: flex; justify-content: center; align-items: center; overflow-x: auto; padding: .7rem; border-radius: 18px; border: 1px solid var(--line); background: #f8fafc; }
-    .lesson-svg { width: min(100%, 390px); height: auto; display: block; flex: 0 0 auto; }
+    .lesson-svg { width: 100%; height: auto; display: block; flex-shrink: 0; }
     .summary-box { border: 1px solid color-mix(in srgb, var(--green) 42%, var(--line)); border-radius: 18px; background: color-mix(in srgb, var(--green) 12%, var(--panel)); color: var(--text); padding: .9rem 1rem; font-weight: 800; margin-top: 1rem; }
     .warning-box { border: 1px solid color-mix(in srgb, var(--orange) 45%, var(--line)); border-radius: 18px; background: color-mix(in srgb, var(--orange) 12%, var(--panel)); color: var(--text); padding: .9rem 1rem; font-weight: 800; margin-top: 1rem; }
     @media print { .board-panel, .summary-box, .warning-box { break-inside: avoid; box-shadow: none; } .board-wrap { overflow: visible; } .lesson-svg { max-width: 330px; } }
@@ -154,10 +154,10 @@
           <p style="color:var(--muted);">White: pawn e5. Black: pawn d5 (just moved from d7).</p>
           <div class="board-panel">
             <div class="board-wrap">
-              <svg class="lesson-svg" viewBox="0 0 360 360" role="img" aria-label="Position 1: White pawn e5, Black pawn d5">
+              <svg class="lesson-svg" viewbox="0 0 316 316" role="img" aria-label="Position 1: White pawn e5, Black pawn d5">
                 <defs><style>.lbl{font:14px Arial,sans-serif;fill:#334155;font-weight:700}.arr{fill:none;stroke:#ef4444;stroke-width:2.5;stroke-linecap:round}</style></defs>
                 <rect x="0" y="0" width="360" height="360" fill="#ffffff" rx="14"/>
-                <g transform="translate(40,20)">
+                <g transform="translate(16,10)">
                   <rect x="0" y="0" width="35" height="35" fill="#eee3cb"/><rect x="35" y="0" width="35" height="35" fill="#71925a"/><rect x="70" y="0" width="35" height="35" fill="#eee3cb"/><rect x="105" y="0" width="35" height="35" fill="#71925a"/><rect x="140" y="0" width="35" height="35" fill="#eee3cb"/><rect x="175" y="0" width="35" height="35" fill="#71925a"/><rect x="210" y="0" width="35" height="35" fill="#eee3cb"/><rect x="245" y="0" width="35" height="35" fill="#71925a"/>
                   <rect x="0" y="35" width="35" height="35" fill="#71925a"/><rect x="35" y="35" width="35" height="35" fill="#eee3cb"/><rect x="70" y="35" width="35" height="35" fill="#71925a"/><rect x="105" y="35" width="35" height="35" fill="#eee3cb"/><rect x="140" y="35" width="35" height="35" fill="#71925a"/><rect x="175" y="35" width="35" height="35" fill="#eee3cb"/><rect x="210" y="35" width="35" height="35" fill="#71925a"/><rect x="245" y="35" width="35" height="35" fill="#eee3cb"/>
                   <rect x="0" y="70" width="35" height="35" fill="#eee3cb"/><rect x="35" y="70" width="35" height="35" fill="#71925a"/><rect x="70" y="70" width="35" height="35" fill="#eee3cb"/><rect x="105" y="70" width="35" height="35" fill="#71925a"/><rect x="140" y="70" width="35" height="35" fill="#eee3cb"/><rect x="175" y="70" width="35" height="35" fill="#71925a"/><rect x="210" y="70" width="35" height="35" fill="#eee3cb"/><rect x="245" y="70" width="35" height="35" fill="#71925a"/>
@@ -170,8 +170,8 @@
                   <image href="../assets/pieces/mpchess/bP.svg" x="105" y="105" width="35" height="35"/>
                   <path class="arr" d="M140,115 L112.5,115"/>
                   <g class="lbl">
-                    <text x="17.5" y="301" text-anchor="middle">a</text><text x="52.5" y="301" text-anchor="middle">b</text><text x="87.5" y="301" text-anchor="middle">c</text><text x="122.5" y="301" text-anchor="middle">d</text><text x="157.5" y="301" text-anchor="middle">e</text><text x="192.5" y="301" text-anchor="middle">f</text><text x="227.5" y="301" text-anchor="middle">g</text><text x="262.5" y="301" text-anchor="middle">h</text>
-                    <text x="-12" y="18" text-anchor="middle">8</text><text x="-12" y="53" text-anchor="middle">7</text><text x="-12" y="88" text-anchor="middle">6</text><text x="-12" y="123" text-anchor="middle">5</text><text x="-12" y="158" text-anchor="middle">4</text><text x="-12" y="193" text-anchor="middle">3</text><text x="-12" y="228" text-anchor="middle">2</text><text x="-12" y="263" text-anchor="middle">1</text>
+                    <text x="17.5" y="295" text-anchor="middle">a</text><text x="52.5" y="295" text-anchor="middle">b</text><text x="87.5" y="295" text-anchor="middle">c</text><text x="122.5" y="295" text-anchor="middle">d</text><text x="157.5" y="295" text-anchor="middle">e</text><text x="192.5" y="295" text-anchor="middle">f</text><text x="227.5" y="295" text-anchor="middle">g</text><text x="262.5" y="295" text-anchor="middle">h</text>
+                    <text x="-10" y="18" text-anchor="middle">8</text><text x="-10" y="53" text-anchor="middle">7</text><text x="-10" y="88" text-anchor="middle">6</text><text x="-10" y="123" text-anchor="middle">5</text><text x="-10" y="158" text-anchor="middle">4</text><text x="-10" y="193" text-anchor="middle">3</text><text x="-10" y="228" text-anchor="middle">2</text><text x="-10" y="263" text-anchor="middle">1</text>
                   </g>
                 </g>
               </svg>
@@ -184,10 +184,10 @@
           <p style="color:var(--muted);">White: pawn e5. Black: pawn d5 (moved from d7 two moves ago).</p>
           <div class="board-panel">
             <div class="board-wrap">
-              <svg class="lesson-svg" viewBox="0 0 360 360" role="img" aria-label="Position 2: White pawn e5, Black pawn d5, too late for en passant">
+              <svg class="lesson-svg" viewbox="0 0 316 316" role="img" aria-label="Position 2: White pawn e5, Black pawn d5, too late for en passant">
                 <defs><style>.lbl{font:14px Arial,sans-serif;fill:#334155;font-weight:700}</style></defs>
                 <rect x="0" y="0" width="360" height="360" fill="#ffffff" rx="14"/>
-                <g transform="translate(40,20)">
+                <g transform="translate(16,10)">
                   <rect x="0" y="0" width="35" height="35" fill="#eee3cb"/><rect x="35" y="0" width="35" height="35" fill="#71925a"/><rect x="70" y="0" width="35" height="35" fill="#eee3cb"/><rect x="105" y="0" width="35" height="35" fill="#71925a"/><rect x="140" y="0" width="35" height="35" fill="#eee3cb"/><rect x="175" y="0" width="35" height="35" fill="#71925a"/><rect x="210" y="0" width="35" height="35" fill="#eee3cb"/><rect x="245" y="0" width="35" height="35" fill="#71925a"/>
                   <rect x="0" y="35" width="35" height="35" fill="#71925a"/><rect x="35" y="35" width="35" height="35" fill="#eee3cb"/><rect x="70" y="35" width="35" height="35" fill="#71925a"/><rect x="105" y="35" width="35" height="35" fill="#eee3cb"/><rect x="140" y="35" width="35" height="35" fill="#71925a"/><rect x="175" y="35" width="35" height="35" fill="#eee3cb"/><rect x="210" y="35" width="35" height="35" fill="#71925a"/><rect x="245" y="35" width="35" height="35" fill="#eee3cb"/>
                   <rect x="0" y="70" width="35" height="35" fill="#eee3cb"/><rect x="35" y="70" width="35" height="35" fill="#71925a"/><rect x="70" y="70" width="35" height="35" fill="#eee3cb"/><rect x="105" y="70" width="35" height="35" fill="#71925a"/><rect x="140" y="70" width="35" height="35" fill="#eee3cb"/><rect x="175" y="70" width="35" height="35" fill="#71925a"/><rect x="210" y="70" width="35" height="35" fill="#eee3cb"/><rect x="245" y="70" width="35" height="35" fill="#71925a"/>
@@ -200,8 +200,8 @@
                   <image href="../assets/pieces/mpchess/bP.svg" x="105" y="105" width="35" height="35"/>
                   <text x="105" y="95" class="lbl" fill="#ef4444" font-size="11">2 moves ago</text>
                   <g class="lbl">
-                    <text x="17.5" y="301" text-anchor="middle">a</text><text x="52.5" y="301" text-anchor="middle">b</text><text x="87.5" y="301" text-anchor="middle">c</text><text x="122.5" y="301" text-anchor="middle">d</text><text x="157.5" y="301" text-anchor="middle">e</text><text x="192.5" y="301" text-anchor="middle">f</text><text x="227.5" y="301" text-anchor="middle">g</text><text x="262.5" y="301" text-anchor="middle">h</text>
-                    <text x="-12" y="18" text-anchor="middle">8</text><text x="-12" y="53" text-anchor="middle">7</text><text x="-12" y="88" text-anchor="middle">6</text><text x="-12" y="123" text-anchor="middle">5</text><text x="-12" y="158" text-anchor="middle">4</text><text x="-12" y="193" text-anchor="middle">3</text><text x="-12" y="228" text-anchor="middle">2</text><text x="-12" y="263" text-anchor="middle">1</text>
+                    <text x="17.5" y="295" text-anchor="middle">a</text><text x="52.5" y="295" text-anchor="middle">b</text><text x="87.5" y="295" text-anchor="middle">c</text><text x="122.5" y="295" text-anchor="middle">d</text><text x="157.5" y="295" text-anchor="middle">e</text><text x="192.5" y="295" text-anchor="middle">f</text><text x="227.5" y="295" text-anchor="middle">g</text><text x="262.5" y="295" text-anchor="middle">h</text>
+                    <text x="-10" y="18" text-anchor="middle">8</text><text x="-10" y="53" text-anchor="middle">7</text><text x="-10" y="88" text-anchor="middle">6</text><text x="-10" y="123" text-anchor="middle">5</text><text x="-10" y="158" text-anchor="middle">4</text><text x="-10" y="193" text-anchor="middle">3</text><text x="-10" y="228" text-anchor="middle">2</text><text x="-10" y="263" text-anchor="middle">1</text>
                   </g>
                 </g>
               </svg>
@@ -214,10 +214,10 @@
           <p style="color:var(--muted);">White: pawn e4. Black: pawn d5 (just moved from d7).</p>
           <div class="board-panel">
             <div class="board-wrap">
-              <svg class="lesson-svg" viewBox="0 0 360 360" role="img" aria-label="Position 3: White pawn e4, Black pawn d5, White pawn not on 5th rank">
+              <svg class="lesson-svg" viewbox="0 0 316 316" role="img" aria-label="Position 3: White pawn e4, Black pawn d5, White pawn not on 5th rank">
                 <defs><style>.lbl{font:14px Arial,sans-serif;fill:#334155;font-weight:700}</style></defs>
                 <rect x="0" y="0" width="360" height="360" fill="#ffffff" rx="14"/>
-                <g transform="translate(40,20)">
+                <g transform="translate(16,10)">
                   <rect x="0" y="0" width="35" height="35" fill="#eee3cb"/><rect x="35" y="0" width="35" height="35" fill="#71925a"/><rect x="70" y="0" width="35" height="35" fill="#eee3cb"/><rect x="105" y="0" width="35" height="35" fill="#71925a"/><rect x="140" y="0" width="35" height="35" fill="#eee3cb"/><rect x="175" y="0" width="35" height="35" fill="#71925a"/><rect x="210" y="0" width="35" height="35" fill="#eee3cb"/><rect x="245" y="0" width="35" height="35" fill="#71925a"/>
                   <rect x="0" y="35" width="35" height="35" fill="#71925a"/><rect x="35" y="35" width="35" height="35" fill="#eee3cb"/><rect x="70" y="35" width="35" height="35" fill="#71925a"/><rect x="105" y="35" width="35" height="35" fill="#eee3cb"/><rect x="140" y="35" width="35" height="35" fill="#71925a"/><rect x="175" y="35" width="35" height="35" fill="#eee3cb"/><rect x="210" y="35" width="35" height="35" fill="#71925a"/><rect x="245" y="35" width="35" height="35" fill="#eee3cb"/>
                   <rect x="0" y="70" width="35" height="35" fill="#eee3cb"/><rect x="35" y="70" width="35" height="35" fill="#71925a"/><rect x="70" y="70" width="35" height="35" fill="#eee3cb"/><rect x="105" y="70" width="35" height="35" fill="#71925a"/><rect x="140" y="70" width="35" height="35" fill="#eee3cb"/><rect x="175" y="70" width="35" height="35" fill="#71925a"/><rect x="210" y="70" width="35" height="35" fill="#eee3cb"/><rect x="245" y="70" width="35" height="35" fill="#71925a"/>
@@ -229,8 +229,8 @@
                   <image href="../assets/pieces/mpchess/wP.svg" x="140" y="140" width="35" height="35"/>
                   <image href="../assets/pieces/mpchess/bP.svg" x="105" y="105" width="35" height="35"/>
                   <g class="lbl">
-                    <text x="17.5" y="301" text-anchor="middle">a</text><text x="52.5" y="301" text-anchor="middle">b</text><text x="87.5" y="301" text-anchor="middle">c</text><text x="122.5" y="301" text-anchor="middle">d</text><text x="157.5" y="301" text-anchor="middle">e</text><text x="192.5" y="301" text-anchor="middle">f</text><text x="227.5" y="301" text-anchor="middle">g</text><text x="262.5" y="301" text-anchor="middle">h</text>
-                    <text x="-12" y="18" text-anchor="middle">8</text><text x="-12" y="53" text-anchor="middle">7</text><text x="-12" y="88" text-anchor="middle">6</text><text x="-12" y="123" text-anchor="middle">5</text><text x="-12" y="158" text-anchor="middle">4</text><text x="-12" y="193" text-anchor="middle">3</text><text x="-12" y="228" text-anchor="middle">2</text><text x="-12" y="263" text-anchor="middle">1</text>
+                    <text x="17.5" y="295" text-anchor="middle">a</text><text x="52.5" y="295" text-anchor="middle">b</text><text x="87.5" y="295" text-anchor="middle">c</text><text x="122.5" y="295" text-anchor="middle">d</text><text x="157.5" y="295" text-anchor="middle">e</text><text x="192.5" y="295" text-anchor="middle">f</text><text x="227.5" y="295" text-anchor="middle">g</text><text x="262.5" y="295" text-anchor="middle">h</text>
+                    <text x="-10" y="18" text-anchor="middle">8</text><text x="-10" y="53" text-anchor="middle">7</text><text x="-10" y="88" text-anchor="middle">6</text><text x="-10" y="123" text-anchor="middle">5</text><text x="-10" y="158" text-anchor="middle">4</text><text x="-10" y="193" text-anchor="middle">3</text><text x="-10" y="228" text-anchor="middle">2</text><text x="-10" y="263" text-anchor="middle">1</text>
                   </g>
                 </g>
               </svg>
@@ -243,10 +243,10 @@
           <p style="color:var(--muted);">Black: pawn e4. White: pawn f4 (just moved from f2).</p>
           <div class="board-panel">
             <div class="board-wrap">
-              <svg class="lesson-svg" viewBox="0 0 360 360" role="img" aria-label="Position 4: Black pawn e4, White pawn f4, Black can capture en passant">
+              <svg class="lesson-svg" viewbox="0 0 316 316" role="img" aria-label="Position 4: Black pawn e4, White pawn f4, Black can capture en passant">
                 <defs><style>.lbl{font:14px Arial,sans-serif;fill:#334155;font-weight:700}.arr{fill:none;stroke:#ef4444;stroke-width:2.5;stroke-linecap:round}</style></defs>
                 <rect x="0" y="0" width="360" height="360" fill="#ffffff" rx="14"/>
-                <g transform="translate(40,20)">
+                <g transform="translate(16,10)">
                   <rect x="0" y="0" width="35" height="35" fill="#eee3cb"/><rect x="35" y="0" width="35" height="35" fill="#71925a"/><rect x="70" y="0" width="35" height="35" fill="#eee3cb"/><rect x="105" y="0" width="35" height="35" fill="#71925a"/><rect x="140" y="0" width="35" height="35" fill="#eee3cb"/><rect x="175" y="0" width="35" height="35" fill="#71925a"/><rect x="210" y="0" width="35" height="35" fill="#eee3cb"/><rect x="245" y="0" width="35" height="35" fill="#71925a"/>
                   <rect x="0" y="35" width="35" height="35" fill="#71925a"/><rect x="35" y="35" width="35" height="35" fill="#eee3cb"/><rect x="70" y="35" width="35" height="35" fill="#71925a"/><rect x="105" y="35" width="35" height="35" fill="#eee3cb"/><rect x="140" y="35" width="35" height="35" fill="#71925a"/><rect x="175" y="35" width="35" height="35" fill="#eee3cb"/><rect x="210" y="35" width="35" height="35" fill="#71925a"/><rect x="245" y="35" width="35" height="35" fill="#eee3cb"/>
                   <rect x="0" y="70" width="35" height="35" fill="#eee3cb"/><rect x="35" y="70" width="35" height="35" fill="#71925a"/><rect x="70" y="70" width="35" height="35" fill="#eee3cb"/><rect x="105" y="70" width="35" height="35" fill="#71925a"/><rect x="140" y="70" width="35" height="35" fill="#eee3cb"/><rect x="175" y="70" width="35" height="35" fill="#71925a"/><rect x="210" y="70" width="35" height="35" fill="#eee3cb"/><rect x="245" y="70" width="35" height="35" fill="#71925a"/>
@@ -259,8 +259,8 @@
                   <image href="../assets/pieces/mpchess/wP.svg" x="175" y="140" width="35" height="35"/>
                   <path class="arr" d="M140,150 L167.5,150"/>
                   <g class="lbl">
-                    <text x="17.5" y="301" text-anchor="middle">a</text><text x="52.5" y="301" text-anchor="middle">b</text><text x="87.5" y="301" text-anchor="middle">c</text><text x="122.5" y="301" text-anchor="middle">d</text><text x="157.5" y="301" text-anchor="middle">e</text><text x="192.5" y="301" text-anchor="middle">f</text><text x="227.5" y="301" text-anchor="middle">g</text><text x="262.5" y="301" text-anchor="middle">h</text>
-                    <text x="-12" y="18" text-anchor="middle">8</text><text x="-12" y="53" text-anchor="middle">7</text><text x="-12" y="88" text-anchor="middle">6</text><text x="-12" y="123" text-anchor="middle">5</text><text x="-12" y="158" text-anchor="middle">4</text><text x="-12" y="193" text-anchor="middle">3</text><text x="-12" y="228" text-anchor="middle">2</text><text x="-12" y="263" text-anchor="middle">1</text>
+                    <text x="17.5" y="295" text-anchor="middle">a</text><text x="52.5" y="295" text-anchor="middle">b</text><text x="87.5" y="295" text-anchor="middle">c</text><text x="122.5" y="295" text-anchor="middle">d</text><text x="157.5" y="295" text-anchor="middle">e</text><text x="192.5" y="295" text-anchor="middle">f</text><text x="227.5" y="295" text-anchor="middle">g</text><text x="262.5" y="295" text-anchor="middle">h</text>
+                    <text x="-10" y="18" text-anchor="middle">8</text><text x="-10" y="53" text-anchor="middle">7</text><text x="-10" y="88" text-anchor="middle">6</text><text x="-10" y="123" text-anchor="middle">5</text><text x="-10" y="158" text-anchor="middle">4</text><text x="-10" y="193" text-anchor="middle">3</text><text x="-10" y="228" text-anchor="middle">2</text><text x="-10" y="263" text-anchor="middle">1</text>
                   </g>
                 </g>
               </svg>

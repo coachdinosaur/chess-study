@@ -503,10 +503,10 @@
       background: #f8fafc;
     }
     .lesson-svg {
-      width: min(100%, 390px);
+      width: 100%;
       height: auto;
       display: block;
-      flex: 0 0 auto;
+      flex-shrink: 0;
     }
     .summary-box {
       border: 1px solid color-mix(in srgb, var(--green) 42%, var(--line));
@@ -707,7 +707,7 @@
           </div>
           <figure class="figure">
             <div style="padding:1rem;display:flex;justify-content:center;">
-              <svg class="lesson-svg" viewBox="0 0 360 360" role="img" aria-label="En passant diagram: white pawn on e5 captures black pawn on d5 en passant">
+              <svg class="lesson-svg" viewBox="0 0 316 316" role="img" aria-label="En passant diagram: white pawn on e5 captures black pawn on d5 en passant">
                 <defs>
                   <style>
                     .lbl{font:14px Arial,sans-serif;fill:#334155;font-weight:700}
@@ -717,7 +717,7 @@
                   </marker>
                 </defs>
                 <rect x="0" y="0" width="360" height="360" fill="#ffffff" rx="14" />
-                <g transform="translate(40,20)">
+                <g transform="translate(16,10)">
                   <g>
                     <rect x="0" y="0" width="35" height="35" fill="#eee3cb"/><rect x="35" y="0" width="35" height="35" fill="#71925a"/><rect x="70" y="0" width="35" height="35" fill="#eee3cb"/><rect x="105" y="0" width="35" height="35" fill="#71925a"/><rect x="140" y="0" width="35" height="35" fill="#eee3cb"/><rect x="175" y="0" width="35" height="35" fill="#71925a"/><rect x="210" y="0" width="35" height="35" fill="#eee3cb"/><rect x="245" y="0" width="35" height="35" fill="#71925a"/>
                     <rect x="0" y="35" width="35" height="35" fill="#71925a"/><rect x="35" y="35" width="35" height="35" fill="#eee3cb"/><rect x="70" y="35" width="35" height="35" fill="#71925a"/><rect x="105" y="35" width="35" height="35" fill="#eee3cb"/><rect x="140" y="35" width="35" height="35" fill="#71925a"/><rect x="175" y="35" width="35" height="35" fill="#eee3cb"/><rect x="210" y="35" width="35" height="35" fill="#71925a"/><rect x="245" y="35" width="35" height="35" fill="#eee3cb"/>
@@ -729,8 +729,8 @@
                     <rect x="0" y="245" width="35" height="35" fill="#71925a"/><rect x="35" y="245" width="35" height="35" fill="#eee3cb"/><rect x="70" y="245" width="35" height="35" fill="#71925a"/><rect x="105" y="245" width="35" height="35" fill="#eee3cb"/><rect x="140" y="245" width="35" height="35" fill="#71925a"/><rect x="175" y="245" width="35" height="35" fill="#eee3cb"/><rect x="210" y="245" width="35" height="35" fill="#71925a"/><rect x="245" y="245" width="35" height="35" fill="#eee3cb"/>
                   </g>
                   <g class="lbl">
-                    <text x="17.5" y="301" text-anchor="middle">a</text><text x="52.5" y="301" text-anchor="middle">b</text><text x="87.5" y="301" text-anchor="middle">c</text><text x="122.5" y="301" text-anchor="middle">d</text><text x="157.5" y="301" text-anchor="middle">e</text><text x="192.5" y="301" text-anchor="middle">f</text><text x="227.5" y="301" text-anchor="middle">g</text><text x="262.5" y="301" text-anchor="middle">h</text>
-                    <text x="-12" y="18" text-anchor="middle">8</text><text x="-12" y="53" text-anchor="middle">7</text><text x="-12" y="88" text-anchor="middle">6</text><text x="-12" y="123" text-anchor="middle">5</text><text x="-12" y="158" text-anchor="middle">4</text><text x="-12" y="193" text-anchor="middle">3</text><text x="-12" y="228" text-anchor="middle">2</text><text x="-12" y="263" text-anchor="middle">1</text>
+                    <text x="17.5" y="295" text-anchor="middle">a</text><text x="52.5" y="295" text-anchor="middle">b</text><text x="87.5" y="295" text-anchor="middle">c</text><text x="122.5" y="295" text-anchor="middle">d</text><text x="157.5" y="295" text-anchor="middle">e</text><text x="192.5" y="295" text-anchor="middle">f</text><text x="227.5" y="295" text-anchor="middle">g</text><text x="262.5" y="295" text-anchor="middle">h</text>
+                    <text x="-10" y="18" text-anchor="middle">8</text><text x="-10" y="53" text-anchor="middle">7</text><text x="-10" y="88" text-anchor="middle">6</text><text x="-10" y="123" text-anchor="middle">5</text><text x="-10" y="158" text-anchor="middle">4</text><text x="-10" y="193" text-anchor="middle">3</text><text x="-10" y="228" text-anchor="middle">2</text><text x="-10" y="263" text-anchor="middle">1</text>
                   </g>
                   <rect class="ep-highlight" x="105" y="70" width="35" height="35" rx="4" />
                   <image href="../assets/pieces/mpchess/wP.svg" x="140" y="105" width="35" height="35" />
