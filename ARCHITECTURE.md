@@ -2,31 +2,27 @@
 
 ## Overview
 
-This repository is a **chess teaching platform** composed of three cooperating,
+This repository is a **chess teaching platform** composed of four cooperating,
 framework-free subsystems:
-
-**2026-07-09 update:** the Pawn Level lesson site now also includes Module 4
-(`lessons/pawn-m4-lesson-*.html`) and uses shared floating teacher-board assets
-(`lessons/pawn-teacher-board.js` / `.css`) across the Pawn lessons. The SPA
-annotation system now stores per-annotation colors (`green`, `orange`, `blue`)
-instead of treating all markings as one theme-colored layer.
 
 1. **Interactive Study SPA** (`index.html` + `app.js`) — a browser-based chess
    study and analysis single-page application (endgame study, practice, puzzles,
-   Play-vs-Engine, board scanning, lesson tree). Pure ES modules with direct DOM
-   manipulation; a single global `state` object drives rendering across six tabs.
-2. **Pawn Level Lesson Site** (`lessons/pawn-*.html`, `lessons/pawn-m2-*.html`,
-   `lessons/pawn-m3-*.html`, `lessons/pawn-m4-*.html`, `lessons/pawn-index.html`)
-   — a beginner curriculum of static HTML lesson pages (no build step, no iframe
-   to the SPA). The pages carry local lesson content and diagrams, plus shared
-   lesson helpers. Four modules are published: Module 1 foundations, Module 2
-   piece movement, Module 3 attack/check/stalemate, and Module 4 rook/queen
-   checkmates and checkmate-vs-stalemate practice.
+   Play-vs-Engine, board scanning, lesson tree, lesson position builder). Pure ES
+   modules with direct DOM manipulation; a single global `state` object drives
+   rendering across six tabs.
+2. **Pawn Level Lesson Site** (`lessons/pawn-*.html`, `lessons/pawn-m{2,3,4,5}-*.html`,
+   `lessons/pawn-index.html`) — a beginner curriculum of static HTML lesson pages
+   (no build step, no iframe to the SPA). The pages carry local lesson content and
+   diagrams, plus shared lesson helpers (`pawn-teacher-board.js` / `.css`,
+   `endgame-lesson.js` / `.css`). Five modules are published: Module 1 foundations,
+   Module 2 piece movement, Module 3 attack/check/stalemate, Module 4 basic
+   checkmate and stalemate, and Module 5 castling and en passant.
 3. **Bishop Level Lesson Site** (`lessons/bishop-index.html`,
    `lessons/bishop-m1-lesson-*.html`) — a post-beginner curriculum of static
    HTML lesson pages following the same conventions as Pawn Level. Module 1
-   (Bishop M1) covers opening principles: control the center, develop pieces,
-   king safety, common opening mistakes, and pawn structure.
+   covers building a chess foundation: building a strong foundation, components
+   of a chess foundation, opening principles and the goal of chess, the point
+   system, and the five core thinking principles.
 4. **Piece Asset Pipeline** (`mpchess-pieces/` → `assets/pieces/mpchess/*.svg`) — the
    `mpchess` chess font is authored in MetaPost/LuaLaTeX and exported to the 12
    Unicode-free SVG piece images used by both the SPA and the lesson pages.
@@ -34,7 +30,9 @@ instead of treating all markings as one theme-colored layer.
 There is **no framework and no build step** for the SPA or lessons; dependencies
 are vendored. Lesson pages are plain HTML/CSS with inline SVG diagrams. The SPA is
 embedded via `<iframe>` only by the older *numbered endgame* lessons
-(`lessons/01-…07`), not by the Pawn Level pages.
+(`lessons/01-…07`), not by the Pawn Level or Bishop Level pages. The SPA annotation
+system stores per-annotation colors (`green`, `orange`, `blue`) instead of treating
+all markings as one theme-colored layer.
 
 ---
 
@@ -42,27 +40,34 @@ embedded via `<iframe>` only by the older *numbered endgame* lessons
 
 ```
 chess-study/
-├── index.html                  SPA entry point — page shell, SVG overlays, modals
-├── app.js                      Main application (~11,340 lines)
-├── styles.css                  All SPA styles (~4,430 lines)
-├── pgn.mjs                     PGN import/export with tree conversion
-├── puzzle-api.mjs              Endgame puzzle generation (Stockfish worker)
-├── guided-review.mjs           CSV/XLSX lesson-row review controller
-├── text-normalization.mjs      Unicode repair and punctuation normalization
-├── lessons/                    Published lesson pages (static HTML)
-│   ├── pawn-index.html         Pawn Level curriculum table of contents
-│   ├── pawn-01-…-pawn-11-…      Pawn Level MODULE 1 lessons (self-contained HTML)
-│   ├── pawn-m2-lesson-01-…      Pawn Level MODULE 2 lessons (self-contained HTML)
-│   │   └── … -lesson-13-…
-│   ├── pawn-m3-lesson-01-…      Pawn Level MODULE 3 lessons (self-contained HTML)
-│   │   └── … -lesson-12-…
-│   ├── bishop-index.html        Bishop Level curriculum table of contents
-│   ├── bishop-m1-lesson-01-…    Bishop Level MODULE 1 lessons (self-contained HTML)
-│   │   └── … -lesson-05-…
-│   ├── bishop_m1/               Bishop M1 asset images (PNG)
-│   ├── index.html               (legacy) Endgame lesson index / landing page
-│   ├── endgame-lesson.css       Shared lesson page styles (~1,116 lines)
-│   ├── endgame-lesson.js        Vanilla FEN→board renderer for endgame pages
+├── index.html                       SPA entry point — page shell, SVG overlays, modals
+├── app.js                           Main application (~11,720 lines)
+├── styles.css                       All SPA styles (~4,430 lines)
+├── pgn.mjs                          PGN import/export with tree conversion
+├── puzzle-api.mjs                   Endgame puzzle generation (Stockfish worker)
+├── lesson-position-builder.mjs      CSV/XLSX position-set builder (~1,380 lines)
+├── text-normalization.mjs           Unicode repair and punctuation normalization
+│
+├── lessons/                         Published lesson pages (static HTML)
+│   ├── pawn-index.html              Pawn Level curriculum table of contents
+│   ├── pawn-01-…-pawn-11-…          Pawn Level MODULE 1 (introducing through piece values)
+│   ├── pawn-m2-lesson-01-…-13-…     Pawn Level MODULE 2 (how pieces move, + 13b Protecting Points)
+│   ├── pawn-m3-lesson-01-…-12-…     Pawn Level MODULE 3 (check, checkmate, draws)
+│   ├── pawn-m4-lesson-01-…-10-…     Pawn Level MODULE 4 (basic checkmate & stalemate)
+│   ├── pawn-m5-lesson-01-…-08-…     Pawn Level MODULE 5 (castling and en passant)
+│   ├── pawn-teacher-board.js        Shared floating board overlay for Pawn lessons
+│   ├── pawn-teacher-board.css       Shared teacher board styles
+│   ├── bishop-index.html            Bishop Level curriculum table of contents
+│   ├── bishop-m1-lesson-01-building-a-strong-foundation.html
+│   ├── bishop-m1-lesson-02-components-of-a-chess-foundation.html
+│   ├── bishop-m1-lesson-03-opening-principles-and-the-goal-of-chess.html
+│   ├── bishop-m1-lesson-04-the-point-system.html
+│   ├── bishop-m1-lesson-05-the-five-core-thinking-principles.html
+│   ├── bishop_m1/                   Bishop M1 asset images (PNG, intermediate-m1- prefix)
+│   ├── index.html                   Lesson landing page / endgame lesson index
+│   ├── endgame-lesson.css           Shared lesson page styles (~1,116 lines)
+│   ├── endgame-lesson.js            Vanilla FEN→board renderer for endgame pages
+│   ├── stolen_images/               Miscellaneous unprocessed asset images
 │   ├── 01-king-pawn-rule-of-square.html
 │   ├── 02-pawn-on-the-6th-rank.html
 │   ├── 03-knights-pawn-and-key-squares.html
@@ -70,76 +75,52 @@ chess-study/
 │   ├── 05-rook-pawn-rule-rook-vs-bishop-knight.html
 │   ├── 06-separated-knight-corner-trap-kamsky-bacrot.html
 │   └── 07-basic-test-positions.html
-├── lesson_source/              Authored SOURCE manuscripts for Pawn Module 1
-├── lesson_source2/             Authored SOURCE manuscripts for Pawn Module 2
-│   ├── pawn-m1-2-lesson-01-how-to-move-the-king.html
-│   ├── pawn-m1-2-lesson-02-how-to-capture-with-the-king.html
-│   ├── pawn-m1-2-lesson-03-how-to-move-the-knight.html
-│   ├── pawn-m1-2-lesson-04-how-to-capture-with-the-knight.html
-│   ├── pawn-m1-2-lesson-05-how-to-move-the-pawn.html
-│   ├── pawn-m1-2-lesson-06-pawn-capture.html
-│   ├── pawn-m1-2-lesson-07-pawn-promotion.html
-│   ├── pawn-m1-2-lesson-08-activity-practice-moving-the-king-knight-and-pawn.html
-│   ├── pawn-m1-2-lesson-09-how-to-move-the-rook.html
-│   ├── pawn-m1-2-lesson-10-how-to-capture-with-the-rook.html
-│   ├── pawn-m1-2-lesson-11-how-to-move-the-bishop.html
-│   ├── pawn-m1-2-lesson-12-how-to-move-the-queen.html
-│   └── pawn-m1-2-lesson-13-activity-practice-moving-the-rook-bishop-and-queen.html
-├── lesson_source/              Authored SOURCE manuscripts for Pawn Module 1
-│   ├── introducing_game_of_chess_lesson.html
-│   ├── basic-chess-rules-following-introducing-format.html
-│   ├── capturing-a-piece-following-introducing-format.html
-│   ├── chess-terms-following-introducing-format.html
-│   ├── chessboard-lesson-following-introducing-format.html
-│   ├── lesson-3-files-ranks-diagonals-improved-following-introducing-format.html
-│   ├── pawn-lesson-4-scorekeeping-algebraic-notation-following-introducing-format.html
-│   ├── pawn-lesson-5-algebraic-notation-examples-following-introducing-format.html
-│   ├── piece-values-following-introducing-format.html
-│   ├── setting-up-chessboard-following-introducing-format.html
-│   └── the-chessmen-following-introducing-format.html
-├── lesson_source3/             Authored SOURCE manuscripts for Pawn Module 3
-│   ├── pawn-level-module-3-how-to-win-a-chess-game-formatted.html
-│   ├── pawn-level-module-3-lesson-2-attack-formatted.html
-│   ├── pawn-level-module-3-lesson-3-check-formatted.html
-│   ├── pawn-level-module-3-lesson-4-illegal-move-formatted.html
-│   ├── pawn-level-module-3-lesson-5-escaping-a-check-formatted.html
-│   ├── pawn-level-module-3-lesson-6-how-do-you-win-a-chess-game-formatted.html
-│   ├── pawn-level-module-3-lesson-7-stalemate-formatted.html
-│   ├── pawn-level-module-3-lesson-8-activity-check-the-king-formatted.html
-│   ├── pawn-level-module-3-lesson-9-activity-capture-the-checker-formatted.html
-│   ├── pawn-level-module-3-lesson-10-activity-block-the-check-formatted.html
-│   ├── pawn-level-module-3-lesson-11-activity-is-this-a-checkmate-formatted.html
-│   └── pawn-level-module-3-lesson-12-activity-is-this-a-stalemate-formatted.html
-├── local_server.py             Python HTTP server with COOP/COEP headers
-├── scanner_server.py           Chessboard image recognition HTTP server
-├── scanner_predict.py          Image-to-FEN prediction logic
-├── start-local.ps1             Windows deployment script
+│
+├── pawn_m5/                         Pawn Module 5 lesson image assets (PNG/WebP)
+├── lesson_source/                   Authored SOURCE manuscripts for Pawn Module 1 (11 files)
+├── lesson_source2/                  Authored SOURCE manuscripts for Pawn Module 2 (13 files)
+├── lesson_source3/                  Authored SOURCE manuscripts for Pawn Module 3 (12 files)
+│
+├── Endgame/                         Endgame knowledge base (PDFs, CSV inputs, WTHarvey data)
+│   ├── 100_pgn/                     PGN files for endgame lessons
+│   ├── _kb/                         Knowledge-base working directory
+│   ├── *.pdf                        Endgame reference books
+│   └── *.csv                        Tactics / lesson input CSVs
+│
+├── local_server.py                  Python HTTP server with COOP/COEP headers
+├── scanner_server.py                Chessboard image recognition HTTP server
+├── scanner_predict.py               Image-to-FEN prediction logic
+├── start-local.ps1                  Windows deployment script
+│
 ├── assets/
-│   ├── pieces/mpchess/         SVG piece images (wK.svg, bQ.svg, …) — 12 files
-│   ├── openings.tsv            Opening book TSV (ECO, name, PGN, UCI, EPD)
-│   ├── Inter/                  Inter variable font (body text)
-│   ├── Manrope/                Manrope variable font (headings)
-│   └── social-preview.png      Open Graph / Twitter card image
-├── mpchess-pieces/             Piece font SOURCE (MetaPost + LuaLaTeX)
-│   ├── metapost/               MetaPost sources for each glyph
-│   ├── lualatex/               LuaLaTeX build scripts
-│   ├── svg/                    Exported SVG glyphs
-│   └── mpchess font.*          Compiled font binaries (ttf/otf/eot/svg)
+│   ├── pieces/mpchess/              SVG piece images (bB.svg … wR.svg) — 12 files
+│   ├── pieces/app_icon.png          Application icon
+│   ├── openings.tsv                 Opening book TSV (ECO, name, PGN, UCI, EPD)
+│   ├── Inter/                       Inter variable font (body text)
+│   ├── Manrope/                     Manrope variable font (headings)
+│   └── social-preview.png           Open Graph / Twitter card image
+│
+├── mpchess-pieces/                  Piece font SOURCE (MetaPost + LuaLaTeX)
+│   ├── metapost/                    MetaPost sources for each glyph
+│   ├── lualatex/                    LuaLaTeX build scripts
+│   ├── svg/                         Exported SVG glyphs
+│   └── mpchess font.*               Compiled font binaries (ttf/otf/eot/svg)
+│
 ├── vendor/
-│   ├── chess.js                Chess.js (PGN parser, move validation, FEN)
-│   ├── stockfish/              Stockfish browser bundles (4 variants)
-│   └── xlsx.full.min.js        XLSX parsing for Guided Review
-└── tools/
-    ├── test-puzzle-api.mjs     Puzzle API unit tests
-    ├── fetch_openings.js       Opening book data fetcher
-    └── generate_openings.mjs   Opening book generator
+│   ├── chess.js                     Chess.js (PGN parser, move validation, FEN)
+│   ├── stockfish/                   Stockfish browser bundles (4 variants)
+│   └── xlsx.full.min.js             XLSX parsing for Lesson Position Builder
+│
+├── optimization-review/             Performance and code review notes
+├── tools/
+│   ├── test-puzzle-api.mjs          Puzzle API unit tests
+│   ├── fetch_openings.js            Opening book data fetcher
+│   ├── generate_openings.mjs        Opening book generator
+│   ├── endgame_kb/                  Endgame knowledge-base build tools (Python)
+│   └── wtharvey/                    WTHarvey tactics download / check tools
+│
+└── .opencode/                       opencode configuration (if present)
 ```
-
-Directory note: the published `lessons/` folder now also includes
-`pawn-m4-lesson-01-...-10` and the shared `pawn-teacher-board.js` /
-`pawn-teacher-board.css` files used by the Pawn lesson pages. The tree above is
-kept as a broad map; the Pawn section below is the current source of truth for
-module coverage and shared lesson helpers.
 
 ---
 
@@ -154,11 +135,11 @@ index.html
     │
     └── app.js ◄── entry point
             │
-            ├── vendor/chess.js             Chess logic (FEN, PGN, moves)
-            ├── pgn.mjs                     Lesson tree ↔ PGN text
-            ├── puzzle-api.mjs              Puzzle generation (Stockfish worker)
-            ├── guided-review.mjs           CSV/XLSX review controller
-            └── text-normalization.mjs      Unicode cleanup
+            ├── vendor/chess.js                  Chess logic (FEN, PGN, moves)
+            ├── pgn.mjs                          Lesson tree ↔ PGN text
+            ├── puzzle-api.mjs                   Puzzle generation (Stockfish worker)
+            ├── lesson-position-builder.mjs      CSV/XLSX position-set builder
+            └── text-normalization.mjs           Unicode cleanup
 ```
 
 ### Module Responsibilities
@@ -168,7 +149,7 @@ index.html
 | `app.js` | UI rendering, event handling, state management, Stockfish/tablebase integration, board interaction, annotation system, lesson tree management, Play-vs-Engine mode, puzzle session management |
 | `pgn.mjs` | `buildPgnFromLessonTree()` — converts the internal lesson tree to PGN text; `parsePgnToLessonTree()` — parses PGN text back into the lesson tree; `splitPgnGames()` — splits multi-game PGNs; `extractPgnHeaders()` — extracts PGN metadata |
 | `puzzle-api.mjs` | Random endgame puzzle generation with Stockfish evaluation, candidate classification (mate/win/draw), optional Syzygy tablebase verification, prefetch caching |
-| `guided-review.mjs` | CSV/XLSX row parsing, field alias normalization (title, fen, difficulty, goalType, lessonText, mode, etc.), review progress persistence and restoration |
+| `lesson-position-builder.mjs` | CSV/XLSX position-set CRUD, field alias resolution (`order`, `id`, `title`, `fen`, `orientation`, `teacher_note`, `is_default`), persistence and restoration, import/export |
 | `text-normalization.mjs` | Multi-pass Unicode repair (mojibake, smart quotes, dashes, ellipsis) and whitespace normalization |
 | `chess.js` (vendor) | FEN parsing/validation, move execution, check/checkmate/stalemate detection, PGN parsing (Peggy-generated parser), board state queries |
 | `lessons/` (numbered) | Standalone endgame lesson pages. Each chapter HTML loads `endgame-lesson.css` and `endgame-lesson.js` for static board rendering, and embeds the interactive SPA via an `<iframe>` at the bottom (`index.html?embed=1`) for hands-on practice. No framework, no build step. |
@@ -213,7 +194,7 @@ then calls `renderAll()` or a targeted render function.
 | `state.annotations` | Drawing state: arrows, circled/starred/painted squares, gesture tracking |
 | `state.lessonBook` | Multi-lesson management: active ID, lesson array |
 | `state.openingBook` | Opening reference: TSV rows, UCI/EPD indexes |
-| `state.guidedReview` | Guided Review active flag |
+| `state.lessonPositionBuilder` | Lesson Position Builder active flag (`{ active: bool }`) |
 
 There is no immutable state library or proxy — state is mutated directly. The
 initialization sequence (`app.js:11327`) sets up all defaults, hydrates persisted
@@ -224,16 +205,19 @@ state from localStorage, then calls `renderAll()`.
 ## Initialization Sequence (SPA)
 
 ```javascript
-initializeColorTheme();          // Read persisted theme → set <html data-theme>
-initializeDefaultSetup();        // Set up standard starting position
-hydrateDraft();                  // Restore lesson draft from localStorage
-hydratePuzzleState();            // Restore puzzle queue, history, stats, premium
-window.__endgamePuzzlePremium = …; // Expose key generator to console
-syncAnalysisGameFromTree();      // Sync Chess.js with lesson tree
-initializeGuidedReviewController(); // Restore guided review if active
-bindEvents();                    // Register all document/board event listeners
-loadOpeningBook();               // Fetch and index assets/openings.tsv
-renderAll();                     // Full initial render
+initializeColorTheme();              // Read persisted theme → set <html data-theme>
+initializeDefaultSetup();            // Set up standard starting position
+applyEmbedDeepLink();                // Apply ?embed=1 and ?fen= deep-link
+if (!state.embedMode) hydrateDraft();// Restore lesson draft from localStorage
+hydratePuzzleState();                // Restore puzzle queue, history, stats, premium
+window.__endgamePuzzlePremium = …;    // Expose key generator to console
+syncAnalysisGameFromTree();          // Sync Chess.js with lesson tree
+initializeLessonPositionBuilder();   // Create builder controller
+bindEvents();                        // Register all document/board event listeners
+bindEmbedMessageListener();          // Listen for postMessage from parent frames
+loadOpeningBook();                   // Fetch and index assets/openings.tsv
+renderAll();                         // Full initial render
+if (state.lessonPositionBuilder.active) lessonPositionBuilder?.open();
 ```
 
 ---
@@ -394,7 +378,7 @@ Major groups not detailed elsewhere in this document:
 | Group | Actions | Purpose |
 |---|---|---|
 | **Lesson book** | `new-lesson`, `duplicate-lesson`, `delete-lesson`, `select-lesson`, `toggle-lesson-picker`, `toggle-lesson-book-actions`, `toggle-lesson-actions` | Multi-lesson CRUD and menu toggles |
-| **File I/O** | `open-lesson`, `save-lesson`, `import-pgn`, `export-pgn`, `copy-fen`, `open-guided-review` | File import/export and clipboard |
+| **File I/O** | `open-lesson`, `save-lesson`, `import-pgn`, `export-pgn`, `copy-fen` | File import/export and clipboard |
 | **Setup** | `reset-setup`, `clear-board`, `flip-board`, `toggle-piece-tool`, `set-palette-color`, `set-active-color`, `scan-board`, `apply-fen`, `reset-fen`, `toggle-advanced`, `toggle-castling`, `set-en-passant` | Position builder controls |
 | **Practice** | `start-practice`, `restart-practice`, `stop-practice`, `set-practice-kind`, `practice-hint`, `practice-reveal` | Practice session lifecycle |
 | **Puzzle** | `new-puzzle`, `generate-puzzle-batch`, `cancel-batch-generation`, `retry-puzzle`, `give-up-puzzle`, `skip-puzzle`, `puzzle-next`, `replay-previous-puzzle`, `restore-default-puzzles`, `clear-puzzle-history`, `save-puzzle-csv`, `load-puzzle-csv`, `open-premium-modal`, `activate-premium` | Puzzle queue, generation, CSV, premium |
@@ -417,7 +401,7 @@ element:
 | `play` | `dom.playPanel` | Play vs Stockfish |
 | `puzzle` | `dom.puzzlePanel` | Endgame puzzles |
 | `study` | — | Collapses tools panel, focuses the board |
-| `lessons` | — | Guided Review / lesson management |
+| `lessons` | — | Lesson Position Builder |
 
 `renderTabs()` toggles `.hidden` and `.is-active` on panel elements and
 updates `data-active-tab` on the root element, which CSS uses to show/hide
@@ -430,7 +414,7 @@ panels and the tab-chip `.is-active` class.
   into `state.setupFen`/`state.setup.pieces` so the Setup board shows the
   puzzle position (captured before `stopPlayGame` terminates the session).
 - Switching away from Puzzle while generation is in progress cancels it.
-- Switching to Lessons opens Guided Review; switching away closes it.
+- Switching to Lessons opens the Lesson Position Builder; switching away closes it.
 
 ### Play Clock System
 
@@ -749,7 +733,7 @@ Uses `Chess.isAttacked()` on both kings explicitly, not `game.isCheck()`
 | `endgame-puzzle-free-v1` | Daily free puzzle usage tracking |
 | `endgame-puzzle-queue-v1` | Puzzle queue array |
 | `endgame-puzzle-history-v1` | Puzzle history array (max 300) |
-| `guided-lesson-row-review-v1:*` | Guided Review progress per session |
+| `lesson-position-builder-v1:*` (multiple keys) | Lesson Position Builder state per named set |
 
 ### Draft Save
 
@@ -863,17 +847,39 @@ use the theme-driven green CSS variables (`--annotation-paint`,
 
 ---
 
-## Guided Review (SPA)
+## Lesson Position Builder (SPA)
 
-`createGuidedReviewController()` from `guided-review.mjs` manages a separate
-worksheet-review workflow:
+`createLessonPositionBuilder()` from `lesson-position-builder.mjs` manages a
+position-set builder accessible from the Lessons tab:
 
-- Accepts `.csv`, `.xlsx`, or `.xls` files
-- Parses rows using flexible field aliases (e.g., `title`, `lesson_title`, `name`
-  all map to the title field)
-- Provides Analysis panel context (engine/tablebase) for each row's FEN
-- Persists review progress per session in localStorage
-- Reopens automatically on page load if a review was active
+- **Purpose:** Create, edit, import, export, and manage named FEN positions
+  organized into named sets
+- **Supported files:** CSV and XLSX (via `vendor/xlsx.full.min.js`)
+- **Canonical columns:** `order`, `id`, `title`, `fen`, `orientation`,
+  `teacher_note`, `is_default`
+- **Field aliases:** Flexible header matching (e.g., `name` → `title`,
+  `board_orientation` → `orientation`, `note`/`instruction` → `teacher_note`)
+- **Legacy columns:** `difficulty`, `level_tier`, `goal_type`, `lesson_text`,
+  `mode`, `endgame_position`, `status` are detected and reported as ignored
+- **Import:** Parses CSV (with quoted-field support) or XLSX (via sheet-to-json);
+  validates FENs, normalizes orientation, deduplicates IDs, warns about ignored
+  legacy columns, auto-generates IDs from titles
+- **Export:** Downloads CSV or XLSX with canonical column headers; validates
+  that at least one position exists and one default is set before allowing export
+- **Persistence:** Saved under `lesson-position-builder-v1:*` in localStorage
+  (per-set named keys)
+- **Restoration:** `initializeLessonPositionBuilder()` (called during app init)
+  restores the last-active set; the builder reopens on page reload if it was
+  active
+- **Navigation:** `setLessonPositionBuilderActive` does NOT change tabs; the
+  tab handler (`set-tab` case) owns navigation — switches to Lessons opens the
+  builder, switches away closes it
+- **Orientation:** Stored per-position; FEN is loaded via `loadFenToBoard(fen)`
+  and orientation is applied separately via `setBoardOrientation()`. No `chess.js`
+  import in the builder module.
+- **CRUD operations:** New set, add current board position, update from current
+  board, duplicate, delete, reorder (move up/down), set default, edit title/id/
+  FEN/orientation/teacherNote fields directly
 
 ---
 
@@ -883,7 +889,7 @@ worksheet-review workflow:
 |---|---|
 | **chess.js** (vendor) | Bundled copy in `vendor/chess.js`. PGN parsing via Peggy-generated grammar. No npm. |
 | **Stockfish** (vendor) | Pre-compiled browser bundles in `vendor/stockfish/`. Four variants selected at runtime by file-existence detection. |
-| **xlsx** (vendor) | Bundled in `vendor/xlsx.full.min.js`. Loaded only when a `.xlsx` file is imported in Guided Review. |
+| **xlsx** (vendor) | Bundled in `vendor/xlsx.full.min.js`. Loaded globally for XLSX import/export in the Lesson Position Builder. |
 
 No build step. No package manager. All dependencies are vendored and loaded
 as ES modules or plain `<script>` tags.
@@ -937,9 +943,10 @@ references indicate the maximize-capable version.
 | Module | Lessons | Topic |
 |---|---|---|
 | **Module 1** | `pawn-01` … `pawn-11` | Foundations: what chess is, the board, files/ranks/diagonals, notation, capturing, setup, rules, the chessmen, piece values |
-| **Module 2** | `pawn-m2-lesson-01` … `pawn-m2-lesson-13` | How the pieces move: king, knight, pawn (move/capture/promotion), rook, bishop, queen, and practice activities |
+| **Module 2** | `pawn-m2-lesson-01` … `pawn-m2-lesson-13`, plus `pawn-m2-lesson-13-protecting-points` | How the pieces move: king, knight, pawn (move/capture/promotion), rook, bishop, queen, practice activities, and defending (13b. Protecting Points) |
 | **Module 3** | `pawn-m3-lesson-01` … `pawn-m3-lesson-12` | How to win: attack, check, illegal moves, escaping check, stalemate, and hands-on check/stalemate/capture/block activities |
 | **Module 4** | `pawn-m4-lesson-01` … `pawn-m4-lesson-10` | Rook and queen checkmates, double-rook mate, stalemate examples, and checkmate-or-stalemate practice |
+| **Module 5** | `pawn-m5-lesson-01` … `pawn-m5-lesson-08` | Castling and en passant: kingside/queenside castling, castling restrictions, en passant capture, notation |
 
 ## Page Shell (common to all Pawn Level pages)
 
@@ -989,13 +996,16 @@ Authored manuscripts live in `lesson_source/` (Module 1), `lesson_source2/`
 | `lesson_source2/pawn-m1-2-lesson-NN-*.html` | `lessons/pawn-m2-lesson-NN-*.html` (rename + s/Module 1-2/Module 2/) |
 | `lesson_source3/pawn-level-module-3-*-formatted.html` | `lessons/pawn-m3-lesson-NN-*.html` |
 
+Modules 4 and 5 do not have dedicated `lesson_source*` directories; their
+published `lessons/` files are the canonical copies.
+
 Publication is a manual copy/edit step (there is no build script in `tools/` that
 performs it). When updating lesson content, edit the source manuscript **and** the
 published `lessons/` copy, or re-sync them, to avoid drift.
 
 ## Index Page
 
-`lessons/pawn-index.html` is the Pawn Level table of contents. It lists all four
+`lessons/pawn-index.html` is the Pawn Level table of contents. It lists all five
 modules and links to every lesson. It reuses `endgame-lesson.css` for layout and
 exposes `data-piece-base`, `data-app-path`, and `data-orientation` attributes on
 `<html>` (the same hook contract the numbered endgame pages use), but it does not
@@ -1003,7 +1013,7 @@ itself embed the SPA.
 
 ---
 
-# Subsystem B — Lesson Diagram & Asset Conventions
+# Subsystem C — Lesson Diagram & Asset Conventions
 
 To keep the static lessons consistent and editable, the curriculum follows a set
 of shared diagram conventions. These were standardized so that every Pawn Level
@@ -1113,7 +1123,7 @@ consistent.
 
 ---
 
-# Subsystem C — Piece Asset Pipeline
+# Subsystem D — Piece Asset Pipeline
 
 ## Source: `mpchess-pieces/`
 
@@ -1152,7 +1162,7 @@ in `assets/pieces/mpchess/`.
   `vendor/*` modules are served as-is.
 - Lesson pages are **static HTML** with inline `<style>`/`<script>` and inline SVG
   diagrams; no transpilation.
-- All third-party code (chess.js, Stockfish, xlsx) is **vendored** under
+- All third-party code (chess.js, Stockfish, XLSX) is **vendored** under
   `vendor/`.
 - Shared visual identity is achieved through **convention** (the CSS variables,
   board/star/arrow/Q&A rules above) rather than a shared component library, so
@@ -1170,5 +1180,13 @@ When editing Pawn Level or Bishop Level lessons, preserve:
 - [ ] Q&A: `<details class="quiz">` with the canonical `.quiz` CSS.
 - [ ] Page shell: topbar (back link, theme toggle, print), TOC, numbered sections.
 - [ ] Piece glyphs: only `../assets/pieces/mpchess/*.svg`.
-- [ ] Update both `lesson_source/` (or `lesson_source3/`) and `lessons/` when
-      changing lesson content.
+- [ ] Update both the `lesson_source/` / `lesson_source2/` / `lesson_source3/`
+      manuscript and the `lessons/` published copy when changing lesson content.
+
+## Maintenance rule
+
+When a major subsystem, curriculum module, shared lesson helper, or top-level
+file is added, removed, or renamed, update `ARCHITECTURE.md` in the same change.
+The directory tree, module tables, subsystem descriptions, and dependency list
+must reflect the current state of the repository. Stale references to removed
+code (e.g. `guided-review.mjs`) should be purged rather than preserved.
