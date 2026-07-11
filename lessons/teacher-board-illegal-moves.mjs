@@ -217,32 +217,82 @@ function installTeacherBoardIllegalMoveSupport() {
   let pendingIllegalFen = '';
   let markerFrame = 0;
 
+  // ── Teacher Board position history (supports legal, illegal, out-of-turn) ──
+  const teacherHistory = [];
+  let currentTeacherFen = '';
+  let baselineTeacherFen = '';
+  let isRestoringHistory = false;
+  let suppressHistoryCapture = false;
+
+  const FEN_OBSERVER_DELAY_MS = 50;
+  let fenObserverTimer = 0;
+
+  function initTeacherHistory() {
+    currentTeacherFen = currentFen();
+    baselineTeacherFen = currentTeacherFen;
+    teacherHistory.length = 0;
+  }
+
+  function pushTeacherHistory(fen) {
+    if (!fen) {
+      return;
+    }
+    if (teacherHistory.length > 0 && teacherHistory[teacherHistory.length - 1] === fen) {
+      return;
+    }
+    teacherHistory.push(fen);
+  }
+
+  function restorePreviousTeacherPosition() {
+    if (teacherHistory.length === 0) {
+      return false;
+    }
+    isRestoringHistory = true;
+    const prevFen = teacherHistory.pop();
+    window.postMessage({ type: 'loadFen', fen: prevFen }, window.location.origin);
+    return true;
+  }
+
+  function clearIllegalMoveVisuals() {
+    illegalMove = null;
+    pendingIllegalFen = '';
+    forcedSelectedSquare = '';
+    selectionMessage = '';
+    scheduleMarkerRender();
+  }
+
   const style = document.createElement('style');
   style.textContent = `
     html[data-board-only="1"] .teacher-illegal-notice {
       position: absolute;
-      left: 50%;
-      top: clamp(.35rem, 1.4vw, .75rem);
-      transform: translateX(-50%);
+      top: .35rem;
+      right: .45rem;
       z-index: 30;
-      max-width: calc(100% - 1rem);
-      padding: .38rem .72rem;
-      border: 2px solid rgba(255,255,255,.9);
+      padding: .18rem .5rem;
+      border: 1px solid rgba(220, 38, 38, .5);
       border-radius: 999px;
-      background: rgba(153, 27, 27, .96);
-      color: #fff;
-      box-shadow: 0 7px 22px rgba(0,0,0,.35);
-      font: 800 clamp(.68rem, 1.7vw, .86rem)/1.15 ui-sans-serif, system-ui, sans-serif;
-      letter-spacing: .04em;
+      background: rgba(153, 27, 27, .78);
+      color: #fca5a5;
+      font: 600 clamp(.6rem, 1.3vw, .74rem)/1.25 ui-sans-serif, system-ui, sans-serif;
       text-align: center;
-      text-transform: uppercase;
       pointer-events: none;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      opacity: 0;
+      transition: opacity .18s ease;
+    }
+    html[data-board-only="1"] .teacher-illegal-notice[hidden] {
+      display: block;
+      opacity: 0;
+    }
+    html[data-board-only="1"] .teacher-illegal-notice:not([hidden]) {
+      opacity: 1;
     }
     html[data-board-only="1"] .teacher-illegal-notice.is-selection {
-      background: rgba(146, 64, 14, .96);
+      background: rgba(146, 64, 14, .78);
+      border-color: rgba(245, 158, 11, .5);
+      color: #fcd34d;
     }
     html[data-board-only="1"] .board-square.teacher-illegal-from,
     html[data-board-only="1"] .board-square.teacher-illegal-to {
@@ -367,15 +417,18 @@ function installTeacherBoardIllegalMoveSupport() {
   }
 
   function showIllegalMove(from, to, result) {
-    const moverColor = colorName(pieceColor(result.piece));
-    const mover = pieceName(result.piece);
-    const suffix = result.outOfTurn ? ' - wrong side to move' : '';
+    let message;
+    if (result.blocked) {
+      message = result.reason === 'The king cannot be captured.'
+        ? 'The king cannot be captured'
+        : 'Cannot capture your own piece';
+    } else {
+      message = '\u26A0 Illegal move';
+    }
     illegalMove = {
       from,
       to,
-      message: result.blocked
-        ? `Illegal move: ${result.reason}`
-        : `Illegal move shown: ${moverColor} ${mover} ${from} to ${to}${suffix}`,
+      message,
     };
     clearForcedSelection();
     scheduleMarkerRender();
@@ -392,7 +445,9 @@ function installTeacherBoardIllegalMoveSupport() {
       return true;
     }
 
+    pushTeacherHistory(currentTeacherFen);
     pendingIllegalFen = result.fen;
+    suppressHistoryCapture = true;
     window.postMessage({ type: 'loadFen', fen: result.fen }, window.location.origin);
     return true;
   }
@@ -425,7 +480,7 @@ function installTeacherBoardIllegalMoveSupport() {
         event.stopImmediatePropagation();
         clearIllegalMove();
         forcedSelectedSquare = to;
-        selectionMessage = `Illegal move setup: ${colorName(pieceColor(selectedPiece))} ${pieceName(selectedPiece)} selected out of turn`;
+        selectionMessage = '\u26A0 Illegal move';
         scheduleMarkerRender();
         return;
       }
@@ -479,29 +534,74 @@ function installTeacherBoardIllegalMoveSupport() {
 
     if (data.type === 'loadFen' && typeof data.fen === 'string') {
       const nextFen = data.fen.trim();
-      if (pendingIllegalFen && nextFen === pendingIllegalFen) {
+      if (isRestoringHistory) {
+        isRestoringHistory = false;
+        currentTeacherFen = nextFen;
+        clearIllegalMoveVisuals();
+        return;
+      }
+      if (suppressHistoryCapture && pendingIllegalFen && nextFen === pendingIllegalFen) {
         pendingIllegalFen = '';
+        suppressHistoryCapture = false;
+        currentTeacherFen = nextFen;
         scheduleMarkerRender();
         return;
       }
+      if (suppressHistoryCapture) {
+        suppressHistoryCapture = false;
+      }
+      // External loadFen — new baseline, clear history
       baselineFen = nextFen || baselineFen;
+      baselineTeacherFen = nextFen;
+      currentTeacherFen = nextFen;
+      teacherHistory.length = 0;
       clearTeacherIllegalState();
       return;
     }
 
     if ((data.type === 'teacherBoardAction' || data.type === 'boardOnlyAction') && typeof data.action === 'string') {
+      if (data.action === 'takeBack') {
+        event.stopImmediatePropagation();
+        clearIllegalMoveVisuals();
+        restorePreviousTeacherPosition();
+        return;
+      }
       if (data.action === 'reset') {
         event.stopImmediatePropagation();
         clearTeacherIllegalState();
+        teacherHistory.length = 0;
+        baselineTeacherFen = baselineFen;
+        currentTeacherFen = baselineFen;
         window.postMessage({ type: 'loadFen', fen: baselineFen }, window.location.origin);
         return;
       }
       if (data.action === 'emptyTeacherBoard'
         || data.action === 'startTeacherBoard'
-        || data.action === 'lessonTeacherBoard'
-        || data.action === 'enterTeacherSetup'
-        || data.action === 'showSetup') {
+        || data.action === 'lessonTeacherBoard') {
+        event.stopImmediatePropagation();
+        suppressHistoryCapture = true;
+        teacherHistory.length = 0;
+        baselineTeacherFen = '';
         clearTeacherIllegalState();
+        return;
+      }
+      if (data.action === 'enterTeacherSetup') {
+        suppressHistoryCapture = true;
+        clearTeacherIllegalState();
+        return;
+      }
+      if (data.action === 'showSetup') {
+        suppressHistoryCapture = true;
+        clearTeacherIllegalState();
+        return;
+      }
+      if (data.action === 'exitTeacherSetup') {
+        suppressHistoryCapture = false;
+        teacherHistory.length = 0;
+        currentTeacherFen = currentFen();
+        baselineTeacherFen = currentTeacherFen;
+        clearTeacherIllegalState();
+        return;
       }
     }
   }, true);
@@ -512,6 +612,47 @@ function installTeacherBoardIllegalMoveSupport() {
     }
   });
   observer.observe(boardGrid, { childList: true });
+
+  // ── FEN change observer: detects legal moves ──
+  function handleFenChange() {
+    fenObserverTimer = 0;
+    const newFen = currentFen();
+    if (!newFen || newFen === currentTeacherFen) {
+      return;
+    }
+    if (suppressHistoryCapture) {
+      suppressHistoryCapture = false;
+      currentTeacherFen = newFen;
+      if (!baselineTeacherFen) {
+        baselineTeacherFen = newFen;
+      }
+      return;
+    }
+    if (isRestoringHistory) {
+      currentTeacherFen = newFen;
+      return;
+    }
+    // Legal move or other FEN change: push previous position
+    pushTeacherHistory(currentTeacherFen);
+    currentTeacherFen = newFen;
+    if (!baselineTeacherFen) {
+      baselineTeacherFen = newFen;
+    }
+  }
+
+  const fenElement = document.getElementById('currentFenCode');
+  if (fenElement) {
+    const fenObserver = new MutationObserver(() => {
+      if (fenObserverTimer) {
+        return;
+      }
+      fenObserverTimer = window.setTimeout(handleFenChange, FEN_OBSERVER_DELAY_MS);
+    });
+    fenObserver.observe(fenElement, { childList: true, characterData: true, subtree: true });
+  }
+
+  // Initialize history after all setup above
+  initTeacherHistory();
 }
 
 installTeacherBoardIllegalMoveSupport();

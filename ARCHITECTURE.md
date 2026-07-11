@@ -972,6 +972,42 @@ minimized, or maximized:
   behavior of clearing current annotation marks. `Clear marks` remains the
   explicit always-clear command.
 
+### Teacher Board Illegal-Move & History System
+
+When the embedded SPA is loaded in Teacher Board mode (`_teacher` query flag),
+`text-normalization.mjs` dynamically imports
+`teacher-board-illegal-moves.mjs`. This module intercepts board clicks and
+allows the instructor to demonstrate illegal moves (wrong-side pieces, illegal
+destinations, captures blocked by rules, etc.) without the normal `chess.js`
+validation rejecting them.
+
+**FEN History (Take Back support):** The module maintains a private history
+stack (`teacherHistory`) of FEN strings. Before every illegal move, the current
+FEN is pushed onto the stack. For legal moves, a `MutationObserver` on the
+`#currentFenCode` element detects the FEN change (the move went through the
+normal analysis tree) and pushes the pre-move FEN. A `suppressHistoryCapture`
+flag prevents duplicates during module-initiated FEN loads.
+
+**Take Back action:** The parent panel sends a `teacherBoardAction`/`boardOnlyAction`
+with action `takeBack`. The module pops the previous FEN from history, clears
+all red illegal-move markers and the compact warning pill, and loads the
+restored FEN. Repeated presses undo multiple moves. When history is empty,
+Take Back does nothing.
+
+**History reset:** Cleared on external `loadFen` messages, Reset, Empty Board,
+Start Position, and lesson position loads.
+
+**Compact warning badge:** The illegal-move text is displayed as a small pill
+(`⚠ Illegal move`) in the upper-right corner of the board. For blocked moves
+(own-piece capture, king capture), a descriptive but brief message replaces
+the generic text. The warning has a fade transition, uses `role="status"` for
+accessibility, and clears on Take Back, Reset, new position, or subsequent
+legal move.
+
+**Scope:** This module runs only inside the Teacher Board iframe. Normal
+application modes (Analysis, Play, Puzzle, Setup) remain strict and unaffected
+by this history system.
+
 ## Lesson Source Pipeline
 
 Authored manuscripts live in `lesson_source/` (Module 1), `lesson_source2/`

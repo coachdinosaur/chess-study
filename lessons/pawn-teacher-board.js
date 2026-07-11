@@ -722,6 +722,7 @@
       '  </div>',
       '  <button type="button" class="teacher-board-tool" data-teacher-action="setup" aria-pressed="false" title="Open the quick piece setup tray">Setup</button>',
       '  <button type="button" class="teacher-board-tool" data-teacher-action="annotate" aria-pressed="false" title="Keep marks while left-clicking. Right-click marks squares. Alt+right-drag draws arrows.">Annotate</button>',
+      '  <button type="button" class="teacher-board-tool" data-teacher-action="take-back">Take Back</button>',
       '  <button type="button" class="teacher-board-tool" data-teacher-action="clear-marks">Clear marks</button>',
       '  <button type="button" class="teacher-board-tool" data-teacher-action="flip">Flip</button>',
       '  <button type="button" class="teacher-board-tool" data-teacher-action="reset">Reset</button>',
@@ -1294,6 +1295,10 @@
     }
     if (action === "flip") {
       post("flip");
+      return;
+    }
+    if (action === "take-back") {
+      post("takeBack");
       return;
     }
     if (action === "reset") {
