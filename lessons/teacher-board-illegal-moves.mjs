@@ -28,6 +28,10 @@ function pieceColor(piece) {
   return piece === piece.toLowerCase() ? 'b' : 'w';
 }
 
+function colorName(color) {
+  return color === 'b' ? 'Black' : 'White';
+}
+
 function pieceName(piece) {
   const names = {
     K: 'king',
@@ -148,8 +152,18 @@ function illegalMoveFen(currentFen, from, to) {
 
   let piece = parsed.pieces[from] || '';
   const capturedPiece = parsed.pieces[to] || '';
-  if (!piece || pieceColor(piece) !== parsed.activeColor) {
+  if (!piece) {
     return null;
+  }
+  if (capturedPiece && pieceColor(capturedPiece) === pieceColor(piece)) {
+    return {
+      blocked: true,
+      reason: 'A piece cannot capture its own piece.',
+      piece,
+      capturedPiece,
+      parsed,
+      outOfTurn: pieceColor(piece) !== parsed.activeColor,
+    };
   }
   if (String(capturedPiece).toUpperCase() === 'K') {
     return {
@@ -158,6 +172,7 @@ function illegalMoveFen(currentFen, from, to) {
       piece,
       capturedPiece,
       parsed,
+      outOfTurn: pieceColor(piece) !== parsed.activeColor,
     };
   }
 
@@ -168,18 +183,18 @@ function illegalMoveFen(currentFen, from, to) {
   }
   nextPieces[to] = piece;
 
-  const isPawnMove = piece.toUpperCase() === 'P';
-  const halfmove = isPawnMove || capturedPiece ? 0 : parsed.halfmove + 1;
-  const fullmove = parsed.fullmove + (parsed.activeColor === 'b' ? 1 : 0);
-  const activeColor = parsed.activeColor === 'w' ? 'b' : 'w';
   const castling = castlingAfterMove(parsed.castling, parsed.pieces[from], from, to, capturedPiece);
 
   return {
     blocked: false,
-    fen: `${placementFromPieces(nextPieces)} ${activeColor} ${castling} - ${halfmove} ${fullmove}`,
+    // An illegal demonstration does not consume the turn or update move clocks.
+    // Keeping the original side to move also allows positions such as a king
+    // moved into check to remain loadable for teaching.
+    fen: `${placementFromPieces(nextPieces)} ${parsed.activeColor} ${castling} - ${parsed.halfmove} ${parsed.fullmove}`,
     piece: parsed.pieces[from],
     capturedPiece,
     parsed,
+    outOfTurn: pieceColor(parsed.pieces[from]) !== parsed.activeColor,
   };
 }
 
@@ -197,6 +212,8 @@ function installTeacherBoardIllegalMoveSupport() {
   const params = new URLSearchParams(window.location.search);
   let baselineFen = String(params.get('fen') || START_FEN).trim() || START_FEN;
   let illegalMove = null;
+  let forcedSelectedSquare = '';
+  let selectionMessage = '';
   let pendingIllegalFen = '';
   let markerFrame = 0;
 
@@ -224,9 +241,15 @@ function installTeacherBoardIllegalMoveSupport() {
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    html[data-board-only="1"] .teacher-illegal-notice.is-selection {
+      background: rgba(146, 64, 14, .96);
+    }
     html[data-board-only="1"] .board-square.teacher-illegal-from,
     html[data-board-only="1"] .board-square.teacher-illegal-to {
       box-shadow: inset 0 0 0 clamp(3px, .65vw, 5px) rgba(220, 38, 38, .96);
+    }
+    html[data-board-only="1"] .board-square.teacher-forced-selected {
+      box-shadow: inset 0 0 0 clamp(4px, .75vw, 6px) rgba(245, 158, 11, .98);
     }
     html[data-board-only="1"] .teacher-illegal-square-mark {
       position: absolute;
@@ -277,8 +300,8 @@ function installTeacherBoardIllegalMoveSupport() {
   boardSurface.append(notice);
 
   function clearRenderedMarkers() {
-    boardGrid.querySelectorAll('.teacher-illegal-from, .teacher-illegal-to').forEach((square) => {
-      square.classList.remove('teacher-illegal-from', 'teacher-illegal-to');
+    boardGrid.querySelectorAll('.teacher-illegal-from, .teacher-illegal-to, .teacher-forced-selected').forEach((square) => {
+      square.classList.remove('teacher-illegal-from', 'teacher-illegal-to', 'teacher-forced-selected');
     });
     boardGrid.querySelectorAll('.teacher-illegal-square-mark').forEach((mark) => mark.remove());
   }
@@ -286,31 +309,34 @@ function installTeacherBoardIllegalMoveSupport() {
   function renderMarkers() {
     markerFrame = 0;
     clearRenderedMarkers();
-    if (!illegalMove) {
-      notice.hidden = true;
-      notice.textContent = '';
-      return;
+
+    if (forcedSelectedSquare) {
+      boardGrid.querySelector(`[data-square="${forcedSelectedSquare}"]`)?.classList.add('teacher-forced-selected');
     }
 
-    const fromSquare = boardGrid.querySelector(`[data-square="${illegalMove.from}"]`);
-    const toSquare = boardGrid.querySelector(`[data-square="${illegalMove.to}"]`);
-    if (fromSquare) {
-      fromSquare.classList.add('teacher-illegal-from');
-      const mark = document.createElement('span');
-      mark.className = 'teacher-illegal-square-mark';
-      mark.setAttribute('aria-hidden', 'true');
-      fromSquare.append(mark);
-    }
-    if (toSquare) {
-      toSquare.classList.add('teacher-illegal-to');
-      const mark = document.createElement('span');
-      mark.className = 'teacher-illegal-square-mark';
-      mark.setAttribute('aria-hidden', 'true');
-      toSquare.append(mark);
+    if (illegalMove) {
+      const fromSquare = boardGrid.querySelector(`[data-square="${illegalMove.from}"]`);
+      const toSquare = boardGrid.querySelector(`[data-square="${illegalMove.to}"]`);
+      if (fromSquare) {
+        fromSquare.classList.add('teacher-illegal-from');
+        const mark = document.createElement('span');
+        mark.className = 'teacher-illegal-square-mark';
+        mark.setAttribute('aria-hidden', 'true');
+        fromSquare.append(mark);
+      }
+      if (toSquare) {
+        toSquare.classList.add('teacher-illegal-to');
+        const mark = document.createElement('span');
+        mark.className = 'teacher-illegal-square-mark';
+        mark.setAttribute('aria-hidden', 'true');
+        toSquare.append(mark);
+      }
     }
 
-    notice.textContent = illegalMove.message;
-    notice.hidden = false;
+    const message = illegalMove?.message || selectionMessage;
+    notice.textContent = message || '';
+    notice.hidden = !message;
+    notice.classList.toggle('is-selection', Boolean(selectionMessage && !illegalMove));
   }
 
   function scheduleMarkerRender() {
@@ -320,10 +346,20 @@ function installTeacherBoardIllegalMoveSupport() {
     markerFrame = window.requestAnimationFrame(renderMarkers);
   }
 
+  function clearForcedSelection() {
+    forcedSelectedSquare = '';
+    selectionMessage = '';
+  }
+
   function clearIllegalMove() {
     illegalMove = null;
     pendingIllegalFen = '';
     scheduleMarkerRender();
+  }
+
+  function clearTeacherIllegalState() {
+    clearForcedSelection();
+    clearIllegalMove();
   }
 
   function currentFen() {
@@ -331,14 +367,17 @@ function installTeacherBoardIllegalMoveSupport() {
   }
 
   function showIllegalMove(from, to, result) {
+    const moverColor = colorName(pieceColor(result.piece));
     const mover = pieceName(result.piece);
+    const suffix = result.outOfTurn ? ' - wrong side to move' : '';
     illegalMove = {
       from,
       to,
       message: result.blocked
         ? `Illegal move: ${result.reason}`
-        : `Illegal move shown: ${mover} ${from} to ${to}`,
+        : `Illegal move shown: ${moverColor} ${mover} ${from} to ${to}${suffix}`,
     };
+    clearForcedSelection();
     scheduleMarkerRender();
   }
 
@@ -366,38 +405,64 @@ function installTeacherBoardIllegalMoveSupport() {
       return;
     }
 
-    const selectedSquare = boardGrid.querySelector('.board-square.selected');
-    if (!selectedSquare) {
-      if (illegalMove) {
-        clearIllegalMove();
-      }
-      return;
-    }
-
-    const from = selectedSquare.dataset.square || '';
-    const to = targetSquare.dataset.square || '';
-    if (!SQUARE_PATTERN.test(from) || !SQUARE_PATTERN.test(to) || from === to) {
-      return;
-    }
-
-    if (targetSquare.classList.contains('legal-target') || targetSquare.classList.contains('legal-capture')) {
-      clearIllegalMove();
-      return;
-    }
-
     const parsed = parseFen(currentFen());
     if (!parsed) {
       return;
     }
-    const movingPiece = parsed.pieces[from] || '';
-    const targetPiece = parsed.pieces[to] || '';
-    if (!movingPiece || pieceColor(movingPiece) !== parsed.activeColor) {
+
+    const to = targetSquare.dataset.square || '';
+    if (!SQUARE_PATTERN.test(to)) {
       return;
     }
 
-    // Clicking another friendly piece remains normal selection behavior.
-    if (targetPiece && pieceColor(targetPiece) === parsed.activeColor) {
-      clearIllegalMove();
+    const appSelectedSquare = boardGrid.querySelector('.board-square.selected')?.dataset.square || '';
+    const from = forcedSelectedSquare || appSelectedSquare;
+
+    if (!from) {
+      const selectedPiece = parsed.pieces[to] || '';
+      if (selectedPiece && pieceColor(selectedPiece) !== parsed.activeColor) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        clearIllegalMove();
+        forcedSelectedSquare = to;
+        selectionMessage = `Illegal move setup: ${colorName(pieceColor(selectedPiece))} ${pieceName(selectedPiece)} selected out of turn`;
+        scheduleMarkerRender();
+        return;
+      }
+      if (illegalMove || forcedSelectedSquare) {
+        clearTeacherIllegalState();
+      }
+      return;
+    }
+
+    if (from === to) {
+      if (forcedSelectedSquare) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        clearTeacherIllegalState();
+      }
+      return;
+    }
+
+    if (!forcedSelectedSquare
+      && (targetSquare.classList.contains('legal-target') || targetSquare.classList.contains('legal-capture'))) {
+      clearTeacherIllegalState();
+      return;
+    }
+
+    const movingPiece = parsed.pieces[from] || '';
+    if (!movingPiece) {
+      clearTeacherIllegalState();
+      return;
+    }
+
+    // Let the normal app switch selection between pieces belonging to the legal
+    // side to move. A forced out-of-turn selection remains under this module.
+    const targetPiece = parsed.pieces[to] || '';
+    if (!forcedSelectedSquare
+      && targetPiece
+      && pieceColor(targetPiece) === parsed.activeColor) {
+      clearTeacherIllegalState();
       return;
     }
 
@@ -420,14 +485,14 @@ function installTeacherBoardIllegalMoveSupport() {
         return;
       }
       baselineFen = nextFen || baselineFen;
-      clearIllegalMove();
+      clearTeacherIllegalState();
       return;
     }
 
     if ((data.type === 'teacherBoardAction' || data.type === 'boardOnlyAction') && typeof data.action === 'string') {
       if (data.action === 'reset') {
         event.stopImmediatePropagation();
-        clearIllegalMove();
+        clearTeacherIllegalState();
         window.postMessage({ type: 'loadFen', fen: baselineFen }, window.location.origin);
         return;
       }
@@ -436,13 +501,13 @@ function installTeacherBoardIllegalMoveSupport() {
         || data.action === 'lessonTeacherBoard'
         || data.action === 'enterTeacherSetup'
         || data.action === 'showSetup') {
-        clearIllegalMove();
+        clearTeacherIllegalState();
       }
     }
   }, true);
 
   const observer = new MutationObserver(() => {
-    if (illegalMove) {
+    if (illegalMove || forcedSelectedSquare) {
       scheduleMarkerRender();
     }
   });
