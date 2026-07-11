@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Opening Principles and the Goal of Chess — Bishop Level Module 1</title>
+  <meta name="description" content="Use opening principles as flexible thinking tools while keeping checkmate as the ultimate objective.">
+  <style>
+
+    :root {
+      --bg: #071012;
+      --bg-2: #0b1517;
+      --panel: rgba(27, 42, 46, 0.92);
+      --panel-strong: rgba(28, 43, 48, 0.98);
+      --text: #f7faf5;
+      --muted: #b9c6c3;
+      --line: rgba(52, 74, 78, 0.92);
+      --gold: #8ad8b7;
+      --blue: #3d8dff;
+      --green: #65d28a;
+      --orange: #ffae5a;
+      --red: #ff6b6b;
+      --purple: #b990ff;
+      --shadow: 0 22px 60px rgba(0,0,0,.45);
+      --radius: 24px;
+      --max: 1180px;
+    }
+
+    [data-theme="light"] {
+      --bg: #f6f7f8;
+      --bg-2: #edf1f3;
+      --panel: rgba(255, 255, 255, 0.94);
+      --panel-strong: rgba(255, 255, 255, 0.98);
+      --text: #172127;
+      --muted: #52606a;
+      --line: rgba(190, 202, 207, 0.9);
+      --shadow: 0 20px 50px rgba(17,28,35,0.16);
+      --gold: #1d6f78;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      line-height: 1.55;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -20%, color-mix(in srgb, var(--gold) 14%, transparent) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 50% at 80% 20%, color-mix(in srgb, var(--gold) 10%, transparent) 0%, transparent 60%),
+        linear-gradient(180deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 96%, var(--muted)) 52%, color-mix(in srgb, var(--bg) 92%, var(--muted)) 100%);
+      overflow-x: hidden;
+    }
+
+    img { max-width: 100%; height: auto; display: block; }
+    a { color: inherit; }
+    button { font: inherit; }
+
+    .skip-link {
+      position: absolute;
+      left: -999px;
+      top: 1rem;
+      background: var(--gold);
+      color: #111827;
+      padding: .65rem 1rem;
+      border-radius: 999px;
+      z-index: 999;
+    }
+    .skip-link:focus { left: 1rem; }
+
+    .index-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(16px);
+      background: color-mix(in srgb, var(--bg) 82%, transparent);
+      border-bottom: 1px solid var(--line);
+    }
+    .index-header-inner {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: .7rem 0;
+    }
+    .index-brand { display: flex; align-items: center; gap: .75rem; min-width: 0; }
+    .index-brand-icon {
+      width: 2.55rem;
+      height: 2.55rem;
+      flex: 0 0 auto;
+      border-radius: .85rem;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--gold), color-mix(in srgb, var(--gold) 30%, transparent));
+      color: #13203a;
+      font-size: 1.45rem;
+      box-shadow: 0 10px 30px color-mix(in srgb, var(--gold) 25%, transparent);
+    }
+    .index-brand-label { color: var(--gold); font-size: .78rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+    .index-brand-title { font-weight: 850; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .index-top-actions { display: flex; align-items: center; justify-content: flex-end; gap: .5rem; flex-wrap: wrap; }
+    .toolbar-link {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: .55rem .9rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform .18s ease, background .18s ease;
+    }
+    .toolbar-link:hover { transform: translateY(-1px); background: var(--panel-strong); }
+
+    .progress { height: 3px; background: rgba(255,255,255,.08); position: sticky; top: 64px; z-index: 29; }
+    .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--gold), var(--green), var(--blue)); }
+
+    .page { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; }
+    .hero {
+      padding: clamp(2rem, 4vw, 4rem) 0 1.4rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 540px);
+      gap: clamp(1.25rem, 4vw, 3rem);
+      align-items: center;
+    }
+    .kicker {
+      color: var(--gold);
+      text-transform: uppercase;
+      font-weight: 850;
+      letter-spacing: .14em;
+      font-size: .85rem;
+      margin: 0 0 .75rem;
+    }
+    h1, h2, h3 { line-height: 1.08; margin: 0; }
+    h1 { font-size: clamp(2.35rem, 7vw, 5.4rem); letter-spacing: -.055em; }
+    h2 { font-size: clamp(1.65rem, 4vw, 3.05rem); letter-spacing: -.035em; }
+    h3 { font-size: clamp(1.18rem, 2.2vw, 1.55rem); letter-spacing: -.015em; }
+    .lead { font-size: clamp(1.05rem, 1.9vw, 1.3rem); color: var(--muted); max-width: 64ch; }
+    .hero-card {
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--line);
+      background: var(--panel);
+      margin: 0;
+    }
+    .hero-card img { width: 100%; cursor: zoom-in; }
+    .hero-card figcaption { color: var(--muted); font-size: .9rem; padding: .75rem 1rem; border-top: 1px solid var(--line); }
+
+    .objective-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .8rem;
+      margin: 1rem 0 2rem;
+    }
+    .objective {
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel);
+      min-height: 8rem;
+    }
+    .objective strong { display: block; margin-bottom: .45rem; font-size: 1.03rem; }
+    .objective span { color: var(--muted); font-size: .95rem; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 245px minmax(0, 1fr);
+      gap: 1.25rem;
+      align-items: start;
+      padding: 1rem 0 4rem;
+    }
+    .toc {
+      position: sticky;
+      top: 5.2rem;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--panel);
+      padding: 1rem;
+      max-height: calc(100vh - 6rem);
+      overflow: auto;
+    }
+    .toc-title { font-weight: 850; margin-bottom: .7rem; color: var(--gold); }
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--muted);
+      padding: .55rem .65rem;
+      border-radius: 12px;
+      font-size: .95rem;
+    }
+    .toc a:hover { color: var(--text); background: var(--panel-strong); }
+
+    main { min-width: 0; }
+    .lesson-section {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: var(--radius);
+      padding: clamp(1rem, 3vw, 2rem);
+      margin-bottom: 1.1rem;
+      box-shadow: 0 14px 40px rgba(0,0,0,.14);
+      scroll-margin-top: 5.5rem;
+    }
+    .section-head { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1rem; }
+    .number {
+      flex: 0 0 auto;
+      width: 2.45rem;
+      height: 2.45rem;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      font-weight: 900;
+      color: #111827;
+      background: var(--gold);
+      box-shadow: 0 10px 22px color-mix(in srgb, var(--gold) 28%, transparent);
+    }
+    .section-text p { color: var(--muted); margin: .75rem 0 0; }
+    .section-text p:first-of-type { margin-top: .75rem; }
+    .figure {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(0,0,0,.18);
+      margin: 1.2rem 0 0;
+    }
+    .figure img { width: 100%; cursor: zoom-in; }
+    .figure figcaption {
+      color: var(--muted);
+      font-size: .92rem;
+      padding: .8rem 1rem;
+      border-top: 1px solid var(--line);
+      background: rgba(0,0,0,.12);
+    }
+
+    .two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, .9fr); gap: 1rem; align-items: start; }
+    .callout {
+      border: 1px solid color-mix(in srgb, var(--gold) 42%, var(--line));
+      border-radius: 20px;
+      padding: 1rem;
+      background: color-mix(in srgb, var(--gold) 12%, var(--panel));
+    }
+    .callout-title { color: var(--gold); font-weight: 900; margin-bottom: .35rem; }
+    ul.clean, ol.clean { padding-left: 1.25rem; margin: .7rem 0 0; color: var(--muted); }
+    ul.clean li, ol.clean li { margin: .38rem 0; }
+
+    .concept-grid, .remember-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .75rem;
+      margin-top: 1rem;
+    }
+    .concept-card, .remember-item {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1rem;
+      background: rgba(255,255,255,.055);
+    }
+    .concept-card strong, .remember-item strong { color: var(--gold); display: block; margin-bottom: .25rem; }
+    .concept-card p, .remember-item p { color: var(--muted); margin: .35rem 0 0; }
+
+    .checklist {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: .65rem;
+      margin-top: 1rem;
+    }
+    .check-item {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: .9rem;
+      text-align: center;
+      background: rgba(255,255,255,.055);
+      font-weight: 800;
+    }
+    .check-item span { display: block; color: var(--gold); font-size: 1.35rem; margin-bottom: .25rem; }
+
+    details.quiz {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.055);
+      border-radius: 16px;
+      padding: .9rem 1rem;
+      margin-top: .75rem;
+    }
+    details.quiz summary { cursor: pointer; font-weight: 800; }
+    details.quiz p { color: var(--muted); margin-bottom: 0; }
+
+    .lesson-nav-row { display: flex; justify-content: space-between; gap: 1rem; margin-top: 1.5rem; }
+    .lesson-nav-row a {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: .55rem .9rem;
+      text-decoration: none;
+      transition: transform .18s ease, background .18s ease;
+    }
+    .lesson-nav-row a:hover { transform: translateY(-1px); background: var(--panel-strong); }
+
+    .footer {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      padding: 2rem 0 3rem;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+    }
+
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: none;
+      place-items: center;
+      padding: 1rem;
+      background: rgba(0,0,0,.88);
+      backdrop-filter: blur(9px);
+    }
+    .lightbox.open { display: grid; }
+    .lightbox img { max-width: min(96vw, 1500px); max-height: 91vh; border-radius: 18px; box-shadow: 0 28px 100px rgba(0,0,0,.7); }
+    .lightbox-close {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      width: 2.8rem;
+      height: 2.8rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.3);
+      background: rgba(20,20,20,.8);
+      color: white;
+      cursor: pointer;
+      font-size: 1.35rem;
+    }
+
+    @media (max-width: 980px) {
+      .hero { grid-template-columns: 1fr; }
+      .layout { grid-template-columns: 1fr; }
+      .toc { position: static; max-height: none; overflow-x: auto; white-space: nowrap; }
+      .toc a { display: inline-block; }
+      .objective-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 720px) {
+      .index-header-inner, .page, .footer { width: min(100% - 22px, var(--max)); }
+      .index-header-inner { align-items: flex-start; }
+      .index-brand-title { max-width: 48vw; }
+      .index-top-actions { gap: .35rem; }
+      .toolbar-link { padding: .48rem .72rem; font-size: .88rem; }
+      .objective-grid, .concept-grid, .remember-list, .two-col, .checklist { grid-template-columns: 1fr; }
+      .lesson-section { border-radius: 18px; }
+      .section-head { gap: .75rem; }
+      .number { width: 2.15rem; height: 2.15rem; }
+      h1 { font-size: clamp(2.3rem, 14vw, 4rem); }
+    }
+
+    @media print {
+      :root, [data-theme="light"], [data-theme="dark"] {
+        --bg: #ffffff;
+        --bg-2: #ffffff;
+        --panel: #ffffff;
+        --panel-strong: #ffffff;
+        --text: #111827;
+        --muted: #374151;
+        --line: #d1d5db;
+        --shadow: none;
+      }
+      body { background: #ffffff; }
+      .no-print, .toc, .progress, .lightbox { display: none !important; }
+      .page, .footer { width: 100%; }
+      .hero { padding-top: 0; }
+      .layout { display: block; padding: 0; }
+      .lesson-section, .objective, .concept-card, .remember-item { break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
+      .figure, img, table { break-inside: avoid; page-break-inside: avoid; }
+    }
+
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#lesson">Skip to lesson</a>
+  <header class="index-header no-print">
+    <div class="index-header-inner">
+      <div class="index-brand">
+        <div class="index-brand-icon" aria-hidden="true">♞</div>
+        <div>
+          <div class="index-brand-label">Bishop Level</div>
+          <div class="index-brand-title">Opening Principles and the Goal of Chess</div>
+        </div>
+      </div>
+      <div class="index-top-actions">
+        <a class="toolbar-link" href="bishop-index.html">&larr; Back to Bishop Index</a>
+        <button class="toolbar-link" type="button" id="themeToggle">Toggle theme</button>
+        <button class="toolbar-link" type="button" onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </div>
+  </header>
+  <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+
+  <div class="page">
+    <section class="hero" id="top">
+      <div>
+        <p class="kicker">Lesson 3 · Bishop Level · Module 1</p>
+        <h1>Opening Principles and the Goal of Chess</h1>
+        <p class="lead">Use opening principles as flexible thinking tools while keeping checkmate as the ultimate objective.</p>
+        <div class="objective-grid" aria-label="Learning objectives">
+          <div class="objective"><strong>Use a thinking process</strong><span>Replace mechanical rule-following with observation, evaluation, planning, and reassessment.</span></div>
+          <div class="objective"><strong>Treat rules as guidelines</strong><span>Know when concrete tactical or strategic reasons justify an exception.</span></div>
+          <div class="objective"><strong>Aim toward checkmate</strong><span>Understand how king protection must often be weakened before the final attack.</span></div>
+          <div class="objective"><strong>Choose durable principles</strong><span>Use principles that remain useful across openings, styles, and levels of experience.</span></div>
+        </div>
+      </div>
+      <figure class="hero-card">
+        <img class="lesson-zoomable" src="bishop_m1/intermediate-m1-lesson-03-opening-principles-and-goal-of-chess.png" width="1448" height="1086" decoding="async" alt="Opening principles infographic showing structured thinking, flexible guidelines, and checkmate as the ultimate goal.">
+        <figcaption>Opening guidelines support clear thinking, while the ultimate objective remains checkmate.</figcaption>
+      </figure>
+    </section>
+
+    <div class="layout" id="lesson">
+      <nav class="toc" aria-label="Lesson contents">
+        <div class="toc-title">Contents</div>
+        <a href="#thinking">1. Five Thinking Principles</a>
+        <a href="#guidelines">2. Opening Guidelines</a>
+        <a href="#exceptions">3. When to Break a Guideline</a>
+        <a href="#goal">4. The Ultimate Goal</a>
+        <a href="#dismantle">5. Dismantling King Protection</a>
+        <a href="#quality">6. What Good Principles Should Do</a>
+        <a href="#remember">7. Remember</a>
+        <a href="#check">Review Questions</a>
+      </nav>
+
+      <main>
+        <section class="lesson-section" id="thinking">
+          <div class="section-head">
+            <div class="number">1</div>
+            <div class="section-text">
+              <h2>Five Thinking Principles</h2>
+            </div>
+          </div>
+          <p>A chess player should use a consistent thinking process rather than simply memorize isolated opening rules.</p>
+          <div class="checklist">
+            <div class="check-item"><span>1</span>Observe</div>
+            <div class="check-item"><span>2</span>Identify</div>
+            <div class="check-item"><span>3</span>Evaluate</div>
+            <div class="check-item"><span>4</span>Plan</div>
+            <div class="check-item"><span>5</span>Reassess</div>
+          </div>
+        </section>
+        <section class="lesson-section" id="guidelines">
+          <div class="section-head">
+            <div class="number">2</div>
+            <div class="section-text">
+              <h2>Opening Guidelines</h2>
+            </div>
+          </div>
+          <p>Traditional opening advice includes:</p>
+          <ul class="clean">
+            <li>Do not make too many pawn moves.</li>
+            <li>Do not move the same piece twice.</li>
+          </ul>
+          <p>However, these rules are guidelines rather than absolute laws.</p>
+          <div class="callout" style="margin-top:1rem"><div class="callout-title">Guidelines, not absolute laws</div>These rules normally promote efficient development, but the needs of the position take priority over mechanical obedience.</div>
+        </section>
+        <section class="lesson-section" id="exceptions">
+          <div class="section-head">
+            <div class="number">3</div>
+            <div class="section-text">
+              <h2>When to Break a Guideline</h2>
+            </div>
+          </div>
+          <p>A position may require a player to break an opening guideline when there is a concrete tactical or strategic reason.</p>
+          <div class="concept-grid">
+            <div class="concept-card"><strong>Tactical reason</strong><p>Win material, prevent a forcing line, deliver checkmate, or create a decisive threat.</p></div>
+            <div class="concept-card"><strong>Strategic reason</strong><p>Gain space, improve the pawn structure, restrict the opponent, or carry out a long-term plan.</p></div>
+          </div>
+          <p>The exception must be justified by calculation or positional understanding&mdash;not by impatience or habit.</p>
+        </section>
+        <section class="lesson-section" id="goal">
+          <div class="section-head">
+            <div class="number">4</div>
+            <div class="section-text">
+              <h2>The Ultimate Goal</h2>
+            </div>
+          </div>
+          <p>The ultimate goal in chess is to <strong>checkmate the opponent&rsquo;s king</strong>.</p>
+          <p>Before checkmate can be achieved, a player often needs to dismantle the king&rsquo;s protection.</p>
+          <div class="callout"><div class="callout-title">Keep the objective in view</div>Good opening play does not win by itself. It creates the conditions for effective middlegame and endgame decisions.</div>
+        </section>
+        <section class="lesson-section" id="dismantle">
+          <div class="section-head">
+            <div class="number">5</div>
+            <div class="section-text">
+              <h2>Dismantling the King&rsquo;s Protection</h2>
+            </div>
+          </div>
+          <p>This may involve:</p>
+          <div class="concept-grid">
+            <div class="concept-card"><strong>Remove defenders</strong><p>Exchange, deflect, pin, overload, or capture the pieces guarding the king.</p></div>
+            <div class="concept-card"><strong>Open lines</strong><p>Open files, ranks, or diagonals so attacking pieces can reach the king.</p></div>
+            <div class="concept-card"><strong>Create weaknesses</strong><p>Induce pawn moves, exposed squares, or a weakened dark- or light-square complex.</p></div>
+            <div class="concept-card"><strong>Combine forces</strong><p>Use tactical combinations within a strategic attacking plan.</p></div>
+          </div>
+        </section>
+        <section class="lesson-section" id="quality">
+          <div class="section-head">
+            <div class="number">6</div>
+            <div class="section-text">
+              <h2>What Good Opening Principles Should Do</h2>
+            </div>
+          </div>
+          <p>Good opening principles should:</p>
+          <ul class="clean">
+            <li>Be compatible with established opening theory.</li>
+            <li>Be useful in different openings and styles of play.</li>
+            <li>Work in tactical, positional, and defensive positions.</li>
+            <li>Help the player develop a correct thinking process.</li>
+            <li>Continue to support improvement as the player gains experience.</li>
+          </ul>
+        </section>
+        <section class="lesson-section" id="remember">
+          <div class="section-head">
+            <div class="number">7</div>
+            <div class="section-text">
+              <h2>Remember</h2>
+            </div>
+          </div>
+          <p>This lesson teaches that opening principles should guide a player&rsquo;s thinking process, not replace it. Opening rules are useful guidelines, but they may be broken when tactics or strategy demand it. The ultimate goal of chess is checkmate, and good opening principles should support sound decisions, work across different styles, and continue helping the player improve.</p>
+          <div class="remember-list">
+            <div class="remember-item"><strong>Think, do not merely recite</strong>Rules should trigger evaluation rather than automatic moves.</div>
+            <div class="remember-item"><strong>Concrete reasons permit exceptions</strong>Tactics and strategy can justify breaking a normal guideline.</div>
+            <div class="remember-item"><strong>Checkmate is the final goal</strong>Other advantages are tools for reaching a winning result.</div>
+            <div class="remember-item"><strong>Principles should transfer</strong>They should remain useful across openings, styles, and stages of development.</div>
+          </div>
+        </section>
+        <section class="lesson-section" id="check">
+          <div class="section-head">
+            <div class="number">✓</div>
+            <div class="section-text">
+              <h2>Review Questions</h2>
+              <p>Open each question to check your understanding.</p>
+            </div>
+          </div>
+          <details class="quiz"><summary>1. Why should opening principles not be memorized mechanically?</summary><p>Because every position has concrete features that must be observed, evaluated, and calculated.</p></details>
+          <details class="quiz"><summary>2. When may a player move the same piece twice in the opening?</summary><p>When a tactical or strategic reason&mdash;such as winning material, meeting a threat, or improving the position&mdash;justifies it.</p></details>
+          <details class="quiz"><summary>3. What is the ultimate goal of chess?</summary><p>To checkmate the opponent&rsquo;s king.</p></details>
+          <details class="quiz"><summary>4. How can a player dismantle the king&rsquo;s protection?</summary><p>By removing defenders, opening lines, creating weaknesses, using tactical combinations, and coordinating a strategic attack.</p></details>
+          <details class="quiz"><summary>5. What makes an opening principle useful?</summary><p>It should agree with sound theory, transfer across styles and openings, improve thinking, and remain useful as experience grows.</p></details>
+          <div class="lesson-nav-row"><a href="bishop-m1-lesson-02-components-of-a-chess-foundation.html">&larr; Lesson 2: The Components of a Chess Foundation</a><a href="bishop-m1-lesson-04-the-point-system.html">Lesson 4: The Point System &rarr;</a></div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <strong>End of Lesson 3:</strong> Opening Principles and the Goal of Chess. Bishop Level Module 1.
+  </footer>
+
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Expanded lesson image">
+    <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Close expanded image">×</button>
+    <img id="lightboxImage" alt="">
+  </div>
+
+  <script>
+
+    const root = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const storedTheme = localStorage.getItem('chess-lesson-theme');
+    if (storedTheme === 'light' || storedTheme === 'dark') root.dataset.theme = storedTheme;
+    themeToggle?.addEventListener('click', () => {
+      root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('chess-lesson-theme', root.dataset.theme);
+    });
+
+    const progressBar = document.getElementById('progressBar');
+    const updateProgress = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = max > 0 ? (window.scrollY / max) * 100 : 0;
+      if (progressBar) progressBar.style.width = Math.min(100, Math.max(0, pct)) + '%';
+    };
+    updateProgress();
+    window.addEventListener('scroll', updateProgress, { passive: true });
+
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImage = document.getElementById('lightboxImage');
+    const closeLightbox = () => {
+      lightbox?.classList.remove('open');
+      if (lightboxImage) lightboxImage.removeAttribute('src');
+      document.body.style.overflow = '';
+    };
+    document.querySelectorAll('.lesson-zoomable').forEach((image) => {
+      image.addEventListener('click', () => {
+        if (!lightbox || !lightboxImage) return;
+        lightboxImage.src = image.currentSrc || image.src;
+        lightboxImage.alt = image.alt || '';
+        lightbox.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+    document.getElementById('lightboxClose')?.addEventListener('click', closeLightbox);
+    lightbox?.addEventListener('click', (event) => { if (event.target === lightbox) closeLightbox(); });
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeLightbox(); });
+
+  </script>
+</body>
+</html>

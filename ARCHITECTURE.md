@@ -22,7 +22,12 @@ instead of treating all markings as one theme-colored layer.
    lesson helpers. Four modules are published: Module 1 foundations, Module 2
    piece movement, Module 3 attack/check/stalemate, and Module 4 rook/queen
    checkmates and checkmate-vs-stalemate practice.
-3. **Piece Asset Pipeline** (`mpchess-pieces/` → `assets/pieces/mpchess/*.svg`) — the
+3. **Bishop Level Lesson Site** (`lessons/bishop-index.html`,
+   `lessons/bishop-m1-lesson-*.html`) — a post-beginner curriculum of static
+   HTML lesson pages following the same conventions as Pawn Level. Module 1
+   (Bishop M1) covers opening principles: control the center, develop pieces,
+   king safety, common opening mistakes, and pawn structure.
+4. **Piece Asset Pipeline** (`mpchess-pieces/` → `assets/pieces/mpchess/*.svg`) — the
    `mpchess` chess font is authored in MetaPost/LuaLaTeX and exported to the 12
    Unicode-free SVG piece images used by both the SPA and the lesson pages.
 
@@ -51,6 +56,10 @@ chess-study/
 │   │   └── … -lesson-13-…
 │   ├── pawn-m3-lesson-01-…      Pawn Level MODULE 3 lessons (self-contained HTML)
 │   │   └── … -lesson-12-…
+│   ├── bishop-index.html        Bishop Level curriculum table of contents
+│   ├── bishop-m1-lesson-01-…    Bishop Level MODULE 1 lessons (self-contained HTML)
+│   │   └── … -lesson-05-…
+│   ├── bishop_m1/               Bishop M1 asset images (PNG)
 │   ├── index.html               (legacy) Endgame lesson index / landing page
 │   ├── endgame-lesson.css       Shared lesson page styles (~1,116 lines)
 │   ├── endgame-lesson.js        Vanilla FEN→board renderer for endgame pages
@@ -1151,7 +1160,7 @@ in `assets/pieces/mpchess/`.
 
 ## Conventions checklist (for contributors)
 
-When editing Pawn Level lessons, preserve:
+When editing Pawn Level or Bishop Level lessons, preserve:
 
 - [ ] Board orientation: rank 8 top, rank 1 bottom, a–h left→right.
 - [ ] Stars: absolute `translate(-50%,-50%)` centering; use `.neutral/.red/.blue/.yellow`.

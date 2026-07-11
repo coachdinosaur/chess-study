@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Components of a Chess Foundation — Bishop Level Module 1</title>
+  <meta name="description" content="Explore the principles, tactics, strategy, theory, and mental discipline that form a complete chess foundation.">
+  <style>
+
+    :root {
+      --bg: #071012;
+      --bg-2: #0b1517;
+      --panel: rgba(27, 42, 46, 0.92);
+      --panel-strong: rgba(28, 43, 48, 0.98);
+      --text: #f7faf5;
+      --muted: #b9c6c3;
+      --line: rgba(52, 74, 78, 0.92);
+      --gold: #8ad8b7;
+      --blue: #3d8dff;
+      --green: #65d28a;
+      --orange: #ffae5a;
+      --red: #ff6b6b;
+      --purple: #b990ff;
+      --shadow: 0 22px 60px rgba(0,0,0,.45);
+      --radius: 24px;
+      --max: 1180px;
+    }
+
+    [data-theme="light"] {
+      --bg: #f6f7f8;
+      --bg-2: #edf1f3;
+      --panel: rgba(255, 255, 255, 0.94);
+      --panel-strong: rgba(255, 255, 255, 0.98);
+      --text: #172127;
+      --muted: #52606a;
+      --line: rgba(190, 202, 207, 0.9);
+      --shadow: 0 20px 50px rgba(17,28,35,0.16);
+      --gold: #1d6f78;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      line-height: 1.55;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -20%, color-mix(in srgb, var(--gold) 14%, transparent) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 50% at 80% 20%, color-mix(in srgb, var(--gold) 10%, transparent) 0%, transparent 60%),
+        linear-gradient(180deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 96%, var(--muted)) 52%, color-mix(in srgb, var(--bg) 92%, var(--muted)) 100%);
+      overflow-x: hidden;
+    }
+
+    img { max-width: 100%; height: auto; display: block; }
+    a { color: inherit; }
+    button { font: inherit; }
+
+    .skip-link {
+      position: absolute;
+      left: -999px;
+      top: 1rem;
+      background: var(--gold);
+      color: #111827;
+      padding: .65rem 1rem;
+      border-radius: 999px;
+      z-index: 999;
+    }
+    .skip-link:focus { left: 1rem; }
+
+    .index-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(16px);
+      background: color-mix(in srgb, var(--bg) 82%, transparent);
+      border-bottom: 1px solid var(--line);
+    }
+    .index-header-inner {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: .7rem 0;
+    }
+    .index-brand { display: flex; align-items: center; gap: .75rem; min-width: 0; }
+    .index-brand-icon {
+      width: 2.55rem;
+      height: 2.55rem;
+      flex: 0 0 auto;
+      border-radius: .85rem;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--gold), color-mix(in srgb, var(--gold) 30%, transparent));
+      color: #13203a;
+      font-size: 1.45rem;
+      box-shadow: 0 10px 30px color-mix(in srgb, var(--gold) 25%, transparent);
+    }
+    .index-brand-label { color: var(--gold); font-size: .78rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+    .index-brand-title { font-weight: 850; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .index-top-actions { display: flex; align-items: center; justify-content: flex-end; gap: .5rem; flex-wrap: wrap; }
+    .toolbar-link {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: .55rem .9rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform .18s ease, background .18s ease;
+    }
+    .toolbar-link:hover { transform: translateY(-1px); background: var(--panel-strong); }
+
+    .progress { height: 3px; background: rgba(255,255,255,.08); position: sticky; top: 64px; z-index: 29; }
+    .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--gold), var(--green), var(--blue)); }
+
+    .page { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; }
+    .hero {
+      padding: clamp(2rem, 4vw, 4rem) 0 1.4rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 540px);
+      gap: clamp(1.25rem, 4vw, 3rem);
+      align-items: center;
+    }
+    .kicker {
+      color: var(--gold);
+      text-transform: uppercase;
+      font-weight: 850;
+      letter-spacing: .14em;
+      font-size: .85rem;
+      margin: 0 0 .75rem;
+    }
+    h1, h2, h3 { line-height: 1.08; margin: 0; }
+    h1 { font-size: clamp(2.35rem, 7vw, 5.4rem); letter-spacing: -.055em; }
+    h2 { font-size: clamp(1.65rem, 4vw, 3.05rem); letter-spacing: -.035em; }
+    h3 { font-size: clamp(1.18rem, 2.2vw, 1.55rem); letter-spacing: -.015em; }
+    .lead { font-size: clamp(1.05rem, 1.9vw, 1.3rem); color: var(--muted); max-width: 64ch; }
+    .hero-card {
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--line);
+      background: var(--panel);
+      margin: 0;
+    }
+    .hero-card img { width: 100%; cursor: zoom-in; }
+    .hero-card figcaption { color: var(--muted); font-size: .9rem; padding: .75rem 1rem; border-top: 1px solid var(--line); }
+
+    .objective-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .8rem;
+      margin: 1rem 0 2rem;
+    }
+    .objective {
+      padding: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel);
+      min-height: 8rem;
+    }
+    .objective strong { display: block; margin-bottom: .45rem; font-size: 1.03rem; }
+    .objective span { color: var(--muted); font-size: .95rem; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 245px minmax(0, 1fr);
+      gap: 1.25rem;
+      align-items: start;
+      padding: 1rem 0 4rem;
+    }
+    .toc {
+      position: sticky;
+      top: 5.2rem;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--panel);
+      padding: 1rem;
+      max-height: calc(100vh - 6rem);
+      overflow: auto;
+    }
+    .toc-title { font-weight: 850; margin-bottom: .7rem; color: var(--gold); }
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--muted);
+      padding: .55rem .65rem;
+      border-radius: 12px;
+      font-size: .95rem;
+    }
+    .toc a:hover { color: var(--text); background: var(--panel-strong); }
+
+    main { min-width: 0; }
+    .lesson-section {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: var(--radius);
+      padding: clamp(1rem, 3vw, 2rem);
+      margin-bottom: 1.1rem;
+      box-shadow: 0 14px 40px rgba(0,0,0,.14);
+      scroll-margin-top: 5.5rem;
+    }
+    .section-head { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1rem; }
+    .number {
+      flex: 0 0 auto;
+      width: 2.45rem;
+      height: 2.45rem;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      font-weight: 900;
+      color: #111827;
+      background: var(--gold);
+      box-shadow: 0 10px 22px color-mix(in srgb, var(--gold) 28%, transparent);
+    }
+    .section-text p { color: var(--muted); margin: .75rem 0 0; }
+    .section-text p:first-of-type { margin-top: .75rem; }
+    .figure {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(0,0,0,.18);
+      margin: 1.2rem 0 0;
+    }
+    .figure img { width: 100%; cursor: zoom-in; }
+    .figure figcaption {
+      color: var(--muted);
+      font-size: .92rem;
+      padding: .8rem 1rem;
+      border-top: 1px solid var(--line);
+      background: rgba(0,0,0,.12);
+    }
+
+    .two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, .9fr); gap: 1rem; align-items: start; }
+    .callout {
+      border: 1px solid color-mix(in srgb, var(--gold) 42%, var(--line));
+      border-radius: 20px;
+      padding: 1rem;
+      background: color-mix(in srgb, var(--gold) 12%, var(--panel));
+    }
+    .callout-title { color: var(--gold); font-weight: 900; margin-bottom: .35rem; }
+    ul.clean, ol.clean { padding-left: 1.25rem; margin: .7rem 0 0; color: var(--muted); }
+    ul.clean li, ol.clean li { margin: .38rem 0; }
+
+    .concept-grid, .remember-list, .value-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .75rem;
+      margin-top: 1rem;
+    }
+    .concept-card, .remember-item, .value-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1rem;
+      background: rgba(255,255,255,.055);
+    }
+    .concept-card strong, .remember-item strong, .value-card strong { color: var(--gold); display: block; margin-bottom: .25rem; }
+    .concept-card p, .value-card p { color: var(--muted); margin: .35rem 0 0; }
+
+    details.quiz {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.055);
+      border-radius: 16px;
+      padding: .9rem 1rem;
+      margin-top: .75rem;
+    }
+    details.quiz summary { cursor: pointer; font-weight: 800; }
+    details.quiz p { color: var(--muted); margin-bottom: 0; }
+
+    .lesson-nav-row { display: flex; justify-content: space-between; gap: 1rem; margin-top: 1.5rem; }
+    .lesson-nav-row a {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: var(--panel);
+      border-radius: 999px;
+      padding: .55rem .9rem;
+      text-decoration: none;
+      transition: transform .18s ease, background .18s ease;
+    }
+    .lesson-nav-row a:hover { transform: translateY(-1px); background: var(--panel-strong); }
+
+    .footer {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      padding: 2rem 0 3rem;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+    }
+
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: none;
+      place-items: center;
+      padding: 1rem;
+      background: rgba(0,0,0,.88);
+      backdrop-filter: blur(9px);
+    }
+    .lightbox.open { display: grid; }
+    .lightbox img { max-width: min(96vw, 1500px); max-height: 91vh; border-radius: 18px; box-shadow: 0 28px 100px rgba(0,0,0,.7); }
+    .lightbox-close {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      width: 2.8rem;
+      height: 2.8rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.3);
+      background: rgba(20,20,20,.8);
+      color: white;
+      cursor: pointer;
+      font-size: 1.35rem;
+    }
+
+    @media (max-width: 980px) {
+      .hero { grid-template-columns: 1fr; }
+      .layout { grid-template-columns: 1fr; }
+      .toc { position: static; max-height: none; overflow-x: auto; white-space: nowrap; }
+      .toc a { display: inline-block; }
+      .objective-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 720px) {
+      .index-header-inner, .page, .footer { width: min(100% - 22px, var(--max)); }
+      .index-header-inner { align-items: flex-start; }
+      .index-brand-title { max-width: 48vw; }
+      .index-top-actions { gap: .35rem; }
+      .toolbar-link { padding: .48rem .72rem; font-size: .88rem; }
+      .objective-grid, .concept-grid, .remember-list, .value-grid, .two-col { grid-template-columns: 1fr; }
+      .lesson-section { border-radius: 18px; }
+      .section-head { gap: .75rem; }
+      .number { width: 2.15rem; height: 2.15rem; }
+      h1 { font-size: clamp(2.3rem, 14vw, 4rem); }
+    }
+
+    @media print {
+      :root, [data-theme="light"], [data-theme="dark"] {
+        --bg: #ffffff;
+        --bg-2: #ffffff;
+        --panel: #ffffff;
+        --panel-strong: #ffffff;
+        --text: #111827;
+        --muted: #374151;
+        --line: #d1d5db;
+        --shadow: none;
+      }
+      body { background: #ffffff; }
+      .no-print, .toc, .progress, .lightbox { display: none !important; }
+      .page, .footer { width: 100%; }
+      .hero { padding-top: 0; }
+      .layout { display: block; padding: 0; }
+      .lesson-section, .objective, .concept-card, .remember-item, .value-card { break-inside: avoid; page-break-inside: avoid; box-shadow: none; }
+      .figure, img, table { break-inside: avoid; page-break-inside: avoid; }
+    }
+
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#lesson">Skip to lesson</a>
+  <header class="index-header no-print">
+    <div class="index-header-inner">
+      <div class="index-brand">
+        <div class="index-brand-icon" aria-hidden="true">♞</div>
+        <div>
+          <div class="index-brand-label">Bishop Level</div>
+          <div class="index-brand-title">The Components of a Chess Foundation</div>
+        </div>
+      </div>
+      <div class="index-top-actions">
+        <a class="toolbar-link" href="bishop-index.html">&larr; Back to Bishop Index</a>
+        <button class="toolbar-link" type="button" id="themeToggle">Toggle theme</button>
+        <button class="toolbar-link" type="button" onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </div>
+  </header>
+  <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+
+  <div class="page">
+    <section class="hero" id="top">
+      <div>
+        <p class="kicker">Lesson 2 · Bishop Level · Module 1</p>
+        <h1>The Components of a Chess Foundation</h1>
+        <p class="lead">Explore the principles, tactics, strategy, theory, and mental discipline that form a complete chess foundation.</p>
+        <div class="objective-grid" aria-label="Learning objectives">
+          <div class="objective"><strong>Apply general principles</strong><span>Use center control, development, activity, protection, and king safety as practical guides.</span></div>
+          <div class="objective"><strong>Recognize tactical devices</strong><span>Identify recurring mechanisms such as forks, pins, deflections, and discovered attacks.</span></div>
+          <div class="objective"><strong>Think strategically</strong><span>Evaluate space, coordination, pawn structure, defense, and long-term plans.</span></div>
+          <div class="objective"><strong>Complete the foundation</strong><span>Connect opening theory, endgame theory, and mental control to practical play.</span></div>
+        </div>
+      </div>
+      <figure class="hero-card">
+        <img class="lesson-zoomable" src="bishop_m1/intermediate-m1-lesson-02-components-of-a-chess-foundation.png" width="1448" height="1086" decoding="async" alt="Chess foundation infographic showing principles, tactics, strategy, opening theory, endgame theory, and mental condition.">
+        <figcaption>A complete foundation joins general principles, pattern knowledge, theory, and mental control.</figcaption>
+      </figure>
+    </section>
+
+    <div class="layout" id="lesson">
+      <nav class="toc" aria-label="Lesson contents">
+        <div class="toc-title">Contents</div>
+        <a href="#overview">1. Foundation Overview</a>
+        <a href="#principles">2. General Chess Principles</a>
+        <a href="#areas">3. Important Chess Concepts</a>
+        <a href="#devices">4. Tactical and Strategic Devices</a>
+        <a href="#theory">5. Chess Theory</a>
+        <a href="#mental">6. Mental Condition</a>
+        <a href="#remember">7. Remember</a>
+        <a href="#check">Review Questions</a>
+      </nav>
+
+      <main>
+        <section class="lesson-section" id="overview">
+          <div class="section-head">
+            <div class="number">1</div>
+            <div class="section-text">
+              <h2>Foundation Overview</h2>
+            </div>
+          </div>
+          <p>A chess player&rsquo;s foundation includes <strong>general principles</strong>, <strong>tactical knowledge</strong>, <strong>strategic knowledge</strong>, <strong>opening theory</strong>, and <strong>endgame theory</strong>.</p>
+          <p>These components should not be studied as isolated subjects. They interact during every serious decision at the board.</p>
+        </section>
+        <section class="lesson-section" id="principles">
+          <div class="section-head">
+            <div class="number">2</div>
+            <div class="section-text">
+              <h2>General Chess Principles</h2>
+            </div>
+          </div>
+          <p>General principles guide piece placement, development, pawn structure, and king safety. They are not rigid laws, but they provide reliable starting points.</p>
+          <div class="two-col">
+            <ul class="clean">
+              <li>Control the center.</li>
+              <li>Develop your pieces.</li>
+              <li>Improve all of your pieces.</li>
+              <li>Keep your pieces protected.</li>
+              <li>Place your pieces on squares that give them maximum space and activity.</li>
+              <li>Create a favorable pawn structure.</li>
+            </ul>
+            <ul class="clean">
+              <li>Avoid doubled or tripled pawns when they create weaknesses.</li>
+              <li>Castle early to make your king safe.</li>
+              <li>Do not bring your queen out too early.</li>
+              <li>Do not move the same piece repeatedly without a good reason.</li>
+              <li>Do not take unnecessary chances.</li>
+            </ul>
+          </div>
+        </section>
+        <section class="lesson-section" id="areas">
+          <div class="section-head">
+            <div class="number">3</div>
+            <div class="section-text">
+              <h2>Important Chess Concepts</h2>
+            </div>
+          </div>
+          <p>A well-rounded player studies several broad areas and understands how they support one another.</p>
+          <div class="concept-grid">
+            <div class="concept-card"><strong>Tactics</strong><p>Short, forcing sequences that use concrete threats and calculation.</p></div>
+            <div class="concept-card"><strong>Strategy</strong><p>Long-term planning based on structure, activity, space, and weaknesses.</p></div>
+            <div class="concept-card"><strong>Defense</strong><p>Recognizing danger, reducing the opponent&rsquo;s options, and surviving pressure.</p></div>
+            <div class="concept-card"><strong>Prophylaxis</strong><p>Anticipating and preventing the opponent&rsquo;s intended plan or threat.</p></div>
+            <div class="concept-card"><strong>Simplification</strong><p>Trading material to reduce complexity when the resulting position is favorable.</p></div>
+          </div>
+        </section>
+        <section class="lesson-section" id="devices">
+          <div class="section-head">
+            <div class="number">4</div>
+            <div class="section-text">
+              <h2>Tactical and Strategic Devices</h2>
+            </div>
+          </div>
+          <p>These recurring devices form part of the pattern vocabulary that strong players use during calculation:</p>
+          <div class="concept-grid">
+            <div class="concept-card"><strong>Direct attacks</strong><p>Fork or double attack, pin, skewer, discovered attack, discovered check, and X-ray attack.</p></div>
+            <div class="concept-card"><strong>Control and redirection</strong><p>Deflection, decoy, interference, and removal of the guard.</p></div>
+            <div class="concept-card"><strong>Move-order devices</strong><p><em>Zwischenzug</em>, or an intermediate move inserted before the expected reply.</p></div>
+            <div class="concept-card"><strong>Restriction</strong><p><em>Zugzwang</em>, where every available move worsens the player&rsquo;s position.</p></div>
+          </div>
+        </section>
+        <section class="lesson-section" id="theory">
+          <div class="section-head">
+            <div class="number">5</div>
+            <div class="section-text">
+              <h2>Chess Theory</h2>
+            </div>
+          </div>
+          <p>A complete chess foundation should include <strong>opening theory</strong> and <strong>endgame theory</strong>.</p>
+          <div class="two-col">
+            <div>
+              <h3>Opening theory</h3>
+              <p>Opening theory helps a player begin efficiently, develop pieces, contest the center, and reach playable middlegame positions.</p>
+            </div>
+            <div>
+              <h3>Endgame theory</h3>
+              <p>Endgame theory teaches exact techniques, king activity, pawn play, conversion of advantages, and defensive methods.</p>
+            </div>
+          </div>
+        </section>
+        <section class="lesson-section" id="mental">
+          <div class="section-head">
+            <div class="number">6</div>
+            <div class="section-text">
+              <h2>Mental Condition</h2>
+            </div>
+          </div>
+          <p>A calm, unstressed mind provides better control over thoughts, emotions, and actions. This improves calculation and decision-making.</p>
+          <p>Stress can weaken that control and interfere with calculation, judgment, emotional discipline, and decision-making.</p>
+          <div class="concept-grid">
+            <div class="concept-card"><strong>Calm condition</strong><p>Clearer thought, balanced emotions, more accurate calculation, and better practical decisions.</p></div>
+            <div class="concept-card"><strong>Stress condition</strong><p>Rushed thinking, emotional reactions, calculation errors, and impulsive decisions.</p></div>
+          </div>
+        </section>
+        <section class="lesson-section" id="remember">
+          <div class="section-head">
+            <div class="number">7</div>
+            <div class="section-text">
+              <h2>Remember</h2>
+            </div>
+          </div>
+          <p>A strong chess foundation is built from principles, tactical knowledge, strategic understanding, opening theory, endgame theory, and the right mental condition. When these elements work together, a player can think more clearly, calculate better, and make stronger decisions.</p>
+          <div class="remember-list">
+            <div class="remember-item"><strong>Principles guide play</strong>They improve development, activity, pawn structure, and king safety.</div>
+            <div class="remember-item"><strong>Patterns improve calculation</strong>Tactical devices become easier to find when their structures are familiar.</div>
+            <div class="remember-item"><strong>Theory completes knowledge</strong>Opening and endgame theory support the beginning and conclusion of the game.</div>
+            <div class="remember-item"><strong>Mental control matters</strong>Knowledge is most useful when the player can think calmly and accurately.</div>
+          </div>
+        </section>
+        <section class="lesson-section" id="check">
+          <div class="section-head">
+            <div class="number">✓</div>
+            <div class="section-text">
+              <h2>Review Questions</h2>
+              <p>Open each question to check your understanding.</p>
+            </div>
+          </div>
+          <details class="quiz"><summary>1. What are the major components of a chess foundation?</summary><p>General principles, tactical knowledge, strategic knowledge, opening theory, and endgame theory, supported by an effective mental condition.</p></details>
+          <details class="quiz"><summary>2. Why should pieces be placed on active squares?</summary><p>Active squares increase a piece&rsquo;s space, influence, mobility, and ability to coordinate with other pieces.</p></details>
+          <details class="quiz"><summary>3. What is prophylaxis?</summary><p>Prophylaxis is the practice of anticipating and preventing the opponent&rsquo;s intended threat or plan.</p></details>
+          <details class="quiz"><summary>4. What is a zwischenzug?</summary><p>It is an intermediate move played before the expected move, often changing the tactical result.</p></details>
+          <details class="quiz"><summary>5. How can stress affect chess decisions?</summary><p>Stress may reduce emotional and cognitive control, causing rushed calculation, missed threats, and poorer decisions.</p></details>
+          <div class="lesson-nav-row"><a href="bishop-m1-lesson-01-building-a-strong-foundation.html">&larr; Lesson 1: Building a Strong Foundation</a><a href="bishop-m1-lesson-03-opening-principles-and-the-goal-of-chess.html">Lesson 3: Opening Principles and the Goal of Chess &rarr;</a></div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <strong>End of Lesson 2:</strong> The Components of a Chess Foundation. Bishop Level Module 1.
+  </footer>
+
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Expanded lesson image">
+    <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Close expanded image">×</button>
+    <img id="lightboxImage" alt="">
+  </div>
+
+  <script>
+
+    const root = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const storedTheme = localStorage.getItem('chess-lesson-theme');
+    if (storedTheme === 'light' || storedTheme === 'dark') root.dataset.theme = storedTheme;
+    themeToggle?.addEventListener('click', () => {
+      root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('chess-lesson-theme', root.dataset.theme);
+    });
+
+    const progressBar = document.getElementById('progressBar');
+    const updateProgress = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = max > 0 ? (window.scrollY / max) * 100 : 0;
+      if (progressBar) progressBar.style.width = Math.min(100, Math.max(0, pct)) + '%';
+    };
+    updateProgress();
+    window.addEventListener('scroll', updateProgress, { passive: true });
+
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImage = document.getElementById('lightboxImage');
+    const closeLightbox = () => {
+      lightbox?.classList.remove('open');
+      if (lightboxImage) lightboxImage.removeAttribute('src');
+      document.body.style.overflow = '';
+    };
+    document.querySelectorAll('.lesson-zoomable').forEach((image) => {
+      image.addEventListener('click', () => {
+        if (!lightbox || !lightboxImage) return;
+        lightboxImage.src = image.currentSrc || image.src;
+        lightboxImage.alt = image.alt || '';
+        lightbox.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+    document.getElementById('lightboxClose')?.addEventListener('click', closeLightbox);
+    lightbox?.addEventListener('click', (event) => { if (event.target === lightbox) closeLightbox(); });
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeLightbox(); });
+
+  </script>
+</body>
+</html>

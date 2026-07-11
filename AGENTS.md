@@ -71,5 +71,34 @@ For each of the 9 files above: swapped `#71925a` ↔ `#eee3cb` on all board-squa
 
 ---
 
+---
+
+## Phase 3: Create Bishop Level Module 1 (2026-07-11)
+
+### Objective
+Create and integrate Bishop Level — Module 1 (5 lesson HTML pages, bishop-index.html, index.html update) using existing intermediate-m1 content and images.
+
+### Concepts & Constraints
+- Canonical filenames: `bishop-m1-lesson-01-...html` through `bishop-m1-lesson-05-...html`
+- All lessons rebranded from "Intermediate Level" to "Bishop Level"; no page calls itself "Intermediate Level"
+- Lesson 5's FEN board uses project's existing renderer (`endgame-lesson.js`) with `<html data-piece-base>`, `<link rel="stylesheet" href="endgame-lesson.css">`, and `<div class="board" data-fen="...">`
+- Image assets live in `lessons/bishop_m1/` with `intermediate-m1-` prefix filenames
+- No commit, no push
+
+### Files Changed
+- **Created:** `bishop-index.html` — Bishop Level TOC (modeled on `pawn-index.html`)
+- **Created:** `bishop-m1-lesson-01-opening-principles-control-the-center.html`
+- **Created:** `bishop-m1-lesson-02-develop-your-pieces.html`
+- **Created:** `bishop-m1-lesson-03-king-safety-castling.html`
+- **Created:** `bishop-m1-lesson-04-common-opening-mistakes.html`
+- **Created:** `bishop-m1-lesson-05-pawn-structure-basics.html`
+- **Modified:** `lessons/index.html` — Added Bishop Level toolbar link + module section
+- **Deleted:** `lessons/bishop_m1/intermediate_module_1_html/` — obsolete intermediate HTML/images/README
+
+### Verification
+- All 6 HTML pages return HTTP 200; all 5 PNG images return HTTP 200; shared CSS/JS (endgame-lesson.css, endgame-lesson.js) return HTTP 200
+- Pawn Level pages unchanged and return 200
+- Navigation links verified: sequential L1→L2→L3→L4→L5 with wraparound to bishop-index.html
+
 ## Remaining/Blocked
 - (none)
