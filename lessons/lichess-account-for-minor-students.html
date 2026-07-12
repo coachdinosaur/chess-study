@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>A Safe Start on Lichess — Young Student Guide</title>
+  <meta name="description" content="A simple parent-and-student tutorial for creating and safely using a Lichess account with Kid Mode.">
+  <meta name="color-scheme" content="light dark">
+  <style>
+    :root {
+      --sticky-header-offset: 110px;
+      --paper: #f4f0e8;
+      --paper-2: #e8f0e6;
+      --ink: #17231f;
+      --muted: #5f6a64;
+      --line: rgba(23, 35, 31, 0.17);
+      --card: rgba(255, 255, 255, 0.66);
+      --card-strong: #fffdf8;
+      --green: #2f6a55;
+      --green-dark: #173f34;
+      --lime: #cfe47a;
+      --orange: #f5a45d;
+      --pink: #eeb6b3;
+      --blue: #9ec9d2;
+      --shadow: 0 24px 70px rgba(29, 50, 41, 0.14);
+      --radius-xl: 42px;
+      --radius-lg: 28px;
+      --radius-md: 18px;
+      --max: 1200px;
+      --display: Georgia, "Times New Roman", serif;
+      --body: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: var(--sticky-header-offset);
+      -webkit-text-size-adjust: 100%;
+    }
+
+    section[id],
+    article[id] {
+      scroll-margin-top: var(--sticky-header-offset);
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: var(--body);
+      font-size: 16px;
+      line-height: 1.58;
+      background:
+        radial-gradient(circle at 10% 5%, rgba(207, 228, 122, .42), transparent 25rem),
+        radial-gradient(circle at 96% 18%, rgba(238, 182, 179, .38), transparent 28rem),
+        linear-gradient(145deg, var(--paper), var(--paper-2));
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; }
+    button, input { font: inherit; }
+
+    .skip-link {
+      position: fixed;
+      left: 1rem;
+      top: -5rem;
+      z-index: 100;
+      padding: .7rem 1rem;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--green-dark);
+      transition: top .2s ease;
+    }
+
+    .skip-link:focus { top: 1rem; }
+
+    .shell {
+      width: min(var(--max), calc(100% - 32px));
+      margin-inline: auto;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      padding: .8rem 0;
+      background: rgba(244, 240, 232, .78);
+      border-bottom: 1px solid rgba(23, 35, 31, .08);
+      backdrop-filter: blur(18px);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: .7rem;
+      text-decoration: none;
+      font-weight: 850;
+      letter-spacing: -.02em;
+    }
+
+    .brand-mark {
+      width: 2.6rem;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--green-dark);
+      box-shadow: 0 8px 20px rgba(23, 63, 52, .2);
+      font-size: 1.3rem;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: .55rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .45rem;
+      min-height: 2.65rem;
+      padding: .65rem 1rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--ink);
+      background: rgba(255,255,255,.55);
+      text-decoration: none;
+      font-weight: 750;
+      cursor: pointer;
+    }
+
+    .pill:hover,
+    .pill:focus-visible {
+      transform: translateY(-1px);
+      background: #fff;
+      outline: 3px solid rgba(47, 106, 85, .16);
+      outline-offset: 2px;
+    }
+
+    .pill.primary {
+      color: white;
+      border-color: var(--green-dark);
+      background: var(--green-dark);
+    }
+
+    .hero {
+      position: relative;
+      min-height: auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(340px, 500px);
+      align-items: center;
+      gap: clamp(2rem, 5vw, 5rem);
+      padding: clamp(4.5rem, 7vw, 7rem) 0 clamp(4rem, 7vw, 7rem);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: .55rem;
+      margin: 0 0 1.25rem;
+      padding: .5rem .8rem;
+      border: 1px solid rgba(23,35,31,.14);
+      border-radius: 999px;
+      background: rgba(255,255,255,.54);
+      font-size: .82rem;
+      font-weight: 850;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: .65rem;
+      height: .65rem;
+      border-radius: 50%;
+      background: var(--orange);
+      box-shadow: 0 0 0 .3rem rgba(245, 164, 93, .17);
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      text-wrap: balance;
+    }
+
+    h1 {
+      max-width: 10.5ch;
+      font-family: var(--display);
+      font-size: clamp(3.2rem, 6.2vw, 6.4rem);
+      line-height: 0.94;
+      letter-spacing: -.07em;
+      font-weight: 500;
+    }
+
+    h1 em {
+      color: var(--green);
+      font-weight: inherit;
+    }
+
+    .hero-lead {
+      max-width: 58ch;
+      margin: 1.5rem 0 0;
+      color: var(--muted);
+      font-size: clamp(1.06rem, 1.8vw, 1.34rem);
+    }
+
+    .hero-note {
+      max-width: 54ch;
+      margin-top: 1.4rem;
+      padding: 1rem 1.1rem;
+      border-left: 4px solid var(--orange);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      background: rgba(255,255,255,.48);
+      font-weight: 670;
+    }
+
+    .hero-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .75rem;
+      margin-top: 1.7rem;
+    }
+
+    .art-panel {
+      position: relative;
+      width: 100%;
+      min-height: 500px;
+      display: grid;
+      place-items: center;
+      isolation: isolate;
+    }
+
+    .art-panel::before {
+      content: "";
+      position: absolute;
+      width: min(92%, 500px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: var(--lime);
+      box-shadow: var(--shadow);
+      z-index: -2;
+    }
+
+    .art-panel::after {
+      content: "";
+      position: absolute;
+      inset: 12% 9% 8% 17%;
+      border-radius: 50% 50% 46% 54% / 58% 48% 52% 42%;
+      border: 1px solid rgba(23,35,31,.18);
+      z-index: -1;
+      transform: rotate(-8deg);
+    }
+
+    .chess-card {
+      width: min(88%, 420px);
+      padding: 1rem;
+      border: 1px solid rgba(23,35,31,.14);
+      border-radius: 34px;
+      background: rgba(255,253,248,.82);
+      box-shadow: 0 30px 80px rgba(23,63,52,.2);
+      backdrop-filter: blur(14px);
+      transform: rotate(3deg);
+    }
+
+    .mini-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: .25rem .35rem .85rem;
+      font-size: .82rem;
+      font-weight: 800;
+    }
+
+    .mini-status {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      color: var(--green);
+    }
+
+    .mini-status::before {
+      content: "";
+      width: .52rem;
+      height: .52rem;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    .board-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      overflow: hidden;
+      aspect-ratio: 1;
+      border-radius: 24px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);
+    }
+
+    .board-square {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      aspect-ratio: 1 / 1;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .board-square.light { background: #f0e7d7; }
+    .board-square.dark  { background: #557b64; }
+
+    .board-piece-shell {
+      position: relative;
+      z-index: 3;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .board-piece {
+      width: 94%;
+      height: 94%;
+      object-fit: contain;
+      pointer-events: none;
+      filter: drop-shadow(0 1px 1px rgba(0,0,0,.2));
+    }
+
+    .mini-caption {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      margin-top: .9rem;
+      padding: .9rem;
+      border-radius: 18px;
+      background: rgba(47,106,85,.08);
+      font-weight: 760;
+    }
+
+    .mini-caption span:first-child {
+      width: 2.1rem;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--green);
+      color: white;
+    }
+
+    .float-badge {
+      position: absolute;
+      padding: .8rem 1rem;
+      border: 1px solid rgba(23,35,31,.14);
+      border-radius: 999px;
+      background: rgba(255,255,255,.82);
+      box-shadow: 0 14px 36px rgba(23,63,52,.15);
+      font-size: .9rem;
+      font-weight: 800;
+      backdrop-filter: blur(12px);
+    }
+
+    .float-badge.one { top: 8%; left: 5%; transform: rotate(-5deg); }
+    .float-badge.two { right: 5%; bottom: 10%; transform: rotate(4deg); }
+
+    .section {
+      padding: clamp(4.5rem, 9vw, 8rem) 0;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, .75fr) minmax(300px, 1.25fr);
+      gap: 2rem;
+      align-items: end;
+      margin-bottom: 2.3rem;
+    }
+
+    .section-kicker {
+      margin: 0 0 .75rem;
+      color: var(--green);
+      font-size: .82rem;
+      font-weight: 850;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      font-family: var(--display);
+      font-size: clamp(2.65rem, 6vw, 5.45rem);
+      line-height: .96;
+      letter-spacing: -.055em;
+      font-weight: 500;
+    }
+
+    .section-intro {
+      max-width: 62ch;
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(1.03rem, 1.5vw, 1.25rem);
+    }
+
+    .permission {
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      padding: clamp(1.2rem, 4vw, 2.5rem);
+      border: 1px solid rgba(23,35,31,.14);
+      border-radius: var(--radius-xl);
+      background: var(--green-dark);
+      color: white;
+      box-shadow: var(--shadow);
+    }
+
+    .permission::after {
+      content: "";
+      position: absolute;
+      width: 300px;
+      aspect-ratio: 1;
+      right: -90px;
+      top: -100px;
+      border-radius: 50%;
+      background: var(--orange);
+      opacity: .88;
+    }
+
+    .permission > * { position: relative; z-index: 1; }
+
+    .permission h3 {
+      max-width: 13ch;
+      font-family: var(--display);
+      font-size: clamp(2rem, 4vw, 3.6rem);
+      line-height: 1;
+      font-weight: 500;
+    }
+
+    .permission p {
+      max-width: 56ch;
+      margin: 0;
+      align-self: end;
+      font-size: 1.06rem;
+      color: rgba(255,255,255,.82);
+    }
+
+    .plain-warning {
+      margin: 1rem 0 0;
+      padding: 1rem 1.1rem;
+      border-radius: var(--radius-md);
+      background: var(--orange);
+      color: #2e2419;
+      font-weight: 850;
+    }
+
+    .steps {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 84px minmax(0, 1fr);
+      gap: clamp(1rem, 3vw, 2rem);
+      padding: clamp(1.2rem, 3vw, 2rem);
+      border: 1px solid rgba(23,35,31,.13);
+      border-radius: var(--radius-lg);
+      background: rgba(255,255,255,.55);
+      box-shadow: 0 10px 40px rgba(23,63,52,.07);
+    }
+
+    .step-number {
+      width: 72px;
+      height: 72px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: white;
+      background: var(--green);
+      font-family: var(--display);
+      font-size: 2rem;
+      line-height: 1;
+    }
+
+    .step:nth-child(2n) .step-number {
+      color: var(--ink);
+      background: var(--lime);
+    }
+
+    .step h3 {
+      font-family: var(--display);
+      font-size: clamp(1.55rem, 3vw, 2.35rem);
+      line-height: 1.05;
+      letter-spacing: -.025em;
+      font-weight: 500;
+    }
+
+    .step-lead {
+      margin: .6rem 0 1.15rem;
+      color: var(--muted);
+      font-size: 1.03rem;
+    }
+
+    .roles {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .8rem;
+    }
+
+    .role {
+      padding: 1rem;
+      border-radius: 18px;
+      background: rgba(255,255,255,.72);
+      border: 1px solid rgba(23,35,31,.1);
+    }
+
+    .role.student { background: rgba(158,201,210,.22); }
+    .role.adult { background: rgba(238,182,179,.22); }
+
+    .role-title {
+      display: flex;
+      align-items: center;
+      gap: .55rem;
+      margin-bottom: .55rem;
+      font-weight: 850;
+    }
+
+    .role-title span {
+      width: 2rem;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: white;
+    }
+
+    .role p,
+    .role ul {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .role ul {
+      padding-left: 1.2rem;
+    }
+
+    .role li + li { margin-top: .35rem; }
+
+    .action-link {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      margin-top: 1rem;
+      padding: .78rem 1rem;
+      border-radius: 999px;
+      background: var(--green-dark);
+      color: white;
+      text-decoration: none;
+      font-weight: 820;
+    }
+
+    .action-link:hover,
+    .action-link:focus-visible {
+      outline: 3px solid rgba(47,106,85,.2);
+      outline-offset: 3px;
+      transform: translateY(-1px);
+    }
+
+    .safe-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .safe-card {
+      min-height: 210px;
+      padding: 1.25rem;
+      border: 1px solid rgba(23,35,31,.13);
+      border-radius: 26px;
+      background: rgba(255,255,255,.6);
+    }
+
+    .safe-card:nth-child(1) { background: rgba(207,228,122,.4); }
+    .safe-card:nth-child(2) { background: rgba(158,201,210,.35); }
+    .safe-card:nth-child(3) { background: rgba(238,182,179,.35); }
+
+    .safe-icon {
+      width: 3rem;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      margin-bottom: 1rem;
+      border-radius: 50%;
+      background: rgba(255,255,255,.76);
+      font-size: 1.35rem;
+    }
+
+    .safe-card h3 {
+      font-family: var(--display);
+      font-size: 1.75rem;
+      line-height: 1.05;
+      font-weight: 500;
+    }
+
+    .safe-card p {
+      margin: .65rem 0 0;
+      color: var(--muted);
+    }
+
+    .fair-play {
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: minmax(440px, 1fr) minmax(420px, 1fr);
+      gap: 1.2rem;
+      align-items: stretch;
+      border-radius: var(--radius-xl);
+      background: var(--card-strong);
+      border: 1px solid rgba(23,35,31,.13);
+      box-shadow: var(--shadow);
+    }
+
+    .fair-copy {
+      padding: clamp(2rem, 4vw, 3rem);
+    }
+
+    .fair-copy h2 {
+      font-size: clamp(2.6rem, 4.3vw, 4.4rem);
+      line-height: 0.98;
+      max-width: 11ch;
+    }
+
+    .fair-copy p {
+      max-width: 48ch;
+      color: var(--muted);
+    }
+
+    .fair-list {
+      display: grid;
+      gap: .65rem;
+      margin-top: 1.2rem;
+    }
+
+    .fair-item {
+      display: flex;
+      gap: .75rem;
+      align-items: flex-start;
+      padding: .85rem;
+      border-radius: 16px;
+      background: rgba(47,106,85,.07);
+    }
+
+    .fair-check {
+      flex: 0 0 auto;
+      width: 1.7rem;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--green);
+      color: white;
+      font-size: .84rem;
+      font-weight: 900;
+    }
+
+    .fair-art {
+      position: relative;
+      min-height: 430px;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 50% 50%, var(--lime) 0 33%, transparent 33.5%),
+        linear-gradient(135deg, var(--green-dark), #345f50);
+    }
+
+    .fair-art .king {
+      font-family: "Times New Roman", serif;
+      font-size: clamp(7rem, 16vw, 14rem);
+      color: #fffdf8;
+      filter: drop-shadow(0 20px 28px rgba(0,0,0,.26));
+    }
+
+    .fair-art::before,
+    .fair-art::after {
+      content: "";
+      position: absolute;
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 50%;
+    }
+
+    .fair-art::before { width: 70%; aspect-ratio: 1; }
+    .fair-art::after { width: 90%; aspect-ratio: 1; }
+
+    .checklist-wrap {
+      display: grid;
+      grid-template-columns: minmax(0, .72fr) minmax(360px, 1.28fr);
+      gap: 1.4rem;
+      align-items: start;
+    }
+
+    .checklist-copy {
+      position: sticky;
+      top: 6rem;
+    }
+
+    .checklist-copy p {
+      color: var(--muted);
+      max-width: 44ch;
+    }
+
+    .checklist {
+      display: grid;
+      gap: .7rem;
+      padding: clamp(1.1rem, 3vw, 1.8rem);
+      border: 1px solid rgba(23,35,31,.13);
+      border-radius: var(--radius-lg);
+      background: rgba(255,255,255,.65);
+      box-shadow: 0 16px 50px rgba(23,63,52,.09);
+    }
+
+    .check-row {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: .8rem;
+      align-items: start;
+      padding: .95rem;
+      border-radius: 16px;
+      background: rgba(255,255,255,.72);
+      cursor: pointer;
+    }
+
+    .check-row:hover { background: white; }
+
+    .check-row input {
+      width: 1.35rem;
+      height: 1.35rem;
+      margin-top: .12rem;
+      accent-color: var(--green);
+    }
+
+    .check-row strong {
+      display: block;
+      margin-bottom: .15rem;
+    }
+
+    .check-row span {
+      color: var(--muted);
+      font-size: .94rem;
+    }
+
+    .progress-card {
+      margin-top: .75rem;
+      padding: 1rem;
+      border-radius: 18px;
+      background: var(--green-dark);
+      color: white;
+    }
+
+    .progress-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      font-weight: 800;
+    }
+
+    .progress-track {
+      height: 10px;
+      margin-top: .7rem;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255,255,255,.18);
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--lime);
+      transition: width .25s ease;
+    }
+
+    .resources {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .8rem;
+    }
+
+    .resource {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      min-height: 86px;
+      padding: 1rem 1.1rem;
+      border: 1px solid rgba(23,35,31,.13);
+      border-radius: 20px;
+      background: rgba(255,255,255,.56);
+      text-decoration: none;
+      font-weight: 800;
+    }
+
+    .resource span:last-child {
+      font-size: 1.25rem;
+      transition: transform .2s ease;
+    }
+
+    .resource:hover,
+    .resource:focus-visible {
+      background: white;
+      outline: 3px solid rgba(47,106,85,.14);
+      outline-offset: 2px;
+    }
+
+    .resource:hover span:last-child { transform: translate(3px, -3px); }
+
+    .policy-note {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 18px;
+      background: rgba(245,164,93,.18);
+      border: 1px solid rgba(245,164,93,.45);
+      color: #4a3826;
+    }
+
+    footer {
+      padding: 2.2rem 0 3rem;
+      border-top: 1px solid rgba(23,35,31,.12);
+      color: var(--muted);
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .footer-inner p { margin: 0; }
+
+    @media (max-width: 900px) {
+      .hero {
+        min-height: auto;
+        grid-template-columns: 1fr;
+        gap: clamp(2rem, 5vw, 3rem);
+      }
+
+      .hero-copy { max-width: 100%; }
+
+      .art-panel {
+        width: 100%;
+        min-height: 460px;
+        margin-inline: auto;
+      }
+
+      .float-badge.one { top: 6%; left: 4%; }
+      .float-badge.two { right: 4%; bottom: 8%; }
+
+      .section-head,
+      .permission,
+      .fair-play,
+      .checklist-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .fair-play { grid-template-columns: 1fr; }
+
+      .checklist-copy { position: static; }
+
+      .safe-grid { grid-template-columns: 1fr 1fr; }
+
+      .fair-art { min-height: 360px; }
+    }
+
+    @media (max-width: 640px) {
+      .shell { width: min(100% - 20px, var(--max)); }
+
+      .site-header { padding: .55rem 0; }
+
+      .brand-text { display: none; }
+
+      .nav-actions .pill:not(.primary) { display: none; }
+
+      .hero {
+        padding-top: 3rem;
+        padding-bottom: 2.5rem;
+        gap: 2rem;
+      }
+
+      h1 {
+        max-width: 10ch;
+        font-size: clamp(3.15rem, 17vw, 5rem);
+      }
+
+      .art-panel { min-height: 380px; }
+
+      .chess-card {
+        width: 92%;
+        border-radius: 26px;
+      }
+
+      .board-grid { border-radius: 18px; }
+
+      .float-badge {
+        padding: .55rem .7rem;
+        font-size: .72rem;
+      }
+
+      .float-badge.one { top: 4%; left: 3%; }
+      .float-badge.two { right: 3%; bottom: 5%; }
+
+      .section { padding: 4rem 0; }
+
+      .section-head { gap: .8rem; }
+
+      h2 { font-size: clamp(2.45rem, 13vw, 4rem); }
+
+      .permission { border-radius: 28px; }
+      .permission::after { opacity: .22; }
+
+      .step {
+        grid-template-columns: 1fr;
+        border-radius: 24px;
+      }
+
+      .step-number {
+        width: 58px;
+        height: 58px;
+        font-size: 1.6rem;
+      }
+
+      .roles,
+      .safe-grid,
+      .resources {
+        grid-template-columns: 1fr;
+      }
+
+      .safe-card { min-height: auto; }
+
+      .fair-play { border-radius: 28px; }
+      .fair-art { min-height: 280px; }
+
+      .footer-inner { align-items: flex-start; }
+    }
+
+    @media (max-width: 500px) {
+      .art-panel { min-height: 340px; }
+
+      .chess-card {
+        width: 96%;
+        padding: .7rem;
+        border-radius: 22px;
+      }
+
+      .board-grid { border-radius: 14px; }
+
+      .float-badge {
+        padding: .45rem .6rem;
+        font-size: .65rem;
+      }
+
+      .float-badge.one { top: 3%; left: 2%; }
+      .float-badge.two { right: 2%; bottom: 4%; }
+
+      .fair-art { min-height: 240px; }
+
+      .fair-art .king {
+        font-size: clamp(5rem, 20vw, 8rem);
+      }
+    }
+
+    @media print {
+      :root {
+        --paper: #fff;
+        --paper-2: #fff;
+        --ink: #000;
+        --muted: #333;
+      }
+
+      body { background: #fff; }
+
+      .site-header,
+      .hero-buttons,
+      .art-panel,
+      .fair-art,
+      .print-hide,
+      .progress-card {
+        display: none !important;
+      }
+
+      .hero {
+        min-height: 0;
+        display: block;
+        padding: 1rem 0 2rem;
+      }
+
+      h1 {
+        max-width: none;
+        font-size: 42pt;
+      }
+
+      .section { padding: 1.2rem 0; }
+
+      .section-head,
+      .permission,
+      .fair-play,
+      .checklist-wrap {
+        display: block;
+      }
+
+      .step,
+      .safe-card,
+      .permission,
+      .fair-play,
+      .checklist,
+      .resource {
+        break-inside: avoid;
+        box-shadow: none;
+        background: #fff;
+        color: #000;
+      }
+
+      .permission {
+        border: 2px solid #000;
+      }
+
+      .permission p { color: #222; }
+
+      .checklist-copy { position: static; }
+
+      .check-row input {
+        appearance: none;
+        width: 14px;
+        height: 14px;
+        border: 1px solid #000;
+      }
+
+      a::after {
+        content: " (" attr(href) ")";
+        font-size: 8pt;
+        font-weight: 400;
+      }
+
+      .brand::after,
+      .pill::after {
+        content: "";
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to the guide</a>
+
+  <header class="site-header">
+    <div class="shell nav">
+      <a class="brand" href="index.html" aria-label="Back to Lessons">
+        <span class="brand-mark" aria-hidden="true">♙</span>
+        <span class="brand-text">Chess Study · Student Guide</span>
+      </a>
+      <nav class="nav-actions" aria-label="Page actions">
+        <button class="pill print-hide" type="button" onclick="window.print()">Print guide</button>
+        <a class="pill primary" href="index.html">Back to lessons</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="shell hero" aria-labelledby="page-title">
+      <div class="hero-copy">
+        <p class="eyebrow">For a student and parent together</p>
+        <h1 id="page-title">A safe start on <em>Lichess.</em></h1>
+        <p class="hero-lead">
+          This simple guide shows a young chess student and a parent or guardian how to create a Lichess account, switch on Kid Mode, and keep personal information private.
+        </p>
+        <p class="hero-note">
+          A young student should not create the account alone. Sit together and complete each step as a team.
+        </p>
+        <div class="hero-buttons">
+          <a class="pill primary" href="#steps">Start the steps ↓</a>
+          <a class="pill" href="#checklist">Parent checklist</a>
+        </div>
+      </div>
+
+      <div class="art-panel" aria-label="Decorative chessboard showing a protected student account">
+        <span class="float-badge one">✓ Parent approved</span>
+        <span class="float-badge two">🛡 Kid Mode on</span>
+        <div class="chess-card">
+          <div class="mini-top">
+            <span>Safe chess account</span>
+            <span class="mini-status">Ready</span>
+          </div>
+          <div class="board-grid" aria-hidden="true">
+            <div class="board-square light"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/bR.svg" alt="" loading="lazy"></div></div><div class="board-square dark"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/bN.svg" alt="" loading="lazy"></div></div><div class="board-square light"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/bB.svg" alt="" loading="lazy"></div></div><div class="board-square dark"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/bQ.svg" alt="" loading="lazy"></div></div><div class="board-square light"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/bK.svg" alt="" loading="lazy"></div></div><div class="board-square dark"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/bB.svg" alt="" loading="lazy"></div></div><div class="board-square light"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/bN.svg" alt="" loading="lazy"></div></div><div class="board-square dark"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/bR.svg" alt="" loading="lazy"></div></div>
+            <div class="board-square dark"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/bP.svg" alt="" loading="lazy"></div></div><div class="board-square light"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/bP.svg" alt="" loading="lazy"></div></div><div class="board-square dark"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/bP.svg" alt="" loading="lazy"></div></div><div class="board-square light"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/bP.svg" alt="" loading="lazy"></div></div><div class="board-square dark"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/bP.svg" alt="" loading="lazy"></div></div><div class="board-square light"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/bP.svg" alt="" loading="lazy"></div></div><div class="board-square dark"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/bP.svg" alt="" loading="lazy"></div></div><div class="board-square light"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/bP.svg" alt="" loading="lazy"></div></div>
+            <div class="board-square light"></div><div class="board-square dark"></div><div class="board-square light"></div><div class="board-square dark"></div><div class="board-square light"></div><div class="board-square dark"></div><div class="board-square light"></div><div class="board-square dark"></div>
+            <div class="board-square dark"></div><div class="board-square light"></div><div class="board-square dark"></div><div class="board-square light"></div><div class="board-square dark"></div><div class="board-square light"></div><div class="board-square dark"></div><div class="board-square light"></div>
+            <div class="board-square light"></div><div class="board-square dark"></div><div class="board-square light"></div><div class="board-square dark"></div><div class="board-square light"></div><div class="board-square dark"></div><div class="board-square light"></div><div class="board-square dark"></div>
+            <div class="board-square dark"></div><div class="board-square light"></div><div class="board-square dark"></div><div class="board-square light"></div><div class="board-square dark"></div><div class="board-square light"></div><div class="board-square dark"></div><div class="board-square light"></div>
+            <div class="board-square light"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/wP.svg" alt="" loading="lazy"></div></div><div class="board-square dark"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/wP.svg" alt="" loading="lazy"></div></div><div class="board-square light"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/wP.svg" alt="" loading="lazy"></div></div><div class="board-square dark"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/wP.svg" alt="" loading="lazy"></div></div><div class="board-square light"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/wP.svg" alt="" loading="lazy"></div></div><div class="board-square dark"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/wP.svg" alt="" loading="lazy"></div></div><div class="board-square light"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/wP.svg" alt="" loading="lazy"></div></div><div class="board-square dark"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/wP.svg" alt="" loading="lazy"></div></div>
+            <div class="board-square dark"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/wR.svg" alt="" loading="lazy"></div></div><div class="board-square light"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/wN.svg" alt="" loading="lazy"></div></div><div class="board-square dark"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/wB.svg" alt="" loading="lazy"></div></div><div class="board-square light"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/wQ.svg" alt="" loading="lazy"></div></div><div class="board-square dark"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/wK.svg" alt="" loading="lazy"></div></div><div class="board-square light"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/wB.svg" alt="" loading="lazy"></div></div><div class="board-square dark"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/wN.svg" alt="" loading="lazy"></div></div><div class="board-square light"><div class="board-piece-shell"><img class="board-piece" src="../assets/pieces/mpchess/wR.svg" alt="" loading="lazy"></div></div>
+          </div>
+          <div class="mini-caption">
+            <span aria-hidden="true">♥</span>
+            <span>Play, learn, and stay safe.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="shell">
+        <div class="permission">
+          <h3>First: get adult permission.</h3>
+          <div>
+            <p>
+              Lichess says a user must be at least 15 and old enough to accept an online contract where they live. A younger user needs authorization from a parent or legal guardian.
+            </p>
+            <div class="plain-warning">Student: do not register secretly or pretend to be older.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="steps" aria-labelledby="steps-title">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Seven easy steps</p>
+            <h2 id="steps-title">Create the account together.</h2>
+          </div>
+          <p class="section-intro">
+            The blue box tells the student what to do. The pink box tells the parent or guardian what to check.
+          </p>
+        </div>
+
+        <div class="steps">
+          <article class="step">
+            <div class="step-number" aria-hidden="true">1</div>
+            <div>
+              <h3>Choose a safe username.</h3>
+              <p class="step-lead">A username is public. Other players will see it.</p>
+              <div class="roles">
+                <div class="role student">
+                  <div class="role-title"><span aria-hidden="true">♙</span> Student</div>
+                  <ul>
+                    <li>Pick a friendly chess nickname.</li>
+                    <li>Do not use your full real name.</li>
+                    <li>Do not add your school, birthday, or exact city.</li>
+                  </ul>
+                </div>
+                <div class="role adult">
+                  <div class="role-title"><span aria-hidden="true">♥</span> Parent or guardian</div>
+                  <p>Check that the name is appropriate and does not reveal who the student is. Lichess warns that usernames cannot simply be changed later.</p>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="step">
+            <div class="step-number" aria-hidden="true">2</div>
+            <div>
+              <h3>Prepare a strong password and email.</h3>
+              <p class="step-lead">Use account details the family can safely recover.</p>
+              <div class="roles">
+                <div class="role student">
+                  <div class="role-title"><span aria-hidden="true">♙</span> Student</div>
+                  <ul>
+                    <li>Use a password you do not use for school or games.</li>
+                    <li>Do not share it with classmates or online players.</li>
+                    <li>Your chess teacher does not need your password.</li>
+                  </ul>
+                </div>
+                <div class="role adult">
+                  <div class="role-title"><span aria-hidden="true">♥</span> Parent or guardian</div>
+                  <p>Use an email address you can access for account recovery. Keep the password in a secure family password manager or another safe place.</p>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="step">
+            <div class="step-number" aria-hidden="true">3</div>
+            <div>
+              <h3>Open the official signup page.</h3>
+              <p class="step-lead">Check the address before typing any account information.</p>
+              <div class="roles">
+                <div class="role student">
+                  <div class="role-title"><span aria-hidden="true">♙</span> Student</div>
+                  <p>Look at the browser address. It must begin with <strong>https://lichess.org/</strong>.</p>
+                </div>
+                <div class="role adult">
+                  <div class="role-title"><span aria-hidden="true">♥</span> Parent or guardian</div>
+                  <p>Review the current Terms of Service and Privacy Policy before authorizing the account.</p>
+                </div>
+              </div>
+              <a class="action-link" href="https://lichess.org/signup" target="_blank" rel="noopener noreferrer">Open official Lichess signup ↗</a>
+            </div>
+          </article>
+
+          <article class="step">
+            <div class="step-number" aria-hidden="true">4</div>
+            <div>
+              <h3>Complete the form together.</h3>
+              <p class="step-lead">The current Lichess form asks for a username, password, and email.</p>
+              <div class="roles">
+                <div class="role student">
+                  <div class="role-title"><span aria-hidden="true">♙</span> Student</div>
+                  <ul>
+                    <li>Type the username you both approved.</li>
+                    <li>Create the password with your adult.</li>
+                    <li>Read the promises before pressing Register.</li>
+                  </ul>
+                </div>
+                <div class="role adult">
+                  <div class="role-title"><span aria-hidden="true">♥</span> Parent or guardian</div>
+                  <ul>
+                    <li>Confirm the email is correct.</li>
+                    <li>Review the fair-play and respectful-behavior promises.</li>
+                    <li>Complete any device or anti-bot check Lichess displays.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="step">
+            <div class="step-number" aria-hidden="true">5</div>
+            <div>
+              <h3>Turn on Kid Mode immediately.</h3>
+              <p class="step-lead">Kid Mode adds child-protection restrictions, including limits on public communication features.</p>
+              <div class="roles">
+                <div class="role student">
+                  <div class="role-title"><span aria-hidden="true">♙</span> Student</div>
+                  <p>Stay signed in and ask your parent or guardian to open the Kid Mode page.</p>
+                </div>
+                <div class="role adult">
+                  <div class="role-title"><span aria-hidden="true">♥</span> Parent or guardian</div>
+                  <p>Open Kid Mode, enter the account password if requested, and enable it. Keep Kid Mode on while the student uses the account.</p>
+                </div>
+              </div>
+              <a class="action-link" href="https://lichess.org/account/kid" target="_blank" rel="noopener noreferrer">Open Kid Mode settings ↗</a>
+            </div>
+          </article>
+
+          <article class="step">
+            <div class="step-number" aria-hidden="true">6</div>
+            <div>
+              <h3>Keep the profile private.</h3>
+              <p class="step-lead">Optional profile boxes can be left empty.</p>
+              <div class="roles">
+                <div class="role student">
+                  <div class="role-title"><span aria-hidden="true">♙</span> Never post</div>
+                  <ul>
+                    <li>Your full name, birthday, or age</li>
+                    <li>Your school, home address, or phone number</li>
+                    <li>Your personal email or social-media account</li>
+                    <li>Your exact location, schedule, or identifying photos</li>
+                  </ul>
+                </div>
+                <div class="role adult">
+                  <div class="role-title"><span aria-hidden="true">♥</span> Parent or guardian</div>
+                  <p>Review the public profile after registration. Remove anything that could identify or contact the student outside the chess activity.</p>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="step">
+            <div class="step-number" aria-hidden="true">7</div>
+            <div>
+              <h3>Know what to do when something feels wrong.</h3>
+              <p class="step-lead">A student never has to solve an online safety problem alone.</p>
+              <div class="roles">
+                <div class="role student">
+                  <div class="role-title"><span aria-hidden="true">♙</span> Student</div>
+                  <ul>
+                    <li>Do not reply to suspicious messages.</li>
+                    <li>Do not open strange links.</li>
+                    <li>Tell your parent, guardian, or teacher.</li>
+                  </ul>
+                </div>
+                <div class="role adult">
+                  <div class="role-title"><span aria-hidden="true">♥</span> Parent or guardian</div>
+                  <p>Use Lichess blocking and reporting tools when needed. Contact Lichess through its official help pages for account or safety concerns.</p>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="safety-title">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Three safety rules</p>
+            <h2 id="safety-title">Remember these every time.</h2>
+          </div>
+          <p class="section-intro">Kid Mode helps, but a safe account also depends on good habits and adult support.</p>
+        </div>
+
+        <div class="safe-grid">
+          <article class="safe-card">
+            <div class="safe-icon" aria-hidden="true">🔒</div>
+            <h3>Keep passwords private.</h3>
+            <p>Only type the password on lichess.org. Use the official password-recovery page when help is needed.</p>
+          </article>
+          <article class="safe-card">
+            <div class="safe-icon" aria-hidden="true">🙈</div>
+            <h3>Keep personal details offline.</h3>
+            <p>A chess opponent does not need to know the student's school, address, phone number, or social accounts.</p>
+          </article>
+          <article class="safe-card">
+            <div class="safe-icon" aria-hidden="true">🙋</div>
+            <h3>Ask an adult.</h3>
+            <p>Stop and ask for help when a message, link, request, or account problem feels strange or uncomfortable.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="fair-section" aria-labelledby="fair-title">
+      <div class="shell fair-play">
+        <div class="fair-copy">
+          <p class="section-kicker">Fair play</p>
+          <h2 id="fair-title">Play using your own chess ideas.</h2>
+          <p>Lichess requires players to compete without outside help during a game.</p>
+          <div class="fair-list">
+            <div class="fair-item"><span class="fair-check" aria-hidden="true">✓</span><span>Do not use a chess engine, book, database, or another person to choose moves during a live game.</span></div>
+            <div class="fair-item"><span class="fair-check" aria-hidden="true">✓</span><span>Do not deliberately lose games to change a rating.</span></div>
+            <div class="fair-item"><span class="fair-check" aria-hidden="true">✓</span><span>Be polite after winning or losing.</span></div>
+            <div class="fair-item"><span class="fair-check" aria-hidden="true">✓</span><span>Report problems instead of arguing or publicly accusing another player.</span></div>
+          </div>
+        </div>
+        <div class="fair-art" aria-hidden="true">
+          <span class="king">♔</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="checklist" aria-labelledby="checklist-title">
+      <div class="shell checklist-wrap">
+        <div class="checklist-copy">
+          <p class="section-kicker">Before the first game</p>
+          <h2 id="checklist-title">Parent or guardian checklist.</h2>
+          <p>Tick each item together. The boxes reset when the page is closed or refreshed.</p>
+          <button class="pill primary print-hide" type="button" onclick="window.print()">Print this checklist</button>
+        </div>
+
+        <div>
+          <div class="checklist" role="group" aria-label="Parent or guardian checklist">
+            <label class="check-row">
+              <input type="checkbox">
+              <span><strong>I reviewed the Lichess Terms of Service.</strong>The account is authorized under the student's age and local rules.</span>
+            </label>
+            <label class="check-row">
+              <input type="checkbox">
+              <span><strong>I reviewed the Lichess Privacy Policy.</strong>I understand the account information and public profile choices.</span>
+            </label>
+            <label class="check-row">
+              <input type="checkbox">
+              <span><strong>I supervised the account creation.</strong>The student did not register alone or pretend to be older.</span>
+            </label>
+            <label class="check-row">
+              <input type="checkbox">
+              <span><strong>The username protects the student's identity.</strong>It does not contain a full name, school, birthday, or exact location.</span>
+            </label>
+            <label class="check-row">
+              <input type="checkbox">
+              <span><strong>The recovery email is accessible.</strong>The family can use it if the password is forgotten.</span>
+            </label>
+            <label class="check-row">
+              <input type="checkbox">
+              <span><strong>Kid Mode is enabled.</strong>I will keep it enabled while the young student uses the account.</span>
+            </label>
+            <label class="check-row">
+              <input type="checkbox">
+              <span><strong>The student understands password safety.</strong>The password will not be shared with friends, opponents, or the teacher.</span>
+            </label>
+            <label class="check-row">
+              <input type="checkbox">
+              <span><strong>The student understands fair play.</strong>No engine, database, book, or other person's moves during a game.</span>
+            </label>
+            <label class="check-row">
+              <input type="checkbox">
+              <span><strong>The student knows to ask for help.</strong>Suspicious messages, links, or behavior will be shown to an adult.</span>
+            </label>
+          </div>
+
+          <div class="progress-card print-hide" aria-live="polite">
+            <div class="progress-top">
+              <span>Setup progress</span>
+              <span id="progressText">0 of 9 complete</span>
+            </div>
+            <div class="progress-track" aria-hidden="true">
+              <div class="progress-bar" id="progressBar"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="resources-title">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Official pages</p>
+            <h2 id="resources-title">Check Lichess directly.</h2>
+          </div>
+          <p class="section-intro">The Lichess interface and policies can change. A parent or guardian should review the current official pages during setup.</p>
+        </div>
+
+        <div class="resources">
+          <a class="resource" href="https://lichess.org/signup" target="_blank" rel="noopener noreferrer"><span>Create a Lichess account</span><span aria-hidden="true">↗</span></a>
+          <a class="resource" href="https://lichess.org/account/kid" target="_blank" rel="noopener noreferrer"><span>Kid Mode settings</span><span aria-hidden="true">↗</span></a>
+          <a class="resource" href="https://lichess.org/terms-of-service" target="_blank" rel="noopener noreferrer"><span>Terms of Service</span><span aria-hidden="true">↗</span></a>
+          <a class="resource" href="https://lichess.org/privacy" target="_blank" rel="noopener noreferrer"><span>Privacy Policy</span><span aria-hidden="true">↗</span></a>
+          <a class="resource" href="https://lichess.org/page/fair-play" target="_blank" rel="noopener noreferrer"><span>Fair-play guidance</span><span aria-hidden="true">↗</span></a>
+          <a class="resource" href="https://lichess.org/contact" target="_blank" rel="noopener noreferrer"><span>Lichess help and contact</span><span aria-hidden="true">↗</span></a>
+        </div>
+
+        <p class="policy-note">
+          This tutorial explains the process in simple language. The official Lichess Terms of Service and Privacy Policy remain the authoritative rules.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell footer-inner">
+      <p>Young Student Lichess Setup Guide</p>
+      <a class="pill" href="index.html">← Back to lessons</a>
+    </div>
+  </footer>
+
+  <script>
+    (() => {
+      const boxes = Array.from(document.querySelectorAll('.checklist input[type="checkbox"]'));
+      const progressText = document.getElementById('progressText');
+      const progressBar = document.getElementById('progressBar');
+
+      function updateProgress() {
+        const complete = boxes.filter(box => box.checked).length;
+        const total = boxes.length;
+        progressText.textContent = `${complete} of ${total} complete`;
+        progressBar.style.width = `${(complete / total) * 100}%`;
+      }
+
+      boxes.forEach(box => box.addEventListener('change', updateProgress));
+      updateProgress();
+    })();
+  </script>
+</body>
+</html>

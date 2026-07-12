@@ -138,7 +138,7 @@ body {
   color: var(--ink);
   font-family: var(--font-body);
   font-size: clamp(16px, 0.6vw + 15px, 19px);
-  line-height: 1.62;
+  line-height: 1.55;
   font-feature-settings: "kern", "liga", "calt";
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -561,7 +561,7 @@ body {
 .eyebrow {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(13px, 0.5vw + 12px, 16px);
+  font-size: .85rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--accent);
@@ -570,14 +570,14 @@ body {
 .chapter-title {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: clamp(26px, 3vw + 16px, 48px);
-  line-height: 1.1;
-  letter-spacing: -0.01em;
+  font-size: clamp(2.35rem, 7vw, 5.7rem);
+  line-height: 1.08;
+  letter-spacing: -0.055em;
   margin: 0 0 12px;
   color: var(--ink);
 }
 .chapter-subtitle {
-  font-size: clamp(16px, 0.8vw + 14px, 20px);
+  font-size: clamp(1.05rem, 1.9vw, 1.34rem);
   color: var(--ink-soft);
   margin: 0;
   max-width: 62ch;
@@ -597,7 +597,6 @@ body {
   position: relative;
   padding-left: 24px;
   margin: 8px 0;
-  font-size: clamp(15px, 0.6vw + 14px, 18px);
   color: var(--ink-soft);
   line-height: 1.6;
 }
@@ -638,15 +637,16 @@ body {
 .lesson-title {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: clamp(21px, 1.8vw + 16px, 31px);
-  line-height: 1.2;
+  font-size: clamp(1.65rem, 4vw, 3.15rem);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
   margin: 0;
   color: var(--ink);
 }
 .lesson-intro {
   margin: 6px 0 clamp(16px, 0.6vw + 14px, 20px);
   color: var(--ink-soft);
-  font-size: clamp(16px, 0.6vw + 15px, 19px);
+  font-size: clamp(1.05rem, 1.9vw, 1.34rem);
   line-height: 1.6;
   max-width: 64ch;
 }
@@ -660,7 +660,7 @@ body {
 .position-label {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(12px, 0.4vw + 11px, 15px);
+  font-size: .95rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-faint);
@@ -678,12 +678,11 @@ body {
 }
 .caption {
   margin: clamp(6px, 0.4vw + 5px, 10px) 0 0;
-  font-size: clamp(12px, 0.4vw + 11px, 15px);
+  font-size: .92rem;
   color: var(--ink-faint);
   font-style: italic;
 }
 .position-note {
-  font-size: clamp(16px, 0.6vw + 15px, 19px);
   color: var(--ink);
   line-height: 1.65;
   max-width: 58ch;
@@ -845,15 +844,14 @@ body {
 .rule-box h3, .recap h3 {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: clamp(13px, 0.5vw + 12px, 16px);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: clamp(1.18rem, 2.2vw, 1.55rem);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
   margin: 0 0 clamp(4px, 0.3vw + 3px, 8px);
 }
 .rule-box h3 { color: var(--rule-ink); }
 .rule-box p, .recap li, .recap p {
   margin: 6px 0;
-  font-size: clamp(15px, 0.6vw + 14px, 18px);
   line-height: 1.6;
 }
 .recap {
@@ -867,12 +865,12 @@ body {
 /* Inline accent / soft notes inside callouts and positions */
 .note-accent {
   margin-top: clamp(6px, 0.4vw + 5px, 10px);
-  font-size: clamp(14px, 0.4vw + 13px, 16px);
+  font-size: .95rem;
   color: var(--accent);
   line-height: 1.55;
 }
 .note-soft {
-  font-size: clamp(14px, 0.4vw + 13px, 16px);
+  font-size: .95rem;
   color: var(--ink-soft);
   line-height: 1.55;
 }
@@ -888,7 +886,9 @@ body {
 .checklist h2 {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: clamp(22px, 1.5vw + 16px, 29px);
+  font-size: clamp(1.65rem, 4vw, 3.15rem);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
   margin: 0 0 clamp(8px, 0.6vw + 6px, 14px);
 }
 .checklist ul { list-style: none; padding: 0; margin: 0; }
@@ -896,7 +896,6 @@ body {
   position: relative;
   padding: clamp(8px, 0.4vw + 6px, 10px) 8px clamp(8px, 0.4vw + 6px, 10px) 34px;
   margin: 5px 0;
-  font-size: clamp(16px, 0.6vw + 15px, 19px);
   line-height: 1.55;
   border-bottom: 1px dashed var(--hairline);
   cursor: pointer;
@@ -1003,7 +1002,7 @@ body {
   color: var(--page-bg);
 }
 .test-question {
-  font-size: clamp(14px, 0.4vw + 13px, 16px);
+  font-size: .95rem;
   color: var(--ink);
   line-height: 1.5;
   padding: 10px 14px;
@@ -1337,7 +1336,7 @@ body {
     border-bottom: 2px solid #172127;
     padding-bottom: 14px;
   }
-  .chapter-title { font-size: 26pt; }
+  .chapter-title { font-size: 32pt; }
   .chapter-subtitle { font-size: 12pt; }
 
   .goals { break-inside: avoid; background: #f6faf8 !important; border-color: #d5e3df !important; }
@@ -1345,8 +1344,8 @@ body {
   .lesson { break-inside: avoid-page; }
   .lesson + .lesson { break-before: page; }
 
-  .lesson-title { font-size: 17pt; color: #172127 !important; }
-  .lesson-intro { font-size: 11.5pt; color: #52606a !important; }
+  .lesson-title { font-size: 22pt; color: #172127 !important; }
+  .lesson-intro { font-size: 12pt; color: #52606a !important; }
   .lesson-number { background: #1d6f78 !important; color: #fff !important; }
 
   .position { break-inside: avoid; page-break-inside: avoid; }

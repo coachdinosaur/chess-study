@@ -1,0 +1,16 @@
+[Event "Opening As White (Lee chen yu) As of 16 Nov 2025: Deutz Gambit 3...Nf6"]
+[Date "2026.06.28"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "C56"]
+[Opening "Italian Game: Scotch Gambit, Anderssen Attack"]
+[StudyName "Opening As White (Lee chen yu) As of 16 Nov 2025"]
+[ChapterName "Deutz Gambit 3...Nf6"]
+[ChapterURL "https://lichess.org/study/JznhrSXu/03gitsgY"]
+[Annotator "https://lichess.org/@/Chess_Attack_Juras"]
+[UTCDate "2026.06.28"]
+[UTCTime "23:34:36"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6 (3... d6 4. Nc3 Bg4 5. h3 Bh5 6. Nxe5 Nxe5 7. Qxh5 g6 (7... Nxc4 8. Qb5+ c6 9. Qxc4) 8. Qe2 { [%csl Ge2][%cal Gh5e2] }) 4. d4 exd4 (4... Nxd4? 5. Nxe5 { [%cal Gc4f7,Ge5f7,Gd1d4] } 5... Ne6 6. Bxe6 dxe6 (6... fxe6 7. Qe2) 7. Qxd8+ Kxd8 8. Nxf7+ { [%cal Gf7h8] }) (4... Na5 5. Bxf7+ Kxf7 { [%csl Ge5] } (5... Ke7 6. dxe5 { [%csl Ge5] }) 6. dxe5 { [%csl Gf6] } 6... Ng8 (6... Nxe4 { [%csl Ge4] } 7. Qd5+ Ke8 8. Qxe4) 7. Qd5+ { [%cal Gd5a5,Gd5f7] }) (4... Nxe4 5. dxe5 Be7 (5... Bc5 6. Qd5) 6. Qd5) 5. O-O Nxe4 (5... d5 6. exd5 Na5 7. Qe1+) (5... Ng8) 6. Re1 d5 7. Bxd5!! Qxd5 8. Nc3 { [%cal Ge4c3,Ge1e8,Gc3d5] } 8... Qa5 (8... dxc3 9. Qxd5) (8... Qe6?? 9. Rxe4 { [%cal Ge4e8] } 9... dxc3 10. Rxe6+ Bxe6 11. bxc3 { [%csl Gc3] }) (8... Qh5 { [%cal Gh5a5] } 9. Nxe4 Be6 { [%csl Ge6,Ge8] } 10. Nxd4 (10. Bg5 { [%csl Gc8][%cal Ge8c8] })) 9. Nxe4 *
+
+
