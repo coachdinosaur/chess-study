@@ -28,7 +28,7 @@ function loadAiHelpChat() {
     console.warn('[AI Help] Markdown enhancer failed to load.', error);
   });
 
-  void import('./ai-help-chat.mjs?v=20260718-ai-help1').catch((error) => {
+  void import('./ai-help-chat.mjs?v=20260718-ai-help3').catch((error) => {
     console.warn('[AI Help] Chat failed to load.', error);
   });
 }
