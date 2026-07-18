@@ -165,7 +165,7 @@ export default {
 
     const contextJson = sanitizeContext(body?.context);
     const model = String(env.GEMINI_MODEL || DEFAULT_MODEL).trim() || DEFAULT_MODEL;
-    const geminiUrl = 'https://generativelanguage.googleapis.com/v1/interactions';
+    const geminiUrl = 'https://generativelanguage.googleapis.com/v1beta/interactions';
 
     const providerResponse = await fetch(geminiUrl, {
       method: 'POST',
