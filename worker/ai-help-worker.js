@@ -88,6 +88,9 @@ function buildInteractionInput(messages) {
 }
 
 function extractInteractionText(payload) {
+  if (typeof payload?.output_text === 'string' && payload.output_text.trim()) {
+    return payload.output_text.trim();
+  }
   if (!Array.isArray(payload?.steps)) {
     return '';
   }
@@ -164,8 +167,11 @@ export default {
     }
 
     const contextJson = sanitizeContext(body?.context);
-    const model = String(env.GEMINI_MODEL || DEFAULT_MODEL).trim() || DEFAULT_MODEL;
-    const geminiUrl = 'https://generativelanguage.googleapis.com/v1beta/interactions';
+    const configuredModel = String(env.GEMINI_MODEL || DEFAULT_MODEL).trim() || DEFAULT_MODEL;
+    const model = configuredModel.startsWith('models/')
+      ? configuredModel
+      : `models/${configuredModel}`;
+    const geminiUrl = 'https://generativelanguage.googleapis.com/v1/interactions';
 
     const providerResponse = await fetch(geminiUrl, {
       method: 'POST',
@@ -185,14 +191,21 @@ export default {
       }),
     });
 
-    const providerPayload = await providerResponse.json().catch(() => ({}));
+    const providerText = await providerResponse.text();
+    let providerPayload = {};
+    try {
+      providerPayload = providerText ? JSON.parse(providerText) : {};
+    } catch {
+      providerPayload = {};
+    }
+
     if (!providerResponse.ok) {
       const providerError = providerPayload?.error || {};
       console.error(
         'Gemini request failed',
         providerResponse.status,
         providerError.status || 'unknown',
-        providerError.message || 'No provider error message',
+        providerError.message || providerText.slice(0, 500) || 'No provider error message',
       );
       const retryable = providerResponse.status === 429 || providerResponse.status >= 500;
       return jsonResponse(
@@ -204,7 +217,7 @@ export default {
 
     const text = extractInteractionText(providerPayload);
     if (!text) {
-      console.error('Gemini returned no text', providerPayload?.status || 'unknown');
+      console.error('Gemini returned no text', providerPayload?.status || 'unknown', providerText.slice(0, 500));
       return jsonResponse({ error: 'The AI returned no usable response.' }, 502, corsOrigin);
     }
 
