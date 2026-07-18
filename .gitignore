@@ -14,3 +14,5 @@ Endgame/wtharvey_*.log
 lesson_source/
 lesson_source2/
 lesson_source3/
+
+worker/.wrangler/
