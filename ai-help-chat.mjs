@@ -132,7 +132,7 @@ function mountChat() {
       src="${AI_HELP_ICON_DATA_URI}"
       alt=""
       aria-hidden="true"
-      style="width:2rem;height:2rem;display:block;flex:0 0 auto;border-radius:50%;object-fit:cover;object-position:center;box-shadow:0 0 0 2px rgba(255,255,255,.26);"
+      style="width:2.65rem;height:2.65rem;display:block;flex:0 0 auto;box-sizing:border-box;padding:.12rem;border-radius:.6rem;object-fit:contain;object-position:center;background:#061515;box-shadow:0 0 0 2px rgba(255,255,255,.26);"
     >
     <span>AI Help</span>
   `;
