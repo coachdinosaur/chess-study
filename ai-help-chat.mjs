@@ -229,7 +229,7 @@ function mountChat() {
 
   function appendMessage(role, content, extraClass = '') {
     const message = createElement('div', `ai-help-message ai-help-message-${role} ${extraClass}`.trim(), undefined);
-    const label = createElement('div', 'ai-help-message-label', role === 'user' ? 'You' : 'AI Coach');
+    const label = createElement('div', 'ai-help-message-label', role === 'user' ? 'You' : 'Dyno Bot');
     const body = createElement('div', 'ai-help-message-body', content);
     message.append(label, body);
     transcript.append(message);
