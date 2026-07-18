@@ -1,732 +1,611 @@
-# Chess Lesson Study Board User Guide
+# Coach Dinosaur Chess Study User Guide
 
-## What This App Is
+Coach Dinosaur Chess Study is a browser-based chess notebook for building positions, recording lesson lines, studying with Stockfish, adding explanations, and practicing saved variations.
 
-Chess Lesson Study Board is a chess study notebook that runs in your web browser.
-
-You can use it to:
-
-- set up any chess position
-- play moves from that position
-- build main lines and side lines
-- ask Stockfish for analysis
-- practice a recorded line or branch without seeing future moves
-- draw arrows, circles, stars, and highlights on the board
-- write a lesson note
-- save the lesson as a file and open it again later
-
-The app is best on a desktop or laptop computer with a mouse or trackpad.
-
-## Open the App
-
-Open this website in your browser:
+Live app:
 
 ```text
 https://coachdinosaur.github.io/chess-study/
 ```
 
-You do not need to install anything or run a local server to use the deployed app.
+You do not need to install anything to use the deployed app.
 
-## Quick Start
+---
 
-If you want the fastest way to begin, do this:
+## Start Here: The Three Places You Will Use Most
 
-1. Open `https://coachdinosaur.github.io/chess-study/`.
-2. Click the lesson title box on the right and type a name.
-3. Click the three-dot menu.
-4. Click `Show tools`.
-5. Use the `Setup` tab if you want to build a custom starting position.
-6. Click the `Analysis` tab.
-7. Click pieces to make moves.
-8. Click the `Analyze` button beside the three-dot menu if you want Stockfish to evaluate the current position.
-9. Read the 3 engine lines that appear below the move list.
-10. Click the same button again when it changes to `Stop` if you want to stop the search.
-11. Click the three-dot menu again and choose `Save lesson` when you want a file copy.
+### 1. Lesson controls at the top
 
-## The Big Idea
+Use these controls to manage lessons:
 
-The app has three main work areas:
+- **Lesson picker**: switch between lessons.
+- **Actions**: create, duplicate, or delete a lesson.
+- **Analyze / Stop**: start or stop Stockfish analysis.
+- **Three-dot menu**: open, save, import, export, show or hide panels, change theme, and access other display options.
 
-- the board on the left
-- the lesson title, move list, and navigation on the right
-- the tools panel, which can show `Setup`, `Analysis`, and `Line`
+### 2. The chessboard
 
-If you ever feel lost, click the three-dot menu and choose `Show tools`.
+Use the board to:
 
-## What You See on the Screen
+- set up a position in **Setup**;
+- play legal moves in **Analysis**;
+- review recorded moves in **Line**;
+- play against Stockfish in **Play**;
+- solve endgame puzzles in **Puzzle**.
 
-### Left side: the board area
+### 3. The tools panel
 
-The left side shows:
+The tools panel contains the main working tabs:
 
-- the chessboard
-- the lesson title above the board
-- the current mode, such as `Setup` or `Analysis`
-- whether the position is ready or has a warning
-- whose turn it is
-- castling rights
-- en passant information
-- the current board FEN
-- the source setup FEN
-- the evaluation badge and evaluation bar when engine analysis is running
+- **Setup**: create or change the starting position.
+- **Analysis**: play moves, use Stockfish, practice, and annotate.
+- **Line**: review the recorded lesson tree.
+- **Play**: play a complete game against Stockfish.
+- **Puzzle**: solve endgame puzzles.
 
-### Right side: the lesson area
+If the tools panel is missing:
 
-The right side shows:
+> **Where to go:** Three-dot menu → **Show tools**
 
-- the lesson title box
-- the `Analyze` / `Stop` button
-- the three-dot menu
-- the notation tree, which is the move list
-- the engine lines area under the move list when PV lines are shown
-- move navigation buttons
-- the optional lesson note
-- the optional tools panel
+---
 
-The notation tree stays visible even when the tools panel is hidden.
+## Quick Navigation Map
 
-## The Three-Dot Menu
+Use these exact paths when you know what you want to do.
 
-Click the three-dot button near the title to open the lesson actions menu.
+- Create a blank lesson: **Actions → New**
+- Copy the current lesson: **Actions → Duplicate**
+- Delete the current lesson: **Actions → Delete**
+- Show the tools panel: **Three-dot menu → Show tools**
+- Hide the tools panel: **Three-dot menu → Hide tools**
+- Save the current lesson: **Three-dot menu → Save lesson**
+- Open a saved lesson: **Three-dot menu → Open lesson**
+- Import a PGN: **Three-dot menu → Import PGN**
+- Export a PGN: **Three-dot menu → Export PGN**
+- Show the lesson note: **Three-dot menu → Show note**
+- Show engine lines: **Three-dot menu → Show PV lines**
+- Change the starting position: **Tools → Setup**
+- Play and record moves: **Tools → Analysis**
+- Review the lesson tree: **Tools → Line**
+- Start engine analysis: click **Analyze** beside the three-dot menu
+- Stop engine analysis: click **Stop** in the same place
+- Flip the board: use **Flip board** in the current tools tab
+- Enter Focus mode: **Three-dot menu → Focus mode**
 
-From this menu you can:
+---
 
-- `Open lesson`
-- `Save lesson`
-- `Import PGN`
-- `Export PGN`
-- `Show note` or `Hide note`
-- `Show tools` or `Hide tools`
-- `Show PV lines` or `Hide PV lines`
-- `Enter fullscreen` or `Exit fullscreen` on supported mobile browsers
-- switch between `Light` and `Dark` theme
+# Common Tasks
 
-Your theme choice is remembered in the same browser.
+## Create a New Lesson
 
-Important limit:
+> **Where to go:** **Actions → New**
 
-- iPhone Safari in a normal browser tab does not support this fullscreen mode, so the menu item stays hidden there
+1. Click **Actions** near the lesson picker.
+2. Choose **New**.
+3. Click the lesson title field and type a name.
+4. Open the three-dot menu and choose **Show tools** if the tools are hidden.
+5. Leave the normal starting position, or use **Setup** to create a custom position.
+6. Switch to **Analysis**.
+7. Play moves on the board.
+8. Save the lesson when finished.
 
-## Your First Lesson
+The move list grows automatically as you play.
 
-Here is a simple example you can follow from start to finish.
+## Rename the Current Lesson
 
-1. Open the website.
-2. Type a title such as `My first checkmate lesson`.
-3. Open the three-dot menu.
-4. Click `Show tools`.
-5. Stay on `Setup` if you want to build a special starting position.
-6. If you want the normal chess starting position, you can leave it as it is.
-7. Click `Analysis`.
-8. Make a move on the board.
-9. Make another move.
-10. Watch the move list on the right grow as you play.
-11. Click the header `Analyze` button to ask Stockfish what it thinks.
-12. Read the 3 PV lines that appear below the move list.
-13. Add a note if you want to explain the lesson.
-14. Click `Save lesson` when you want a file copy to keep or share.
+> **Where to go:** lesson title field at the top of the lesson area
 
-## The Three Tabs
+1. Click the lesson title.
+2. Replace the existing text.
+3. Click outside the field or continue working.
 
-The tools panel has these tabs:
+The title is stored in the browser draft and included when you save the lesson.
 
-- `Setup`: build or change the starting position
-- `Analysis`: play legal moves and run Stockfish
-- `Line`: review the move tree without focusing on the engine panel
-- `Play`: play a full game against Stockfish
-- `Puzzle`: solve random Stockfish-verified endgame puzzles (premium feature)
+## Duplicate a Lesson
 
-## Setup Tab
+> **Where to go:** **Actions → Duplicate**
 
-Use `Setup` to decide what the starting chess position should be.
+Use Duplicate when you want to experiment without changing the original lesson.
 
-### Setup buttons
+The copied lesson keeps the setup position, move tree, comments, annotations, and note.
 
-The `Setup` tab includes:
+## Delete a Lesson
 
-- `Reset setup`: go back to the normal chess starting position
-- `Clear board`: remove every piece from the board
-- `Flip board`: turn the board around so the other side is at the bottom
+> **Where to go:** **Actions → Delete**
 
-### Adding and moving pieces
+1. Switch to the lesson you want to remove.
+2. Click **Actions**.
+3. Choose **Delete**.
+4. Confirm the deletion.
 
-The piece palette lets you put pieces on the board.
+The app always keeps at least one lesson.
+
+---
+
+## Build a Lesson from the Normal Starting Position
+
+> **Where to go:** **Tools → Analysis**
+
+1. Create a new lesson or select an existing one.
+2. Give the lesson a title.
+3. Make sure the board shows the normal starting position.
+4. Open **Analysis**.
+5. Play the main line on the board.
+6. Navigate back to an earlier move and play a different move to create a variation.
+7. Add comments, notes, or annotations as needed.
+8. Choose **Three-dot menu → Save lesson**.
+
+## Build a Lesson from a Custom Position
+
+> **Where to go:** **Tools → Setup**
+
+1. Open **Setup**.
+2. Build the position using the piece palette, drag-and-drop, or a FEN string.
+3. Set side to move, castling rights, and en passant details when needed.
+4. Check that the app reports the position as legal.
+5. Switch to **Analysis**.
+6. Play and record the lesson moves.
+7. Save the lesson.
+
+Changing the setup resets the existing analysis tree because the lesson now begins from a different position.
+
+---
+
+## Make Moves and Build Variations
+
+> **Where to go:** **Tools → Analysis**
+
+To make a move:
+
+1. Click a piece belonging to the side to move.
+2. Legal destination squares appear.
+3. Click a legal destination square.
+
+The app automatically records the move and stores the resulting position.
+
+To create a side variation:
+
+1. Click an earlier move in the notation tree, or use the navigation controls.
+2. Confirm that the board shows the position where the branch should begin.
+3. Play a different legal move.
+4. The new move appears as a variation from that position.
+
+If the move already exists, the app follows the existing branch instead of creating a duplicate.
+
+## Navigate the Move Tree
+
+> **Where to go:** notation tree and navigation buttons on the right
 
 You can:
 
-- choose `White` or `Black` in the palette
-- click a palette piece to arm it
-- click a board square to place the armed piece there
-- click the same palette piece again to unarm it
-- drag a palette piece onto the board to copy it onto a square
-- drag a piece that is already on the board to move it to another square
-- right-click a square in `Setup` to remove the piece on that square
-
-Helpful behavior:
-
-- if no piece is armed and you click a board piece, that piece type becomes armed so you can place more of that kind
-- dragging a board piece moves the actual piece that is already there
-
-### FEN editor
-
-FEN is a text way to describe a chess position.
-
-The FEN box lets you paste a full 6-part FEN and load it.
-
-You can:
-
-- paste a legal FEN into the text area
-- click `Apply FEN` to replace the current setup with that position
-- click `Reset draft` to throw away unsaved text in the FEN box and return to the current real setup
-
-Important behavior:
-
-- the board and the FEN stay in sync
-- board edits update the FEN field automatically
-- changing the setup resets the current analysis tree because the starting position changed
-- invalid FEN is rejected and a warning message appears
-
-### Advanced position details
-
-Open `Advanced position details` when you need to control:
-
-- side to move
-- White castling rights
-- Black castling rights
-- en passant target square
-
-Rules enforced by the app:
-
-- the normal starting position always locks side to move to White
-- castling checkboxes only work when the needed king and rook are on their home squares
-- the en passant menu only shows legal target squares for the current position
-
-### Legal position check
-
-You can only analyze legal positions.
-
-If the setup is invalid, the app shows a warning and disables legal move analysis until the setup is fixed.
-
-## Analysis Tab
-
-Use `Analysis` to play moves from the setup position and ask Stockfish for help.
-
-### How to make moves
-
-In `Analysis`:
-
-- click a piece belonging to the side to move
-- legal destination squares light up
-- click a legal destination square to play the move
-- click the selected square again if you want to cancel the selection
-
-The app automatically:
-
-- records the move in the lesson tree
-- stores the new board position for that move
-- highlights the last move on the board
-- creates or follows variations when you branch from an earlier position
-
-If the move already exists from the current node, the app reuses that branch instead of making a duplicate.
-
-### Practice mode
-
-You can also use the recorded lesson tree as a simple training drill.
-
-- open `Analysis` or `Line`
-- choose `Selected line` or `Branch drill`
-- click `Start practice`
-- `Selected line` uses the currently displayed lesson line from the start position
-- `Branch drill` starts from the current position and accepts any recorded child move
-- future moves are hidden until you solve them
-- Stockfish output is hidden during practice
-
-While practice is active:
-
-- play a recorded move on the board
-- use `Hint` if you want a lighter clue
-- use `Reveal move` if you want to give up on the current move
-- use `Restart` to begin the same drill again
-- use `Stop practice` to return to normal analysis
-
-Important behavior:
-
-- wrong guesses do not create new lesson moves
-- branch drills do not change the coach's saved preferred variation
-- changing the setup or resetting analysis ends the practice session
-
-### Promotions
-
-If a pawn can promote in more than one way, the app opens a promotion dialog.
-
-Choose the piece you want:
-
-- queen
-- rook
-- bishop
-- knight
-
-### Engine analysis
-
-The app has one main engine button beside the three-dot menu:
-
-- `Analyze`: start live Stockfish analysis
-- `Stop`: stop the current search
-
-If the current position is a legal tablebase endgame, `Analyze` checks the Lichess tablebase instead of starting Stockfish. This applies when the board has one king per side, no castling rights, and up to 7 pieces total. This includes 4v3 and 3v4 endgames. Pawns are included.
-
-Tablebase lookup needs internet access. If the lookup is unavailable or rate-limited, the app automatically falls back to Stockfish.
-
-The `Analysis` tab also includes:
-
-- the same `Analyze` / `Stop` action
-- `Reset to setup`: clear the move tree and return to the original setup position
-- `Annotate`: turn on annotation-focused mode
-- `Flip board`
-
-The engine area shows:
-
-- evaluation
-- search depth
-- searched nodes
-- engine status text
-- the top 3 principal variation lines, which are the engine's candidate best lines
-
-For tablebase positions, the same area shows:
-
-- result
-- DTM
-- DTZ
-- the top tablebase moves returned for the current board
-
-The board can also show:
-
-- an evaluation badge
-- an evaluation bar
-
-These only appear outside `Setup` and only after the engine has produced a score.
-
-### PV lines under the move list
-
-When analysis is running, the app can show 3 engine lines below the move list.
-
-For tablebase endgames, this same area shows solved tablebase moves instead of Stockfish PV lines.
-
-Engine lines show:
-
-- `PV 1`, `PV 2`, or `PV 3`
-- that line's evaluation
-- the sequence of moves for that candidate line
-
-Tablebase lines show:
-
-- `TB 1`, `TB 2`, or `TB 3`
-- the solved continuation with normal move numbers
-- an ellipsis if the continuation reached the app's request or time limit before mate
-
-This is useful because you can see more than one engine idea, not just the single best move.
-
-If you do not want to see these lines, open the three-dot menu and choose `Hide PV lines`.
-
-## Line Tab
-
-Use `Line` when you want to review your lesson tree without focusing on Stockfish controls.
-
-The `Line` tab shows:
-
-- how many half-moves are recorded
-- how many branch points exist
-- a current board message
-- shortcuts to jump to the start or reset to setup
-- the same `Annotate` and `Flip board` controls
-
-The notation tree above the tabs still works, so you can click moves and variations directly.
-
-## Puzzle Tab (Premium)
-
-The `Puzzle` tab (next to `Play`) serves random endgame puzzles generated and
-verified by the built-in puzzle API. Every puzzle:
-
-- has at most 6 pieces per side, kings included
-- is a fully legal position, checked by Stockfish before you see it
-- randomly assigns you White or Black (you always have the move)
-- has one of three objectives:
-  - `Checkmate`: deliver checkmate against Stockfish
-  - `Gain a piece`: win at least a minor piece's worth of material (+3 points)
-  - `Hold the draw`: you start down material and must reach a draw
-
-You solve each puzzle live against Stockfish. Adjust its resistance with the
-`Stockfish Defense (Elo)` slider and the `Stockfish Reply Speed` selector
-(instant to slow). Pick a specific objective or choose `Surprise me (random)`.
-
-During a puzzle you can `Give Up`, `Skip Puzzle`, or (in hold-the-draw
-puzzles) `Offer Draw`. When a puzzle ends, a result popup offers `Next
-Puzzle` so you can keep solving for as long as you like. The panel tracks
-your solved count, failed count, current streak, and best streak.
-
-### Free plan and Premium
-
-The free plan includes 3 puzzles per day. Premium removes the limit:
-
-- open the `Puzzle` tab and press `Unlock Premium`
-- enter an activation key shaped like `CHESS-XXXX-XXXX-XX`
-- the unlock is stored in your browser, so it survives reloads
-
-Activation keys are validated offline. App owners can issue keys from the
-browser console with `window.__endgamePuzzlePremium.generateKey()`.
-
-## The Move List and Navigation
-
-The move list on the right is the notation tree.
-
-It shows:
-
-- the main line
-- side lines and variations
-- inline PGN comment previews when a move has a comment
-- the currently selected move
-- the optional engine lines below it when PV lines are visible
-
-You can click any move in the notation tree to jump straight to that position.
-
-The navigation buttons let you:
-
-- go to the start
-- go back one move
-- go forward one move in the current branch
-- go to the end of the current branch
+- click any move to jump directly to that position;
+- go to the start;
+- go back one move;
+- go forward one move in the current branch;
+- go to the end of the current branch.
 
 Keyboard shortcuts:
 
-- `Left Arrow`: previous move
-- `Right Arrow`: next move
-- `Escape`: close the lesson actions menu
+- **Left Arrow**: previous move
+- **Right Arrow**: next move
+- **Escape**: close menus and dialogs
 
-Arrow-key navigation works only when:
+Arrow-key navigation does not run while you are typing in a field or choosing a promotion piece.
 
-- there is already at least one move in the lesson
-- you are not typing in an input field
-- the promotion dialog is not open
+---
 
-## Annotations
+## Analyze a Position with Stockfish
 
-Annotations let you draw on the board to explain ideas.
+> **Where to go:** click **Analyze** beside the three-dot menu
 
-You can use annotations in:
+1. Open a legal position in **Analysis** or **Line**.
+2. Click **Analyze**.
+3. Wait for the evaluation, depth, and candidate lines to appear.
+4. Click **Stop** when you want to end the search.
 
-- `Analysis`
-- `Line`
+The engine area can show:
 
-You cannot use annotations in:
+- evaluation;
+- search depth;
+- searched nodes;
+- engine status;
+- up to three principal variation lines.
 
-- `Setup`
+To show or hide the candidate lines:
 
-Supported annotation types:
+> **Where to go:** Three-dot menu → **Show PV lines** or **Hide PV lines**
 
-- circles on squares
-- stars on squares
-- painted highlighted squares
-- arrows between squares
+For legal endgames with up to seven pieces and no castling rights, the app may use the Lichess tablebase instead of Stockfish. If tablebase access fails, the app falls back to Stockfish.
 
-Mouse actions:
+## Explain the Current Position with AI Help
 
-- right-click a square: add or remove a circle
-- `Ctrl` + right-click a square: add or remove a star
-- right-drag across squares: paint highlighted squares
-- `Alt` + right-drag from one square to another: draw an arrow
-- left-click the board while annotations exist: clear all annotations
+> **Where to go:** **AI Help** button at the bottom-right
 
-The `Annotate` button is useful when you want to mark up the board without accidentally making moves.
+The AI receives the visible lesson title, current FEN, active tab, side to move, opening information, and a notation excerpt.
 
-Annotations are saved in:
+Useful questions include:
 
-- the browser draft
-- lesson files
+- “Explain this position.”
+- “What should White look for?”
+- “What changed after the last move?”
+- “Give me a small hint.”
+- “How do I import a PGN?”
 
-## Lesson Note
+AI can make mistakes. Verify concrete tactics with Stockfish and verify app instructions against this guide.
 
-The lesson note is one text note for the current lesson.
+---
 
-Use the three-dot menu to:
+## Add a Lesson Note
 
-- `Show note`
-- `Hide note`
+> **Where to go:** Three-dot menu → **Show note**
 
-When the note is visible, you can type any text you want below the move list.
+The lesson note is one free-form text area for the whole lesson.
 
-The note text and its visibility are saved with the lesson.
+Use it for:
 
-## PGN Comments
+- lesson goals;
+- teaching reminders;
+- homework instructions;
+- a summary of the position.
 
-PGN comments are different from the lesson note.
+Use **Hide note** when you want more screen space. The note remains saved even when hidden.
 
-- the lesson note is one free-form note for the whole lesson
-- the PGN comment box is tied to the currently selected position in the move tree
-- when you click a move, the PGN comment editor switches to that position
-- PGN comments are included in `Export PGN`
-- imported PGN comments appear inline in the move list and in the PGN comment box
+## Add a PGN Comment to a Position
 
-If the selected position is the start position, the PGN comment is saved before the first move in the exported PGN.
+> **Where to go:** select a position in the move tree, then use the PGN comment editor in the tools area
 
-## Saving, Opening, and Sharing Lessons
+1. Click the move or starting position you want to explain.
+2. Find the PGN comment editor for the selected position.
+3. Enter the explanation.
+4. Select another move to edit that position’s comment.
 
-### Lesson JSON files
+PGN comments are attached to individual positions. They are different from the lesson note, which belongs to the whole lesson.
 
-`Save lesson` downloads a JSON file.
+PGN comments are included in exported PGN files.
 
-The app usually names it like this:
+## Draw Arrows, Circles, Stars, and Highlights
 
-- `lucena-position.lesson.json`
-- `untitled-position.lesson.json`
+> **Where to go:** **Tools → Analysis** or **Tools → Line**
 
-This file can be kept, copied, moved, emailed, or shared like a normal file.
+Use the **Annotate** control when you want to draw without accidentally playing moves.
 
-### What gets saved in a lesson JSON file
+Mouse controls:
 
-A saved lesson file includes:
+- Right-click a square: add or remove a circle.
+- **Ctrl + right-click** a square: add or remove a star.
+- Right-drag across squares: paint highlighted squares.
+- **Alt + right-drag** from one square to another: draw an arrow.
+- Left-click while annotations exist: clear all annotations.
 
-- lesson title
-- setup FEN
-- board orientation
-- active tab
-- whether advanced setup details were open
-- whether the tools panel was open
-- whether PV lines were shown
-- the full lesson tree and current node
-- annotations
-- the lesson note
-- PGN comments attached to positions in the move tree
+Annotations are saved in lesson files and the browser draft.
 
-### How to save a lesson
+---
 
-1. Open the three-dot menu.
-2. Click `Save lesson`.
-3. Your browser downloads the file.
-4. Keep that file somewhere safe if the lesson matters to you.
+## Practice a Recorded Lesson
 
-### How to open a saved lesson
+> **Where to go:** **Tools → Analysis** or **Tools → Line**
 
-1. Open the three-dot menu.
-2. Click `Open lesson`.
-3. Pick a `.json` or `.lesson.json` file from your device.
-4. The lesson loads into the app.
+1. Build or open a lesson with recorded moves.
+2. Choose **Selected line** or **Branch drill**.
+3. Click **Start practice**.
+4. Play the expected move on the board.
 
-The app checks the file before loading it. If the JSON is broken, the version is unsupported, or the lesson tree is invalid, the app shows an error instead of loading bad data.
+Practice types:
 
-### PGN files
+- **Selected line** follows the currently displayed lesson line from the starting position.
+- **Branch drill** starts from the current position and accepts any recorded child move.
 
-`Export PGN` downloads a `.pgn` file.
+During practice:
+
+- future moves are hidden;
+- Stockfish output is hidden;
+- wrong guesses do not create lesson moves;
+- **Hint** highlights the correct piece;
+- **Reveal move** shows the next move;
+- **Restart** begins the drill again;
+- **Stop practice** returns to normal study mode.
+
+---
+
+# Setup Position Guide
+
+## Reset to the Normal Starting Position
+
+> **Where to go:** **Tools → Setup → Reset setup**
+
+This restores the standard chess starting position.
+
+## Clear the Board
+
+> **Where to go:** **Tools → Setup → Clear board**
+
+Use Clear board when building a position from scratch. Add one king for each side before attempting analysis.
+
+## Add or Move Pieces
+
+> **Where to go:** **Tools → Setup**
+
+You can:
+
+- choose White or Black in the palette;
+- click a palette piece and then click a square;
+- drag a palette piece onto the board;
+- drag an existing board piece to another square;
+- right-click a square to remove its piece.
+
+## Load a FEN
+
+> **Where to go:** **Tools → Setup → FEN field**
+
+1. Paste a complete six-part FEN.
+2. Click **Apply FEN** if it does not apply automatically.
+3. Check the validity message.
+4. Switch to **Analysis** when the position is ready.
+
+Use **Reset draft** to discard unsaved text in the FEN field and restore the current setup FEN.
+
+## Change Side to Move, Castling, or En Passant
+
+> **Where to go:** **Tools → Setup → Advanced position details**
+
+The app limits choices to details that make sense for the pieces on the board. For example, castling rights require the king and rook on their home squares.
+
+## Fix an Invalid Position
+
+> **Where to go:** **Tools → Setup**
+
+Common causes include:
+
+- missing or extra kings;
+- impossible king placement;
+- illegal side to move;
+- castling rights without the required pieces;
+- invalid en passant square;
+- a position where the side not moving is illegally left in check.
+
+Analysis remains disabled until the setup is legal.
+
+---
+
+# Saving and Sharing
+
+## Save the Current Lesson
+
+> **Where to go:** Three-dot menu → **Save lesson**
+
+1. Choose **Save lesson**.
+2. Your browser downloads a `.lesson.json` file.
+3. Store that file somewhere safe.
+
+A lesson file keeps app-specific details, including:
+
+- title;
+- setup FEN;
+- board orientation;
+- move tree and current position;
+- annotations;
+- lesson note;
+- PGN comments;
+- selected display settings.
+
+## Open a Saved Lesson
+
+> **Where to go:** Three-dot menu → **Open lesson**
+
+1. Choose **Open lesson**.
+2. Select a `.lesson.json` or compatible `.json` file.
+3. The app validates and loads the lesson.
+
+If the file is broken or unsupported, the app shows an error instead of loading it.
+
+## Export a PGN
+
+> **Where to go:** Three-dot menu → **Export PGN**
 
 PGN export includes:
 
-- lesson title as the PGN event name
-- starting FEN when needed
-- the selected main line plus all recorded variations
-- PGN comments from the move tree
+- the starting position when needed;
+- main line and variations;
+- PGN comments;
+- lesson title as PGN event information.
 
-PGN export does not keep app-only details such as:
+PGN does not preserve app-only details such as annotations, lesson note, board orientation, or panel visibility.
 
-- board orientation
-- the lesson note
-- annotations
-- whether tools or PV lines were visible
+## Import a PGN
 
-### How to export PGN
+> **Where to go:** Three-dot menu → **Import PGN**
 
-1. Open the three-dot menu.
-2. Click `Export PGN`.
-3. Your browser downloads a `.pgn` file.
+1. Choose **Import PGN**.
+2. Select a `.pgn` file.
+3. If the file contains multiple games, choose the game to load.
+4. The app rebuilds the move tree, variations, and PGN comments.
 
-### How to import PGN
+## Share a Lesson
 
-1. Open the three-dot menu.
-2. Click `Import PGN`.
-3. Pick a `.pgn` file from your device.
-4. The app rebuilds the move tree, variations, and PGN comments from that file.
+Send the downloaded `.lesson.json` or `.pgn` file through email, chat, cloud storage, or another file-sharing method.
 
-### Sharing with other people
+This is file sharing, not live collaboration. Changes do not synchronize automatically between users.
 
-Yes, you can share lesson files and PGN files.
+## Understand Browser Draft Saving
 
-For example, you can send a saved file by:
+The app automatically stores a working draft in the current browser profile.
 
-- email
-- chat
-- cloud storage
-- USB drive
-
-Important sharing rule:
-
-- sharing a lesson file is not live collaboration
-
-This means:
-
-- one person saves a file
-- another person opens that file later
-- changes do not automatically sync between people
-
-## Automatic Browser Draft Save
-
-The app also keeps one working draft in the browser's local storage.
-
-This draft remembers:
-
-- title
-- setup position
-- board orientation
-- active tab
-- advanced setup panel state
-- tools panel state
-- whether PV lines are shown
-- practice mode preference
-- full lesson tree
-- current node
-- annotations
-- note text
-- note visibility
-
-This is helpful because if you close the page and reopen it later in the same browser, your work can come back automatically.
+The draft can restore your work after closing and reopening the page, but it is not an account-based cloud backup.
 
 Important limits:
 
-- the browser draft belongs to one browser profile, not to an account
-- a different computer or different browser does not automatically get that draft
-- multiple tabs in the same browser profile can overwrite the same draft
-- if the work matters, use `Save lesson` and keep the downloaded file
+- another browser or device does not receive the draft;
+- multiple tabs can overwrite the same draft;
+- clearing browser storage can remove it;
+- important work should be saved as a lesson file.
 
-## Can Multiple People Use the Website at the Same Time?
+---
 
-Yes.
+# Play Against Stockfish
 
-Different people can open the GitHub Pages website at the same time on different devices or different browser profiles.
+> **Where to go:** **Tools → Play**
 
-Normally, their work will not affect each other because:
+1. Choose your side: White, Black, or Random.
+2. Choose a time control.
+3. Choose the engine strength.
+4. Choose the starting position.
+5. Choose the engine reply speed.
+6. Click **Start Game**.
 
-- each person's browser keeps its own draft
-- lesson files are only shared when someone manually sends a file
+Available starting positions can include:
 
-The main exception is this:
+- current board;
+- setup position;
+- normal initial position.
 
-- if several people use the same browser profile on the same machine, they share the same browser draft
+During a game, the panel shows clocks and provides controls such as Resign and Offer Draw.
 
-## Typical Workflows
+---
 
-### Workflow 1: Start from the normal chess opening
+# Endgame Puzzles
 
-1. Open the website.
-2. Type a lesson title.
-3. Click the three-dot menu.
-4. Click `Show tools`.
-5. Leave the board in the normal starting position.
-6. Click `Analysis`.
-7. Play the moves you want.
-8. Click the header `Analyze` button if you want engine help.
-9. Read the 3 PV lines below the move list if they are visible.
-10. Save the lesson file.
+> **Where to go:** **Tools → Puzzle**
 
-### Workflow 2: Build a custom puzzle or study position
+1. Choose an objective or select a random objective.
+2. Choose the difficulty.
+3. Set Stockfish defense strength and reply speed.
+4. Start or load a puzzle.
+5. Play your solution on the board.
 
-1. Open the website.
-2. Show the tools panel.
-3. Go to `Setup`.
-4. Use the piece palette, `Clear board`, or a FEN string to build the position.
-5. Make sure the setup is legal.
-6. Switch to `Analysis`.
-7. Play lines, add variations, and annotate ideas.
-8. Save the lesson file when you are done.
+Possible objectives include:
 
-### Workflow 3: Open a lesson someone else sent you
+- checkmate;
+- gain a piece;
+- hold the draw.
 
-1. Download the lesson file to your device.
-2. Open the website.
-3. Click the three-dot menu.
-4. Click `Open lesson`.
-5. Choose the file.
-6. Read the note, click through the moves, and continue studying.
+The panel tracks solved puzzles, failed puzzles, current streak, and best streak.
 
-## Easy Troubleshooting
+The free plan has a daily limit. Premium removes that limit when a valid activation key is entered in the Puzzle tab.
 
-### I do not see the tools panel
+---
 
-Open the three-dot menu and click `Show tools`.
+# Focus Mode and Display Controls
 
-### I do not see the PV lines
+## Enter Focus Mode
 
-Check these things:
+> **Where to go:** Three-dot menu → **Focus mode**
 
-- click `Analyze` first so the engine starts searching
-- open the three-dot menu and click `Show PV lines` if they are hidden
-- wait a moment for Stockfish to produce lines
+Focus mode hides most panels and emphasizes the board.
 
-### I cannot move a piece
+Exit by:
 
-Check these things:
+- pressing **Escape**;
+- clicking the close button in the Focus mode controls.
 
-- you are in `Analysis`, not `Setup`
-- it is that side's turn
-- the move is legal
-- annotation mode is not preventing your normal click behavior
+## Change Theme
 
-### The app says the position is invalid
+> **Where to go:** Three-dot menu → **Light** or **Dark** theme
 
-Go back to `Setup` and fix the position.
+The app remembers the theme in the current browser.
 
-Common reasons include:
+## Flip the Board
 
-- impossible king placement
-- illegal side to move
-- bad castling rights
-- invalid en passant square
+> **Where to go:** use **Flip board** in Setup, Analysis, or Line
 
-### `Analyze` is not working
+Flipping changes the viewing direction but does not change the position.
 
-Check these things:
+---
 
-- the setup is legal
-- you are not in `Setup`
-- the page finished loading
+# Troubleshooting
 
-### My work is gone
+## I Cannot See the Tools Panel
 
-Check these things:
+> **Fix:** Three-dot menu → **Show tools**
 
-- are you in the same browser and browser profile as before
-- did another tab overwrite the draft
-- did you save a lesson file that you can reopen
+## I Cannot Move a Piece
 
-If the work matters, saving a lesson file is safer than relying only on the browser draft.
+Check that:
 
-### A lesson file will not open
+1. You are in **Analysis**, not Setup.
+2. It is that piece’s turn.
+3. The move is legal.
+4. Practice mode is not expecting a different recorded move.
+5. Annotate mode is not intercepting board clicks.
+6. The setup position is valid.
+
+## Analyze Does Nothing
+
+Check that:
+
+1. The board position is legal.
+2. You are not in Setup.
+3. The page and Stockfish files finished loading.
+4. You clicked **Analyze**, not an unrelated panel control.
+5. You waited briefly for the first engine result.
+
+## I Cannot See Engine Lines
+
+1. Click **Analyze**.
+2. Open the three-dot menu.
+3. Choose **Show PV lines**.
+4. Wait for Stockfish or the tablebase to return results.
+
+## The Position Is Invalid
+
+> **Where to go:** **Tools → Setup**
+
+Review the kings, side to move, castling rights, and en passant square.
+
+## My Work Disappeared
+
+Check whether:
+
+- you are using the same browser profile;
+- another tab replaced the browser draft;
+- browser storage was cleared;
+- you saved a `.lesson.json` file that can be reopened.
+
+## A Lesson File Will Not Open
 
 Possible reasons:
 
-- the file is not valid JSON
-- the lesson version is not supported
-- the move tree inside the file is broken
+- the file is not valid JSON;
+- it is not a supported lesson format;
+- the lesson tree is damaged;
+- the file was only partially downloaded.
 
-Try another saved copy if you have one.
+Try another saved copy when available.
 
-### The board looks upside down
+## The Board Looks Upside Down
 
-Use `Flip board` in the current tab.
+> **Fix:** click **Flip board** in the current tools tab.
 
-## Short Vocabulary Guide
+## AI Help Gives an Unclear App Instruction
 
-- `Setup`: choose the starting position
-- `Analysis`: play moves and use the engine
-- `Line`: review the recorded move tree
-- `FEN`: a text string that describes a chess position
-- `variation`: a side line that branches from another move
-- `annotation`: a drawing on the board, such as an arrow or circle
-- `SAN`: the short chess notation used in the move list
+1. Ask it to name the exact menu, button, or tab first.
+2. Compare its answer with the Quick Navigation Map in this guide.
+3. Treat this guide as authoritative when the AI and guide disagree.
 
-## Important Things to Remember
+---
 
-- use the website at `https://coachdinosaur.github.io/chess-study/`
-- click the three-dot menu if you need more controls
-- the button beside the three-dot menu toggles between `Analyze` and `Stop`
-- `Setup` changes the starting position
-- `Analysis` is where you normally make moves
-- the 3 PV lines below the move list can be shown or hidden from the three-dot menu
-- `Save lesson` creates a shareable file
-- the browser draft is helpful, but a saved lesson file is safer
+# Short Vocabulary Guide
+
+- **Setup**: choose the starting position.
+- **Analysis**: play moves and use the engine.
+- **Line**: review the recorded move tree.
+- **FEN**: text describing a chess position.
+- **PGN**: portable chess game notation containing moves, variations, and comments.
+- **Variation**: a side line branching from another position.
+- **Annotation**: an arrow, circle, star, or highlighted square.
+- **PV line**: an engine’s suggested continuation.
+- **Lesson note**: one note for the whole lesson.
+- **PGN comment**: a comment attached to a specific position.
+
+---
+
+# Important Things to Remember
+
+- Use **Actions → New** to create a blank lesson.
+- Use the three-dot menu for opening, saving, importing, exporting, and display controls.
+- Use **Setup** to change the starting position.
+- Use **Analysis** to play and record moves.
+- Return to an earlier move and play a different move to create a variation.
+- Click **Analyze** beside the three-dot menu to start Stockfish.
+- Use **Save lesson** for a complete app lesson file.
+- Use **Export PGN** for a portable chess file.
+- The browser draft is convenient, but a downloaded lesson file is safer.

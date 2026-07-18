@@ -1,0 +1,20 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "chess-study-ai",
+  "main": "ai-help-worker.js",
+  "compatibility_date": "2026-07-18",
+  "vars": {
+    "GEMINI_MODEL": "gemini-3.5-flash",
+    "ALLOWED_ORIGINS": "https://coachdinosaur.github.io,http://127.0.0.1:8000,http://localhost:8000"
+  },
+  "ratelimits": [
+    {
+      "name": "AI_RATE_LIMITER",
+      "namespace_id": "1001",
+      "simple": {
+        "limit": 20,
+        "period": 60
+      }
+    }
+  ]
+}
