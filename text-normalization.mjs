@@ -19,7 +19,18 @@ function loadTeacherBoardIllegalMoveSupport() {
   }
 }
 
+function loadAiHelpChat() {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  void import('./ai-help-chat.mjs?v=20260718-ai-help1').catch((error) => {
+    console.warn('[AI Help] Chat failed to load.', error);
+  });
+}
+
 loadTeacherBoardIllegalMoveSupport();
+loadAiHelpChat();
 
 const ENCODING_REPAIR_REPLACEMENTS = Object.freeze([
   ['\u00e2\u20ac\u2122', "'"],
