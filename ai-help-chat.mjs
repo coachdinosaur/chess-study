@@ -1,4 +1,5 @@
 import { AI_HELP_ENDPOINT } from './ai-help-config.mjs';
+import { AI_HELP_ICON_DATA_URI } from './ai-help-icon.mjs';
 
 const STORAGE_KEY = 'chess-study-ai-endpoint-v1';
 const MAX_HISTORY_MESSAGES = 12;
@@ -92,7 +93,7 @@ function injectStylesheet() {
   const link = document.createElement('link');
   link.id = id;
   link.rel = 'stylesheet';
-  link.href = new URL('./ai-help-chat.css?v=20260718-ai-help1', import.meta.url).href;
+  link.href = new URL('./ai-help-chat.css?v=20260718-ai-help3', import.meta.url).href;
   document.head.append(link);
 }
 
@@ -127,10 +128,12 @@ function mountChat() {
   launcher.setAttribute('aria-expanded', 'false');
   launcher.setAttribute('aria-controls', 'aiHelpPanel');
   launcher.innerHTML = `
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d="M8.5 4.5h7l1 3 2.5 2.5-2 2.5.6 5H6.4l.6-5-2-2.5L7.5 7.5l1-3Z"></path>
-      <path d="M9 9.5h6M8 17.5h8M7 20h10"></path>
-    </svg>
+    <img
+      src="${AI_HELP_ICON_DATA_URI}"
+      alt=""
+      aria-hidden="true"
+      style="width:2rem;height:2rem;display:block;flex:0 0 auto;border-radius:50%;object-fit:cover;object-position:center;box-shadow:0 0 0 2px rgba(255,255,255,.26);"
+    >
     <span>AI Help</span>
   `;
 
