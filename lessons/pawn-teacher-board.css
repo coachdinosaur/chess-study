@@ -10,7 +10,7 @@
   width: min(92vw, 680px);
   height: min(82vh, 680px);
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto auto auto auto;
+  grid-template-rows: auto minmax(0, 1fr) auto auto auto;
   overflow: hidden;
   border: 1px solid var(--line, rgba(52, 74, 78, 0.92));
   border-radius: 18px;
@@ -103,7 +103,9 @@
 }
 
 .teacher-board-body {
+  position: relative;
   min-height: 0;
+  overflow: hidden;
   background: #071012;
 }
 
@@ -116,14 +118,26 @@
 }
 
 .teacher-board-game-status {
-  padding: .58rem .78rem;
-  border-top: 1px solid var(--line, rgba(52, 74, 78, 0.92));
+  position: absolute;
+  left: 50%;
+  bottom: .55rem;
+  z-index: 5;
+  max-width: calc(100% - 1rem);
+  transform: translateX(-50%);
+  border: 1px solid color-mix(in srgb, var(--line, rgba(52, 74, 78, 0.92)) 88%, transparent);
+  border-radius: 999px;
+  padding: .34rem .62rem;
+  overflow: hidden;
   color: var(--text, #f7faf5);
-  background: color-mix(in srgb, var(--panel-strong, #1c2b30) 90%, #000 10%);
-  font-size: .86rem;
+  background: color-mix(in srgb, var(--panel-strong, #1c2b30) 94%, #000 6%);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .36);
+  font-size: .74rem;
   font-weight: 900;
-  line-height: 1.35;
+  line-height: 1.2;
   text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 .teacher-board-game-status[hidden] {
@@ -131,15 +145,13 @@
 }
 
 .teacher-board-game-status.is-checkmate {
-  border-top-color: color-mix(in srgb, var(--gold, #8ad8b7) 72%, transparent);
+  border-color: color-mix(in srgb, var(--gold, #8ad8b7) 74%, transparent);
   color: #eafff5;
-  background: color-mix(in srgb, var(--gold, #8ad8b7) 22%, var(--panel-strong, #1c2b30));
 }
 
 .teacher-board-game-status.is-stalemate {
-  border-top-color: rgba(238, 183, 78, .72);
+  border-color: rgba(238, 183, 78, .78);
   color: #ffe5aa;
-  background: color-mix(in srgb, #9a6d1f 22%, var(--panel-strong, #1c2b30));
 }
 
 .teacher-board-tools {

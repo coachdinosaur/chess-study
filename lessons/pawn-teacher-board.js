@@ -291,11 +291,11 @@
 
       if (checkmate) {
         var winner = game.turn() === "w" ? "Black" : "White";
-        renderTeacherGameStatus("checkmate", "Checkmate — " + winner + " wins.", fen);
+        renderTeacherGameStatus("checkmate", "Checkmate. " + winner + " wins.", fen);
         return;
       }
       if (stalemate) {
-        renderTeacherGameStatus("stalemate", "Stalemate — the game is a draw.", fen);
+        renderTeacherGameStatus("stalemate", "Stalemate. Draw.", fen);
         return;
       }
       clearTeacherGameStatus();
@@ -827,8 +827,8 @@
       '</div>',
       '<div class="teacher-board-body">',
       '  <iframe class="teacher-board-frame" title="Interactive teacher chessboard" loading="lazy"></iframe>',
+      '  <div class="teacher-board-game-status" role="status" aria-live="assertive" hidden></div>',
       '</div>',
-      '<div class="teacher-board-game-status" role="status" aria-live="assertive" hidden></div>',
       '<div class="teacher-board-setup-tray" hidden>',
       '  <div class="teacher-piece-tray">',
       setupBoardMenu(),

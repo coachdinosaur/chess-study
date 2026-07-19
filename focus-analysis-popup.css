@@ -1,0 +1,178 @@
+.focus-analysis-popup {
+  position: fixed;
+  top: max(5.5rem, env(safe-area-inset-top));
+  right: max(1rem, env(safe-area-inset-right));
+  z-index: 1180;
+  width: min(24rem, calc(100vw - 2rem));
+  max-height: min(72vh, 42rem);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--line, rgba(52, 74, 78, .92)) 88%, transparent);
+  border-radius: 14px;
+  color: var(--text, #f7faf5);
+  background: color-mix(in srgb, var(--panel-strong, #1c2b30) 96%, #000 4%);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, .46);
+}
+
+.focus-analysis-popup[hidden] {
+  display: none;
+}
+
+.focus-analysis-popup.is-dragging {
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .58);
+}
+
+.focus-analysis-popup.is-minimized {
+  width: min(19rem, calc(100vw - 2rem));
+  max-height: none;
+  grid-template-rows: auto;
+}
+
+.focus-analysis-popup.is-minimized .focus-analysis-popup-body {
+  display: none;
+}
+
+.focus-analysis-popup-head {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .55rem .62rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--line, rgba(52, 74, 78, .92)) 78%, transparent);
+  background: color-mix(in srgb, var(--panel, rgba(27, 42, 46, .92)) 90%, transparent);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.focus-analysis-popup.is-dragging .focus-analysis-popup-head {
+  cursor: grabbing;
+}
+
+.focus-analysis-popup-grip {
+  flex: 0 0 auto;
+  color: var(--muted, #b9c8c5);
+  font-size: .95rem;
+  line-height: 1;
+}
+
+.focus-analysis-popup-title {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  color: var(--gold, #8ad8b7);
+  font-size: .78rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.focus-analysis-popup-eval {
+  flex: 0 0 auto;
+  color: var(--gold, #8ad8b7);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .8rem;
+  font-weight: 900;
+}
+
+.focus-analysis-popup-button {
+  width: 1.65rem;
+  height: 1.65rem;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--line, rgba(52, 74, 78, .92)) 82%, transparent);
+  border-radius: 8px;
+  padding: 0;
+  color: var(--muted, #b9c8c5);
+  background: transparent;
+  cursor: pointer;
+  font: 900 1rem/1 system-ui, sans-serif;
+}
+
+.focus-analysis-popup-button:hover,
+.focus-analysis-popup-button:focus-visible {
+  border-color: var(--gold, #8ad8b7);
+  color: var(--text, #f7faf5);
+  background: color-mix(in srgb, var(--gold, #8ad8b7) 14%, transparent);
+}
+
+.focus-analysis-popup-button:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--gold, #8ad8b7) 78%, #fff);
+  outline-offset: 2px;
+}
+
+.focus-analysis-popup-body {
+  min-height: 0;
+  display: grid;
+  gap: .45rem;
+  overflow: auto;
+  padding: .58rem;
+  overscroll-behavior: contain;
+}
+
+.focus-analysis-summary {
+  margin: 0;
+  padding: .1rem .12rem .18rem;
+  color: var(--muted, #b9c8c5);
+  font-size: .76rem;
+  line-height: 1.45;
+}
+
+.focus-analysis-line {
+  min-width: 0;
+  border: 1px solid color-mix(in srgb, var(--line, rgba(52, 74, 78, .92)) 76%, transparent);
+  border-radius: 9px;
+  padding: .5rem .56rem;
+  background: color-mix(in srgb, var(--panel, rgba(27, 42, 46, .92)) 84%, transparent);
+}
+
+.focus-analysis-line-head {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: .45rem;
+  margin-bottom: .28rem;
+  color: var(--gold, #8ad8b7);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .72rem;
+}
+
+.focus-analysis-line-head strong {
+  flex: 0 0 auto;
+}
+
+.focus-analysis-line-head span {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--muted, #b9c8c5);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.focus-analysis-line p {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--text, #f7faf5);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .78rem;
+  line-height: 1.48;
+}
+
+@media (max-width: 760px) {
+  .focus-analysis-popup {
+    top: max(4.75rem, env(safe-area-inset-top));
+    right: .5rem;
+    width: calc(100vw - 1rem);
+    max-height: min(60vh, 30rem);
+  }
+}
+
+@media print {
+  .focus-analysis-popup {
+    display: none !important;
+  }
+}
