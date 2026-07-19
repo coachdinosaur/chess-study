@@ -162,6 +162,19 @@
   line-height: 1.48;
 }
 
+html[data-theme="light"] .focus-analysis-popup-title,
+html[data-theme="light"] .focus-analysis-popup-eval,
+html[data-theme="light"] .focus-analysis-line-head strong {
+  color: #14745f;
+}
+
+html[data-theme="light"] .focus-analysis-line-head span,
+html[data-theme="light"] .focus-analysis-summary,
+html[data-theme="light"] .focus-analysis-popup-grip,
+html[data-theme="light"] .focus-analysis-popup-button {
+  color: #536a6f;
+}
+
 @media (max-width: 760px) {
   .focus-analysis-popup {
     top: max(4.75rem, env(safe-area-inset-top));
