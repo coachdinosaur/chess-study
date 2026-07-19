@@ -277,3 +277,5 @@ body.focus-mode-active .site-intro {
           git add index.html site-home.css README.md .github/workflows/apply-homepage-seo-branding.yml
           git commit -m "feat: improve homepage branding and SEO"
           git push origin HEAD:agent/homepage-seo-branding
+
+# Triggered after the workflow existed on the branch.
