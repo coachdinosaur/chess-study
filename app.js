@@ -786,7 +786,9 @@ const state = {
     whiteInc: 0,
     blackInc: 0,
     lastClockTick: 0,
+    activeClock: null,
     timerId: null,
+    gameReady: false,
     engineThinking: false,
     playSessionId: 0,
     activeEngineSessionId: null,
@@ -6113,7 +6115,10 @@ function applyAnalysisMove(move) {
   if (!state.analysis.game) {
     return;
   }
-  updateClockElapsed();
+  const playMoverColor = state.play.active ? state.analysis.game.turn() : null;
+  if (playMoverColor && !settlePlayMoverClock(playMoverColor)) {
+    return;
+  }
   const shouldKeepAnalysisLive = analysisShouldFollowPositionChanges();
   const currentNode = getCurrentAnalysisNode();
   if (!currentNode) {
@@ -6154,8 +6159,7 @@ function applyAnalysisMove(move) {
     clearAnalysisSelection();
     state.analysis.lastMoveSquares = [applied.from, applied.to];
     if (state.play.timeControl !== 'none') {
-      const turn = state.analysis.game.turn();
-      if (turn === 'b') {
+      if (playMoverColor === 'w') {
         state.play.whiteTime += state.play.whiteInc;
       } else {
         state.play.blackTime += state.play.blackInc;
@@ -6171,12 +6175,13 @@ function applyAnalysisMove(move) {
       return;
     }
     schedulePersist();
+    const nextTurn = state.analysis.game.turn();
+    state.play.activeClock = state.play.timeControl === 'none' ? null : nextTurn;
     renderAll();
-    window.setTimeout(() => {
-      if (shouldEngineMoveInPlay()) {
-        void triggerEngineMove();
-      }
-    }, 50);
+    beginPlayTurnClock(nextTurn);
+    if (shouldEngineMoveInPlay()) {
+      void triggerEngineMove();
+    }
     return;
   }
 
@@ -6244,6 +6249,9 @@ function handleAnalysisSquareClick(square) {
     return;
   }
   if (state.play.active) {
+    if (!state.play.gameReady) {
+      return;
+    }
     const humanSide = state.play.assignedSide === 'white' ? 'w' : 'b';
     if (state.analysis.game.turn() !== humanSide) {
       return;
@@ -9239,6 +9247,8 @@ async function startPlayGame(options = {}) {
   state.play.clockRunning = false;
   state.play.engineThinking = false;
   state.play.lastClockTick = 0;
+  state.play.activeClock = null;
+  state.play.gameReady = false;
   state.play.whiteTime = 0;
   state.play.blackTime = 0;
   state.play.whiteInc = 0;
@@ -9354,13 +9364,22 @@ async function startPlayGame(options = {}) {
   applyEngineSkillLevel(state.play.skill);
   worker.postMessage('ucinewgame');
 
+  state.play.gameReady = true;
+  const turn = game.turn();
+  const humanSideLetter = state.play.assignedSide === 'white' ? 'w' : 'b';
+  state.analysis.boardMessage = turn === humanSideLetter
+    ? 'Stockfish is ready. Your turn!'
+    : 'Stockfish is ready and will move first.';
+
   if (state.play.timeControl !== 'none') {
     state.play.clockRunning = true;
+    state.play.activeClock = turn;
+  }
+  renderAll();
+  if (state.play.timeControl !== 'none') {
     startPlayClock();
   }
 
-  const turn = game.turn();
-  const humanSideLetter = state.play.assignedSide === 'white' ? 'w' : 'b';
   if (turn !== humanSideLetter) {
     void triggerEngineMove();
   }
@@ -9394,6 +9413,10 @@ function stopPlayGame(options = {}) {
   state.play.playSessionId += 1;
   cancelPlayEngineRequest('stopping play game');
   state.play.active = false;
+  state.play.gameReady = false;
+  state.play.clockRunning = false;
+  state.play.activeClock = null;
+  state.play.lastClockTick = 0;
   state.play.engineThinking = false;
   stopPlayClock();
 
@@ -9588,6 +9611,9 @@ function startPlayEngineWatchdog(sessionId) {
 
 function shouldEngineMoveInPlay() {
   if (!state.play.active) {
+    return false;
+  }
+  if (!state.play.gameReady) {
     return false;
   }
   if (!state.analysis.game) {
@@ -9885,8 +9911,11 @@ function applyPlayEngineMove(bestMoveUci) {
   if (!state.play.active || !state.analysis.game) {
     return;
   }
-  updateClockElapsed();
+  const engineMoverColor = state.analysis.game.turn();
   bestMoveUci = chooseBeginnerMove(bestMoveUci);
+  if (!settlePlayMoverClock(engineMoverColor)) {
+    return;
+  }
   const parsedMove = tablebaseUciMoveObject(bestMoveUci);
   if (!parsedMove) {
     stopPlayGame({ reason: 'Stockfish returned an invalid move.' });
@@ -9934,11 +9963,10 @@ function applyPlayEngineMove(bestMoveUci) {
     : `Stockfish played ${applied.san}. Your turn!`;
 
   if (state.play.timeControl !== 'none') {
-    const turn = state.analysis.game.turn();
-    if (turn === 'w') {
-      state.play.blackTime += state.play.blackInc;
-    } else {
+    if (engineMoverColor === 'w') {
       state.play.whiteTime += state.play.whiteInc;
+    } else {
+      state.play.blackTime += state.play.blackInc;
     }
   }
 
@@ -9950,7 +9978,10 @@ function applyPlayEngineMove(bestMoveUci) {
     return;
   }
 
+  const nextTurn = state.analysis.game.turn();
+  state.play.activeClock = state.play.timeControl === 'none' ? null : nextTurn;
   renderAll();
+  beginPlayTurnClock(nextTurn);
 }
 
 function checkPlayGameOver() {
@@ -9981,13 +10012,27 @@ function checkPlayGameOver() {
   return false;
 }
 
+function playClockNow() {
+  return window.performance?.now ? window.performance.now() : Date.now();
+}
+
+function playClockTimeFor(color) {
+  return color === 'w' ? state.play.whiteTime : state.play.blackTime;
+}
+
+function playClockFlagReason(color) {
+  return color === 'w'
+    ? 'Black wins on time (White flagged).'
+    : 'White wins on time (Black flagged).';
+}
+
 function startPlayClock() {
   stopPlayClock();
   if (state.play.timeControl === 'none') {
     return;
   }
-  state.play.lastClockTick = Date.now();
-  state.play.timerId = window.setInterval(tickPlayClock, 100);
+  state.play.lastClockTick = playClockNow();
+  state.play.timerId = window.setInterval(tickPlayClock, 50);
 }
 
 function stopPlayClock() {
@@ -9997,20 +10042,68 @@ function stopPlayClock() {
   }
 }
 
-function updateClockElapsed() {
-  if (!state.play.active || !state.play.clockRunning || !state.analysis.game) {
+function beginPlayTurnClock(color) {
+  if (
+    !state.play.active
+    || !state.play.gameReady
+    || !state.play.clockRunning
+    || state.play.timeControl === 'none'
+  ) {
     return;
   }
-  const now = Date.now();
-  const elapsed = now - state.play.lastClockTick;
-  state.play.lastClockTick = now;
+  state.play.activeClock = color;
+  state.play.lastClockTick = playClockNow();
+}
 
-  const turn = state.analysis.game.turn();
-  if (turn === 'w') {
+function updateClockElapsed() {
+  const color = state.play.activeClock;
+  if (
+    !state.play.active
+    || !state.play.clockRunning
+    || !state.analysis.game
+    || (color !== 'w' && color !== 'b')
+  ) {
+    return null;
+  }
+
+  const now = playClockNow();
+  if (!state.play.lastClockTick) {
+    state.play.lastClockTick = now;
+    return { color, remaining: playClockTimeFor(color) };
+  }
+
+  const elapsed = Math.max(0, now - state.play.lastClockTick);
+  state.play.lastClockTick = now;
+  if (color === 'w') {
     state.play.whiteTime = Math.max(0, state.play.whiteTime - elapsed);
   } else {
     state.play.blackTime = Math.max(0, state.play.blackTime - elapsed);
   }
+  return { color, remaining: playClockTimeFor(color) };
+}
+
+function settlePlayMoverClock(color) {
+  if (state.play.timeControl === 'none' || !state.play.clockRunning) {
+    return true;
+  }
+
+  if (state.play.activeClock !== color) {
+    console.warn('[PlayClock] Correcting active clock ownership.', {
+      activeClock: state.play.activeClock,
+      mover: color,
+    });
+    state.play.activeClock = color;
+  }
+
+  const settled = updateClockElapsed();
+  if (settled && settled.remaining <= 0) {
+    stopPlayGame({ reason: playClockFlagReason(color) });
+    return false;
+  }
+
+  state.play.activeClock = null;
+  state.play.lastClockTick = 0;
+  return true;
 }
 
 function tickPlayClock() {
@@ -10019,44 +10112,51 @@ function tickPlayClock() {
     return;
   }
 
-  // If Time Control is "none" or clock is not running, stop the clock and do not flag or run clock logic.
   if (state.play.timeControl === 'none' || !state.play.clockRunning) {
     stopPlayClock();
     return;
   }
 
-  // Puzzle mode: do not tick or flag the clock.
   if (state.puzzle.sessionActive) {
     return;
   }
 
-  updateClockElapsed();
-
-  if (state.play.whiteTime === 0) {
-    stopPlayGame({ reason: 'Black wins on time (White flagged).' });
-    return;
-  }
-  if (state.play.blackTime === 0) {
-    stopPlayGame({ reason: 'White wins on time (Black flagged).' });
+  const settled = updateClockElapsed();
+  if (settled && settled.remaining <= 0) {
+    stopPlayGame({ reason: playClockFlagReason(settled.color) });
     return;
   }
 
   if (dom.playPanel) {
     const clocks = dom.playPanel.querySelectorAll('.play-clock-time');
     if (clocks.length === 2) {
-      const formatTime = (ms) => {
-        if (ms <= 0) return '0:00';
-        const totalSecs = Math.ceil(ms / 1000);
-        const mins = Math.floor(totalSecs / 60);
-        const secs = totalSecs % 60;
-        return `${mins}:${secs.toString().padStart(2, '0')}`;
-      };
-      clocks[0].textContent = formatTime(state.play.whiteTime);
-      clocks[1].textContent = formatTime(state.play.blackTime);
+      clocks[0].textContent = formatPlayClock(state.play.whiteTime);
+      clocks[1].textContent = formatPlayClock(state.play.blackTime);
+      const cards = dom.playPanel.querySelectorAll('.play-clock');
+      if (cards.length === 2) {
+        cards[0].classList.toggle('is-low', state.play.whiteTime <= 10000);
+        cards[1].classList.toggle('is-low', state.play.blackTime <= 10000);
+      }
     } else {
       renderPlayPanel();
     }
   }
+}
+
+function formatPlayClock(ms) {
+  if (ms <= 0) {
+    return '0:00.0';
+  }
+  if (ms < 10000) {
+    const totalTenths = Math.ceil(ms / 100);
+    const seconds = Math.floor(totalTenths / 10);
+    const tenths = totalTenths % 10;
+    return `0:${seconds.toString().padStart(2, '0')}.${tenths}`;
+  }
+  const totalSeconds = Math.ceil(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 }
 
 function renderPlayPanel() {
@@ -10065,14 +10165,6 @@ function renderPlayPanel() {
   }
   const { skill, timeControl, side, active, whiteTime, blackTime, thinkingSpeed, startPosition } = state.play;
   const gameActive = active;
-
-  const formatTime = (ms) => {
-    if (ms <= 0) return '0:00';
-    const totalSecs = Math.ceil(ms / 1000);
-    const mins = Math.floor(totalSecs / 60);
-    const secs = totalSecs % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
 
   const statusText = `Playing as ${state.play.assignedSide === 'white' ? 'White' : 'Black'}. Engine Elo: ${skill}`;
   const activePlayActionsMarkup = gameActive ? `
@@ -10098,13 +10190,13 @@ function renderPlayPanel() {
 
       ${gameActive && timeControl !== 'none' ? `
         <div class="play-clocks-container">
-          <div class="play-clock ${state.analysis.game?.turn() === 'w' ? 'is-active' : ''}">
+          <div class="play-clock ${state.play.activeClock === 'w' ? 'is-active' : ''} ${whiteTime <= 10000 ? 'is-low' : ''}">
             <span class="play-clock-label">White</span>
-            <span class="play-clock-time">${formatTime(whiteTime)}</span>
+            <span class="play-clock-time">${formatPlayClock(whiteTime)}</span>
           </div>
-          <div class="play-clock ${state.analysis.game?.turn() === 'b' ? 'is-active' : ''}">
+          <div class="play-clock ${state.play.activeClock === 'b' ? 'is-active' : ''} ${blackTime <= 10000 ? 'is-low' : ''}">
             <span class="play-clock-label">Black</span>
-            <span class="play-clock-time">${formatTime(blackTime)}</span>
+            <span class="play-clock-time">${formatPlayClock(blackTime)}</span>
           </div>
         </div>
         ${activePlayActionsMarkup}
