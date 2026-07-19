@@ -2848,10 +2848,17 @@ code {
 }
 
 .play-clock-time {
+  min-width: 5.4ch;
   color: var(--text);
   font-family: "Consolas", "Cascadia Code", monospace;
-  font-size: 1.28rem;
+  font-size: 1.45rem;
   font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.015em;
+}
+
+.play-clock.is-low .play-clock-time {
+  color: var(--danger);
 }
 
 .play-options-grid > .field-row {
@@ -3841,7 +3848,8 @@ html[data-board-only="1"] .eval-bar-wrap {
   }
 
   .play-clock-time {
-    font-size: 1.08rem;
+    min-width: 5.4ch;
+    font-size: 1.18rem;
   }
 
   /* Slim scrollbar — thin, low-contrast, supports scrolling without competing
