@@ -204,7 +204,7 @@ iPhone Safari in a normal tab may not expose browser fullscreen controls.
 
 ## Focus and embed modes
 
-Focus mode hides most surrounding interface and keeps minimal Analyze/Exit controls.
+Focus mode hides most surrounding interface and keeps minimal Analyze/Exit controls. Pressing Analyze opens a movable analysis window that mirrors the current Lichess tablebase or Stockfish PV lines; it can be minimized, repositioned, or closed.
 
 Embedding is enabled with:
 
@@ -222,7 +222,7 @@ Common optional parameters include:
 
 Embedded lesson pages communicate with the board through `window.postMessage()` for FEN loading, orientation, annotations, and teacher-board actions.
 
-The floating Teacher Board also evaluates the embedded FEN after moves and position loads. It shows a persistent, screen-reader-announced notification for **Checkmate** (including the winning side) or **Stalemate** until the position changes.
+The floating Teacher Board also evaluates the embedded FEN after moves and position loads. It shows a compact, screen-reader-announced **Checkmate** or **Stalemate** overlay inside the board area, without changing the board size, until the position changes.
 
 ## Main files
 
@@ -231,6 +231,8 @@ The floating Teacher Board also evaluates the embedded FEN after moves and posit
 | `index.html` | SPA shell, panels, modals, board containers, cache-versioned assets |
 | `app.js` | Global state, rendering, events, board interaction, Stockfish/tablebase, Play, Puzzle, lesson management |
 | `styles.css` | Layout, themes, responsive behavior, board and panel styling |
+| `focus-analysis-popup.mjs` | Movable Focus-mode tablebase/PV analysis window |
+| `focus-analysis-popup.css` | Focus analysis window presentation and responsive sizing |
 | `pgn.mjs` | PGN parsing, multi-game splitting, lesson-tree import/export |
 | `puzzle-api.mjs` | Endgame puzzle generation and verification using a dedicated worker |
 | `lesson-position-builder.mjs` | CSV/XLSX lesson-position workflow |
