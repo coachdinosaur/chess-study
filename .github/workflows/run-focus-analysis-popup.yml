@@ -1,0 +1,47 @@
+name: Run Focus analysis popup patch
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/run-focus-analysis-popup.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/focus-analysis-popup
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Apply focused UI updates
+        run: python .github/scripts/apply_focus_analysis_popup.py
+
+      - name: Validate implementation
+        run: |
+          node --check focus-analysis-popup.mjs
+          node --check lessons/pawn-teacher-board.js
+          git diff --check
+          grep -q "focus-analysis-popup.mjs" index.html
+          grep -q "focus-analysis-popup.css" index.html
+          grep -q "Checkmate. .* wins." lessons/pawn-teacher-board.js
+          grep -q "Stalemate. Draw." lessons/pawn-teacher-board.js
+          grep -q "position: absolute" lessons/pawn-teacher-board.css
+          grep -q "without changing the board size" README.md
+
+      - name: Commit validated changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/scripts/apply_focus_analysis_popup.py
+          git add index.html README.md ARCHITECTURE.md focus-analysis-popup.mjs focus-analysis-popup.css lessons/pawn-teacher-board.js lessons/pawn-teacher-board.css
+          git diff --cached --check
+          git commit -m "Add movable Focus analysis popup"
+          git push origin HEAD:agent/focus-analysis-popup
