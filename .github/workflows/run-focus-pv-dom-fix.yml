@@ -1,0 +1,44 @@
+name: Run Focus PV DOM fix
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.head_ref == 'agent/fix-focus-pv-dom-parser'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/fix-focus-pv-dom-parser
+          fetch-depth: 0
+
+      - name: Apply and validate fix
+        shell: bash
+        run: |
+          python tools/apply_focus_pv_dom_fix.py
+          node --check focus-analysis-popup.mjs
+          grep -q "querySelector('.pv-line-index')" focus-analysis-popup.mjs
+          grep -q "focus-analysis3" index.html
+          git diff --check
+
+      - name: Remove temporary runner and commit
+        shell: bash
+        run: |
+          rm -f tools/apply_focus_pv_dom_fix.py
+          rm -f .github/workflows/run-focus-pv-dom-fix.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "fix: parse Focus PV rows directly"
+          git push origin HEAD:agent/fix-focus-pv-dom-parser
