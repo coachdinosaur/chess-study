@@ -5,7 +5,7 @@ A framework-free, browser-based chess teaching and study application. It combine
 ## Live app
 
 ```text
-https://coachdinosaur.github.io/chess-study/
+https://cddigital.top/
 ```
 
 For normal use, open the deployed site in a modern browser. No installation is required.

@@ -6,25 +6,38 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>Chess Study</title>
+  <title>CD Digital Chess Study | Interactive Chess Board &amp; Lessons</title>
+  <meta name="description" content="Free interactive chess board with lessons, puzzles, analysis tools, clocks, and teaching features.">
+  <link rel="canonical" href="https://cddigital.top/">
 
   <!-- ==========================================================================
        Social Sharing / Search Engine Optimization (SEO) Metadata
        ========================================================================== -->
   <!-- Open Graph / Facebook / Messenger / Discord -->
-  <meta property="og:title" content="Chess Study">
-  <meta property="og:description" content="Interactive lessons, puzzles, and analysis">
-  <meta property="og:image" content="https://coachdinosaur.github.io/chess-study/assets/social-preview.png">
+  <meta property="og:site_name" content="CD Digital Chess">
+  <meta property="og:title" content="CD Digital Chess Study">
+  <meta property="og:description" content="Interactive chess lessons, puzzles, analysis, and teaching tools.">
+  <meta property="og:image" content="https://cddigital.top/assets/social-preview.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:url" content="https://coachdinosaur.github.io/chess-study/">
+  <meta property="og:url" content="https://cddigital.top/">
   <meta property="og:type" content="website">
 
   <!-- Twitter / X Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Chess Study">
-  <meta name="twitter:description" content="Interactive lessons, puzzles, and analysis">
-  <meta name="twitter:image" content="https://coachdinosaur.github.io/chess-study/assets/social-preview.png">
+  <meta name="twitter:title" content="CD Digital Chess Study">
+  <meta name="twitter:description" content="Interactive chess lessons, puzzles, analysis, and teaching tools.">
+  <meta name="twitter:image" content="https://cddigital.top/assets/social-preview.png">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "CD Digital Chess",
+    "alternateName": "CD Digital Chess Study",
+    "url": "https://cddigital.top/"
+  }
+  </script>
   <!-- ========================================================================== -->
 
   <!-- Favicon and App Icons -->
@@ -61,6 +74,7 @@
     })();
   </script>
   <link rel="stylesheet" href="./styles.css?v=20260719-mobile-drag-ui1">
+  <link rel="stylesheet" href="./site-home.css?v=20260719-seo-branding1">
   <link rel="stylesheet" href="./focus-analysis-popup.css?v=20260719-focus-analysis1">
 </head>
 <body class="loading">
@@ -76,7 +90,7 @@
           <div class="board-stage-head recording-hidden" aria-hidden="true">
             <div>
               <p class="eyebrow">Study Board</p>
-              <h1 id="boardTitleDisplay" class="board-stage-title">Untitled position</h1>
+              <h2 id="boardTitleDisplay" class="board-stage-title">Untitled position</h2>
             </div>
             <div class="head-pills">
               <span id="modePill" class="pill pill-primary">Setup</span>
@@ -145,6 +159,18 @@
 
       <section class="control-pane">
         <div class="control-pane-scroll">
+          <header class="site-intro" aria-labelledby="siteTitle">
+            <div class="site-intro-copy">
+              <p class="site-intro-kicker">CD Digital Chess</p>
+              <h1 id="siteTitle" class="site-intro-title">Interactive Chess Study Board</h1>
+              <p class="site-intro-description">Build positions, study lessons, solve puzzles, and analyze games with browser-based chess tools.</p>
+            </div>
+            <nav class="site-intro-actions" aria-label="Quick start">
+              <a class="site-intro-button site-intro-button-primary" href="./lessons/">Explore lessons</a>
+              <button class="site-intro-button" type="button" data-action="set-tab" data-tab="analysis">Analyze a position</button>
+            </nav>
+          </header>
+
           <section class="lesson-header" aria-labelledby="titleInput">
             <label class="sr-only" for="titleInput">Lesson title</label>
             <input
