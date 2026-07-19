@@ -1,383 +1,255 @@
 # Chess Lesson Study Board
 
----
-**Local Windows deployment:** See [LOCAL_DEPLOYMENT.md](LOCAL_DEPLOYMENT.md) for running locally with Python and PowerShell.
----
+A framework-free, browser-based chess teaching and study application. It combines a position editor, lesson-tree authoring, Stockfish analysis, tablebase support, practice drills, Play vs Stockfish, endgame puzzles, static lesson pages, and an optional AI chess-help panel.
 
-Browser-based chess setup, study, and analysis app for building positions, recording lesson lines, adding annotations, and running Stockfish in the browser.
-
-## Live App
-
-Use the deployed GitHub Pages version here:
+## Live app
 
 ```text
 https://coachdinosaur.github.io/chess-study/
 ```
 
-For normal use, you do not need to install anything or run a local server.
+For normal use, open the deployed site in a modern browser. No installation is required.
 
-## What It Does
+For local Windows setup, see [LOCAL_DEPLOYMENT.md](LOCAL_DEPLOYMENT.md).
 
-- build any legal chess position via the Setup tab
-- play moves from that position with drag-and-drop
-- create main lines and side variations in the Study tab
-- run Stockfish analysis in the browser with configurable depth
-- probe the Lichess tablebase for up-to-7-piece endgames
-- show the top 3 engine lines for the current position
-- practice either the selected lesson line or any recorded branch
-- draw arrows, circles, stars, and highlighted squares
-- annotate positions with PGN comments in a collapsible editor
-- import and export PGN with variations and comments (multi-game PGN supported)
-- write a lesson note
-- save and reopen lessons as `.lesson.json` files
-- manage multiple lessons with New, Duplicate, Delete, and switch actions
-- **Play vs Stockfish** with Elo strength selection, time controls, clocks, and side choice
-- **Endgame Puzzles** tab with queue, statistics, objectives, difficulty, and premium keys
-- **Guided Review** of CSV/XLSX lesson rows with engine and tablebase context
-- **Opening book** identification (ECO code and opening name) from TSV database
-- copy the current FEN to the clipboard from the three-dot menu
-- toggle the tools panel on/off from the three-dot menu
-- expand/collapse PGN comments inline in the move notation
-- browse and load individual games from multi-game PGN imports
-- show/hide PV lines and PGN comments independently
-- request a hint or reveal the next move during practice
-- keyboard navigation of the move tree (Arrow keys), Escape to close modals
-- seven printable endgame lesson chapters with static diagrams and interactive board embeds (`lessons/`)
+## Main features
 
-## Recent Improvements
+- Build and validate custom chess positions from FEN or the piece palette.
+- Move pieces by clicking or dragging.
+  - Desktop uses native drag-and-drop.
+  - Touch and pen use pointer-based dragging with a floating piece preview.
+  - Tap-to-select and tap-to-move remain available.
+- Record a lesson as a branching move tree with main lines and variations.
+- Add PGN comments, lesson notes, arrows, circles, stars, and colored square highlights.
+- Import and export PGN, including comments, variations, and multi-game files.
+- Save and reopen lesson JSON files and multi-lesson books.
+- Analyze positions with browser Stockfish and up to three principal variations.
+- Probe the public Lichess tablebase for eligible endgames.
+- Practice a selected line or drill any recorded branch.
+- Play against Stockfish with Elo, side, speed, starting-position, and clock settings.
+- Train with built-in or generated endgame puzzles.
+- Review CSV/XLSX position sets in the Lesson Position Builder.
+- Identify openings from the bundled ECO/opening database.
+- Use static Pawn, Bishop, and numbered endgame lesson pages in `lessons/`.
+- Ask the optional Dyno Bot panel about the visible position and notation on supported desktop-sized layouts.
 
-### Endgame Lesson Pages
+## Workspace
 
-Seven printable endgame lesson chapters covering king-and-pawn, rook endgames,
-and separated-knight-corner trap positions, with interactive board embeds:
+The single-page application is organized around six tabs:
 
-- **[Lesson Index](lessons/index.html)** — landing page with links to all chapters
-- Static chess diagrams rendered by `endgame-lesson.js` (a lightweight FEN→board renderer)
-- Each page embeds the full interactive SPA via an iframe for live practice
-- Print/PDF export styled with [Paged.js](https://pagedjs.org/)-compatible CSS
+| Tab | Purpose |
+|---|---|
+| Study | Board and notation with the tools panel collapsed |
+| Setup | Position construction, FEN editing, scanner input, castling and en passant controls |
+| Analysis | Stockfish/tablebase analysis, annotations, and practice controls |
+| Play | Play vs Stockfish |
+| Puzzle | Endgame puzzle queue and active puzzle sessions |
+| Lessons | CSV/XLSX Lesson Position Builder |
 
-### Mobile Engine Lines
+The lesson title input is intentionally hidden while the Play or Puzzle tab is active so game controls receive the available space. The title remains part of the lesson state and returns on the other tabs.
 
-On mobile viewports, engine PV lines are rendered into a dedicated slot below the
-board (rather than the right-side notation panel) so they remain visible on small
-screens where the control pane is typically hidden.
+## Board interaction
 
-### Mobile Layout Optimizations
+### Click and tap
 
-The mobile portrait layout was reworked to maximize usable board width on small
-screens (360–430 px viewport):
+Click or tap a movable piece, then select a legal destination. Legal targets and captures are highlighted.
 
-- The outer board enclosure (`.board-frame` border, padding, background, shadow)
-  is removed so the chessboard uses nearly the full viewport width.
-- The eval bar and turn-side-marker badge are reduced proportionally and the
-  board size is calculated to account for their left-side offset, ensuring the
-  entire assembly fits without horizontal scroll.
-- Board coordinates (ranks 1–8, files a–h) are reduced to 0.46 rem.
-- Captured-piece icons use smaller cell sizing (min 0.5 rem, divisor 24).
-- All supporting elements (eval bar, turn marker, captured pieces, coordinates)
-  remain visible and balanced alongside the maximized board.
+### Dragging legal moves
 
-### Earlier Improvements
+Legal pieces can be dragged in Analysis, Practice, Play, and Puzzle contexts.
 
-- added Lichess tablebase analysis for legal up-to-7-piece endgames, including pawns, with no backend or API key required
-- tablebase results now replace Stockfish automatically for eligible positions and fall back to Stockfish if the lookup is unavailable, rate-limited, offline, or out of scope
-- tablebase move output now shows numbered SAN continuation lines, such as `1. Kb4 Kc6 2. ...`, instead of only result, DTM, and DTZ fields
-- tablebase and engine PV lines stay visible after a move is played when the move belongs to one of the displayed lines, matching the smoother Lichess-style analysis flow
-- analysis display now maps tablebase results into the existing eval badge, eval bar, status grid, and move-line panel
-- lesson title, notation, and analysis move text are larger, while move-list text uses a lighter semibold weight
-- light theme background is darker and easier on the eyes
-- right-click annotation green is darker in both light and dark themes
+- On desktop, the app uses HTML drag events.
+- On touch and pen devices, it uses pointer events.
+- A move is accepted only when the source and destination match a legal `chess.js` move.
+- During Play and Puzzle sessions, only the human side can be dragged.
+- Promotion opens the same promotion dialog used by click-to-move.
+- Annotation mode and Setup mode keep their specialized board behavior.
 
-### Endgame Puzzle Quality
+### Setup dragging
 
-The built-in puzzle generation pipeline was hardened to prevent illegal or misevaluated puzzles:
+The Setup tab separately supports:
 
-- **Legality gates** — `buildCandidate` now rejects positions where the solver is in check or would be checking the opponent king, using `game.isAttacked()` in both directions. Same check added to the setup board validation.
-- **Deeper verification** — Minimum accept depth raised from 14 to 16; clarity gap raised from 150cp to 200cp. A two-phase verification (depth 24 then depth 28) catches horizon-effect mirages where a shallow search misses a refutation.
-- **Storage-level filtering** — `isPuzzleFenIllegal()` runs on all puzzle ingestion paths (queue/history hydration, CSV import, `addPuzzleToQueue`, `addPuzzleToHistory`) so defective puzzles are never persisted.
-- **Default puzzle audit** — All built-in default puzzles were verified against the Syzygy tablebase. Invalid FENs were corrected, illegal positions removed, and 6 replacements added with legal, tablebase-confirmed positions across mate, win, and draw objectives.
-- **Tablebase-assisted generation** — The puzzle API can optionally probe the Lichess tablebase during verification, accepting ground-truth wins/draws for ≤7-piece positions instead of relying solely on search depth.
+- dragging pieces from the palette to the board
+- moving setup pieces between squares
+- deleting a setup piece by dragging it off the board
+- click-to-place and eraser tools
 
-## Main Workspace
+## Play vs Stockfish
 
-The app is organized around:
+Available controls include:
 
-- a chessboard on the left with on-screen file/rank coordinates and captured-pieces display above and below
-- a lesson title, `Analyze` / `Stop` button, move tree, and navigation area on the right
-- optional tools with `Setup`, `Analysis`, and `Line` tabs
-- a three-dot menu with note, **Show/Hide tools**, PV-line visibility, PGN comments visibility, Focus mode, theme toggle, last-move arrow toggle, copy FEN, and a mobile fullscreen toggle on supported browsers
-- pill badges showing the active tab, setup validity, and engine status
-- an eval bar with turn-side marker and a meta strip (context label, turn, castling, en passant tokens)
+- Elo from 800 to 3190
+- White, Black, or Random side
+- Current, Setup, or Initial starting position
+- Instant, Fast, Normal, or Slow engine speed
+- Bullet `1+0`
+- Blitz `3+2` and `5+0`
+- Rapid `10+0` and `15+10`
+- Classical `30+0` and `45+45`
+- No clock
 
-## Setup Tab
+### Clock behavior
 
-The Setup tab provides a complete position builder:
+The clock system is designed to avoid assigning browser-processing delay to the wrong player:
 
-- **Piece palette** — click a piece type, then click a board square to place it. Palette color toggle (White/Black) selects which color to place.
-- **Drag-and-drop** — drag pieces from the palette onto the board, or drag pieces between board squares.
-- **Eraser tool** — click to arm, then click a square to remove that piece.
-- **Clear Board** — removes all non-King pieces at once.
-- **Flip Board** — rotates the board 180 degrees.
-- **FEN field** — paste a full FEN string and it applies automatically; `Apply FEN` and `Reset Draft` buttons for manual control.
-- **Scan Board** — sends a chessboard image (`.png`, `.jpg`, `.jpeg`) to `http://127.0.0.1:8765/predict-fen` (requires the local scanner helper server).
-- **Scan status** — success/danger/warning banners appear in the Setup panel to report scan results.
-- **Advanced details** — collapsible panel for side-to-move, castling rights (checkboxes), and en passant target square (dropdown).
-- **Hero banner** — shows green/danger status messages indicating setup validity.
-- **Puzzle position preservation** — switching to the Setup tab while a puzzle is active saves the puzzle position into the setup board, so you can explore or modify the position after the puzzle session ends.
+- The clock does not begin until Stockfish is ready.
+- `performance.now()` is used for monotonic elapsed-time measurement.
+- `state.play.activeClock` explicitly records which side owns the running clock.
+- The mover's elapsed time is settled before a move is accepted.
+- A player who has reached zero is flagged before increment can be added.
+- The next clock starts only after the move is processed and the board is rendered.
+- The display refreshes every 50 ms.
+- Tenths are shown below ten seconds.
+- An 8-second engine watchdog retries a stalled Stockfish request once.
 
-## Play vs Stockfish Tab
+The Play and Puzzle interfaces also hide the lesson title. During an active Play game, PGN comments and PV lines are temporarily hidden and restored after the game ends.
 
-A complete play-against-the-engine mode:
+## Endgame puzzles
 
-- **Start Game** — begins a game from the chosen position with the chosen settings.
-- **Time controls** — Bullet (1+0), Blitz (3+2, 5+0), Rapid (10+0, 15+10), Classical (30+0, 45+45), or No clock.
-- **Engine strength** — Elo slider from 800 to 3190. Ratings 800–1100 use a beginner weakness engine that deliberately selects weaker moves (Safe, Imperfect, or Weak alternatives).
-- **Side selection** — White, Black, or Random.
-- **Starting position** — Current board, Setup position, or Initial position.
-- **Thinking speed** — Instant (0.1–0.5s), Fast (0.25–1.0s), Normal (0.5–2.0s), Slow (1.0–4.0s).
-- **Clock display** — shown for both sides with active-turn highlighting (100 ms tick interval). Resign and Offer Draw buttons available.
-- **Engine stall watchdog** — 8-second timeout with one automatic retry, then a panel message.
-- While a Play game is active, PGN comments and PV lines are auto-hidden; restored on resign.
+The Puzzle tab provides:
 
-## Endgame Puzzles Tab
+- built-in tablebase-checked endgame positions
+- generated puzzle batches
+- checkmate, gain-a-piece, and hold-the-draw objectives
+- difficulty and Stockfish defense settings
+- queue and history persistence
+- solved, failed, streak, and best-streak statistics
+- CSV queue import/export
+- replay and reset controls
+- legality filtering on every puzzle ingestion path
+- optional tablebase-assisted candidate verification
 
-A puzzle-practice system with built-in and generated endgame puzzles:
+Puzzle sessions reuse the Play-vs-Engine move machinery but are untimed.
 
-- **Queue** — shows upcoming puzzles; persisted to localStorage.
-- **Default puzzles** — 20 built-in endgame puzzles verified against the Syzygy tablebase across mate, win, and draw objectives.
-- **Objectives** — Checkmate, Gain a piece, Hold the draw, or Surprise me (random).
-- **Difficulty** — Any, Easier, or Harder (based on mate length or total pieces).
-- **Stockfish Defense slider** — Elo for the defending side (800–3190).
-- **Stockfish Reply Speed** — Instant, Fast, Normal, Slow.
-- **Statistics** — Solved, Failed, Streak, Best Streak.
-- **Instruction banner** — during a puzzle, a contextual message above the board foot tells you your side, objective, and available goal (e.g. "You play White. Checkmate Stockfish — mate in 2 is available.").
-- **Material gain progress** — shown for "Gain a piece" puzzles; draw objective has a losing-threshold detector.
-- **Generate 5 More Puzzles** — batch-generates puzzles via Stockfish verification.
-- **Reset Default Puzzles** — restores the original 20 built-in puzzles.
-- **Save Queue as CSV / Load CSV Puzzles** — import/export puzzle sets.
-- **Replay Previous Puzzle** — cycles through the puzzle history.
-- **Clear Previous Puzzles** — with confirmation dialog.
-- **Premium** — activation key (`CHESS-XXXX-XXXX-CC`) removes the free daily limit. Keys validated offline with a checksum. Generate from the browser console: `window.__endgamePuzzlePremium.generateKey()`.
-- **Legality filtering** — `isPuzzleFenIllegal()` rejects any puzzle where the solver would be checking the opponent king, enforced on all ingestion paths (hydration, CSV import, add-to-queue, add-to-history).
+## Analysis and tablebase
 
-## Setup Board Validation
+The app selects the best available analysis source:
 
-The app validates positions before allowing play:
+1. Eligible endgames are probed through the Lichess tablebase.
+2. Other positions use the strongest compatible bundled Stockfish worker.
+3. If a tablebase request fails, analysis falls back to Stockfish.
 
-- **Setup position validity** — the setup board runs `isIllegalSetupPosition()` which checks both directions: the solver must not be in check, and the solver must not be checking the opponent king.
-- **`isFenInsufficientMaterialDraw()`** — detects K vs K, KB vs K, KN vs K, and same-color-Bishop insufficient-material endgames.
+Tablebase eligibility requires a legal FEN, no castling rights, no more than seven total pieces, and no more than four pieces per side.
 
-## Annotations
+## AI chess help
 
-- **Drawing tools** — arrows, circles, stars, and highlighted (painted) squares, drawn directly on the board.
-- **Annotation toggle** in the Analysis panel enters annotation mode. While active, board clicks draw instead of moving pieces.
-- **PGN comment collapse** — inline PGN comments in the move notation can be collapsed/expanded by clicking the toggle button on each comment block.
-- **Mouse gestures** — right-click + drag paints squares, Alt + right-click + drag draws arrows, Ctrl + right-click places a star. Left-click clears all annotations (with a 400 ms suppression delay to prevent accidental clears).
-- **Annotation colors** — green (primary), configurable. Darker green in both light and dark themes.
-- **Last Move Arrow** — can be toggled on/off from the menu. When on, an arrow from the last move's origin to destination square is shown.
+`ai-help-chat.mjs` mounts an optional floating Dyno Bot panel outside embedded/board-only mode.
 
-## Focus Mode
-
-A distraction-free board view:
-
-- **Enter** — from the three-dot menu. Shows only the board with minimal controls.
-- **Controls bar** — floating Analyze and Exit (×) buttons appear in the top-right corner.
-- **Watermark** — the app icon is shown in the bottom-right corner as a subtle brand mark.
-- **Exit** — press Escape or click the × button.
-- Useful for teaching, presenting, or concentrating on a single position.
-
-## Lesson Book
-
-The app supports multiple lessons in a single browser session:
-
-- **Lesson picker dropdown** — switch between lessons.
-- **Actions button** — New (creates a blank lesson), Duplicate (copies the current lesson), Delete (removes with confirmation, minimum of 1 kept).
-- **Lesson-book file format** (`.lesson-book.json`) — saves and reopens all lessons at once.
-- **Legacy draft migration** — older single-lesson drafts are automatically converted to the lesson-book format on load.
-
-## Opening Book
-
-An embedded opening reference:
-
-- **TSV database** loaded from `./assets/openings.tsv` (ECO code, Name, PGN, UCI, EPD).
-- **Opening identification** — UCI longest-prefix match with EPD fallback. Merges PGN header info (ECO, Opening, Variation) when available.
-- **Display** — ECO code and opening name shown in the lesson header next to the FEN information.
-
-## Keyboard Shortcuts
-
-- **Arrow Left** — navigate to the parent move in the tree
-- **Arrow Right** — navigate to the next move in the tree
-- **Escape** — close premium modal, PGN game picker, puzzle result, custom select dropdown, Focus mode, and header menus
-- **Enter** (in premium key input) — activate premium
-
-## Practice Mode
-
-The app includes two student practice styles:
-
-- `Selected line`: follows the displayed lesson line from the root position
-- `Branch drill`: starts from the current position and accepts any recorded child move
-- start either mode from the `Analysis` or `Line` tool panel
-- future moves are hidden while practice is active
-- Stockfish output is hidden until practice stops
-- wrong guesses do not change the saved lesson tree
-- **Hint** button shows a subtle highlight on the correct piece; **Reveal move** shows the next move on the board
-- **Restart** resets progress within the current session; **Stop practice** exits practice mode
-
-## Guided Review
-
-A separate panel for working through lesson-row data:
-
-- **File input** — accepts `.csv`, `.xlsx`, and `.xls` files.
-- **Context panel** — shows engine and tablebase analysis for the current FEN as you step through rows.
-- Useful for reviewing a batch of positions from a spreadsheet (e.g., student games, exercise sets).
-
-## Promotion Dialog
-
-When a pawn reaches the eighth rank with multiple promotion options, a modal appears showing Queen, Rook, Bishop, and Knight as clickable piece images. The subtitle indicates the promoting side. The dialog can be dismissed by clicking the backdrop.
-
-## Captured Pieces
-
-Captured pieces are displayed in a dedicated area above and below the board:
-
-- Pieces are shown with piece-count badges (`×2`, `×3`, etc.) when multiple of the same type are captured.
-- Empty slots show pieces still on the board.
-- The layout swaps top/bottom when the board is flipped.
-
-## Lesson Files and PGN
-
-`Save lesson` downloads a JSON file named like:
-
-```text
-my-lesson.lesson.json
-```
-
-Saved lesson files include:
+The panel can send the following visible context to the configured `/chat` endpoint:
 
 - lesson title
-- setup FEN
-- board orientation
+- current FEN and setup FEN
+- opening name/ECO display
 - active tab
-- lesson tree and current node
-- whether PV lines are shown
+- side-to-move and position labels
+- visible notation, capped before transmission
+
+The endpoint can come from `ai-help-config.mjs` or the browser-local key `chess-study-ai-endpoint-v1`.
+
+To avoid covering board controls, the entire floating AI-help control is hidden on:
+
+- viewports up to 760 px wide
+- short coarse-pointer landscape screens
+
+The feature is also disabled in `?embed=1` and board-only modes.
+
+## Lessons and files
+
+### Lesson JSON
+
+Lesson files preserve app-specific state such as:
+
+- title and setup FEN
+- board orientation
+- move tree and selected branches
+- comments and note
 - annotations
-- lesson note
+- visibility preferences
+- active lesson position
 
-`Open lesson` accepts `.json` and `.lesson.json` files.
+The app supports individual `.lesson.json` files and multi-lesson `.lesson-book.json` files.
 
-`Export PGN` downloads a `.pgn` file that includes:
+### PGN
 
-- lesson title as the PGN event name
-- starting FEN when the lesson does not begin from the normal chess start
-- the selected main line plus all recorded side variations
-- PGN comments attached to positions in the move tree
+PGN import/export supports:
 
-`Import PGN` accepts `.pgn` files and rebuilds the lesson tree from the PGN move text, variations, and comments.
+- non-standard starting FENs
+- main lines and nested variations
+- comments
+- multi-game browsing and selection
 
-**Multi-game PGN:** When a PGN file contains multiple games, the header area shows
-the filename and game count with **Browse Games** and **Clear** buttons. Clicking
-**Browse Games** opens a modal listing each game with its headers; select one to
-load it. **Clear** discards all imported games at once.
+Use JSON when complete application state matters. Use PGN for chess notation interchange.
 
-Use JSON when you need the full app state. JSON keeps the lesson note, annotations, board orientation, active tab, and other app-specific settings that PGN does not carry.
+### Browser draft
 
-## Lesson File Status
+The current lesson book is persisted locally under `setup-analysis-draft-v1`. Puzzle settings, queue, history, theme, AI endpoint, and Lesson Position Builder state use separate localStorage keys.
 
-After save, open, or import operations, a transient **file status** message appears
-below the lesson header (e.g. "Lesson saved", "PGN imported", "Lesson opened").
-It auto-clears on the next non-persistence action.
+Browser storage is local to one browser profile and is not collaborative synchronization.
 
-## Browser Draft Persistence
+## Mobile behavior
 
-The app also keeps one browser-local working draft under `setup-analysis-draft-v1`, including:
+Mobile-specific behavior includes:
 
-- title
-- setup FEN
-- board orientation
-- active tab
-- advanced-controls open state
-- current lesson-tree position
-- full lesson move tree, including variations
-- whether PV lines are shown
-- practice mode preference
-- board annotations
-- lesson note text and note panel state
+- a nearly edge-to-edge portrait board
+- compact coordinates, captured pieces, and evaluation rail
+- engine lines duplicated into a dedicated slot below the board
+- pointer-based piece dragging
+- tap-to-move support
+- best-effort fullscreen where supported
+- hidden floating AI-help control to prevent board obstruction
 
-This draft is local to one browser profile. If the lesson matters, save a lesson file.
+iPhone Safari in a normal tab may not expose browser fullscreen controls.
 
-## Mobile Fullscreen
+## Focus and embed modes
 
-On supported mobile browsers, the three-dot menu shows `Enter fullscreen` / `Exit fullscreen` in mobile view.
+Focus mode hides most surrounding interface and keeps minimal Analyze/Exit controls.
 
-Important limit:
-
-- this is best-effort browser fullscreen, not PWA standalone mode
-- iPhone Safari in a normal browser tab does not support hiding the browser bar for this app, so the fullscreen item stays hidden there
-
-## Sharing and Multiple Users
-
-Different people can use the GitHub Pages app at the same time on different devices or browser profiles.
-
-Important limits:
-
-- the app is not real-time collaborative
-- one person's browser draft does not automatically sync to another person's browser
-- lesson sharing happens by sending a saved `.lesson.json`, `.json`, or `.pgn` file
-- multiple tabs in the same browser profile can overwrite the same local draft
-
-## Included Assets
-
-- MPChess SVG piece set in `assets/pieces/mpchess/`
-- `chess.js` in `vendor/chess.js`
-- Stockfish browser worker bundle in `vendor/stockfish/`
-
-## Stockfish Upgrades
-
-This app uses browser-compatible Stockfish bundles, not native desktop `stockfish.exe` downloads.
-
-Put browser bundle files in `vendor/stockfish/`. The app will automatically use the strongest installed bundle it can run in this order:
-
-- `stockfish-18.js` + `stockfish-18.wasm`
-- `stockfish-18-single.js` + `stockfish-18-single.wasm`
-- `stockfish-18-lite.js` + `stockfish-18-lite.wasm`
-- `stockfish-18-lite-single.js` + `stockfish-18-lite-single.wasm`
-
-Recommended setups:
-
-- easiest stronger upgrade: add `stockfish-18-single.js` and `stockfish-18-single.wasm`
-- strongest local setup: add `stockfish-18.js` and `stockfish-18.wasm`, then run `python local_server.py`
-
-If you only install a multi-threaded bundle, the app needs the local server above or another server that sends `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp`.
-
-## Tablebase Analysis
-
-For legal endgames with one king per side, no castling rights, and up to 7 pieces total, `Analyze` uses the public Lichess tablebase before Stockfish. This includes 4v3 and 3v4 endgames. Pawns are included.
-
-This works from GitHub Pages or any static deployment because the request goes directly from the browser to:
+Embedding is enabled with:
 
 ```text
-https://tablebase.lichess.ovh/standard
+?embed=1
 ```
 
-Important limits:
+Common optional parameters include:
 
-- tablebase lookup needs internet access
-- results are cached per full FEN in the browser session
-- solved move lines use bounded follow-up probes to build SAN continuations
-- if the lookup is unavailable, rate-limited, or returns an unexpected response, the app falls back to Stockfish
-- the puzzle generation API can optionally use tablebase verification for ≤7-piece positions during its confirm phase, accepting ground-truth wins/draws in place of deeper engine searches
+```text
+?fen=<encoded FEN>
+?boardOnly=1
+?setupPanel=open
+```
 
-## Local Development
+Embedded lesson pages communicate with the board through `window.postMessage()` for FEN loading, orientation, annotations, and teacher-board actions.
 
-If you want to run the app from this repository locally, serve the folder over HTTP:
+## Main files
+
+| File | Responsibility |
+|---|---|
+| `index.html` | SPA shell, panels, modals, board containers, cache-versioned assets |
+| `app.js` | Global state, rendering, events, board interaction, Stockfish/tablebase, Play, Puzzle, lesson management |
+| `styles.css` | Layout, themes, responsive behavior, board and panel styling |
+| `pgn.mjs` | PGN parsing, multi-game splitting, lesson-tree import/export |
+| `puzzle-api.mjs` | Endgame puzzle generation and verification using a dedicated worker |
+| `lesson-position-builder.mjs` | CSV/XLSX lesson-position workflow |
+| `text-normalization.mjs` | Unicode and punctuation normalization |
+| `ai-help-chat.mjs` | Dyno Bot UI, context collection, request lifecycle |
+| `ai-help-chat.css` | Floating chat styling and mobile auto-hide rules |
+| `ai-help-config.mjs` | Default AI endpoint configuration |
+| `ai-help-icon.mjs` | Embedded launcher icon data |
+| `vendor/chess.js` | Chess rules, legal moves, FEN, PGN support |
+| `vendor/stockfish/` | Browser-compatible Stockfish bundles |
+| `assets/openings.tsv` | Opening identification database |
+| `lessons/` | Static published lesson pages and shared lesson helpers |
+
+A deeper implementation map is in [ARCHITECTURE.md](ARCHITECTURE.md).
+
+## Local development
+
+Serve the repository over HTTP. Do not open `index.html` through `file://`.
+
+Basic static server:
 
 ```powershell
 python -m http.server 8000
-```
-
-For the strongest multi-threaded Stockfish builds, use the included server instead:
-
-```powershell
-python local_server.py
 ```
 
 Then open:
@@ -386,103 +258,72 @@ Then open:
 http://127.0.0.1:8000/
 ```
 
-Do not open `index.html` directly over `file://`. The Stockfish worker and asset loading are intended to run from an HTTP server.
+For multi-threaded Stockfish with the required cross-origin isolation headers:
 
-### Chessboard Image Scanner Helper (Optional)
-
-The app includes an optional **Scan board** feature that automatically converts chessboard images (`.png`, `.jpg`, `.jpeg`) into FEN positions. It relies on a local offline Python environment in `C:\Users\Ronaldo\fen_test` utilizing `chessimg2pos`.
-
-#### 1. Start the Scanner Helper Server
-In a separate terminal window, start the local scanner helper backend:
-```powershell
-python scanner_server.py
-```
-This starts a lightweight HTTP server on `http://127.0.0.1:8765`.
-
-#### 2. Run the Main Web App
-Ensure you are running the main HTTP server:
 ```powershell
 python local_server.py
 ```
-And open `http://127.0.0.1:8000/` in your browser.
 
-#### 3. Use the Scan board Button
-1. In the web app, click the **Setup** tab on the right pane.
-2. Click the **Scan board** button.
-3. Select a valid chessboard image file.
-4. The helper server will process the image offline, return the parsed chessboard placement, and the app will automatically apply the FEN to the chessboard!
-
-## Endgame Puzzle Premium Keys
-
-The Endgame Puzzles tab allows `PUZZLE_FREE_PER_DAY` (3) free puzzles per day. An activation key in the form `CHESS-XXXX-XXXX-CC` removes the limit. Keys are validated entirely offline with a checksum, so no server or account is involved.
-
-Pre-generated working keys:
+The server must provide:
 
 ```text
-CHESS-894P-JZ3E-4O
-CHESS-EV9G-UJ4U-YG
-CHESS-QABK-VT27-AD
-CHESS-4BZ6-8G8V-DS
-CHESS-6Z58-J4HU-KP
-CHESS-CVXK-32NW-NP
-CHESS-42YC-DJG3-8T
-CHESS-M7B9-ZMX9-BW
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Embedder-Policy: require-corp
 ```
 
-Generate more keys from the browser console while the app is open:
+### Optional board scanner
 
-```js
-window.__endgamePuzzlePremium.generateKey()
+The Setup tab can send `.png`, `.jpg`, or `.jpeg` board images to:
+
+```text
+http://127.0.0.1:8765/predict-fen
 ```
 
-Important limits:
-
-- this README is published with the public repository, so anyone who reads it can use these keys
-- the checksum gate is a convenience lock, not real licensing — the generator ships in the client code
-
-## Tools and Supporting Files
-
-### `tools/wtharvey/` — WTHarvey Puzzle Downloader
-
-Downloads chess puzzle pages from WTHarvey.com using only the Python standard library.
-Extracts FEN, task text, motif hints, solution, and side-to-move from each page.
-Outputs a raw archive CSV and an app-shaped CSV compatible with the Guided Review
-pipeline. See `tools/wtharvey/README.md` for usage.
-
-### `tools/endgame_kb/` — Endgame Knowledge Base
-
-Local SQLite FTS5 knowledge base builder for endgame PDFs in the `Endgame/` directory.
-Includes OCR fallback (via `pypdfium2` + `rapidocr-onnxruntime`) for scanned or
-low-text pages. Query with `search_endgame_kb.py`. See `tools/endgame_kb/README.md`
-for details.
-
-### `Endgame/` Directory
-
-Contains endgame reference materials:
-- PDF books (Dvoretsky, Silman, 100 Endgames You Must Know, etc.)
-- PGN collections with database files
-- CSV data files for Guided Review (`middlegame_input.csv`, `lesson_input.csv`)
-- SQLite knowledge base (`_kb/`) built by `tools/endgame_kb/`
-- Downloaded WTHarvey puzzle CSVs
-
-### `restore.js`
-
-Utility script (`node restore.js`) that runs `git restore styles.css` to undo local
-style changes — useful when iterating on CSS during development.
-
-## Update GitHub
-
-After making changes, review what will be committed and push to GitHub:
+Start the helper with:
 
 ```powershell
-git status
-git add README.md
-git commit -m "Update README"
-git push origin main
+python scanner_server.py
 ```
 
-If you changed more than one file, replace `git add README.md` with the specific files you want to upload.
+The scanner is optional and local-only.
 
-## Documentation
+## Stockfish bundles
 
-- Beginner-friendly guide: [USER_GUIDE.md](./USER_GUIDE.md)
+The app prefers the strongest usable installed bundle:
+
+1. `stockfish-18.js` + `stockfish-18.wasm`
+2. `stockfish-18-single.js` + `stockfish-18-single.wasm`
+3. `stockfish-18-lite.js` + `stockfish-18-lite.wasm`
+4. `stockfish-18-lite-single.js` + `stockfish-18-lite-single.wasm`
+
+Multi-threaded bundles require cross-origin isolation. Mobile/coarse-pointer devices may prefer a compatible single-threaded bundle.
+
+## Validation
+
+Useful checks after editing JavaScript or documentation:
+
+```powershell
+node --check app.js
+node --check ai-help-chat.mjs
+node tools/test-puzzle-api.mjs
+git diff --check
+```
+
+Because the app has no build step, browser testing remains important. Test at minimum:
+
+- desktop click and drag moves
+- mobile tap and pointer drag moves
+- Play clocks near zero and with increment
+- promotion by click and drag
+- puzzle sessions
+- analysis/tablebase fallback
+- embedded board mode
+- mobile AI-help hiding
+- lesson JSON and PGN round trips
+
+## Supporting documentation
+
+- [ARCHITECTURE.md](ARCHITECTURE.md)
+- [USER_GUIDE.md](USER_GUIDE.md)
+- [LOCAL_DEPLOYMENT.md](LOCAL_DEPLOYMENT.md)
+- [Lesson index](lessons/index.html)
