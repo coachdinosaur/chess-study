@@ -1085,6 +1085,28 @@ body {
 }
 .lesson-footer .chapter-name { font-style: italic; }
 
+/* ---------- Compact numbered endgame boards on desktop -------------------
+   Keep the iframe's original layout viewport, then scale its complete visual
+   output so board chrome, pieces, coordinates, trays, controls, and eval rail
+   all shrink together. Tablet/mobile and print retain their existing rules. */
+@media screen and (min-width: 861px) {
+  html[data-lesson-series="endgame"] {
+    --board-max: clamp(245px, calc(100vw * 0.35 + 52.5px), 560px);
+  }
+
+  html[data-lesson-series="endgame"] .board-iframe {
+    width: 114.285714%;
+    height: 114.285714%;
+    transform: scale(0.875);
+    transform-origin: 0 0;
+  }
+
+  html[data-lesson-series="endgame"] .test-diagram .board {
+    width: min(420px, calc(100vw - 48px));
+    height: min(420px, calc(100vw - 48px));
+  }
+}
+
 /* ---------- Layout & spacing overrides for narrow screens ----------- */
 @media (max-width: 860px) {
   .toolbar {
