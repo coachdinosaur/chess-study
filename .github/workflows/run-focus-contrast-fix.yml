@@ -1,0 +1,74 @@
+name: Run Focus contrast fix
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/fix-focus-popup-contrast
+    paths:
+      - .github/workflows/run-focus-contrast-fix.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/fix-focus-popup-contrast
+
+      - name: Apply contrast fix
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          css = Path('focus-analysis-popup.css')
+          text = css.read_text()
+          marker = '@media (max-width: 760px) {'
+          block = '''html[data-theme="light"] .focus-analysis-popup-title,
+html[data-theme="light"] .focus-analysis-popup-eval,
+html[data-theme="light"] .focus-analysis-line-head strong {
+  color: #14745f;
+}
+
+html[data-theme="light"] .focus-analysis-line-head span,
+html[data-theme="light"] .focus-analysis-summary,
+html[data-theme="light"] .focus-analysis-popup-grip,
+html[data-theme="light"] .focus-analysis-popup-button {
+  color: #536a6f;
+}
+
+'''
+          if block not in text:
+              text = text.replace(marker, block + marker)
+          css.write_text(text)
+
+          index = Path('index.html')
+          html = index.read_text()
+          html = html.replace(
+              './focus-analysis-popup.css?v=20260719-focus-analysis1',
+              './focus-analysis-popup.css?v=20260719-focus-analysis2',
+          )
+          index.write_text(html)
+          PY
+
+          grep -q 'color: #14745f;' focus-analysis-popup.css
+          grep -q 'focus-analysis2' index.html
+          git diff --check
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add focus-analysis-popup.css index.html
+          git commit -m "fix: improve Focus popup contrast"
+          git push
+
+      - name: Remove temporary workflow
+        run: |
+          git rm .github/workflows/run-focus-contrast-fix.yml
+          git commit -m "chore: remove temporary contrast workflow"
+          git push
