@@ -22,9 +22,21 @@ jobs:
         with:
           ref: agent/update-app-documentation
           fetch-depth: 0
+          show-progress: false
 
       - name: Apply updates
-        run: python .github/scripts/apply_teacher_board_status.py
+        run: |
+          set -o pipefail
+          python .github/scripts/apply_teacher_board_status.py 2>&1 | tee /tmp/teacher-patch.log
+
+      - name: Upload patch diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: teacher-patch-log
+          path: /tmp/teacher-patch.log
+          if-no-files-found: ignore
+          retention-days: 1
 
       - name: Validate changed files
         run: |
