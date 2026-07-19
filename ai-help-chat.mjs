@@ -93,7 +93,7 @@ function injectStylesheet() {
   const link = document.createElement('link');
   link.id = id;
   link.rel = 'stylesheet';
-  link.href = new URL('./ai-help-chat.css?v=20260718-ai-help3', import.meta.url).href;
+  link.href = new URL('./ai-help-chat.css?v=20260719-mobile-hide1', import.meta.url).href;
   document.head.append(link);
 }
 

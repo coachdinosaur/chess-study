@@ -833,7 +833,7 @@ code {
 }
 
 .board-square.drag-hover {
-  box-shadow: none;
+  box-shadow: inset 0 0 0 4px var(--selection);
 }
 
 .board-square.selected {
@@ -1017,10 +1017,15 @@ code {
 
 .board-piece-shell.is-draggable {
   cursor: grab;
+  touch-action: none;
 }
 
 .board-piece-shell.is-draggable:active {
   cursor: grabbing;
+}
+
+.board-piece-shell.is-pointer-dragging {
+  opacity: 0.32;
 }
 
 .board-piece {
@@ -1054,6 +1059,23 @@ code {
   height: 100%;
   object-fit: contain;
   filter: none;
+}
+
+.board-pointer-drag-preview {
+  position: fixed;
+  z-index: 1500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  filter: drop-shadow(0 8px 12px rgba(7, 17, 15, 0.3));
+}
+
+.board-pointer-drag-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .coord-rank,
@@ -1296,6 +1318,11 @@ code {
   padding: var(--space-2xs) 0 var(--space-xs);
   border-bottom: 0;
   background: var(--header-bg);
+}
+
+html[data-active-tab="play"] .lesson-title-input,
+html[data-active-tab="puzzle"] .lesson-title-input {
+  display: none;
 }
 
 .lesson-section + .lesson-section {

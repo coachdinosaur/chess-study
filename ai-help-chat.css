@@ -310,3 +310,11 @@ html[data-embed="1"] .ai-help-chat,
 html[data-board-only="1"] .ai-help-chat {
   display: none !important;
 }
+
+
+/* Keep the floating helper from covering board controls on phones. */
+@media (max-width: 760px), (max-height: 520px) and (pointer: coarse) {
+  .ai-help-chat {
+    display: none !important;
+  }
+}
