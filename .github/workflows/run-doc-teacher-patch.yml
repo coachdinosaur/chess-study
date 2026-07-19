@@ -1,0 +1,46 @@
+name: Run documentation and teacher board patch
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/run-doc-teacher-patch.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out documentation branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/update-app-documentation
+          fetch-depth: 0
+
+      - name: Apply updates
+        run: python .github/scripts/apply_teacher_board_status.py
+
+      - name: Validate changed files
+        run: |
+          node --check ai-help-chat.mjs
+          node --check lessons/pawn-teacher-board.js
+          git diff --check
+          grep -q "teacher-board-game-status" lessons/pawn-teacher-board.js
+          grep -q "Checkmate" lessons/pawn-teacher-board.js
+          grep -q "Stalemate" lessons/pawn-teacher-board.js
+          grep -q "lower-left" README.md
+          grep -q "teacher-board wrapper" ARCHITECTURE.md
+
+      - name: Commit validated updates
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/scripts/apply_teacher_board_status.py
+          git rm .github/workflows/apply-teacher-board-status.yml
+          git add README.md ARCHITECTURE.md ai-help-chat.css ai-help-chat.mjs lessons/pawn-teacher-board.js lessons/pawn-teacher-board.css
+          git diff --cached --check
+          git commit -m "Update app documentation and teacher board feedback"
+          git push origin HEAD:agent/update-app-documentation
