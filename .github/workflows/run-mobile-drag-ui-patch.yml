@@ -1,0 +1,43 @@
+name: Run mobile drag UI patch
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/run-mobile-drag-ui-patch.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out patch branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/mobile-drag-clean-play-ui
+          fetch-depth: 0
+
+      - name: Apply requested UI changes
+        run: python .github/scripts/apply_mobile_drag_ui.py
+
+      - name: Validate JavaScript and patch
+        run: |
+          node --check app.js
+          node --check ai-help-chat.mjs
+          git diff --check
+          grep -q "function handleBoardPointerDown" app.js
+          grep -q "data-active-tab=\"play\"" styles.css
+          grep -q "max-width: 760px" ai-help-chat.css
+
+      - name: Commit validated changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/scripts/apply_mobile_drag_ui.py
+          git add app.js styles.css ai-help-chat.css ai-help-chat.mjs index.html
+          git diff --cached --check
+          git commit -m "Improve mobile play and board dragging"
+          git push origin HEAD:agent/mobile-drag-clean-play-ui
