@@ -31,9 +31,11 @@ if (root.dataset.embed !== '1' && root.dataset.boardOnly !== '1') {
     return Boolean(pageShell()?.classList.contains('is-focus-mode'));
   }
 
+  function normalizedText(element) {
+    return String(element?.textContent || '').replace(/\s+/g, ' ').trim();
+  }
+
   function normalizedLines(element) {
-    // Focus mode hides the control pane with display:none. textContent still
-    // exposes the rendered PV/tablebase text, while innerText becomes empty.
     return String(element?.textContent || '')
       .split(/\r?\n/)
       .map((line) => line.replace(/\s+/g, ' ').trim())
@@ -61,6 +63,55 @@ if (root.dataset.embed !== '1' && root.dataset.boardOnly !== '1') {
     }
 
     return null;
+  }
+
+  function collectRenderedEntries() {
+    const notationPanel = document.getElementById('notationPanel');
+    const analysisPanel = document.getElementById('analysisPanel');
+    const lineList = notationPanel?.querySelector('.pv-line-list')
+      || analysisPanel?.querySelector('.pv-line-list');
+
+    if (!lineList) {
+      return { source: 'engine', entries: [] };
+    }
+
+    let detectedSource = 'engine';
+    const entries = [];
+
+    lineList.querySelectorAll('.pv-line').forEach((lineElement) => {
+      const indexLabel = normalizedText(lineElement.querySelector('.pv-line-index'));
+      const engineMatch = indexLabel.match(/^PV\s*(\d+)$/i);
+      const tablebaseMatch = indexLabel.match(/^TB\s*(\d+)$/i);
+      if (!engineMatch && !tablebaseMatch) {
+        return;
+      }
+
+      const kind = tablebaseMatch ? 'tablebase' : 'engine';
+      detectedSource = kind;
+      const depthLabel = normalizedText(lineElement.querySelector('.pv-line-depth'));
+      const scoreLabel = normalizedText(lineElement.querySelector('.pv-line-score'));
+      const lineText = normalizedText(lineElement.querySelector('.pv-line-text'));
+      const depth = kind === 'engine'
+        ? depthLabel.replace(/^Depth\s*/i, '').trim()
+        : '';
+      const scoreIsPending = !scoreLabel || /^Pending$/i.test(scoreLabel);
+      const depthIsPending = kind !== 'engine' || !depth || depth === '—';
+      const textIsPlaceholder = !lineText || /^(?:Loading engine line|Stopping analysis|No principal variation yet|Probing tablebase moves|No tablebase move is available)\.{0,3}$/i.test(lineText);
+
+      if (scoreIsPending && depthIsPending && textIsPlaceholder) {
+        return;
+      }
+
+      entries.push({
+        kind,
+        index: Number((tablebaseMatch || engineMatch)[1]),
+        depth: depth === '—' ? '' : depth,
+        meta: scoreIsPending ? '' : scoreLabel,
+        text: textIsPlaceholder ? '' : lineText,
+      });
+    });
+
+    return { source: detectedSource, entries };
   }
 
   function firstEvaluationLabel(source, entries, analysisText) {
@@ -106,11 +157,14 @@ if (root.dataset.embed !== '1' && root.dataset.boardOnly !== '1') {
     const analysisLines = normalizedLines(document.getElementById('analysisPanel'));
     const titleIndex = notationLines.findIndex((line) => line === 'Tablebase moves' || line === 'Engine lines');
     const title = titleIndex >= 0 ? notationLines[titleIndex] : '';
-    const source = title === 'Tablebase moves' ? 'tablebase' : 'engine';
-    const entries = [];
+    const rendered = collectRenderedEntries();
+    const source = rendered.entries.length
+      ? rendered.source
+      : (title === 'Tablebase moves' ? 'tablebase' : 'engine');
+    const entries = [...rendered.entries];
     let currentEntry = null;
 
-    if (titleIndex >= 0) {
+    if (!entries.length && titleIndex >= 0) {
       for (let cursor = titleIndex + 1; cursor < notationLines.length; cursor += 1) {
         const line = notationLines[cursor];
         if (STOP_SECTION_LABELS.has(line)) {
