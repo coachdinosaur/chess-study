@@ -32,7 +32,9 @@ if (root.dataset.embed !== '1' && root.dataset.boardOnly !== '1') {
   }
 
   function normalizedLines(element) {
-    return String(element?.innerText || '')
+    // Focus mode hides the control pane with display:none. textContent still
+    // exposes the rendered PV/tablebase text, while innerText becomes empty.
+    return String(element?.textContent || '')
       .split(/\r?\n/)
       .map((line) => line.replace(/\s+/g, ' ').trim())
       .filter(Boolean);
