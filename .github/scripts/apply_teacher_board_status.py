@@ -25,8 +25,8 @@ replace_once(
 
 replace_once(
     "lessons/pawn-teacher-board.js",
-    '''      '<div class="teacher-board-body">',\n      '  <iframe class="teacher-board-frame" title="Interactive teacher chessboard" loading="lazy"></iframe>',\n      '</div>',\n      '<div class="teacher-board-setup-tray" hidden>', ''',
-    '''      '<div class="teacher-board-body">',\n      '  <iframe class="teacher-board-frame" title="Interactive teacher chessboard" loading="lazy"></iframe>',\n      '</div>',\n      '<div class="teacher-board-game-status" role="status" aria-live="assertive" hidden></div>',\n      '<div class="teacher-board-setup-tray" hidden>', ''',
+    '''      '<div class="teacher-board-body">',\n      '  <iframe class="teacher-board-frame" title="Interactive teacher chessboard" loading="lazy"></iframe>',\n      '</div>',\n      '<div class="teacher-board-setup-tray" hidden>',''',
+    '''      '<div class="teacher-board-body">',\n      '  <iframe class="teacher-board-frame" title="Interactive teacher chessboard" loading="lazy"></iframe>',\n      '</div>',\n      '<div class="teacher-board-game-status" role="status" aria-live="assertive" hidden></div>',\n      '<div class="teacher-board-setup-tray" hidden>',''',
 )
 
 replace_once(
