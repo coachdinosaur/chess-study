@@ -10,6 +10,13 @@
   color: var(--text, #172127);
 }
 
+/* Focus mode reserves the lower-right corner for the app watermark. */
+.page-shell.is-focus-mode ~ .ai-help-chat {
+  right: auto;
+  left: max(1rem, env(safe-area-inset-left));
+  justify-items: start;
+}
+
 .ai-help-launcher {
   display: inline-flex;
   align-items: center;
@@ -310,7 +317,6 @@ html[data-embed="1"] .ai-help-chat,
 html[data-board-only="1"] .ai-help-chat {
   display: none !important;
 }
-
 
 /* Keep the floating helper from covering board controls on phones. */
 @media (max-width: 760px), (max-height: 520px) and (pointer: coarse) {
