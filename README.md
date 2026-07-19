@@ -151,6 +151,8 @@ To avoid covering board controls, the entire floating AI-help control is hidden 
 - viewports up to 760 px wide
 - short coarse-pointer landscape screens
 
+In Focus mode, the AI-help launcher and panel move to the lower-left so the lower-right app watermark remains unobstructed.
+
 The feature is also disabled in `?embed=1` and board-only modes.
 
 ## Lessons and files
@@ -219,6 +221,8 @@ Common optional parameters include:
 ```
 
 Embedded lesson pages communicate with the board through `window.postMessage()` for FEN loading, orientation, annotations, and teacher-board actions.
+
+The floating Teacher Board also evaluates the embedded FEN after moves and position loads. It shows a persistent, screen-reader-announced notification for **Checkmate** (including the winning side) or **Stalemate** until the position changes.
 
 ## Main files
 

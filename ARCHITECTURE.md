@@ -707,6 +707,8 @@ The message listener accepts commands such as:
 | `teacherBoardPing` | Same-origin readiness handshake |
 | `teacherBoardAction` / `boardOnlyAction` | Enter/exit setup, choose a piece, clear, flip, reset, annotate |
 
+The teacher-board wrapper dynamically imports `vendor/chess.js`, observes changes to the embedded board's `#currentFenCode`, and evaluates each settled FEN. A persistent `aria-live="assertive"` banner reports checkmate with the winning side or stalemate as a draw. The banner clears automatically when take-back, reset, setup, or another position produces a non-terminal FEN.
+
 Same-origin checks protect request/response operations that include request IDs.
 
 ---

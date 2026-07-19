@@ -10,7 +10,7 @@
   width: min(92vw, 680px);
   height: min(82vh, 680px);
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto auto auto;
+  grid-template-rows: auto minmax(0, 1fr) auto auto auto auto;
   overflow: hidden;
   border: 1px solid var(--line, rgba(52, 74, 78, 0.92));
   border-radius: 18px;
@@ -44,6 +44,7 @@
 }
 
 .teacher-board-panel.is-minimized .teacher-board-body,
+.teacher-board-panel.is-minimized .teacher-board-game-status,
 .teacher-board-panel.is-minimized .teacher-board-setup-tray,
 .teacher-board-panel.is-minimized .teacher-lesson-status,
 .teacher-board-panel.is-minimized .teacher-board-tools {
@@ -112,6 +113,33 @@
   display: block;
   border: 0;
   background: #071012;
+}
+
+.teacher-board-game-status {
+  padding: .58rem .78rem;
+  border-top: 1px solid var(--line, rgba(52, 74, 78, 0.92));
+  color: var(--text, #f7faf5);
+  background: color-mix(in srgb, var(--panel-strong, #1c2b30) 90%, #000 10%);
+  font-size: .86rem;
+  font-weight: 900;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.teacher-board-game-status[hidden] {
+  display: none;
+}
+
+.teacher-board-game-status.is-checkmate {
+  border-top-color: color-mix(in srgb, var(--gold, #8ad8b7) 72%, transparent);
+  color: #eafff5;
+  background: color-mix(in srgb, var(--gold, #8ad8b7) 22%, var(--panel-strong, #1c2b30));
+}
+
+.teacher-board-game-status.is-stalemate {
+  border-top-color: rgba(238, 183, 78, .72);
+  color: #ffe5aa;
+  background: color-mix(in srgb, #9a6d1f 22%, var(--panel-strong, #1c2b30));
 }
 
 .teacher-board-tools {

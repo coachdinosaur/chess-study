@@ -23,6 +23,13 @@
   var setupColor = "w";
   var boardMenuOpen = false;
   var maximized = false;
+  var teacherGameStatusObserver = null;
+  var teacherGameStatusTimer = null;
+  var teacherGameStatusKey = "";
+  var chessModulePromise = import("../vendor/chess.js").catch(function (error) {
+    console.warn("Teacher board game-status detection is unavailable.", error);
+    return null;
+  });
 
   var lessonMenuOpen = false;
   var lessonFileInput = null;
@@ -214,6 +221,122 @@
 
   function normalizeFenText(value) {
     return String(value == null ? "" : value).trim().replace(/\s+/g, " ");
+  }
+
+  function clearTeacherGameStatus() {
+    teacherGameStatusKey = "";
+    if (!panel) {
+      return;
+    }
+    var status = panel.querySelector(".teacher-board-game-status");
+    if (!status) {
+      return;
+    }
+    status.hidden = true;
+    status.className = "teacher-board-game-status";
+    status.textContent = "";
+  }
+
+  function renderTeacherGameStatus(kind, message, fen) {
+    if (!panel) {
+      return;
+    }
+    var nextKey = kind + "|" + fen;
+    if (teacherGameStatusKey === nextKey) {
+      return;
+    }
+    var status = panel.querySelector(".teacher-board-game-status");
+    if (!status) {
+      return;
+    }
+    teacherGameStatusKey = nextKey;
+    status.className = "teacher-board-game-status is-" + kind;
+    status.textContent = message;
+    status.hidden = false;
+  }
+
+  async function evaluateTeacherGameStatus() {
+    if (!iframe || !iframe.contentDocument) {
+      clearTeacherGameStatus();
+      return;
+    }
+    var fenElement = iframe.contentDocument.getElementById("currentFenCode");
+    var fen = normalizeFenText(fenElement ? fenElement.textContent : "");
+    if (!fen) {
+      clearTeacherGameStatus();
+      return;
+    }
+
+    var chessModule = await chessModulePromise;
+    if (!chessModule || typeof chessModule.Chess !== "function") {
+      clearTeacherGameStatus();
+      return;
+    }
+
+    var currentFenElement = iframe && iframe.contentDocument
+      ? iframe.contentDocument.getElementById("currentFenCode")
+      : null;
+    if (normalizeFenText(currentFenElement ? currentFenElement.textContent : "") !== fen) {
+      return;
+    }
+
+    try {
+      var game = new chessModule.Chess(fen);
+      var checkmate = typeof game.isCheckmate === "function"
+        ? game.isCheckmate()
+        : typeof game.in_checkmate === "function" && game.in_checkmate();
+      var stalemate = typeof game.isStalemate === "function"
+        ? game.isStalemate()
+        : typeof game.in_stalemate === "function" && game.in_stalemate();
+
+      if (checkmate) {
+        var winner = game.turn() === "w" ? "Black" : "White";
+        renderTeacherGameStatus("checkmate", "Checkmate — " + winner + " wins.", fen);
+        return;
+      }
+      if (stalemate) {
+        renderTeacherGameStatus("stalemate", "Stalemate — the game is a draw.", fen);
+        return;
+      }
+      clearTeacherGameStatus();
+    } catch (error) {
+      clearTeacherGameStatus();
+    }
+  }
+
+  function scheduleTeacherGameStatusCheck() {
+    if (teacherGameStatusTimer) {
+      window.clearTimeout(teacherGameStatusTimer);
+    }
+    teacherGameStatusTimer = window.setTimeout(function () {
+      teacherGameStatusTimer = null;
+      evaluateTeacherGameStatus();
+    }, 60);
+  }
+
+  function disconnectTeacherGameStatusObserver() {
+    if (teacherGameStatusObserver) {
+      teacherGameStatusObserver.disconnect();
+      teacherGameStatusObserver = null;
+    }
+    if (teacherGameStatusTimer) {
+      window.clearTimeout(teacherGameStatusTimer);
+      teacherGameStatusTimer = null;
+    }
+  }
+
+  function observeTeacherGameStatus() {
+    disconnectTeacherGameStatusObserver();
+    if (!iframe || !iframe.contentDocument || !iframe.contentDocument.documentElement) {
+      return;
+    }
+    teacherGameStatusObserver = new MutationObserver(scheduleTeacherGameStatusCheck);
+    teacherGameStatusObserver.observe(iframe.contentDocument.documentElement, {
+      childList: true,
+      characterData: true,
+      subtree: true
+    });
+    scheduleTeacherGameStatusCheck();
   }
 
   function resolveLessonDefaults(positions) {
@@ -705,6 +828,7 @@
       '<div class="teacher-board-body">',
       '  <iframe class="teacher-board-frame" title="Interactive teacher chessboard" loading="lazy"></iframe>',
       '</div>',
+      '<div class="teacher-board-game-status" role="status" aria-live="assertive" hidden></div>',
       '<div class="teacher-board-setup-tray" hidden>',
       '  <div class="teacher-piece-tray">',
       setupBoardMenu(),
@@ -996,6 +1120,7 @@
     }
     if (data.type === "teacherBoardReady") {
       iframeReady = true;
+      observeTeacherGameStatus();
       sendPendingLessonLoad();
       return;
     }
@@ -1005,6 +1130,8 @@
   }
 
   function handleTeacherIframeLoad() {
+    disconnectTeacherGameStatusObserver();
+    clearTeacherGameStatus();
     iframeReady = false;
     requestIframeReady();
   }
