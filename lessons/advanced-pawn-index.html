@@ -6,7 +6,7 @@
   <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
   <link rel="apple-touch-icon" href="../assets/pieces/app_icon.png">
   <title>Advanced Pawn Level — Chess Lessons</title>
-  <meta name="description" content="Advanced Pawn / Pawn Plus course: 76 lessons and 89 FEN positions covering checkmate patterns, basic tactics, draws in chess, and stalemate technique.">
+  <meta name="description" content="Advanced Pawn / Pawn Plus course: 82 lessons and 97 FEN positions covering checkmate patterns, basic tactics, draw rules, stalemate technique, and insufficient material.">
   <script>(function(){try{var stored=localStorage.getItem('lesson-theme-v1');if(stored==='light'||stored==='dark')document.documentElement.dataset.theme=stored;}catch(e){}})();</script>
   <link rel="stylesheet" href="endgame-lesson.css">
   <style>
@@ -16,8 +16,8 @@
 <body>
   <div class="index-header no-print"><div class="index-header-inner"><div class="index-brand"><div class="index-brand-icon">♟</div><div><div class="index-brand-label">Advanced Pawn Level</div><div class="index-brand-title">Course Index</div></div></div><div class="index-top-actions"><a class="toolbar-link" href="../index.html">← Chess Study App</a><a class="toolbar-link" href="pawn-index.html">← Pawn Level</a><a class="toolbar-link" href="index.html">Lesson Index</a><a class="toolbar-link" href="bishop-index.html">Bishop Level →</a><button type="button" class="toolbar-link" id="themeToggle" onclick="toggleTheme()">Light theme</button></div></div></div>
   <div class="lesson-page">
-    <header class="hero" style="margin-top:6px;padding-bottom:18px"><p class="eyebrow">Coach Dinosaur Chess Course</p><h1 class="chapter-title">Advanced Pawn Level</h1><p class="chapter-subtitle">Also called Pawn Plus: a bridge between Pawn Level and Bishop / Intermediate Level. Learn practical mating patterns, basic tactics, tactical sacrifices, king restriction, accurate calculation, draw rules, and stalemate technique.</p></header>
-    <div class="level-bridge"><strong>Course placement:</strong> a little harder than Pawn Level and deliberately a little easier than Bishop / Intermediate Level. The course contains 76 short lessons and 89 FEN positions across four modules.</div>
+    <header class="hero" style="margin-top:6px;padding-bottom:18px"><p class="eyebrow">Coach Dinosaur Chess Course</p><h1 class="chapter-title">Advanced Pawn Level</h1><p class="chapter-subtitle">Also called Pawn Plus: a bridge between Pawn Level and Bishop / Intermediate Level. Learn practical mating patterns, basic tactics, tactical sacrifices, king restriction, accurate calculation, draw rules, stalemate technique, and insufficient-material defense.</p></header>
+    <div class="level-bridge"><strong>Course placement:</strong> a little harder than Pawn Level and deliberately a little easier than Bishop / Intermediate Level. The course contains 82 short lessons and 97 FEN positions across five modules.</div>
     <div id="moduleList"><section class="module"><div class="module-head"><span class="module-name">Loading modules…</span></div></section></div>
     <noscript><section class="module"><div class="module-head"><span class="module-name">JavaScript is required</span></div><p>Enable JavaScript to display the Advanced Pawn module lesson lists.</p></section></noscript>
     <footer class="lesson-footer"><span class="chapter-name">Advanced Pawn Level / Pawn Plus</span><span>coachdinosaur.github.io/chess-study</span></footer>
@@ -26,6 +26,7 @@
   <script src="advanced-pawn-module-2-data.js?v=20260720-m2"></script>
   <script src="advanced-pawn-module-3-data.js?v=20260720-m3"></script>
   <script src="advanced-pawn-module-4-data.js?v=20260720-m4"></script>
+  <script src="advanced-pawn-module-5-data.js?v=20260720-m5"></script>
   <script>
     function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]})}
     function renderModule(course){
@@ -36,7 +37,7 @@
       }).join('');
       return '<section class="module" id="module-'+course.module+'"><div class="module-head"><span class="module-name">Module '+course.module+'</span><span class="module-topic">'+escapeHtml(course.moduleTitle)+'</span><span class="module-status">'+course.lessons.length+' lessons · '+course.positionCount+' FEN positions</span></div><ol class="toc-list">'+items+'</ol></section>';
     }
-    (function(){var modules=[window.ADVANCED_PAWN_MODULE_1,window.ADVANCED_PAWN_MODULE_2,window.ADVANCED_PAWN_MODULE_3,window.ADVANCED_PAWN_MODULE_4].filter(Boolean);document.getElementById('moduleList').innerHTML=modules.map(renderModule).join('')})();
+    (function(){var modules=[window.ADVANCED_PAWN_MODULE_1,window.ADVANCED_PAWN_MODULE_2,window.ADVANCED_PAWN_MODULE_3,window.ADVANCED_PAWN_MODULE_4,window.ADVANCED_PAWN_MODULE_5].filter(Boolean);document.getElementById('moduleList').innerHTML=modules.map(renderModule).join('')})();
     function toggleTheme(){var html=document.documentElement;var next=html.dataset.theme==='dark'?'light':'dark';html.dataset.theme=next;try{localStorage.setItem('lesson-theme-v1',next)}catch(e){}var btn=document.getElementById('themeToggle');if(btn)btn.textContent=next==='dark'?'Light theme':'Dark theme'}
     (function(){var t=document.documentElement.dataset.theme||'dark';var btn=document.getElementById('themeToggle');if(btn)btn.textContent=t==='dark'?'Light theme':'Dark theme';})();
   </script>
