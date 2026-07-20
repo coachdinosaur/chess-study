@@ -1,6 +1,7 @@
 (() => {
   'use strict';
-  const course = window.ADVANCED_PAWN_MODULE_1;
+  const moduleNumber = Number(document.body.dataset.moduleNumber || 1);
+  const course = window[`ADVANCED_PAWN_MODULE_${moduleNumber}`];
   const lessonNumber = Number(document.body.dataset.lessonNumber || 0);
   const lesson = course && course.lessons.find(item => item.number === lessonNumber);
   if (!lesson) {
@@ -57,9 +58,12 @@
   }
 
   function positionHtml(p, index) {
-    const solution=p.solution ? `<details class="solution"><summary>Show solution</summary><p>${esc(p.solution)}</p></details>` : '<div class="no-position">This is a practice position. Work it out on the board before checking with a coach or analysis board.</div>';
+    const solutionText=p.solution ? esc(p.solution).replace(/\n/g,'<br>') : '';
+    const solution=p.solution ? `<details class="solution"><summary>Show solution</summary><p>${solutionText}</p></details>` : '<div class="no-position">This is a practice position. Work it out on the board before checking with a coach or analysis board.</div>';
+    const notes=(p.notes||[]).map(note=>`<div class="no-position"><strong>Source note:</strong> ${esc(note)}</div>`).join('');
+    const sourcePage=p.source_pdf_page ? `<div class="position-meta">Source PDF page ${esc(p.source_pdf_page)}</div>` : '';
     return `<article class="position-card" id="position-${index+1}">
-      <div class="position-head"><div><h3>${esc(p.label)}</h3><div class="position-meta">Position ${index+1} · ${esc(p.side_to_move[0].toUpperCase()+p.side_to_move.slice(1))} to move</div></div><div class="position-meta">Source PDF page ${esc(p.source_pdf_page)}</div></div>
+      <div class="position-head"><div><h3>${esc(p.label)}</h3><div class="position-meta">Position ${index+1} · ${esc(p.side_to_move[0].toUpperCase()+p.side_to_move.slice(1))} to move</div></div>${sourcePage}</div>
       <div class="board-and-notes">
         <div class="board-shell"><div class="chessboard" data-fen="${esc(p.fen)}" role="img" aria-label="Chess position: ${esc(p.label)}"></div></div>
         <div>
@@ -67,14 +71,27 @@
           <div class="fen-box">${esc(p.fen)}</div>
           <div class="board-actions"><button class="mini-btn flip-board" type="button">Flip board</button><button class="mini-btn copy-fen" type="button">Copy FEN</button></div>
           <div class="copy-status" aria-live="polite"></div>
-          ${solution}
+          ${solution}${notes}
         </div>
       </div>
     </article>`;
   }
 
+  const defaultObjectives=[
+    {title:'Recognize',text:'Identify the pieces and king restrictions that define the pattern.'},
+    {title:'Calculate',text:'Find forcing checks, captures, sacrifices, and mating moves.'},
+    {title:'Apply',text:'Use the pattern in practical games and avoid the defender’s common mistakes.'}
+  ];
+  const defaultReview=[
+    {question:'What pieces deliver or support this mating pattern?',answer:'Use the lesson explanation and board position to name the attacking pieces and the squares they control.'},
+    {question:'Why can the defending king not escape?',answer:'Identify every flight square and explain whether it is occupied, attacked, or outside the board.'},
+    {question:'What is the forcing move or key idea?',answer:'Look first for checks, then captures, threats, sacrifices, and quiet moves that remove an escape square.'}
+  ];
+  const objectives=(course.objectives||defaultObjectives).map(item=>`<div class="objective"><strong>${esc(item.title)}</strong><span>${esc(item.text)}</span></div>`).join('');
+  const review=(course.reviewQuestions||defaultReview).map(item=>`<details><summary>${esc(item.question)}</summary><p>${esc(item.answer)}</p></details>`).join('');
+  const heroPieces=(course.heroPieces||['wR','wQ','bK']).map(piece=>`<img src="../assets/pieces/mpchess/${esc(piece)}.svg" alt="Chess piece">`).join('');
   const positionLinks=lesson.positions.map((p,i)=>`<a href="#position-${i+1}">${i+1}. ${esc(p.label)}</a>`).join('');
-  const positions=lesson.positions.length ? lesson.positions.map(positionHtml).join('') : '<div class="no-position">This lesson is conceptual. Study the material list carefully, then continue to the next practical position.</div>';
+  const positions=lesson.positions.length ? lesson.positions.map(positionHtml).join('') : `<div class="no-position">${esc(lesson.emptyState||'This lesson is conceptual. Study the main idea carefully, then continue to the next practical position.')}</div>`;
   const prev=lesson.previous?`<a href="${esc(lesson.previous)}">&larr; Previous lesson</a>`:'<a href="advanced-pawn-index.html">&larr; Module index</a>';
   const next=lesson.next?`<a href="${esc(lesson.next)}">Next lesson &rarr;</a>`:'<a href="advanced-pawn-index.html">Module complete &rarr;</a>';
 
@@ -85,18 +102,16 @@
     </div></div>
     <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
     <div class="page">
-      <section class="hero" id="top"><div><p class="kicker">Advanced Pawn · Module 1 · Lesson ${lesson.number}</p><h1>${esc(lesson.title)}</h1><p class="lead">${esc(lesson.description)}</p>
-      <div class="objective-grid"><div class="objective"><strong>Recognize</strong><span>Identify the pieces and king restrictions that define the pattern.</span></div><div class="objective"><strong>Calculate</strong><span>Find forcing checks, captures, sacrifices, and mating moves.</span></div><div class="objective"><strong>Apply</strong><span>Use the pattern in practical games and avoid the defender’s common mistakes.</span></div></div></div>
-      <div class="hero-card"><div class="hero-pieces"><img src="../assets/pieces/mpchess/wR.svg" alt="White rook"><img src="../assets/pieces/mpchess/wQ.svg" alt="White queen"><img src="../assets/pieces/mpchess/bK.svg" alt="Black king"><div class="hero-badge">Checkmate Patterns · ${lesson.positions.length} FEN position${lesson.positions.length===1?'':'s'}</div></div></div></section>
+      <section class="hero" id="top"><div><p class="kicker">Advanced Pawn · Module ${course.module} · Lesson ${lesson.number}</p><h1>${esc(lesson.title)}</h1><p class="lead">${esc(lesson.description)}</p>
+      <div class="objective-grid">${objectives}</div></div>
+      <div class="hero-card"><div class="hero-pieces">${heroPieces}<div class="hero-badge">${esc(course.moduleTitle)} · ${lesson.positions.length} FEN position${lesson.positions.length===1?'':'s'}</div></div></div></section>
       <div class="layout" id="lesson"><nav class="toc" aria-label="Lesson contents"><div class="toc-title">Contents</div><a href="#idea">1. Main idea</a>${positionLinks}<a href="#review">Review</a></nav>
       <main><section class="lesson-section" id="idea"><div class="section-head"><div class="number">1</div><div><h2>Main Idea</h2></div></div><div class="prose">${lesson.intro_html}</div></section>
-      <section class="lesson-section" id="positions"><div class="section-head"><div class="number">2</div><div><h2>${lesson.positions.length?'Study the Position'+(lesson.positions.length===1?'':'s'):'Material Knowledge'}</h2></div></div><div class="position-grid">${positions}</div></section>
-      <section class="lesson-section review" id="review"><div class="section-head"><div class="number">✓</div><div><h2>Review</h2><p class="prose">Check that you understand the pattern before moving on.</p></div></div>
-      <details><summary>What pieces deliver or support this mating pattern?</summary><p>Use the lesson explanation and board position to name the attacking pieces and the squares they control.</p></details>
-      <details><summary>Why can the defending king not escape?</summary><p>Identify every flight square and explain whether it is occupied, attacked, or outside the board.</p></details>
-      <details><summary>What is the forcing move or key idea?</summary><p>Look first for checks, then captures, threats, sacrifices, and quiet moves that remove an escape square.</p></details>
+      <section class="lesson-section" id="positions"><div class="section-head"><div class="number">2</div><div><h2>${lesson.positions.length?'Study the Position'+(lesson.positions.length===1?'':'s'):'Core Knowledge'}</h2></div></div><div class="position-grid">${positions}</div></section>
+      <section class="lesson-section review" id="review"><div class="section-head"><div class="number">✓</div><div><h2>Review</h2><p class="prose">Check that you understand the lesson before moving on.</p></div></div>
+      ${review}
       <div class="lesson-nav-row">${prev}${next}</div></section></main></div>
-    </div><footer class="footer"><strong>Advanced Pawn Level · Module 1 · Lesson ${lesson.number}:</strong> ${esc(lesson.title)}.</footer>`;
+    </div><footer class="footer"><strong>Advanced Pawn Level · Module ${course.module} · Lesson ${lesson.number}:</strong> ${esc(lesson.title)}.</footer>`;
 
   document.querySelectorAll('.chessboard').forEach(board=>renderBoard(board,board.dataset.fen,'white'));
   document.querySelectorAll('.flip-board').forEach(button=>button.addEventListener('click',()=>{
@@ -111,10 +126,11 @@
   }));
 
   const root=document.documentElement;
-  const stored=localStorage.getItem('chess-lesson-theme');
+  const stored=localStorage.getItem('lesson-theme-v1')||localStorage.getItem('chess-lesson-theme');
   if (stored==='light'||stored==='dark') root.dataset.theme=stored;
   document.getElementById('themeToggle').addEventListener('click',()=>{
     root.dataset.theme=root.dataset.theme==='dark'?'light':'dark';
+    localStorage.setItem('lesson-theme-v1',root.dataset.theme);
     localStorage.setItem('chess-lesson-theme',root.dataset.theme);
   });
   const bar=document.getElementById('progressBar');
