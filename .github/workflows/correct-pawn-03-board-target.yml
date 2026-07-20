@@ -36,6 +36,9 @@ jobs:
         shell: bash
         run: |
           rm -f tools/correct_pawn_03_board_target.py
+          rm -f tools/trigger_pawn_03_board_correction.txt
+          rm -f tools/README.tmp
+          rm -f tools/.noop tools/.cleanup-marker tools/.last-noop tools/.test
           rm -f .github/workflows/correct-pawn-03-board-target.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
