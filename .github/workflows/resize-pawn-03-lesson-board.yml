@@ -1,0 +1,43 @@
+name: Apply Pawn 03 lesson board resize
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.head_ref == 'agent/resize-pawn-03-lesson-board'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/resize-pawn-03-lesson-board
+          fetch-depth: 0
+
+      - name: Apply and validate board sizing
+        shell: bash
+        run: |
+          python tools/apply_pawn_03_board_size.py
+          grep -q "width: min(72vw, 520px);" lessons/pawn-03-files-ranks-diagonals.html
+          grep -q "height: min(72vh, 560px);" lessons/pawn-03-files-ranks-diagonals.html
+          git diff --check
+
+      - name: Remove temporary files and commit
+        shell: bash
+        run: |
+          rm -f tools/apply_pawn_03_board_size.py
+          rm -f .github/workflows/resize-pawn-03-lesson-board.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Reduce Pawn 03 lesson board size"
+          git push origin HEAD:agent/resize-pawn-03-lesson-board
