@@ -1,5 +1,6 @@
 from pathlib import Path
 
+# One-time page-scoped patch for Pawn Lesson 3.
 lesson_path = Path("lessons/pawn-03-files-ranks-diagonals.html")
 text = lesson_path.read_text(encoding="utf-8")
 
