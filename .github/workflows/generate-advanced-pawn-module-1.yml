@@ -1,18 +1,20 @@
 name: Generate Advanced Pawn Module 1
 
 on:
-  push:
+  pull_request:
     branches:
-      - feature/advanced-pawn-module-1
-    paths:
-      - tools/advpawn_bundle_*.b64
-      - .github/workflows/generate-advanced-pawn-module-1.yml
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 permissions:
   contents: write
 
 jobs:
   generate:
+    if: github.head_ref == 'feature/advanced-pawn-module-1'
     runs-on: ubuntu-latest
     steps:
       - name: Check out feature branch
