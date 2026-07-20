@@ -1,0 +1,52 @@
+name: Generate Advanced Pawn Module 1
+
+on:
+  push:
+    branches:
+      - feature/advanced-pawn-module-1
+    paths:
+      - tools/advpawn_bundle_*.b64
+      - .github/workflows/generate-advanced-pawn-module-1.yml
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/advanced-pawn-module-1
+          fetch-depth: 0
+
+      - name: Install lesson bundle
+        shell: bash
+        run: |
+          cat tools/advpawn_bundle_*.b64 | base64 --decode > /tmp/advanced-pawn-module-1.tar.gz
+          tar -xzf /tmp/advanced-pawn-module-1.tar.gz -C .
+
+      - name: Validate generated lesson set
+        shell: bash
+        run: |
+          test -f lessons/advanced-pawn-index.html
+          test -f lessons/advanced-pawn-module-1-data.js
+          test -f lessons/advanced-pawn-m1-lesson-01-the-box-mate.html
+          test -f lessons/advanced-pawn-m1-lesson-49-bishop-queen-mate-2.html
+          test "$(find lessons -maxdepth 1 -name 'advanced-pawn-m1-lesson-*.html' | wc -l)" -eq 49
+          grep -q 'advanced-pawn-index.html' lessons/index.html
+          grep -q 'positionCount":53' lessons/advanced-pawn-module-1-data.js
+          node --check lessons/advanced-pawn-lesson.js
+          node --check lessons/advanced-pawn-module-1-data.js
+
+      - name: Commit generated lessons and remove one-time bundle
+        shell: bash
+        run: |
+          rm -f tools/advpawn_bundle_*.b64
+          rm -f .github/workflows/generate-advanced-pawn-module-1.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Add Advanced Pawn Module 1 checkmate lessons"
+          git push origin HEAD:feature/advanced-pawn-module-1
