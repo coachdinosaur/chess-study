@@ -13,6 +13,28 @@
   const pieceMap = {P:'wP',N:'wN',B:'wB',R:'wR',Q:'wQ',K:'wK',p:'bP',n:'bN',b:'bB',r:'bR',q:'bQ',k:'bK'};
   const pieceName = {P:'white pawn',N:'white knight',B:'white bishop',R:'white rook',Q:'white queen',K:'white king',p:'black pawn',n:'black knight',b:'black bishop',r:'black rook',q:'black queen',k:'black king'};
 
+  function enableTeacherBoard() {
+    const firstPosition = lesson.positions && lesson.positions[0];
+    if (firstPosition && firstPosition.fen) {
+      document.documentElement.setAttribute('data-teacher-fen', firstPosition.fen);
+    }
+
+    if (!document.querySelector('link[data-advanced-pawn-teacher-board]')) {
+      const stylesheet = document.createElement('link');
+      stylesheet.rel = 'stylesheet';
+      stylesheet.href = 'pawn-teacher-board.css?v=20260710-teacher-lesson-csv1';
+      stylesheet.setAttribute('data-advanced-pawn-teacher-board', '');
+      document.head.appendChild(stylesheet);
+    }
+
+    if (!document.querySelector('script[data-advanced-pawn-teacher-board]')) {
+      const script = document.createElement('script');
+      script.src = 'pawn-teacher-board.js?v=20260710-teacher-lesson-csv1';
+      script.setAttribute('data-advanced-pawn-teacher-board', '');
+      document.body.appendChild(script);
+    }
+  }
+
   function parseFen(fen) {
     const boardPart = fen.split(/\s+/)[0];
     const out = [];
@@ -136,4 +158,5 @@
   const bar=document.getElementById('progressBar');
   const update=()=>{ const max=document.documentElement.scrollHeight-window.innerHeight; bar.style.width=(max>0?Math.min(100,Math.max(0,window.scrollY/max*100)):0)+'%'; };
   update(); window.addEventListener('scroll',update,{passive:true});
+  enableTeacherBoard();
 })();
