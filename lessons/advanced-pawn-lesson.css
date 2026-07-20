@@ -175,12 +175,39 @@ h3 { font-size:clamp(1.08rem,2vw,1.35rem); }
   .chessboard { border-width:7px; }
 }
 @media print {
-  :root,[data-theme="light"],[data-theme="dark"] { --bg:#fff;--bg-2:#fff;--panel:#fff;--panel-strong:#fff;--text:#111827;--muted:#374151;--line:#d1d5db;--shadow:none; }
-  body { background:#fff; }
+  :root,[data-theme="light"],[data-theme="dark"] {
+    --bg:#fff;
+    --bg-2:#fff;
+    --panel:#fff;
+    --panel-strong:#fff;
+    --text:#111827;
+    --muted:#374151;
+    --line:#d1d5db;
+    --shadow:none;
+    --board-light:#eee3cb;
+    --board-dark:#71925a;
+  }
+  html,body,.chessboard,.square,.square img {
+    -webkit-print-color-adjust:exact!important;
+    print-color-adjust:exact!important;
+  }
+  body { background:#fff!important; }
   .index-header,.progress,.toc,.board-actions,.copy-status { display:none!important; }
   .page,.footer { width:100%; }
   .hero { padding-top:0; }
   .layout { display:block; }
-  .lesson-section,.position-card,.hero-card { break-inside:avoid; box-shadow:none; }
-  .chessboard { max-width:360px; }
+  .lesson-section { box-shadow:none; }
+  .hero-card,.position-card,.board-and-notes,.board-shell,.chessboard {
+    break-inside:avoid-page;
+    page-break-inside:avoid;
+  }
+  .position-card { box-shadow:none; }
+  .chessboard {
+    max-width:360px;
+    background-color:#eee3cb!important;
+    border-color:#2d3a35!important;
+    box-shadow:none;
+  }
+  .square.light { background-color:#eee3cb!important; }
+  .square.dark { background-color:#71925a!important; }
 }
