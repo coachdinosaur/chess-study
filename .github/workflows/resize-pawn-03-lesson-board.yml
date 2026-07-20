@@ -1,66 +1,43 @@
-name: Resize Pawn 03 lesson board
+name: Apply Pawn 03 lesson board resize
 
 on:
-  push:
+  pull_request:
     branches:
       - main
-    paths:
-      - .github/workflows/resize-pawn-03-lesson-board.yml
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 permissions:
   contents: write
 
 jobs:
-  resize-board:
+  apply:
+    if: github.head_ref == 'agent/resize-pawn-03-lesson-board'
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository
+      - name: Check out feature branch
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: agent/resize-pawn-03-lesson-board
+          fetch-depth: 0
 
-      - name: Add page-specific lesson board sizing
+      - name: Apply and validate board sizing
+        shell: bash
         run: |
-          python - <<'PY'
-          from pathlib import Path
+          python tools/apply_pawn_03_board_size.py
+          grep -q "width: min(72vw, 520px);" lessons/pawn-03-files-ranks-diagonals.html
+          grep -q "height: min(72vh, 560px);" lessons/pawn-03-files-ranks-diagonals.html
+          git diff --check
 
-          lesson_path = Path("lessons/pawn-03-files-ranks-diagonals.html")
-          workflow_path = Path(".github/workflows/resize-pawn-03-lesson-board.yml")
-          text = lesson_path.read_text(encoding="utf-8")
-
-          marker = '  <link rel="stylesheet" href="pawn-teacher-board.css?v=20260710-teacher-lesson-csv1">\n'
-          override = '''  <style>
-    /* Pawn 03: keep the floating interactive lesson board from covering the lesson. */
-    .teacher-board-panel:not(.is-maximized):not(.is-minimized) {
-      width: min(72vw, 520px);
-      height: min(72vh, 560px);
-    }
-
-    @media (max-width: 720px) {
-      .teacher-board-panel:not(.is-maximized):not(.is-minimized) {
-        left: auto;
-        right: .5rem;
-        width: min(calc(100vw - 1rem), 440px);
-        height: min(64vh, 500px);
-      }
-    }
-  </style>
-'''
-
-          if "Pawn 03: keep the floating interactive lesson board" not in text:
-              if marker not in text:
-                  raise SystemExit("Expected lesson-board stylesheet link was not found.")
-              text = text.replace(marker, marker + override, 1)
-              lesson_path.write_text(text, encoding="utf-8")
-
-          if workflow_path.exists():
-              workflow_path.unlink()
-          PY
-
-      - name: Commit lesson fix
+      - name: Remove temporary files and commit
+        shell: bash
         run: |
+          rm -f tools/apply_pawn_03_board_size.py
+          rm -f .github/workflows/resize-pawn-03-lesson-board.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add lessons/pawn-03-files-ranks-diagonals.html .github/workflows/resize-pawn-03-lesson-board.yml
+          git add -A
           git commit -m "Reduce Pawn 03 lesson board size"
-          git push origin main
+          git push origin HEAD:agent/resize-pawn-03-lesson-board
