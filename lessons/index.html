@@ -5,186 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
   <link rel="apple-touch-icon" href="../assets/pieces/app_icon.png">
-  <title>Chess Endgame Lessons</title>
-  <meta name="description" content="Chess endgame lesson pages — interactive and PDF-exportable.">
-  <script>
-    (function () {
-      try {
-        var stored = window.localStorage.getItem("lesson-theme-v1");
-        if (stored === "light" || stored === "dark") {
-          document.documentElement.dataset.theme = stored;
-        }
-      } catch (e) {}
-    })();
-  </script>
+  <title>Chess Lesson Index</title>
+  <meta name="description" content="Chess course and endgame lesson pages — interactive and PDF-exportable.">
+  <script>(function(){try{var stored=window.localStorage.getItem("lesson-theme-v1");if(stored==="light"||stored==="dark")document.documentElement.dataset.theme=stored;}catch(e){}})();</script>
   <link rel="stylesheet" href="endgame-lesson.css?v=board-bg">
 </head>
 <body>
-  <div class="index-header no-print">
-    <div class="index-header-inner">
-      <div class="index-brand">
-        <div class="index-brand-icon">♟</div>
-        <div>
-          <div class="index-brand-label">Chess Study</div>
-          <div class="index-brand-title">Lesson Index</div>
-        </div>
-      </div>
-      <div class="index-top-actions">
-        <a class="toolbar-link" href="../index.html">← Chess Study App</a>
-        <a class="toolbar-link" href="pawn-index.html">Pawn Level</a>
-        <a class="toolbar-link" href="bishop-index.html">Bishop Level</a>
-        <button type="button" class="toolbar-link" id="themeToggle" onclick="toggleTheme()">Light theme</button>
-      </div>
-    </div>
-  </div>
-
+  <div class="index-header no-print"><div class="index-header-inner"><div class="index-brand"><div class="index-brand-icon">♟</div><div><div class="index-brand-label">Chess Study</div><div class="index-brand-title">Lesson Index</div></div></div><div class="index-top-actions"><a class="toolbar-link" href="../index.html">← Chess Study App</a><a class="toolbar-link" href="pawn-index.html">Pawn Level</a><a class="toolbar-link" href="advanced-pawn-index.html">Advanced Pawn</a><a class="toolbar-link" href="bishop-index.html">Bishop Level</a><button type="button" class="toolbar-link" id="themeToggle" onclick="toggleTheme()">Light theme</button></div></div></div>
   <div class="lesson-page">
-    <header class="hero" style="margin-top: 6px; padding-bottom: 18px;">
-      <p class="eyebrow">Chess Endgame Lessons</p>
-      <h1 class="chapter-title">Lesson Index</h1>
-      <p class="chapter-subtitle">
-        Interactive endgame lessons with board diagrams, move analysis, and
-        PDF export. Work through each chapter below.
-      </p>
-    </header>
-
-    <section class="module">
-      <div class="module-head">
-        <span class="module-name">Bishop Level</span>
-        <span class="module-topic">Build stronger calculation, evaluation, opening understanding, strategic awareness, and disciplined thinking habits.</span>
-        <span class="module-status">5 lessons</span>
-      </div>
-
-      <ol class="toc-list">
-        <li>
-          <a class="toc-link" href="bishop-index.html">
-            <div class="toc-row">
-              <span class="toc-num">Module 1</span>
-              <span class="toc-title">Building a Chess Foundation</span>
-            </div>
-            <p class="toc-desc">Principles, tactics, strategy, theory, the point system, and a five-question thinking process.</p>
-          </a>
-        </li>
-      </ol>
-    </section>
-
-    <section class="module">
-      <div class="module-head">
-        <span class="module-name">Endgame Lessons</span>
-        <span class="module-topic">King + Pawn to Rook vs Minor Pieces</span>
-        <span class="module-status">7 lessons</span>
-      </div>
-
-      <ol class="toc-list">
-        <li>
-          <a class="toc-link" href="01-king-pawn-rule-of-square.html">
-            <div class="toc-row">
-              <span class="toc-num">Chapter 1</span>
-              <span class="toc-title">King + Pawn vs King: The Rule of the Square</span>
-            </div>
-            <p class="toc-desc">Rule of the square, blocking the king, opposition</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="02-pawn-on-the-6th-rank.html">
-            <div class="toc-row">
-              <span class="toc-num">Ending 2</span>
-              <span class="toc-title">The Pawn on the 6th Rank — Opposition</span>
-            </div>
-            <p class="toc-desc">When the pawn wins, when the defender holds, taking the opposition</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="03-knights-pawn-and-key-squares.html">
-            <div class="toc-row">
-              <span class="toc-num">Ending 3</span>
-              <span class="toc-title">Key Squares — Knight's Pawn &amp; Key Squares</span>
-            </div>
-            <p class="toc-desc">Knight's pawn stalemate, diagonal opposition, key squares</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="04-distant-opposition-rooks-pawn-imprisoning.html">
-            <div class="toc-row">
-              <span class="toc-num">Endings 4 &amp; 5</span>
-              <span class="toc-title">Rook's Pawn, Reserve Moves &amp; Imprisoning</span>
-            </div>
-            <p class="toc-desc">Distant opposition, reserve tempo, rook-pawn drawing rules</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="05-rook-pawn-rule-rook-vs-bishop-knight.html">
-            <div class="toc-row">
-              <span class="toc-num">Endings 6-8</span>
-              <span class="toc-title">Rook vs Bishop, Rook vs Knight &amp; Rook-Pawn Rule</span>
-            </div>
-            <p class="toc-desc">Wrong/right corner, knight defence, corner traps</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="06-separated-knight-corner-trap-kamsky-bacrot.html">
-            <div class="toc-row">
-              <span class="toc-num">Ending 9</span>
-              <span class="toc-title">Rook vs Knight — Separation, Corner Trap &amp; Kamsky-Bacrot</span>
-            </div>
-            <p class="toc-desc">Separated knight, dumb square, zugzwang, practical example</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="07-basic-test-positions.html">
-            <div class="toc-row">
-              <span class="toc-num">Test</span>
-              <span class="toc-title">Basic Test — Positions 2.01 to 2.18</span>
-            </div>
-            <p class="toc-desc">16 test positions covering all previous lessons</p>
-          </a>
-        </li>
-      </ol>
-    </section>
-
-    <section class="module">
-      <div class="module-head">
-        <span class="module-name">Student Setup Guides</span>
-        <span class="module-topic">Account setup and safety resources for young students</span>
-        <span class="module-status">1 guide</span>
-      </div>
-
-      <ol class="toc-list">
-        <li>
-          <a class="toc-link" href="lichess-account-for-minor-students.html">
-            <div class="toc-row">
-              <span class="toc-num">Guide</span>
-              <span class="toc-title">How a Young Student Can Create a Lichess Account Safely</span>
-            </div>
-            <p class="toc-desc">A simple step-by-step guide for creating a Lichess account with the help of a parent or guardian, enabling Kid Mode, and protecting the student's privacy.</p>
-          </a>
-        </li>
-      </ol>
-    </section>
-
-    <footer class="lesson-footer">
-      <span class="chapter-name">Chess Endgame Lessons</span>
-      <span>coachdinosaur.github.io/chess-study</span>
-    </footer>
-
+    <header class="hero" style="margin-top:6px;padding-bottom:18px"><p class="eyebrow">Coach Dinosaur Chess Course</p><h1 class="chapter-title">Lesson Index</h1><p class="chapter-subtitle">Structured chess lessons from beginner Pawn Level through Advanced Pawn and Bishop Level, plus interactive endgame studies.</p></header>
+    <section class="module"><div class="module-head"><span class="module-name">Pawn Level</span><span class="module-topic">Beginner chess curriculum from board basics through checkmate</span><span class="module-status">Course index</span></div><ol class="toc-list"><li><a class="toc-link" href="pawn-index.html"><div class="toc-row"><span class="toc-num">Level</span><span class="toc-title">Pawn Level</span></div><p class="toc-desc">Learn the board, notation, legal moves, check, checkmate, draws, and basic mating technique.</p></a></li></ol></section>
+    <section class="module"><div class="module-head"><span class="module-name">Advanced Pawn Level</span><span class="module-topic">The bridge from beginner foundations to intermediate calculation</span><span class="module-status">49 lessons</span></div><ol class="toc-list"><li><a class="toc-link" href="advanced-pawn-index.html"><div class="toc-row"><span class="toc-num">Module 1</span><span class="toc-title">Checkmate Patterns</span></div><p class="toc-desc">Study 49 mating-pattern lessons with 53 FEN positions, including box mate, back-rank mate, Morphy’s Mate, smothered mate, sacrifices, and mating nets.</p></a></li></ol></section>
+    <section class="module"><div class="module-head"><span class="module-name">Bishop Level</span><span class="module-topic">Build stronger calculation, evaluation, opening understanding, strategic awareness, and disciplined thinking habits.</span><span class="module-status">5 lessons</span></div><ol class="toc-list"><li><a class="toc-link" href="bishop-index.html"><div class="toc-row"><span class="toc-num">Module 1</span><span class="toc-title">Building a Chess Foundation</span></div><p class="toc-desc">Principles, tactics, strategy, theory, the point system, and a five-question thinking process.</p></a></li></ol></section>
+    <section class="module"><div class="module-head"><span class="module-name">Endgame Lessons</span><span class="module-topic">King + Pawn to Rook vs Minor Pieces</span><span class="module-status">7 lessons</span></div><ol class="toc-list">
+      <li><a class="toc-link" href="01-king-pawn-rule-of-square.html"><div class="toc-row"><span class="toc-num">Chapter 1</span><span class="toc-title">King + Pawn vs King: The Rule of the Square</span></div><p class="toc-desc">Rule of the square, blocking the king, opposition</p></a></li>
+      <li><a class="toc-link" href="02-pawn-on-the-6th-rank.html"><div class="toc-row"><span class="toc-num">Ending 2</span><span class="toc-title">The Pawn on the 6th Rank — Opposition</span></div><p class="toc-desc">When the pawn wins, when the defender holds, taking the opposition</p></a></li>
+      <li><a class="toc-link" href="03-knights-pawn-and-key-squares.html"><div class="toc-row"><span class="toc-num">Ending 3</span><span class="toc-title">Key Squares — Knight's Pawn &amp; Key Squares</span></div><p class="toc-desc">Knight's pawn stalemate, diagonal opposition, key squares</p></a></li>
+      <li><a class="toc-link" href="04-distant-opposition-rooks-pawn-imprisoning.html"><div class="toc-row"><span class="toc-num">Endings 4 &amp; 5</span><span class="toc-title">Rook's Pawn, Reserve Moves &amp; Imprisoning</span></div><p class="toc-desc">Distant opposition, reserve tempo, rook-pawn drawing rules</p></a></li>
+      <li><a class="toc-link" href="05-rook-pawn-rule-rook-vs-bishop-knight.html"><div class="toc-row"><span class="toc-num">Endings 6-8</span><span class="toc-title">Rook vs Bishop, Rook vs Knight &amp; Rook-Pawn Rule</span></div><p class="toc-desc">Wrong/right corner, knight defence, corner traps</p></a></li>
+      <li><a class="toc-link" href="06-separated-knight-corner-trap-kamsky-bacrot.html"><div class="toc-row"><span class="toc-num">Ending 9</span><span class="toc-title">Rook vs Knight — Separation, Corner Trap &amp; Kamsky-Bacrot</span></div><p class="toc-desc">Separated knight, dumb square, zugzwang, practical example</p></a></li>
+      <li><a class="toc-link" href="07-basic-test-positions.html"><div class="toc-row"><span class="toc-num">Test</span><span class="toc-title">Basic Test — Positions 2.01 to 2.18</span></div><p class="toc-desc">16 test positions covering all previous lessons</p></a></li>
+    </ol></section>
+    <section class="module"><div class="module-head"><span class="module-name">Student Setup Guides</span><span class="module-topic">Account setup and safety resources for young students</span><span class="module-status">1 guide</span></div><ol class="toc-list"><li><a class="toc-link" href="lichess-account-for-minor-students.html"><div class="toc-row"><span class="toc-num">Guide</span><span class="toc-title">How a Young Student Can Create a Lichess Account Safely</span></div><p class="toc-desc">A simple step-by-step guide for creating a Lichess account with the help of a parent or guardian, enabling Kid Mode, and protecting the student's privacy.</p></a></li></ol></section>
+    <footer class="lesson-footer"><span class="chapter-name">Chess Study Lessons</span><span>coachdinosaur.github.io/chess-study</span></footer>
   </div>
-
-  <script>
-    function toggleTheme() {
-      var html = document.documentElement;
-      var next = html.dataset.theme === "dark" ? "light" : "dark";
-      html.dataset.theme = next;
-      try { window.localStorage.setItem("lesson-theme-v1", next); } catch (e) {}
-      var btn = document.getElementById("themeToggle");
-      if (btn) btn.textContent = next === "dark" ? "Light theme" : "Dark theme";
-    }
-    (function () {
-      try {
-        var t = document.documentElement.dataset.theme || "dark";
-        var btn = document.getElementById("themeToggle");
-        if (btn) btn.textContent = t === "dark" ? "Light theme" : "Dark theme";
-      } catch (e) {}
-    })();
-  </script>
+  <script>function toggleTheme(){var html=document.documentElement;var next=html.dataset.theme==="dark"?"light":"dark";html.dataset.theme=next;try{window.localStorage.setItem("lesson-theme-v1",next);}catch(e){}var btn=document.getElementById("themeToggle");if(btn)btn.textContent=next==="dark"?"Light theme":"Dark theme"}(function(){try{var t=document.documentElement.dataset.theme||"dark";var btn=document.getElementById("themeToggle");if(btn)btn.textContent=t==="dark"?"Light theme":"Dark theme";}catch(e){}})();</script>
 </body>
 </html>
