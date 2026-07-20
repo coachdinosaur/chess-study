@@ -630,6 +630,22 @@
 </style>
 <link rel="stylesheet" href="endgame-lesson.css">
   <link rel="stylesheet" href="pawn-teacher-board.css?v=20260710-teacher-lesson-csv1">
+  <style>
+    /* Pawn 03: keep the floating interactive lesson board from covering the lesson. */
+    .teacher-board-panel:not(.is-maximized):not(.is-minimized) {
+      width: min(72vw, 520px);
+      height: min(72vh, 560px);
+    }
+
+    @media (max-width: 720px) {
+      .teacher-board-panel:not(.is-maximized):not(.is-minimized) {
+        left: auto;
+        right: .5rem;
+        width: min(calc(100vw - 1rem), 440px);
+        height: min(64vh, 500px);
+      }
+    }
+  </style>
 </head>
 <body>
 
