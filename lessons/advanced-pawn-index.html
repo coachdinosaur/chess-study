@@ -25,7 +25,7 @@
   <script src="advanced-pawn-module-1-data.js?v=20260720-m1"></script>
   <script src="advanced-pawn-module-2-data.js?v=20260720-m2"></script>
   <script>
-    function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[ch]})}
+    function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]})}
     function renderModule(course){
       var items=course.lessons.map(function(lesson){
         var count=lesson.positions.length;
