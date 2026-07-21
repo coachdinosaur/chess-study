@@ -26,7 +26,7 @@ body {
 }
 
 a { color: var(--accent-strong); }
-button, input, textarea, select { font: inherit; }
+button, input, textarea, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
 button:disabled { cursor: wait; opacity: .65; }
 
@@ -127,6 +127,9 @@ button:disabled { cursor: wait; opacity: .65; }
 
 .list { display: grid; gap: 10px; }
 .list-card {
+  width: 100%;
+  text-align: left;
+  color: var(--text);
   border: 1px solid var(--line);
   border-radius: 14px;
   padding: 14px;
