@@ -7,7 +7,6 @@
   "use strict";
 
   var EMBED_CACHE_BUSTER = "20260721-bishop-captured-layout-complete";
-
   var PIECE_FILES = {
     K: "wK.svg", Q: "wQ.svg", R: "wR.svg", B: "wB.svg", N: "wN.svg", P: "wP.svg",
     k: "bK.svg", q: "bQ.svg", r: "bR.svg", b: "bB.svg", n: "bN.svg", p: "bP.svg"
@@ -100,7 +99,7 @@
   }
 
   function isCompactBishopLesson() {
-    return /\/bishop-m(?:10|[2-9])-lesson-[^/]+\.html$/i.test(window.location.pathname);
+    return /(?:^|\/)bishop-m(?:10|[2-9])-lesson-[^/]+\.html$/i.test(window.location.pathname);
   }
 
   function applyCompactCapturedPieceLayout(iframe) {
@@ -113,15 +112,16 @@
       var style = doc.createElement("style");
       style.setAttribute("data-bishop-captured-layout", "complete");
       style.textContent = [
-        ":root {",
-        "  --captured-cell-min: 0.65rem !important;",
-        "  --captured-cell-divisor: 24 !important;",
-        "  --captured-cell-max: 0.925rem !important;",
-        "  --captured-row-extra-height: 0.35rem !important;",
-        "  --captured-count-extra-width: 0.6rem !important;",
-        "}",
+        "/* Bishop lesson embeds intentionally use half-size captured-piece UI. */",
         ".board-column {",
+        "  --captured-cell-min: 0.775rem !important;",
+        "  --captured-cell-divisor: 20 !important;",
+        "  --captured-cell-max: 1.075rem !important;",
+        "  --captured-row-extra-height: 0.375rem !important;",
+        "  --captured-count-extra-width: 0.725rem !important;",
         "  --captured-row-gap: clamp(0.12rem, calc(var(--board-size, 42rem) / 280), 0.2rem) !important;",
+        "  --captured-cell-size: clamp(var(--captured-cell-min), calc(var(--board-size, 42rem) / var(--captured-cell-divisor)), var(--captured-cell-max)) !important;",
+        "  --captured-row-height: calc(var(--captured-cell-size) + var(--captured-row-extra-height) + 2px) !important;",
         "}",
         ".captured-row {",
         "  padding: 0.12rem 0.25rem !important;",
@@ -133,28 +133,32 @@
         "  gap: 0.09rem !important;",
         "}",
         ".captured-piece-shell {",
+        "  width: var(--captured-cell-size) !important;",
+        "  height: var(--captured-cell-size) !important;",
         "  border-radius: 0.11rem !important;",
         "}",
         ".captured-piece-shell.has-count {",
-        "  min-width: calc(var(--captured-cell-size) + 0.6rem) !important;",
-        "  padding: 0 0.04rem 0 0.02rem !important;",
-        "  gap: 0.03rem !important;",
+        "  width: auto !important;",
+        "  min-width: calc(var(--captured-cell-size) + var(--captured-count-extra-width)) !important;",
+        "  padding: 0 0.06rem 0 0.02rem !important;",
+        "  gap: 0.04rem !important;",
         "}",
         ".captured-piece-placeholder,",
         ".captured-piece {",
-        "  width: 92% !important;",
-        "  height: 92% !important;",
+        "  width: 100% !important;",
+        "  height: 100% !important;",
         "}",
         ".captured-piece-shell.has-count .captured-piece {",
-        "  flex-basis: var(--captured-cell-size) !important;",
+        "  flex: 0 0 var(--captured-cell-size) !important;",
         "  width: var(--captured-cell-size) !important;",
-        "  height: 92% !important;",
+        "  height: 100% !important;",
         "}",
         ".captured-piece-count {",
-        "  min-width: 0.6rem !important;",
-        "  height: 0.48rem !important;",
+        "  min-width: 0.625rem !important;",
+        "  height: 0.625rem !important;",
         "  padding: 0 0.09rem !important;",
-        "  font-size: 0.42rem !important;",
+        "  font-size: 0.39rem !important;",
+        "  line-height: 1 !important;",
         "  box-shadow: none !important;",
         "}"
       ].join("\n");
