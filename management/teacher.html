@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Teacher Dashboard | CD Digital Chess</title>
+  <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
+  <link rel="stylesheet" href="./management.css">
+</head>
+<body>
+  <div class="portal-shell">
+    <header class="portal-header">
+      <a class="portal-brand" href="./index.html">
+        <span class="portal-brand-mark" aria-hidden="true">♟</span>
+        <span class="portal-brand-copy"><strong>Teacher dashboard</strong><span id="profileName">Loading account…</span></span>
+      </a>
+      <nav class="portal-actions">
+        <a class="button-secondary" href="../lessons/index.html">Lesson index</a>
+        <a class="button-secondary" href="../index.html">Study board</a>
+        <button id="signOutButton" class="button-danger" type="button">Sign out</button>
+      </nav>
+    </header>
+
+    <main class="stack">
+      <div id="dashboardStatus" class="status" aria-live="polite" hidden></div>
+
+      <div class="dashboard-grid">
+        <aside class="stack">
+          <section class="panel">
+            <h2>Create class</h2>
+            <form id="createClassForm" class="form-grid">
+              <div class="form-row">
+                <label for="className">Class name</label>
+                <input id="className" name="className" type="text" maxlength="120" placeholder="Saturday Beginners" required>
+              </div>
+              <button class="button" type="submit">Create class</button>
+            </form>
+          </section>
+
+          <section class="panel">
+            <div class="section-head"><h2>Your classes</h2></div>
+            <div id="classList" class="list"><div class="empty">Loading classes…</div></div>
+          </section>
+        </aside>
+
+        <section id="selectedClassPanel" class="stack" hidden>
+          <article class="panel">
+            <div class="section-head">
+              <div>
+                <h1 id="selectedClassName">Class</h1>
+                <p class="panel-copy">Share this code with students. Membership remains pending until approved.</p>
+              </div>
+              <span id="selectedClassCode" class="code">--------</span>
+            </div>
+            <div class="inline-actions">
+              <button id="copyCodeButton" class="button-secondary" type="button">Copy code</button>
+              <button id="rotateCodeButton" class="button-danger" type="button">Generate new code</button>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="section-head"><h2>Students</h2></div>
+            <div id="memberList" class="list"><div class="empty">Loading students…</div></div>
+          </article>
+
+          <article class="panel">
+            <h2>Publish lesson assignment</h2>
+            <p class="panel-copy">V1 assigns an existing public lesson URL. Study Board snapshots come in the next implementation slice.</p>
+            <form id="assignmentForm" class="form-grid">
+              <div class="form-row">
+                <label for="assignmentTitle">Assignment title</label>
+                <input id="assignmentTitle" name="title" type="text" maxlength="160" placeholder="Learn how the knight moves" required>
+              </div>
+              <div class="form-row">
+                <label for="resourceTitle">Lesson title</label>
+                <input id="resourceTitle" name="resourceTitle" type="text" maxlength="200" placeholder="How to Move the Knight" required>
+              </div>
+              <div class="form-row">
+                <label for="resourceUrl">Lesson URL</label>
+                <input id="resourceUrl" name="resourceUrl" type="url" placeholder="https://cddigital.top/lessons/..." required>
+              </div>
+              <div class="form-row">
+                <label for="instructions">Instructions</label>
+                <textarea id="instructions" name="instructions" maxlength="4000" placeholder="Read the lesson, practise the activity, then mark it complete."></textarea>
+              </div>
+              <div class="form-row">
+                <label for="dueAt">Due date and time</label>
+                <input id="dueAt" name="dueAt" type="datetime-local">
+              </div>
+              <button class="button" type="submit">Publish assignment</button>
+            </form>
+          </article>
+
+          <article class="panel">
+            <div class="section-head"><h2>Assignments and progress</h2></div>
+            <div id="assignmentList" class="list"><div class="empty">Loading assignments…</div></div>
+          </article>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script type="module" src="./js/teacher-dashboard.mjs"></script>
+</body>
+</html>
