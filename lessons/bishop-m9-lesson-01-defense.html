@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-piece-base="../assets/pieces/mpchess/" data-app-path="../index.html" data-orientation="white">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Defense — Bishop Level Module 9</title>
+  <meta name="description" content="Bishop Level Module 9 lesson on protection, exchanges, counterattacks, maneuvers, pawn-storm defense, and calculating responses to dangerous attacks.">
+  <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
+  <link rel="apple-touch-icon" href="../assets/pieces/app_icon.png">
+  <link rel="stylesheet" href="endgame-lesson.css?v=board-bg">
+  <link rel="stylesheet" href="pawn-teacher-board.css?v=20260710-teacher-lesson-csv1">
+  <style>
+    .module-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,520px);gap:clamp(20px,4vw,46px);align-items:center}.hero-board-card{margin:0;padding:clamp(14px,2vw,22px);border:1px solid var(--panel-border);border-radius:20px;background:var(--panel-bg);box-shadow:0 22px 60px rgba(0,0,0,.22)}.hero-board-card .board{max-width:520px;margin:0 auto}.hero-board-card figcaption{margin-top:10px;color:var(--ink-soft);font-size:.92rem;text-align:center}.module-nav{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 28px;padding:12px;border:1px solid var(--hairline);border-radius:12px;background:var(--panel-bg)}.module-nav a{color:var(--btn-ink);text-decoration:none;font-weight:700;font-size:.92rem;padding:8px 11px;border-radius:999px}.module-nav a:hover{background:var(--btn-hover)}.defense-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0 0 24px}.defense-card{border:1px solid var(--panel-border);border-radius:10px;padding:14px;background:var(--panel-bg);min-height:118px}.defense-card strong{display:block;color:var(--accent);font-family:var(--font-display);margin-bottom:6px}.defense-card span{color:var(--ink-soft);font-size:.93rem}.fen-box{margin-top:12px;border:1px solid var(--panel-border);border-radius:8px;overflow:hidden;background:var(--panel-bg)}.fen-title{padding:9px 12px;font-weight:800;color:var(--accent);border-bottom:1px solid var(--panel-border);font-size:.9rem}.fen-code{margin:0;padding:12px;overflow-x:auto;color:var(--ink);font:600 .84rem/1.55 var(--font-mono);white-space:pre}.candidate-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:14px 0}.candidate-card{border:1px solid var(--panel-border);border-radius:10px;background:var(--panel-bg);padding:14px}.candidate-card strong{display:block;color:var(--accent);margin-bottom:6px}.correction-note{border-left:4px solid var(--danger);background:color-mix(in srgb,var(--danger) 9%,var(--panel-bg));border-radius:6px;padding:12px 14px;margin:12px 0 18px;color:var(--ink-soft)}details.quiz{border:1px solid var(--panel-border);background:var(--panel-bg);border-radius:10px;padding:12px 14px;margin-top:10px}details.quiz summary{cursor:pointer;font-weight:800}details.quiz p,details.quiz ul{color:var(--ink-soft)}.lesson-nav-row{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:28px}.lesson-nav-row a{color:var(--btn-ink);background:var(--btn-bg);border:1px solid var(--rule-border);border-radius:999px;padding:9px 14px;text-decoration:none;font-weight:700}.source-note{margin-top:32px;color:var(--ink-faint);font-size:.9rem}@media(max-width:1100px){.defense-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:980px){.module-hero{grid-template-columns:1fr}}@media(max-width:720px){.candidate-grid{grid-template-columns:1fr}}@media(max-width:620px){.defense-grid,.position-body{grid-template-columns:1fr}.lesson-nav-row a{width:100%;text-align:center}}@media print{.no-print,.module-nav{display:none!important}.hero-board-card,.defense-card,details.quiz,.fen-box,.candidate-card{box-shadow:none;break-inside:avoid}.module-hero{display:block}.lesson+.lesson{break-before:auto}}
+  </style>
+</head>
+<body>
+  <header class="index-header no-print">
+    <div class="index-header-inner">
+      <div class="index-brand"><div class="index-brand-icon" aria-hidden="true">♞</div><div><div class="index-brand-label">Bishop Level · Module 9</div><div class="index-brand-title">Defense</div></div></div>
+      <div class="index-top-actions"><a class="toolbar-link" href="bishop-index.html">&larr; Bishop Index</a><button class="toolbar-link" type="button" id="themeToggle">Toggle theme</button><button class="toolbar-link" type="button" onclick="window.print()">Print / Save PDF</button></div>
+    </div>
+  </header>
+
+  <main class="lesson-page">
+    <section class="hero module-hero" id="top">
+      <div><p class="eyebrow">Coach Dinosaur Chess Course</p><h1 class="chapter-title">Defense</h1><p class="chapter-subtitle">Identify the real threat, choose the right defensive method, and create counterplay instead of waiting politely for the attack to finish.</p></div>
+      <figure class="hero-board-card"><div class="board" data-fen="rnbqkb1r/pp3ppp/3ppn2/8/3NP1P1/2N5/PPP2P1P/R1BQKB1R b - - 0 1"></div><figcaption>Black to move after White&rsquo;s g4. The defender can challenge the center, stop the pawn, develop, or counterattack elsewhere.</figcaption></figure>
+    </section>
+
+    <nav class="module-nav no-print" aria-label="Module contents"><a href="#meaning">1. Meaning</a><a href="#methods">2. Methods</a><a href="#pawn-storm">3. Pawn Storm</a><a href="#dangerous-attack">4. Dangerous Attack</a><a href="#combine">5. Combine Skills</a><a href="#exercises">6. Exercises</a><a href="#review">Review</a></nav>
+
+    <section class="defense-grid" aria-label="Fundamental defensive methods">
+      <article class="defense-card"><strong>Protection</strong><span>Guard the threatened piece, square, pawn, or mating point.</span></article>
+      <article class="defense-card"><strong>Exchange</strong><span>Trade an attacker to reduce pressure or simplify safely.</span></article>
+      <article class="defense-card"><strong>Counterattack</strong><span>Create a threat that forces the attacker to respond.</span></article>
+      <article class="defense-card"><strong>Maneuver</strong><span>Block, retreat, support, or reposition pieces to stronger squares.</span></article>
+    </section>
+
+    <section class="lesson" id="meaning">
+      <div class="lesson-head"><span class="lesson-number">Part 1</span><h2 class="lesson-title">What Is Defense in Chess?</h2></div>
+      <p class="lesson-intro">Defense includes preventing checkmate, protecting threatened material, avoiding tactics, removing weaknesses, preserving strengths, simplifying, and counterattacking. Its purpose is to equalize or turn the attack against the opponent.</p>
+      <div class="rule-box"><h3>Defend the position, not only one object</h3><p>A move that saves one piece but ruins king safety or pawn structure may merely exchange one problem for a larger one.</p></div>
+    </section>
+
+    <section class="lesson" id="methods">
+      <div class="lesson-head"><span class="lesson-number">Part 2</span><h2 class="lesson-title">Fundamental Defensive Moves</h2></div>
+      <div class="candidate-grid"><article class="candidate-card"><strong>Blocking</strong><p>Place a piece between the attacker and its target.</p></article><article class="candidate-card"><strong>Escaping or retreating</strong><p>Move the threatened piece or king to a safer square.</p></article><article class="candidate-card"><strong>Supporting</strong><p>Add another defender to a piece, pawn, or critical square.</p></article><article class="candidate-card"><strong>Active defense</strong><p>Attack the opponent&rsquo;s queen, center, king, or loose material while meeting the threat.</p></article></div>
+    </section>
+
+    <section class="lesson" id="pawn-storm">
+      <div class="lesson-head"><span class="lesson-number">Part 3</span><h2 class="lesson-title">Defending Against a Pawn Storm</h2></div>
+      <article class="position">
+        <p class="position-label">Position 1 · Black to move · PDF pages 5–6</p>
+        <div class="position-body"><div class="diagram"><div class="board" data-fen="rnbqkb1r/pp3ppp/3ppn2/8/3NP1P1/2N5/PPP2P1P/R1BQKB1R b - - 0 1"></div><p class="caption">White&rsquo;s last move was g4, preparing g5 and possibly f4 or h4.</p></div><div class="position-note"><p>The pawn storm aims to drive away the knight on f6 and open kingside files. Black should compare several defensive methods instead of choosing the most passive-looking move by reflex.</p><div class="rule-box"><h3>Attack the base or the center</h3><p>Flank attacks often become weaker when the defender strikes the center before the attacking pieces are ready.</p></div></div></div>
+        <div class="candidate-grid">
+          <article class="candidate-card"><strong>Central counterattack</strong><div class="moveline">1...d5</div><p>or <code>1...e5</code>, challenging White&rsquo;s center.</p></article>
+          <article class="candidate-card"><strong>Develop and challenge</strong><div class="moveline">1...Nc6</div><p>Develop the queenside knight and increase pressure on White&rsquo;s centralized pieces.</p></article>
+          <article class="candidate-card"><strong>Stop the advance</strong><div class="moveline">1...h6 2.g5 hxg5 3.Bxg5</div><p>White gains open lines, so the resulting structure must be calculated.</p></article>
+          <article class="candidate-card"><strong>Allow and regroup</strong><div class="moveline">1...Nc6 2.g5 Nd7</div><p>The f6-knight may later reach c5 or e5.</p></article>
+          <article class="candidate-card"><strong>Queenside counterplay</strong><div class="moveline">1...a6</div><p>followed by <code>...b5</code>.</p></article>
+        </div>
+        <div class="correction-note"><strong>Source correction:</strong> the PDF prints <code>1.Nc6</code>; because Black is to move, the notation is <code>1...Nc6</code>.</div>
+        <div class="fen-box"><div class="fen-title">FEN · Black to move</div><pre class="fen-code">rnbqkb1r/pp3ppp/3ppn2/8/3NP1P1/2N5/PPP2P1P/R1BQKB1R b - - 0 1</pre></div>
+      </article>
+    </section>
+
+    <section class="lesson" id="dangerous-attack">
+      <div class="lesson-head"><span class="lesson-number">Part 4</span><h2 class="lesson-title">Defense Against a Dangerous Attack</h2></div>
+      <article class="position">
+        <p class="position-label">Position 2 · Black to move · PDF pages 7–8</p>
+        <div class="position-body"><div class="diagram"><div class="board" data-fen="rnb1k1nr/ppq2ppp/4p3/2ppP3/3P2Q1/P1P5/2P2PPP/R1B1KBNR b - - 0 1"></div><p class="caption">White threatens Qxg7 and then the rook on h8.</p></div><div class="position-note"><p>Black should prefer a defense that solves the immediate problem while gaining time or creating counterplay.</p><div class="rule-box"><h3>Two-purpose defense</h3><p>A move that attacks the queen or center while defending is often stronger than a purely passive move.</p></div></div></div>
+        <div class="candidate-grid">
+          <article class="candidate-card"><strong>Move the pawn with tempo</strong><div class="moveline">1...g6</div><p>The queen is attacked, but f6 and h6 become weaker.</p></article>
+          <article class="candidate-card"><strong>King protection</strong><div class="moveline">1...Kf8</div><p>The king protects g7 but forfeits castling.</p></article>
+          <article class="candidate-card"><strong>Defense with tempo</strong><div class="moveline">1...f5</div><p>Black attacks the queen while interrupting White&rsquo;s plan.</p></article>
+          <article class="candidate-card"><strong>Counterthreat</strong><div class="moveline">1...Ne7 2.Qxg7 Rg8 3.Qxh7 cxd4</div><p>Black opens the c-file and creates ideas such as ...Qxe5+ or ...Qxc3+.</p></article>
+          <article class="candidate-card"><strong>Central counterplay</strong><div class="moveline">1...f6</div><p>The move challenges e5, though it does not directly defend g7.</p></article>
+        </div>
+        <div class="correction-note"><strong>Source corrections:</strong> the impossible <code>1...Kb1</code> is corrected to <code>1...Kf8</code>. The illegal <code>3...dxe5</code> is corrected to <code>3...cxd4</code>, which matches the source&rsquo;s stated queen threats.</div>
+        <div class="fen-box"><div class="fen-title">FEN · Black to move</div><pre class="fen-code">rnb1k1nr/ppq2ppp/4p3/2ppP3/3P2Q1/P1P5/2P2PPP/R1B1KBNR b - - 0 1</pre></div>
+      </article>
+    </section>
+
+    <section class="lesson" id="combine">
+      <div class="lesson-head"><span class="lesson-number">Part 5</span><h2 class="lesson-title">Combine Defense with Other Skills</h2></div>
+      <p class="lesson-intro">Good defense combines tactical awareness with king safety, material, pawn structure, development, weak-square evaluation, exchanges, and calculation. Understanding attacking principles also helps the defender recognize premature attacks and the moments when counterplay is possible.</p>
+      <div class="recap"><h3>Study strong defenders</h3><p>The source recommends analyzing games by champions known for resilient defense and counterplay, including Steinitz, Lasker, Capablanca, Botvinnik, Tal, Fischer, Karpov, and Kasparov.</p></div>
+    </section>
+
+    <section class="lesson" id="exercises">
+      <div class="lesson-head"><span class="lesson-number">Part 6</span><h2 class="lesson-title">Defense Exercises</h2></div>
+      <article class="position">
+        <p class="position-label">Position 3 · White to move · PDF page 10</p>
+        <div class="position-body"><div class="diagram"><div class="board" data-fen="4r1k1/5p1p/p4np1/3P4/Qbp5/2N3Pq/P2B1P2/2R3K1 w - - 0 1"></div><p class="caption">Black threatens ...Ng4, ...Qh2+, and ...Qxf2#.</p></div><div class="position-note"><p>White must examine all of Black&rsquo;s checks, not merely stop the advertised knight move. Candidate defensive ideas include f3, Be1, or active forcing counterplay.</p></div></div>
+        <details class="quiz"><summary>Show calculation checklist</summary><ul><li>List ...Qxg3+, ...Qh2+, and ...Qg2+.</li><li>Identify the queen, knight, bishop, and rook participating in the attack.</li><li>Reject moves that stop ...Ng4 but allow another immediate mating line.</li><li>Compare direct protection with forcing counterplay.</li></ul></details>
+        <div class="fen-box"><div class="fen-title">FEN · White to move</div><pre class="fen-code">4r1k1/5p1p/p4np1/3P4/Qbp5/2N3Pq/P2B1P2/2R3K1 w - - 0 1</pre></div>
+      </article>
+
+      <article class="position">
+        <p class="position-label">Position 4 · Black to move in check · PDF page 10</p>
+        <div class="position-body"><div class="diagram"><div class="board" data-fen="r1bQ2k1/p2p2P1/2pqr2n/4p2P/2p2n2/1P6/P1PP4/1K4R1 b - - 0 1"></div><p class="caption">Black has exactly four legal responses to the queen check on d8.</p></div><div class="position-note"><p>When in check, list every king move, capture, and block before calculating White&rsquo;s continuation.</p></div></div>
+        <div class="candidate-grid"><article class="candidate-card"><strong>1...Kh7??</strong><div class="moveline">1...Kh7 2.Qh8#</div><p>Immediate mate.</p></article><article class="candidate-card"><strong>1...Re8</strong><div class="moveline">1...Re8 2.Qxe8+</div><p>White captures the blocker with check.</p></article><article class="candidate-card"><strong>1...Qf8</strong><div class="moveline">1...Qf8</div><p>White can examine Qxf8+ and promotion captures.</p></article><article class="candidate-card"><strong>1...Kf7</strong><div class="moveline">1...Kf7</div><p>The king leaves the back rank, but forcing checks remain.</p></article></div>
+        <div class="fen-box"><div class="fen-title">FEN · Black to move</div><pre class="fen-code">r1bQ2k1/p2p2P1/2pqr2n/4p2P/2p2n2/1P6/P1PP4/1K4R1 b - - 0 1</pre></div>
+      </article>
+    </section>
+
+    <section class="checklist" id="review"><h2>Defensive Checklist</h2><p>Use this sequence when facing an attack:</p><ul><li><strong>Threat:</strong> What exactly is threatened, including checks and mating ideas?</li><li><strong>Protection:</strong> Can the target be supported, moved, or blocked?</li><li><strong>Exchange:</strong> Can an important attacker be removed?</li><li><strong>Counterplay:</strong> Can you attack the queen, center, king, or loose material with tempo?</li><li><strong>Structure:</strong> Which defensive move creates the fewest new weaknesses?</li><li><strong>Calculation:</strong> Does the defense survive the opponent&rsquo;s strongest continuation?</li></ul></section>
+
+    <section class="lesson"><div class="lesson-head"><span class="lesson-number">Review</span><h2 class="lesson-title">Check Your Understanding</h2></div><details class="quiz"><summary>1. What is the purpose of defense?</summary><p>To prevent immediate damage, equalize the position, or turn the opponent&rsquo;s attack into counterplay.</p></details><details class="quiz"><summary>2. What are the main defensive methods?</summary><p>Protection, exchange, counterattack, maneuver, blocking, retreating, and supporting.</p></details><details class="quiz"><summary>3. Why is central counterplay useful against a pawn storm?</summary><p>A flank attack may lose force if the center opens before the attacker is ready.</p></details><details class="quiz"><summary>4. What is a defense with tempo?</summary><p>A move that meets the threat while attacking an enemy piece or creating another urgent problem.</p></details><details class="quiz"><summary>5. Why calculate every legal response to check?</summary><p>Some legal moves still allow immediate mate or decisive material loss.</p></details><div class="lesson-nav-row no-print"><a href="bishop-m8-lesson-01-tactical-exchanges.html">&larr; Module 8: Tactical Exchanges</a><a href="bishop-index.html">Back to Bishop Index &rarr;</a></div></section>
+
+    <p class="source-note">Converted from the source PDF titled <em>Coach Dinosaur Module 3-9: Defense</em>. This course lists it as Bishop Level Module 9. The lesson corrects <code>1.Nc6</code> to <code>1...Nc6</code>, the impossible <code>1...Kb1</code> to <code>1...Kf8</code>, and the illegal <code>3...dxe5</code> to <code>3...cxd4</code>. All four FEN positions and included move lines were validated.</p>
+  </main>
+
+  <script>const root=document.documentElement;const themeToggle=document.getElementById('themeToggle');const storedTheme=localStorage.getItem('chess-lesson-theme');if(storedTheme==='light'||storedTheme==='dark')root.dataset.theme=storedTheme;themeToggle?.addEventListener('click',()=>{root.dataset.theme=root.dataset.theme==='dark'?'light':'dark';localStorage.setItem('chess-lesson-theme',root.dataset.theme)});</script>
+  <script src="endgame-lesson.js?v=board-bg" defer></script>
+  <script src="pawn-teacher-board.js?v=20260710-teacher-lesson-csv1" defer></script>
+</body>
+</html>
