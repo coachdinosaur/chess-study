@@ -49,6 +49,7 @@ Run these files in order through the Supabase SQL editor or CLI:
 ```text
 supabase/migrations/001_management_v1.sql
 supabase/migrations/002_management_v1_hardening.sql
+supabase/migrations/003_management_v1_rpc_shapes.sql
 ```
 
 The migrations create:
