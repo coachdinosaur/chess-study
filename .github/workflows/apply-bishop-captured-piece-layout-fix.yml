@@ -3,7 +3,7 @@ name: Apply Bishop captured-piece layout fix
 on:
   push:
     branches:
-      - fix-bishop-captured-piece-layout-20260721
+      - main
     paths:
       - .github/workflows/apply-bishop-captured-piece-layout-fix.yml
   workflow_dispatch:
@@ -15,10 +15,10 @@ jobs:
   patch-layout:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out branch
+      - name: Check out main
         uses: actions/checkout@v4
         with:
-          ref: fix-bishop-captured-piece-layout-20260721
+          ref: main
 
       - name: Replace the incomplete runtime sizing rules
         shell: bash
@@ -110,4 +110,4 @@ jobs:
             exit 0
           fi
           git commit -m "Fix Bishop captured-piece row layout"
-          git push origin HEAD:fix-bishop-captured-piece-layout-20260721
+          git push origin HEAD:main
