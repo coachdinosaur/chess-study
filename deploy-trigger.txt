@@ -1,0 +1,2 @@
+Direct deployment trigger for Bishop captured-piece sizing update.
+Created 2026-07-21.
