@@ -6,118 +6,12 @@
   <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
   <link rel="apple-touch-icon" href="../assets/pieces/app_icon.png">
   <title>Pawn Level — Beginner Chess Lessons</title>
-  <meta name="description" content="Pawn Level beginner chess curriculum table of contents.">
-  <script>
-    (function () {
-      try {
-        var stored = window.localStorage.getItem("lesson-theme-v1");
-        if (stored === "light" || stored === "dark") {
-          document.documentElement.dataset.theme = stored;
-        }
-      } catch (e) {}
-    })();
-  </script>
+  <meta name="description" content="Pawn Level beginner chess curriculum: 55 lessons across five modules covering the board, notation, piece movement, checkmate, castling, and en passant.">
+  <script>(function(){try{var stored=window.localStorage.getItem("lesson-theme-v1");if(stored==="light"||stored==="dark")document.documentElement.dataset.theme=stored;}catch(e){}})();</script>
   <link rel="stylesheet" href="endgame-lesson.css">
-  <style>
-    .module {
-      margin-top: 36px;
-    }
-    .module-head {
-      display: flex;
-      align-items: baseline;
-      flex-wrap: wrap;
-      gap: 8px 14px;
-      padding-bottom: 10px;
-      border-bottom: 2px solid var(--hairline);
-      margin-bottom: 6px;
-    }
-    .module-name {
-      font-family: var(--font-display);
-      font-weight: 800;
-      font-size: clamp(20px, 1vw + 16px, 26px);
-      color: var(--ink);
-    }
-    .module-topic {
-      font-family: var(--font-display);
-      font-weight: 600;
-      font-size: clamp(14px, 0.5vw + 12px, 16px);
-      color: var(--accent);
-    }
-    .module-status {
-      margin-left: auto;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--ink-faint);
-    }
-
-    .toc-list {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      counter-reset: toc;
-    }
-    .toc-list li {
-      position: relative;
-      padding: 14px 0;
-      border-bottom: 1px solid var(--hairline);
-    }
-    .toc-list li:last-child { border-bottom: none; }
-    .toc-list a.toc-link {
-      text-decoration: none;
-      color: inherit;
-      display: block;
-    }
-    .toc-list a.toc-link:hover .toc-title { color: var(--accent); }
-    .toc-row {
-      display: flex;
-      align-items: baseline;
-      gap: 12px;
-    }
-    .toc-num {
-      font-family: var(--font-display);
-      font-weight: 800;
-      font-size: clamp(15px, 0.4vw + 14px, 17px);
-      color: var(--accent);
-      min-width: 30px;
-      flex-shrink: 0;
-    }
-    .toc-title {
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: clamp(16px, 0.6vw + 14px, 19px);
-      color: var(--ink);
-    }
-    .toc-desc {
-      margin: 4px 0 0 42px;
-      font-size: clamp(14px, 0.4vw + 13px, 15px);
-      color: var(--ink-soft);
-      line-height: 1.5;
-    }
-    .module-soon {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
-    .module-soon li {
-      padding: 12px 0;
-      border-bottom: 1px solid var(--hairline);
-      color: var(--ink-soft);
-      font-style: italic;
-    }
-    .module-soon li:last-child { border-bottom: none; }
-
-    @media print {
-      .toc-list li, .module-soon li, .module-head { break-inside: avoid; }
-    }
-    @media (max-width: 520px) {
-      .module-status { margin-left: 0; width: 100%; }
-      .toc-desc { margin-left: 0; }
-    }
-  </style>
+  <link rel="stylesheet" href="lesson-index.css?v=20260721-course-path">
 </head>
-<body>
+<body class="lesson-index-page">
   <div class="index-header no-print">
     <div class="index-header-inner">
       <div class="index-brand">
@@ -129,600 +23,161 @@
       </div>
       <div class="index-top-actions">
         <a class="toolbar-link" href="../index.html">← Chess Study App</a>
-        <a class="toolbar-link" href="index.html">← Lesson Index</a>
+        <a class="toolbar-link" href="index.html">Lesson Index</a>
+        <a class="toolbar-link" href="advanced-pawn-index.html">Advanced Pawn →</a>
         <button type="button" class="toolbar-link" id="themeToggle" onclick="toggleTheme()">Light theme</button>
       </div>
     </div>
   </div>
 
-  <div class="lesson-page">
-    <header class="hero" style="margin-top: 6px; padding-bottom: 18px;">
-      <p class="eyebrow">Coach Dinosaur Chess Course</p>
+  <main class="lesson-page">
+    <header class="hero index-hero">
+      <p class="eyebrow">Coach Dinosaur Chess Course · Level 1</p>
       <h1 class="chapter-title">Pawn Level</h1>
-      <p class="chapter-subtitle">
-        Beginner chess curriculum. Work through each module to learn the game
-        from the board up.
-      </p>
+      <p class="chapter-subtitle">Begin with the board and notation, learn how every piece moves, understand check and checkmate, practise basic mating technique, and finish with castling and en passant.</p>
+
+      <div class="index-summary" aria-label="Pawn Level course summary">
+        <div class="summary-stat"><span class="summary-stat-value">5</span><span class="summary-stat-label">modules</span></div>
+        <div class="summary-stat"><span class="summary-stat-value">55</span><span class="summary-stat-label">lessons and activities</span></div>
+        <div class="summary-stat"><span class="summary-stat-value">Level 1</span><span class="summary-stat-label">beginner curriculum</span></div>
+        <div class="summary-stat"><span class="summary-stat-value">Start here</span><span class="summary-stat-label">recommended first course</span></div>
+      </div>
     </header>
 
-    <!-- ============================ Module 1 ============================ -->
-    <section class="module">
-      <div class="module-head">
-        <span class="module-name">Module 1</span>
-        <span class="module-topic">Board, Notation, Setup, Basic Rules, and Piece Values</span>
-        <span class="module-status">Completed</span>
+    <p class="course-note"><strong>Course order:</strong> work through the modules from 1 to 5. The sequence moves from board knowledge to legal movement, then to game-ending rules and practical checkmates before introducing the two special moves.</p>
+
+    <nav class="course-roadmap" aria-labelledby="roadmapTitle">
+      <h2 class="roadmap-title" id="roadmapTitle">Module roadmap</h2>
+      <p class="roadmap-copy">Use these links to resume a module without scrolling past an entire beginner syllabus, a small triumph over unnecessary suffering.</p>
+      <div class="roadmap-grid">
+        <section class="roadmap-group">
+          <h3 class="roadmap-group-title">Board foundation</h3>
+          <div class="roadmap-links">
+            <a class="roadmap-link" href="#module-1"><span class="roadmap-number">M1</span><span>Board, Notation, Setup, Rules, and Values</span></a>
+          </div>
+        </section>
+        <section class="roadmap-group">
+          <h3 class="roadmap-group-title">Piece skills</h3>
+          <div class="roadmap-links">
+            <a class="roadmap-link" href="#module-2"><span class="roadmap-number">M2</span><span>How the Pieces Move</span></a>
+          </div>
+        </section>
+        <section class="roadmap-group">
+          <h3 class="roadmap-group-title">Game results and special rules</h3>
+          <div class="roadmap-links">
+            <a class="roadmap-link" href="#module-3"><span class="roadmap-number">M3</span><span>Check, Checkmate, and Draws</span></a>
+            <a class="roadmap-link" href="#module-4"><span class="roadmap-number">M4</span><span>Basic Checkmate and Stalemate</span></a>
+            <a class="roadmap-link" href="#module-5"><span class="roadmap-number">M5</span><span>Castling and En Passant</span></a>
+          </div>
+        </section>
       </div>
+    </nav>
 
-      <ol class="toc-list">
-        <li>
-          <a class="toc-link" href="pawn-01-introducing-the-game-of-chess.html">
-            <div class="toc-row">
-              <span class="toc-num">1.</span>
-              <span class="toc-title">Introducing the Game of Chess</span>
-            </div>
-            <p class="toc-desc">What chess is, where it came from, and why it is learned around the world.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-02-the-chessboard.html">
-            <div class="toc-row">
-              <span class="toc-num">2.</span>
-              <span class="toc-title">The Chessboard</span>
-            </div>
-            <p class="toc-desc">64 squares, alternating colors, and the rule: white square on the right.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-03-files-ranks-diagonals.html">
-            <div class="toc-row">
-              <span class="toc-num">3.</span>
-              <span class="toc-title">Files, Ranks, and Diagonals</span>
-            </div>
-            <p class="toc-desc">Learn the three ways the board is divided and how squares are grouped.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-04-scorekeeping-algebraic-notation.html">
-            <div class="toc-row">
-              <span class="toc-num">4.</span>
-              <span class="toc-title">Scorekeeping: Algebraic Notation</span>
-            </div>
-            <p class="toc-desc">Learn square names, move notation, captures, and examples like Kf2, Nd3, and Nxd3.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-05-algebraic-notation-examples.html">
-            <div class="toc-row">
-              <span class="toc-num">5.</span>
-              <span class="toc-title">Algebraic Notation Examples</span>
-            </div>
-            <p class="toc-desc">See real example moves and the rule that pawns have no letter in notation.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-06-capturing-a-piece.html">
-            <div class="toc-row">
-              <span class="toc-num">6.</span>
-              <span class="toc-title">Capturing a Piece</span>
-            </div>
-            <p class="toc-desc">How a capture works, how to read Nxd3, and why captures matter.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-07-chess-terms.html">
-            <div class="toc-row">
-              <span class="toc-num">7.</span>
-              <span class="toc-title">Chess Terms</span>
-            </div>
-            <p class="toc-desc">Kingside, queenside, whiteside, and blackside — the four board areas.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-08-setting-up-the-chessboard.html">
-            <div class="toc-row">
-              <span class="toc-num">8.</span>
-              <span class="toc-title">Setting Up the Chessboard</span>
-            </div>
-            <p class="toc-desc">Place kings, queens, rooks, knights, bishops, and pawns in the correct starting squares.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-09-basic-chess-rules.html">
-            <div class="toc-row">
-              <span class="toc-num">9.</span>
-              <span class="toc-title">Basic Chess Rules</span>
-            </div>
-            <p class="toc-desc">Two players, taking turns, White moves first, and the standard starting position.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-10-the-chessmen.html">
-            <div class="toc-row">
-              <span class="toc-num">10.</span>
-              <span class="toc-title">The Chessmen</span>
-            </div>
-            <p class="toc-desc">32 chessmen, 16 per side, and the difference between a piece and a pawn.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-11-piece-values.html">
-            <div class="toc-row">
-              <span class="toc-num">11.</span>
-              <span class="toc-title">Piece Values</span>
-            </div>
-            <p class="toc-desc">The beginner point value of each piece and why the king has none.</p>
-          </a>
-        </li>
-      </ol>
-    </section>
+    <div id="moduleList"></div>
 
-    <!-- ============================ Module 2 ============================ -->
-    <section class="module">
-      <div class="module-head">
-        <span class="module-name">Module 2</span>
-        <span class="module-topic">How the Pieces Move</span>
-        <span class="module-status">Ready</span>
-      </div>
-
-      <ol class="toc-list">
-        <li>
-          <a class="toc-link" href="pawn-m2-lesson-01-how-to-move-the-king.html">
-            <div class="toc-row">
-              <span class="toc-num">1.</span>
-              <span class="toc-title">How to Move the King</span>
-            </div>
-            <p class="toc-desc">Understand why the King is the most important piece and how it moves one square in any direction.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m2-lesson-02-how-to-capture-with-the-king.html">
-            <div class="toc-row">
-              <span class="toc-num">2.</span>
-              <span class="toc-title">How to Capture with the King</span>
-            </div>
-            <p class="toc-desc">Learn how the King captures one square away from any position on the board.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m2-lesson-03-how-to-move-the-knight.html">
-            <div class="toc-row">
-              <span class="toc-num">3.</span>
-              <span class="toc-title">How to Move the Knight</span>
-            </div>
-            <p class="toc-desc">Learn how the knight moves in an L-shape and is the only piece that jumps over others.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m2-lesson-04-how-to-capture-with-the-knight.html">
-            <div class="toc-row">
-              <span class="toc-num">4.</span>
-              <span class="toc-title">How to Capture with the Knight</span>
-            </div>
-            <p class="toc-desc">Learn how the knight captures with an L-shaped move, written as Nxe4.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m2-lesson-05-how-to-move-the-pawn.html">
-            <div class="toc-row">
-              <span class="toc-num">5.</span>
-              <span class="toc-title">How to Move the Pawn</span>
-            </div>
-            <p class="toc-desc">Learn how pawns move one square forward, or two squares from their starting position.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m2-lesson-06-pawn-capture.html">
-            <div class="toc-row">
-              <span class="toc-num">6.</span>
-              <span class="toc-title">Pawn Capture</span>
-            </div>
-            <p class="toc-desc">Learn how pawns capture one square diagonally forward, not straight ahead.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m2-lesson-07-pawn-promotion.html">
-            <div class="toc-row">
-              <span class="toc-num">7.</span>
-              <span class="toc-title">Pawn Promotion</span>
-            </div>
-            <p class="toc-desc">Learn how a pawn promotes to a queen, rook, bishop, or knight upon reaching the final rank.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m2-lesson-08-activity-practice-moving-the-king-knight-and-pawn.html">
-            <div class="toc-row">
-              <span class="toc-num">8.</span>
-              <span class="toc-title">Activity: Practice Moving the King, Knight, and Pawn</span>
-            </div>
-            <p class="toc-desc">Practice finding legal moves with the king, knight, and pawn.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m2-lesson-09-how-to-move-the-rook.html">
-            <div class="toc-row">
-              <span class="toc-num">9.</span>
-              <span class="toc-title">How to Move the Rook</span>
-            </div>
-            <p class="toc-desc">Learn how the rook moves in straight lines along files and ranks.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m2-lesson-10-how-to-capture-with-the-rook.html">
-            <div class="toc-row">
-              <span class="toc-num">10.</span>
-              <span class="toc-title">How to Capture with the Rook</span>
-            </div>
-            <p class="toc-desc">Learn how the rook captures in a straight line, written as Rxe6.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m2-lesson-11-how-to-move-the-bishop.html">
-            <div class="toc-row">
-              <span class="toc-num">11.</span>
-              <span class="toc-title">How to Move the Bishop</span>
-            </div>
-            <p class="toc-desc">Learn how the bishop moves diagonally and always stays on the same color square.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m2-lesson-12-how-to-move-the-queen.html">
-            <div class="toc-row">
-              <span class="toc-num">12.</span>
-              <span class="toc-title">How to Move the Queen</span>
-            </div>
-            <p class="toc-desc">Learn how the queen moves like a rook and bishop combined in any direction.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m2-lesson-13-activity-practice-moving-the-rook-bishop-and-queen.html">
-            <div class="toc-row">
-              <span class="toc-num">13.</span>
-              <span class="toc-title">Activity: Practice Moving the Rook, Bishop, and Queen</span>
-            </div>
-            <p class="toc-desc">Practice finding legal moves and captures with the rook, bishop, and queen.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m2-lesson-13-protecting-points.html">
-            <div class="toc-row">
-              <span class="toc-num">13b.</span>
-              <span class="toc-title">Protecting Points</span>
-            </div>
-            <p class="toc-desc">Learn three defensive ideas: escape, protect, and block.</p>
-          </a>
-        </li>
-      </ol>
-    </section>
-
-    <!-- ============================ Module 3 ============================ -->
-    <section class="module">
-      <div class="module-head">
-        <span class="module-name">Module 3</span>
-        <span class="module-topic">Check, Checkmate, and Draws</span>
-        <span class="module-status">Completed</span>
-      </div>
-
-      <ol class="toc-list">
-        <li>
-          <a class="toc-link" href="pawn-m3-lesson-01-how-to-win-a-chess-game.html">
-            <div class="toc-row">
-              <span class="toc-num">1.</span>
-              <span class="toc-title">How to Win a Chess Game</span>
-            </div>
-            <p class="toc-desc">How a chess game is won, and why capturing is the path to victory.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m3-lesson-02-attack.html">
-            <div class="toc-row">
-              <span class="toc-num">2.</span>
-              <span class="toc-title">Attack</span>
-            </div>
-            <p class="toc-desc">What an attack is, how Qe3 attacks the black queen on e8, and how attack differs from capture.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m3-lesson-03-check.html">
-            <div class="toc-row">
-              <span class="toc-num">3.</span>
-              <span class="toc-title">Check</span>
-            </div>
-            <p class="toc-desc">What check means, why the king is never captured, and how a bishop can check along a diagonal.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m3-lesson-04-illegal-move.html">
-            <div class="toc-row">
-              <span class="toc-num">4.</span>
-              <span class="toc-title">Illegal Move</span>
-            </div>
-            <p class="toc-desc">Illegal moves, the king rule, and why Ke3 is illegal when it moves into check.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m3-lesson-05-escaping-a-check.html">
-            <div class="toc-row">
-              <span class="toc-num">5.</span>
-              <span class="toc-title">Escaping a Check</span>
-            </div>
-            <p class="toc-desc">Three beginner ways to escape check: capture, block, or run away.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m3-lesson-06-how-do-you-win-a-chess-game.html">
-            <div class="toc-row">
-              <span class="toc-num">6.</span>
-              <span class="toc-title">How Do You Win a Chess Game?</span>
-            </div>
-            <p class="toc-desc">Checkmate, how to win a game, and why the enemy king must have no escape.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m3-lesson-07-stalemate.html">
-            <div class="toc-row">
-              <span class="toc-num">7.</span>
-              <span class="toc-title">Stalemate</span>
-            </div>
-            <p class="toc-desc">What stalemate means, how it differs from checkmate, and why stalemate is a draw.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m3-lesson-08-activity-check-the-king.html">
-            <div class="toc-row">
-              <span class="toc-num">8.</span>
-              <span class="toc-title">Activity: Check the King</span>
-            </div>
-            <p class="toc-desc">Activity: find Black's checking move in each position.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m3-lesson-09-activity-capture-the-checker.html">
-            <div class="toc-row">
-              <span class="toc-num">9.</span>
-              <span class="toc-title">Activity: Capture the Checker</span>
-            </div>
-            <p class="toc-desc">Activity: find the move that captures the checking bishop and escapes check.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m3-lesson-10-activity-block-the-check.html">
-            <div class="toc-row">
-              <span class="toc-num">10.</span>
-              <span class="toc-title">Activity: Block the Check</span>
-            </div>
-            <p class="toc-desc">Activity: find the move that blocks the checking bishop line and escapes check.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m3-lesson-11-activity-is-this-a-checkmate.html">
-            <div class="toc-row">
-              <span class="toc-num">11.</span>
-              <span class="toc-title">Activity: Is This a Checkmate?</span>
-            </div>
-            <p class="toc-desc">Activity: decide whether each position is checkmate by checking for check and legal escapes.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m3-lesson-12-activity-is-this-a-stalemate.html">
-            <div class="toc-row">
-              <span class="toc-num">12.</span>
-              <span class="toc-title">Activity: Is This a Stalemate?</span>
-            </div>
-            <p class="toc-desc">Activity: decide whether each position is stalemate by checking for check and legal moves.</p>
-          </a>
-        </li>
-      </ol>
-    </section>
-
-    <!-- ============================ Module 4 ============================ -->
-    <section class="module">
-      <div class="module-head">
-        <span class="module-name">Module 4</span>
-        <span class="module-topic">Basic Checkmate &amp; Stalemate</span>
-        <span class="module-status">Ready</span>
-      </div>
-
-      <ol class="toc-list">
-        <li>
-          <a class="toc-link" href="pawn-m4-lesson-01-checkmate-with-a-rook.html">
-            <div class="toc-row">
-              <span class="toc-num">1.</span>
-              <span class="toc-title">Checkmate with a Rook</span>
-            </div>
-            <p class="toc-desc">Learn why the enemy king must be pushed to the edge and how the king and rook work together.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m4-lesson-02-rook-mating-pattern-1.html">
-            <div class="toc-row">
-              <span class="toc-num">2.</span>
-              <span class="toc-title">Rook Mating Pattern 1</span>
-            </div>
-            <p class="toc-desc">See a basic rook checkmate where the rook gives check and the king controls escape squares.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m4-lesson-03-rook-mating-pattern-2.html">
-            <div class="toc-row">
-              <span class="toc-num">3.</span>
-              <span class="toc-title">Rook Mating Pattern 2</span>
-            </div>
-            <p class="toc-desc">Learn how the corner helps trap the king in another basic rook mate.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m4-lesson-04-rook-mate-example-1.html">
-            <div class="toc-row">
-              <span class="toc-num">4.</span>
-              <span class="toc-title">Rook Mate Example 1</span>
-            </div>
-            <p class="toc-desc">Use the shrinking box method to push the Black king to the edge of the board.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m4-lesson-05-rook-mate-example-2.html">
-            <div class="toc-row">
-              <span class="toc-num">5.</span>
-              <span class="toc-title">Rook Mate Example 2</span>
-            </div>
-            <p class="toc-desc">A simpler example because the Black king is already on the edge of the board.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m4-lesson-06-checkmate-with-the-queen.html">
-            <div class="toc-row">
-              <span class="toc-num">6.</span>
-              <span class="toc-title">Checkmate with the Queen</span>
-            </div>
-            <p class="toc-desc">Use the queen and the shrinking box method, but be careful not to stalemate.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m4-lesson-07-mate-with-the-double-rook.html">
-            <div class="toc-row">
-              <span class="toc-num">7.</span>
-              <span class="toc-title">Mate with the Double Rook</span>
-            </div>
-            <p class="toc-desc">Learn the rook roller, one of the simplest checkmates, using two rooks.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m4-lesson-08-stalemate.html">
-            <div class="toc-row">
-              <span class="toc-num">8.</span>
-              <span class="toc-title">Stalemate</span>
-            </div>
-            <p class="toc-desc">What stalemate means and why it is a draw, not a win.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m4-lesson-09-not-a-stalemate.html">
-            <div class="toc-row">
-              <span class="toc-num">9.</span>
-              <span class="toc-title">Not a Stalemate</span>
-            </div>
-            <p class="toc-desc">A position is not stalemate if the player has at least one legal move.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m4-lesson-10-activity-checkmate-or-stalemate.html">
-            <div class="toc-row">
-              <span class="toc-num">10.</span>
-              <span class="toc-title">Activity: Checkmate or Stalemate?</span>
-            </div>
-            <p class="toc-desc">Practice deciding whether each position is checkmate or stalemate.</p>
-          </a>
-        </li>
-      </ol>
-    </section>
-
-    <!-- ============================ Module 5 ============================ -->
-    <section class="module">
-      <div class="module-head">
-        <span class="module-name">Module 5</span>
-        <span class="module-topic">Castling and En Passant</span>
-        <span class="module-status">Ready</span>
-      </div>
-
-      <ol class="toc-list">
-        <li>
-          <a class="toc-link" href="pawn-m5-lesson-01-castling-keeping-your-king-safe.html">
-            <div class="toc-row">
-              <span class="toc-num">1.</span>
-              <span class="toc-title">Castling: Keeping Your King Safe</span>
-            </div>
-            <p class="toc-desc">Learn the castling move, why it keeps the king safe, and how kingside castling works.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m5-lesson-02-queenside-castling.html">
-            <div class="toc-row">
-              <span class="toc-num">2.</span>
-              <span class="toc-title">Queenside Castling</span>
-            </div>
-            <p class="toc-desc">Learn queenside castling and how it differs from kingside castling.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m5-lesson-03-when-castling-is-not-allowed.html">
-            <div class="toc-row">
-              <span class="toc-num">3.</span>
-              <span class="toc-title">When Castling Is Not Allowed</span>
-            </div>
-            <p class="toc-desc">Learn the four conditions that prevent castling, including moving pieces and checks.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m5-lesson-04-activity-is-castling-allowed.html">
-            <div class="toc-row">
-              <span class="toc-num">4.</span>
-              <span class="toc-title">Activity: Is Castling Allowed?</span>
-            </div>
-            <p class="toc-desc">Practice deciding whether castling is legal in each position.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m5-lesson-05-en-passant.html">
-            <div class="toc-row">
-              <span class="toc-num">5.</span>
-              <span class="toc-title">En Passant</span>
-            </div>
-            <p class="toc-desc">Learn the en passant capture, a special pawn move that catches the opponent by surprise.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m5-lesson-06-activity-en-passant.html">
-            <div class="toc-row">
-              <span class="toc-num">6.</span>
-              <span class="toc-title">Activity: En Passant</span>
-            </div>
-            <p class="toc-desc">Practice identifying when en passant is available and performing the capture.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m5-lesson-07-writing-castling-and-en-passant.html">
-            <div class="toc-row">
-              <span class="toc-num">7.</span>
-              <span class="toc-title">Writing Castling and En Passant</span>
-            </div>
-            <p class="toc-desc">Learn how to write castling as O-O and O-O-O, and en passant with e.p. notation.</p>
-          </a>
-        </li>
-        <li>
-          <a class="toc-link" href="pawn-m5-lesson-08-important-rule-about-en-passant.html">
-            <div class="toc-row">
-              <span class="toc-num">8.</span>
-              <span class="toc-title">Important Rule About En Passant</span>
-            </div>
-            <p class="toc-desc">Understand the key rule: en passant must be played immediately or the opportunity is lost.</p>
-          </a>
-        </li>
-      </ol>
-    </section>
-
-    <footer class="lesson-footer">
-      <span class="chapter-name">Pawn Level</span>
-      <span>Beginner Curriculum · Coach Dinosaur Chess Course</span>
-    </footer>
-
-  </div>
+    <footer class="lesson-footer"><span class="chapter-name">Pawn Level</span><span>Beginner Curriculum · Coach Dinosaur Chess Course</span></footer>
+  </main>
 
   <script>
-    function toggleTheme() {
-      var html = document.documentElement;
-      var next = html.dataset.theme === "dark" ? "light" : "dark";
-      html.dataset.theme = next;
-      try { window.localStorage.setItem("lesson-theme-v1", next); } catch (e) {}
-      var btn = document.getElementById("themeToggle");
-      if (btn) btn.textContent = next === "dark" ? "Light theme" : "Dark theme";
+    var PAWN_MODULES = [
+      {
+        module: 1,
+        title: "Board, Notation, Setup, Basic Rules, and Piece Values",
+        lessons: [
+          ["1", "Introducing the Game of Chess", "pawn-01-introducing-the-game-of-chess.html", "What chess is, where it came from, and why it is learned around the world."],
+          ["2", "The Chessboard", "pawn-02-the-chessboard.html", "Learn the 64 squares, alternating colors, and the rule: white square on the right."],
+          ["3", "Files, Ranks, and Diagonals", "pawn-03-files-ranks-diagonals.html", "Learn the three ways the board is divided and how squares are grouped."],
+          ["4", "Scorekeeping: Algebraic Notation", "pawn-04-scorekeeping-algebraic-notation.html", "Learn square names, move notation, captures, and examples such as Kf2, Nd3, and Nxd3."],
+          ["5", "Algebraic Notation Examples", "pawn-05-algebraic-notation-examples.html", "See example moves and learn why pawns have no letter in notation."],
+          ["6", "Capturing a Piece", "pawn-06-capturing-a-piece.html", "Learn how a capture works, how to read Nxd3, and why captures matter."],
+          ["7", "Chess Terms", "pawn-07-chess-terms.html", "Learn kingside, queenside, whiteside, and blackside as board areas."],
+          ["8", "Setting Up the Chessboard", "pawn-08-setting-up-the-chessboard.html", "Place kings, queens, rooks, knights, bishops, and pawns on the correct starting squares."],
+          ["9", "Basic Chess Rules", "pawn-09-basic-chess-rules.html", "Learn turn-taking, why White moves first, and the standard starting position."],
+          ["10", "The Chessmen", "pawn-10-the-chessmen.html", "Understand the 32 chessmen, 16 per side, and the difference between a piece and a pawn."],
+          ["11", "Piece Values", "pawn-11-piece-values.html", "Learn the beginner point value of each piece and why the king has none."]
+        ]
+      },
+      {
+        module: 2,
+        title: "How the Pieces Move",
+        lessons: [
+          ["1", "How to Move the King", "pawn-m2-lesson-01-how-to-move-the-king.html", "Learn why the king is the most important piece and how it moves one square in any direction."],
+          ["2", "How to Capture with the King", "pawn-m2-lesson-02-how-to-capture-with-the-king.html", "Learn how the king captures one square away from any position on the board."],
+          ["3", "How to Move the Knight", "pawn-m2-lesson-03-how-to-move-the-knight.html", "Learn the knight’s L-shaped move and why it is the only piece that jumps over others."],
+          ["4", "How to Capture with the Knight", "pawn-m2-lesson-04-how-to-capture-with-the-knight.html", "Learn how the knight captures with an L-shaped move, written as Nxe4."],
+          ["5", "How to Move the Pawn", "pawn-m2-lesson-05-how-to-move-the-pawn.html", "Learn how pawns move one square forward, or two squares from their starting position."],
+          ["6", "Pawn Capture", "pawn-m2-lesson-06-pawn-capture.html", "Learn how pawns capture one square diagonally forward, not straight ahead."],
+          ["7", "Pawn Promotion", "pawn-m2-lesson-07-pawn-promotion.html", "Learn how a pawn promotes to a queen, rook, bishop, or knight on the final rank."],
+          ["8", "Activity: King, Knight, and Pawn", "pawn-m2-lesson-08-activity-practice-moving-the-king-knight-and-pawn.html", "Practise finding legal moves with the king, knight, and pawn."],
+          ["9", "How to Move the Rook", "pawn-m2-lesson-09-how-to-move-the-rook.html", "Learn how the rook moves in straight lines along files and ranks."],
+          ["10", "How to Capture with the Rook", "pawn-m2-lesson-10-how-to-capture-with-the-rook.html", "Learn how the rook captures in a straight line, written as Rxe6."],
+          ["11", "How to Move the Bishop", "pawn-m2-lesson-11-how-to-move-the-bishop.html", "Learn how the bishop moves diagonally and always stays on the same color square."],
+          ["12", "How to Move the Queen", "pawn-m2-lesson-12-how-to-move-the-queen.html", "Learn how the queen combines the movement of a rook and bishop."],
+          ["13", "Activity: Rook, Bishop, and Queen", "pawn-m2-lesson-13-activity-practice-moving-the-rook-bishop-and-queen.html", "Practise finding legal moves and captures with the rook, bishop, and queen."],
+          ["13b", "Protecting Points", "pawn-m2-lesson-13-protecting-points.html", "Learn three defensive ideas: escape, protect, and block."]
+        ]
+      },
+      {
+        module: 3,
+        title: "Check, Checkmate, and Draws",
+        lessons: [
+          ["1", "How to Win a Chess Game", "pawn-m3-lesson-01-how-to-win-a-chess-game.html", "Learn how a chess game is won and why capturing supports the path to victory."],
+          ["2", "Attack", "pawn-m3-lesson-02-attack.html", "Learn what an attack is and how it differs from an actual capture."],
+          ["3", "Check", "pawn-m3-lesson-03-check.html", "Learn what check means, why the king is never captured, and how line pieces give check."],
+          ["4", "Illegal Move", "pawn-m3-lesson-04-illegal-move.html", "Learn why a king may not move into check and how to identify an illegal move."],
+          ["5", "Escaping a Check", "pawn-m3-lesson-05-escaping-a-check.html", "Learn three beginner ways to escape check: capture, block, or move the king."],
+          ["6", "How Do You Win a Chess Game?", "pawn-m3-lesson-06-how-do-you-win-a-chess-game.html", "Understand checkmate and why the enemy king must have no legal escape."],
+          ["7", "Stalemate", "pawn-m3-lesson-07-stalemate.html", "Learn what stalemate means, how it differs from checkmate, and why it is a draw."],
+          ["8", "Activity: Check the King", "pawn-m3-lesson-08-activity-check-the-king.html", "Find Black’s checking move in each position."],
+          ["9", "Activity: Capture the Checker", "pawn-m3-lesson-09-activity-capture-the-checker.html", "Find the move that captures the checking bishop and escapes check."],
+          ["10", "Activity: Block the Check", "pawn-m3-lesson-10-activity-block-the-check.html", "Find the move that blocks the checking line and escapes check."],
+          ["11", "Activity: Is This a Checkmate?", "pawn-m3-lesson-11-activity-is-this-a-checkmate.html", "Decide whether each position is checkmate by checking for check and legal escapes."],
+          ["12", "Activity: Is This a Stalemate?", "pawn-m3-lesson-12-activity-is-this-a-stalemate.html", "Decide whether each position is stalemate by checking for check and legal moves."]
+        ]
+      },
+      {
+        module: 4,
+        title: "Basic Checkmate and Stalemate",
+        lessons: [
+          ["1", "Checkmate with a Rook", "pawn-m4-lesson-01-checkmate-with-a-rook.html", "Learn why the enemy king must be pushed to the edge and how the king and rook cooperate."],
+          ["2", "Rook Mating Pattern 1", "pawn-m4-lesson-02-rook-mating-pattern-1.html", "See a basic rook mate where the rook gives check and the king controls escape squares."],
+          ["3", "Rook Mating Pattern 2", "pawn-m4-lesson-03-rook-mating-pattern-2.html", "Learn how the corner helps trap the king in another basic rook mate."],
+          ["4", "Rook Mate Example 1", "pawn-m4-lesson-04-rook-mate-example-1.html", "Use the shrinking-box method to push the black king toward the edge."],
+          ["5", "Rook Mate Example 2", "pawn-m4-lesson-05-rook-mate-example-2.html", "Practise a simpler rook mate with the black king already on the edge."],
+          ["6", "Checkmate with the Queen", "pawn-m4-lesson-06-checkmate-with-the-queen.html", "Use the queen and shrinking-box method while avoiding stalemate."],
+          ["7", "Mate with the Double Rook", "pawn-m4-lesson-07-mate-with-the-double-rook.html", "Learn the rook roller, one of the simplest checkmates, using two rooks."],
+          ["8", "Stalemate", "pawn-m4-lesson-08-stalemate.html", "Review what stalemate means and why it is a draw rather than a win."],
+          ["9", "Not a Stalemate", "pawn-m4-lesson-09-not-a-stalemate.html", "Understand that a position is not stalemate when the player has at least one legal move."],
+          ["10", "Activity: Checkmate or Stalemate?", "pawn-m4-lesson-10-activity-checkmate-or-stalemate.html", "Practise deciding whether each position is checkmate or stalemate."]
+        ]
+      },
+      {
+        module: 5,
+        title: "Castling and En Passant",
+        lessons: [
+          ["1", "Castling: Keeping Your King Safe", "pawn-m5-lesson-01-castling-keeping-your-king-safe.html", "Learn the castling move, why it helps king safety, and how kingside castling works."],
+          ["2", "Queenside Castling", "pawn-m5-lesson-02-queenside-castling.html", "Learn queenside castling and how it differs from kingside castling."],
+          ["3", "When Castling Is Not Allowed", "pawn-m5-lesson-03-when-castling-is-not-allowed.html", "Learn the conditions that prevent castling, including moved pieces and attacked squares."],
+          ["4", "Activity: Is Castling Allowed?", "pawn-m5-lesson-04-activity-is-castling-allowed.html", "Practise deciding whether castling is legal in each position."],
+          ["5", "En Passant", "pawn-m5-lesson-05-en-passant.html", "Learn the special pawn capture called en passant."],
+          ["6", "Activity: En Passant", "pawn-m5-lesson-06-activity-en-passant.html", "Practise identifying when en passant is available and performing the capture."],
+          ["7", "Writing Castling and En Passant", "pawn-m5-lesson-07-writing-castling-and-en-passant.html", "Learn how to write castling as O-O and O-O-O, and en passant with e.p. notation."],
+          ["8", "Important Rule About En Passant", "pawn-m5-lesson-08-important-rule-about-en-passant.html", "Understand that en passant must be played immediately or the opportunity is lost."]
+        ]
+      }
+    ];
+
+    function escapeHtml(value){return String(value==null?"":value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;").replace(/'/g,"&#39;")}
+    function phaseLabel(moduleNumber){if(moduleNumber===1)return "Board foundation";if(moduleNumber===2)return "Piece skills";if(moduleNumber===3)return "Game results and special rules";return ""}
+    function renderModule(course){
+      var items=course.lessons.map(function(lesson){return '<li><a class="toc-link" href="'+escapeHtml(lesson[2])+'"><div class="toc-row"><span class="toc-num">'+escapeHtml(lesson[0])+'.</span><span class="toc-title">'+escapeHtml(lesson[1])+'</span></div><p class="toc-desc">'+escapeHtml(lesson[3])+'</p></a></li>'}).join('');
+      var count=course.lessons.length;
+      return '<section class="module" id="module-'+course.module+'"><div class="module-head"><span class="module-name">Module '+course.module+'</span><span class="module-topic">'+escapeHtml(course.title)+'</span><span class="module-status">'+count+' lessons</span></div><ol class="toc-list">'+items+'</ol></section>';
     }
-    (function () {
-      try {
-        var t = document.documentElement.dataset.theme || "dark";
-        var btn = document.getElementById("themeToggle");
-        if (btn) btn.textContent = t === "dark" ? "Light theme" : "Dark theme";
-      } catch (e) {}
-    })();
+    document.getElementById('moduleList').innerHTML=PAWN_MODULES.map(function(course){var phase=phaseLabel(course.module);return (phase?'<p class="phase-label">'+phase+'</p>':'')+renderModule(course)}).join('');
+
+    function toggleTheme(){var html=document.documentElement;var next=html.dataset.theme==="dark"?"light":"dark";html.dataset.theme=next;try{window.localStorage.setItem("lesson-theme-v1",next)}catch(e){}var btn=document.getElementById("themeToggle");if(btn)btn.textContent=next==="dark"?"Light theme":"Dark theme"}
+    (function(){var t=document.documentElement.dataset.theme||"dark";var btn=document.getElementById("themeToggle");if(btn)btn.textContent=t==="dark"?"Light theme":"Dark theme"})();
   </script>
 </body>
 </html>
