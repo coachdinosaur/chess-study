@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Teacher Login | CD Digital Chess</title>
+  <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
+  <link rel="stylesheet" href="./management.css">
+</head>
+<body>
+  <div class="portal-shell">
+    <header class="portal-header">
+      <a class="portal-brand" href="./index.html">
+        <span class="portal-brand-mark" aria-hidden="true">♟</span>
+        <span class="portal-brand-copy"><strong>Teacher portal</strong><span>CD Digital Chess</span></span>
+      </a>
+      <nav class="portal-actions">
+        <a class="button-secondary" href="./join.html">Student join</a>
+        <a class="button-secondary" href="../index.html">Public study board</a>
+      </nav>
+    </header>
+
+    <main class="stack">
+      <div id="configuredNotice" class="status" hidden></div>
+      <div id="authStatus" class="status" aria-live="polite" hidden></div>
+
+      <section class="portal-grid">
+        <article class="panel">
+          <h1>Teacher sign in</h1>
+          <p class="panel-copy">Use the email and password connected to your coaching account.</p>
+          <form id="signInForm" class="form-grid">
+            <div class="form-row">
+              <label for="signInEmail">Email</label>
+              <input id="signInEmail" name="email" type="email" autocomplete="email" required>
+            </div>
+            <div class="form-row">
+              <label for="signInPassword">Password</label>
+              <input id="signInPassword" name="password" type="password" autocomplete="current-password" required>
+            </div>
+            <button class="button" type="submit">Sign in</button>
+          </form>
+        </article>
+
+        <article class="panel">
+          <h2>Create teacher account</h2>
+          <p class="panel-copy">V1 permits teacher registration. A later production release can require administrator approval.</p>
+          <form id="signUpForm" class="form-grid">
+            <div class="form-row">
+              <label for="displayName">Teacher or coaching name</label>
+              <input id="displayName" name="displayName" type="text" maxlength="80" autocomplete="organization" required>
+            </div>
+            <div class="form-row">
+              <label for="signUpEmail">Email</label>
+              <input id="signUpEmail" name="email" type="email" autocomplete="email" required>
+            </div>
+            <div class="form-row">
+              <label for="signUpPassword">Password</label>
+              <input id="signUpPassword" name="password" type="password" minlength="8" autocomplete="new-password" required>
+            </div>
+            <button class="button" type="submit">Create teacher account</button>
+          </form>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script type="module" src="./js/login.mjs"></script>
+</body>
+</html>
