@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-piece-base="../assets/pieces/mpchess/" data-app-path="../index.html" data-orientation="white">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tactical Exchanges — Bishop Level Module 8</title>
+  <meta name="description" content="Bishop Level Module 8 lesson on evaluating tactical exchanges, minor-piece trades, sacrifices, pawn structure, activity, and king safety.">
+  <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
+  <link rel="apple-touch-icon" href="../assets/pieces/app_icon.png">
+  <link rel="stylesheet" href="endgame-lesson.css?v=board-bg">
+  <link rel="stylesheet" href="pawn-teacher-board.css?v=20260710-teacher-lesson-csv1">
+  <style>
+    .module-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,520px);gap:clamp(20px,4vw,46px);align-items:center}.hero-board-card{margin:0;padding:clamp(14px,2vw,22px);border:1px solid var(--panel-border);border-radius:20px;background:var(--panel-bg);box-shadow:0 22px 60px rgba(0,0,0,.22)}.hero-board-card .board{max-width:520px;margin:0 auto}.hero-board-card figcaption{margin-top:10px;color:var(--ink-soft);font-size:.92rem;text-align:center}.module-nav{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 28px;padding:12px;border:1px solid var(--hairline);border-radius:12px;background:var(--panel-bg)}.module-nav a{color:var(--btn-ink);text-decoration:none;font-weight:700;font-size:.92rem;padding:8px 11px;border-radius:999px}.module-nav a:hover{background:var(--btn-hover)}.exchange-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 24px}.exchange-card{border:1px solid var(--panel-border);border-radius:10px;padding:14px;background:var(--panel-bg);min-height:116px}.exchange-card strong{display:block;color:var(--accent);font-family:var(--font-display);margin-bottom:6px}.exchange-card span{color:var(--ink-soft);font-size:.93rem}.fen-box{margin-top:12px;border:1px solid var(--panel-border);border-radius:8px;overflow:hidden;background:var(--panel-bg)}.fen-title{padding:9px 12px;font-weight:800;color:var(--accent);border-bottom:1px solid var(--panel-border);font-size:.9rem}.fen-code{margin:0;padding:12px;overflow-x:auto;color:var(--ink);font:600 .84rem/1.55 var(--font-mono);white-space:pre}.comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:14px 0}.comparison-card{border:1px solid var(--panel-border);border-radius:10px;background:var(--panel-bg);padding:14px}.comparison-card strong{display:block;color:var(--accent);margin-bottom:6px}.exercise-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.exercise-grid .position{margin:0}details.quiz{border:1px solid var(--panel-border);background:var(--panel-bg);border-radius:10px;padding:12px 14px;margin-top:10px}details.quiz summary{cursor:pointer;font-weight:800}details.quiz p,details.quiz ul{color:var(--ink-soft)}.lesson-nav-row{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:28px}.lesson-nav-row a{color:var(--btn-ink);background:var(--btn-bg);border:1px solid var(--rule-border);border-radius:999px;padding:9px 14px;text-decoration:none;font-weight:700}.source-note{margin-top:32px;color:var(--ink-faint);font-size:.9rem}@media(max-width:1000px){.module-hero{grid-template-columns:1fr}.exchange-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:720px){.exercise-grid,.comparison-grid{grid-template-columns:1fr}}@media(max-width:620px){.exchange-grid,.position-body{grid-template-columns:1fr}.lesson-nav-row a{width:100%;text-align:center}}@media print{.no-print,.module-nav{display:none!important}.hero-board-card,.exchange-card,details.quiz,.fen-box,.comparison-card{box-shadow:none;break-inside:avoid}.module-hero{display:block}.lesson+.lesson{break-before:auto}}
+  </style>
+</head>
+<body>
+  <header class="index-header no-print">
+    <div class="index-header-inner">
+      <div class="index-brand"><div class="index-brand-icon" aria-hidden="true">♞</div><div><div class="index-brand-label">Bishop Level · Module 8</div><div class="index-brand-title">Tactical Exchanges</div></div></div>
+      <div class="index-top-actions"><a class="toolbar-link" href="bishop-index.html">&larr; Bishop Index</a><button class="toolbar-link" type="button" id="themeToggle">Toggle theme</button><button class="toolbar-link" type="button" onclick="window.print()">Print / Save PDF</button></div>
+    </div>
+  </header>
+
+  <main class="lesson-page">
+    <section class="hero module-hero" id="top">
+      <div><p class="eyebrow">Coach Dinosaur Chess Course</p><h1 class="chapter-title">Tactical Exchanges</h1><p class="chapter-subtitle">Judge a trade by the position it creates, not merely by the printed point values of the pieces that disappear.</p></div>
+      <figure class="hero-board-card"><div class="board" data-fen="8/3kqR2/6K1/3p4/1p1B4/p3P3/8/8 b - - 0 1"></div><figcaption>Black to move. Giving up the queen can be stronger than pushing a passed pawn immediately.</figcaption></figure>
+    </section>
+
+    <nav class="module-nav no-print" aria-label="Module contents"><a href="#meaning">1. Meaning</a><a href="#queen-exchange">2. Sacrifice</a><a href="#bad-bishop">3. Bad Bishop</a><a href="#minor-pieces">4. Minor Pieces</a><a href="#opening">5. Opening</a><a href="#advantages">6. Small Advantages</a><a href="#exercises">7. Exercises</a><a href="#review">Review</a></nav>
+
+    <section class="exchange-grid" aria-label="Benefits of tactical exchanges">
+      <article class="exchange-card"><strong>Gain Material</strong><span>Trade pieces when the final sequence wins points or creates an unstoppable promotion.</span></article>
+      <article class="exchange-card"><strong>Improve Activity</strong><span>Exchange a restricted piece for an active enemy piece or open lines for another piece.</span></article>
+      <article class="exchange-card"><strong>Change Structure</strong><span>Damage pawns, create targets, or obtain a useful passed pawn.</span></article>
+      <article class="exchange-card"><strong>Simplify Favorably</strong><span>Reduce the position when the remaining endgame benefits your material or activity.</span></article>
+      <article class="exchange-card"><strong>Reduce an Attack</strong><span>Trade an important attacker or force a draw when your position is worse.</span></article>
+      <article class="exchange-card"><strong>Control Squares</strong><span>Preserve the piece that dominates the most important color complex or entry squares.</span></article>
+    </section>
+
+    <section class="lesson" id="meaning">
+      <div class="lesson-head"><span class="lesson-number">Part 1</span><h2 class="lesson-title">What Is a Tactical Exchange?</h2></div>
+      <p class="lesson-intro">A tactical exchange is a trade that gains something useful beyond the nominal point values. The benefit may be material, space, activity, simplification, drawing chances, pawn structure, king safety, or control of important squares.</p>
+      <div class="rule-box"><h3>Evaluate the result</h3><p>Do not exchange merely because bishop equals knight or rook equals rook. Calculate the resulting position and compare the pieces, pawns, open lines, and kings that remain.</p></div>
+    </section>
+
+    <section class="lesson" id="queen-exchange">
+      <div class="lesson-head"><span class="lesson-number">Part 2</span><h2 class="lesson-title">Exchange the Queen or Push the Pawn?</h2></div>
+      <article class="position">
+        <p class="position-label">Position 1 · Black to move · PDF pages 4–5</p>
+        <div class="position-body"><div class="diagram"><div class="board" data-fen="8/3kqR2/6K1/3p4/1p1B4/p3P3/8/8 b - - 0 1"></div><p class="caption">The queen on e7 is absolutely pinned to the king on d7 by the rook on f7.</p></div><div class="position-note"><p>Black has connected passed pawns, but the obvious pawn push is not the strongest move. Black must compare the entire resulting endings.</p><div class="rule-box"><h3>Count future value</h3><p>An unstoppable promotion may be worth more than the queen sacrificed to create it.</p></div></div></div>
+        <div class="comparison-grid"><div class="comparison-card"><strong>Drawing route</strong><div class="moveline">1...b3 2.Rxe7+ Kxe7 3.Bc5+ Ke6 4.Bxa3</div><p>The source says this approaches a dead position.</p></div><div class="comparison-card"><strong>Winning tactical exchange</strong><div class="moveline">1...Qxf7+! 2.Kxf7 b3</div><p>The rook disappears and the connected pawns become decisive.</p></div></div>
+        <div class="fen-box"><div class="fen-title">FEN · Black to move</div><pre class="fen-code">8/3kqR2/6K1/3p4/1p1B4/p3P3/8/8 b - - 0 1</pre></div>
+      </article>
+    </section>
+
+    <section class="lesson" id="bad-bishop">
+      <div class="lesson-head"><span class="lesson-number">Part 3</span><h2 class="lesson-title">Trade the Bad Bishop for the Good Bishop</h2></div>
+      <article class="position">
+        <p class="position-label">Position 2 · Black to move · PDF page 6</p>
+        <div class="position-body"><div class="diagram"><div class="board" data-fen="r4rk1/2qbn2p/p2p1n1b/P1pPpp2/2P1N3/Q1N5/2B2PPP/1RB2RK1 b - - 0 1"></div><p class="caption">Black's bishop on h6 is restricted by its own dark-squared central pawns.</p></div><div class="position-note"><p>White's bishop on c1 has more useful scope. Black improves the position by exchanging the restricted bishop for the stronger bishop.</p></div></div>
+        <div class="moveline">1...Bxc1 2.Nxf6+ Rxf6 3.Qxc1 Qxa5 4.Qg5+ Kf7</div>
+        <p>White retains a slight advantage according to the source, but Black has improved the minor-piece balance and reduced White's useful resources.</p>
+        <div class="fen-box"><div class="fen-title">FEN · Black to move</div><pre class="fen-code">r4rk1/2qbn2p/p2p1n1b/P1pPpp2/2P1N3/Q1N5/2B2PPP/1RB2RK1 b - - 0 1</pre></div>
+      </article>
+    </section>
+
+    <section class="lesson" id="minor-pieces">
+      <div class="lesson-head"><span class="lesson-number">Part 4</span><h2 class="lesson-title">Which Minor Piece Should Capture?</h2></div>
+      <article class="position">
+        <p class="position-label">Position 3 · Black to move · PDF page 7</p>
+        <div class="position-body"><div class="diagram"><div class="board" data-fen="5r2/1p1r2bk/p1p1p1np/2PpNb2/1P1P1P2/7P/1P1R2BB/4R2K b - - 0 1"></div><p class="caption">White's knight on e5 is centralized and supported by pawns.</p></div><div class="position-note"><p>Black can capture on e5 with the knight or bishop. The correct choice depends on the activity of the pieces that remain.</p></div></div>
+        <div class="comparison-grid"><div class="comparison-card"><strong>Exchange knights</strong><div class="moveline">1...Nxe5 2.fxe5</div><p>The strong knight disappears, but Black's bishop on g7 remains restricted and needs more time.</p></div><div class="comparison-card"><strong>Exchange the bishop</strong><div class="moveline">1...Bxe5 2.fxe5 Nh4 3.Bg3 Nxg2 4.Kxg2 Be4+</div><p>Black preserves the knight for a kingside maneuver and activates the remaining bishop with check.</p></div></div>
+        <div class="fen-box"><div class="fen-title">FEN · Black to move</div><pre class="fen-code">5r2/1p1r2bk/p1p1p1np/2PpNb2/1P1P1P2/7P/1P1R2BB/4R2K b - - 0 1</pre></div>
+      </article>
+      <article class="position">
+        <p class="position-label">Position 4 · After 1...Nxe5 2.fxe5 · Black to move · PDF page 8</p>
+        <div class="position-body"><div class="diagram"><div class="board" data-fen="5r2/1p1r2bk/p1p1p2p/2PpPb2/1P1P4/7P/1P1R2BB/4R2K b - - 0 2"></div><p class="caption">The bishop on g7 is still restricted by the pawn on e5.</p></div><div class="position-note"><p>The source still gives Black an advantage, but this exchange requires additional time before the bishop becomes active.</p></div></div>
+        <div class="fen-box"><div class="fen-title">FEN · Black to move</div><pre class="fen-code">5r2/1p1r2bk/p1p1p2p/2PpPb2/1P1P4/7P/1P1R2BB/4R2K b - - 0 2</pre></div>
+      </article>
+    </section>
+
+    <section class="lesson" id="opening">
+      <div class="lesson-head"><span class="lesson-number">Part 5</span><h2 class="lesson-title">Tactical Exchanges in the Opening</h2></div>
+      <p class="lesson-intro">When opening theory is unfamiliar, use general exchange principles. An equal-material trade may surrender a bishop pair, a useful defender, or control of an important color complex.</p>
+      <article class="position">
+        <p class="position-label">Position 5 · White to move · PDF page 9</p>
+        <div class="position-body"><div class="diagram"><div class="board" data-fen="rnbq1rk1/1p2bpp1/p2ppn1p/6B1/P1BNP2P/2N5/1PP2PP1/R2QK2R w - - 0 1"></div><p class="caption">White considers giving up the dark-squared bishop for the knight on f6.</p></div><div class="position-note"><p>The source treats the exchange as a strategic error because White wins no material and gives Black lasting dark-square control.</p></div></div>
+        <div class="moveline">1.Bxf6 Bxf6</div>
+        <div class="fen-box"><div class="fen-title">FEN · White to move</div><pre class="fen-code">rnbq1rk1/1p2bpp1/p2ppn1p/6B1/P1BNP2P/2N5/1PP2PP1/R2QK2R w - - 0 1</pre></div>
+      </article>
+      <article class="position">
+        <p class="position-label">Position 6 · After 1.Bxf6 Bxf6 · White to move · PDF page 10</p>
+        <div class="position-body"><div class="diagram"><div class="board" data-fen="rnbq1rk1/1p3pp1/p2ppb1p/8/P1BNP2P/2N5/1PP2PP1/R2QK2R w - - 0 2"></div><p class="caption">Material is equal, but Black retains the active dark-squared bishop.</p></div><div class="position-note"><p>Black can use the bishop to attack targets, control dark entry squares, and support future operations. Equal points did not produce an equal strategic result.</p></div></div>
+        <div class="fen-box"><div class="fen-title">FEN · White to move</div><pre class="fen-code">rnbq1rk1/1p3pp1/p2ppb1p/8/P1BNP2P/2N5/1PP2PP1/R2QK2R w - - 0 2</pre></div>
+      </article>
+    </section>
+
+    <section class="lesson" id="advantages">
+      <div class="lesson-head"><span class="lesson-number">Part 6</span><h2 class="lesson-title">Accumulate Small Advantages</h2></div>
+      <p class="lesson-intro">One exchange may create only a slightly better pawn structure, one open file, one stronger bishop, or one safer king. Several such gains can combine into a decisive advantage.</p>
+      <div class="recap"><h3>Why sacrifices can work</h3><p>The combined value of activity, threats, promotion chances, square control, and king safety may exceed the nominal value of the sacrificed piece.</p></div>
+    </section>
+
+    <section class="lesson" id="exercises">
+      <div class="lesson-head"><span class="lesson-number">Part 7</span><h2 class="lesson-title">Tactical Exchange Exercises</h2></div>
+      <p class="lesson-intro">These positions are analysis tasks. Suggested observations identify the main questions without pretending that a slogan can replace calculation.</p>
+      <div class="exercise-grid">
+        <article class="position"><p class="position-label">Exercise 1 · Black to move · PDF page 12</p><div class="diagram"><div class="board" data-fen="r1bq1rk1/5pp1/p1pppb1p/8/P1B1PPPP/2N5/1PP5/R2QK2R b - - 0 1"></div><p class="caption">What is Black's best exchange and what does it gain?</p></div><details class="quiz"><summary>Show analysis guide</summary><p><strong>1...Bxc3+</strong> is a natural candidate. It removes a developed knight with check, may force <strong>bxc3</strong>, damages White's structure, and can create queen activity such as <strong>...Qxh4+</strong>.</p></details><div class="fen-box"><div class="fen-title">FEN · Black to move</div><pre class="fen-code">r1bq1rk1/5pp1/p1pppb1p/8/P1B1PPPP/2N5/1PP5/R2QK2R b - - 0 1</pre></div></article>
+        <article class="position"><p class="position-label">Exercise 2 · Black to move · PDF page 12</p><div class="diagram"><div class="board" data-fen="r4rk1/3b1pp1/p3p2p/q2pP1P1/P1pQ1P1P/2P5/2P1B3/R3K2R b - - 0 1"></div><p class="caption">Should Black capture the g5-pawn with 1...hxg5?</p></div><details class="quiz"><summary>Show analysis guide</summary><p>After <strong>1...hxg5 2.hxg5</strong>, the h-file may open for White's rook and Black's king cover becomes thinner. Compare the pawn gain with the attacking lines that are opened.</p></details><div class="fen-box"><div class="fen-title">FEN · Black to move</div><pre class="fen-code">r4rk1/3b1pp1/p3p2p/q2pP1P1/P1pQ1P1P/2P5/2P1B3/R3K2R b - - 0 1</pre></div></article>
+        <article class="position"><p class="position-label">Exercise 3 · White to move · PDF page 12</p><div class="diagram"><div class="board" data-fen="rn3rk1/pp1qbppp/4b3/3pPB2/2pP4/2P2QN1/P1P3PP/R1B2RK1 w - - 0 1"></div><p class="caption">Is exchanging the bishop on f5 for the bishop on e6 useful?</p></div><details class="quiz"><summary>Show analysis guide</summary><p>After <strong>1.Bxe6 Qxe6</strong>, Black centralizes the queen and retains the bishop on e7. Unless White gains a concrete tactic, the exchange may reduce White's attacking potential and bishop pair.</p></details><div class="fen-box"><div class="fen-title">FEN · White to move</div><pre class="fen-code">rn3rk1/pp1qbppp/4b3/3pPB2/2pP4/2P2QN1/P1P3PP/R1B2RK1 w - - 0 1</pre></div></article>
+        <article class="position"><p class="position-label">Exercise 4 · Black to move · PDF page 12</p><div class="diagram"><div class="board" data-fen="r2q1rk1/pp1n1pp1/2pbp1bp/8/3P2n1/2N1BN1P/PPPQB1P1/3R1RK1 b - - 0 1"></div><p class="caption">What positional advantages does 1...Nxe3 create?</p></div><details class="quiz"><summary>Show analysis guide</summary><p><strong>1...Nxe3</strong> exchanges the knight for one of White's bishops, reduces the bishop-pair advantage, changes White's coordination, and may force a queen recapture. Its value is positional rather than an immediate point gain.</p></details><div class="fen-box"><div class="fen-title">FEN · Black to move</div><pre class="fen-code">r2q1rk1/pp1n1pp1/2pbp1bp/8/3P2n1/2N1BN1P/PPPQB1P1/3R1RK1 b - - 0 1</pre></div></article>
+      </div>
+    </section>
+
+    <section class="checklist" id="review"><h2>Tactical Exchange Checklist</h2><ul><li><strong>Result:</strong> What exactly do I gain after all recaptures?</li><li><strong>Activity:</strong> Which remaining piece becomes stronger or weaker?</li><li><strong>Structure:</strong> Which pawns become isolated, doubled, passed, or vulnerable?</li><li><strong>Lines:</strong> Which files, ranks, and diagonals open?</li><li><strong>King safety:</strong> Does either king lose cover?</li><li><strong>Simplification:</strong> Which side benefits from fewer pieces?</li><li><strong>Alternatives:</strong> Is this merely a playable trade, or the best trade?</li></ul></section>
+
+    <section class="lesson"><div class="lesson-head"><span class="lesson-number">Review</span><h2 class="lesson-title">Check Your Understanding</h2></div><details class="quiz"><summary>1. What makes an exchange tactical?</summary><p>It produces a concrete benefit such as material, space, activity, structural damage, simplification, drawing chances, or reduced attacking force.</p></details><details class="quiz"><summary>2. Why are equal point values insufficient?</summary><p>The remaining activity, pawn structure, king safety, and square control may strongly favor one side.</p></details><details class="quiz"><summary>3. Why can trading a bad bishop be useful?</summary><p>A restricted bishop may be exchanged for a stronger enemy piece, improving the quality of the remaining army.</p></details><details class="quiz"><summary>4. Why was 1.Bxf6 strategically inaccurate?</summary><p>White surrendered the dark-squared bishop without winning material and left Black with lasting dark-square control.</p></details><details class="quiz"><summary>5. Why can a queen sacrifice be correct?</summary><p>The resulting attack, promotion threat, or material recovery may be worth more than the sacrificed queen.</p></details><div class="lesson-nav-row no-print"><a href="bishop-m7-lesson-01-finding-weaknesses-part-1.html">&larr; Module 7: Finding Weaknesses</a><a href="bishop-index.html">Back to Bishop Index &rarr;</a></div></section>
+
+    <p class="source-note">Converted from the source PDF titled <em>Coach Dinosaur Module 3-8: Tactical Exchanges</em>. This course lists it as Bishop Level Module 8. All ten printed diagrams were converted to legal FEN positions, and the supplied move sequences were validated against their starting positions.</p>
+  </main>
+
+  <script>const root=document.documentElement;const themeToggle=document.getElementById('themeToggle');const storedTheme=localStorage.getItem('chess-lesson-theme');if(storedTheme==='light'||storedTheme==='dark')root.dataset.theme=storedTheme;themeToggle?.addEventListener('click',()=>{root.dataset.theme=root.dataset.theme==='dark'?'light':'dark';localStorage.setItem('chess-lesson-theme',root.dataset.theme)});</script>
+  <script src="endgame-lesson.js?v=board-bg" defer></script>
+  <script src="pawn-teacher-board.js?v=20260710-teacher-lesson-csv1" defer></script>
+</body>
+</html>
