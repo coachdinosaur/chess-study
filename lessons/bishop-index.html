@@ -11,51 +11,396 @@
     (function () {
       try {
         var stored = window.localStorage.getItem("lesson-theme-v1");
-        if (stored === "light" || stored === "dark") document.documentElement.dataset.theme = stored;
+        if (stored === "light" || stored === "dark") {
+          document.documentElement.dataset.theme = stored;
+        }
       } catch (e) {}
     })();
   </script>
   <link rel="stylesheet" href="endgame-lesson.css">
   <style>
-    .module{margin-top:36px}.module-head{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px 14px;padding-bottom:10px;border-bottom:2px solid var(--hairline);margin-bottom:6px}.module-name{font-family:var(--font-display);font-weight:800;font-size:clamp(20px,1vw + 16px,26px);color:var(--ink)}.module-topic{font-family:var(--font-display);font-weight:600;font-size:clamp(14px,.5vw + 12px,16px);color:var(--accent)}.module-status{margin-left:auto;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-faint)}.toc-list{list-style:none;margin:0;padding:0;counter-reset:toc}.toc-list li{position:relative;padding:14px 0;border-bottom:1px solid var(--hairline)}.toc-list li:last-child{border-bottom:none}.toc-list a.toc-link{text-decoration:none;color:inherit;display:block}.toc-list a.toc-link:hover .toc-title{color:var(--accent)}.toc-row{display:flex;align-items:baseline;gap:12px}.toc-num{font-family:var(--font-display);font-weight:800;font-size:clamp(15px,.4vw + 14px,17px);color:var(--accent);min-width:30px;flex-shrink:0}.toc-title{font-family:var(--font-display);font-weight:700;font-size:clamp(16px,.6vw + 14px,19px);color:var(--ink)}.toc-desc{margin:4px 0 0 42px;font-size:clamp(14px,.4vw + 13px,15px);color:var(--ink-soft);line-height:1.5}@media print{.toc-list li,.module-head{break-inside:avoid}}@media(max-width:520px){.module-status{margin-left:0;width:100%}.toc-desc{margin-left:0}}
+    .module {
+      margin-top: 36px;
+    }
+    .module-head {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--hairline);
+      margin-bottom: 6px;
+    }
+    .module-name {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(20px, 1vw + 16px, 26px);
+      color: var(--ink);
+    }
+    .module-topic {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: clamp(14px, 0.5vw + 12px, 16px);
+      color: var(--accent);
+    }
+    .module-status {
+      margin-left: auto;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+
+    .toc-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      counter-reset: toc;
+    }
+    .toc-list li {
+      position: relative;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--hairline);
+    }
+    .toc-list li:last-child { border-bottom: none; }
+    .toc-list a.toc-link {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .toc-list a.toc-link:hover .toc-title { color: var(--accent); }
+    .toc-row {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+    .toc-num {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(15px, 0.4vw + 14px, 17px);
+      color: var(--accent);
+      min-width: 30px;
+      flex-shrink: 0;
+    }
+    .toc-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: clamp(16px, 0.6vw + 14px, 19px);
+      color: var(--ink);
+    }
+    .toc-desc {
+      margin: 4px 0 0 42px;
+      font-size: clamp(14px, 0.4vw + 13px, 15px);
+      color: var(--ink-soft);
+      line-height: 1.5;
+    }
+
+    @media print {
+      .toc-list li, .module-head { break-inside: avoid; }
+    }
+    @media (max-width: 520px) {
+      .module-status { margin-left: 0; width: 100%; }
+      .toc-desc { margin-left: 0; }
+    }
   </style>
 </head>
 <body>
-  <div class="index-header no-print"><div class="index-header-inner"><div class="index-brand"><div class="index-brand-icon">♞</div><div><div class="index-brand-label">Bishop Level</div><div class="index-brand-title">Course Index</div></div></div><div class="index-top-actions"><a class="toolbar-link" href="../index.html">← Chess Study App</a><a class="toolbar-link" href="index.html">← Lesson Index</a><button type="button" class="toolbar-link" id="themeToggle" onclick="toggleTheme()">Light theme</button></div></div></div>
-  <div class="lesson-page">
-    <header class="hero" style="margin-top:6px;padding-bottom:18px"><p class="eyebrow">Coach Dinosaur Chess Course</p><h1 class="chapter-title">Bishop Level</h1><p class="chapter-subtitle">Build stronger calculation, evaluation, strategic understanding, and disciplined thinking habits.</p></header>
-
-    <section class="module"><div class="module-head"><span class="module-name">Module 1</span><span class="module-topic">Building a Chess Foundation</span><span class="module-status">Ready</span></div><ol class="toc-list">
-      <li><a class="toc-link" href="bishop-m1-lesson-01-building-a-strong-foundation.html"><div class="toc-row"><span class="toc-num">1.</span><span class="toc-title">Building a Strong Foundation</span></div><p class="toc-desc">How interest, motivation, knowledge, and learning resources work together to create lasting chess improvement.</p></a></li>
-      <li><a class="toc-link" href="bishop-m1-lesson-02-components-of-a-chess-foundation.html"><div class="toc-row"><span class="toc-num">2.</span><span class="toc-title">The Components of a Chess Foundation</span></div><p class="toc-desc">Principles, tactics, strategy, theory, and mental discipline that form a complete chess foundation.</p></a></li>
-      <li><a class="toc-link" href="bishop-m1-lesson-03-opening-principles-and-the-goal-of-chess.html"><div class="toc-row"><span class="toc-num">3.</span><span class="toc-title">Opening Principles and the Goal of Chess</span></div><p class="toc-desc">Using opening principles as flexible thinking tools while keeping checkmate as the ultimate objective.</p></a></li>
-      <li><a class="toc-link" href="bishop-m1-lesson-04-the-point-system.html"><div class="toc-row"><span class="toc-num">4.</span><span class="toc-title">The Point System</span></div><p class="toc-desc">Approximate material values and how they help evaluate captures, exchanges, and combinations.</p></a></li>
-      <li><a class="toc-link" href="bishop-m1-lesson-05-the-five-core-thinking-principles.html"><div class="toc-row"><span class="toc-num">5.</span><span class="toc-title">The Five Core Thinking Principles</span></div><p class="toc-desc">Five essential questions to examine the position before choosing your move.</p></a></li>
-    </ol></section>
-
-    <section class="module"><div class="module-head"><span class="module-name">Module 2</span><span class="module-topic">Thinking Principles of Chess</span><span class="module-status">Ready</span></div><ol class="toc-list"><li><a class="toc-link" href="bishop-m2-lesson-01-thinking-principles-of-chess.html"><div class="toc-row"><span class="toc-num">1.</span><span class="toc-title">Thinking Principles of Chess</span></div><p class="toc-desc">Apply captures, weaknesses, threats, development, and the opponent&rsquo;s last move to seven interactive chess positions.</p></a></li></ol></section>
-
-    <section class="module"><div class="module-head"><span class="module-name">Module 3</span><span class="module-topic">Endgame Mastery: Checkmate</span><span class="module-status">Ready</span></div><ol class="toc-list"><li><a class="toc-link" href="bishop-m3-lesson-01-endgame-mastery-checkmate.html"><div class="toc-row"><span class="toc-num">1.</span><span class="toc-title">Endgame Mastery: Checkmate</span></div><p class="toc-desc">Master fast king-and-rook and king-and-queen mates, forcing moves, efficient edge selection, and stalemate prevention across four FEN positions.</p></a></li></ol></section>
-
-    <section class="module"><div class="module-head"><span class="module-name">Module 4</span><span class="module-topic">Two Bishops vs a Lone King</span><span class="module-status">Ready</span></div><ol class="toc-list"><li><a class="toc-link" href="bishop-m4-lesson-01-two-bishops-vs-a-lone-king.html"><div class="toc-row"><span class="toc-num">1.</span><span class="toc-title">Two Bishops vs a Lone King</span></div><p class="toc-desc">Coordinate the king and bishops, build a diagonal fence, shrink the defending king&rsquo;s space, avoid stalemate, and complete the corner mate across seven FEN positions.</p></a></li></ol></section>
-
-    <section class="module"><div class="module-head"><span class="module-name">Module 5</span><span class="module-topic">Knight and Bishop vs a Lone King</span><span class="module-status">Ready</span></div><ol class="toc-list"><li><a class="toc-link" href="bishop-m5-lesson-01-knight-and-bishop-vs-a-lone-king.html"><div class="toc-row"><span class="toc-num">1.</span><span class="toc-title">Knight and Bishop vs a Lone King</span></div><p class="toc-desc">Identify the correct mating corner, use the W-shaped knight maneuver, coordinate king and bishop waiting moves, and complete the mate across nine FEN positions.</p></a></li></ol></section>
-
-    <section class="module"><div class="module-head"><span class="module-name">Module 6</span><span class="module-topic">First Thinking Principle: Capture</span><span class="module-status">Ready</span></div><ol class="toc-list"><li><a class="toc-link" href="bishop-m6-lesson-01-first-thinking-principle-capture.html"><div class="toc-row"><span class="toc-num">1.</span><span class="toc-title">First Thinking Principle: Capture</span></div><p class="toc-desc">Protect material, compare captures and recaptures, eliminate losing candidates, and calculate tactical exchanges across three FEN positions.</p></a></li></ol></section>
-
-    <section class="module"><div class="module-head"><span class="module-name">Module 7</span><span class="module-topic">Finding Weaknesses, Part 1</span><span class="module-status">Ready</span></div><ol class="toc-list"><li><a class="toc-link" href="bishop-m7-lesson-01-finding-weaknesses-part-1.html"><div class="toc-row"><span class="toc-num">1.</span><span class="toc-title">Finding Weaknesses, Part 1</span></div><p class="toc-desc">Scan for loose and uncoordinated pieces, isolated pawns, unsafe kings, and weak lines across eight unique FEN positions and four practice exercises.</p></a></li></ol></section>
-
-    <section class="module"><div class="module-head"><span class="module-name">Module 8</span><span class="module-topic">Tactical Exchanges</span><span class="module-status">Ready</span></div><ol class="toc-list"><li><a class="toc-link" href="bishop-m8-lesson-01-tactical-exchanges.html"><div class="toc-row"><span class="toc-num">1.</span><span class="toc-title">Tactical Exchanges</span></div><p class="toc-desc">Evaluate sacrifices, bad-bishop trades, minor-piece exchanges, opening decisions, and four analysis exercises across ten interactive FEN positions.</p></a></li></ol></section>
-
-    <section class="module"><div class="module-head"><span class="module-name">Module 9</span><span class="module-topic">Defense</span><span class="module-status">Ready</span></div><ol class="toc-list"><li><a class="toc-link" href="bishop-m9-lesson-01-defense.html"><div class="toc-row"><span class="toc-num">1.</span><span class="toc-title">Defense</span></div><p class="toc-desc">Use protection, exchanges, counterattacks, maneuvers, and active calculation to defend pawn storms and dangerous attacks across four interactive FEN positions.</p></a></li></ol></section>
-
-    <section class="module"><div class="module-head"><span class="module-name">Module 10</span><span class="module-topic">Finding Weaknesses, Part 2</span><span class="module-status">Ready</span></div><ol class="toc-list"><li><a class="toc-link" href="bishop-m10-lesson-01-finding-weaknesses-part-2.html"><div class="toc-row"><span class="toc-num">1.</span><span class="toc-title">Finding Weaknesses, Part 2</span></div><p class="toc-desc">Evaluate space, blocked bishops, uncentralized knights, weak lines, tactical weaknesses, x-rays, and skewers across seven interactive FEN records and four exercises.</p></a></li></ol></section>
-
-    <footer class="lesson-footer"><span class="chapter-name">Bishop Level</span><span>Coach Dinosaur Chess Course</span></footer>
+  <div class="index-header no-print">
+    <div class="index-header-inner">
+      <div class="index-brand">
+        <div class="index-brand-icon">♞</div>
+        <div>
+          <div class="index-brand-label">Bishop Level</div>
+          <div class="index-brand-title">Course Index</div>
+        </div>
+      </div>
+      <div class="index-top-actions">
+        <a class="toolbar-link" href="../index.html">← Chess Study App</a>
+        <a class="toolbar-link" href="index.html">← Lesson Index</a>
+        <button type="button" class="toolbar-link" id="themeToggle" onclick="toggleTheme()">Light theme</button>
+      </div>
+    </div>
   </div>
+
+  <div class="lesson-page">
+    <header class="hero" style="margin-top: 6px; padding-bottom: 18px;">
+      <p class="eyebrow">Coach Dinosaur Chess Course</p>
+      <h1 class="chapter-title">Bishop Level</h1>
+      <p class="chapter-subtitle">
+        Build stronger calculation, evaluation, strategic understanding, and disciplined thinking habits.
+      </p>
+    </header>
+
+    <!-- ============================ Module 1 ============================ -->
+    <section class="module">
+      <div class="module-head">
+        <span class="module-name">Module 1</span>
+        <span class="module-topic">Building a Chess Foundation</span>
+        <span class="module-status">Ready</span>
+      </div>
+
+      <ol class="toc-list">
+        <li>
+          <a class="toc-link" href="bishop-m1-lesson-01-building-a-strong-foundation.html">
+            <div class="toc-row">
+              <span class="toc-num">1.</span>
+              <span class="toc-title">Building a Strong Foundation</span>
+            </div>
+            <p class="toc-desc">How interest, motivation, knowledge, and learning resources work together to create lasting chess improvement.</p>
+          </a>
+        </li>
+        <li>
+          <a class="toc-link" href="bishop-m1-lesson-02-components-of-a-chess-foundation.html">
+            <div class="toc-row">
+              <span class="toc-num">2.</span>
+              <span class="toc-title">The Components of a Chess Foundation</span>
+            </div>
+            <p class="toc-desc">Principles, tactics, strategy, theory, and mental discipline that form a complete chess foundation.</p>
+          </a>
+        </li>
+        <li>
+          <a class="toc-link" href="bishop-m1-lesson-03-opening-principles-and-the-goal-of-chess.html">
+            <div class="toc-row">
+              <span class="toc-num">3.</span>
+              <span class="toc-title">Opening Principles and the Goal of Chess</span>
+            </div>
+            <p class="toc-desc">Using opening principles as flexible thinking tools while keeping checkmate as the ultimate objective.</p>
+          </a>
+        </li>
+        <li>
+          <a class="toc-link" href="bishop-m1-lesson-04-the-point-system.html">
+            <div class="toc-row">
+              <span class="toc-num">4.</span>
+              <span class="toc-title">The Point System</span>
+            </div>
+            <p class="toc-desc">Approximate material values and how they help evaluate captures, exchanges, and combinations.</p>
+          </a>
+        </li>
+        <li>
+          <a class="toc-link" href="bishop-m1-lesson-05-the-five-core-thinking-principles.html">
+            <div class="toc-row">
+              <span class="toc-num">5.</span>
+              <span class="toc-title">The Five Core Thinking Principles</span>
+            </div>
+            <p class="toc-desc">Five essential questions to examine the position before choosing your move.</p>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ============================ Module 2 ============================ -->
+    <section class="module">
+      <div class="module-head">
+        <span class="module-name">Module 2</span>
+        <span class="module-topic">Thinking Principles of Chess</span>
+        <span class="module-status">Ready</span>
+      </div>
+
+      <ol class="toc-list">
+        <li>
+          <a class="toc-link" href="bishop-m2-lesson-01-thinking-principles-of-chess.html">
+            <div class="toc-row">
+              <span class="toc-num">1.</span>
+              <span class="toc-title">Thinking Principles of Chess</span>
+            </div>
+            <p class="toc-desc">Apply captures, weaknesses, threats, development, and the opponent&rsquo;s last move to seven interactive chess positions.</p>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ============================ Module 3 ============================ -->
+    <section class="module">
+      <div class="module-head">
+        <span class="module-name">Module 3</span>
+        <span class="module-topic">Endgame Mastery: Checkmate</span>
+        <span class="module-status">Ready</span>
+      </div>
+
+      <ol class="toc-list">
+        <li>
+          <a class="toc-link" href="bishop-m3-lesson-01-endgame-mastery-checkmate.html">
+            <div class="toc-row">
+              <span class="toc-num">1.</span>
+              <span class="toc-title">Endgame Mastery: Checkmate</span>
+            </div>
+            <p class="toc-desc">Master fast king-and-rook and king-and-queen mates, forcing moves, efficient edge selection, and stalemate prevention across four FEN positions.</p>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ============================ Module 4 ============================ -->
+    <section class="module">
+      <div class="module-head">
+        <span class="module-name">Module 4</span>
+        <span class="module-topic">Two Bishops vs a Lone King</span>
+        <span class="module-status">Ready</span>
+      </div>
+
+      <ol class="toc-list">
+        <li>
+          <a class="toc-link" href="bishop-m4-lesson-01-two-bishops-vs-a-lone-king.html">
+            <div class="toc-row">
+              <span class="toc-num">1.</span>
+              <span class="toc-title">Two Bishops vs a Lone King</span>
+            </div>
+            <p class="toc-desc">Coordinate the king and bishops, build a diagonal fence, shrink the defending king&rsquo;s space, avoid stalemate, and complete the corner mate across seven FEN positions.</p>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ============================ Module 5 ============================ -->
+    <section class="module">
+      <div class="module-head">
+        <span class="module-name">Module 5</span>
+        <span class="module-topic">Knight and Bishop vs a Lone King</span>
+        <span class="module-status">Ready</span>
+      </div>
+
+      <ol class="toc-list">
+        <li>
+          <a class="toc-link" href="bishop-m5-lesson-01-knight-and-bishop-vs-a-lone-king.html">
+            <div class="toc-row">
+              <span class="toc-num">1.</span>
+              <span class="toc-title">Knight and Bishop vs a Lone King</span>
+            </div>
+            <p class="toc-desc">Identify the correct mating corner, use the W-shaped knight maneuver, coordinate king and bishop waiting moves, and complete the mate across nine FEN positions.</p>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ============================ Module 6 ============================ -->
+    <section class="module">
+      <div class="module-head">
+        <span class="module-name">Module 6</span>
+        <span class="module-topic">First Thinking Principle: Capture</span>
+        <span class="module-status">Ready</span>
+      </div>
+
+      <ol class="toc-list">
+        <li>
+          <a class="toc-link" href="bishop-m6-lesson-01-first-thinking-principle-capture.html">
+            <div class="toc-row">
+              <span class="toc-num">1.</span>
+              <span class="toc-title">First Thinking Principle: Capture</span>
+            </div>
+            <p class="toc-desc">Protect material, compare captures and recaptures, eliminate losing candidates, and calculate tactical exchanges across three FEN positions.</p>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ============================ Module 7 ============================ -->
+    <section class="module">
+      <div class="module-head">
+        <span class="module-name">Module 7</span>
+        <span class="module-topic">Finding Weaknesses, Part 1</span>
+        <span class="module-status">Ready</span>
+      </div>
+
+      <ol class="toc-list">
+        <li>
+          <a class="toc-link" href="bishop-m7-lesson-01-finding-weaknesses-part-1.html">
+            <div class="toc-row">
+              <span class="toc-num">1.</span>
+              <span class="toc-title">Finding Weaknesses, Part 1</span>
+            </div>
+            <p class="toc-desc">Scan for loose and uncoordinated pieces, isolated pawns, unsafe kings, and weak lines across eight unique FEN positions and four practice exercises.</p>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ============================ Module 8 ============================ -->
+    <section class="module">
+      <div class="module-head">
+        <span class="module-name">Module 8</span>
+        <span class="module-topic">Tactical Exchanges</span>
+        <span class="module-status">Ready</span>
+      </div>
+
+      <ol class="toc-list">
+        <li>
+          <a class="toc-link" href="bishop-m8-lesson-01-tactical-exchanges.html">
+            <div class="toc-row">
+              <span class="toc-num">1.</span>
+              <span class="toc-title">Tactical Exchanges</span>
+            </div>
+            <p class="toc-desc">Evaluate sacrifices, bad-bishop trades, minor-piece exchanges, opening decisions, and four analysis exercises across ten interactive FEN positions.</p>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ============================ Module 9 ============================ -->
+    <section class="module">
+      <div class="module-head">
+        <span class="module-name">Module 9</span>
+        <span class="module-topic">Defense</span>
+        <span class="module-status">Ready</span>
+      </div>
+
+      <ol class="toc-list">
+        <li>
+          <a class="toc-link" href="bishop-m9-lesson-01-defense.html">
+            <div class="toc-row">
+              <span class="toc-num">1.</span>
+              <span class="toc-title">Defense</span>
+            </div>
+            <p class="toc-desc">Use protection, exchanges, counterattacks, maneuvers, and active calculation to defend pawn storms and dangerous attacks across four interactive FEN positions.</p>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ============================ Module 10 ============================ -->
+    <section class="module">
+      <div class="module-head">
+        <span class="module-name">Module 10</span>
+        <span class="module-topic">Finding Weaknesses, Part 2</span>
+        <span class="module-status">Ready</span>
+      </div>
+
+      <ol class="toc-list">
+        <li>
+          <a class="toc-link" href="bishop-m10-lesson-01-finding-weaknesses-part-2.html">
+            <div class="toc-row">
+              <span class="toc-num">1.</span>
+              <span class="toc-title">Finding Weaknesses, Part 2</span>
+            </div>
+            <p class="toc-desc">Evaluate space, blocked bishops, uncentralized knights, weak lines, tactical weaknesses, x-rays, and skewers across seven interactive FEN records and four exercises.</p>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+    <footer class="lesson-footer">
+      <span class="chapter-name">Bishop Level</span>
+      <span>Coach Dinosaur Chess Course</span>
+    </footer>
+
+  </div>
+
   <script>
-    function toggleTheme(){var html=document.documentElement;var next=html.dataset.theme==="dark"?"light":"dark";html.dataset.theme=next;try{window.localStorage.setItem("lesson-theme-v1",next)}catch(e){}var btn=document.getElementById("themeToggle");if(btn)btn.textContent=next==="dark"?"Light theme":"Dark theme"}
-    (function(){try{var t=document.documentElement.dataset.theme||"dark";var btn=document.getElementById("themeToggle");if(btn)btn.textContent=t==="dark"?"Light theme":"Dark theme"}catch(e){}})();
+    function toggleTheme() {
+      var html = document.documentElement;
+      var next = html.dataset.theme === "dark" ? "light" : "dark";
+      html.dataset.theme = next;
+      try { window.localStorage.setItem("lesson-theme-v1", next); } catch (e) {}
+      var btn = document.getElementById("themeToggle");
+      if (btn) btn.textContent = next === "dark" ? "Light theme" : "Dark theme";
+    }
+    (function () {
+      try {
+        var t = document.documentElement.dataset.theme || "dark";
+        var btn = document.getElementById("themeToggle");
+        if (btn) btn.textContent = t === "dark" ? "Light theme" : "Dark theme";
+      } catch (e) {}
+    })();
   </script>
 </body>
 </html>
