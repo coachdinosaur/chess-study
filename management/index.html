@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chess Coaching Portal | CD Digital Chess</title>
+  <meta name="description" content="Teacher and student portal for CD Digital Chess classes, assignments, and progress.">
+  <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
+  <link rel="stylesheet" href="./management.css">
+</head>
+<body>
+  <div class="portal-shell">
+    <header class="portal-header">
+      <a class="portal-brand" href="../index.html">
+        <span class="portal-brand-mark" aria-hidden="true">♟</span>
+        <span class="portal-brand-copy"><strong>CD Digital Chess</strong><span>Coaching management V1</span></span>
+      </a>
+      <nav class="portal-actions" aria-label="Portal navigation">
+        <a class="button-secondary" href="../lessons/index.html">Public lessons</a>
+        <a class="button-secondary" href="../index.html">Study board</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <p class="muted">Teacher–student management</p>
+        <h1>Classes, assignments, and progress without rebuilding the chess app.</h1>
+        <p>The public lessons and Study Board remain available to everyone. Signed-in teachers can organize classes and assignments; students can join with a class code and record their progress.</p>
+      </section>
+
+      <section class="portal-grid" aria-label="Choose portal">
+        <article class="panel stack">
+          <div>
+            <h2>Teachers and coaches</h2>
+            <p class="panel-copy">Create classes, approve students, assign lesson links, and review completion status.</p>
+          </div>
+          <a class="button" href="./login.html">Open teacher portal</a>
+        </article>
+
+        <article class="panel stack">
+          <div>
+            <h2>Students</h2>
+            <p class="panel-copy">Join a class with an eight-character code. No student email is required for the anonymous V1 account.</p>
+          </div>
+          <a class="button" href="./join.html">Join a class</a>
+          <a class="button-secondary" href="./student.html">Open student dashboard</a>
+        </article>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
