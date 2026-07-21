@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-piece-base="../assets/pieces/mpchess/" data-app-path="../index.html" data-orientation="white">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Two Bishops vs a Lone King — Bishop Level Module 4</title>
+  <meta name="description" content="Bishop Level Module 4 lesson on forcing checkmate with two bishops and a king against a lone king.">
+  <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
+  <link rel="apple-touch-icon" href="../assets/pieces/app_icon.png">
+  <link rel="stylesheet" href="endgame-lesson.css?v=board-bg">
+  <link rel="stylesheet" href="pawn-teacher-board.css?v=20260710-teacher-lesson-csv1">
+  <style>
+    .module-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 520px);
+      gap: clamp(20px, 4vw, 46px);
+      align-items: center;
+    }
+    .hero-board-card {
+      margin: 0;
+      padding: clamp(14px, 2vw, 22px);
+      border: 1px solid var(--panel-border);
+      border-radius: 20px;
+      background: var(--panel-bg);
+      box-shadow: 0 22px 60px rgba(0,0,0,.22);
+    }
+    .hero-board-card .board { max-width: 520px; margin: 0 auto; }
+    .hero-board-card figcaption {
+      margin-top: 10px;
+      color: var(--ink-soft);
+      font-size: .92rem;
+      text-align: center;
+    }
+    .module-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 28px;
+      padding: 12px;
+      border: 1px solid var(--hairline);
+      border-radius: 12px;
+      background: var(--panel-bg);
+    }
+    .module-nav a {
+      color: var(--btn-ink);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: .92rem;
+      padding: 8px 11px;
+      border-radius: 999px;
+    }
+    .module-nav a:hover { background: var(--btn-hover); }
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin: 0 0 24px;
+    }
+    .method-card {
+      border: 1px solid var(--panel-border);
+      border-radius: 10px;
+      padding: 14px;
+      background: var(--panel-bg);
+      min-height: 118px;
+    }
+    .method-card strong {
+      display: block;
+      color: var(--accent);
+      font-family: var(--font-display);
+      margin-bottom: 6px;
+    }
+    .method-card span { color: var(--ink-soft); font-size: .93rem; }
+    .fen-box {
+      margin-top: 12px;
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--panel-bg);
+    }
+    .fen-title {
+      padding: 9px 12px;
+      font-weight: 800;
+      color: var(--accent);
+      border-bottom: 1px solid var(--panel-border);
+      font-size: .9rem;
+    }
+    .fen-code {
+      margin: 0;
+      padding: 12px;
+      overflow-x: auto;
+      color: var(--ink);
+      font: 600 .84rem/1.55 var(--font-mono);
+      white-space: pre;
+    }
+    .correction-note {
+      border-left: 4px solid var(--danger);
+      background: color-mix(in srgb, var(--danger) 10%, var(--panel-bg));
+      border-radius: 6px;
+      padding: 12px 14px;
+      margin: 12px 0 18px;
+      color: var(--ink-soft);
+    }
+    .position-stack { display: grid; gap: 24px; }
+    details.quiz {
+      border: 1px solid var(--panel-border);
+      background: var(--panel-bg);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-top: 10px;
+    }
+    details.quiz summary { cursor: pointer; font-weight: 800; }
+    details.quiz p { color: var(--ink-soft); margin-bottom: 0; }
+    .lesson-nav-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+    .lesson-nav-row a {
+      color: var(--btn-ink);
+      background: var(--btn-bg);
+      border: 1px solid var(--rule-border);
+      border-radius: 999px;
+      padding: 9px 14px;
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .source-note {
+      margin-top: 32px;
+      color: var(--ink-faint);
+      font-size: .9rem;
+    }
+    @media (max-width: 980px) {
+      .module-hero { grid-template-columns: 1fr; }
+      .method-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 620px) {
+      .method-grid { grid-template-columns: 1fr; }
+      .position-body { grid-template-columns: 1fr; }
+      .lesson-nav-row a { width: 100%; text-align: center; }
+    }
+    @media print {
+      .no-print, .module-nav { display: none !important; }
+      .hero-board-card, .method-card, details.quiz, .fen-box { box-shadow: none; break-inside: avoid; }
+      .module-hero { display: block; }
+      .lesson + .lesson { break-before: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header class="index-header no-print">
+    <div class="index-header-inner">
+      <div class="index-brand">
+        <div class="index-brand-icon" aria-hidden="true">♞</div>
+        <div>
+          <div class="index-brand-label">Bishop Level · Module 4</div>
+          <div class="index-brand-title">Two Bishops vs a Lone King</div>
+        </div>
+      </div>
+      <div class="index-top-actions">
+        <a class="toolbar-link" href="bishop-index.html">&larr; Bishop Index</a>
+        <button class="toolbar-link" type="button" id="themeToggle">Toggle theme</button>
+        <button class="toolbar-link" type="button" onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="lesson-page">
+    <section class="hero module-hero" id="top">
+      <div>
+        <p class="eyebrow">Coach Dinosaur Chess Course</p>
+        <h1 class="chapter-title">Two Bishops vs a Lone King</h1>
+        <p class="chapter-subtitle">
+          Coordinate the king and two bishops, build a diagonal fence, shrink the defending king&rsquo;s space,
+          and finish with a precise corner checkmate without allowing stalemate.
+        </p>
+      </div>
+      <figure class="hero-board-card">
+        <div class="board" data-fen="K7/5B2/7B/8/4k3/8/8/8 w - - 0 1"></div>
+        <figcaption>Corrected starting position. White to move and force checkmate.</figcaption>
+      </figure>
+    </section>
+
+    <nav class="module-nav no-print" aria-label="Module contents">
+      <a href="#correction">1. Source Correction</a>
+      <a href="#keys">2. Keys to Victory</a>
+      <a href="#fence">3. Diagonal Fence</a>
+      <a href="#shrink">4. Shrink the Box</a>
+      <a href="#corner">5. Corner the King</a>
+      <a href="#waiting">6. Waiting Move</a>
+      <a href="#mate">7. Final Mate</a>
+      <a href="#review">Review</a>
+    </nav>
+
+    <section class="method-grid" aria-label="Two-bishop checkmate method">
+      <article class="method-card"><strong>Connect the Bishops</strong><span>Use neighboring diagonals to create a barrier the enemy king cannot cross.</span></article>
+      <article class="method-card"><strong>Bring the King</strong><span>The attacking king must approach and help remove close escape squares.</span></article>
+      <article class="method-card"><strong>Shrink the Box</strong><span>Move the diagonal barrier inward until the king is forced toward a corner.</span></article>
+      <article class="method-card"><strong>Avoid Stalemate</strong><span>Before a waiting move, verify that the enemy king still has a legal move unless it is in check.</span></article>
+    </section>
+
+    <section class="lesson" id="correction">
+      <div class="lesson-head">
+        <span class="lesson-number">Part 1</span>
+        <h2 class="lesson-title">Correcting the Starting Position</h2>
+      </div>
+      <p class="lesson-intro">
+        The source diagram accidentally reverses the colors of the kings. Its move sequence is legal only when the White king is on a8
+        and the Black king is on e4.
+      </p>
+
+      <article class="position">
+        <p class="position-label">Position 1 · White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="K7/5B2/7B/8/4k3/8/8/8 w - - 0 1"></div>
+            <p class="caption">White king a8, bishops f7 and h6; Black king e4.</p>
+          </div>
+          <div class="position-note">
+            <p>The first goal is to connect the bishops&rsquo; control while beginning the king&rsquo;s approach.</p>
+            <div class="rule-box">
+              <h3>Corrected first moves</h3>
+              <p>1.Bg6+ Ke5 2.Kb7</p>
+            </div>
+          </div>
+        </div>
+        <div class="correction-note">
+          <strong>Source correction:</strong> the printed diagram shows a Black king on a8 and a White king on e4.
+          That position contradicts the text and cannot produce 2.Kb7. The corrected FEN is used throughout this lesson.
+        </div>
+        <div class="fen-box">
+          <div class="fen-title">Corrected FEN · White to move</div>
+          <pre class="fen-code">K7/5B2/7B/8/4k3/8/8/8 w - - 0 1</pre>
+        </div>
+      </article>
+    </section>
+
+    <section class="lesson" id="keys">
+      <div class="lesson-head">
+        <span class="lesson-number">Part 2</span>
+        <h2 class="lesson-title">Keys to Victory</h2>
+      </div>
+      <p class="lesson-intro">The technique is systematic. The bishops form a movable fence, and the king helps push that fence forward.</p>
+      <div class="recap">
+        <h3>Five essential rules</h3>
+        <ol>
+          <li><strong>Create a diagonal fence.</strong> Use connected diagonals to stop the king from crossing.</li>
+          <li><strong>Take away extra squares.</strong> Each bishop should restrict more than one route.</li>
+          <li><strong>Shrink the territory.</strong> Coordinate king and bishops as in the rook box method.</li>
+          <li><strong>Drive the king to a corner.</strong> The final mating pattern occurs at the edge.</li>
+          <li><strong>Protect both bishops.</strong> Never allow the defending king to capture either one.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="lesson" id="fence">
+      <div class="lesson-head">
+        <span class="lesson-number">Part 3</span>
+        <h2 class="lesson-title">Build the Diagonal Fence</h2>
+      </div>
+      <p class="lesson-intro">The connected bishops restrict the Black king while the White king approaches the battle area.</p>
+
+      <article class="position">
+        <p class="position-label">Position 2 · After 1.Bg6+ Ke5 2.Kb7 · Black to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="8/1K6/6BB/4k3/8/8/8/8 b - - 3 2"></div>
+            <p class="caption">The bishops on g6 and h6 form a connected diagonal barrier.</p>
+          </div>
+          <div class="position-note">
+            <p>The Black king cannot cross the bishops&rsquo; fence. White must now keep the bishops safe while bringing the king closer.</p>
+            <div class="rule-box">
+              <h3>Do not hang a bishop</h3>
+              <p>After 2...Kf6, White retreats the attacked bishop with 3.Bh7 and continues the king march.</p>
+            </div>
+          </div>
+        </div>
+        <div class="moveline">2...Kf6 3.Bh7 Ke5 4.Kc6 Kd4 5.Bf4</div>
+        <p><strong>Purpose of 5.Bf4:</strong> the bishop removes e5 from the Black king.</p>
+        <div class="moveline">5...Kc4 6.Be5 Kb4 7.Bg8</div>
+        <p class="note-soft">The source also gives 5...Kc3 6.Kc5, which makes White&rsquo;s task easier.</p>
+        <div class="fen-box">
+          <div class="fen-title">FEN · Black to move</div>
+          <pre class="fen-code">8/1K6/6BB/4k3/8/8/8/8 b - - 3 2</pre>
+        </div>
+      </article>
+    </section>
+
+    <section class="lesson" id="shrink">
+      <div class="lesson-head">
+        <span class="lesson-number">Part 4</span>
+        <h2 class="lesson-title">Shrink the Diagonal Box</h2>
+      </div>
+      <p class="lesson-intro">The bishops keep moving the barrier inward while the White king takes away nearby squares.</p>
+
+      <div class="position-stack">
+        <article class="position">
+          <p class="position-label">Position 3 · After 7.Bg8 · Black to move</p>
+          <div class="position-body">
+            <div class="diagram">
+              <div class="board" data-fen="6B1/8/2K5/4B3/1k6/8/8/8 b - - 13 7"></div>
+              <p class="caption">The bishops control long connected diagonals and force the Black king toward the a-file.</p>
+            </div>
+            <div class="position-note">
+              <p>White keeps the king close and uses Bb2 and Bb3 to remove more squares.</p>
+              <div class="moveline">7...Ka3 8.Kc5 Ka4 9.Bb2 Ka5 10.Bb3 Ka6 11.Kc6 Ka7</div>
+            </div>
+          </div>
+          <div class="fen-box">
+            <div class="fen-title">FEN · Black to move</div>
+            <pre class="fen-code">6B1/8/2K5/4B3/1k6/8/8/8 b - - 13 7</pre>
+          </div>
+        </article>
+
+        <article class="position">
+          <p class="position-label">Position 4 · After 11...Ka7 · White to move</p>
+          <div class="position-body">
+            <div class="diagram">
+              <div class="board" data-fen="8/k7/2K5/8/8/1B6/1B6/8 w - - 22 12"></div>
+              <p class="caption">The Black king is close to the corner, but White still must remove b8 and maintain the fence.</p>
+            </div>
+            <div class="position-note">
+              <p><strong>12.Be5</strong> prevents the Black king from escaping through b8.</p>
+              <div class="moveline">12.Be5 Ka6 13.Bc7 Ka7 14.Bc4</div>
+            </div>
+          </div>
+          <div class="fen-box">
+            <div class="fen-title">FEN · White to move</div>
+            <pre class="fen-code">8/k7/2K5/8/8/1B6/1B6/8 w - - 22 12</pre>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="lesson" id="corner">
+      <div class="lesson-head">
+        <span class="lesson-number">Part 5</span>
+        <h2 class="lesson-title">Confine the King to a7 and a8</h2>
+      </div>
+      <p class="lesson-intro">Once the Black king has only two squares, White must arrange the final checking pattern without stalemating.</p>
+
+      <article class="position">
+        <p class="position-label">Position 5 · After 14.Bc4 · Black to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="8/k1B5/2K5/8/2B5/8/8/8 b - - 27 14"></div>
+            <p class="caption">Only a7 and a8 remain available to the Black king.</p>
+          </div>
+          <div class="position-note">
+            <p>The dark-squared bishop moves to a useful checking distance, then the White king takes over b8.</p>
+            <div class="moveline">14...Ka8 15.Be5 Ka7 16.Kc7 Ka8</div>
+          </div>
+        </div>
+        <div class="fen-box">
+          <div class="fen-title">FEN · Black to move</div>
+          <pre class="fen-code">8/k1B5/2K5/8/2B5/8/8/8 b - - 27 14</pre>
+        </div>
+      </article>
+    </section>
+
+    <section class="lesson" id="waiting">
+      <div class="lesson-head">
+        <span class="lesson-number">Part 6</span>
+        <h2 class="lesson-title">Choose the Correct Waiting Move</h2>
+      </div>
+      <p class="lesson-intro">This is the critical moment. A correct waiting move preserves a legal square for Black and prepares the final check.</p>
+
+      <article class="position">
+        <p class="position-label">Position 6 · After 16...Ka8 · White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="k7/2K5/8/4B3/2B5/8/8/8 w - - 32 17"></div>
+            <p class="caption">White must pass the move without taking away every legal square.</p>
+          </div>
+          <div class="position-note">
+            <div class="rule-box">
+              <h3>Correct move</h3>
+              <p><strong>17.Bf4!</strong> keeps a7 available and prepares Be3+ after ...Ka7.</p>
+            </div>
+            <div class="correction-note">
+              <strong>Stalemate warning:</strong> 17.Bd4?? takes away every legal move while the Black king is not in check.
+              The result is stalemate.
+            </div>
+          </div>
+        </div>
+        <div class="moveline">17.Bf4! Ka7 18.Be3+ Ka8 19.Bd5#</div>
+        <div class="fen-box">
+          <div class="fen-title">FEN · White to move</div>
+          <pre class="fen-code">k7/2K5/8/4B3/2B5/8/8/8 w - - 32 17</pre>
+        </div>
+      </article>
+    </section>
+
+    <section class="lesson" id="mate">
+      <div class="lesson-head">
+        <span class="lesson-number">Part 7</span>
+        <h2 class="lesson-title">The Final Checkmate</h2>
+      </div>
+      <p class="lesson-intro">The bishops and king now cover every flight square around a8.</p>
+
+      <article class="position">
+        <p class="position-label">Position 7 · After 19.Bd5# · Checkmate</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="k7/2K5/8/3B4/8/4B3/8/8 b - - 37 19"></div>
+            <p class="caption">The bishop on d5 checks along the diagonal to a8 while the king and second bishop cover every escape.</p>
+          </div>
+          <div class="position-note">
+            <ul>
+              <li>The White king on c7 controls b8 and b7.</li>
+              <li>The bishop on e3 covers the remaining diagonal escape squares.</li>
+              <li>The bishop on d5 gives check to a8.</li>
+              <li>The Black king has no legal move.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="fen-box">
+          <div class="fen-title">Final FEN · Black is checkmated</div>
+          <pre class="fen-code">k7/2K5/8/3B4/8/4B3/8/8 b - - 37 19</pre>
+        </div>
+      </article>
+    </section>
+
+    <section class="checklist" id="review">
+      <h2>Two-Bishop Mate Checklist</h2>
+      <p>Use this sequence whenever you have two bishops and a king against a lone king:</p>
+      <ul>
+        <li><strong>Fence:</strong> Are the bishops controlling neighboring diagonals?</li>
+        <li><strong>Protect:</strong> Can the enemy king capture either bishop?</li>
+        <li><strong>Approach:</strong> Is my king moving closer without opening an escape route?</li>
+        <li><strong>Shrink:</strong> Which bishop move removes another rank, file, or diagonal of space?</li>
+        <li><strong>Corner:</strong> Can I force the king toward a corner safely?</li>
+        <li><strong>Verify:</strong> Does my waiting move avoid stalemate?</li>
+      </ul>
+    </section>
+
+    <section class="lesson">
+      <div class="lesson-head">
+        <span class="lesson-number">Review</span>
+        <h2 class="lesson-title">Check Your Understanding</h2>
+      </div>
+
+      <details class="quiz">
+        <summary>1. Why do the bishops work best on connected diagonals?</summary>
+        <p>They create a barrier the enemy king cannot cross, allowing White to shrink the king&rsquo;s territory gradually.</p>
+      </details>
+      <details class="quiz">
+        <summary>2. Why must the attacking king approach?</summary>
+        <p>The king controls close escape squares and supports the bishops in the final mating net.</p>
+      </details>
+      <details class="quiz">
+        <summary>3. What is the purpose of 12.Be5?</summary>
+        <p>It prevents the Black king from escaping through b8.</p>
+      </details>
+      <details class="quiz">
+        <summary>4. Why is 17.Bd4?? a draw?</summary>
+        <p>It leaves the Black king with no legal move while the king is not in check, so the position is stalemate.</p>
+      </details>
+      <details class="quiz">
+        <summary>5. What is the final mating move?</summary>
+        <p>19.Bd5#.</p>
+      </details>
+
+      <div class="lesson-nav-row no-print">
+        <a href="bishop-m3-lesson-01-endgame-mastery-checkmate.html">&larr; Module 3: Endgame Mastery</a>
+        <a href="bishop-index.html">Back to Bishop Index &rarr;</a>
+      </div>
+    </section>
+
+    <p class="source-note">
+      Converted from the source PDF titled <em>Coach Dinosaur Module 3-4: Intermediate Endgame — Two Bishops vs a Lone King</em>.
+      This course lists it as Bishop Level Module 4. The first source diagram reverses the king colors; the corrected legal position is used here.
+      Castling and en-passant FEN fields are set to &ldquo;-&rdquo; because those rights do not apply to this material.
+    </p>
+  </main>
+
+  <script>
+    const root = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const storedTheme = localStorage.getItem('chess-lesson-theme');
+    if (storedTheme === 'light' || storedTheme === 'dark') root.dataset.theme = storedTheme;
+    themeToggle?.addEventListener('click', () => {
+      root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('chess-lesson-theme', root.dataset.theme);
+    });
+  </script>
+  <script src="endgame-lesson.js?v=board-bg" defer></script>
+  <script src="pawn-teacher-board.js?v=20260710-teacher-lesson-csv1" defer></script>
+</body>
+</html>
