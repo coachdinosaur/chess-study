@@ -1,36 +1,21 @@
 /* ========================================================================== 
    endgame-lesson.js
-   Vanilla FEN -> board renderer for chess endgame lesson pages.
-   Reused by every chapter HTML in /lessons. No dependencies.
-
-   Usage in HTML:
-     <html data-piece-base="../assets/pieces/mpchess/" data-orientation="white">
-     ...
-     <div class="board" data-fen="6k1/8/8/8/8/8/P7/7K w - - 0 1"></div>
-
-   The script reads data-fen from each .board element and builds an 8x8 grid
-   mirroring the SPA's markup (.board-grid > .board-square.light/.dark +
-   .board-piece-shell > img.board-piece) so diagrams visually match the app.
+   Vanilla FEN -> board renderer for chess lesson pages.
    ========================================================================== */
 
 (function () {
   "use strict";
 
-  /* Cache-buster for embedded app iframes. Bump this when the app (index.html /
-     app.js / styles.css) changes so browsers fetch fresh copies instead of
-     serving stale cached HTML inside lesson-page iframes. */
-  var EMBED_CACHE_BUSTER = "20260721-bishop-captured-half";
+  var EMBED_CACHE_BUSTER = "20260721-bishop-captured-layout-complete";
 
   var PIECE_FILES = {
     K: "wK.svg", Q: "wQ.svg", R: "wR.svg", B: "wB.svg", N: "wN.svg", P: "wP.svg",
     k: "bK.svg", q: "bQ.svg", r: "bR.svg", b: "bB.svg", n: "bN.svg", p: "bP.svg"
   };
-
   var FILES = ["a", "b", "c", "d", "e", "f", "g", "h"];
 
   function resolvePieceBase() {
-    var html = document.documentElement;
-    var base = html.getAttribute("data-piece-base");
+    var base = document.documentElement.getAttribute("data-piece-base");
     if (!base) return "../assets/pieces/mpchess/";
     return base.endsWith("/") ? base : base + "/";
   }
@@ -40,130 +25,146 @@
     if (!placement || !/^[KQRBNPkqrbnp1-8\/]+$/.test(placement)) return null;
     var ranks = placement.split("/");
     if (ranks.length !== 8) return null;
+
     var grid = [];
     for (var r = 0; r < 8; r++) {
       var row = [];
-      var empty = 0;
       for (var c = 0; c < ranks[r].length; c++) {
         var ch = ranks[r][c];
         if (/[1-8]/.test(ch)) {
-          empty += parseInt(ch, 10);
+          for (var n = 0; n < parseInt(ch, 10); n++) row.push("");
         } else if (PIECE_FILES[ch]) {
-          for (var k = 0; k < empty; k++) row.push("");
-          empty = 0;
           row.push(ch);
         } else {
           return null;
         }
       }
-      for (var m = 0; m < empty; m++) row.push("");
       if (row.length !== 8) return null;
       grid.push(row);
     }
     return grid;
   }
 
+  function parseMarks(value) {
+    if (!value) return null;
+    var set = new Set();
+    String(value).trim().split(/\s+/).forEach(function (square) {
+      if (/^[a-h][1-8]$/.test(square)) set.add(square);
+    });
+    return set.size ? set : null;
+  }
+
   function buildSquare(row, col, piece, base, showFile, showRank, isLight, markSet) {
     var square = FILES[col] + (8 - row);
     var cls = "board-square " + (isLight ? "light" : "dark");
     var marked = markSet && markSet.has(square);
-    if (marked) { cls += " is-marked"; }
+    if (marked) cls += " is-marked";
+
     var html = '<div class="' + cls + '" data-square="' + square + '">';
-    if (marked) {
-      html += '<span class="board-mark" aria-hidden="true"></span>';
-    }
+    if (marked) html += '<span class="board-mark" aria-hidden="true"></span>';
     if (showRank) {
-      html += '<span class="coord-rank ' + (isLight ? "coord-light" : "coord-dark") + '">' +
-              (8 - row) + '</span>';
+      html += '<span class="coord-rank ' + (isLight ? "coord-light" : "coord-dark") + '">' + (8 - row) + "</span>";
     }
     if (showFile) {
-      html += '<span class="coord-file ' + (isLight ? "coord-light" : "coord-dark") + '">' +
-              FILES[col] + '</span>';
+      html += '<span class="coord-file ' + (isLight ? "coord-light" : "coord-dark") + '">' + FILES[col] + "</span>";
     }
     if (piece) {
-      html += '<div class="board-piece-shell">' +
-              '<img class="board-piece" src="' + base + PIECE_FILES[piece] + '" alt="' +
-              piece + '" loading="lazy">' +
-              '</div>';
+      html += '<div class="board-piece-shell"><img class="board-piece" src="' + base + PIECE_FILES[piece] + '" alt="' + piece + '" loading="lazy"></div>';
     }
-    html += '</div>';
-    return html;
+    return html + "</div>";
   }
 
   function buildStaticGrid(grid, base, orientation, markSet) {
     var html = '<div class="board-grid">';
     for (var displayRow = 0; displayRow < 8; displayRow++) {
       for (var displayCol = 0; displayCol < 8; displayCol++) {
-        var row, col;
-        if (orientation === "black") {
-          row = displayRow;
-          col = 7 - displayCol;
-        } else {
-          row = 7 - displayRow;
-          col = displayCol;
-        }
-        var piece = grid[row][col];
-        var isLight = (row + col) % 2 === 0;
-        var showRank = displayCol === 0;
-        var showFile = displayRow === 7;
-        html += buildSquare(row, col, piece, base, showFile, showRank, isLight, markSet);
+        var row = orientation === "black" ? displayRow : 7 - displayRow;
+        var col = orientation === "black" ? 7 - displayCol : displayCol;
+        html += buildSquare(
+          row,
+          col,
+          grid[row][col],
+          base,
+          displayRow === 7,
+          displayCol === 0,
+          (row + col) % 2 === 0,
+          markSet
+        );
       }
     }
-    html += '</div>';
-    return html;
-  }
-
-  function parseMarks(value) {
-    if (!value) { return null; }
-    var parts = String(value).trim().split(/\s+/);
-    var set = new Set();
-    for (var i = 0; i < parts.length; i++) {
-      if (/^[a-h][1-8]$/.test(parts[i])) {
-        set.add(parts[i]);
-      }
-    }
-    return set.size ? set : null;
+    return html + "</div>";
   }
 
   function appPath() {
-    var html = document.documentElement;
-    var p = html.getAttribute("data-app-path");
-    if (!p) return "../index.html";
-    return p;
+    return document.documentElement.getAttribute("data-app-path") || "../index.html";
   }
 
-  function isBishopModuleWithCompactCapturedPieces() {
-    return /\/bishop-m(?:[2-9]|10)-lesson-[^/]+\.html$/i.test(window.location.pathname);
+  function isCompactBishopLesson() {
+    return /\/bishop-m(?:10|[2-9])-lesson-[^/]+\.html$/i.test(window.location.pathname);
   }
 
-  function applyCompactCapturedPieceScale(iframe) {
-    if (!isBishopModuleWithCompactCapturedPieces()) return;
+  function applyCompactCapturedPieceLayout(iframe) {
+    if (!isCompactBishopLesson()) return;
 
     try {
-      var iframeDocument = iframe.contentDocument;
-      if (!iframeDocument || !iframeDocument.head || iframeDocument.querySelector("style[data-bishop-captured-scale]")) {
-        return;
-      }
+      var doc = iframe.contentDocument;
+      if (!doc || !doc.head || doc.querySelector("style[data-bishop-captured-layout]")) return;
 
-      var capturedScaleStyle = iframeDocument.createElement("style");
-      capturedScaleStyle.setAttribute("data-bishop-captured-scale", "0.5");
-      capturedScaleStyle.textContent = [
+      var style = doc.createElement("style");
+      style.setAttribute("data-bishop-captured-layout", "complete");
+      style.textContent = [
         ":root {",
-        "  --captured-cell-min: 0.65rem;",
-        "  --captured-cell-divisor: 24;",
-        "  --captured-cell-max: 0.925rem;",
-        "  --captured-row-extra-height: 0.35rem;",
-        "  --captured-count-extra-width: 0.6rem;",
+        "  --captured-cell-min: 0.65rem !important;",
+        "  --captured-cell-divisor: 24 !important;",
+        "  --captured-cell-max: 0.925rem !important;",
+        "  --captured-row-extra-height: 0.35rem !important;",
+        "  --captured-count-extra-width: 0.6rem !important;",
         "}",
-        ".captured-pieces { gap: 0.09rem; }"
+        ".board-column {",
+        "  --captured-row-gap: clamp(0.12rem, calc(var(--board-size, 42rem) / 280), 0.2rem) !important;",
+        "}",
+        ".captured-row {",
+        "  padding: 0.12rem 0.25rem !important;",
+        "}",
+        ".captured-pieces {",
+        "  width: 100% !important;",
+        "  min-width: 0 !important;",
+        "  max-width: 100% !important;",
+        "  gap: 0.09rem !important;",
+        "}",
+        ".captured-piece-shell {",
+        "  border-radius: 0.11rem !important;",
+        "}",
+        ".captured-piece-shell.has-count {",
+        "  min-width: calc(var(--captured-cell-size) + 0.6rem) !important;",
+        "  padding: 0 0.04rem 0 0.02rem !important;",
+        "  gap: 0.03rem !important;",
+        "}",
+        ".captured-piece-placeholder,",
+        ".captured-piece {",
+        "  width: 92% !important;",
+        "  height: 92% !important;",
+        "}",
+        ".captured-piece-shell.has-count .captured-piece {",
+        "  flex-basis: var(--captured-cell-size) !important;",
+        "  width: var(--captured-cell-size) !important;",
+        "  height: 92% !important;",
+        "}",
+        ".captured-piece-count {",
+        "  min-width: 0.6rem !important;",
+        "  height: 0.48rem !important;",
+        "  padding: 0 0.09rem !important;",
+        "  font-size: 0.42rem !important;",
+        "  box-shadow: none !important;",
+        "}"
       ].join("\n");
-      iframeDocument.head.appendChild(capturedScaleStyle);
-    } catch (e) {}
+      doc.head.appendChild(style);
+    } catch (e) {
+      /* Same-origin lesson embeds are expected; retain the normal board if access fails. */
+    }
   }
 
   function buildIframe(fen, orientation, marks) {
-    /* Cache-bust: append a version hash so browsers always fetch the latest
-       app HTML instead of serving a stale cached version inside iframes. */
     var src = appPath() + "?fen=" + encodeURIComponent(fen) + "&embed=1&_b=" + EMBED_CACHE_BUSTER;
     var iframe = document.createElement("iframe");
     iframe.className = "board-iframe";
@@ -173,18 +174,13 @@
     iframe.setAttribute("scrolling", "no");
     iframe.setAttribute("frameborder", "0");
     iframe.dataset.orientation = orientation;
+
     var markList = marks ? Array.from(marks) : [];
     iframe.addEventListener("load", function () {
       try {
-        iframe.contentWindow.postMessage({
-          type: "setOrientation",
-          orientation: orientation
-        }, "*");
+        iframe.contentWindow.postMessage({ type: "setOrientation", orientation: orientation }, "*");
         if (markList.length) {
-          iframe.contentWindow.postMessage({
-            type: "setAnnotations",
-            mark: markList
-          }, "*");
+          iframe.contentWindow.postMessage({ type: "setAnnotations", mark: markList }, "*");
         }
       } catch (e) {}
     });
@@ -198,7 +194,7 @@
     var iframe = buildIframe(fen, orientation, markSet);
     iframe.style.visibility = "hidden";
     iframe.addEventListener("load", function () {
-      applyCompactCapturedPieceScale(iframe);
+      applyCompactCapturedPieceLayout(iframe);
       screen.removeAttribute("role");
       screen.removeAttribute("aria-label");
       print.style.display = "none";
@@ -209,30 +205,29 @@
 
   function renderBoard(el, base) {
     var fen = el.getAttribute("data-fen") || "";
-    var orientation = (el.getAttribute("data-orientation") ||
-                       document.documentElement.getAttribute("data-orientation") ||
-                       "white").toLowerCase() === "black" ? "black" : "white";
+    var orientation = (
+      el.getAttribute("data-orientation") ||
+      document.documentElement.getAttribute("data-orientation") ||
+      "white"
+    ).toLowerCase() === "black" ? "black" : "white";
     var markSet = parseMarks(el.getAttribute("data-mark"));
 
     el.innerHTML = "";
-
-    /* FEN missing placeholder */
     if (!fen || fen.toLowerCase() === "missing") {
       var missing = document.createElement("div");
       missing.className = "fen-missing";
       missing.textContent = "FEN missing — rebuild from source diagram.";
       el.appendChild(missing);
-      return;
+      return null;
     }
 
     var grid = parseFenPlacement(fen);
-
     if (!grid) {
-      var err = document.createElement("div");
-      err.className = "board-static board-error";
-      err.textContent = "Invalid FEN: " + fen;
-      el.appendChild(err);
-      return;
+      var error = document.createElement("div");
+      error.className = "board-static board-error";
+      error.textContent = "Invalid FEN: " + fen;
+      el.appendChild(error);
+      return null;
     }
 
     var print = document.createElement("div");
@@ -254,45 +249,38 @@
     };
   }
 
-  function initInteractiveBoards(boardInitializers) {
-    if (!boardInitializers.length) return;
-
+  function initInteractiveBoards(items) {
+    if (!items.length) return;
     if (!("IntersectionObserver" in window)) {
-      for (var i = 0; i < boardInitializers.length; i++) {
-        boardInitializers[i].initialize();
-      }
+      items.forEach(function (item) { item.initialize(); });
       return;
     }
 
     var initializers = new WeakMap();
     var observer = new IntersectionObserver(function (entries) {
-      for (var i = 0; i < entries.length; i++) {
-        if (entries[i].isIntersecting) {
-          var board = entries[i].target;
-          initializers.get(board)();
-          initializers.delete(board);
-          observer.unobserve(board);
-        }
-      }
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        var initialize = initializers.get(entry.target);
+        if (initialize) initialize();
+        initializers.delete(entry.target);
+        observer.unobserve(entry.target);
+      });
     }, { rootMargin: "500px 0px" });
 
-    for (var j = 0; j < boardInitializers.length; j++) {
-      initializers.set(boardInitializers[j].el, boardInitializers[j].initialize);
-      observer.observe(boardInitializers[j].el);
-    }
+    items.forEach(function (item) {
+      initializers.set(item.el, item.initialize);
+      observer.observe(item.el);
+    });
   }
 
   function init() {
     var base = resolvePieceBase();
-    var boards = document.querySelectorAll(".board[data-fen]");
-    var boardInitializers = [];
-    for (var i = 0; i < boards.length; i++) {
-      var initialize = renderBoard(boards[i], base);
-      if (initialize) {
-        boardInitializers.push({ el: boards[i], initialize: initialize });
-      }
-    }
-    initInteractiveBoards(boardInitializers);
+    var items = [];
+    document.querySelectorAll(".board[data-fen]").forEach(function (board) {
+      var initialize = renderBoard(board, base);
+      if (initialize) items.push({ el: board, initialize: initialize });
+    });
+    initInteractiveBoards(items);
   }
 
   if (document.readyState === "loading") {
@@ -302,9 +290,7 @@
   }
 })();
 
-/* ========================================================================== 
-   Image lightbox — opens .lesson-zoomable images in a same-page overlay.
-   ========================================================================== */
+/* Image lightbox for .lesson-zoomable images. */
 (function () {
   "use strict";
 
@@ -315,49 +301,48 @@
     overlay.setAttribute("aria-modal", "true");
     overlay.setAttribute("aria-label", "Enlarged lesson image");
 
-    var closeBtn = document.createElement("button");
-    closeBtn.className = "lesson-lightbox__close";
-    closeBtn.setAttribute("aria-label", "Close enlarged image");
-    closeBtn.textContent = "\u00d7";
+    var closeButton = document.createElement("button");
+    closeButton.className = "lesson-lightbox__close";
+    closeButton.setAttribute("aria-label", "Close enlarged image");
+    closeButton.textContent = "\u00d7";
 
     var enlarged = document.createElement("img");
     enlarged.className = "lesson-lightbox__image";
     enlarged.src = img.src;
     enlarged.alt = img.alt || "";
 
-    overlay.appendChild(closeBtn);
+    overlay.appendChild(closeButton);
     overlay.appendChild(enlarged);
     document.body.appendChild(overlay);
 
     function close() {
       overlay.remove();
+      document.removeEventListener("keydown", onKeyDown);
+    }
+    function onKeyDown(event) {
+      if (event.key === "Escape") close();
     }
 
-    closeBtn.addEventListener("click", close);
-    overlay.addEventListener("click", function (e) {
-      if (e.target === overlay) close();
+    closeButton.addEventListener("click", close);
+    overlay.addEventListener("click", function (event) {
+      if (event.target === overlay) close();
     });
-
-    function escHandler(e) {
-      if (e.key === "Escape") {
-        close();
-        document.removeEventListener("keydown", escHandler);
-      }
-    }
-    document.addEventListener("keydown", escHandler);
-
-    closeBtn.focus();
+    document.addEventListener("keydown", onKeyDown);
+    closeButton.focus();
   }
 
   function init() {
-    var imgs = document.querySelectorAll(".lesson-zoomable");
-    for (var i = 0; i < imgs.length; i++) {
-      imgs[i].addEventListener("click", function () {
-        openLightbox(this);
+    document.querySelectorAll(".lesson-zoomable").forEach(function (img) {
+      img.addEventListener("click", function () { openLightbox(img); });
+      img.addEventListener("keydown", function (event) {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openLightbox(img);
+        }
       });
-      imgs[i].setAttribute("tabindex", "0");
-      imgs[i].setAttribute("role", "button");
-    }
+      img.setAttribute("tabindex", "0");
+      img.setAttribute("role", "button");
+    });
   }
 
   if (document.readyState === "loading") {
