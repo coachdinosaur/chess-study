@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-piece-base="../assets/pieces/mpchess/" data-app-path="../index.html" data-orientation="white">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>First Thinking Principle: Capture — Bishop Level Module 6</title>
+  <meta name="description" content="Bishop Level Module 6 lesson on the Capture thinking principle: protecting material, evaluating exchanges, eliminating bad candidates, and calculating tactical consequences.">
+  <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
+  <link rel="apple-touch-icon" href="../assets/pieces/app_icon.png">
+  <link rel="stylesheet" href="endgame-lesson.css?v=board-bg">
+  <link rel="stylesheet" href="pawn-teacher-board.css?v=20260710-teacher-lesson-csv1">
+  <style>
+    .module-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 520px);
+      gap: clamp(20px, 4vw, 46px);
+      align-items: center;
+    }
+    .hero-board-card {
+      margin: 0;
+      padding: clamp(14px, 2vw, 22px);
+      border: 1px solid var(--panel-border);
+      border-radius: 20px;
+      background: var(--panel-bg);
+      box-shadow: 0 22px 60px rgba(0,0,0,.22);
+    }
+    .hero-board-card .board { max-width: 520px; margin: 0 auto; }
+    .hero-board-card figcaption {
+      margin-top: 10px;
+      color: var(--ink-soft);
+      font-size: .92rem;
+      text-align: center;
+    }
+    .module-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 28px;
+      padding: 12px;
+      border: 1px solid var(--hairline);
+      border-radius: 12px;
+      background: var(--panel-bg);
+    }
+    .module-nav a {
+      color: var(--btn-ink);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: .92rem;
+      padding: 8px 11px;
+      border-radius: 999px;
+    }
+    .module-nav a:hover { background: var(--btn-hover); }
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin: 0 0 24px;
+    }
+    .method-card {
+      border: 1px solid var(--panel-border);
+      border-radius: 10px;
+      padding: 14px;
+      background: var(--panel-bg);
+      min-height: 132px;
+    }
+    .method-card strong {
+      display: block;
+      color: var(--accent);
+      font-family: var(--font-display);
+      margin-bottom: 6px;
+    }
+    .method-card span { color: var(--ink-soft); font-size: .93rem; }
+    .fen-box {
+      margin-top: 12px;
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--panel-bg);
+    }
+    .fen-title {
+      padding: 9px 12px;
+      font-weight: 800;
+      color: var(--accent);
+      border-bottom: 1px solid var(--panel-border);
+      font-size: .9rem;
+    }
+    .fen-code {
+      margin: 0;
+      padding: 12px;
+      overflow-x: auto;
+      color: var(--ink);
+      font: 600 .84rem/1.55 var(--font-mono);
+      white-space: pre;
+    }
+    .correction-note {
+      border-left: 4px solid var(--danger);
+      background: color-mix(in srgb, var(--danger) 10%, var(--panel-bg));
+      border-radius: 6px;
+      padding: 12px 14px;
+      margin: 12px 0 18px;
+      color: var(--ink-soft);
+    }
+    .definition-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin: 14px 0 24px;
+    }
+    .definition-card {
+      border: 1px solid var(--panel-border);
+      border-radius: 10px;
+      background: var(--panel-bg);
+      padding: 14px;
+    }
+    .definition-card strong { display: block; color: var(--accent); margin-bottom: 5px; }
+    details.quiz {
+      border: 1px solid var(--panel-border);
+      background: var(--panel-bg);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-top: 10px;
+    }
+    details.quiz summary { cursor: pointer; font-weight: 800; }
+    details.quiz p { color: var(--ink-soft); margin-bottom: 0; }
+    .lesson-nav-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+    .lesson-nav-row a {
+      color: var(--btn-ink);
+      background: var(--btn-bg);
+      border: 1px solid var(--rule-border);
+      border-radius: 999px;
+      padding: 9px 14px;
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .source-note {
+      margin-top: 32px;
+      color: var(--ink-faint);
+      font-size: .9rem;
+    }
+    @media (max-width: 1100px) {
+      .method-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 980px) {
+      .module-hero { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 620px) {
+      .method-grid, .definition-grid, .position-body { grid-template-columns: 1fr; }
+      .lesson-nav-row a { width: 100%; text-align: center; }
+    }
+    @media print {
+      .no-print, .module-nav { display: none !important; }
+      .hero-board-card, .method-card, details.quiz, .fen-box, .definition-card { box-shadow: none; break-inside: avoid; }
+      .module-hero { display: block; }
+      .lesson + .lesson { break-before: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header class="index-header no-print">
+    <div class="index-header-inner">
+      <div class="index-brand">
+        <div class="index-brand-icon" aria-hidden="true">♞</div>
+        <div>
+          <div class="index-brand-label">Bishop Level · Module 6</div>
+          <div class="index-brand-title">First Thinking Principle: Capture</div>
+        </div>
+      </div>
+      <div class="index-top-actions">
+        <a class="toolbar-link" href="bishop-index.html">&larr; Bishop Index</a>
+        <button class="toolbar-link" type="button" id="themeToggle">Toggle theme</button>
+        <button class="toolbar-link" type="button" onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="lesson-page">
+    <section class="hero module-hero" id="top">
+      <div>
+        <p class="eyebrow">Coach Dinosaur Chess Course</p>
+        <h1 class="chapter-title">First Thinking Principle: Capture</h1>
+        <p class="chapter-subtitle">
+          Begin every serious calculation by checking how to avoid losing material, how to gain material,
+          and what happens after the full sequence of captures and recaptures.
+        </p>
+      </div>
+      <figure class="hero-board-card">
+        <div class="board" data-fen="r5k1/pp1b1ppp/3q4/3p1n2/8/2PB1N2/PPQ2PPP/4R1K1 b - - 0 1"></div>
+        <figcaption>Black to move. The knight on f5 is under pressure and every defensive candidate must be calculated.</figcaption>
+      </figure>
+    </section>
+
+    <nav class="module-nav no-print" aria-label="Module contents">
+      <a href="#meaning">1. Two Meanings</a>
+      <a href="#first-example">2. Avoid Losing Material</a>
+      <a href="#candidates">3. Compare Candidates</a>
+      <a href="#second-example">4. Calculate Captures</a>
+      <a href="#eliminate">5. Eliminate Choices</a>
+      <a href="#review">Review</a>
+    </nav>
+
+    <section class="method-grid" aria-label="Capture thinking method">
+      <article class="method-card"><strong>Scan Attacks</strong><span>Identify every attacked, loose, or insufficiently defended piece.</span></article>
+      <article class="method-card"><strong>Count Material</strong><span>Compare what is gained and lost after all captures and recaptures.</span></article>
+      <article class="method-card"><strong>Find Tactics</strong><span>Check for discovered attacks, checks, pins, forks, and passed-pawn resources.</span></article>
+      <article class="method-card"><strong>Reject Bad Moves</strong><span>Remove candidates that lose material before spending time on deeper analysis.</span></article>
+      <article class="method-card"><strong>Calculate to Rest</strong><span>Stop only when the forcing exchange sequence has settled into a position you can evaluate.</span></article>
+    </section>
+
+    <section class="lesson" id="meaning">
+      <div class="lesson-head">
+        <span class="lesson-number">Part 1</span>
+        <h2 class="lesson-title">Two Meanings of Capture</h2>
+      </div>
+      <p class="lesson-intro">
+        Coach Dinosaur uses the word <em>capture</em> both for an ordinary move and for the first thinking principle.
+        The capitalization may be subtle. The material consequences are rather less subtle.
+      </p>
+
+      <div class="definition-grid">
+        <article class="definition-card">
+          <strong>Ordinary capture</strong>
+          A move such as <code>Nxd3</code>, where the knight removes the enemy piece on d3 and occupies that square.
+        </article>
+        <article class="definition-card">
+          <strong>Capture thinking principle</strong>
+          First ask how to avoid losing material and how to gain material in the current position.
+        </article>
+      </div>
+
+      <div class="rule-box">
+        <h3>The principle starts the analysis</h3>
+        <p>It narrows the candidate moves, but it does not replace calculation. Every exchange still has to be followed to its final material and tactical result.</p>
+      </div>
+    </section>
+
+    <section class="lesson" id="first-example">
+      <div class="lesson-head">
+        <span class="lesson-number">Part 2</span>
+        <h2 class="lesson-title">Avoid Losing Material</h2>
+      </div>
+      <p class="lesson-intro">
+        Black must deal with the pressure on the knight on f5. Moving the knight, defending it, or exchanging pieces all deserve consideration.
+      </p>
+
+      <article class="position">
+        <p class="position-label">Position 1 · Black to move · PDF page 4</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="r5k1/pp1b1ppp/3q4/3p1n2/8/2PB1N2/PPQ2PPP/4R1K1 b - - 0 1"></div>
+            <p class="caption">The bishop on d3 attacks f5. The queen on c2 stands behind it, while the bishop on d7 protects the knight.</p>
+          </div>
+          <div class="position-note">
+            <p>
+              The bishop directly attacks the knight. The queen forms a battery behind the bishop and may recapture on f5 after the bishop exchanges.
+              If the knight simply leaves, White may also gain the h7-pawn with Bxh7+.
+            </p>
+            <div class="rule-box">
+              <h3>Candidate-move question</h3>
+              <p>Which defense preserves the most material after the entire exchange sequence?</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="fen-box">
+          <div class="fen-title">FEN · Black to move</div>
+          <pre class="fen-code">r5k1/pp1b1ppp/3q4/3p1n2/8/2PB1N2/PPQ2PPP/4R1K1 b - - 0 1</pre>
+        </div>
+      </article>
+    </section>
+
+    <section class="lesson" id="candidates">
+      <div class="lesson-head">
+        <span class="lesson-number">Part 3</span>
+        <h2 class="lesson-title">Compare the Defensive Candidates</h2>
+      </div>
+      <p class="lesson-intro">
+        A move that appears to solve the first problem may still lose material several moves later.
+      </p>
+
+      <p><strong>Candidate A: add protection with 1...Qf6</strong></p>
+      <div class="moveline">1...Qf6 2.Bxf5 Bxf5 3.Qb3 Qc6 4.Nd4 Qd7 5.Nxf5 Qxf5 6.Qxd5</div>
+      <div class="correction-note">
+        <strong>Source corrections:</strong> the PDF says that 1...Qf6 supports a pawn, but it actually adds protection to the knight on f5.
+        It also prints 6.Qxd7, which is illegal from b3. The coherent legal move is 6.Qxd5.
+      </div>
+      <p>Black saves the knight initially but eventually loses the d5-pawn.</p>
+
+      <p><strong>Candidate B: 1...g6</strong></p>
+      <div class="moveline">1...g6 2.Qd2 Qf6 3.Ne5 Qd6 4.Nxd7 Qxd7 5.g3</div>
+      <p>This line produces the better material outcome. The lesson is not that 1...g6 is visible by magic. It becomes the leading candidate after the inferior line is calculated and rejected.</p>
+
+      <div class="recap">
+        <h3>Calculation rule</h3>
+        <p>Do not stop when the attacked piece is saved. Continue through the exchanges until the material balance and resulting position can be evaluated.</p>
+      </div>
+    </section>
+
+    <section class="lesson" id="second-example">
+      <div class="lesson-head">
+        <span class="lesson-number">Part 4</span>
+        <h2 class="lesson-title">Calculate Before Taking the Queen</h2>
+      </div>
+      <p class="lesson-intro">
+        The Black queen on c2 looks available, but the move order determines whether White gains material or walks into a forcing discovered check.
+      </p>
+
+      <article class="position">
+        <p class="position-label">Position 2 · White to move · PDF page 6</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="2rr2k1/5p2/pb2p1pp/1p2P3/3p1P2/P2B1R1P/1Pq1Q1P1/R5K1 w - - 0 1"></div>
+            <p class="caption">The pawn on d4 can move with check by opening the bishop&rsquo;s diagonal from b6 to g1.</p>
+          </div>
+          <div class="position-note">
+            <p>The tempting bishop capture allows Black to activate the d-pawn with tempo. White should exchange queens first and only then recapture with the bishop.</p>
+            <div class="rule-box">
+              <h3>Move-order warning</h3>
+              <p>Two captures that seem equivalent may produce completely different tactical positions.</p>
+            </div>
+          </div>
+        </div>
+
+        <p><strong>The losing choice:</strong></p>
+        <div class="moveline">1.Bxc2? d3+ 2.Qf2 Bxf2+ 3.Rxf2 Rxc2 4.Rd1</div>
+
+        <p><strong>The better choice:</strong></p>
+        <div class="moveline">1.Qxc2 Rxc2 2.Bxc2 d3+ 3.Kf1 dxc2 4.Ke2</div>
+
+        <div class="fen-box">
+          <div class="fen-title">FEN · White to move</div>
+          <pre class="fen-code">2rr2k1/5p2/pb2p1pp/1p2P3/3p1P2/P2B1R1P/1Pq1Q1P1/R5K1 w - - 0 1</pre>
+        </div>
+      </article>
+    </section>
+
+    <section class="lesson" id="eliminate">
+      <div class="lesson-head">
+        <span class="lesson-number">Part 5</span>
+        <h2 class="lesson-title">Eliminate Choices and Evaluate the Result</h2>
+      </div>
+      <p class="lesson-intro">
+        Thinking principles reduce the number of moves that deserve full analysis. They do not excuse the player from calculating three, five, or sometimes more moves.
+      </p>
+
+      <article class="position">
+        <p class="position-label">Position 3 · After 4.Ke2 · Black to move · PDF page 7</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="3r2k1/5p2/pb2p1pp/1p2P3/5P2/P4R1P/1Pp1K1P1/R7 b - - 1 4"></div>
+            <p class="caption">White has chosen the better exchange sequence. The c2-pawn is advanced, but it is not an immediate promotion threat.</p>
+          </div>
+          <div class="position-note">
+            <p>White has gained a small material advantage and has enough activity to contain the passed pawn. The tactical resource ...d3+ was unavoidable, but the correct move order limited its effect.</p>
+            <div class="rule-box">
+              <h3>Final-position test</h3>
+              <p>Evaluate the material, passed pawns, king safety, and activity only after the forcing sequence is complete.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="fen-box">
+          <div class="fen-title">FEN · Black to move</div>
+          <pre class="fen-code">3r2k1/5p2/pb2p1pp/1p2P3/5P2/P4R1P/1Pp1K1P1/R7 b - - 1 4</pre>
+        </div>
+      </article>
+
+      <div class="recap">
+        <h3>What the first principle requires</h3>
+        <ul>
+          <li>Count attackers and defenders accurately.</li>
+          <li>Know approximate material values.</li>
+          <li>Recognize tactical ideas such as discovered checks.</li>
+          <li>Visualize exchanges several moves ahead.</li>
+          <li>Reject losing candidates and compare the survivors.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="checklist" id="review">
+      <h2>Capture Principle Checklist</h2>
+      <p>Use this material scan before committing to an important move:</p>
+      <ul>
+        <li><strong>Attacks:</strong> Which pieces are attacked, loose, or overloaded?</li>
+        <li><strong>Defenses:</strong> Can the attacked piece move, gain protection, or exchange favorably?</li>
+        <li><strong>Captures:</strong> What captures and recaptures are available to both sides?</li>
+        <li><strong>Tactics:</strong> Does the line contain a check, discovered attack, pin, fork, or passed-pawn idea?</li>
+        <li><strong>Material:</strong> What is the balance after the forcing line ends?</li>
+        <li><strong>Elimination:</strong> Which candidate moves can be rejected immediately?</li>
+      </ul>
+    </section>
+
+    <section class="lesson">
+      <div class="lesson-head">
+        <span class="lesson-number">Review</span>
+        <h2 class="lesson-title">Check Your Understanding</h2>
+      </div>
+
+      <details class="quiz">
+        <summary>1. What are the two meanings of capture in this module?</summary>
+        <p>An ordinary capture removes an enemy piece. The Capture thinking principle begins by checking how to avoid losing material and how to gain material.</p>
+      </details>
+      <details class="quiz">
+        <summary>2. Why is the queen on c2 relevant to the knight on f5?</summary>
+        <p>The queen stands behind the bishop on d3 and may recapture along the diagonal after the bishop exchanges on f5.</p>
+      </details>
+      <details class="quiz">
+        <summary>3. Why is the printed 6.Qxd7 illegal?</summary>
+        <p>The White queen is on b3 and cannot capture d7. The coherent legal correction is 6.Qxd5.</p>
+      </details>
+      <details class="quiz">
+        <summary>4. Why is 1.Bxc2? inaccurate in the second example?</summary>
+        <p>It permits 1...d3+, a discovered check that begins a forcing sequence and leaves White with the inferior material result.</p>
+      </details>
+      <details class="quiz">
+        <summary>5. Does the Capture principle replace calculation?</summary>
+        <p>No. It identifies material problems and removes bad candidates, but the remaining lines must still be calculated and evaluated.</p>
+      </details>
+
+      <div class="lesson-nav-row no-print">
+        <a href="bishop-m5-lesson-01-knight-and-bishop-vs-a-lone-king.html">&larr; Module 5: Knight and Bishop Mate</a>
+        <a href="bishop-index.html">Back to Bishop Index &rarr;</a>
+      </div>
+    </section>
+
+    <p class="source-note">
+      Converted from the source PDF titled <em>Coach Dinosaur Module 3-6: Thinking Principle Lesson — Capture</em>.
+      This course lists it as Bishop Level Module 6. The illegal printed move 6.Qxd7 was corrected to 6.Qxd5,
+      and static-diagram castling and en-passant fields are set to &ldquo;-&rdquo;.
+    </p>
+  </main>
+
+  <script>
+    const root = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const storedTheme = localStorage.getItem('chess-lesson-theme');
+    if (storedTheme === 'light' || storedTheme === 'dark') root.dataset.theme = storedTheme;
+    themeToggle?.addEventListener('click', () => {
+      root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('chess-lesson-theme', root.dataset.theme);
+    });
+  </script>
+  <script src="endgame-lesson.js?v=board-bg" defer></script>
+  <script src="pawn-teacher-board.js?v=20260710-teacher-lesson-csv1" defer></script>
+</body>
+</html>
