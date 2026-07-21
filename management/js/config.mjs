@@ -1,5 +1,5 @@
-export const SUPABASE_URL = 'https://YOUR_PROJECT_REF.supabase.co';
-export const SUPABASE_PUBLISHABLE_KEY = 'YOUR_SUPABASE_PUBLISHABLE_KEY';
+export const SUPABASE_URL = 'https://oxcottitwvayrrcuypmb.supabase.co';
+export const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_-0VdtXfcJH__vKlXrX5QIg_8QKXmf6z';
 
 export const MANAGEMENT_CONFIGURED =
   /^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(SUPABASE_URL)
