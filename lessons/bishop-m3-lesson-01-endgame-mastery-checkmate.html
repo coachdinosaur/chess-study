@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-piece-base="../assets/pieces/mpchess/" data-app-path="../index.html" data-orientation="white">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Endgame Mastery: Checkmate — Bishop Level Module 3</title>
+  <meta name="description" content="Bishop Level Module 3 lesson on fast king-and-rook and king-and-queen checkmates, forcing moves, efficient technique, and stalemate prevention.">
+  <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
+  <link rel="apple-touch-icon" href="../assets/pieces/app_icon.png">
+  <link rel="stylesheet" href="endgame-lesson.css?v=board-bg">
+  <link rel="stylesheet" href="pawn-teacher-board.css?v=20260710-teacher-lesson-csv1">
+  <style>
+    .module-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 520px);
+      gap: clamp(20px, 4vw, 46px);
+      align-items: center;
+    }
+    .hero-board-card {
+      margin: 0;
+      padding: clamp(14px, 2vw, 22px);
+      border: 1px solid var(--panel-border);
+      border-radius: 20px;
+      background: var(--panel-bg);
+      box-shadow: 0 22px 60px rgba(0,0,0,.22);
+    }
+    .hero-board-card .board { max-width: 520px; margin: 0 auto; }
+    .hero-board-card figcaption {
+      margin-top: 10px;
+      color: var(--ink-soft);
+      font-size: .92rem;
+      text-align: center;
+    }
+    .module-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 28px;
+      padding: 12px;
+      border: 1px solid var(--hairline);
+      border-radius: 12px;
+      background: var(--panel-bg);
+    }
+    .module-nav a {
+      color: var(--btn-ink);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: .92rem;
+      padding: 8px 11px;
+      border-radius: 999px;
+    }
+    .module-nav a:hover { background: var(--btn-hover); }
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin: 0 0 24px;
+    }
+    .method-card {
+      border: 1px solid var(--panel-border);
+      border-radius: 10px;
+      padding: 14px;
+      background: var(--panel-bg);
+      min-height: 118px;
+    }
+    .method-card strong {
+      display: block;
+      color: var(--accent);
+      font-family: var(--font-display);
+      margin-bottom: 6px;
+    }
+    .method-card span { color: var(--ink-soft); font-size: .93rem; }
+    .fen-box {
+      margin-top: 12px;
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--panel-bg);
+    }
+    .fen-title {
+      padding: 9px 12px;
+      font-weight: 800;
+      color: var(--accent);
+      border-bottom: 1px solid var(--panel-border);
+      font-size: .9rem;
+    }
+    .fen-code {
+      margin: 0;
+      padding: 12px;
+      overflow-x: auto;
+      color: var(--ink);
+      font: 600 .84rem/1.55 var(--font-mono);
+      white-space: pre;
+    }
+    .correction-note {
+      border-left: 4px solid var(--danger);
+      background: color-mix(in srgb, var(--danger) 10%, var(--panel-bg));
+      border-radius: 6px;
+      padding: 12px 14px;
+      margin: 12px 0 18px;
+      color: var(--ink-soft);
+    }
+    .exercise-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+    .exercise-grid .position { margin: 0; }
+    details.quiz {
+      border: 1px solid var(--panel-border);
+      background: var(--panel-bg);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-top: 10px;
+    }
+    details.quiz summary { cursor: pointer; font-weight: 800; }
+    details.quiz p { color: var(--ink-soft); margin-bottom: 0; }
+    .lesson-nav-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+    .lesson-nav-row a {
+      color: var(--btn-ink);
+      background: var(--btn-bg);
+      border: 1px solid var(--rule-border);
+      border-radius: 999px;
+      padding: 9px 14px;
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .source-note {
+      margin-top: 32px;
+      color: var(--ink-faint);
+      font-size: .9rem;
+    }
+    @media (max-width: 980px) {
+      .module-hero { grid-template-columns: 1fr; }
+      .method-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 720px) {
+      .exercise-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 620px) {
+      .method-grid { grid-template-columns: 1fr; }
+      .position-body { grid-template-columns: 1fr; }
+      .lesson-nav-row a { width: 100%; text-align: center; }
+    }
+    @media print {
+      .no-print, .module-nav { display: none !important; }
+      .hero-board-card, .method-card, details.quiz, .fen-box { box-shadow: none; break-inside: avoid; }
+      .module-hero { display: block; }
+      .lesson + .lesson { break-before: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header class="index-header no-print">
+    <div class="index-header-inner">
+      <div class="index-brand">
+        <div class="index-brand-icon" aria-hidden="true">♞</div>
+        <div>
+          <div class="index-brand-label">Bishop Level · Module 3</div>
+          <div class="index-brand-title">Endgame Mastery: Checkmate</div>
+        </div>
+      </div>
+      <div class="index-top-actions">
+        <a class="toolbar-link" href="bishop-index.html">&larr; Bishop Index</a>
+        <button class="toolbar-link" type="button" id="themeToggle">Toggle theme</button>
+        <button class="toolbar-link" type="button" onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="lesson-page">
+    <section class="hero module-hero" id="top">
+      <div>
+        <p class="eyebrow">Coach Dinosaur Chess Course</p>
+        <h1 class="chapter-title">Endgame Mastery: Checkmate</h1>
+        <p class="chapter-subtitle">
+          Finish winning positions efficiently with king-and-rook and king-and-queen checkmates,
+          forcing moves, correct king support, and careful stalemate prevention.
+        </p>
+      </div>
+      <figure class="hero-board-card">
+        <div class="board" data-fen="3k4/4R3/3K4/8/8/8/8/8 w - - 0 1"></div>
+        <figcaption>White to move. A forcing rook maneuver produces checkmate in three moves.</figcaption>
+      </figure>
+    </section>
+
+    <nav class="module-nav no-print" aria-label="Module contents">
+      <a href="#rook-mate">1. Fast Rook Mate</a>
+      <a href="#forcing-move">2. Forcing Move</a>
+      <a href="#queen-mate">3. Fast Queen Mate</a>
+      <a href="#general-method">4. General Method</a>
+      <a href="#practice">5. Practice</a>
+      <a href="#review">Review</a>
+    </nav>
+
+    <section class="method-grid" aria-label="Endgame checkmate method">
+      <article class="method-card"><strong>Restrict</strong><span>Use the rook or queen to reduce the enemy king&rsquo;s available space.</span></article>
+      <article class="method-card"><strong>Bring the King</strong><span>The attacking king must help control escape squares and protect the mating piece.</span></article>
+      <article class="method-card"><strong>Force Replies</strong><span>Prefer moves that leave the defender only one useful or legal response.</span></article>
+      <article class="method-card"><strong>Avoid Stalemate</strong><span>Before every quiet move, confirm that the enemy king still has a legal move unless it is in check.</span></article>
+    </section>
+
+    <section class="lesson" id="rook-mate">
+      <div class="lesson-head">
+        <span class="lesson-number">Part 1</span>
+        <h2 class="lesson-title">Fast King and Rook versus King Mate</h2>
+      </div>
+      <p class="lesson-intro">
+        A king and rook can always force checkmate against a lone king. The task is not merely to win,
+        but to finish efficiently without hanging the rook or accidentally producing stalemate.
+      </p>
+
+      <article class="position">
+        <p class="position-label">Position 1 · White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="3k4/4R3/3K4/8/8/8/8/8 w - - 0 1"></div>
+            <p class="caption">The kings are already close. White can use either the standard opposition method or a faster forcing method.</p>
+          </div>
+          <div class="position-note">
+            <p>
+              The familiar beginner method uses waiting moves and direct opposition until the rook can checkmate
+              along the edge. It works, but the source position also contains a much faster solution.
+            </p>
+            <div class="rule-box">
+              <h3>Rook-mate safety rule</h3>
+              <p>Keep the rook far enough from the enemy king that it cannot be captured. Let your king control the close escape squares.</p>
+            </div>
+          </div>
+        </div>
+
+        <p><strong>Longer opposition method:</strong></p>
+        <div class="moveline">1.Rh7 Ke8 2.Re7+ Kf8 3.Ke6 Kg8 4.Kf6 Kh8 5.Kg6 Kg8 6.Re8#</div>
+        <div class="correction-note">
+          <strong>Source correction:</strong> the PDF prints <strong>6.Ra8#</strong>, but the rook is on e7 and cannot move diagonally to a8.
+          The legal mating move is <strong>6.Re8#</strong>.
+        </div>
+
+        <div class="fen-box">
+          <div class="fen-title">FEN · White to move</div>
+          <pre class="fen-code">3k4/4R3/3K4/8/8/8/8/8 w - - 0 1</pre>
+        </div>
+      </article>
+    </section>
+
+    <section class="lesson" id="forcing-move">
+      <div class="lesson-head">
+        <span class="lesson-number">Part 2</span>
+        <h2 class="lesson-title">The Forcing Move</h2>
+      </div>
+      <p class="lesson-intro">
+        A forcing move sharply limits the opponent&rsquo;s replies. In the strongest form, it leaves only one legal move,
+        allowing you to gain time and guide the king directly into the mating net.
+      </p>
+
+      <article class="position">
+        <p class="position-label">The same rook position · White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="3k4/4R3/3K4/8/8/8/8/8 w - - 0 1"></div>
+            <p class="caption">Any rook move from e7 to e1, e2, e3, e4, or e5 forces the black king to c8.</p>
+          </div>
+          <div class="position-note">
+            <p>
+              White moves the rook down the e-file. The rook controls the eighth rank while the white king controls c7, d7, and e7.
+              Black therefore has only one legal reply: <strong>...Kc8</strong>.
+            </p>
+            <div class="rule-box">
+              <h3>Fast solution</h3>
+              <p>Force the king to c8, transfer the rook to the b-file, then mate on b8.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="moveline">1.Re1! Kc8 2.Rb1 Kd8 3.Rb8#</div>
+
+        <details class="quiz">
+          <summary>Why is 1.Re1 a forcing move?</summary>
+          <p>The rook controls the eighth rank and the white king controls the nearby squares, leaving Black only 1...Kc8.</p>
+        </details>
+      </article>
+    </section>
+
+    <section class="lesson" id="queen-mate">
+      <div class="lesson-head">
+        <span class="lesson-number">Part 3</span>
+        <h2 class="lesson-title">Fast King and Queen versus King Mate</h2>
+      </div>
+      <p class="lesson-intro">
+        A queen and king can force mate quickly. The efficient plan is to choose the nearest useful edge,
+        restrict the enemy king with the queen, bring your own king closer, and finish without stalemating.
+      </p>
+
+      <article class="position">
+        <p class="position-label">Position 2 · White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="8/8/8/8/8/4k3/8/3QK3 w - - 0 1"></div>
+            <p class="caption">The black king is on e3. The h-file is the efficient target edge in the source solution.</p>
+          </div>
+          <div class="position-note">
+            <p>
+              Pushing the king all the way toward the eighth rank would waste time. White instead uses the queen to guide the king
+              toward the h-file while the white king approaches to support the final mate.
+            </p>
+            <div class="rule-box">
+              <h3>Efficient sequence</h3>
+              <p>The queen restricts first. The king approaches second. The queen delivers mate only after the king controls the escape squares.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="moveline">1.Qd5 Kf4 2.Kf2 Kg4 3.Qe5 Kh4 4.Kf3 Kh3 5.Qg3#</div>
+
+        <div class="fen-box">
+          <div class="fen-title">FEN · White to move</div>
+          <pre class="fen-code">8/8/8/8/8/4k3/8/3QK3 w - - 0 1</pre>
+        </div>
+      </article>
+    </section>
+
+    <section class="lesson" id="general-method">
+      <div class="lesson-head">
+        <span class="lesson-number">Part 4</span>
+        <h2 class="lesson-title">The General Queen-Mate Method</h2>
+      </div>
+      <p class="lesson-intro">
+        Do not push the king toward an arbitrary edge. First identify which edge can be reached most efficiently from the current position.
+      </p>
+
+      <div class="recap">
+        <h3>Four-step method</h3>
+        <ol>
+          <li><strong>Choose an edge.</strong> Compare the king&rsquo;s distance from all four sides of the board.</li>
+          <li><strong>Shrink the box.</strong> Place the queen a knight&rsquo;s move away from the enemy king whenever practical, mirroring its movement while reducing space.</li>
+          <li><strong>Bring your king.</strong> Approach until your king controls the squares beside the enemy king.</li>
+          <li><strong>Check for stalemate.</strong> If the enemy king is not in check, it must still have at least one legal move.</li>
+        </ol>
+      </div>
+
+      <div class="rule-box">
+        <h3>Final-move test</h3>
+        <p>Before delivering mate, verify three things: the queen is protected, every escape square is covered, and the enemy king is actually in check.</p>
+      </div>
+    </section>
+
+    <section class="lesson" id="practice">
+      <div class="lesson-head">
+        <span class="lesson-number">Part 5</span>
+        <h2 class="lesson-title">Practice the King and Queen Mate</h2>
+      </div>
+      <p class="lesson-intro">
+        For each exercise, choose the best target edge, restrict the black king, bring the white king closer,
+        and finish without stalemate. The source provides the positions as independent practice tasks rather than fixed move sequences.
+      </p>
+
+      <div class="exercise-grid">
+        <article class="position">
+          <p class="position-label">Position 3 · White to move</p>
+          <div class="diagram">
+            <div class="board" data-fen="8/8/8/4k3/8/8/8/4K2Q w - - 0 1"></div>
+            <p class="caption">White king e1, white queen h1, black king e5.</p>
+          </div>
+          <div class="position-note">
+            <p><strong>Task:</strong> Identify the nearest practical edge and force mate efficiently.</p>
+            <p><strong>Hint:</strong> Use the queen to reduce space before marching the king forward.</p>
+          </div>
+          <div class="fen-box">
+            <div class="fen-title">FEN · White to move</div>
+            <pre class="fen-code">8/8/8/4k3/8/8/8/4K2Q w - - 0 1</pre>
+          </div>
+        </article>
+
+        <article class="position">
+          <p class="position-label">Position 4 · White to move</p>
+          <div class="diagram">
+            <div class="board" data-fen="Q7/8/8/4k3/8/8/8/4K3 w - - 0 1"></div>
+            <p class="caption">White king e1, white queen a8, black king e5.</p>
+          </div>
+          <div class="position-note">
+            <p><strong>Task:</strong> Convert the unusual queen placement into a controlled box and then bring the king closer.</p>
+            <p><strong>Hint:</strong> Do not give pointless checks. Quiet restricting moves are often faster.</p>
+          </div>
+          <div class="fen-box">
+            <div class="fen-title">FEN · White to move</div>
+            <pre class="fen-code">Q7/8/8/4k3/8/8/8/4K3 w - - 0 1</pre>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="checklist" id="review">
+      <h2>Endgame Checkmate Checklist</h2>
+      <p>Use this sequence whenever you have a rook or queen against a lone king:</p>
+      <ul>
+        <li><strong>Restrict:</strong> Which move cuts off the most useful squares?</li>
+        <li><strong>Protect:</strong> Can the enemy king attack or capture my rook or queen?</li>
+        <li><strong>Approach:</strong> How can my king get closer without releasing the enemy king?</li>
+        <li><strong>Force:</strong> Can I leave the opponent only one legal or useful reply?</li>
+        <li><strong>Verify:</strong> Is the final position checkmate rather than stalemate?</li>
+      </ul>
+    </section>
+
+    <section class="lesson">
+      <div class="lesson-head">
+        <span class="lesson-number">Review</span>
+        <h2 class="lesson-title">Check Your Understanding</h2>
+      </div>
+
+      <details class="quiz">
+        <summary>1. Why is the attacking king necessary in rook and queen mates?</summary>
+        <p>The king protects the mating piece and controls close escape squares that the rook or queen cannot safely cover alone.</p>
+      </details>
+      <details class="quiz">
+        <summary>2. What makes a move forcing?</summary>
+        <p>It sharply restricts the opponent&rsquo;s replies. The rook move 1.Re1 is especially forcing because Black has only one legal response.</p>
+      </details>
+      <details class="quiz">
+        <summary>3. Why should you choose the nearest practical edge in a queen mate?</summary>
+        <p>Driving the king toward a closer edge reduces the number of moves required and lowers the chance of careless errors.</p>
+      </details>
+      <details class="quiz">
+        <summary>4. What is the main stalemate warning?</summary>
+        <p>If the enemy king is not in check and has no legal move, the game is drawn. Always verify that a quiet restricting move leaves a legal reply.</p>
+      </details>
+
+      <div class="lesson-nav-row no-print">
+        <a href="bishop-m2-lesson-01-thinking-principles-of-chess.html">&larr; Module 2: Thinking Principles</a>
+        <a href="bishop-index.html">Back to Bishop Index &rarr;</a>
+      </div>
+    </section>
+
+    <p class="source-note">
+      Converted from the source PDF titled <em>Coach Dinosaur Module 3-3: Endgame Mastery - Checkmate</em>.
+      This course lists it as Bishop Level Module 3. Static diagrams do not prove castling or en-passant rights,
+      so those FEN fields are set to &ldquo;-&rdquo;.
+    </p>
+  </main>
+
+  <script>
+    const root = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const storedTheme = localStorage.getItem('chess-lesson-theme');
+    if (storedTheme === 'light' || storedTheme === 'dark') root.dataset.theme = storedTheme;
+    themeToggle?.addEventListener('click', () => {
+      root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('chess-lesson-theme', root.dataset.theme);
+    });
+  </script>
+  <script src="endgame-lesson.js?v=board-bg" defer></script>
+  <script src="pawn-teacher-board.js?v=20260710-teacher-lesson-csv1" defer></script>
+</body>
+</html>
