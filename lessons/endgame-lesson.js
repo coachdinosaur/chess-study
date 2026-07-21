@@ -1,4 +1,4 @@
-/* ==========================================================================
+/* ========================================================================== 
    endgame-lesson.js
    Vanilla FEN -> board renderer for chess endgame lesson pages.
    Reused by every chapter HTML in /lessons. No dependencies.
@@ -19,7 +19,7 @@
   /* Cache-buster for embedded app iframes. Bump this when the app (index.html /
      app.js / styles.css) changes so browsers fetch fresh copies instead of
      serving stale cached HTML inside lesson-page iframes. */
-  var EMBED_CACHE_BUSTER = "20260709-board-bg2";
+  var EMBED_CACHE_BUSTER = "20260721-bishop-captured-half";
 
   var PIECE_FILES = {
     K: "wK.svg", Q: "wQ.svg", R: "wR.svg", B: "wB.svg", N: "wN.svg", P: "wP.svg",
@@ -132,6 +132,35 @@
     return p;
   }
 
+  function isBishopModuleWithCompactCapturedPieces() {
+    return /\/bishop-m(?:[2-9]|10)-lesson-[^/]+\.html$/i.test(window.location.pathname);
+  }
+
+  function applyCompactCapturedPieceScale(iframe) {
+    if (!isBishopModuleWithCompactCapturedPieces()) return;
+
+    try {
+      var iframeDocument = iframe.contentDocument;
+      if (!iframeDocument || !iframeDocument.head || iframeDocument.querySelector("style[data-bishop-captured-scale]")) {
+        return;
+      }
+
+      var capturedScaleStyle = iframeDocument.createElement("style");
+      capturedScaleStyle.setAttribute("data-bishop-captured-scale", "0.5");
+      capturedScaleStyle.textContent = [
+        ":root {",
+        "  --captured-cell-min: 0.65rem;",
+        "  --captured-cell-divisor: 24;",
+        "  --captured-cell-max: 0.925rem;",
+        "  --captured-row-extra-height: 0.35rem;",
+        "  --captured-count-extra-width: 0.6rem;",
+        "}",
+        ".captured-pieces { gap: 0.09rem; }"
+      ].join("\n");
+      iframeDocument.head.appendChild(capturedScaleStyle);
+    } catch (e) {}
+  }
+
   function buildIframe(fen, orientation, marks) {
     /* Cache-bust: append a version hash so browsers always fetch the latest
        app HTML instead of serving a stale cached version inside iframes. */
@@ -169,6 +198,7 @@
     var iframe = buildIframe(fen, orientation, markSet);
     iframe.style.visibility = "hidden";
     iframe.addEventListener("load", function () {
+      applyCompactCapturedPieceScale(iframe);
       screen.removeAttribute("role");
       screen.removeAttribute("aria-label");
       print.style.display = "none";
@@ -272,7 +302,7 @@
   }
 })();
 
-/* ==========================================================================
+/* ========================================================================== 
    Image lightbox — opens .lesson-zoomable images in a same-page overlay.
    ========================================================================== */
 (function () {
