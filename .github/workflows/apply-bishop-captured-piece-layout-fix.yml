@@ -1,0 +1,113 @@
+name: Apply Bishop captured-piece layout fix
+
+on:
+  push:
+    branches:
+      - fix-bishop-captured-piece-layout-20260721
+    paths:
+      - .github/workflows/apply-bishop-captured-piece-layout-fix.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-layout:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix-bishop-captured-piece-layout-20260721
+
+      - name: Replace the incomplete runtime sizing rules
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('lessons/endgame-lesson.js')
+          source = path.read_text(encoding='utf-8')
+
+          old = '''      capturedScaleStyle.textContent = [
+        ":root {",
+        "  --captured-cell-min: 0.65rem;",
+        "  --captured-cell-divisor: 24;",
+        "  --captured-cell-max: 0.925rem;",
+        "  --captured-row-extra-height: 0.35rem;",
+        "  --captured-count-extra-width: 0.6rem;",
+        "}",
+        ".captured-pieces { gap: 0.09rem; }"
+      ].join("\\n");'''
+
+          new = '''      capturedScaleStyle.textContent = [
+        ":root {",
+        "  --captured-cell-min: 0.65rem;",
+        "  --captured-cell-divisor: 24;",
+        "  --captured-cell-max: 0.925rem;",
+        "  --captured-row-extra-height: 0.35rem;",
+        "  --captured-count-extra-width: 0.6rem;",
+        "}",
+        ".board-column {",
+        "  --captured-row-gap: clamp(0.12rem, calc(var(--board-size, 42rem) / 280), 0.2rem);",
+        "}",
+        ".captured-row {",
+        "  padding: 0.12rem 0.25rem;",
+        "}",
+        ".captured-pieces {",
+        "  width: 100%;",
+        "  min-width: 0;",
+        "  gap: 0.09rem;",
+        "}",
+        ".captured-piece-shell {",
+        "  border-radius: 0.11rem;",
+        "}",
+        ".captured-piece-shell.has-count {",
+        "  min-width: calc(var(--captured-cell-size) + 0.6rem);",
+        "  padding: 0 0.04rem 0 0.02rem;",
+        "  gap: 0.03rem;",
+        "}",
+        ".captured-piece-placeholder,",
+        ".captured-piece {",
+        "  width: 92%;",
+        "  height: 92%;",
+        "}",
+        ".captured-piece-shell.has-count .captured-piece {",
+        "  height: 92%;",
+        "}",
+        ".captured-piece-count {",
+        "  min-width: 0.6rem;",
+        "  height: 0.48rem;",
+        "  padding: 0 0.09rem;",
+        "  font-size: 0.42rem;",
+        "  box-shadow: none;",
+        "}"
+      ].join("\\n");'''
+
+          if old not in source:
+              raise SystemExit('Expected captured-piece style block was not found; refusing an unsafe edit.')
+
+          updated = source.replace(old, new, 1)
+          updated = updated.replace(
+              'var EMBED_CACHE_BUSTER = "20260721-bishop-captured-half";',
+              'var EMBED_CACHE_BUSTER = "20260721-bishop-captured-layout-complete";',
+              1,
+          )
+          path.write_text(updated, encoding='utf-8')
+
+          workflow = Path('.github/workflows/apply-bishop-captured-piece-layout-fix.yml')
+          workflow.unlink()
+          PY
+
+      - name: Commit the real layout fix
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lessons/endgame-lesson.js .github/workflows/apply-bishop-captured-piece-layout-fix.yml
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "Fix Bishop captured-piece row layout"
+          git push origin HEAD:fix-bishop-captured-piece-layout-20260721
