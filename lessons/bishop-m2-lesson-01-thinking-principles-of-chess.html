@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-piece-base="../assets/pieces/mpchess/" data-app-path="../index.html" data-orientation="white">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Thinking Principles of Chess — Bishop Level Module 2</title>
+  <meta name="description" content="Bishop Level Module 2 lesson on captures, weaknesses, threats, development, and understanding the opponent's last move.">
+  <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
+  <link rel="apple-touch-icon" href="../assets/pieces/app_icon.png">
+  <link rel="stylesheet" href="endgame-lesson.css?v=board-bg">
+  <link rel="stylesheet" href="pawn-teacher-board.css?v=20260710-teacher-lesson-csv1">
+  <style>
+    .module-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 520px);
+      gap: clamp(20px, 4vw, 46px);
+      align-items: center;
+    }
+    .hero-board-card {
+      margin: 0;
+      padding: clamp(14px, 2vw, 22px);
+      border: 1px solid var(--panel-border);
+      border-radius: 20px;
+      background: var(--panel-bg);
+      box-shadow: 0 22px 60px rgba(0,0,0,.22);
+    }
+    .hero-board-card .board { max-width: 520px; margin: 0 auto; }
+    .hero-board-card figcaption {
+      margin-top: 10px;
+      color: var(--ink-soft);
+      font-size: .92rem;
+      text-align: center;
+    }
+    .module-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 28px;
+      padding: 12px;
+      border: 1px solid var(--hairline);
+      border-radius: 12px;
+      background: var(--panel-bg);
+    }
+    .module-nav a {
+      color: var(--btn-ink);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: .92rem;
+      padding: 8px 11px;
+      border-radius: 999px;
+    }
+    .module-nav a:hover { background: var(--btn-hover); }
+    .principle-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin: 0 0 24px;
+    }
+    .principle-card {
+      border: 1px solid var(--panel-border);
+      border-radius: 10px;
+      padding: 14px;
+      background: var(--panel-bg);
+      min-height: 112px;
+    }
+    .principle-card strong {
+      display: block;
+      color: var(--accent);
+      font-family: var(--font-display);
+      margin-bottom: 6px;
+    }
+    .principle-card span { color: var(--ink-soft); font-size: .93rem; }
+    .fen-box {
+      margin-top: 12px;
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--panel-bg);
+    }
+    .fen-title {
+      padding: 9px 12px;
+      font-weight: 800;
+      color: var(--accent);
+      border-bottom: 1px solid var(--panel-border);
+      font-size: .9rem;
+    }
+    .fen-code {
+      margin: 0;
+      padding: 12px;
+      overflow-x: auto;
+      color: var(--ink);
+      font: 600 .84rem/1.55 var(--font-mono);
+      white-space: pre;
+    }
+    .correction-note {
+      border-left: 4px solid var(--danger);
+      background: color-mix(in srgb, var(--danger) 10%, var(--panel-bg));
+      border-radius: 6px;
+      padding: 12px 14px;
+      margin: 12px 0 18px;
+      color: var(--ink-soft);
+    }
+    .weakness-list {
+      columns: 2;
+      column-gap: 32px;
+      padding-left: 22px;
+    }
+    .weakness-list li { break-inside: avoid; margin: 5px 0; }
+    details.quiz {
+      border: 1px solid var(--panel-border);
+      background: var(--panel-bg);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-top: 10px;
+    }
+    details.quiz summary { cursor: pointer; font-weight: 800; }
+    details.quiz p { color: var(--ink-soft); margin-bottom: 0; }
+    .lesson-nav-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+    .lesson-nav-row a {
+      color: var(--btn-ink);
+      background: var(--btn-bg);
+      border: 1px solid var(--rule-border);
+      border-radius: 999px;
+      padding: 9px 14px;
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .source-note {
+      margin-top: 32px;
+      color: var(--ink-faint);
+      font-size: .9rem;
+    }
+    @media (max-width: 980px) {
+      .module-hero { grid-template-columns: 1fr; }
+      .principle-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 620px) {
+      .principle-grid { grid-template-columns: 1fr; }
+      .weakness-list { columns: 1; }
+      .position-body { grid-template-columns: 1fr; }
+      .lesson-nav-row a { width: 100%; text-align: center; }
+    }
+    @media print {
+      .no-print, .module-nav { display: none !important; }
+      .hero-board-card, .principle-card, details.quiz, .fen-box { box-shadow: none; break-inside: avoid; }
+      .module-hero { display: block; }
+      .lesson + .lesson { break-before: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header class="index-header no-print">
+    <div class="index-header-inner">
+      <div class="index-brand">
+        <div class="index-brand-icon" aria-hidden="true">♞</div>
+        <div>
+          <div class="index-brand-label">Bishop Level · Module 2</div>
+          <div class="index-brand-title">Thinking Principles of Chess</div>
+        </div>
+      </div>
+      <div class="index-top-actions">
+        <a class="toolbar-link" href="bishop-index.html">&larr; Bishop Index</a>
+        <button class="toolbar-link" type="button" id="themeToggle">Toggle theme</button>
+        <button class="toolbar-link" type="button" onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="lesson-page">
+    <section class="hero module-hero" id="top">
+      <div>
+        <p class="eyebrow">Coach Dinosaur Chess Course</p>
+        <h1 class="chapter-title">Thinking Principles of Chess</h1>
+        <p class="chapter-subtitle">
+          A practical five-part thinking system for choosing moves: captures, weaknesses, threats,
+          development, and the opponent&rsquo;s last move.
+        </p>
+      </div>
+      <figure class="hero-board-card">
+        <div class="board" data-fen="r5k1/pp1b1ppp/3q4/3p1n2/8/2PB1N2/PPQ2PPP/4R1K1 b - - 0 1"></div>
+        <figcaption>Start every decision by identifying what is attacked, loose, threatened, undeveloped, or newly changed.</figcaption>
+      </figure>
+    </section>
+
+    <nav class="module-nav no-print" aria-label="Module contents">
+      <a href="#capture">1. Capture</a>
+      <a href="#weakness">2. Weakness</a>
+      <a href="#threat">3. Threat</a>
+      <a href="#development">4. Development</a>
+      <a href="#last-move">5. Last Move</a>
+      <a href="#review">Review</a>
+    </nav>
+
+    <section class="principle-grid" aria-label="Five chess thinking principles">
+      <article class="principle-card"><strong>1. Capture</strong><span>Avoid losing material and calculate chances to gain material.</span></article>
+      <article class="principle-card"><strong>2. Weakness</strong><span>Avoid creating weaknesses and plan to exploit the opponent&rsquo;s weaknesses.</span></article>
+      <article class="principle-card"><strong>3. Threat</strong><span>Notice urgent threats and search for forcing threats of your own.</span></article>
+      <article class="principle-card"><strong>4. Development</strong><span>Bring pieces into useful, coordinated positions.</span></article>
+      <article class="principle-card"><strong>5. Last Move</strong><span>Ask what changed and why the opponent chose that move.</span></article>
+    </section>
+
+    <section class="lesson" id="capture">
+      <div class="lesson-head">
+        <span class="lesson-number">Principle 1</span>
+        <h2 class="lesson-title">Capture</h2>
+      </div>
+      <p class="lesson-intro">
+        The capture principle means avoiding unnecessary material losses and looking for sound ways to gain material.
+        It does not mean capturing automatically. Every capture still has to survive calculation.
+      </p>
+
+      <article class="position">
+        <p class="position-label">Position 1 · Black to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="r5k1/pp1b1ppp/3q4/3p1n2/8/2PB1N2/PPQ2PPP/4R1K1 b - - 0 1"></div>
+            <p class="caption">The knight on f5 is attacked by the bishop on d3.</p>
+          </div>
+          <div class="position-note">
+            <p>Black may retreat the knight to h6 or e7, but either retreat leaves the h7-pawn vulnerable. Black can instead support the knight.</p>
+            <div class="rule-box">
+              <h3>Compare the defenses</h3>
+              <p><strong>Queen support:</strong> 1...Qf6 keeps the knight defended, but the queen can become exposed and Black still loses pawns.</p>
+              <p><strong>Pawn support:</strong> 1...g6 supports the knight more naturally and is the better practical choice in the source lesson.</p>
+            </div>
+          </div>
+        </div>
+        <div class="moveline">1...Qf6 2.Bxf5 Bxf5 3.Qb3 Qc6 4.Nd4 Qd7 5.Nxf5 Qxf5 6.Qxd5</div>
+        <div class="correction-note"><strong>Source correction:</strong> the PDF prints <strong>6.Qxd7</strong>, which is illegal because the white queen is on b3. The legal and positionally consistent move is <strong>6.Qxd5</strong>.</div>
+        <div class="moveline">1...g6 2.Qd2 Qf6 3.Ne5 Qd6 4.Nxd7 Qxd7 5.g3</div>
+        <div class="fen-box">
+          <div class="fen-title">FEN · Black to move</div>
+          <pre class="fen-code">r5k1/pp1b1ppp/3q4/3p1n2/8/2PB1N2/PPQ2PPP/4R1K1 b - - 0 1</pre>
+        </div>
+      </article>
+
+      <article class="position">
+        <p class="position-label">Position 2 · White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="2rr2k1/5p2/pb2p1pp/1p2P3/3p1P2/P2B1R1P/1Pq1Q1P1/R5K1 w - - 0 1"></div>
+            <p class="caption">The black queen on c2 looks available, but the d-pawn can open a discovered check.</p>
+          </div>
+          <div class="position-note">
+            <p>The tempting 1.Bxc2 allows 1...d3+, opening the bishop&rsquo;s diagonal toward the white king. White must calculate the whole sequence instead of stopping at the first capture.</p>
+            <div class="rule-box">
+              <h3>Calculation remains mandatory</h3>
+              <p>A principle helps you select candidate moves. It does not replace analysis.</p>
+            </div>
+          </div>
+        </div>
+        <div class="moveline">1.Qxc2 Rxc2 2.Bxc2 d3+ 3.Kf1 dxc2 4.Ke2</div>
+        <div class="fen-box">
+          <div class="fen-title">FEN · White to move</div>
+          <pre class="fen-code">2rr2k1/5p2/pb2p1pp/1p2P3/3p1P2/P2B1R1P/1Pq1Q1P1/R5K1 w - - 0 1</pre>
+        </div>
+      </article>
+    </section>
+
+    <section class="lesson" id="weakness">
+      <div class="lesson-head">
+        <span class="lesson-number">Principle 2</span>
+        <h2 class="lesson-title">Weakness</h2>
+      </div>
+      <p class="lesson-intro">
+        Avoid weaknesses in your own position and make plans that exploit weaknesses in the opponent&rsquo;s position.
+      </p>
+
+      <div class="recap">
+        <h3>Common weaknesses</h3>
+        <ol class="weakness-list">
+          <li>Unprotected pieces</li>
+          <li>Uncoordinated pieces</li>
+          <li>Isolated or doubled pawns</li>
+          <li>An unsafe king</li>
+          <li>Lack of space</li>
+          <li>A blocked bishop</li>
+          <li>Uncentralized knights</li>
+          <li>Tactical weaknesses</li>
+          <li>Weak squares, files, or diagonals</li>
+        </ol>
+      </div>
+
+      <article class="position">
+        <p class="position-label">Position 3 · Black to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="2r2rk1/1q3pp1/p4n1p/4p3/1PB1P3/P6P/4Q1P1/4RR1K b - - 0 1"></div>
+            <p class="caption">Black should preserve activity instead of placing the rook in a cramped position.</p>
+          </div>
+          <div class="position-note">
+            <p>The source compares 1...Ra8 with 1...Rc6. The move 1...Ra8 reduces the rook&rsquo;s space and activity. The recommended move is 1...Rc6, keeping the rook active and the position balanced.</p>
+            <div class="rule-box">
+              <h3>Do not solve one problem by creating another</h3>
+              <p>A move that saves material can still be inferior if it leaves a piece passive or cramped.</p>
+            </div>
+          </div>
+        </div>
+        <div class="moveline">1...Rc6</div>
+        <div class="fen-box">
+          <div class="fen-title">FEN · Black to move</div>
+          <pre class="fen-code">2r2rk1/1q3pp1/p4n1p/4p3/1PB1P3/P6P/4Q1P1/4RR1K b - - 0 1</pre>
+        </div>
+      </article>
+
+      <article class="position">
+        <p class="position-label">Position 4 · Black to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="r2qk2r/1b1nbp1p/p3p1pP/1p1pP3/2nP2QN/P1NBB1P1/1P3P2/2R1K2R b - - 0 1"></div>
+            <p class="caption">The b2-pawn is unprotected and the bishop on d3 can be attacked with tempo.</p>
+          </div>
+          <div class="position-note">
+            <p>Black can exploit the loose b2-pawn immediately. After the capture, the knight also attacks the bishop on d3, forcing White to respond.</p>
+            <div class="rule-box">
+              <h3>Material plus tempo</h3>
+              <p>The strongest captures often win material while creating another threat.</p>
+            </div>
+          </div>
+        </div>
+        <div class="moveline">1...Nxb2</div>
+        <div class="fen-box">
+          <div class="fen-title">FEN · Black to move</div>
+          <pre class="fen-code">r2qk2r/1b1nbp1p/p3p1pP/1p1pP3/2nP2QN/P1NBB1P1/1P3P2/2R1K2R b - - 0 1</pre>
+        </div>
+      </article>
+    </section>
+
+    <section class="lesson" id="threat">
+      <div class="lesson-head">
+        <span class="lesson-number">Principle 3</span>
+        <h2 class="lesson-title">Threat</h2>
+      </div>
+      <p class="lesson-intro">
+        Look for the opponent&rsquo;s threats and stop them when necessary. At the same time, search for a stronger threat of your own,
+        especially forcing checks, captures, and mating ideas.
+      </p>
+
+      <article class="position">
+        <p class="position-label">Position 5 · White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="r4rk1/5p2/p2pbQp1/1p2p2P/4P3/1Pqn4/P1P2P2/1K4RR w - - 0 1"></div>
+            <p class="caption">Black threatens mate, but White has a forcing mating attack.</p>
+          </div>
+          <div class="position-note">
+            <p>White can capture the knight on d3, but Black then uses forcing queen checks and wins substantial material.</p>
+            <p>The stronger solution is to ignore passive defense and begin a direct mating attack with 1.Rxg6+.</p>
+          </div>
+        </div>
+        <div class="moveline">1.cxd3 Qxd3+ 2.Kb2 Qd4+ 3.Kb1 Qxe4+ 4.Ka1 Qd4+ 5.Kb1 Qf4 6.hxg6 Qxf6 7.g7 Bf5+ 8.Kb2 e4+ 9.Ka3 Qxg7 10.Rxg7+ Kxg7</div>
+        <div class="moveline">1.Rxg6+ fxg6 2.Qxg6+ Kh8 3.Qh6+ Kg8 4.Rg1+ Bg4 5.Rxg4+ Kf7 6.Rg7+ Ke8 7.Qe6+ Kd8 8.Qd7#</div>
+        <div class="fen-box">
+          <div class="fen-title">FEN · White to move</div>
+          <pre class="fen-code">r4rk1/5p2/p2pbQp1/1p2p2P/4P3/1Pqn4/P1P2P2/1K4RR w - - 0 1</pre>
+        </div>
+      </article>
+
+      <div class="rule-box">
+        <h3>Practical threat rule</h3>
+        <p>When the opponent threatens something serious, do not defend automatically. First check whether you have a forcing sequence that is more urgent.</p>
+      </div>
+    </section>
+
+    <section class="lesson" id="development">
+      <div class="lesson-head">
+        <span class="lesson-number">Principle 4</span>
+        <h2 class="lesson-title">Development</h2>
+      </div>
+      <p class="lesson-intro">
+        Development means bringing pieces into useful positions in a coordinated way so that they can help with attack, defense, central control, and king safety.
+      </p>
+
+      <article class="position">
+        <p class="position-label">Position 6 · White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="r4rk1/pbp1nppp/1pnqp3/3p4/3P4/2P1PN2/PP1NBPPP/R2Q1RK1 w - - 0 1"></div>
+            <p class="caption">White should open lines and activate the queenside pieces.</p>
+          </div>
+          <div class="position-note">
+            <p>The source recommends a strategic plan rather than a forced move:</p>
+            <ul>
+              <li>Open the c-file.</li>
+              <li>Activate the rook on a1.</li>
+              <li>Improve the knights toward useful central squares.</li>
+              <li>Coordinate the pieces before starting operations elsewhere.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="fen-box">
+          <div class="fen-title">FEN · White to move</div>
+          <pre class="fen-code">r4rk1/pbp1nppp/1pnqp3/3p4/3P4/2P1PN2/PP1NBPPP/R2Q1RK1 w - - 0 1</pre>
+        </div>
+      </article>
+
+      <div class="rule-box">
+        <h3>Development is not merely movement</h3>
+        <p>A piece is properly developed when it has a useful job and cooperates with the rest of the army.</p>
+      </div>
+    </section>
+
+    <section class="lesson" id="last-move">
+      <div class="lesson-head">
+        <span class="lesson-number">Principle 5</span>
+        <h2 class="lesson-title">Last Move of the Opponent</h2>
+      </div>
+      <p class="lesson-intro">
+        Analyze why the opponent made the last move. Every move changes attacks, defenses, lines, weak squares, and future plans.
+      </p>
+
+      <article class="position">
+        <p class="position-label">Position 7 · Black to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="r1bq1rk1/1p2bpp1/p1n1pn1p/2pp4/5P2/1PN1PNQ1/PBPPB1PP/R4RK1 b - - 0 1"></div>
+            <p class="caption">White has just played Qg3, suggesting future kingside attacking ideas.</p>
+          </div>
+          <div class="position-note">
+            <p>White&rsquo;s queen move points toward the kingside. Black should recognize the plan and create counterplay in the center and on the queenside.</p>
+            <div class="rule-box">
+              <h3>Recommended counterplay</h3>
+              <p>The source recommends striking immediately with 1...d4.</p>
+            </div>
+          </div>
+        </div>
+        <div class="moveline">1...d4</div>
+        <div class="fen-box">
+          <div class="fen-title">FEN · Black to move</div>
+          <pre class="fen-code">r1bq1rk1/1p2bpp1/p1n1pn1p/2pp4/5P2/1PN1PNQ1/PBPPB1PP/R4RK1 b - - 0 1</pre>
+        </div>
+      </article>
+    </section>
+
+    <section class="checklist" id="review">
+      <h2>Five-Principle Move Checklist</h2>
+      <p>Use this sequence before every important move:</p>
+      <ul>
+        <li><strong>Capture:</strong> What is attacked, loose, or available to capture?</li>
+        <li><strong>Weakness:</strong> What weaknesses exist on both sides?</li>
+        <li><strong>Threat:</strong> What is the opponent threatening, and do I have a stronger threat?</li>
+        <li><strong>Development:</strong> Which piece is least useful and needs improvement?</li>
+        <li><strong>Last move:</strong> What changed, and what does the opponent intend?</li>
+      </ul>
+    </section>
+
+    <section class="lesson">
+      <div class="lesson-head">
+        <span class="lesson-number">Review</span>
+        <h2 class="lesson-title">Check Your Understanding</h2>
+      </div>
+      <details class="quiz"><summary>1. Does the capture principle mean that every available capture should be played?</summary><p>No. It means captures should be considered and calculated. The final position must justify the capture.</p></details>
+      <details class="quiz"><summary>2. Why is 1...Rc6 preferred to 1...Ra8 in Position 3?</summary><p>Rc6 keeps the rook active and avoids the space weakness and passivity created by Ra8.</p></details>
+      <details class="quiz"><summary>3. What makes 1...Nxb2 especially useful in Position 4?</summary><p>Black wins a pawn and attacks the bishop on d3 with tempo.</p></details>
+      <details class="quiz"><summary>4. What is the main lesson of the mating attack in Position 5?</summary><p>Before defending an enemy threat, check whether you have a stronger forcing sequence of your own.</p></details>
+      <details class="quiz"><summary>5. What should you ask after every opponent move?</summary><p>Ask what changed, what the moved piece attacks or stopped defending, and what plan the move suggests.</p></details>
+
+      <div class="lesson-nav-row no-print">
+        <a href="bishop-m1-lesson-05-the-five-core-thinking-principles.html">&larr; Module 1: Five Core Thinking Principles</a>
+        <a href="bishop-index.html">Back to Bishop Index &rarr;</a>
+      </div>
+    </section>
+
+    <p class="source-note">
+      Converted from the source PDF titled <em>Chess Whizdom Module 3-2: Thinking Principles of Chess</em>.
+      This course lists it as Bishop Level Module 2. Static diagrams do not prove castling or en-passant rights,
+      so those FEN fields are set to &ldquo;-&rdquo; unless they are certain.
+    </p>
+  </main>
+
+  <script>
+    const root = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const storedTheme = localStorage.getItem('chess-lesson-theme');
+    if (storedTheme === 'light' || storedTheme === 'dark') root.dataset.theme = storedTheme;
+    themeToggle?.addEventListener('click', () => {
+      root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('chess-lesson-theme', root.dataset.theme);
+    });
+  </script>
+  <script src="endgame-lesson.js?v=board-bg" defer></script>
+  <script src="pawn-teacher-board.js?v=20260710-teacher-lesson-csv1" defer></script>
+</body>
+</html>
