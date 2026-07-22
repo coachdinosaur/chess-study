@@ -75,6 +75,21 @@ export async function requireProfile(expectedRole) {
   return profile;
 }
 
+export async function requireStudentProfile() {
+  const profile = await currentProfile();
+  if (!profile) {
+    window.location.replace('./join.html');
+    return null;
+  }
+
+  if (profile.role !== 'student') {
+    window.location.replace('./teacher.html');
+    return null;
+  }
+
+  return profile;
+}
+
 export function readableError(error) {
   const message = String(error?.message || error || 'Unexpected error.');
   return message
@@ -82,9 +97,9 @@ export function readableError(error) {
     .replace(/JSON object requested, multiple \(or no\) rows returned/i, 'The requested account record was not found.');
 }
 
-export async function signOut() {
+export async function signOut(destination = './login.html') {
   const supabase = getSupabase();
   const { error } = await supabase.auth.signOut();
   if (error) throw error;
-  window.location.replace('./login.html');
+  window.location.replace(destination);
 }
