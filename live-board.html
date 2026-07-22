@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Board | CD Digital Chess</title>
+  <meta name="description" content="A synchronized chess board for teacher and student sessions.">
+  <link rel="icon" type="image/png" href="./assets/pieces/app_icon.png">
+  <script>
+    (() => {
+      try {
+        const saved = localStorage.getItem('color-theme-v1');
+        document.documentElement.dataset.theme = saved === 'dark' ? 'dark' : 'light';
+      } catch {}
+    })();
+  </script>
+  <link rel="stylesheet" href="./live-board.css?v=20260722-live-board3">
+</head>
+<body>
+  <main class="live-board-shell">
+    <header class="live-board-header">
+      <div>
+        <p class="eyebrow">CD Digital Chess</p>
+        <h1>Live Board</h1>
+        <p id="modeSubtitle" class="subtitle">Create a teacher room, then share its secure student link.</p>
+      </div>
+      <a class="secondary-button" href="./">Back to main app</a>
+    </header>
+
+    <section id="roomSetup" class="room-setup card" aria-labelledby="roomSetupTitle">
+      <div>
+        <p class="eyebrow">Live session</p>
+        <h2 id="roomSetupTitle">Start or join a board</h2>
+      </div>
+      <div class="room-setup-actions">
+        <button id="createRoomButton" type="button">Create teacher room</button>
+        <label class="room-code-field">Student access
+          <input id="roomCodeInput" autocomplete="off" placeholder="Open the teacher's student link">
+        </label>
+        <button id="joinRoomButton" class="secondary-button" type="button">Join as student</button>
+      </div>
+      <p id="roomSetupMessage" class="message" aria-live="polite">Students should open the secure link copied by the teacher.</p>
+    </section>
+
+    <section id="sessionBar" class="session-bar card" hidden>
+      <div>
+        <p class="eyebrow"><span id="roleLabel">Teacher</span> session</p>
+        <strong>Room <span id="roomCodeLabel"></span></strong>
+        <span id="connectionStatus" class="connection-status">Connecting to Supabase…</span>
+      </div>
+      <div class="session-actions teacher-only">
+        <button id="copyStudentLinkButton" type="button">Copy student link</button>
+        <button id="lockStudentButton" class="secondary-button" type="button">Lock student moves</button>
+      </div>
+    </section>
+
+    <section id="liveBoardLayout" class="live-board-layout" aria-label="Live chess board" hidden>
+      <article class="board-card">
+        <div class="board-card-head">
+          <div>
+            <p class="eyebrow">Interactive board</p>
+            <h2 id="statusTitle">White to move</h2>
+          </div>
+          <span id="statusPill" class="status-pill">Ready</span>
+        </div>
+
+        <div class="board-frame">
+          <div id="liveBoard" class="chess-board" role="grid" aria-label="Chess board"></div>
+        </div>
+
+        <p id="studentLockMessage" class="student-lock-message" hidden>Teacher is demonstrating. Your board is view-only.</p>
+
+        <div class="board-toolbar teacher-only" aria-label="Teacher board controls">
+          <button id="undoButton" type="button">Undo</button>
+          <button id="resetButton" type="button">Reset</button>
+          <button id="flipButton" type="button">Flip board</button>
+          <button id="themeButton" type="button">Theme</button>
+        </div>
+      </article>
+
+      <aside class="side-card">
+        <section class="teacher-only">
+          <p class="eyebrow">Prepared lessons</p>
+          <label class="file-picker" for="lessonFileInput">CSV or Excel lesson file</label>
+          <input id="lessonFileInput" type="file" accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
+          <div class="side-actions">
+            <button id="importLessonButton" type="button">Import lesson file</button>
+            <button id="clearLessonButton" class="secondary-button" type="button">Clear lessons</button>
+          </div>
+          <p id="lessonMessage" class="message" aria-live="polite"></p>
+          <div id="lessonPanel" hidden>
+            <label for="lessonPositionSelect">Prepared position</label>
+            <select id="lessonPositionSelect"></select>
+            <div class="lesson-note" id="lessonNote" hidden></div>
+          </div>
+        </section>
+
+        <section class="teacher-only">
+          <p class="eyebrow">Position</p>
+          <label for="fenInput">FEN</label>
+          <textarea id="fenInput" rows="4" spellcheck="false"></textarea>
+          <div class="side-actions">
+            <button id="loadFenButton" type="button">Load FEN</button>
+            <button id="copyFenButton" class="secondary-button" type="button">Copy FEN</button>
+          </div>
+          <p id="fenMessage" class="message" aria-live="polite"></p>
+        </section>
+
+        <section>
+          <p class="eyebrow">Moves</p>
+          <ol id="moveList" class="move-list"></ol>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.91.0/dist/umd/supabase.min.js" crossorigin="anonymous"></script>
+  <script src="./live-board-realtime.js?v=20260722-live-board3"></script>
+  <script src="./vendor/xlsx.full.min.js"></script>
+  <script type="module" src="./live-board.js?v=20260722-live-board3"></script>
+</body>
+</html>
