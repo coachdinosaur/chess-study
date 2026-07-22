@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Chess Coaching Portal | CD Digital Chess</title>
-  <meta name="description" content="Teacher and student portal for CD Digital Chess classes, assignments, and progress.">
+  <title>Chess Coaching Tracker | CD Digital Chess</title>
+  <meta name="description" content="Private teacher dashboard for students, lesson history, and curriculum progress.">
   <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
   <link rel="stylesheet" href="./management.css">
 </head>
@@ -13,37 +13,36 @@
     <header class="portal-header">
       <a class="portal-brand" href="../index.html">
         <span class="portal-brand-mark" aria-hidden="true">♟</span>
-        <span class="portal-brand-copy"><strong>CD Digital Chess</strong><span>Coaching management V1</span></span>
+        <span class="portal-brand-copy"><strong>CD Digital Chess</strong><span>Teacher lesson tracker</span></span>
       </a>
       <nav class="portal-actions" aria-label="Portal navigation">
-        <a class="button-secondary" href="../lessons/index.html">Public lessons</a>
+        <a class="button-secondary" href="../lessons/index.html">Lesson index</a>
         <a class="button-secondary" href="../index.html">Study board</a>
       </nav>
     </header>
 
     <main>
       <section class="hero">
-        <p class="muted">Teacher–student management</p>
-        <h1>Classes, assignments, and progress without rebuilding the chess app.</h1>
-        <p>The public lessons and Study Board remain available to everyone. Signed-in teachers can organize classes and assignments; students can join with a class code and record their progress.</p>
+        <p class="muted">Private coaching management</p>
+        <h1>Track every student's lesson progress from one teacher dashboard.</h1>
+        <p>Add one student or many students, record what has already been taught, flag lessons that need practice, and see what comes next. Students do not create accounts or use this management page.</p>
       </section>
 
-      <section class="portal-grid" aria-label="Choose portal">
+      <section class="portal-grid" aria-label="Teacher portal">
         <article class="panel stack">
           <div>
             <h2>Teachers and coaches</h2>
-            <p class="panel-copy">Create classes, approve students, assign lesson links, and review completion status.</p>
+            <p class="panel-copy">Manage private student records and track progress through the curriculum listed in the public lesson index.</p>
           </div>
-          <a class="button" href="./login.html">Open teacher portal</a>
+          <a class="button" href="./login.html">Open teacher dashboard</a>
         </article>
 
         <article class="panel stack">
           <div>
             <h2>Students</h2>
-            <p class="panel-copy">Join a class with an eight-character code. No student email is required for the anonymous V1 account.</p>
+            <p class="panel-copy">No management login is needed. Lessons remain available through the public lesson index or links shared directly by the teacher.</p>
           </div>
-          <a class="button" href="./join.html">Join a class</a>
-          <a class="button-secondary" href="./student.html">Open student dashboard</a>
+          <a class="button-secondary" href="../lessons/index.html">Open public lessons</a>
         </article>
       </section>
     </main>
