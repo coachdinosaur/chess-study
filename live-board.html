@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Live Board | CD Digital Chess</title>
-  <meta name="description" content="A simple interactive chess board for live teaching sessions.">
+  <meta name="description" content="A simple synchronized chess board for teacher and student sessions.">
   <link rel="icon" type="image/png" href="./assets/pieces/app_icon.png">
   <script>
     (() => {
@@ -14,7 +14,7 @@
       } catch {}
     })();
   </script>
-  <link rel="stylesheet" href="./live-board.css?v=20260722-live-board1">
+  <link rel="stylesheet" href="./live-board.css?v=20260722-live-board2">
 </head>
 <body>
   <main class="live-board-shell">
@@ -22,12 +22,39 @@
       <div>
         <p class="eyebrow">CD Digital Chess</p>
         <h1>Live Board</h1>
-        <p class="subtitle">A clean board for teacher and student demonstrations.</p>
+        <p id="modeSubtitle" class="subtitle">Create a room or join as a student.</p>
       </div>
       <a class="secondary-button" href="./">Back to main app</a>
     </header>
 
-    <section class="live-board-layout" aria-label="Live chess board">
+    <section id="roomSetup" class="room-setup card" aria-labelledby="roomSetupTitle">
+      <div>
+        <p class="eyebrow">Live session</p>
+        <h2 id="roomSetupTitle">Start or join a board</h2>
+      </div>
+      <div class="room-setup-actions">
+        <button id="createRoomButton" type="button">Create teacher room</button>
+        <label class="room-code-field">Room code
+          <input id="roomCodeInput" maxlength="12" autocomplete="off" placeholder="ABC123">
+        </label>
+        <button id="joinRoomButton" class="secondary-button" type="button">Join as student</button>
+      </div>
+      <p id="roomSetupMessage" class="message" aria-live="polite"></p>
+    </section>
+
+    <section id="sessionBar" class="session-bar card" hidden>
+      <div>
+        <p class="eyebrow"><span id="roleLabel">Teacher</span> session</p>
+        <strong>Room <span id="roomCodeLabel"></span></strong>
+        <span id="connectionStatus" class="connection-status">Local session</span>
+      </div>
+      <div class="session-actions teacher-only">
+        <button id="copyStudentLinkButton" type="button">Copy student link</button>
+        <button id="lockStudentButton" class="secondary-button" type="button">Lock student moves</button>
+      </div>
+    </section>
+
+    <section id="liveBoardLayout" class="live-board-layout" aria-label="Live chess board" hidden>
       <article class="board-card">
         <div class="board-card-head">
           <div>
@@ -41,7 +68,9 @@
           <div id="liveBoard" class="chess-board" role="grid" aria-label="Chess board"></div>
         </div>
 
-        <div class="board-toolbar" aria-label="Board controls">
+        <p id="studentLockMessage" class="student-lock-message" hidden>Teacher is demonstrating. Your board is view-only.</p>
+
+        <div class="board-toolbar teacher-only" aria-label="Teacher board controls">
           <button id="undoButton" type="button">Undo</button>
           <button id="resetButton" type="button">Reset</button>
           <button id="flipButton" type="button">Flip board</button>
@@ -50,7 +79,23 @@
       </article>
 
       <aside class="side-card">
-        <section>
+        <section class="teacher-only">
+          <p class="eyebrow">Prepared lessons</p>
+          <label class="file-picker" for="lessonFileInput">CSV or Excel lesson file</label>
+          <input id="lessonFileInput" type="file" accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
+          <div class="side-actions">
+            <button id="importLessonButton" type="button">Import lesson file</button>
+            <button id="clearLessonButton" class="secondary-button" type="button">Clear lessons</button>
+          </div>
+          <p id="lessonMessage" class="message" aria-live="polite"></p>
+          <div id="lessonPanel" hidden>
+            <label for="lessonPositionSelect">Prepared position</label>
+            <select id="lessonPositionSelect"></select>
+            <div class="lesson-note" id="lessonNote" hidden></div>
+          </div>
+        </section>
+
+        <section class="teacher-only">
           <p class="eyebrow">Position</p>
           <label for="fenInput">FEN</label>
           <textarea id="fenInput" rows="4" spellcheck="false"></textarea>
@@ -69,6 +114,7 @@
     </section>
   </main>
 
-  <script type="module" src="./live-board.js?v=20260722-live-board1"></script>
+  <script src="./vendor/xlsx.full.min.js"></script>
+  <script type="module" src="./live-board.js?v=20260722-live-board2"></script>
 </body>
 </html>
