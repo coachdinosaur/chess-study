@@ -62,28 +62,17 @@ export async function currentProfile() {
 export async function requireProfile(expectedRole) {
   const profile = await currentProfile();
   if (!profile) {
-    const next = encodeURIComponent(window.location.pathname + window.location.search);
-    window.location.replace(`./login.html?next=${next}`);
+    if (expectedRole === 'student') {
+      window.location.replace('./join.html');
+    } else {
+      const next = encodeURIComponent(window.location.pathname + window.location.search);
+      window.location.replace(`./login.html?next=${next}`);
+    }
     return null;
   }
 
   if (expectedRole && profile.role !== expectedRole) {
     window.location.replace(profile.role === 'teacher' ? './teacher.html' : './student.html');
-    return null;
-  }
-
-  return profile;
-}
-
-export async function requireStudentProfile() {
-  const profile = await currentProfile();
-  if (!profile) {
-    window.location.replace('./join.html');
-    return null;
-  }
-
-  if (profile.role !== 'student') {
-    window.location.replace('./teacher.html');
     return null;
   }
 
