@@ -82,8 +82,8 @@ select { min-height: 44px; }
 .board-card-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.8rem; }
 .status-pill { border: 1px solid rgba(31, 111, 74, 0.28); border-radius: 999px; padding: 0.42rem 0.7rem; color: var(--accent-strong); background: rgba(75, 157, 103, 0.12); font-size: 0.8rem; font-weight: 800; }
 .board-frame { width: min(100%, 760px); margin: 0 auto; padding: clamp(6px, 1vw, 10px); border-radius: 18px; background: #26392d; box-shadow: 0 14px 35px rgba(18, 34, 23, 0.22); }
-.chess-board { display: grid; grid-template-columns: repeat(8, 1fr); width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 11px; touch-action: manipulation; }
-.square { position: relative; display: grid; place-items: center; border: 0; border-radius: 0; padding: 0; min-height: 0; background: var(--light-square); }
+.chess-board { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); grid-template-rows: repeat(8, minmax(0, 1fr)); width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 11px; touch-action: manipulation; }
+.square { position: relative; display: grid; place-items: center; width: 100%; height: 100%; min-width: 0; min-height: 0; border: 0; border-radius: 0; padding: 0; background: var(--light-square); }
 .square.dark { background: var(--dark-square); }
 .square.selected { box-shadow: inset 0 0 0 999px color-mix(in srgb, var(--selected) 52%, transparent); }
 .square.last-move { box-shadow: inset 0 0 0 999px var(--last); }
