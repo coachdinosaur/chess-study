@@ -251,11 +251,12 @@
 
   SupabaseBroadcastChannel.prototype.postMessage = function (message) {
     var self = this;
-    if (this.closed || !message || !message.state || !this.credentials.accessToken) return;
+    if (this.closed || !message || !this.credentials.accessToken) return;
     if (message.type === 'request-state') {
       this.queue = this.queue.then(function () { return fetchState(self); }).catch(function () {});
       return;
     }
+    if (!message.state) return;
 
     this.queue = this.queue.then(async function () {
       var authoritative;
