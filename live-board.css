@@ -1,0 +1,242 @@
+:root {
+  color-scheme: light;
+  --page: #eef3ef;
+  --surface: rgba(255, 255, 255, 0.94);
+  --surface-strong: #ffffff;
+  --text: #17211b;
+  --muted: #617067;
+  --line: rgba(28, 51, 38, 0.14);
+  --accent: #1f6f4a;
+  --accent-strong: #18583b;
+  --light-square: #e7efe6;
+  --dark-square: #73916f;
+  --selected: #f6d365;
+  --legal: rgba(18, 75, 46, 0.28);
+  --last: rgba(242, 204, 96, 0.52);
+  --shadow: 0 22px 60px rgba(31, 54, 40, 0.14);
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #111713;
+  --surface: rgba(27, 36, 30, 0.96);
+  --surface-strong: #202b24;
+  --text: #edf5ef;
+  --muted: #a7b5aa;
+  --line: rgba(224, 239, 228, 0.12);
+  --accent: #77bd91;
+  --accent-strong: #9bd4ad;
+  --light-square: #a9b8a5;
+  --dark-square: #526c51;
+  --selected: #d9b94d;
+  --legal: rgba(238, 248, 240, 0.28);
+  --last: rgba(239, 202, 86, 0.42);
+  --shadow: 0 24px 72px rgba(0, 0, 0, 0.34);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(65, 137, 91, 0.16), transparent 34rem),
+    var(--page);
+}
+
+button,
+a,
+textarea { font: inherit; }
+
+button,
+.secondary-button {
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.65rem 0.95rem;
+  color: var(--text);
+  background: var(--surface-strong);
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+button:hover,
+.secondary-button:hover { border-color: var(--accent); }
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.live-board-shell {
+  width: min(1180px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 1.25rem 0 2.5rem;
+}
+
+.live-board-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+h1, h2, p { margin-top: 0; }
+h1 { margin-bottom: 0.35rem; font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1; }
+h2 { margin-bottom: 0; font-size: 1.2rem; }
+.subtitle { color: var(--muted); margin-bottom: 0; }
+.eyebrow {
+  margin-bottom: 0.35rem;
+  color: var(--accent);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.live-board-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 330px);
+  gap: 1rem;
+  align-items: start;
+}
+
+.board-card,
+.side-card {
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.board-card { padding: clamp(0.8rem, 2vw, 1.25rem); }
+.board-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.status-pill {
+  border: 1px solid rgba(31, 111, 74, 0.28);
+  border-radius: 999px;
+  padding: 0.42rem 0.7rem;
+  color: var(--accent-strong);
+  background: rgba(75, 157, 103, 0.12);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.board-frame {
+  width: min(100%, 760px);
+  margin: 0 auto;
+  padding: clamp(6px, 1vw, 10px);
+  border-radius: 18px;
+  background: #26392d;
+  box-shadow: 0 14px 35px rgba(18, 34, 23, 0.22);
+}
+
+.chess-board {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 11px;
+  touch-action: manipulation;
+}
+
+.square {
+  position: relative;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  min-height: 0;
+  background: var(--light-square);
+}
+.square.dark { background: var(--dark-square); }
+.square.selected { box-shadow: inset 0 0 0 999px color-mix(in srgb, var(--selected) 52%, transparent); }
+.square.last-move { box-shadow: inset 0 0 0 999px var(--last); }
+.square.legal::after {
+  content: "";
+  width: 24%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--legal);
+}
+.square.legal.capture::after {
+  width: 78%;
+  border: 6px solid var(--legal);
+  background: transparent;
+}
+.square:focus-visible { z-index: 2; outline: 3px solid #fff; outline-offset: -4px; }
+
+.piece {
+  width: 86%;
+  height: 86%;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.2));
+}
+
+.coordinate {
+  position: absolute;
+  font-size: clamp(0.55rem, 1.5vw, 0.72rem);
+  font-weight: 800;
+  opacity: 0.74;
+  pointer-events: none;
+}
+.coordinate.file { right: 4px; bottom: 2px; }
+.coordinate.rank { left: 4px; top: 2px; }
+.square.dark .coordinate { color: var(--light-square); }
+.square:not(.dark) .coordinate { color: var(--dark-square); }
+
+.board-toolbar,
+.side-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+.board-toolbar { justify-content: center; margin-top: 0.85rem; }
+.board-toolbar button:first-child,
+#loadFenButton { color: white; border-color: var(--accent); background: var(--accent); }
+
+.side-card { padding: 1rem; }
+.side-card section + section { border-top: 1px solid var(--line); margin-top: 1rem; padding-top: 1rem; }
+.side-card label { display: block; margin-bottom: 0.4rem; font-weight: 800; }
+textarea {
+  width: 100%;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.75rem;
+  color: var(--text);
+  background: var(--surface-strong);
+  line-height: 1.45;
+}
+.side-actions { margin-top: 0.6rem; }
+.message { min-height: 1.3em; margin: 0.65rem 0 0; color: var(--muted); font-size: 0.88rem; }
+.message.error { color: #c43c3c; }
+.move-list { margin: 0; padding-left: 1.6rem; color: var(--muted); }
+.move-list li { padding: 0.2rem 0; }
+.empty-moves { list-style: none; margin-left: -1.6rem; }
+
+@media (max-width: 840px) {
+  .live-board-layout { grid-template-columns: 1fr; }
+  .side-card { width: min(100%, 760px); margin: 0 auto; }
+}
+
+@media (max-width: 560px) {
+  .live-board-shell { width: 100%; padding: 0.7rem 0 1.5rem; }
+  .live-board-header { padding: 0 0.8rem; align-items: flex-start; }
+  .live-board-header .secondary-button { min-height: 38px; padding: 0.5rem 0.7rem; white-space: nowrap; }
+  .board-card, .side-card { border-radius: 0; border-left: 0; border-right: 0; }
+  .board-card { padding: 0.7rem 0; }
+  .board-card-head { padding: 0 0.8rem; }
+  .board-frame { width: 100%; padding: 4px; border-radius: 0; }
+  .chess-board { border-radius: 0; }
+  .board-toolbar { padding: 0 0.7rem; }
+}
