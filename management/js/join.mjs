@@ -10,12 +10,6 @@ import { setBusy, setStatus } from './ui.mjs';
 const form = document.querySelector('#joinForm');
 const statusBox = document.querySelector('#joinStatus');
 const configuredNotice = document.querySelector('#configuredNotice');
-const classCodeInput = document.querySelector('#classCode');
-
-const sharedCode = new URLSearchParams(window.location.search).get('code')?.trim().toUpperCase();
-if (classCodeInput && sharedCode && /^[A-Z0-9]{8}$/.test(sharedCode)) {
-  classCodeInput.value = sharedCode;
-}
 
 if (!MANAGEMENT_CONFIGURED) {
   setStatus(
@@ -31,7 +25,7 @@ async function ensureStudentSession() {
   if (existingSession?.user) {
     const profile = await currentProfile();
     if (profile?.role !== 'student') {
-      throw new Error('A teacher account cannot join a class as a student. Use a separate browser profile or private window.');
+      throw new Error('A teacher account cannot join a class as a student. Sign out first or use a separate browser profile.');
     }
     return existingSession;
   }
