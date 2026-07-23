@@ -111,6 +111,35 @@ button:disabled { cursor: wait; opacity: .65; }
 .form-row textarea:focus,
 .form-row select:focus { outline: 2px solid color-mix(in srgb, var(--accent) 60%, transparent); outline-offset: 1px; }
 
+.password-input {
+  position: relative;
+}
+.password-input input {
+  padding-right: 76px;
+}
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 7px;
+  min-width: 58px;
+  transform: translateY(-50%);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 5px 9px;
+  color: var(--accent-strong);
+  background: var(--panel-strong);
+  font-size: .82rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+.password-toggle:hover {
+  border-color: var(--accent);
+}
+.password-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .button,
 .button-secondary,
 .button-danger {
