@@ -11,7 +11,8 @@ h1,
 h2,
 strong,
 span,
-li {
+li,
+time {
   font-family: Arial, Helvetica, sans-serif !important;
   font-style: normal !important;
   font-synthesis: none;
@@ -22,6 +23,87 @@ input,
 select,
 textarea {
   font: inherit;
+}
+
+.session-messages {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.session-message-heading,
+.session-message-actions,
+.session-message-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.session-message-heading h2 {
+  margin: 0.12rem 0 0;
+  font-size: 1rem;
+}
+
+.compact-button {
+  padding: 0.45rem 0.7rem;
+  min-height: auto;
+}
+
+.session-message-list {
+  display: grid;
+  gap: 0.55rem;
+  max-height: 18rem;
+  overflow-y: auto;
+  padding-right: 0.15rem;
+}
+
+.session-message,
+.session-message-empty {
+  margin: 0;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--card) 92%, var(--accent) 8%);
+}
+
+.session-message.student {
+  background: color-mix(in srgb, var(--card) 94%, var(--muted) 6%);
+}
+
+.session-message-meta {
+  margin-bottom: 0.35rem;
+  font-size: 0.78rem;
+  color: var(--muted-text);
+}
+
+.session-message p {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.45;
+}
+
+.session-message a {
+  display: inline-block;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.session-message-form {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.session-message-form textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 4.6rem;
+}
+
+.session-message-actions .message {
+  margin: 0;
+  font-size: 0.78rem;
 }
 
 @media (min-width: 841px) {
@@ -35,13 +117,16 @@ textarea {
   }
 
   html[data-role="student"] .live-board-layout {
-    grid-template-columns: minmax(0, 660px);
+    grid-template-columns: minmax(0, 660px) minmax(280px, 350px);
   }
 
   html[data-role="student"] .board-frame,
-  html[data-role="student"] .student-lock-message,
-  html[data-role="student"] .side-card {
+  html[data-role="student"] .student-lock-message {
     width: min(100%, 620px);
+  }
+
+  html[data-role="student"] .side-card {
+    width: min(100%, 350px);
   }
 }
 
@@ -57,5 +142,9 @@ textarea {
 
   .board-frame {
     width: min(100%, 560px, calc(100vh - 210px));
+  }
+
+  .session-message-list {
+    max-height: 12rem;
   }
 }

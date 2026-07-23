@@ -15,7 +15,7 @@
     })();
   </script>
   <link rel="stylesheet" href="./live-board.css?v=20260722-live-board3">
-  <link rel="stylesheet" href="./live-board-display-fixes.css?v=20260723-upright-font1">
+  <link rel="stylesheet" href="./live-board-display-fixes.css?v=20260723-session-messages1">
 </head>
 <body>
   <main class="live-board-shell">
@@ -72,7 +72,7 @@
         <p id="studentLockMessage" class="student-lock-message" hidden>Teacher is demonstrating. Your board is view-only.</p>
 
         <div class="board-toolbar teacher-only" aria-label="Teacher board controls">
-          <button id="undoButton" type="button">Undo</button>
+          <button id="undoButton" type="button" aria-label="Move the last piece back" title="Move the last piece back">↶ Undo</button>
           <button id="resetButton" type="button">Reset</button>
           <button id="flipButton" type="button">Flip board</button>
           <button id="themeButton" type="button">Theme</button>
@@ -111,6 +111,25 @@
           <p class="eyebrow">Moves</p>
           <ol id="moveList" class="move-list"></ol>
         </section>
+
+        <section id="sessionMessages" class="session-messages" hidden>
+          <div class="session-message-heading">
+            <div>
+              <p class="eyebrow">Session messages</p>
+              <h2>Coach and student</h2>
+            </div>
+            <button id="clearSessionMessagesButton" class="secondary-button compact-button" type="button">Clear</button>
+          </div>
+          <div id="sessionMessageList" class="session-message-list" aria-live="polite"></div>
+          <form id="sessionMessageForm" class="session-message-form">
+            <label for="sessionMessageInput">Message or Lichess link</label>
+            <textarea id="sessionMessageInput" rows="3" maxlength="500" placeholder="Paste a Lichess link or type a short message"></textarea>
+            <div class="session-message-actions">
+              <span id="messageBoardStatus" class="message" aria-live="polite"></span>
+              <button id="sendSessionMessageButton" type="submit">Send</button>
+            </div>
+          </form>
+        </section>
       </aside>
     </section>
   </main>
@@ -118,9 +137,10 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.91.0/dist/umd/supabase.min.js" crossorigin="anonymous"></script>
   <script src="./live-board-realtime.js?v=20260722-live-board3"></script>
   <script src="./vendor/xlsx.full.min.js"></script>
-  <script type="module" src="./live-board.js?v=20260722-live-board3"></script>
+  <script type="module" src="./live-board.js?v=20260723-input-undo1"></script>
   <script src="./live-board-lesson-ux.js?v=20260723-lesson-loading"></script>
-  <script type="module" src="./live-board-drag.js?v=20260723-live-board1"></script>
+  <script type="module" src="./live-board-drag.js?v=20260723-click-drag2"></script>
   <script type="module" src="./live-board-display-fixes.js?v=20260723-desktop-startup2"></script>
+  <script src="./live-board-messages.js?v=20260723-session-messages1"></script>
 </body>
 </html>

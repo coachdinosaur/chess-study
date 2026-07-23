@@ -60,9 +60,8 @@ if (board) {
     const currentSource = board.querySelector(`.square[data-square="${drag.sourceSquare}"]`);
     if (!currentSource) return false;
 
-    // Use the board's existing click-to-move logic to select the piece and
-    // calculate legal destinations. This keeps dragging and tapping governed
-    // by exactly the same chess rules and synchronization path.
+    // Select through the board's existing click path so legal moves, turn rules,
+    // synchronization and promotion behavior remain shared with tap-to-move.
     currentSource.click();
 
     const selectedSource = board.querySelector(`.square[data-square="${drag.sourceSquare}"].selected`);
@@ -106,7 +105,7 @@ if (board) {
   board.addEventListener('pointerdown', (event) => {
     if (event.button !== 0 || drag.pointerId !== null) return;
     const source = event.target.closest('.square');
-    if (!source || source.disabled || !source.querySelector('.piece')) return;
+    if (!source || source.disabled) return;
 
     drag.pointerId = event.pointerId;
     drag.sourceSquare = source.dataset.square || '';
@@ -119,7 +118,8 @@ if (board) {
     if (event.pointerId !== drag.pointerId) return;
 
     const distance = Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY);
-    if (!drag.active && distance >= 7 && !beginDrag(event.clientX, event.clientY)) {
+    const source = board.querySelector(`.square[data-square="${drag.sourceSquare}"]`);
+    if (!drag.active && distance >= 7 && source?.querySelector('.piece') && !beginDrag(event.clientX, event.clientY)) {
       cleanup();
       return;
     }
@@ -137,9 +137,16 @@ if (board) {
       event.preventDefault();
       const destination = squareAtPoint(event.clientX, event.clientY);
       if (destination?.classList.contains('legal')) destination.click();
-      suppressTrustedClickUntil = Date.now() + 400;
+    } else {
+      // Some mobile browsers fail to dispatch the native click after pointer
+      // capture. Trigger it explicitly so tap a piece, then tap its destination
+      // always works just like the main chess board.
+      const tappedSquare = squareAtPoint(event.clientX, event.clientY)
+        || board.querySelector(`.square[data-square="${drag.sourceSquare}"]`);
+      tappedSquare?.click();
     }
 
+    suppressTrustedClickUntil = Date.now() + 400;
     cleanup();
   });
 
