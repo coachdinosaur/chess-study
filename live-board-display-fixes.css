@@ -139,16 +139,17 @@ textarea {
   }
 
   html[data-role="student"] .live-board-layout {
-    grid-template-columns: minmax(0, 660px) minmax(280px, 350px);
+    grid-template-columns: minmax(0, 560px) minmax(260px, 320px);
+    gap: 0.9rem;
   }
 
   html[data-role="student"] .board-frame,
   html[data-role="student"] .student-lock-message {
-    width: min(100%, 620px);
+    width: min(100%, 520px, calc(100vh - 240px));
   }
 
   html[data-role="student"] .side-card {
-    width: min(100%, 350px);
+    width: min(100%, 320px);
   }
 }
 
@@ -164,6 +165,11 @@ textarea {
 
   .board-frame {
     width: min(100%, 560px, calc(100vh - 210px));
+  }
+
+  html[data-role="student"] .board-frame,
+  html[data-role="student"] .student-lock-message {
+    width: min(100%, 500px, calc(100vh - 220px));
   }
 
   .session-message-list {
