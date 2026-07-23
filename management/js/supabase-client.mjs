@@ -7,7 +7,7 @@ import {
 let client = null;
 
 export function configurationMessage() {
-  return 'Management is not configured yet. Add the Supabase project URL and publishable key in management/js/config.mjs, then apply supabase/migrations/001_management_v1.sql.';
+  return 'Management is not configured yet. Add the Supabase project URL and publishable key in management/js/config.mjs, then apply management migrations 001 through 004.';
 }
 
 export function getSupabase() {
@@ -68,7 +68,9 @@ export async function requireProfile(expectedRole) {
   }
 
   if (expectedRole && profile.role !== expectedRole) {
-    window.location.replace(profile.role === 'teacher' ? './teacher.html' : './student.html');
+    const supabase = getSupabase();
+    await supabase.auth.signOut();
+    window.location.replace('./login.html');
     return null;
   }
 
