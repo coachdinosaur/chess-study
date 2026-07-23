@@ -4,6 +4,7 @@
   var SUPABASE_URL = 'https://oxcottitwvayrrcuypmb.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_-0VdtXfcJH__vKlXrX5QIg_8QKXmf6z';
   var POLL_INTERVAL_MS = 2000;
+  var client = null;
   var realtimeChannel = null;
   var pollTimer = null;
   var refreshInFlight = null;
@@ -29,39 +30,10 @@
   }
 
   async function rpc(functionName, parameters) {
-    var response = await fetch(SUPABASE_URL + '/rest/v1/rpc/' + functionName, {
-      method: 'POST',
-      mode: 'cors',
-      cache: 'no-store',
-      credentials: 'omit',
-      headers: {
-        apikey: SUPABASE_KEY,
-        Authorization: 'Bearer ' + SUPABASE_KEY,
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache, no-store, max-age=0',
-        Pragma: 'no-cache'
-      },
-      body: JSON.stringify(parameters)
-    });
-
-    var text = await response.text();
-    var data = null;
-    if (text) {
-      try {
-        data = JSON.parse(text);
-      } catch (_) {
-        data = text;
-      }
-    }
-
-    if (!response.ok) {
-      var message = data && typeof data === 'object'
-        ? (data.message || data.error || data.details)
-        : data;
-      throw new Error(message || ('Request failed with status ' + response.status));
-    }
-
-    return data;
+    if (!client) throw new Error('Supabase client is unavailable');
+    var response = await client.rpc(functionName, parameters);
+    if (response.error) throw response.error;
+    return response.data;
   }
 
   function setStatus(text, isError) {
@@ -182,7 +154,7 @@
     if (stopped) return;
     if (pollTimer) window.clearTimeout(pollTimer);
 
-    pollTimer = window.setTimeout(function runPoll() {
+    pollTimer = window.setTimeout(function () {
       refresh(details).catch(function (error) {
         console.warn('Could not refresh Live Board messages.', error);
       }).finally(function () {
@@ -200,7 +172,7 @@
         payload: { changedAt: Date.now() }
       });
     } catch (error) {
-      console.warn('Live Board message broadcast failed; polling will recover.', error);
+      console.warn('Message broadcast failed; polling will recover.', error);
     }
   }
 
@@ -212,6 +184,26 @@
     if (!details.roomCode || !details.accessToken || !['teacher', 'student'].includes(details.role)) {
       return;
     }
+
+    if (!window.supabase || typeof window.supabase.createClient !== 'function') {
+      panel.hidden = false;
+      setStatus('Messages could not connect.', true);
+      return;
+    }
+
+    client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false
+      },
+      global: {
+        fetch: function (input, init) {
+          var options = Object.assign({}, init || {}, { cache: 'no-store' });
+          return window.fetch(input, options);
+        }
+      }
+    });
 
     panel.hidden = false;
 
@@ -272,31 +264,21 @@
       }
     });
 
-    if (window.supabase && typeof window.supabase.createClient === 'function') {
-      var client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-        auth: {
-          persistSession: false,
-          autoRefreshToken: false,
-          detectSessionInUrl: false
+    realtimeChannel = client.channel('live-board:' + details.roomCode, {
+      config: { broadcast: { self: false, ack: false } }
+    });
+
+    realtimeChannel
+      .on('broadcast', { event: 'messages-changed' }, function () {
+        refresh(details).catch(function (error) {
+          console.warn('Could not refresh after a message broadcast.', error);
+        });
+      })
+      .subscribe(function (status) {
+        if (status === 'SUBSCRIBED') {
+          refresh(details).catch(function () {});
         }
       });
-
-      realtimeChannel = client.channel('live-board:' + details.roomCode, {
-        config: { broadcast: { self: false, ack: false } }
-      });
-
-      realtimeChannel
-        .on('broadcast', { event: 'messages-changed' }, function () {
-          refresh(details).catch(function (error) {
-            console.warn('Could not refresh after a message broadcast.', error);
-          });
-        })
-        .subscribe(function (status) {
-          if (status === 'SUBSCRIBED') {
-            refresh(details).catch(function () {});
-          }
-        });
-    }
 
     window.addEventListener('focus', function () {
       refresh(details).catch(function () {});
