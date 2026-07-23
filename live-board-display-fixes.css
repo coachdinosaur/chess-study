@@ -12,7 +12,16 @@ h2,
 strong,
 span,
 li {
+  font-family: Arial, Helvetica, sans-serif !important;
   font-style: normal !important;
+  font-synthesis: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }
 
 @media (min-width: 841px) {
