@@ -1,18 +1,27 @@
-.curriculum-head {
+.curriculum-head,
+.student-detail-head {
   align-items: end;
   flex-wrap: wrap;
 }
 
-.curriculum-head > div:first-child {
+.curriculum-head > div:first-child,
+.student-detail-head > div:first-child {
   flex: 1 1 320px;
 }
 
 .curriculum-filters {
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) minmax(140px, auto);
+  grid-template-columns: minmax(220px, 1.3fr) minmax(135px, .7fr) minmax(150px, .8fr);
   gap: 10px;
-  flex: 1 1 380px;
-  width: min(100%, 520px);
+  flex: 1 1 560px;
+  width: min(100%, 720px);
+}
+
+.student-filters {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) minmax(120px, .65fr);
+  gap: 10px;
+  margin-bottom: 12px;
 }
 
 .curriculum-filter-label {
@@ -53,9 +62,87 @@
   margin-bottom: 10px;
 }
 
-@media (max-width: 700px) {
+.heading-with-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.heading-with-chip h1 {
+  margin: 0;
+}
+
+.session-form {
+  margin-bottom: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.session-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.session-list {
+  margin-top: 4px;
+}
+
+.session-card .list-card-head p a {
+  color: var(--accent-strong);
+}
+
+.session-detail {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+}
+
+.session-detail strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: .82rem;
+  color: var(--accent-strong);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.session-detail p {
+  margin: 0;
+  color: var(--text);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+#sessionHomework,
+#sessionNextStep {
+  min-height: 88px;
+}
+
+input:disabled,
+textarea:disabled,
+select:disabled {
+  opacity: .72;
+  cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
   .curriculum-filters {
+    grid-template-columns: minmax(190px, 1fr) repeat(2, minmax(130px, .7fr));
+    width: 100%;
+  }
+}
+
+@media (max-width: 700px) {
+  .curriculum-filters,
+  .student-filters,
+  .session-form-grid {
     grid-template-columns: 1fr;
     width: 100%;
+  }
+
+  .student-detail-head {
+    align-items: flex-start;
   }
 }
