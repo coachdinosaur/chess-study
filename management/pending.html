@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Teacher Account Review | CD Digital Chess</title>
+  <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
+  <link rel="stylesheet" href="./management.css?v=20260723-hardening1">
+  <link rel="stylesheet" href="./hardening.css?v=20260723-hardening1">
+</head>
+<body>
+  <div class="portal-shell">
+    <header class="portal-header">
+      <a class="portal-brand" href="./index.html">
+        <span class="portal-brand-mark" aria-hidden="true">♟</span>
+        <span class="portal-brand-copy"><strong>Teacher account</strong><span>Review status</span></span>
+      </a>
+      <nav class="portal-actions">
+        <a class="button-secondary" href="./account.html">Account</a>
+        <a class="button-secondary" href="./privacy.html">Privacy</a>
+        <button id="signOutButton" class="button-danger" type="button">Sign out</button>
+      </nav>
+    </header>
+
+    <main class="stack approval-card">
+      <div id="approvalStatus" class="status" aria-live="polite">Checking account status…</div>
+      <section class="panel notice-panel" data-tone="warning">
+        <h1 id="approvalTitle">Teacher account awaiting approval</h1>
+        <p id="approvalCopy" class="panel-copy">Private management access is not available yet.</p>
+        <div id="suspensionReason" class="status" data-tone="warning" hidden></div>
+        <div class="inline-actions">
+          <button id="refreshApprovalButton" class="button" type="button">Refresh status</button>
+          <a class="button-secondary" href="../lessons/index.html">Public lessons</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script type="module" src="./js/pending.mjs?v=20260723-hardening1"></script>
+</body>
+</html>
