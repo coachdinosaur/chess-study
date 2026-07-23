@@ -11,7 +11,10 @@
 
     client.channel = function (name, options) {
       var normalizedName = String(name || '');
-      if (normalizedName.indexOf('live-board:') === 0) {
+      if (
+        normalizedName.indexOf('live-board:') === 0
+        || normalizedName.indexOf('live-board-messages:') === 0
+      ) {
         var parts = normalizedName.split(':');
         normalizedName = parts.slice(0, 2).join(':');
       }
