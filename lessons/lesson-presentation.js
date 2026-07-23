@@ -87,7 +87,7 @@
     scene.classList.add("presentation-scene");
     scene.dataset.presentationIndex = String(index);
     scene.dataset.presentationTitle = sceneTitle(scene, index);
-    scene.setAttribute("aria-hidden", "true");
+    scene.setAttribute("aria-hidden", "false");
     scene.setAttribute("tabindex", "-1");
     markCoachOnlyNotes(scene);
 
@@ -273,8 +273,15 @@
       if (exit && typeof exit.catch === "function") exit.catch(function () {});
     }
     nativeFullscreenRequested = false;
-    window.scrollTo({ top: previousScrollY, behavior: "instant" });
+    window.scrollTo({ top: previousScrollY, behavior: "auto" });
     if (launchButton) launchButton.focus({ preventScroll: true });
+  }
+
+  function onFullscreenChange() {
+    if (nativeFullscreenRequested && !document.fullscreenElement && document.body.classList.contains("lesson-presentation-active")) {
+      nativeFullscreenRequested = false;
+      exitPresentation();
+    }
   }
 
   function isTypingTarget(target) {
@@ -323,6 +330,7 @@
     createToolbar();
     addLaunchButton();
     document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("fullscreenchange", onFullscreenChange);
   }
 
   if (document.readyState === "loading") {
