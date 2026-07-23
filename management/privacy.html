@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Management Privacy Notice | CD Digital Chess</title>
+  <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
+  <link rel="stylesheet" href="./management.css?v=20260723-hardening1">
+  <link rel="stylesheet" href="./hardening.css?v=20260723-hardening1">
+</head>
+<body>
+  <div class="portal-shell">
+    <header class="portal-header">
+      <a class="portal-brand" href="./index.html">
+        <span class="portal-brand-mark" aria-hidden="true">♟</span>
+        <span class="portal-brand-copy"><strong>Management privacy</strong><span>Operational notice</span></span>
+      </a>
+      <nav class="portal-actions">
+        <a class="button-secondary" href="./login.html">Teacher sign in</a>
+        <a class="button-secondary" href="./index.html">Management home</a>
+      </nav>
+    </header>
+
+    <main class="panel privacy-copy">
+      <div class="status" data-tone="warning">This is an operational privacy notice for the current software. Obtain jurisdiction-specific legal review before a broad commercial launch.</div>
+      <h1>How the coaching management area handles data</h1>
+      <p>The management area is a private teacher workspace. Students do not create management accounts or sign in to it.</p>
+
+      <h2>Information stored</h2>
+      <ul>
+        <li>Teacher account email, display name, approval status, and security events.</li>
+        <li>Teacher-entered student names, general notes, lesson status, coaching-session notes, homework, and next steps.</li>
+        <li>Technical timestamps needed to maintain history and investigate account activity.</li>
+      </ul>
+
+      <h2>Purpose</h2>
+      <p>The information is used to operate the private coaching tracker, preserve lesson history, support account security, and let teachers export or delete their data.</p>
+
+      <h2>Access and isolation</h2>
+      <p>Database Row Level Security restricts student, lesson, and session records to the owning approved teacher. Platform administrators can review teacher-account status and limited audit metadata. Audit entries intentionally avoid copying the contents of private coaching notes.</p>
+
+      <h2>Children and guardian permission</h2>
+      <p>Teachers are responsible for collecting only information they genuinely need and for obtaining guardian permission when required for minor students. Avoid storing birthdates, home addresses, medical details, or unrelated family information in general notes.</p>
+
+      <h2>Export, correction, and deletion</h2>
+      <p>Approved teachers can export their complete current management data from the Account page. Ordinary teacher accounts can permanently delete themselves after password confirmation. Platform-administrator accounts require an ownership transfer before deletion.</p>
+
+      <h2>Service providers and international use</h2>
+      <p>The static site is hosted separately from the Supabase authentication and database service. A commercial launch should publish the final hosting locations, subprocessors, retention schedule, contact method, and lawful basis appropriate to the countries served.</p>
+
+      <h2>Security limitations</h2>
+      <p>No browser application is magically invulnerable because it has a tasteful dark theme. Production operation still requires custom SMTP, configured redirect URLs, backups, monitoring, incident response, and periodic access-control testing.</p>
+    </main>
+  </div>
+</body>
+</html>
