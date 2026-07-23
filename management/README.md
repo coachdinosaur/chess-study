@@ -116,4 +116,4 @@ Test at minimum:
 
 ## Production boundaries
 
-V2.1 adds important controls but does not magically complete international compliance. Before broad commercial launch, complete the items in [`PRODUCTION_CHECKLIST.md`](PRODUCTION_CHECKLIST.md), including legal review, custom SMTP, backups, monitoring, incident response, retention rules, and access-control testing.
+V2.1 provides the application-level hardening controls listed above. Before broad commercial launch, complete the items in [`PRODUCTION_CHECKLIST.md`](PRODUCTION_CHECKLIST.md), including legal review, custom SMTP, backups, monitoring, incident response, retention rules, and access-control testing.
