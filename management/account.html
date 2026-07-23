@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Teacher Account | CD Digital Chess</title>
+  <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
+  <link rel="stylesheet" href="./management.css?v=20260723-hardening1">
+  <link rel="stylesheet" href="./hardening.css?v=20260723-hardening1">
+</head>
+<body>
+  <div class="portal-shell">
+    <header class="portal-header">
+      <a class="portal-brand" href="./teacher.html">
+        <span class="portal-brand-mark" aria-hidden="true">♟</span>
+        <span class="portal-brand-copy"><strong>Teacher account</strong><span id="profileName">Loading teacher…</span></span>
+      </a>
+      <nav class="portal-actions">
+        <a class="button-secondary" href="./teacher.html">Teacher dashboard</a>
+        <a class="button-secondary" href="./privacy.html">Privacy</a>
+        <button id="signOutButton" class="button-danger" type="button">Sign out</button>
+      </nav>
+    </header>
+
+    <main class="stack">
+      <div id="accountStatus" class="status" aria-live="polite" hidden></div>
+      <div class="security-grid">
+        <section class="panel">
+          <h1>Account details</h1>
+          <div class="account-summary">
+            <div class="account-summary-row"><span>Email</span><strong id="accountEmail">Loading…</strong></div>
+            <div class="account-summary-row"><span>Approval status</span><strong id="accountStatusLabel">Loading…</strong></div>
+            <div class="account-summary-row"><span>Role</span><strong id="accountAdminLabel">Teacher account</strong></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Change password</h2>
+          <form id="changePasswordForm" class="form-grid">
+            <div class="form-row">
+              <label for="currentPassword">Current password</label>
+              <div class="password-input">
+                <input id="currentPassword" name="currentPassword" type="password" autocomplete="current-password" required>
+                <button class="password-toggle" type="button" data-password-toggle="currentPassword" data-password-label="current password" aria-controls="currentPassword" aria-pressed="false">Show</button>
+              </div>
+            </div>
+            <div class="form-row">
+              <label for="newPassword">New password</label>
+              <div class="password-input">
+                <input id="newPassword" name="newPassword" type="password" minlength="8" autocomplete="new-password" required>
+                <button class="password-toggle" type="button" data-password-toggle="newPassword" data-password-label="new password" aria-controls="newPassword" aria-pressed="false">Show</button>
+              </div>
+            </div>
+            <div class="form-row">
+              <label for="confirmPassword">Confirm new password</label>
+              <div class="password-input">
+                <input id="confirmPassword" name="confirmPassword" type="password" minlength="8" autocomplete="new-password" required>
+                <button class="password-toggle" type="button" data-password-toggle="confirmPassword" data-password-label="password confirmation" aria-controls="confirmPassword" aria-pressed="false">Show</button>
+              </div>
+            </div>
+            <button class="button" type="submit">Update password</button>
+          </form>
+        </section>
+
+        <section class="panel panel-wide">
+          <h2>Export management data</h2>
+          <p class="panel-copy">Download the teacher profile, all student records, lesson progress, and coaching sessions as one JSON file.</p>
+          <button id="exportAccountButton" class="button-secondary" type="button">Export all account data</button>
+        </section>
+
+        <section class="panel danger-panel panel-wide">
+          <h2>Delete teacher account</h2>
+          <p class="panel-copy">Deletion permanently removes the authentication account and cascades through private students, lesson progress, and coaching sessions.</p>
+          <div id="adminDeleteNotice" class="status" data-tone="warning" hidden>A platform administrator cannot self-delete. Another administrator must first take ownership and remove this administrator role.</div>
+          <form id="deleteAccountForm" class="form-grid">
+            <div class="form-row">
+              <label for="deleteCurrentPassword">Current password</label>
+              <div class="password-input">
+                <input id="deleteCurrentPassword" name="currentPassword" type="password" autocomplete="current-password" required>
+                <button class="password-toggle" type="button" data-password-toggle="deleteCurrentPassword" data-password-label="current password" aria-controls="deleteCurrentPassword" aria-pressed="false">Show</button>
+              </div>
+            </div>
+            <div class="form-row">
+              <label for="deleteConfirmation">Type DELETE</label>
+              <input id="deleteConfirmation" name="confirmation" type="text" autocomplete="off" pattern="DELETE" required>
+            </div>
+            <button id="deleteAccountButton" class="button-danger" type="submit">Permanently delete account</button>
+          </form>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script type="module" src="./js/password-toggle.mjs?v=20260723-hardening1"></script>
+  <script type="module" src="./js/account.mjs?v=20260723-hardening1"></script>
+</body>
+</html>
