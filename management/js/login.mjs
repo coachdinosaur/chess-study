@@ -3,39 +3,15 @@ import {
   currentProfile,
   getSupabase,
   readableError,
+  teacherDestination,
 } from './supabase-client.mjs';
 import { setBusy, setStatus } from './ui.mjs';
 
 const signInForm = document.querySelector('#signInForm');
 const signUpForm = document.querySelector('#signUpForm');
+const recoveryForm = document.querySelector('#recoveryForm');
 const statusBox = document.querySelector('#authStatus');
 const configuredNotice = document.querySelector('#configuredNotice');
-
-function initializePasswordToggles() {
-  for (const toggle of document.querySelectorAll('[data-password-toggle]')) {
-    const inputId = toggle.dataset.passwordToggle;
-    const input = document.getElementById(inputId);
-    if (!input) continue;
-
-    toggle.addEventListener('click', () => {
-      const isVisible = input.type === 'text';
-      input.type = isVisible ? 'password' : 'text';
-      toggle.textContent = isVisible ? 'Show' : 'Hide';
-      toggle.setAttribute('aria-pressed', String(!isVisible));
-      toggle.setAttribute('aria-label', `${isVisible ? 'Show' : 'Hide'} ${inputId === 'signUpPassword' ? 'new' : 'sign-in'} password`);
-      input.focus({ preventScroll: true });
-      const end = input.value.length;
-      input.setSelectionRange?.(end, end);
-    });
-  }
-}
-
-function teacherDestination(profile) {
-  if (profile?.role !== 'teacher') {
-    throw new Error('This management portal is for teacher accounts only.');
-  }
-  return './teacher.html';
-}
 
 async function clearRetiredStudentSession(profile) {
   if (!profile || profile.role === 'teacher') return false;
@@ -62,7 +38,12 @@ async function redirectExistingSession() {
   }
 }
 
-initializePasswordToggles();
+const query = new URLSearchParams(window.location.search);
+if (query.get('deleted') === '1') {
+  setStatus(statusBox, 'The teacher account and its management data were deleted.', 'success');
+} else if (query.get('reset') === '1') {
+  setStatus(statusBox, 'Password updated. Sign in with the new password.', 'success');
+}
 
 if (!MANAGEMENT_CONFIGURED) {
   setStatus(
@@ -124,6 +105,7 @@ signUpForm?.addEventListener('submit', async (event) => {
       email,
       password,
       options: {
+        emailRedirectTo: new URL('./pending.html', window.location.href).href,
         data: {
           role: 'teacher',
           display_name: displayName,
@@ -135,7 +117,7 @@ signUpForm?.addEventListener('submit', async (event) => {
     if (!data.session) {
       setStatus(
         statusBox,
-        'Account created. Check the teacher email for the confirmation link, then sign in.',
+        'Account created. Confirm the teacher email, then wait for platform approval before opening private student records.',
         'success',
       );
       signUpForm.reset();
@@ -143,9 +125,40 @@ signUpForm?.addEventListener('submit', async (event) => {
       return;
     }
 
-    window.location.replace('./teacher.html');
+    const profile = await currentProfile();
+    window.location.replace(teacherDestination(profile));
   } catch (error) {
     setStatus(statusBox, readableError(error), 'error');
+    setBusy(button, false);
+  }
+});
+
+recoveryForm?.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const button = recoveryForm.querySelector('button[type="submit"]');
+  setBusy(button, true, 'Sending…');
+  setStatus(statusBox, '');
+
+  try {
+    const form = new FormData(recoveryForm);
+    const email = String(form.get('email') || '').trim();
+    if (!email) throw new Error('Enter the teacher account email.');
+
+    const supabase = getSupabase();
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: new URL('./reset-password.html', window.location.href).href,
+    });
+    if (error) throw error;
+
+    setStatus(
+      statusBox,
+      'If that email belongs to a teacher account, a password-reset link has been sent.',
+      'success',
+    );
+    recoveryForm.reset();
+  } catch (error) {
+    setStatus(statusBox, readableError(error), 'error');
+  } finally {
     setBusy(button, false);
   }
 });
