@@ -11,6 +11,25 @@ const signUpForm = document.querySelector('#signUpForm');
 const statusBox = document.querySelector('#authStatus');
 const configuredNotice = document.querySelector('#configuredNotice');
 
+function initializePasswordToggles() {
+  for (const toggle of document.querySelectorAll('[data-password-toggle]')) {
+    const inputId = toggle.dataset.passwordToggle;
+    const input = document.getElementById(inputId);
+    if (!input) continue;
+
+    toggle.addEventListener('click', () => {
+      const isVisible = input.type === 'text';
+      input.type = isVisible ? 'password' : 'text';
+      toggle.textContent = isVisible ? 'Show' : 'Hide';
+      toggle.setAttribute('aria-pressed', String(!isVisible));
+      toggle.setAttribute('aria-label', `${isVisible ? 'Show' : 'Hide'} ${inputId === 'signUpPassword' ? 'new' : 'sign-in'} password`);
+      input.focus({ preventScroll: true });
+      const end = input.value.length;
+      input.setSelectionRange?.(end, end);
+    });
+  }
+}
+
 function teacherDestination(profile) {
   if (profile?.role !== 'teacher') {
     throw new Error('This management portal is for teacher accounts only.');
@@ -42,6 +61,8 @@ async function redirectExistingSession() {
     setStatus(statusBox, readableError(error), 'error');
   }
 }
+
+initializePasswordToggles();
 
 if (!MANAGEMENT_CONFIGURED) {
   setStatus(
