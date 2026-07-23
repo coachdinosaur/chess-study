@@ -11,15 +11,33 @@ const signUpForm = document.querySelector('#signUpForm');
 const statusBox = document.querySelector('#authStatus');
 const configuredNotice = document.querySelector('#configuredNotice');
 
-function destinationFor(profile) {
-  return profile?.role === 'teacher' ? './teacher.html' : './student.html';
+function teacherDestination(profile) {
+  if (profile?.role !== 'teacher') {
+    throw new Error('This management portal is for teacher accounts only.');
+  }
+  return './teacher.html';
+}
+
+async function clearRetiredStudentSession(profile) {
+  if (!profile || profile.role === 'teacher') return false;
+  const supabase = getSupabase();
+  const { error } = await supabase.auth.signOut();
+  if (error) throw error;
+  setStatus(
+    statusBox,
+    'The retired student-management session was signed out. Sign in with a teacher account.',
+    'warning',
+  );
+  return true;
 }
 
 async function redirectExistingSession() {
   if (!MANAGEMENT_CONFIGURED) return;
   try {
     const profile = await currentProfile();
-    if (profile) window.location.replace(destinationFor(profile));
+    if (!profile) return;
+    if (await clearRetiredStudentSession(profile)) return;
+    window.location.replace(teacherDestination(profile));
   } catch (error) {
     setStatus(statusBox, readableError(error), 'error');
   }
@@ -54,7 +72,11 @@ signInForm?.addEventListener('submit', async (event) => {
     if (error) throw error;
 
     const profile = await currentProfile();
-    window.location.replace(destinationFor(profile));
+    if (profile?.role !== 'teacher') {
+      await supabase.auth.signOut();
+      throw new Error('This management portal accepts teacher accounts only.');
+    }
+    window.location.replace(teacherDestination(profile));
   } catch (error) {
     setStatus(statusBox, readableError(error), 'error');
     setBusy(button, false);
