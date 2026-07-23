@@ -30,11 +30,7 @@
   function makeStudentLink(roomCode, studentToken) {
     var url = new URL(location.href);
     url.search = '';
-    var hash = new URLSearchParams();
-    hash.set('room', roomCode);
-    hash.set('role', 'student');
-    hash.set('access', studentToken);
-    url.hash = hash.toString();
+    url.hash = 's=' + roomCode + '.' + studentToken;
     return url.href;
   }
 
@@ -87,7 +83,7 @@
 
     var link = makeStudentLink(code, credentials.studentToken);
     if (await copyText(link)) {
-      setStatus('Student link copied');
+      setStatus('Short student link copied');
       return;
     }
 
