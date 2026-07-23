@@ -11,7 +11,7 @@ This directory provides a private teacher dashboard for the framework-free CD Di
 - Teachers track curriculum lessons as Not yet taught, Taught, Needs practice, or Completed.
 - Teachers record dated coaching sessions, duration, homework, and next steps.
 - Teachers can export account data and ordinary teacher accounts can permanently delete themselves after password confirmation.
-- Platform administrators can approve or suspend teachers and inspect limited management audit metadata.
+- Platform administrators can approve or suspend teachers, grant or remove administrator access, and inspect limited management audit metadata.
 
 ## Main pages
 
@@ -21,7 +21,7 @@ This directory provides a private teacher dashboard for the framework-free CD Di
 - `pending.html` — pending or suspended teacher status
 - `teacher.html` — private student, session, and curriculum tracker
 - `account.html` — password change, full data export, and account deletion
-- `admin.html` — teacher-account approval and audit history
+- `admin.html` — teacher-account approval, administrator ownership, and audit history
 - `privacy.html` — operational privacy notice requiring legal review before public launch
 
 The retired anonymous student join page, student dashboard, and their JavaScript files are intentionally removed.
@@ -39,18 +39,19 @@ supabase/migrations/005_coaching_sessions.sql
 supabase/migrations/006_teacher_account_controls.sql
 supabase/migrations/007_management_audit_log.sql
 supabase/migrations/008_management_approval_policies.sql
+supabase/migrations/009_platform_admin_management.sql
 ```
 
-Migrations 006 through 008 add the V2.1 hardening foundation:
+Migrations 006 through 009 add the V2.1 hardening foundation:
 
 - pending, approved, and suspended teacher-account states
-- a platform-administrator role
-- administrator RPCs for account review
-- audit history for teacher reviews, students, lesson progress, sessions, exports, and deletion
+- a transferable platform-administrator role with final-admin protection
+- administrator RPCs for account and administrator review
+- audit history for teacher reviews, administrator changes, students, lesson progress, sessions, exports, and deletion
 - approval-aware Row Level Security on the current management tables
 - self-service account deletion for non-administrator teachers
 
-The migration automatically approves existing teacher accounts and assigns the earliest existing teacher as the first platform administrator. New teachers start as pending.
+The migrations automatically approve existing teacher accounts and assign the earliest existing teacher as the first platform administrator. New teachers start as pending.
 
 ## Supabase Auth configuration
 
@@ -105,11 +106,13 @@ Test at minimum:
 2. A second teacher signs up, confirms email, and lands on `pending.html`.
 3. Administrator approves the second teacher.
 4. Approved teacher can add students and sessions.
-5. Suspended teacher is redirected away from private data and database queries are rejected by RLS.
-6. Password-recovery link reaches `reset-password.html` and updates the password.
-7. Full account export contains students, lesson progress, and sessions.
-8. A non-administrator teacher can delete the account after password and `DELETE` confirmation.
-9. Audit history records account review and management changes without copying private note contents.
+5. Administrator grants the second approved teacher administrator access.
+6. The second administrator can remove the original administrator role without leaving the platform with zero administrators.
+7. Suspended teacher is redirected away from private data and database queries are rejected by RLS.
+8. Password-recovery link reaches `reset-password.html` and updates the password.
+9. Full account export contains students, lesson progress, and sessions.
+10. A non-administrator teacher can delete the account after password and `DELETE` confirmation.
+11. Audit history records account and administrator review plus management changes without copying private note contents.
 
 ## Production boundaries
 
