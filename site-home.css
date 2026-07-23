@@ -1,15 +1,18 @@
 .site-intro {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 0.75rem 1rem;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 0.7rem;
   padding: 0.78rem 0.9rem;
   border: 1px solid var(--card-border);
   border-radius: var(--radius-panel, 18px);
   background: var(--header-bg);
   box-shadow: 0 10px 24px var(--panel-shadow);
 }
-.site-intro-copy { min-width: 0; }
+.site-intro-copy {
+  min-width: 0;
+  max-width: 58rem;
+}
 .site-intro-kicker {
   margin: 0 0 0.12rem;
   color: var(--accent-strong);
@@ -35,11 +38,15 @@
 .site-intro-actions {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 0.45rem;
+  width: 100%;
 }
 .site-intro-button {
   display: inline-flex;
+  flex: 1 1 10rem;
+  min-width: 0;
+  max-width: 15rem;
   min-height: 2.35rem;
   align-items: center;
   justify-content: center;
@@ -52,7 +59,9 @@
   font-size: 0.78rem;
   font-weight: 750;
   line-height: 1.1;
+  text-align: center;
   text-decoration: none;
+  white-space: normal;
   cursor: pointer;
   transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 }
@@ -76,14 +85,15 @@ html[data-board-only="1"] .site-intro,
 body.focus-mode .site-intro,
 body.is-focus-mode .site-intro,
 body.focus-mode-active .site-intro { display: none; }
-@media (max-width: 760px) {
+@media (max-width: 520px) {
   .site-intro {
-    grid-template-columns: 1fr;
     gap: 0.6rem;
     padding: 0.68rem 0.75rem;
   }
-  .site-intro-actions { justify-content: flex-start; }
-  .site-intro-button { flex: 1 1 9rem; }
+  .site-intro-button {
+    flex-basis: 100%;
+    max-width: none;
+  }
 }
 @media (min-width: 761px) and (max-height: 650px) {
   .site-intro { padding: 0.55rem 0.7rem; }
