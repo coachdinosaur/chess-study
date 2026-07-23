@@ -4,9 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Chess Coaching Tracker | CD Digital Chess</title>
-  <meta name="description" content="Private teacher dashboard for students, lesson history, and curriculum progress.">
+  <meta name="description" content="Private teacher dashboard for students, lesson history, coaching sessions, and curriculum progress.">
   <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
-  <link rel="stylesheet" href="./management.css">
+  <link rel="stylesheet" href="./management.css?v=20260723-hardening1">
+  <link rel="stylesheet" href="./hardening.css?v=20260723-hardening1">
 </head>
 <body>
   <div class="portal-shell">
@@ -16,6 +17,7 @@
         <span class="portal-brand-copy"><strong>CD Digital Chess</strong><span>Teacher lesson tracker</span></span>
       </a>
       <nav class="portal-actions" aria-label="Portal navigation">
+        <a class="button-secondary" href="./privacy.html">Privacy</a>
         <a class="button-secondary" href="../lessons/index.html">Lesson index</a>
         <a class="button-secondary" href="../index.html">Study board</a>
       </nav>
@@ -24,23 +26,23 @@
     <main>
       <section class="hero">
         <p class="muted">Private coaching management</p>
-        <h1>Track every student's lesson progress from one teacher dashboard.</h1>
-        <p>Add one student or many students, record what has already been taught, flag lessons that need practice, and see what comes next. Students do not create accounts or use this management page.</p>
+        <h1>Track lesson progress and coaching sessions from one protected teacher workspace.</h1>
+        <p>Teachers manage private student records, homework, next steps, and curriculum status. Students do not create management accounts or open this dashboard.</p>
       </section>
 
       <section class="portal-grid" aria-label="Teacher portal">
         <article class="panel stack">
           <div>
             <h2>Teachers and coaches</h2>
-            <p class="panel-copy">Manage private student records and track progress through the curriculum listed in the public lesson index.</p>
+            <p class="panel-copy">Teacher accounts require verified email and platform approval. Approved teachers receive isolated access to their own student records.</p>
           </div>
-          <a class="button" href="./login.html">Open teacher dashboard</a>
+          <a class="button" href="./login.html">Open teacher portal</a>
         </article>
 
         <article class="panel stack">
           <div>
             <h2>Students</h2>
-            <p class="panel-copy">No management login is needed. Lessons remain available through the public lesson index or links shared directly by the teacher.</p>
+            <p class="panel-copy">No management login is needed. Lessons remain available through public links or the synchronized Live Board shared by the teacher.</p>
           </div>
           <a class="button-secondary" href="../lessons/index.html">Open public lessons</a>
         </article>
