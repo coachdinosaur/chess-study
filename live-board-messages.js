@@ -4,7 +4,10 @@
   var SUPABASE_URL = 'https://oxcottitwvayrrcuypmb.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_-0VdtXfcJH__vKlXrX5QIg_8QKXmf6z';
   var realtimeChannel = null;
+  var realtimeReady = false;
+  var pendingBroadcast = false;
   var pollTimer = null;
+  var lastRenderedSignature = '';
 
   function hashParams() {
     return new URLSearchParams(location.hash.replace(/^#/, ''));
@@ -21,8 +24,7 @@
     return {
       roomCode: normalizeRoomCode(hash.get('room') || search.get('room')),
       role: role,
-      accessToken: hash.get('access') || '',
-      sharedChannelToken: role === 'teacher' ? (hash.get('student') || '') : (hash.get('access') || '')
+      accessToken: hash.get('access') || ''
     };
   }
 
@@ -65,7 +67,17 @@
     element.classList.toggle('error', Boolean(isError));
   }
 
+  function signatureFor(messages) {
+    return messages.map(function (message) {
+      return [message.id, message.sender_role, message.created_at, message.body].join('|');
+    }).join('\n');
+  }
+
   function render(messages) {
+    var signature = signatureFor(messages);
+    if (signature === lastRenderedSignature) return;
+    lastRenderedSignature = signature;
+
     var list = document.getElementById('sessionMessageList');
     if (!list) return;
     list.replaceChildren();
@@ -111,10 +123,21 @@
   }
 
   async function notifyChanged() {
-    if (!realtimeChannel) return;
+    if (!realtimeChannel || !realtimeReady) {
+      pendingBroadcast = true;
+      return;
+    }
+
     try {
-      await realtimeChannel.send({ type: 'broadcast', event: 'messages-changed', payload: {} });
-    } catch (_) {}
+      var result = await realtimeChannel.send({
+        type: 'broadcast',
+        event: 'messages-changed',
+        payload: { changedAt: Date.now() }
+      });
+      pendingBroadcast = result !== 'ok';
+    } catch (_) {
+      pendingBroadcast = true;
+    }
   }
 
   async function initialize() {
@@ -135,6 +158,14 @@
     var form = document.getElementById('sessionMessageForm');
     var input = document.getElementById('sessionMessageInput');
     var sendButton = document.getElementById('sendSessionMessageButton');
+
+    async function refreshQuietly() {
+      try {
+        await refresh(client, details);
+      } catch (error) {
+        console.warn('Could not refresh session messages.', error);
+      }
+    }
 
     form.addEventListener('submit', async function (event) {
       event.preventDefault();
@@ -183,28 +214,39 @@
       }
     });
 
-    if (details.sharedChannelToken) {
-      realtimeChannel = client.channel('live-board-messages:' + details.roomCode + ':' + details.sharedChannelToken, {
-        config: { broadcast: { self: false, ack: false } }
+    realtimeChannel = client.channel('live-board-messages:' + details.roomCode, {
+      config: { broadcast: { self: false, ack: true } }
+    });
+
+    realtimeChannel
+      .on('broadcast', { event: 'messages-changed' }, function () {
+        refreshQuietly();
+      })
+      .subscribe(function (subscriptionStatus) {
+        realtimeReady = subscriptionStatus === 'SUBSCRIBED';
+        if (realtimeReady) {
+          refreshQuietly();
+          if (pendingBroadcast) notifyChanged();
+        }
       });
-      realtimeChannel
-        .on('broadcast', { event: 'messages-changed' }, function () {
-          refresh(client, details).catch(function () {});
-        })
-        .subscribe();
-    }
 
     try {
       await refresh(client, details);
-      setStatus('Messages are temporary to this room');
+      setStatus('Messages update automatically');
     } catch (error) {
       console.warn('Could not load session messages.', error);
       setStatus('Messages could not be loaded.', true);
     }
 
     pollTimer = window.setInterval(function () {
-      refresh(client, details).catch(function () {});
-    }, 15000);
+      refreshQuietly();
+    }, 5000);
+
+    window.addEventListener('focus', refreshQuietly);
+    window.addEventListener('online', refreshQuietly);
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) refreshQuietly();
+    });
   }
 
   window.addEventListener('beforeunload', function () {
