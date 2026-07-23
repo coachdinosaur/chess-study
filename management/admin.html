@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Platform Administration | CD Digital Chess</title>
+  <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
+  <link rel="stylesheet" href="./management.css?v=20260723-hardening1">
+  <link rel="stylesheet" href="./teacher-search.css?v=20260723-hardening1">
+  <link rel="stylesheet" href="./hardening.css?v=20260723-hardening1">
+</head>
+<body>
+  <div class="portal-shell">
+    <header class="portal-header">
+      <a class="portal-brand" href="./teacher.html">
+        <span class="portal-brand-mark" aria-hidden="true">♟</span>
+        <span class="portal-brand-copy"><strong>Platform administration</strong><span id="profileName">Loading administrator…</span></span>
+      </a>
+      <nav class="portal-actions">
+        <a class="button-secondary" href="./teacher.html">Teacher dashboard</a>
+        <a class="button-secondary" href="./account.html">Account</a>
+        <button id="signOutButton" class="button-danger" type="button">Sign out</button>
+      </nav>
+    </header>
+
+    <main class="stack">
+      <div id="adminStatus" class="status" aria-live="polite" hidden></div>
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <h1>Teacher accounts</h1>
+            <p class="panel-copy">Approve new teachers, return accounts to review, or suspend access. Student data stays isolated by teacher ownership.</p>
+          </div>
+          <button id="refreshAdminButton" class="button-secondary" type="button">Refresh</button>
+        </div>
+        <div class="form-row">
+          <label for="teacherSearch">Search teachers</label>
+          <input id="teacherSearch" type="search" autocomplete="off" placeholder="Name or email">
+        </div>
+        <div id="teacherAccountList" class="list"><div class="empty">Loading teacher accounts…</div></div>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <h2>Recent management audit events</h2>
+            <p class="panel-copy">The log records account reviews and changes to students, lesson progress, sessions, exports, and deletion requests without duplicating private note contents.</p>
+          </div>
+        </div>
+        <div id="auditList" class="list"><div class="empty">Loading audit history…</div></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script type="module" src="./js/admin-dashboard.mjs?v=20260723-hardening1"></script>
+</body>
+</html>
