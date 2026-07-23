@@ -176,3 +176,74 @@ textarea {
     max-height: 12rem;
   }
 }
+
+/* Keep the student board visually consistent when a phone or tablet rotates. */
+@media (max-width: 840px) {
+  html[data-role="student"] .live-board-shell {
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  html[data-role="student"] .live-board-header,
+  html[data-role="student"] .session-bar {
+    margin-left: 0.8rem;
+    margin-right: 0.8rem;
+  }
+
+  html[data-role="student"] .live-board-layout {
+    gap: 0;
+  }
+
+  html[data-role="student"] .board-card,
+  html[data-role="student"] .side-card {
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+  }
+
+  html[data-role="student"] .board-card {
+    padding: 0.7rem 0 0;
+  }
+
+  html[data-role="student"] .board-card-head {
+    padding-left: 0.8rem;
+    padding-right: 0.8rem;
+  }
+
+  html[data-role="student"] .board-frame {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  html[data-role="student"] .chess-board {
+    border-radius: 0;
+  }
+
+  html[data-role="student"] .student-lock-message {
+    width: calc(100% - 1.6rem);
+    margin-left: 0.8rem;
+    margin-right: 0.8rem;
+  }
+
+  html[data-role="student"] .side-card {
+    width: 100%;
+    margin-top: 1rem;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  html[data-role="student"] .board-frame,
+  html[data-role="student"] .chess-board {
+    border-radius: 0;
+  }
+
+  html[data-role="student"] .board-frame {
+    padding: 0;
+    box-shadow: none;
+  }
+}
