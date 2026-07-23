@@ -7,14 +7,16 @@
 - [ ] Production and local redirect URLs include `pending.html` and `reset-password.html`.
 - [ ] Password-change security notification email is enabled when available.
 - [ ] At least two trusted platform administrators exist before the original administrator is replaced or removed.
+- [ ] Granting administrator access and removing a non-final administrator are tested.
 - [ ] Pending, approved, and suspended account flows are tested in separate browser profiles.
 
 ## Database and access control
 
-- [ ] Migrations 001 through 008 are present in production.
+- [ ] Migrations 001 through 009 are present in production.
 - [ ] RLS tests verify Teacher A cannot read or modify Teacher B's students, progress, or sessions.
 - [ ] Suspended teachers cannot read or write private coaching records.
 - [ ] Administrator RPCs reject ordinary teachers.
+- [ ] The final platform administrator cannot be removed or self-delete.
 - [ ] Audit events avoid storing complete private note contents.
 - [ ] Database backups are enabled and a restoration has been tested.
 
@@ -37,7 +39,7 @@
 
 ## Release validation
 
-- [ ] Sign-up, confirmation, approval, sign-in, password reset, suspension, restoration, export, and deletion are browser-tested.
+- [ ] Sign-up, confirmation, approval, sign-in, password reset, suspension, restoration, export, deletion, and administrator transfer are browser-tested.
 - [ ] Desktop, tablet, and mobile layouts remain usable.
 - [ ] Keyboard navigation and visible focus states are tested.
 - [ ] No secret keys or credentials appear in repository files or browser storage.
