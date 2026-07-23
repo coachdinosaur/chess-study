@@ -1,0 +1,61 @@
+.curriculum-head {
+  align-items: end;
+  flex-wrap: wrap;
+}
+
+.curriculum-head > div:first-child {
+  flex: 1 1 320px;
+}
+
+.curriculum-filters {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(140px, auto);
+  gap: 10px;
+  flex: 1 1 380px;
+  width: min(100%, 520px);
+}
+
+.curriculum-filter-label {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.curriculum-filter-label > span {
+  font-size: .82rem;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.curriculum-filter-label input,
+.curriculum-filter-label select {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: var(--text);
+  background: #09171a;
+}
+
+.curriculum-filter-label input:focus,
+.curriculum-filter-label select:focus {
+  outline: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
+  outline-offset: 1px;
+}
+
+.curriculum-search-status {
+  min-height: 28px;
+  margin-bottom: 10px;
+}
+
+#lessonSearchEmpty {
+  margin-bottom: 10px;
+}
+
+@media (max-width: 700px) {
+  .curriculum-filters {
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+}
