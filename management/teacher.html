@@ -6,6 +6,7 @@
   <title>Teacher Dashboard | CD Digital Chess</title>
   <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
   <link rel="stylesheet" href="./management.css">
+  <link rel="stylesheet" href="./teacher-search.css?v=20260723-lesson-search1">
 </head>
 <body>
   <div class="portal-shell">
@@ -67,16 +68,29 @@
           </article>
 
           <article class="panel">
-            <div class="section-head">
+            <div class="section-head curriculum-head">
               <div>
                 <h2>Lesson curriculum</h2>
                 <p class="panel-copy">The curriculum is loaded from the lesson indexes. Advanced Pawn remains visible but locked until those lesson pages are created.</p>
               </div>
-              <select id="levelFilter" aria-label="Filter curriculum by level">
-                <option value="all">All levels</option>
-              </select>
+              <div class="curriculum-filters" aria-label="Lesson filters">
+                <label class="curriculum-filter-label" for="lessonSearch">
+                  <span>Search lessons</span>
+                  <input id="lessonSearch" type="search" autocomplete="off" placeholder="Title, module, level, or number">
+                </label>
+                <label class="curriculum-filter-label" for="levelFilter">
+                  <span>Level</span>
+                  <select id="levelFilter">
+                    <option value="all">All levels</option>
+                  </select>
+                </label>
+              </div>
             </div>
             <div id="curriculumSummary" class="meta"></div>
+            <div class="curriculum-search-status">
+              <span id="lessonSearchResult" class="chip" aria-live="polite" hidden></span>
+            </div>
+            <div id="lessonSearchEmpty" class="empty" hidden>No lessons match your search.</div>
             <div id="curriculumList" class="list"><div class="empty">Loading curriculum…</div></div>
           </article>
         </section>
@@ -86,5 +100,6 @@
 
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script type="module" src="./js/teacher-dashboard.mjs"></script>
+  <script type="module" src="./js/lesson-search.mjs?v=20260723-lesson-search1"></script>
 </body>
 </html>
