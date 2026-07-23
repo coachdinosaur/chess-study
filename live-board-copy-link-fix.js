@@ -30,7 +30,7 @@
   function makeStudentLink(roomCode, studentToken) {
     var url = new URL(location.href);
     url.search = '';
-    url.hash = 's=' + roomCode + '.' + studentToken;
+    url.hash = 'j=' + roomCode + '.' + String(studentToken).slice(0, 16);
     return url.href;
   }
 
