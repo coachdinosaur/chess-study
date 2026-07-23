@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Teacher Dashboard | CD Digital Chess</title>
   <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
-  <link rel="stylesheet" href="./management.css?v=20260723-management-v2">
-  <link rel="stylesheet" href="./teacher-search.css?v=20260723-management-v2">
+  <link rel="stylesheet" href="./management.css?v=20260723-hardening1">
+  <link rel="stylesheet" href="./teacher-search.css?v=20260723-hardening1">
+  <link rel="stylesheet" href="./hardening.css?v=20260723-hardening1">
 </head>
 <body>
   <div class="portal-shell">
@@ -16,6 +17,8 @@
         <span class="portal-brand-copy"><strong>Student lesson tracker</strong><span id="profileName">Loading teacher…</span></span>
       </a>
       <nav class="portal-actions">
+        <a id="platformAdminLink" class="button-secondary" href="./admin.html" hidden>Administration</a>
+        <a class="button-secondary" href="./account.html">Account</a>
         <a class="button-secondary" href="../lessons/index.html">Lesson index</a>
         <a class="button-secondary" href="../index.html">Study board</a>
         <button id="signOutButton" class="button-danger" type="button">Sign out</button>
@@ -176,5 +179,6 @@
 
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script type="module" src="./js/teacher-dashboard.mjs?v=20260723-management-v2"></script>
+  <script type="module" src="./js/teacher-shell.mjs?v=20260723-hardening1"></script>
 </body>
 </html>
