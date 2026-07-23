@@ -34,6 +34,9 @@ function renderTeachers() {
   elements.teacherList.innerHTML = visible.map((teacher) => {
     const isProtectedAdmin = teacher.is_admin;
     const status = teacher.account_status || 'pending';
+    const adminAction = isProtectedAdmin
+      ? '<button class="button-secondary" type="button" data-action="remove-admin">Remove administrator</button>'
+      : `<button class="button-secondary" type="button" data-action="grant-admin" ${status !== 'approved' ? 'disabled' : ''}>Grant administrator</button>`;
     return `
       <article class="list-card teacher-admin-card" data-teacher-id="${escapeHtml(teacher.teacher_id)}">
         <div class="list-card-head">
@@ -61,6 +64,7 @@ function renderTeachers() {
           <button class="button" type="button" data-action="approve" ${isProtectedAdmin ? 'disabled' : ''}>Approve</button>
           <button class="button-secondary" type="button" data-action="pending" ${isProtectedAdmin ? 'disabled' : ''}>Return to pending</button>
           <button class="button-danger" type="button" data-action="suspend" ${isProtectedAdmin ? 'disabled' : ''}>Suspend</button>
+          ${adminAction}
         </div>
       </article>`;
   }).join('');
@@ -138,6 +142,30 @@ async function updateTeacherStatus(card, status) {
   }
 }
 
+async function updatePlatformAdmin(card, isAdmin) {
+  const action = isAdmin ? 'grant-admin' : 'remove-admin';
+  const button = card.querySelector(`[data-action="${action}"]`);
+  const verb = isAdmin ? 'grant administrator access to' : 'remove administrator access from';
+  const teacher = teachers.find((item) => item.teacher_id === card.dataset.teacherId);
+  if (!window.confirm(`${verb} ${teacher?.display_name || 'this teacher'}?`)) return;
+
+  setBusy(button, true, 'Saving…');
+  setStatus(elements.status, '');
+  try {
+    const supabase = getSupabase();
+    const { error } = await supabase.rpc('admin_set_platform_admin', {
+      p_teacher_id: card.dataset.teacherId,
+      p_is_admin: isAdmin,
+    });
+    if (error) throw error;
+    await loadAdminData();
+    setStatus(elements.status, isAdmin ? 'Platform administrator access granted.' : 'Platform administrator access removed.', 'success');
+  } catch (error) {
+    setStatus(elements.status, readableError(error), 'error');
+    setBusy(button, false);
+  }
+}
+
 async function initialize() {
   try {
     const profile = await requireProfile('teacher', { requireAdmin: true });
@@ -159,6 +187,8 @@ elements.teacherList?.addEventListener('click', (event) => {
   if (button.dataset.action === 'approve') updateTeacherStatus(card, 'approved');
   if (button.dataset.action === 'pending') updateTeacherStatus(card, 'pending');
   if (button.dataset.action === 'suspend') updateTeacherStatus(card, 'suspended');
+  if (button.dataset.action === 'grant-admin') updatePlatformAdmin(card, true);
+  if (button.dataset.action === 'remove-admin') updatePlatformAdmin(card, false);
 });
 
 initialize();
