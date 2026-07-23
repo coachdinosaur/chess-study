@@ -160,3 +160,12 @@
   update(); window.addEventListener('scroll',update,{passive:true});
   enableTeacherBoard();
 })();
+
+(function loadLessonPresentation() {
+  if (document.querySelector('script[data-lesson-presentation]')) return;
+  var script = document.createElement('script');
+  script.src = 'lesson-presentation.js?v=20260723-phase1a';
+  script.defer = true;
+  script.setAttribute('data-lesson-presentation', '');
+  document.body.appendChild(script);
+})();
