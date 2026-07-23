@@ -21,7 +21,7 @@
   display: none;
 }
 
-.presentation-reveal-target[data-presentation-revealed="false"] {
+body.lesson-presentation-active .presentation-reveal-target[data-presentation-revealed="false"] {
   display: none !important;
 }
 
@@ -254,7 +254,7 @@ body.lesson-presentation-active .lesson-presentation-toolbar {
   }
 
   body.lesson-presentation-active .presentation-scene.presentation-current {
-    inset-bottom: 6.2rem !important;
+    bottom: 6.2rem !important;
   }
 
   .lesson-presentation-status {
