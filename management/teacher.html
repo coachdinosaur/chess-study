@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Teacher Dashboard | CD Digital Chess</title>
   <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
-  <link rel="stylesheet" href="./management.css">
-  <link rel="stylesheet" href="./teacher-search.css?v=20260723-lesson-search1">
+  <link rel="stylesheet" href="./management.css?v=20260723-management-v2">
+  <link rel="stylesheet" href="./teacher-search.css?v=20260723-management-v2">
 </head>
 <body>
   <div class="portal-shell">
@@ -44,17 +44,34 @@
           </section>
 
           <section class="panel">
-            <div class="section-head"><h2>Your students</h2></div>
+            <div class="section-head student-list-head"><h2>Your students</h2></div>
+            <div class="student-filters">
+              <label class="curriculum-filter-label" for="studentSearch">
+                <span>Search students</span>
+                <input id="studentSearch" type="search" autocomplete="off" placeholder="Name or notes">
+              </label>
+              <label class="curriculum-filter-label" for="studentViewFilter">
+                <span>Show</span>
+                <select id="studentViewFilter">
+                  <option value="active">Active</option>
+                  <option value="archived">Archived</option>
+                  <option value="all">All students</option>
+                </select>
+              </label>
+            </div>
             <div id="studentList" class="list"><div class="empty">Loading students…</div></div>
           </section>
         </aside>
 
         <section id="selectedStudentPanel" class="stack" hidden>
           <article class="panel">
-            <div class="section-head">
+            <div class="section-head student-detail-head">
               <div>
-                <h1 id="selectedStudentName">Student</h1>
-                <p class="panel-copy">Track what has been taught and what still needs work. Status changes are saved immediately.</p>
+                <div class="heading-with-chip">
+                  <h1 id="selectedStudentName">Student</h1>
+                  <span id="selectedStudentState" class="chip">Active</span>
+                </div>
+                <p class="panel-copy">Track lessons, record coaching sessions, and preserve the next action instead of trusting memory, that famously reliable human storage medium.</p>
               </div>
               <button id="archiveStudentButton" class="button-danger" type="button">Archive student</button>
             </div>
@@ -64,14 +81,63 @@
             </div>
             <div class="inline-actions">
               <button id="saveStudentNotesButton" class="button-secondary" type="button">Save notes</button>
+              <button id="exportStudentButton" class="button-secondary" type="button">Export student CSV</button>
             </div>
+          </article>
+
+          <article class="panel" id="sessionPanel">
+            <div class="section-head">
+              <div>
+                <h2>Coaching sessions</h2>
+                <p class="panel-copy">Record what happened, homework, and the next lesson while the evidence is still warm.</p>
+              </div>
+            </div>
+
+            <form id="sessionForm" class="form-grid session-form">
+              <input id="sessionId" name="sessionId" type="hidden">
+              <div class="session-form-grid">
+                <div class="form-row">
+                  <label for="sessionDate">Session date</label>
+                  <input id="sessionDate" name="sessionDate" type="date" required>
+                </div>
+                <div class="form-row">
+                  <label for="sessionDuration">Duration in minutes</label>
+                  <input id="sessionDuration" name="durationMinutes" type="number" min="0" max="600" step="5" inputmode="numeric" placeholder="60">
+                </div>
+              </div>
+              <div class="form-row">
+                <label for="sessionLessonKey">Lesson taught</label>
+                <select id="sessionLessonKey" name="lessonKey">
+                  <option value="">No linked lesson</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label for="sessionNotes">Session notes</label>
+                <textarea id="sessionNotes" name="notes" maxlength="8000" placeholder="What was taught, what the student understood, recurring mistakes, and notable moments."></textarea>
+              </div>
+              <div class="session-form-grid">
+                <div class="form-row">
+                  <label for="sessionHomework">Homework</label>
+                  <textarea id="sessionHomework" name="homework" maxlength="4000" placeholder="Exercises, games, or positions to review."></textarea>
+                </div>
+                <div class="form-row">
+                  <label for="sessionNextStep">Next step</label>
+                  <textarea id="sessionNextStep" name="nextStep" maxlength="4000" placeholder="What to teach or revisit next session."></textarea>
+                </div>
+              </div>
+              <div class="inline-actions">
+                <button id="saveSessionButton" class="button" type="submit">Add session</button>
+                <button id="cancelSessionEditButton" class="button-secondary" type="button" hidden>Cancel editing</button>
+              </div>
+            </form>
+            <div id="sessionList" class="list session-list"><div class="empty">No coaching sessions recorded yet.</div></div>
           </article>
 
           <article class="panel">
             <div class="section-head curriculum-head">
               <div>
                 <h2>Lesson curriculum</h2>
-                <p class="panel-copy">The curriculum is loaded from the lesson indexes. Advanced Pawn remains visible but locked until those lesson pages are created.</p>
+                <p class="panel-copy">Filter the curriculum by text, level, or teaching status. “Needs practice” is the useful view when deciding what should happen next.</p>
               </div>
               <div class="curriculum-filters" aria-label="Lesson filters">
                 <label class="curriculum-filter-label" for="lessonSearch">
@@ -84,13 +150,23 @@
                     <option value="all">All levels</option>
                   </select>
                 </label>
+                <label class="curriculum-filter-label" for="statusFilter">
+                  <span>Status</span>
+                  <select id="statusFilter">
+                    <option value="all">All statuses</option>
+                    <option value="practicing">Needs practice</option>
+                    <option value="taught">Taught</option>
+                    <option value="completed">Completed</option>
+                    <option value="not_started">Not yet taught</option>
+                  </select>
+                </label>
               </div>
             </div>
             <div id="curriculumSummary" class="meta"></div>
             <div class="curriculum-search-status">
               <span id="lessonSearchResult" class="chip" aria-live="polite" hidden></span>
             </div>
-            <div id="lessonSearchEmpty" class="empty" hidden>No lessons match your search.</div>
+            <div id="lessonSearchEmpty" class="empty" hidden>No lessons match the current filters.</div>
             <div id="curriculumList" class="list"><div class="empty">Loading curriculum…</div></div>
           </article>
         </section>
@@ -99,7 +175,6 @@
   </div>
 
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  <script type="module" src="./js/teacher-dashboard.mjs"></script>
-  <script type="module" src="./js/lesson-search.mjs?v=20260723-lesson-search1"></script>
+  <script type="module" src="./js/teacher-dashboard.mjs?v=20260723-management-v2"></script>
 </body>
 </html>
