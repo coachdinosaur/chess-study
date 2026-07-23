@@ -1,0 +1,9 @@
+/* Student Live Board: portrait tablets only. Phones and landscape layouts stay unchanged. */
+@media (min-width: 600px) and (max-width: 840px) and (orientation: portrait) {
+  html[data-role="student"] .board-frame {
+    width: 70%;
+    max-width: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
