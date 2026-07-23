@@ -4,7 +4,7 @@
   if (window.__LESSON_PRESENTATION_PHASE_1A__) return;
   window.__LESSON_PRESENTATION_PHASE_1A__ = true;
 
-  var VERSION = "20260723-phase1a";
+  var VERSION = "20260723-phase1a-2";
   var scriptUrl = document.currentScript && document.currentScript.src
     ? document.currentScript.src
     : new URL("lesson-presentation.js", window.location.href).href;
@@ -24,6 +24,44 @@
     link.href = new URL("lesson-presentation.css?v=" + VERSION, scriptUrl).href;
     link.setAttribute("data-lesson-presentation-style", VERSION);
     document.head.appendChild(link);
+  }
+
+  /*
+   * Pawn Lesson 10 had all four piece rows positioned too close to the labels.
+   * Keep this repair narrowly scoped to that lesson instead of disturbing the
+   * many other inline lesson diagrams that use their own coordinates.
+   */
+  function fixPawn10ChessmenOverview() {
+    if (!/(?:^|\/)pawn-10-the-chessmen\.html$/i.test(window.location.pathname)) return;
+
+    var svg = document.querySelector('#all-chessmen .board-shell svg[aria-label="All 32 chessmen in a game of chess"]');
+    if (!svg || svg.dataset.chessmenLayoutFixed === "true") return;
+
+    var images = Array.prototype.slice.call(svg.querySelectorAll("image"));
+    if (images.length < 32) return;
+
+    var rows = [
+      { start: 0, end: 8, y: 91 },
+      { start: 8, end: 16, y: 126 },
+      { start: 16, end: 24, y: 207 },
+      { start: 24, end: 32, y: 242 }
+    ];
+
+    rows.forEach(function (row) {
+      for (var index = row.start; index < row.end; index += 1) {
+        images[index].setAttribute("y", String(row.y));
+        images[index].setAttribute("width", "28");
+        images[index].setAttribute("height", "28");
+      }
+    });
+
+    svg.querySelectorAll("text").forEach(function (text) {
+      var label = (text.textContent || "").trim();
+      if (label === "Black has 16") text.setAttribute("y", "82");
+      if (label === "White has 16") text.setAttribute("y", "198");
+    });
+
+    svg.dataset.chessmenLayoutFixed = "true";
   }
 
   function directChildrenMatching(root, selector) {
@@ -323,6 +361,7 @@
 
   function init() {
     if (!document.body || document.body.classList.contains("lesson-index-page")) return;
+    fixPawn10ChessmenOverview();
     loadStylesheet();
     scenes = collectScenes();
     if (!scenes.length) return;
