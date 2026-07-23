@@ -1,0 +1,52 @@
+html,
+body,
+button,
+a,
+input,
+select,
+textarea,
+label,
+p,
+h1,
+h2,
+strong,
+span,
+li {
+  font-style: normal !important;
+}
+
+@media (min-width: 841px) {
+  .live-board-layout {
+    grid-template-columns: minmax(0, 660px) minmax(280px, 350px);
+    justify-content: center;
+  }
+
+  .board-frame {
+    width: min(100%, 620px, calc(100vh - 250px));
+  }
+
+  html[data-role="student"] .live-board-layout {
+    grid-template-columns: minmax(0, 660px);
+  }
+
+  html[data-role="student"] .board-frame,
+  html[data-role="student"] .student-lock-message,
+  html[data-role="student"] .side-card {
+    width: min(100%, 620px);
+  }
+}
+
+@media (min-width: 1180px) and (max-height: 820px) {
+  .live-board-shell {
+    padding-top: 0.75rem;
+  }
+
+  .live-board-header,
+  .session-bar {
+    margin-bottom: 0.65rem;
+  }
+
+  .board-frame {
+    width: min(100%, 560px, calc(100vh - 210px));
+  }
+}
