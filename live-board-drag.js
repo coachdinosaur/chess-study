@@ -26,6 +26,7 @@ if (board) {
     startX: 0,
     startY: 0,
     active: false,
+    wasSelected: false,
     ghost: null,
     target: null,
   };
@@ -84,6 +85,17 @@ if (board) {
     return true;
   }
 
+  function deselectTappedSquare(tappedSquare) {
+    const squares = Array.from(board.querySelectorAll('.square'));
+    const fallback = squares.find((candidate) => (
+      candidate !== tappedSquare
+      && !candidate.querySelector('.piece')
+      && !candidate.classList.contains('legal')
+    )) || squares.find((candidate) => candidate !== tappedSquare);
+
+    fallback?.click();
+  }
+
   function cleanup() {
     clearTarget();
     drag.ghost?.remove();
@@ -92,6 +104,7 @@ if (board) {
     drag.pointerId = null;
     drag.sourceSquare = '';
     drag.active = false;
+    drag.wasSelected = false;
     drag.ghost = null;
   }
 
@@ -109,6 +122,7 @@ if (board) {
 
     drag.pointerId = event.pointerId;
     drag.sourceSquare = source.dataset.square || '';
+    drag.wasSelected = source.classList.contains('selected');
     drag.startX = event.clientX;
     drag.startY = event.clientY;
     board.setPointerCapture?.(event.pointerId);
@@ -139,11 +153,16 @@ if (board) {
       if (destination?.classList.contains('legal')) destination.click();
     } else {
       // Some mobile browsers fail to dispatch the native click after pointer
-      // capture. Trigger it explicitly so tap a piece, then tap its destination
-      // always works just like the main chess board.
+      // capture. Trigger it explicitly, while treating a second tap on the
+      // already-selected square as a direct deselection request.
       const tappedSquare = squareAtPoint(event.clientX, event.clientY)
         || board.querySelector(`.square[data-square="${drag.sourceSquare}"]`);
-      tappedSquare?.click();
+
+      if (drag.wasSelected && tappedSquare?.dataset.square === drag.sourceSquare) {
+        deselectTappedSquare(tappedSquare);
+      } else {
+        tappedSquare?.click();
+      }
     }
 
     suppressTrustedClickUntil = Date.now() + 400;
