@@ -5,7 +5,7 @@ Coach Dinosaur Chess Study is a browser-based chess notebook for building positi
 Live app:
 
 ```text
-https://coachdinosaur.github.io/chess-study/
+https://cddigital.top/
 ```
 
 You do not need to install anything to use the deployed app.
@@ -219,9 +219,9 @@ For legal endgames with up to seven pieces and no castling rights, the app may u
 
 ## Explain the Current Position with AI Help
 
-> **Where to go:** **AI Help** button at the bottom-right
+> **Where to go:** **AI Help** button at the bottom-right on supported desktop-sized layouts
 
-The AI receives the visible lesson title, current FEN, active tab, side to move, opening information, and a notation excerpt.
+The AI receives a bounded snapshot of the visible lesson title, current FEN, setup FEN, active tab, side to move, opening information, position label, and notation excerpt. It does not receive saved lesson files, unrelated browser data, or the Gemini API key.
 
 Useful questions include:
 
@@ -231,7 +231,24 @@ Useful questions include:
 - “Give me a small hint.”
 - “How do I import a PGN?”
 
-AI can make mistakes. Verify concrete tactics with Stockfish and verify app instructions against this guide.
+AI can make mistakes. Verify concrete tactics with Stockfish and app instructions against this guide.
+
+### When the AI Help button is hidden
+
+The floating control is intentionally hidden on phone-width screens, short landscape touch screens, and embedded or board-only pages. Use a wider desktop or tablet layout for AI Help.
+
+### AI Help connection errors
+
+If the panel cannot reach the AI service:
+
+1. Confirm the main app is open at `https://cddigital.top/`.
+2. Confirm the internet connection works.
+3. Reload once and try a short message such as “hello.”
+4. `NetworkError when attempting to fetch resource` usually means the Worker URL, deployment, DNS/TLS, or production-domain CORS allowlist failed before Gemini was contacted.
+5. For busy or too-many-request messages, wait about a minute and retry.
+6. For repeated timeouts, try later and report the exact message.
+
+Do not paste an API key into the chat or browser console. The Gemini key belongs only in the private Cloudflare Worker secret. The Worker must be redeployed separately after its code or allowed-origin configuration changes.
 
 ---
 
