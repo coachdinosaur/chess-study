@@ -193,6 +193,14 @@ scene.classList.add("presentation-position-scene");
 if (scene.querySelector(".board, .chessboard, .board-grid, .board-iframe")) {
 scene.classList.add("presentation-board-scene");
 }
+if (
+bishopLesson &&
+scene.matches(".position") &&
+!scene.querySelector(".position-body") &&
+scopedQuery(scene, "> .diagram").length
+) {
+scene.classList.add("presentation-compact-position-scene");
+}
 if (scene.matches(".weakness-grid, .question-grid, .process-grid, .objective-grid, .checklist")) {
 scene.classList.add("presentation-grid-scene");
 }
