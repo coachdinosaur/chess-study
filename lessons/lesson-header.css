@@ -1,0 +1,180 @@
+/* Unified lesson header, based on the Pawn Level lesson design. */
+
+:root {
+  --lesson-header-max-width: 1280px;
+  --lesson-header-icon-size: 2.4rem;
+}
+
+body .index-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  width: 100%;
+  backdrop-filter: saturate(140%) blur(16px);
+  -webkit-backdrop-filter: saturate(140%) blur(16px);
+  background: color-mix(in srgb, var(--page-bg, var(--bg, #071012)) 78%, transparent);
+  border-bottom: 1px solid var(--hairline, var(--line, rgba(52, 74, 78, .92)));
+}
+
+body .index-header-inner {
+  width: 100%;
+  max-width: var(--lesson-header-max-width);
+  min-height: 3.9rem;
+  margin: 0 auto;
+  padding: .65rem clamp(16px, 3vw + 10px, 48px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+body .index-brand {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  font-family: var(--font-body, ui-sans-serif, system-ui, sans-serif);
+  font-weight: 800;
+  letter-spacing: .01em;
+}
+
+body .index-brand-icon {
+  width: var(--lesson-header-icon-size);
+  height: var(--lesson-header-icon-size);
+  flex: 0 0 var(--lesson-header-icon-size);
+  display: grid;
+  place-items: center;
+  border-radius: .8rem;
+  background: linear-gradient(135deg, var(--accent, var(--gold, #8ad8b7)), color-mix(in srgb, var(--accent, var(--gold, #8ad8b7)) 30%, transparent));
+  color: #13203a;
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--accent, var(--gold, #8ad8b7)) 25%, transparent);
+  font-size: 1.3rem;
+  font-weight: 900;
+}
+
+body .index-brand > div:last-child {
+  min-width: 0;
+}
+
+body .index-brand-label {
+  margin: 0;
+  color: var(--accent, var(--gold, #8ad8b7));
+  font-size: .78rem;
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  opacity: .78;
+}
+
+body .index-brand-title {
+  max-width: min(42vw, 42rem);
+  margin: 0;
+  overflow: hidden;
+  color: var(--ink, var(--text, #f7faf5));
+  font-size: clamp(1rem, 1.2vw + .5rem, 1.25rem);
+  font-weight: 800;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body .index-top-actions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: .5rem;
+}
+
+body .index-top-actions .toolbar-link,
+body .index-top-actions button {
+  min-height: 2.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--rule-border, var(--line, rgba(52, 74, 78, .92)));
+  border-radius: 999px;
+  padding: .45rem .85rem;
+  color: var(--btn-ink, var(--text, #f7faf5));
+  background: var(--btn-bg, var(--panel, rgba(27, 42, 46, .92)));
+  font-family: var(--font-body, ui-sans-serif, system-ui, sans-serif);
+  font-size: clamp(12px, .3vw + 11px, 14px);
+  font-weight: 650;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform .18s ease, background .18s ease, border-color .18s ease;
+}
+
+body .index-top-actions .toolbar-link:hover,
+body .index-top-actions button:hover {
+  background: var(--btn-hover, var(--panel-strong, rgba(28, 43, 48, .98)));
+  transform: translateY(-1px);
+}
+
+body .index-top-actions .toolbar-link:focus-visible,
+body .index-top-actions button:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent, var(--gold, #8ad8b7)) 55%, transparent);
+  outline-offset: 2px;
+}
+
+/* Pawn lessons keep the reading-progress line directly below the header. */
+body .progress {
+  position: static;
+  top: auto;
+  z-index: auto;
+}
+
+@media (max-width: 900px) {
+  body .index-header-inner {
+    align-items: flex-start;
+  }
+
+  body .index-brand-title {
+    max-width: 38vw;
+  }
+}
+
+@media (max-width: 720px) {
+  body .index-header-inner {
+    min-height: 0;
+    padding: .65rem 11px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: .65rem;
+  }
+
+  body .index-brand-title {
+    max-width: calc(100vw - 5.5rem);
+  }
+
+  body .index-top-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .45rem;
+  }
+
+  body .index-top-actions .toolbar-link,
+  body .index-top-actions button {
+    width: 100%;
+    min-width: 0;
+    white-space: normal;
+    text-align: center;
+  }
+}
+
+@media (max-width: 430px) {
+  body .index-top-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media print {
+  body .index-header,
+  body .progress {
+    display: none !important;
+  }
+}
