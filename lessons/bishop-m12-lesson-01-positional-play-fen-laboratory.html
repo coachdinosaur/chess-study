@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-piece-base="../assets/pieces/mpchess/" data-app-path="../index.html" data-orientation="white">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Positional Play: FEN Laboratory — Bishop Level Module 12</title>
+  <meta name="description" content="Bishop Level Module 12 lesson on imbalances, worst-piece improvement, restriction, prophylaxis, pawn breaks, favorable exchanges, positional transformation, and six guided FEN positions.">
+  <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
+  <link rel="apple-touch-icon" href="../assets/pieces/app_icon.png">
+  <link rel="stylesheet" href="endgame-lesson.css?v=board-bg">
+  <link rel="stylesheet" href="pawn-teacher-board.css?v=20260710-teacher-lesson-csv1">
+  <style>
+    .module-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,520px);gap:clamp(20px,4vw,46px);align-items:center}
+    .hero-board-card{margin:0;padding:clamp(14px,2vw,22px);border:1px solid var(--panel-border);border-radius:20px;background:var(--panel-bg);box-shadow:0 22px 60px rgba(0,0,0,.22)}
+    .hero-board-card .board{max-width:520px;margin:0 auto}
+    .hero-board-card figcaption{margin-top:10px;color:var(--ink-soft);font-size:.92rem;text-align:center}
+    .module-nav{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 28px;padding:12px;border:1px solid var(--hairline);border-radius:12px;background:var(--panel-bg)}
+    .module-nav a{color:var(--btn-ink);text-decoration:none;font-weight:700;font-size:.92rem;padding:8px 11px;border-radius:999px}
+    .module-nav a:hover{background:var(--btn-hover)}
+    .weakness-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 24px}
+    .weakness-card{border:1px solid var(--panel-border);border-radius:10px;padding:14px;background:var(--panel-bg);min-height:116px}
+    .weakness-card strong{display:block;color:var(--accent);font-family:var(--font-display);margin-bottom:6px}
+    .weakness-card span{color:var(--ink-soft);font-size:.93rem}
+    .formula{font-size:clamp(1rem,2vw,1.2rem);text-align:center;padding:16px;margin:18px 0;border:1px solid var(--panel-border);border-radius:12px;background:var(--panel-bg);font-weight:800}
+    .concept-grid,.process-grid,.master-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:14px 0 22px}
+    .concept-card,.process-card,.master-card{border:1px solid var(--panel-border);border-radius:10px;background:var(--panel-bg);padding:15px}
+    .concept-card h3,.process-card h3,.master-card h3{margin:0 0 8px;color:var(--accent)}
+    .concept-card p,.process-card p,.master-card p{margin:0;color:var(--ink-soft)}
+    .reference-table{width:100%;border-collapse:collapse;margin:14px 0 24px;background:var(--panel-bg);border:1px solid var(--panel-border)}
+    .reference-table th,.reference-table td{padding:11px 12px;border:1px solid var(--panel-border);text-align:left;vertical-align:top}
+    .reference-table th{color:var(--accent);font-family:var(--font-display)}
+    .reference-table td{color:var(--ink-soft)}
+    .fen-box{margin-top:12px;border:1px solid var(--panel-border);border-radius:8px;overflow:hidden;background:var(--panel-bg)}
+    .fen-title{padding:9px 12px;font-weight:800;color:var(--accent);border-bottom:1px solid var(--panel-border);font-size:.9rem}
+    .fen-code{margin:0;padding:12px;overflow-x:auto;color:var(--ink);font:600 .84rem/1.55 var(--font-mono);white-space:pre}
+    .candidate-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}
+    .candidate{border:1px solid var(--panel-border);border-radius:9px;background:var(--panel-bg);padding:12px;text-align:center;font:800 .95rem/1.4 var(--font-mono)}
+    .coach-panel{margin-top:14px;border-left:4px solid var(--accent);background:color-mix(in srgb,var(--accent) 9%,var(--panel-bg));border-radius:7px;padding:13px 15px}
+    .coach-panel h3{margin:0 0 6px;color:var(--accent)}
+    .coach-panel p{margin:0;color:var(--ink-soft)}
+    .teaching-steps{counter-reset:teach;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:0;list-style:none}
+    .teaching-steps li{counter-increment:teach;border:1px solid var(--panel-border);border-radius:10px;background:var(--panel-bg);padding:13px;color:var(--ink-soft)}
+    .teaching-steps li:before{content:counter(teach);display:inline-grid;place-items:center;width:25px;height:25px;margin-right:8px;border-radius:50%;background:var(--btn-bg);color:var(--btn-ink);font-weight:900}
+    .diagnosis-sheet{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 18px;margin:0;padding:16px 16px 16px 38px;border:1px solid var(--panel-border);border-radius:12px;background:var(--panel-bg)}
+    .diagnosis-sheet li{padding:3px 0;color:var(--ink-soft)}
+    details.quiz{border:1px solid var(--panel-border);background:var(--panel-bg);border-radius:10px;padding:12px 14px;margin-top:10px}
+    details.quiz summary{cursor:pointer;font-weight:800}
+    details.quiz p,details.quiz ul{color:var(--ink-soft)}
+    .lesson-nav-row{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:28px}
+    .lesson-nav-row a{color:var(--btn-ink);background:var(--btn-bg);border:1px solid var(--rule-border);border-radius:999px;padding:9px 14px;text-decoration:none;font-weight:700}
+    .source-note{margin-top:32px;color:var(--ink-faint);font-size:.9rem}
+    @media(max-width:1000px){.module-hero{grid-template-columns:1fr}.weakness-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:760px){.concept-grid,.process-grid,.master-grid,.teaching-steps,.diagnosis-sheet{grid-template-columns:1fr}.candidate-grid{grid-template-columns:1fr}}
+    @media(max-width:620px){.weakness-grid,.position-body{grid-template-columns:1fr}.lesson-nav-row a{width:100%;text-align:center}.reference-table{font-size:.88rem}}
+    @media print{.no-print,.module-nav{display:none!important}.hero-board-card,.weakness-card,details.quiz,.fen-box,.concept-card,.process-card,.master-card{box-shadow:none;break-inside:avoid}.module-hero{display:block}.lesson+.lesson{break-before:auto}}
+    .plan-compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:14px 0}
+    .plan-card{border:1px solid var(--panel-border);border-radius:10px;background:var(--panel-bg);padding:15px}
+    .plan-card h3{margin:0 0 8px;color:var(--accent)}
+    .plan-card p{margin:0;color:var(--ink-soft)}
+    @media(max-width:760px){.plan-compare{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+  <header class="index-header no-print">
+    <div class="index-header-inner">
+      <div class="index-brand"><div class="index-brand-icon" aria-hidden="true">♝</div><div><div class="index-brand-label">Bishop Level · Module 12</div><div class="index-brand-title">Positional Play: FEN Laboratory</div></div></div>
+      <div class="index-top-actions"><a class="toolbar-link" href="bishop-index.html">&larr; Bishop Index</a><button class="toolbar-link" type="button" id="themeToggle">Toggle theme</button><button class="toolbar-link" type="button" onclick="window.print()">Print / Save PDF</button></div>
+    </div>
+  </header>
+
+  <main class="lesson-page">
+    <section class="hero module-hero" id="top">
+      <div>
+        <p class="eyebrow">Coach Dinosaur Chess Course</p>
+        <h1 class="chapter-title">Positional Play: FEN Laboratory</h1>
+        <p class="chapter-subtitle">Identify the main imbalance, improve the correct piece, restrict counterplay, and choose the transformation that makes the future position favorable.</p>
+      </div>
+      <figure class="hero-board-card">
+        <div class="board" data-fen="r2q1rk1/pp1b1ppp/2p1pn2/3p4/3P4/2P1PN2/PPQ1BPPP/R1B2RK1 w - - 0 1"></div>
+        <figcaption>White to move. The Carlsbad structure offers two valid plans, but piece placement determines which one belongs now.</figcaption>
+      </figure>
+    </section>
+
+    <nav class="module-nav no-print" aria-label="Module contents">
+      <a href="#definition">1. Definition</a><a href="#principles">2. Principles</a><a href="#advantages">3. Advantages</a><a href="#framework">4. Framework</a><a href="#connections">5. Connections</a><a href="#teaching">6. Teaching Method</a><a href="#lab-1">7. FEN Laboratory</a><a href="#worksheet">8. Worksheet</a><a href="#mastery">9. Mastery</a>
+    </nav>
+
+    <section class="weakness-grid" aria-label="Core positional questions">
+      <article class="weakness-card"><strong>Main imbalance</strong><span>Choose the plan from the most important difference between the two sides.</span></article>
+      <article class="weakness-card"><strong>Worst-placed piece</strong><span>Improve the piece that contributes least to the position&rsquo;s real demands.</span></article>
+      <article class="weakness-card"><strong>Restriction</strong><span>Reduce the opponent&rsquo;s useful choices before launching direct operations.</span></article>
+      <article class="weakness-card"><strong>Pawn break</strong><span>Change the structure only when the resulting lines and squares favor your pieces.</span></article>
+      <article class="weakness-card"><strong>Favorable exchange</strong><span>Trade with a reason: remove a defender, preserve a superior piece, or enter a better ending.</span></article>
+      <article class="weakness-card"><strong>Prophylaxis</strong><span>Ask what the opponent would improve if given a free move, then decide whether it must be prevented.</span></article>
+    </section>
+
+    <section class="lesson" id="definition">
+      <div class="lesson-head"><span class="lesson-number">Part 1</span><h2 class="lesson-title">What Positional Play Actually Means</h2></div>
+      <p class="lesson-intro"><strong>Positional play</strong> is the process of improving the long-term quality of a position by coordinating pieces and pawns around the most important imbalances.</p>
+      <div class="formula">A tactical question asks: What works now?<br>A positional question asks: What should this position become?</div>
+      <p>Positional play is not the opposite of tactics. It arranges the position so that tactics favor you, or so that the opponent has no useful tactical counterplay. A positional move may improve the worst piece, restrict an enemy piece, stop a pawn break, gain space, occupy a file, create or fix a weakness, force a favorable exchange, preserve a structure, or prepare a tactical operation.</p>
+      <div class="rule-box"><h3>Purpose, not appearance</h3><p>A quiet move is not automatically positional, and a forcing move is not automatically tactical. The distinction concerns what the move is trying to accomplish.</p></div>
+    </section>
+
+    <section class="lesson" id="principles">
+      <div class="lesson-head"><span class="lesson-number">Part 2</span><h2 class="lesson-title">Historical Foundations and Fundamental Principles</h2></div>
+      <div class="master-grid">
+        <article class="master-card"><h3>Wilhelm Steinitz</h3><p>Advantages accumulate. The stronger side should preserve and increase them; the defender should seek exchanges or transformations that reduce them.</p></article>
+        <article class="master-card"><h3>Aron Nimzowitsch</h3><p>Blockade, restraint, prophylaxis, overprotection, indirect central control, and pawn-chain play showed that controlling a square may matter more than occupying it immediately.</p></article>
+        <article class="master-card"><h3>Tigran Petrosian</h3><p>Prevention became a central art. He often stopped the opponent&rsquo;s plan before improving his own position and used positional exchange sacrifices to remove counterplay.</p></article>
+        <article class="master-card"><h3>Anatoly Karpov</h3><p>His technical method was to identify the imbalance, improve the least effective piece, reduce counterplay, force a favorable exchange, create a second weakness, and convert.</p></article>
+      </div>
+
+      <div class="concept-grid">
+        <article class="concept-card"><h3>Plans arise from imbalances</h3><p>Bishop versus knight, space, structure, king safety, initiative, development, file control, weak squares, and pawn majorities are differences that generate plans.</p></article>
+        <article class="concept-card"><h3>Improve the worst piece</h3><p>Ask which piece has no useful function, blocks another piece, or cannot join the main plan. Several maneuvering moves are acceptable when the opponent lacks immediate counterplay.</p></article>
+        <article class="concept-card"><h3>Restrict before attacking</h3><p>Control freeing breaks, fix pawns, occupy outposts, take away lines, and exchange the opponent&rsquo;s active piece. An attack becomes easier when active alternatives disappear.</p></article>
+        <article class="concept-card"><h3>Use pawn breaks purposefully</h3><p>Before changing the structure, identify which lines open, which pieces improve, which squares weaken, what structure remains, and whether the resulting endgame favors you.</p></article>
+        <article class="concept-card"><h3>Exchange with a reason</h3><p>A favorable exchange may remove the best defender, preserve a superior minor piece, reduce counterplay, expose a target, or enter a favorable ending.</p></article>
+        <article class="concept-card"><h3>Practice prophylaxis</h3><p>Ask what the opponent would play after a free move. Identify the most useful plan, break, exchange, or piece improvement instead of guessing one exact reply.</p></article>
+      </div>
+    </section>
+
+    <section class="lesson" id="advantages">
+      <div class="lesson-head"><span class="lesson-number">Part 3</span><h2 class="lesson-title">Core Concepts and Positional Advantages</h2></div>
+      <div style="overflow-x:auto">
+        <table class="reference-table">
+          <thead><tr><th>Concept</th><th>Meaning</th><th>Practical use</th></tr></thead>
+          <tbody>
+            <tr><td>Space</td><td>Useful territory controlled by pawns and pieces.</td><td>Restricts the opponent and gives maneuvering room.</td></tr>
+            <tr><td>Activity</td><td>The number and quality of useful operations available to a piece.</td><td>Active pieces generate threats and control.</td></tr>
+            <tr><td>Coordination</td><td>How well pieces support common goals.</td><td>Coordinated pieces often outperform equal material.</td></tr>
+            <tr><td>Prophylaxis</td><td>Prevention of the opponent&rsquo;s plan.</td><td>Reduces counterplay.</td></tr>
+            <tr><td>Restriction</td><td>Limiting enemy mobility and pawn breaks.</td><td>Converts space or structural advantages.</td></tr>
+            <tr><td>Outpost</td><td>A secure advanced square.</td><td>Supports invasion and domination.</td></tr>
+            <tr><td>Open file</td><td>A file without pawns.</td><td>Provides a line for rooks and queens when entry squares exist.</td></tr>
+            <tr><td>Half-open file</td><td>A file with no friendly pawn but an enemy pawn.</td><td>Creates a natural line of pressure.</td></tr>
+            <tr><td>Pawn break</td><td>A pawn move that changes the structure.</td><td>Opens lines, creates targets, or produces passed pawns.</td></tr>
+            <tr><td>Minority attack</td><td>A smaller pawn group attacks a larger group.</td><td>Creates a backward or isolated pawn.</td></tr>
+            <tr><td>Transformation</td><td>Converting one advantage into another.</td><td>Space may become an attack; structure may become a favorable endgame.</td></tr>
+            <tr><td>Good and bad bishop</td><td>A bishop&rsquo;s value relative to the pawn structure.</td><td>Preserve the structure that favors your piece comparison.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="concept-grid">
+        <article class="concept-card"><h3>Space advantage</h3><p>Usually calls for avoiding unnecessary exchanges, improving pieces behind the pawn chain, preventing freeing breaks, and preparing a favorable-wing break. Space can become overextension when advanced pawns cannot be supported.</p></article>
+        <article class="concept-card"><h3>Superior minor piece</h3><p>Knights prefer closed positions, stable outposts, and play on one wing. Bishops prefer open positions, mobile structures, long diagonals, and play on both wings.</p></article>
+        <article class="concept-card"><h3>Pawn-structure advantage</h3><p>A healthier structure supplies fewer targets, stronger squares, better passed-pawn chances, more useful breaks, and often a superior endgame.</p></article>
+        <article class="concept-card"><h3>File and diagonal control</h3><p>An open line matters only when it leads to entry squares, targets, or improved coordination. Occupation without penetration may be decorative furniture.</p></article>
+        <article class="concept-card"><h3>Initiative</h3><p>The ability to pose problems that force responses may compensate for structural or material defects, but it is temporary and must be converted before it fades.</p></article>
+        <article class="concept-card"><h3>Transformation</h3><p>The strategic task is often not to preserve every advantage forever, but to convert it into a more durable or more concrete advantage.</p></article>
+      </div>
+    </section>
+
+    <section class="lesson" id="framework">
+      <div class="lesson-head"><span class="lesson-number">Part 4</span><h2 class="lesson-title">Strategic Framework</h2></div>
+      <div class="process-grid">
+        <article class="process-card"><h3>1. Safety and material</h3><p>Evaluate both kings and compare material before making long-term claims.</p></article>
+        <article class="process-card"><h3>2. Structure</h3><p>Identify pawn chains, fixed targets, majorities, open lines, and the structure that should remain.</p></article>
+        <article class="process-card"><h3>3. Piece comparison</h3><p>Compare minor pieces, locate the worst piece, and identify the opponent&rsquo;s most active defender.</p></article>
+        <article class="process-card"><h3>4. Breaks and plans</h3><p>Find both sides&rsquo; pawn breaks and ask what the opponent wants after a free move.</p></article>
+        <article class="process-card"><h3>5. Transformation</h3><p>Choose between a pawn break, favorable exchange, wing switch, or creation of a weakness.</p></article>
+        <article class="process-card"><h3>6. Calculation</h3><p>Calculate concrete consequences before committing. Principles select candidates; calculation approves them.</p></article>
+      </div>
+      <div class="recap"><h3>Practical positional thought process</h3><ol><li>Evaluate king safety.</li><li>Compare material.</li><li>Identify the main structural features.</li><li>Compare the minor pieces.</li><li>Identify open files and key squares.</li><li>Find both sides&rsquo; pawn breaks.</li><li>Identify the worst-placed piece.</li><li>Ask what the opponent wants.</li><li>Choose the transformation that improves your favorable imbalance.</li><li>Calculate concrete lines before playing.</li></ol></div>
+    </section>
+
+    <section class="lesson" id="connections">
+      <div class="lesson-head"><span class="lesson-number">Part 5</span><h2 class="lesson-title">Connections, Models, and Common Errors</h2></div>
+      <div class="concept-grid">
+        <article class="concept-card"><h3>Positional play and tactics</h3><p>Weak back ranks, pinned defenders, outposts, open files, and bad pieces often create the tactical opportunity. Strategy prepares the geometry.</p></article>
+        <article class="concept-card"><h3>Openings</h3><p>Understand opening moves through the structure they create, the good and bad minor pieces, thematic breaks, space balance, and likely endgames.</p></article>
+        <article class="concept-card"><h3>Endgames</h3><p>Weak pawns, king activity, passed pawns, and piece quality become more permanent after exchanges remove tactical resources.</p></article>
+        <article class="concept-card"><h3>Defense</h3><p>The defender seeks exchanges, a freeing break, activity, counterplay, a fortress, or simplification. The stronger side must reduce those resources while increasing pressure.</p></article>
+      </div>
+
+      <div class="master-grid">
+        <article class="master-card"><h3>Karpov–Unzicker, Nice 1974</h3><p>A model of restriction and gradual conversion: improve, prevent counterplay, and transform small advantages into a decisive bind.</p></article>
+        <article class="master-card"><h3>Petrosian&rsquo;s strategic games</h3><p>He repeatedly prevented pawn breaks and made opposing pieces ineffective before beginning an active operation.</p></article>
+        <article class="master-card"><h3>Capablanca&rsquo;s technical games</h3><p>His clarity in exchanges and endgame transitions shows how to convert without unnecessary tactical complications.</p></article>
+      </div>
+
+      <div class="plan-compare">
+        <article class="plan-card"><h3>Common misconceptions</h3><ul><li>Positional play does not mean slow play.</li><li>General principles do not replace calculation.</li><li>The bishop pair is not always superior in a closed position.</li><li>An open file is not useful without entry squares.</li><li>Space may become overextension.</li></ul></article>
+        <article class="plan-card"><h3>Typical errors</h3><ul><li>Playing a break before the pieces are ready.</li><li>Exchanging the superior minor piece.</li><li>Opening the position for the opponent&rsquo;s bishops.</li><li>Ignoring the freeing break.</li><li>Occupying a file without an invasion plan.</li><li>Improving an already active piece while the worst piece remains inactive.</li><li>Simplifying into an ending that removes the advantage.</li></ul></article>
+      </div>
+
+      <div class="checklist"><h2>Before every strategic move</h2><ul><li>Which imbalance matters most?</li><li>Which side benefits from exchanges?</li><li>Which piece is worst placed?</li><li>Which pawn break defines the position?</li><li>What does the opponent want?</li><li>Should the position remain closed or become open?</li><li>Which transformation preserves or increases the advantage?</li></ul></div>
+    </section>
+
+    <section class="lesson" id="teaching">
+      <div class="lesson-head"><span class="lesson-number">Part 6</span><h2 class="lesson-title">How to Teach the FEN Positions</h2></div>
+      <ol class="teaching-steps">
+        <li>Load the FEN without showing the solution.</li>
+        <li>Confirm the side to move.</li>
+        <li>Ask the student to describe the position before naming a move.</li>
+        <li>Require at least two serious candidate plans when the position is not forced.</li>
+        <li>Ask for a short variation and evaluation of the resulting structure.</li>
+        <li>Reveal the model answer only after the student explains the idea.</li>
+        <li>Reset the position and let the student play both sides.</li>
+        <li>Finish with the transferable rule, not merely the move.</li>
+      </ol>
+      <div class="rule-box"><h3>Laboratory standard</h3><p>The student must identify the main imbalance, choose the desired transformation, and calculate enough to verify that the plan is concrete. A move that merely looks positional does not receive diplomatic immunity.</p></div>
+    </section>
+
+    
+    <section class="lesson" id="lab-1">
+      <div class="lesson-head"><span class="lesson-number">Laboratory 1</span><h2 class="lesson-title">Choose the Correct Carlsbad Plan</h2></div>
+      <p class="lesson-intro"><strong>Learning objective:</strong> Compare two valid plans instead of applying the minority attack automatically.</p>
+      <article class="position">
+        <p class="position-label">Position 1 · White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="r2q1rk1/pp1b1ppp/2p1pn2/3p4/3P4/2P1PN2/PPQ1BPPP/R1B2RK1 w - - 0 1"></div>
+            <p class="caption">White has two legitimate transformations: queenside structural pressure or a central expansion.</p>
+          </div>
+          <div class="position-note">
+            <h3>Student task</h3>
+            <ol><li>Which plan attacks Black&rsquo;s queenside structure?</li><li>Which plan challenges the center?</li><li>Which white pieces already support each plan?</li><li>Which plan is safer in the present position?</li></ol>
+            <div class="candidate-grid"><div class="candidate">b4-b5</div><div class="candidate">e3-e4</div></div>
+            <details class="quiz">
+              <summary>Reveal the model plan</summary>
+              <div class="moveline">1.b4! a5 2.b5 cxb5 3.Bxb5</div>
+       <p>White uses the minority attack to create structural pressure and open queenside lines. The central plan <strong>e3-e4</strong> remains thematic, but it should be chosen only after White verifies the resulting central tension.</p>
+            </details>
+          </div>
+        </div>
+        <div class="coach-panel"><h3>Coach explanation</h3><p>Intermediate positional play requires comparing plans, not recalling slogans. The minority attack is suitable because it creates a target on the queenside, where White can use open files without exposing the king.</p></div>
+        <div class="concept-grid">
+          <article class="concept-card"><h3>Common error</h3><p>Playing b4 in every Carlsbad structure regardless of piece placement or Black&rsquo;s counterplay.</p></article>
+          <article class="concept-card"><h3>Transfer rule</h3><p>A thematic plan is a candidate, not an automatic move.</p></article>
+        </div>
+        <div class="fen-box"><div class="fen-title">FEN · White to move</div><pre class="fen-code">r2q1rk1/pp1b1ppp/2p1pn2/3p4/3P4/2P1PN2/PPQ1BPPP/R1B2RK1 w - - 0 1</pre></div>
+      </article>
+    </section>
+
+    <section class="lesson" id="lab-2">
+      <div class="lesson-head"><span class="lesson-number">Laboratory 2</span><h2 class="lesson-title">Improve the Worst-Placed Piece</h2></div>
+      <p class="lesson-intro"><strong>Learning objective:</strong> Identify the piece whose improvement produces the greatest increase in coordination.</p>
+      <article class="position">
+        <p class="position-label">Position 2 · White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="r2q1rk1/pp1b1ppp/2n1pn2/2pp4/3P4/2P1PN2/PPQ1BPPP/RNB2RK1 w - - 0 1"></div>
+            <p class="caption">White should improve the undeveloped queenside before forcing central action.</p>
+          </div>
+          <div class="position-note">
+            <h3>Student task</h3>
+            <ol><li>Which white piece contributes the least?</li><li>Which square begins its useful route?</li><li>Why is moving an already active piece less efficient?</li><li>How does the improvement support a later central break?</li></ol>
+            <div class="candidate-grid"><div class="candidate">Nbd2</div><div class="candidate">Bd3</div><div class="candidate">Re1</div></div>
+            <details class="quiz">
+              <summary>Reveal the model plan</summary>
+              <div class="moveline">1.Nbd2! Re8 2.Bd3</div>
+       <p>White develops the queenside, connects the pieces, and prepares central play. The b1-knight is brought into the strategic conversation instead of leaving the army to operate one piece short.</p>
+            </details>
+          </div>
+        </div>
+        <div class="coach-panel"><h3>Coach explanation</h3><p>The worst piece is not always the piece with the fewest legal moves. It is the piece with the least useful function. Here the b1-knight is absent from every important plan, so Nbd2 produces the greatest overall improvement.</p></div>
+        <div class="concept-grid">
+          <article class="concept-card"><h3>Common error</h3><p>Repositioning the active f3-knight while leaving the b1-knight undeveloped.</p></article>
+          <article class="concept-card"><h3>Transfer rule</h3><p>Improve the piece that is absent from the plan.</p></article>
+        </div>
+        <div class="fen-box"><div class="fen-title">FEN · White to move</div><pre class="fen-code">r2q1rk1/pp1b1ppp/2n1pn2/2pp4/3P4/2P1PN2/PPQ1BPPP/RNB2RK1 w - - 0 1</pre></div>
+      </article>
+    </section>
+
+    <section class="lesson" id="lab-3">
+      <div class="lesson-head"><span class="lesson-number">Laboratory 3</span><h2 class="lesson-title">Preserve the Favorable Minor-Piece Comparison</h2></div>
+      <p class="lesson-intro"><strong>Learning objective:</strong> Avoid transforming the structure in a way that repairs the opponent&rsquo;s bad piece.</p>
+      <article class="position">
+        <p class="position-label">Position 3 · White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="2r2rk1/1p1b1ppp/p1n1p3/3pP3/3P4/2N2N2/PP3PPP/2R1BBK1 w - - 0 1"></div>
+            <p class="caption">The fixed center favors White&rsquo;s knight and keeps Black&rsquo;s bishop restricted.</p>
+          </div>
+          <div class="position-note">
+            <h3>Student task</h3>
+            <ol><li>Which minor piece is superior?</li><li>Which piece would benefit if the center opened?</li><li>Should White seek exchanges or preserve pieces?</li><li>Find a maneuver that strengthens the knight.</li></ol>
+            <div class="candidate-grid"><div class="candidate">Ne2-f4</div><div class="candidate">Central break</div><div class="candidate">Minor-piece trade</div></div>
+            <details class="quiz">
+              <summary>Reveal the model plan</summary>
+              <div class="moveline">1.Ne2! b5 2.Nf4</div>
+       <p>White preserves the fixed structure and improves the knight while Black&rsquo;s bishop remains limited by its own pawns.</p>
+            </details>
+          </div>
+        </div>
+        <div class="coach-panel"><h3>Coach explanation</h3><p>A positional advantage is often a relationship, not an object. White&rsquo;s knight is strong because the center is fixed and Black&rsquo;s bishop is restricted. Opening the center carelessly would improve the bishop and erase the comparison.</p></div>
+        <div class="concept-grid">
+          <article class="concept-card"><h3>Common error</h3><p>Exchanging the knight merely because an exchange is available, or opening the position for Black&rsquo;s bishop.</p></article>
+          <article class="concept-card"><h3>Transfer rule</h3><p>Do not trade the piece that carries your positional advantage unless the resulting transformation is clearly favorable.</p></article>
+        </div>
+        <div class="fen-box"><div class="fen-title">FEN · White to move</div><pre class="fen-code">2r2rk1/1p1b1ppp/p1n1p3/3pP3/3P4/2N2N2/PP3PPP/2R1BBK1 w - - 0 1</pre></div>
+      </article>
+    </section>
+
+    <section class="lesson" id="lab-4">
+      <div class="lesson-head"><span class="lesson-number">Laboratory 4</span><h2 class="lesson-title">Heavy-Piece Coordination Before Invasion</h2></div>
+      <p class="lesson-intro"><strong>Learning objective:</strong> Improve queen-and-rook coordination before attempting an unsupported tactical operation.</p>
+      <article class="position">
+        <p class="position-label">Position 4 · White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="2r3k1/pp3ppp/2n1pn2/q2p4/3P4/2P1PN2/PPQ2PPP/2RR2K1 w - - 0 1"></div>
+            <p class="caption">White controls central files, but the heavy pieces still need a concrete route into Black&rsquo;s position.</p>
+          </div>
+          <div class="position-note">
+            <h3>Student task</h3>
+            <ol><li>Which file does White control?</li><li>Does White currently have a safe entry square?</li><li>Which queen move adds pressure without overcommitting?</li><li>Why is an immediate sacrifice unjustified?</li></ol>
+            <div class="candidate-grid"><div class="candidate">Qb3</div><div class="candidate">Rooks double</div><div class="candidate">Immediate sacrifice</div></div>
+            <details class="quiz">
+              <summary>Reveal the model plan</summary>
+              <div class="moveline">1.Qb3! Rc7 2.h3 Ne4 3.c4</div>
+       <p>The line is illustrative rather than forced. White coordinates the queen and rooks, removes back-rank concerns, and challenges the center before attempting penetration.</p>
+            </details>
+          </div>
+        </div>
+        <div class="coach-panel"><h3>Coach explanation</h3><p>An open file is not valuable merely because a rook stands on it. The file must lead to an entry square, a target, or improved coordination. White should make the supporting pieces useful before trying to invade.</p></div>
+        <div class="concept-grid">
+          <article class="concept-card"><h3>Common error</h3><p>Doubling rooks automatically without identifying an entry square or target.</p></article>
+          <article class="concept-card"><h3>Transfer rule</h3><p>File control becomes useful only when the pieces can penetrate or create a concrete target.</p></article>
+        </div>
+        <div class="fen-box"><div class="fen-title">FEN · White to move</div><pre class="fen-code">2r3k1/pp3ppp/2n1pn2/q2p4/3P4/2P1PN2/PPQ2PPP/2RR2K1 w - - 0 1</pre></div>
+      </article>
+    </section>
+
+    <section class="lesson" id="lab-5">
+      <div class="lesson-head"><span class="lesson-number">Laboratory 5</span><h2 class="lesson-title">Restriction Before Direct Attack</h2></div>
+      <p class="lesson-intro"><strong>Learning objective:</strong> Prevent the opponent&rsquo;s freeing move before piling pressure onto a weakness.</p>
+      <article class="position">
+        <p class="position-label">Position 5 · White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="r2q1rk1/pp3ppp/2npbn2/4p3/2B1P3/2NP1N2/PPP2PPP/R1BQ1RK1 w - - 0 1"></div>
+            <p class="caption">The d6-pawn is backward, while d5 supplies the access square and blockade.</p>
+          </div>
+          <div class="position-note">
+            <h3>Student task</h3>
+            <ol><li>Which pawn is backward?</li><li>Which square in front of it is strategically important?</li><li>Which freeing move would reduce the weakness?</li><li>Which move combines occupation and restriction?</li></ol>
+            <div class="candidate-grid"><div class="candidate">Nd5</div><div class="candidate">Be3</div><div class="candidate">h3</div></div>
+            <details class="quiz">
+              <summary>Reveal the model plan</summary>
+              <div class="moveline">1.Nd5! Bxd5 2.exd5</div>
+       <p>White fixes the central structure, occupies the critical square, and limits Black&rsquo;s freeing resources. The d6-pawn is the visible target, but d5 is the operational square.</p>
+            </details>
+          </div>
+        </div>
+        <div class="coach-panel"><h3>Coach explanation</h3><p>Directly attacking d6 may be less important than making sure the pawn cannot advance or disappear. Restriction is positional preparation for conversion.</p></div>
+        <div class="concept-grid">
+          <article class="concept-card"><h3>Common error</h3><p>Adding attackers to d6 while allowing Black to play the freeing break.</p></article>
+          <article class="concept-card"><h3>Transfer rule</h3><p>Prevent the repair before increasing the pressure.</p></article>
+        </div>
+        <div class="fen-box"><div class="fen-title">FEN · White to move</div><pre class="fen-code">r2q1rk1/pp3ppp/2npbn2/4p3/2B1P3/2NP1N2/PPP2PPP/R1BQ1RK1 w - - 0 1</pre></div>
+      </article>
+    </section>
+
+    <section class="lesson" id="lab-6">
+      <div class="lesson-head"><span class="lesson-number">Laboratory 6</span><h2 class="lesson-title">Transform the Position While the King Is Vulnerable</h2></div>
+      <p class="lesson-intro"><strong>Learning objective:</strong> Recognize that a pawn break is a positional transformation requiring tactical verification.</p>
+      <article class="position">
+        <p class="position-label">Position 6 · White to move</p>
+        <div class="position-body">
+          <div class="diagram">
+            <div class="board" data-fen="r1bqk2r/pppp1ppp/2n2n2/4p3/2B1P3/2N2N2/PPPP1PPP/R1BQ1RK1 w kq - 4 5"></div>
+            <p class="caption">Black&rsquo;s king has not castled, so opening the center becomes a time-sensitive positional operation.</p>
+          </div>
+          <div class="position-note">
+            <h3>Student task</h3>
+            <ol><li>Which side benefits from opening the center?</li><li>Which king is less secure?</li><li>Which break changes the character of the position?</li><li>Calculate the first exchange.</li></ol>
+            <div class="candidate-grid"><div class="candidate">d4</div><div class="candidate">Re1</div><div class="candidate">h3</div></div>
+            <details class="quiz">
+              <summary>Reveal the model plan</summary>
+              <div class="moveline">1.d4! exd4 2.Nxd4</div>
+       <p>White transforms a quiet developing position into an open center while Black&rsquo;s king remains uncastled. The strategic idea is valid only because the concrete exchange works.</p>
+            </details>
+          </div>
+        </div>
+        <div class="coach-panel"><h3>Coach explanation</h3><p>Positional play is not always slow. The purpose of d4 is strategic, but the move must be checked tactically. Strategy chooses the transformation; calculation verifies it.</p></div>
+        <div class="concept-grid">
+          <article class="concept-card"><h3>Common error</h3><p>Calling a move positional and therefore failing to calculate its concrete consequences.</p></article>
+          <article class="concept-card"><h3>Transfer rule</h3><p>Strategy chooses the transformation; calculation verifies it.</p></article>
+        </div>
+        <div class="fen-box"><div class="fen-title">FEN · White to move</div><pre class="fen-code">r1bqk2r/pppp1ppp/2n2n2/4p3/2B1P3/2N2N2/PPPP1PPP/R1BQ1RK1 w kq - 4 5</pre></div>
+      </article>
+    </section>
+
+
+    <section class="lesson" id="worksheet">
+      <div class="lesson-head"><span class="lesson-number">Worksheet</span><h2 class="lesson-title">Positional Planning Worksheet</h2></div>
+      <ol class="diagnosis-sheet">
+        <li>Main imbalance</li><li>Better minor piece</li><li>Worst-placed piece</li><li>Open or half-open file</li><li>Key square</li><li>My thematic pawn break</li><li>Opponent&rsquo;s freeing pawn break</li><li>Favorable exchange</li><li>Unfavorable exchange</li><li>Desired resulting structure</li><li>Candidate plan A</li><li>Candidate plan B</li><li>Concrete line for each</li><li>Final choice and evaluation</li>
+      </ol>
+    </section>
+
+    <section class="lesson" id="mastery">
+      <div class="lesson-head"><span class="lesson-number">Review</span><h2 class="lesson-title">Exercises, Chapter Summary, and Mastery Check</h2></div>
+      <details class="quiz"><summary>Exercise 1: Name White&rsquo;s two plans in the Carlsbad position.</summary><p>The queenside minority attack with b4-b5 and the central expansion with e3-e4.</p></details>
+      <details class="quiz"><summary>Exercise 2: Which minor piece is stronger in the fixed-center position?</summary><p>White&rsquo;s knight is stronger because the fixed structure supplies useful squares while restricting Black&rsquo;s bishop.</p></details>
+      <details class="quiz"><summary>Exercise 3: Tactic first or coordination first in the heavy-piece position?</summary><p>White should improve coordination first. The file control and activity advantage become valuable once the queen, rooks, and minor pieces cooperate.</p></details>
+      <details class="quiz"><summary>Exercise 4: Review one recent game.</summary><p>Identify the main imbalance, the worst piece, the critical pawn break, the exchange that helped one side, and whether the resulting structure was favorable.</p></details>
+
+      <div class="recap">
+        <h3>Positional play is long-term optimization</h3>
+        <ol><li>Evaluate the structure.</li><li>Identify the main imbalance.</li><li>Improve the worst piece.</li><li>Prevent the opponent&rsquo;s freeing plan.</li><li>Choose a favorable transformation.</li><li>Calculate the concrete result.</li></ol>
+        <p>The best positional players do not merely wait. They shape the future position until the opponent&rsquo;s choices become increasingly unpleasant.</p>
+      </div>
+
+      <div class="recap">
+        <h3>Mastery standard</h3>
+        <ol><li>Identify the main imbalance.</li><li>Improve the correct piece.</li><li>Explain which structure should remain.</li><li>Prevent the opponent&rsquo;s freeing plan.</li><li>Calculate the transformation before committing.</li></ol>
+      </div>
+
+      <div class="lesson-nav-row no-print">
+        <a href="bishop-m11-lesson-01-finding-weaknesses-fen-laboratory.html">&larr; Module 11: Finding Weaknesses</a>
+        <a href="bishop-index.html">Back to Bishop Index &rarr;</a>
+      </div>
+    </section>
+
+    <p class="source-note">Converted from <em>Positional Play — Intermediate FEN Lesson Edition</em>. The conceptual reference and six-position guided laboratory were integrated into the Bishop Level page format. All six supplied FEN records and model lines are preserved.</p>
+  </main>
+
+  <script>const root=document.documentElement;const themeToggle=document.getElementById('themeToggle');const storedTheme=localStorage.getItem('chess-lesson-theme');if(storedTheme==='light'||storedTheme==='dark')root.dataset.theme=storedTheme;themeToggle?.addEventListener('click',()=>{root.dataset.theme=root.dataset.theme==='dark'?'light':'dark';localStorage.setItem('chess-lesson-theme',root.dataset.theme)});</script>
+  <script src="endgame-lesson.js?v=20260721-bishop-captured-half2" defer></script>
+  <script src="pawn-teacher-board.js?v=20260710-teacher-lesson-csv1" defer></script>
+</body>
+</html>
