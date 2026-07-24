@@ -7,9 +7,11 @@ It contains:
 
 - An **Interactive Study SPA** (vanilla JS, no framework) for analysis, Play-vs-Engine,
   puzzles, lesson management, and position building
-- **Pawn Level** beginner curriculum (5 modules, 50+ static HTML pages)
-- **Bishop Level** post-beginner curriculum (Module 1 published, 5 lesson pages)
+- **Pawn Level** beginner curriculum (5 modules)
+- **Advanced Pawn Level** curriculum (12 modules)
+- **Bishop Level** post-beginner/intermediate curriculum (15 modules, 19 lesson pages)
 - **Numbered endgame lessons** (7 chapter pages with embedded SPA iframe)
+- **AI Help** browser panel backed by a separately deployed Cloudflare Worker and Gemini
 - **Piece asset pipeline** (MetaPost/LuaLaTeX font → 12 SVG pieces)
 - **Local servers** for HTTP hosting (`local_server.py`) and board scanning (`scanner_server.py`)
 
@@ -18,8 +20,8 @@ It contains:
 - Always inspect actual files before editing. Do not trust outdated session summaries
   or stale documentation.
 - The current source code and filenames are the ground truth.
-- When in doubt about module structure, read `lessons/pawn-index.html` or
-  `lessons/bishop-index.html`.
+- When in doubt about module structure, read `lessons/pawn-index.html`,
+  `lessons/advanced-pawn-index.html`, or `lessons/bishop-index.html`.
 
 ## Repository Areas
 
@@ -27,7 +29,10 @@ It contains:
 |---|---|
 | **SPA** | `index.html`, `app.js`, `styles.css`, `pgn.mjs`, `puzzle-api.mjs`, `lesson-position-builder.mjs`, `text-normalization.mjs` |
 | **Pawn lessons** | `lessons/pawn-*.html`, `lessons/pawn-m{2,3,4,5}-*.html`, `lessons/pawn-index.html` |
-| **Bishop lessons** | `lessons/bishop-*.html`, `lessons/bishop_m1/` |
+| **Advanced Pawn lessons** | `lessons/advanced-pawn-m*-lesson-*.html`, `lessons/advanced-pawn-module-*-data.js`, `lessons/advanced-pawn-index.html` |
+| **Bishop lessons** | `lessons/bishop-m*-lesson-*.html`, `lessons/bishop-index.html`, `lessons/bishop_m1/` |
+| **AI Help client** | `ai-help-chat.mjs`, `ai-help-chat.css`, `ai-help-config.mjs`, `ai-help-icon.mjs` |
+| **AI Help Worker** | `worker/ai-help-worker.js`, `worker/wrangler.jsonc` |
 | **Numbered endgame lessons** | `lessons/01-*.html` … `lessons/07-*.html`, `lessons/endgame-lesson.js`, `lessons/endgame-lesson.css` |
 | **Shared lesson helpers** | `lessons/pawn-teacher-board.js`, `lessons/pawn-teacher-board.css` |
 | **Lesson source manuscripts** | `lesson_source/` (Module 1), `lesson_source2/` (Module 2), `lesson_source3/` (Module 3) |
@@ -110,20 +115,27 @@ It contains:
 ## Bishop Lesson Conventions
 
 - **Table of contents:** `lessons/bishop-index.html`
-- **Naming pattern:** `bishop-m1-lesson-{NN}-*.html`
-- **Published Module 1 (5 lessons):**
-  1. `bishop-m1-lesson-01-building-a-strong-foundation.html`
-  2. `bishop-m1-lesson-02-components-of-a-chess-foundation.html`
-  3. `bishop-m1-lesson-03-opening-principles-and-the-goal-of-chess.html`
-  4. `bishop-m1-lesson-04-the-point-system.html`
-  5. `bishop-m1-lesson-05-the-five-core-thinking-principles.html`
-- **Image assets:** `lessons/bishop_m1/` — PNG files with `intermediate-m1-` prefix
-- **Styling:** Pages are primarily self-contained with inline `<style>` blocks
-  and inline scripts. Shared `endgame-lesson.css` and `endgame-lesson.js` are
-  loaded only by lessons that use the dynamic FEN board renderer (currently
-  Lesson 5). Do not assume every Bishop lesson uses shared board helpers.
-- **Navigation:** Preserve the existing Back-to-Bishop-Index and sequential
-  lesson links; validate all links after editing.
+- **Naming pattern:** `bishop-m{module}-lesson-{NN}-*.html`
+- **Current curriculum:** 15 modules and 19 lesson pages. Verify totals in the index rather than trusting prose documentation.
+- **Module 1 assets:** `lessons/bishop_m1/` with `intermediate-m1-` filenames.
+- **Shared systems:** Bishop pages may use `endgame-lesson.css`, `endgame-lesson.js`, `lesson-header.css`, `lesson-presentation.js`, `lesson-presentation.css`, and Teacher Board helpers.
+- **Legacy markup:** Module 1 differs from later generated and FEN-laboratory pages. Audit every Bishop page when changing shared headers or presentation collection.
+- **Presentation mode:** collect intentional top-level sections and direct positions only. Nested candidate cards, student tasks, error notes, and transfer rules must not become standalone scenes.
+- **Navigation:** preserve Back-to-Bishop-Index and sequential links; validate them after editing.
+
+## AI Help Worker Conventions
+
+- The browser sends bounded context to the Cloudflare Worker `/chat` route. It must never call Gemini directly.
+- Keep `GEMINI_API_KEY` only as a Cloudflare Worker secret. Never commit or expose it.
+- Production runs at `https://cddigital.top`; keep it and `https://www.cddigital.top` in `ALLOWED_ORIGINS` unless deployment changes.
+- Preserve the legacy GitHub Pages and localhost origins used for fallback and local testing.
+- Exact-origin CORS failures appear as generic browser fetch/network errors. Check the allowlist before blaming Gemini.
+- Gemini uses `/v1beta/interactions` and a plain model ID; normalize away an optional `models/` prefix.
+- Preserve request/history/context bounds, rate limiting, `/health`, and sanitized public errors.
+- GitHub merges do not deploy Cloudflare. Worker changes require `cd worker` and `npx wrangler deploy`.
+- Validate with `node --check worker/ai-help-worker.js`, check Wrangler variables, deploy, test `/health`, and send a live production request.
+
+## Lesson Position Builder Conventions
 
 ## Lesson Position Builder Conventions
 
@@ -164,6 +176,7 @@ Before completing a task, verify:
 - [ ] Theme switching works (light/dark)
 - [ ] Back/Next navigation works (when modifying lesson series)
 - [ ] All shared assets load (CSS, JS, SVGs, fonts)
+- [ ] AI Help changes preserve secrets, allowed origins, CORS preflight, `/health`, rate limits, and deployment instructions
 - [ ] No accidental changes were made outside the requested scope
 
 ## Git Rules

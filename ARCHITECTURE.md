@@ -19,11 +19,10 @@ The major subsystems are:
    - `lesson-position-builder.mjs`
    - `text-normalization.mjs`
 
-3. **AI chess-help UI**
-   - `ai-help-chat.mjs`
-   - `ai-help-chat.css`
-   - `ai-help-config.mjs`
-   - `ai-help-icon.mjs`
+3. **AI chess-help subsystem**
+   - Browser UI: `ai-help-chat.mjs`, `ai-help-chat.css`, `ai-help-config.mjs`, `ai-help-icon.mjs`
+   - Cloudflare Worker proxy: `worker/ai-help-worker.js`, `worker/wrangler.jsonc`
+   - Gemini Interactions API, reached only from the Worker
 
 4. **Static lesson sites**
    - Pawn-level lessons
@@ -61,6 +60,10 @@ chess-study/
 ├── ai-help-chat.css
 ├── ai-help-config.mjs
 ├── ai-help-icon.mjs
+│
+├── worker/
+│   ├── ai-help-worker.js
+│   └── wrangler.jsonc
 │
 ├── assets/
 │   ├── openings.tsv
@@ -117,7 +120,10 @@ index.html
 ai-help-chat.mjs
 ├── ai-help-config.mjs
 ├── ai-help-icon.mjs
-└── ai-help-chat.css
+├── ai-help-chat.css
+└── HTTPS POST /chat
+    └── Cloudflare Worker (`worker/ai-help-worker.js`)
+        └── Gemini Interactions API (`/v1beta/interactions`)
 ```
 
 ### Responsibilities
@@ -131,8 +137,11 @@ ai-help-chat.mjs
 | `puzzle-api.mjs` | Random puzzle generation and verification with a dedicated Stockfish worker and optional tablebase checks |
 | `lesson-position-builder.mjs` | CSV/XLSX import, field normalization, position-set CRUD, persistence, and builder UI |
 | `text-normalization.mjs` | Unicode repair, punctuation normalization, and editable-text cleanup |
-| `ai-help-chat.mjs` | Dyno Bot launcher and panel, context collection, endpoint storage, transcript state, request lifecycle |
+| `ai-help-chat.mjs` | Dyno Bot launcher and panel, bounded context collection, endpoint storage, transcript state, timeout and request lifecycle |
 | `ai-help-chat.css` | Floating panel layout, themes, responsive hiding, Focus-mode placement |
+| `ai-help-config.mjs` | Public Worker base URL used by the browser client; never contains the Gemini API key |
+| `worker/ai-help-worker.js` | CORS enforcement, request validation, rate limiting, Gemini proxying, response normalization, `/chat` and `/health` routes |
+| `worker/wrangler.jsonc` | Cloudflare Worker name, entry point, Gemini model, allowed origins, and rate-limit binding |
 | `vendor/chess.js` | Legal moves, FEN, PGN, game termination, attack queries |
 | `vendor/stockfish/` | Browser Stockfish JavaScript and WASM variants |
 
@@ -620,54 +629,103 @@ Click, tap, desktop drag, and pointer drag all feed the same practice move submi
 
 ## 16. AI chess-help subsystem
 
-`ai-help-chat.mjs` mounts a floating Dyno Bot interface unless the page is embedded or board-only.
+AI Help is a two-tier feature. The static browser application collects bounded visible chess context, while a Cloudflare Worker protects the Gemini API key and performs the provider request.
 
-### Context payload
-
-The panel collects visible, bounded context:
-
-```javascript
-{
-  lessonTitle,
-  fen,
-  setupFen,
-  opening,
-  activeTab,
-  positionLabel,
-  sideToMove,
-  notation
-}
+```text
+Browser at https://cddigital.top
+  → ai-help-chat.mjs
+  → HTTPS POST <Worker URL>/chat
+  → Cloudflare Worker
+  → Gemini Interactions API
+  → normalized JSON { text }
+  → Dyno Bot transcript
 ```
 
-Notation is whitespace-normalized and capped before transmission.
+The browser must never call Gemini directly and must never contain `GEMINI_API_KEY`.
 
-### Endpoint resolution
+### 16.1 Browser client
 
-The endpoint is resolved from:
+`ai-help-chat.mjs` mounts the floating Dyno Bot interface unless the page is embedded or board-only. It collects a bounded snapshot containing the lesson title, FENs, opening, active tab, position label, side to move, and notation excerpt.
 
-1. `AI_HELP_ENDPOINT` in `ai-help-config.mjs`
-2. browser-local `chess-study-ai-endpoint-v1`
+Notation and conversation history are capped before transmission. Requests abort after 45 seconds. The endpoint comes from `AI_HELP_ENDPOINT` in `ai-help-config.mjs`, with browser-local `chess-study-ai-endpoint-v1` retained as a testing fallback. A base Worker URL is normalized to end in `/chat`.
 
-A base Worker URL is normalized to end in `/chat`.
+### 16.2 Cloudflare Worker
 
-### Request lifecycle
+`worker/ai-help-worker.js` exposes:
 
-- Keep at most 12 history messages.
-- Send JSON with messages and chess context.
-- Abort after 45 seconds.
-- Render pending, success, and failure states in the transcript.
-- Allow clearing the local transcript.
+| Route | Method | Purpose |
+|---|---|---|
+| `/chat` | `POST` | Validate, rate-limit, call Gemini, and return `{ text }` |
+| `/health` | `GET` | Confirm Worker reachability from an allowed origin |
+| `/chat` and `/health` | `OPTIONS` | CORS preflight handling |
 
-### Visibility and placement
+The Worker:
 
-- Hidden for `embed` and `boardOnly` modes.
+- reads `GEMINI_API_KEY` from a Cloudflare secret;
+- reads `GEMINI_MODEL` and `ALLOWED_ORIGINS` from Wrangler variables;
+- accepts only exact allowed origins;
+- limits request bytes, message count, message length, and context size;
+- uses `https://generativelanguage.googleapis.com/v1beta/interactions`;
+- removes an accidental `models/` prefix from a configured model ID;
+- maps provider and network failures to bounded JSON errors.
+
+Current production origins are `https://cddigital.top` and `https://www.cddigital.top`. The legacy GitHub Pages origin and localhost origins remain allowed.
+
+### 16.3 CORS behavior
+
+A missing production origin causes preflight to fail before browser JavaScript can read the Worker's JSON response. Firefox commonly reports this as:
+
+```text
+NetworkError when attempting to fetch resource.
+```
+
+When the production domain changes, update both `ALLOWED_ORIGINS` in `worker/wrangler.jsonc` and the fallback origin list in `worker/ai-help-worker.js`, then redeploy.
+
+### 16.4 Deployment boundary
+
+The static site and Worker are separate deployments. Merging Worker code into GitHub does not update the running Cloudflare Worker.
+
+```powershell
+cd worker
+npx wrangler login
+npx wrangler deploy
+```
+
+The existing secret normally remains attached. Set it only when missing:
+
+```powershell
+npx wrangler secret put GEMINI_API_KEY
+npx wrangler deploy
+```
+
+Never commit the API key to configuration, JavaScript, Markdown, logs, or screenshots.
+
+### 16.5 Validation and troubleshooting
+
+After Worker changes:
+
+1. Run `node --check worker/ai-help-worker.js`.
+2. Verify the current production origins in `worker/wrangler.jsonc`.
+3. Deploy the Worker.
+4. Test `/health` from an allowed origin.
+5. Send a short live AI Help request from `https://cddigital.top`.
+6. Inspect browser Network details and Cloudflare logs on failure.
+
+Failure categories:
+
+- **Browser network/CORS error:** Worker URL, DNS/TLS, deployment, or origin allowlist.
+- **HTTP 429/503:** rate limit, missing secret, provider outage, or temporary capacity.
+- **HTTP 502:** provider rejected the model/request or returned unusable output.
+- **Timeout:** the browser aborted after 45 seconds.
+
+### 16.6 Visibility and placement
+
+- Hidden in `embed` and `boardOnly` modes.
 - Hidden at phone widths and short coarse-pointer landscape sizes.
 - Normally fixed to the lower-right.
-- In Focus mode, `.page-shell.is-focus-mode ~ .ai-help-chat` moves the launcher and panel to the lower-left.
+- In Focus mode, `.page-shell.is-focus-mode ~ .ai-help-chat` moves it to the lower-left.
 
-The lower-right is reserved for `.focus-mode-brand`, so the AI control no longer covers the app watermark.
-
----
+The lower-right remains available for `.focus-mode-brand`.
 
 ## 17. Focus mode
 

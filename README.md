@@ -133,9 +133,9 @@ Tablebase eligibility requires a legal FEN, no castling rights, no more than sev
 
 ## AI chess help
 
-`ai-help-chat.mjs` mounts an optional floating Dyno Bot panel outside embedded/board-only mode.
+`ai-help-chat.mjs` mounts an optional floating Dyno Bot panel outside embedded and board-only mode. It can explain the visible board, plans, candidate moves, tactical ideas, lesson concepts, and supported app controls.
 
-The panel can send the following visible context to the configured `/chat` endpoint:
+The browser sends bounded context to a Cloudflare Worker:
 
 - lesson title
 - current FEN and setup FEN
@@ -144,16 +144,43 @@ The panel can send the following visible context to the configured `/chat` endpo
 - side-to-move and position labels
 - visible notation, capped before transmission
 
-The endpoint can come from `ai-help-config.mjs` or the browser-local key `chess-study-ai-endpoint-v1`.
+```text
+Browser → Cloudflare Worker /chat → Gemini Interactions API
+```
 
-To avoid covering board controls, the entire floating AI-help control is hidden on:
+The Gemini API key is never stored in the static site. It exists only as the Worker's `GEMINI_API_KEY` secret. The browser endpoint comes from `ai-help-config.mjs` or the local testing key `chess-study-ai-endpoint-v1`.
 
-- viewports up to 760 px wide
-- short coarse-pointer landscape screens
+The Worker lives in `worker/ai-help-worker.js`, with deployment configuration in `worker/wrangler.jsonc`. It provides `POST /chat`, `GET /health`, exact-origin CORS validation, request limits, rate limiting, and normalized public errors.
 
-In Focus mode, the AI-help launcher and panel move to the lower-left so the lower-right app watermark remains unobstructed.
+Current production origins are `https://cddigital.top` and `https://www.cddigital.top`. The old GitHub Pages origin and localhost origins remain available for fallback and development.
 
-The feature is also disabled in `?embed=1` and board-only modes.
+### Deploy or update the Worker
+
+Merging Worker code does not update the running Cloudflare deployment.
+
+```powershell
+cd worker
+npx wrangler login
+npx wrangler deploy
+```
+
+The existing secret normally remains attached. Set it only if Cloudflare reports it missing:
+
+```powershell
+npx wrangler secret put GEMINI_API_KEY
+npx wrangler deploy
+```
+
+Never commit the API key.
+
+### AI Help troubleshooting
+
+- **`NetworkError when attempting to fetch resource`**: check Worker deployment, endpoint URL, DNS/TLS, and `ALLOWED_ORIGINS`; this usually occurs before Gemini is contacted.
+- **Busy or temporary error**: wait briefly; rate limiting or Gemini capacity may be involved.
+- **Configuration error**: confirm the Worker secret and configured model.
+- **Timeout**: the client aborts after 45 seconds.
+
+The floating control is hidden on phone-width layouts and short coarse-pointer landscape screens so it does not cover board controls. In Focus mode it moves to the lower-left. It is disabled in `?embed=1` and board-only modes.
 
 ## Lessons and files
 
@@ -241,6 +268,8 @@ The floating Teacher Board also evaluates the embedded FEN after moves and posit
 | `ai-help-chat.css` | Floating chat styling and mobile auto-hide rules |
 | `ai-help-config.mjs` | Default AI endpoint configuration |
 | `ai-help-icon.mjs` | Embedded launcher icon data |
+| `worker/ai-help-worker.js` | Cloudflare Worker CORS, validation, rate limiting, Gemini proxy, `/chat`, and `/health` |
+| `worker/wrangler.jsonc` | Worker variables, production origins, model, and rate-limit binding |
 | `vendor/chess.js` | Chess rules, legal moves, FEN, PGN support |
 | `vendor/stockfish/` | Browser-compatible Stockfish bundles |
 | `assets/openings.tsv` | Opening identification database |
@@ -311,6 +340,7 @@ Useful checks after editing JavaScript or documentation:
 ```powershell
 node --check app.js
 node --check ai-help-chat.mjs
+node --check worker/ai-help-worker.js
 node tools/test-puzzle-api.mjs
 git diff --check
 ```
