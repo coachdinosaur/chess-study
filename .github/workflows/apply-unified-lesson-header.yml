@@ -1,0 +1,43 @@
+name: Apply unified lesson header
+
+on:
+  push:
+    branches:
+      - agent/unify-lesson-headers
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/unify-lesson-headers
+          fetch-depth: 0
+
+      - name: Import the shared header stylesheet
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          import_rule = '@import url("lesson-header.css?v=20260724-unified-header-v1");\n\n'
+          for filename in ("lessons/endgame-lesson.css", "lessons/advanced-pawn-lesson.css"):
+              path = Path(filename)
+              text = path.read_text(encoding="utf-8")
+              text = text.replace(import_rule, "")
+              path.write_text(import_rule + text, encoding="utf-8")
+          PY
+
+      - name: Remove one-time workflow
+        run: rm .github/workflows/apply-unified-lesson-header.yml
+
+      - name: Commit generated update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lessons/endgame-lesson.css lessons/advanced-pawn-lesson.css .github/workflows/apply-unified-lesson-header.yml
+          git commit -m "Apply unified lesson header across levels"
+          git push origin HEAD:agent/unify-lesson-headers
