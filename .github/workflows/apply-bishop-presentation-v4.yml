@@ -1,0 +1,154 @@
+name: Apply Bishop presentation v4
+
+on:
+  push:
+    branches:
+      - agent/repair-bishop-presentation-and-headers-v4
+    paths:
+      - .github/workflows/apply-bishop-presentation-v4.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-test:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/repair-bishop-presentation-and-headers-v4
+          fetch-depth: 0
+
+      - name: Apply presentation and header fixes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          presentation = Path('lessons/lesson-presentation.js')
+          text = presentation.read_text(encoding='utf-8')
+          text = text.replace(
+              'var VERSION = "20260724-bishop-presentation-v3";',
+              'var VERSION = "20260724-bishop-presentation-v4";'
+          )
+          old = '''function scopedQuery(root, selector) {
+          if (!root) return [];
+          try {
+          return Array.prototype.slice.call(root.querySelectorAll(":scope " + selector));
+          } catch (error) {
+          return Array.prototype.slice.call(root.querySelectorAll(selector.replace(/(^|,)\\s*>\\s*/g, "$1 ")));
+          }
+          }'''
+          new = '''function scopedQuery(root, selector) {
+          if (!root) return [];
+          var selectors = String(selector || "")
+          .split(",")
+          .map(function (part) { return part.trim(); })
+          .filter(Boolean);
+          if (!selectors.length) return [];
+          var scopedSelector = selectors.map(function (part) {
+          return part.indexOf(":scope") === 0 ? part : ":scope " + part;
+          }).join(", ");
+          try {
+          return Array.prototype.slice.call(root.querySelectorAll(scopedSelector));
+          } catch (error) {
+          var attribute = "data-presentation-scope-token";
+          var previous = root.getAttribute(attribute);
+          var token = "scope" + Math.random().toString(36).slice(2);
+          root.setAttribute(attribute, token);
+          try {
+          var fallbackSelector = selectors.map(function (part) {
+          return "[" + attribute + '=\\"' + token + '\\"] " + part;
+          }).join(", ");
+          return Array.prototype.slice.call(document.querySelectorAll(fallbackSelector));
+          } finally {
+          if (previous === null) root.removeAttribute(attribute);
+          else root.setAttribute(attribute, previous);
+          }
+          }
+          }'''
+          if old not in text:
+              raise SystemExit('Expected scopedQuery implementation was not found')
+          presentation.write_text(text.replace(old, new), encoding='utf-8')
+
+          for css_name in ('lessons/endgame-lesson.css', 'lessons/advanced-pawn-lesson.css'):
+              path = Path(css_name)
+              css = path.read_text(encoding='utf-8')
+              css = css.replace(
+                  'lesson-header.css?v=20260724-unified-header-v1',
+                  'lesson-header.css?v=20260724-unified-header-v2'
+              )
+              path.write_text(css, encoding='utf-8')
+
+          index_text = Path('lessons/bishop-index.html').read_text(encoding='utf-8')
+          bishop_files = sorted(set(re.findall(
+              r'["\\\'](bishop-(?:m\\d+-)?lesson-[^"\\\']+\\.html)["\\\']',
+              index_text
+          )))
+          for filename in bishop_files:
+              path = Path('lessons') / filename
+              html = path.read_text(encoding='utf-8')
+              html = re.sub(
+                  r'lesson-presentation\\.js\\?v=[^"\\\']+',
+                  'lesson-presentation.js?v=20260724-bishop-presentation-v4',
+                  html
+              )
+              if 'endgame-lesson.css' not in html and 'lesson-header.css' not in html:
+                  marker = '<link rel="stylesheet" href="pawn-teacher-board.css'
+                  if marker in html:
+                      html = html.replace(
+                          marker,
+                          '<link rel="stylesheet" href="lesson-header.css?v=20260724-unified-header-v2">\\n  ' + marker,
+                          1
+                      )
+                  else:
+                      html = html.replace(
+                          '</head>',
+                          '  <link rel="stylesheet" href="lesson-header.css?v=20260724-unified-header-v2">\\n</head>',
+                          1
+                      )
+              path.write_text(html, encoding='utf-8')
+          print(f'Patched {len(bishop_files)} Bishop lesson pages.')
+          PY
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Playwright
+        run: |
+          python -m pip install --disable-pip-version-check playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Run Chromium regression audit
+        run: |
+          python -m http.server 8000 --bind 127.0.0.1 >/tmp/chess-study-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          python .github/scripts/audit_bishop_presentation.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path('.github/bishop-presentation-audit.json').read_text())
+          summary = report['summary']
+          failures = {
+              'missing_launch_button': summary['missing_launch_button'],
+              'blank_scene_lessons': summary['blank_scene_lessons'],
+              'exact_duplicate_lessons': summary['exact_duplicate_lessons'],
+              'page_error_lessons': summary['page_error_lessons'],
+              'module1_without_endgame_css': summary['module1_without_endgame_css'],
+          }
+          failures = {key: value for key, value in failures.items() if value}
+          if failures:
+              raise SystemExit('Browser regression audit failed: ' + json.dumps(failures, indent=2))
+          print('Browser regression audit passed.')
+          PY
+
+      - name: Commit fix and audit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lessons .github/bishop-presentation-audit.json
+          git commit -m "Fix Bishop presentation scene scoping and headers"
+          git push origin HEAD:agent/repair-bishop-presentation-and-headers-v4
