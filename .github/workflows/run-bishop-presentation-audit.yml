@@ -1,0 +1,41 @@
+name: Run Bishop presentation audit
+
+on:
+  push:
+    branches:
+      - agent/repair-bishop-presentation-and-headers-v4
+    paths:
+      - .github/workflows/run-bishop-presentation-audit.yml
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/repair-bishop-presentation-and-headers-v4
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Playwright
+        run: |
+          python -m pip install --disable-pip-version-check playwright
+          python -m playwright install --with-deps chromium
+      - name: Audit all Bishop lessons in Chromium
+        run: |
+          python -m http.server 8000 --bind 127.0.0.1 >/tmp/chess-study-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          python .github/scripts/audit_bishop_presentation.py
+      - name: Commit report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/bishop-presentation-audit.json
+          git commit -m "Record Bishop presentation browser audit"
+          git push origin HEAD:agent/repair-bishop-presentation-and-headers-v4
