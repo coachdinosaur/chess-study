@@ -1,3 +1,5 @@
+@import url("lesson-header.css?v=20260724-unified-header-v1");
+
 /* Shared figure/image styles for lesson artwork */
 .figure {
   overflow: hidden;
