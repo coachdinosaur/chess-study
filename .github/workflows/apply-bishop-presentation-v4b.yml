@@ -63,3 +63,5 @@ jobs:
           git add lessons .github/scripts/audit_bishop_presentation.py .github/bishop-presentation-audit.json
           git commit -m "Fix Bishop presentation scoping and Module 1 headers"
           git push origin HEAD:agent/repair-bishop-presentation-and-headers-v4
+
+# Explicit retry after the browser audit exposed the selector-scoping defect.
