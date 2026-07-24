@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-teacher-fen="r1bqkbnr/pppp1ppp/2n5/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 3 3">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
+  <link rel="apple-touch-icon" href="../assets/pieces/app_icon.png">
+  <title>Blunder Prevention in Chess — Advanced Pawn Module 11</title>
+  <meta name="description" content="Advanced Pawn Module 11: a complete blunder-prevention system with nine interactive FEN positions, threat detection, final safety checks, tactical falsification, and phase-specific routines.">
+  <script>(function(){try{var stored=localStorage.getItem('lesson-theme-v1')||localStorage.getItem('chess-lesson-theme');if(stored==='light'||stored==='dark')document.documentElement.dataset.theme=stored;}catch(e){}})();</script>
+  <link rel="stylesheet" href="advanced-pawn-lesson.css?v=20260724-m11">
+  <link rel="stylesheet" href="pawn-teacher-board.css?v=20260710-teacher-lesson-csv1">
+  <style>
+    .hero-card{min-height:360px}
+    .hero-pieces{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .module-badge{grid-column:1/-1;text-align:center;color:var(--muted);font-weight:850}
+    .chapter-prose h2{margin-top:1.8rem}
+    .chapter-prose h3{margin-top:1.4rem;color:var(--accent)}
+    .chapter-prose ul,.chapter-prose ol{padding-left:1.3rem}
+    .chapter-prose li{margin:.35rem 0}
+    .chapter-prose blockquote{margin:1rem 0;padding:.85rem 1rem;border-left:4px solid var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--panel));border-radius:0 14px 14px 0;color:var(--text);font-weight:800}
+    .chapter-prose table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.95rem}
+    .chapter-prose th,.chapter-prose td{border:1px solid var(--line);padding:.65rem;text-align:left;vertical-align:top}
+    .chapter-prose th{color:var(--accent);background:var(--panel-strong)}
+    .section-kicker{margin:0 0 .25rem;color:var(--accent);font-size:.78rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+    .board-lab{border-color:color-mix(in srgb,var(--accent) 48%,var(--line))}
+    .lab-meta{display:grid;gap:.35rem;margin-bottom:.75rem}
+    .lab-meta p{margin:0;color:var(--muted)}
+    .board-lab h4{margin:.85rem 0 .35rem;color:var(--accent);font-size:1rem;text-transform:uppercase;letter-spacing:.08em}
+    .solution-body{margin-top:.65rem;color:var(--text)}
+    .solution-body p:first-child{margin-top:0}
+    .coach-note{margin-top:.7rem;border:1px solid var(--line);border-radius:15px;padding:.75rem .9rem;background:rgba(255,255,255,.035)}
+    .coach-note summary{cursor:pointer;font-weight:900;color:var(--accent-2)}
+    .takeaway{margin-top:.75rem;border:1px solid color-mix(in srgb,var(--accent-2) 48%,var(--line));border-radius:15px;padding:.8rem .9rem;background:color-mix(in srgb,var(--accent-2) 9%,var(--panel));color:var(--muted)}
+    .takeaway strong{display:block;color:var(--accent-2);margin-bottom:.25rem;text-transform:uppercase;letter-spacing:.08em;font-size:.8rem}
+    .takeaway blockquote{margin:.35rem 0;padding:0;border:0;background:none;color:var(--text)}
+    .reference-list{font-size:.92rem}
+    .reference-list a{color:var(--accent)}
+    .toc-divider{height:1px;background:var(--line);margin:.65rem 0}
+    .toc-group-label{padding:.2rem .55rem;color:var(--accent-2);font-size:.76rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
+    @media(max-width:720px){.chapter-prose table{display:block;overflow-x:auto}}
+  </style>
+</head>
+<body>
+  <div class="index-header no-print">
+    <div class="index-header-inner">
+      <div class="index-brand">
+        <div class="index-brand-icon" aria-hidden="true">♟</div>
+        <div><div class="index-brand-label">Advanced Pawn · Module 11</div><div class="index-brand-title">Blunder Prevention in Chess</div></div>
+      </div>
+      <div class="index-top-actions">
+        <a class="toolbar-link" href="advanced-pawn-index.html">&larr; Advanced Pawn Index</a>
+        <button class="toolbar-link" type="button" id="themeToggle">Toggle theme</button>
+        <button class="toolbar-link" type="button" onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </div>
+  </div>
+  <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+  <div class="page">
+    <section class="hero" id="top">
+      <div>
+        <p class="kicker">Advanced Pawn · Module 11 · Complete Reference</p>
+        <h1>Blunder Prevention in Chess</h1>
+        <p class="lead">Build a reliable final safety layer between choosing a move and playing it. Learn to identify what changed, test the opponent's strongest forcing reply, and prevent tactical, positional, endgame, conversion, and time-pressure blunders.</p>
+        <div class="objective-grid">
+          <div class="objective"><strong>Detect</strong><span>Identify threats, loose pieces, alignments, exposed kings, and phantom defenders.</span></div>
+          <div class="objective"><strong>Test</strong><span>Generate alternatives and try to refute each candidate with the opponent's strongest reply.</span></div>
+          <div class="objective"><strong>Verify</strong><span>Perform a brief final check for checks, captures, threats, opened lines, and stalemate.</span></div>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div class="hero-pieces">
+          <img src="../assets/pieces/mpchess/wQ.svg" alt="White queen">
+          <img src="../assets/pieces/mpchess/bN.svg" alt="Black knight">
+          <img src="../assets/pieces/mpchess/wK.svg" alt="White king">
+          <div class="module-badge">15 conceptual chapters · 8 board laboratories · 9 legal FEN positions</div>
+        </div>
+      </div>
+    </section>
+    <section class="lesson-section" id="introduction">
+      <div class="section-head"><div class="number">★</div><div><p class="section-kicker">Module introduction</p><h2>Why blunder prevention matters</h2></div></div>
+      <div class="prose chapter-prose"><h2>Introduction</h2>
+<p>A blunder is a move that causes a serious and usually avoidable deterioration of a chess position. It may lose material, permit checkmate, destroy a winning advantage, turn an equal position into a losing one, or allow the opponent to escape from a lost position.</p>
+<p>Blunder prevention is not merely the ability to calculate long variations. Many blunders occur after only one move because a player fails to notice an immediate check, capture, threat, loose piece, tactical alignment, or change created by the opponent's previous move.</p>
+<p>The practical purpose of blunder prevention is to make a player's decision process reliable. It creates a final layer of verification between choosing a move and playing it.</p>
+<p>This chapter explains:</p>
+<ul>
+<li>what blunders are;</li>
+<li>why they occur;</li>
+<li>the main categories of blunders;</li>
+<li>how to identify danger before moving;</li>
+<li>how to perform a complete blunder check;</li>
+<li>how the process changes in openings, middlegames, endgames, winning positions, defensive positions, and time pressure;</li>
+<li>how strong players reduce errors through prophylaxis, candidate comparison, and tactical falsification.</li>
+</ul>
+<h2>How to Use the Board Lessons</h2>
+<p>The conceptual material in this chapter should be paired with board positions. Each board lesson follows the same sequence:</p>
+<ol>
+<li><strong>Load the FEN position.</strong></li>
+<li><strong>State whose move it is.</strong></li>
+<li><strong>Ask the student what changed, what is threatened, and what forcing moves exist.</strong></li>
+<li><strong>Require a move or short variation before revealing the answer.</strong></li>
+<li><strong>Show the opponent's strongest reply to an incorrect move.</strong></li>
+<li><strong>End with one transferable decision rule.</strong></li>
+</ol>
+<p>For an advanced beginner, most positions should require only one to three moves of calculation. The purpose is not to find a brilliant combination every time. The purpose is to connect a repeatable safety question to a visible board position.</p>
+<p>A useful lesson card contains:</p>
+<ul>
+<li><strong>FEN</strong></li>
+<li><strong>Side to move</strong></li>
+<li><strong>Position source:</strong> real game, opening line, or constructed teaching position</li>
+<li><strong>Lesson goal</strong></li>
+<li><strong>Student task</strong></li>
+<li><strong>Candidate moves</strong></li>
+<li><strong>Solution</strong></li>
+<li><strong>Why the incorrect move fails</strong></li>
+<li><strong>Practical takeaway</strong></li>
+<li><strong>Reset position</strong></li>
+</ul>
+<p>The student should see the position before seeing the explanation. Otherwise the board becomes decorative furniture, which chess already has enough of.</p>
+</div>
+    </section>
+    <div class="layout" id="lesson">
+      <nav class="toc" aria-label="Lesson contents">
+        <div class="toc-title">Contents</div>
+        <a href="#introduction">Introduction</a>
+        <div class="toc-group-label">Concepts</div>
+        <a href="#chapter-1">1. Definition</a><a href="#chapter-2">2. Why Blunders Happen</a><a href="#chapter-3">3. Main Categories of Blunders</a><a href="#chapter-4">4. The Complete Blunder-Prevention Process</a><a href="#chapter-5">5. A Compact Practical Checklist</a><a href="#chapter-6">6. Loose Pieces and Tactical Targets</a><a href="#chapter-7">7. Critical Tactical Warning Signs</a><a href="#chapter-8">8. Blunder Prevention in Different Phases</a><a href="#chapter-9">9. Blunder Prevention When Winning</a><a href="#chapter-10">10. Blunder Prevention in Difficult Positions</a><a href="#chapter-11">11. Time Management and Blunder Prevention</a><a href="#chapter-12">12. Advanced Blunder Prevention</a><a href="#chapter-13">13. Common Misconceptions</a><a href="#chapter-14">14. Model Decision Routine</a><a href="#chapter-15">15. Summary</a>
+        <div class="toc-divider"></div>
+        <div class="toc-group-label">Board laboratories</div>
+        <a href="#lab-1">Lab 1: What Changed? Stop the Immediate Threat</a><a href="#lab-2">Lab 2: The Phantom Defender</a><a href="#lab-3">Lab 3: Loose Targets and the Fork Square</a><a href="#lab-4">Lab 4: Back-Rank Danger and Creating Luft</a><a href="#lab-5">Lab 5: The &quot;Free Queen&quot; That Is Not Free</a><a href="#lab-6">Lab 6: The Same Position, a Different Result</a><a href="#lab-7">Lab 7: Winning Without Stalemating</a><a href="#lab-8">Lab 8: A World Champion's Missing Final Check</a>
+        <a href="#references">References</a>
+      </nav>
+      <main>
+        <section class="lesson-section" id="chapter-1">
+      <div class="section-head">
+        <div class="number">1</div>
+        <div><p class="section-kicker">Conceptual reference</p><h2>Definition</h2></div>
+      </div>
+      <div class="prose chapter-prose"><h2>1.1 What Is a Blunder?</h2>
+<p>A blunder is a move that causes a major negative change in the objective or practical value of a position.</p>
+<p>Typical consequences include:</p>
+<ul>
+<li>losing a queen, rook, or minor piece;</li>
+<li>allowing forced checkmate;</li>
+<li>overlooking a decisive tactical combination;</li>
+<li>moving into a lost ending;</li>
+<li>failing to make a necessary defensive move;</li>
+<li>exchanging into a position that cannot be held;</li>
+<li>throwing away a forced win;</li>
+<li>allowing a perpetual check or stalemate;</li>
+<li>violating a critical opening requirement;</li>
+<li>spending so much time that the remaining position becomes unmanageable.</li>
+</ul>
+<p>A blunder is normally more serious than an inaccuracy or an ordinary mistake.</p>
+<table>
+<thead>
+<tr>
+  <th>Classification</th>
+  <th>General meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Inaccuracy</td>
+  <td>A move that is not best but keeps the position within a manageable range</td>
+</tr>
+<tr>
+  <td>Mistake</td>
+  <td>A move that causes a clear deterioration</td>
+</tr>
+<tr>
+  <td>Blunder</td>
+  <td>A move that causes a severe deterioration or decisive consequence</td>
+</tr>
+</tbody>
+</table>
+<p>Engine labels are useful, but the practical definition is more important: a blunder is a move whose harmful consequence should have been detectable with an appropriate safety check.</p>
+<h2>1.2 Why Blunders Exist</h2>
+<p>Chess requires a player to manage several mental tasks at once:</p>
+<ul>
+<li>remember the current position accurately;</li>
+<li>understand the opponent's last move;</li>
+<li>generate candidate moves;</li>
+<li>calculate forcing variations;</li>
+<li>compare resulting positions;</li>
+<li>evaluate long-term consequences;</li>
+<li>manage time;</li>
+<li>control emotion;</li>
+<li>physically execute the intended move.</li>
+</ul>
+<p>A failure in any one of these tasks can produce a blunder.</p>
+<p>Blunders therefore arise from both chess errors and decision-process errors.</p>
+<h2>1.3 The Role of Blunder Prevention</h2>
+<p>Blunder prevention has three roles:</p>
+<ol>
+<li><strong>Preservation:</strong> It protects the value already present in the position.</li>
+<li><strong>Verification:</strong> It tests whether a chosen move survives the opponent's strongest reply.</li>
+<li><strong>Decision control:</strong> It prevents impulse, fixation, wishful thinking, and automatic play from bypassing calculation.</li>
+</ol>
+<p>A player may understand strategy well and still lose because the final verification stage is missing.</p>
+</div>
+    </section>
+    <section class="lesson-section" id="chapter-2">
+      <div class="section-head">
+        <div class="number">2</div>
+        <div><p class="section-kicker">Conceptual reference</p><h2>Why Blunders Happen</h2></div>
+      </div>
+      <div class="prose chapter-prose"><h2>2.1 Failure to Notice What Changed</h2>
+<p>Every move changes the position.</p>
+<p>The opponent's last move may:</p>
+<ul>
+<li>attack a piece;</li>
+<li>uncover a line;</li>
+<li>remove a defender;</li>
+<li>create a discovered attack;</li>
+<li>threaten checkmate;</li>
+<li>prepare a pawn break;</li>
+<li>open a diagonal;</li>
+<li>close an escape square;</li>
+<li>overload a defender;</li>
+<li>leave another piece undefended.</li>
+</ul>
+<p>A common blunder begins when a player treats the new position as though it were still the old one.</p>
+<p>The first question after every opposing move should be:</p>
+<blockquote>
+<p>What changed?</p>
+</blockquote>
+<h2>2.2 Opponent-Threat Blindness</h2>
+<p>Players naturally focus on their own plans. This creates a dangerous imbalance of attention.</p>
+<p>A player may think:</p>
+<ul>
+<li>"I am attacking the king."</li>
+<li>"I can win the queenside pawn."</li>
+<li>"I want to occupy the open file."</li>
+<li>"I should complete development."</li>
+</ul>
+<p>Meanwhile, the opponent may already be threatening:</p>
+<ul>
+<li>mate in one;</li>
+<li>a fork;</li>
+<li>a discovered attack;</li>
+<li>a queen trap;</li>
+<li>a tactical pawn break;</li>
+<li>a removal of the defender;</li>
+<li>a winning exchange.</li>
+</ul>
+<p>A move cannot be judged only by what it accomplishes. It must also be judged by what it permits.</p>
+<h2>2.3 Premature Commitment</h2>
+<p>A player often sees an attractive move and immediately begins proving that it works.</p>
+<p>This is confirmation bias in chess form.</p>
+<p>The player calculates only favorable replies and ignores:</p>
+<ul>
+<li>forcing checks;</li>
+<li>unexpected captures;</li>
+<li>intermediate moves;</li>
+<li>counterattacks;</li>
+<li>quiet defensive moves;</li>
+<li>tactical refutations.</li>
+</ul>
+<p>The first move seen is not always the best move. It is merely the first move seen.</p>
+<h2>2.4 Tactical Blindness</h2>
+<p>A tactical pattern may be present but unrecognized.</p>
+<p>Common missed patterns include:</p>
+<ul>
+<li>forks;</li>
+<li>pins;</li>
+<li>skewers;</li>
+<li>discovered attacks;</li>
+<li>double attacks;</li>
+<li>overloaded defenders;</li>
+<li>deflections;</li>
+<li>decoys;</li>
+<li>interference;</li>
+<li>back-rank mates;</li>
+<li>mating nets;</li>
+<li>trapped pieces;</li>
+<li>zwischenzugs;</li>
+<li>clearance sacrifices.</li>
+</ul>
+<p>A player who does not recognize the pattern may fail to calculate the relevant line at all.</p>
+<h2>2.5 Calculation Stopping Too Early</h2>
+<p>Many blunders occur because calculation ends at the first convenient point.</p>
+<p>For example:</p>
+<ol>
+<li>"I capture the pawn."</li>
+<li>"They recapture."</li>
+<li>"I recapture."</li>
+<li>"I win material."</li>
+</ol>
+<p>The player may stop before noticing:</p>
+<ul>
+<li>an intermediate check;</li>
+<li>a final fork;</li>
+<li>a trapped queen;</li>
+<li>a back-rank weakness;</li>
+<li>a lost pawn ending;</li>
+<li>a mating attack.</li>
+</ul>
+<p>A tactical line should be calculated until it reaches a position that is sufficiently quiet to evaluate.</p>
+<h2>2.6 Phantom Defense</h2>
+<p>A phantom defender is a piece that appears to protect something but cannot actually perform the defensive task.</p>
+<p>A defender may be:</p>
+<ul>
+<li>pinned;</li>
+<li>overloaded;</li>
+<li>blocked;</li>
+<li>too far away;</li>
+<li>required to prevent mate;</li>
+<li>unable to recapture because of a stronger tactical reply.</li>
+</ul>
+<p>Counting attackers and defenders is not enough. Their legal and tactical ability to act must be verified.</p>
+<h2>2.7 Board-Visualization Error</h2>
+<p>A player may calculate with an inaccurate internal board.</p>
+<p>Typical errors include:</p>
+<ul>
+<li>forgetting that a square became empty;</li>
+<li>imagining that a captured piece still exists;</li>
+<li>overlooking that a line opened;</li>
+<li>assuming a pawn still controls a square after it moved;</li>
+<li>forgetting that castling rights are gone;</li>
+<li>confusing the location of a rook or queen;</li>
+<li>missing that a king has no escape square.</li>
+</ul>
+<p>This is especially common in long forcing lines.</p>
+<h2>2.8 Automatic Opening Play</h2>
+<p>Memorized opening moves can become dangerous when the opponent changes the move order.</p>
+<p>A familiar move may fail because:</p>
+<ul>
+<li>a defender has not developed;</li>
+<li>the center is different;</li>
+<li>the opponent's queen is placed differently;</li>
+<li>a tactical resource exists in the altered move order;</li>
+<li>castling is no longer safe;</li>
+<li>a standard pawn break is premature.</li>
+</ul>
+<p>Opening knowledge must be tied to position, not merely move number.</p>
+<h2>2.9 Time Pressure</h2>
+<p>Under time pressure, players tend to:</p>
+<ul>
+<li>choose the first plausible move;</li>
+<li>stop generating candidates;</li>
+<li>skip the opponent-threat check;</li>
+<li>calculate only one line;</li>
+<li>overlook quiet defensive moves;</li>
+<li>move before the board image is stable.</li>
+</ul>
+<p>Time pressure does not create new tactical rules. It removes the time normally used to notice them.</p>
+<h2>2.10 Emotional Distortion</h2>
+<p>Emotion changes evaluation.</p>
+<h3>After gaining an advantage</h3>
+<p>A player may relax, assume the game is already won, and stop checking tactics.</p>
+<h3>After making a mistake</h3>
+<p>A player may rush, seek revenge, or try to recover everything immediately.</p>
+<h3>When surprised</h3>
+<p>A player may respond too quickly to prove that the surprise is harmless.</p>
+<h3>When afraid</h3>
+<p>A player may choose passive moves without calculating active defensive resources.</p>
+<h3>When excited</h3>
+<p>A player may sacrifice material because the attacking idea looks beautiful.</p>
+<p>Blunder prevention requires emotional reset as well as calculation.</p>
+</div>
+    </section>
+    <section class="lesson-section board-lab" id="lab-1">
+      <div class="section-head">
+        <div class="number">1</div>
+        <div><p class="section-kicker">Board laboratory</p><h2>What Changed? Stop the Immediate Threat</h2></div>
+      </div>
+      <div class="position-grid">
+        <article class="position-card" id="lab-1-position-1">
+          <div class="position-head">
+            <div>
+              <h3>What Changed? Stop the Immediate Threat</h3>
+              <div class="position-meta">Board Lesson 1 · Black to move</div>
+            </div>
+            <div class="position-meta">Advanced Pawn · Module 11</div>
+          </div>
+          <div class="board-and-notes">
+            <div class="board-shell">
+              <div class="chessboard" data-fen="r1bqkbnr/pppp1ppp/2n5/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 3 3" role="img" aria-label="What Changed? Stop the Immediate Threat"></div>
+            </div>
+            <div>
+              <div class="lab-meta"><p><strong>Position source:</strong> Common opening position after <code>1.e4 e5 2.Bc4 Nc6 3.Qh5</code></p>
+<p><strong>Lesson goal:</strong> Identify the opponent's threat before making a routine developing move.</p>
+</div>
+              <h4>Student task</h4>
+              <div class="prose"><p>Before choosing a move, answer:</p>
+<ol>
+<li>What did <code>Qh5</code> change?</li>
+<li>What is White threatening?</li>
+<li>Which natural developing move loses immediately?</li>
+<li>Find at least two moves that stop the threat.</li>
+</ol>
+<p>Do not move until the threat has been stated in words.</p>
+</div>
+              <div class="fen-box">r1bqkbnr/pppp1ppp/2n5/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 3 3</div>
+              <div class="board-actions">
+                <button class="mini-btn flip-board" type="button">Flip board</button>
+                <button class="mini-btn copy-fen" type="button">Copy FEN</button>
+              </div>
+              <div class="copy-status" aria-live="polite"></div>
+              <details class="solution">
+                <summary>Reveal solution</summary>
+                <div class="solution-body"><p>White threatens <code>Qxf7#</code>. The queen attacks f7 together with the bishop on c4, and the f7-pawn is defended only by the black king.</p>
+<p>The careless move is:</p>
+<p><code>3...Nf6?? 4.Qxf7#</code></p>
+<p>Black can instead defend with moves such as:</p>
+<ul>
+<li><code>3...g6</code>, attacking the queen and protecting f7;</li>
+<li><code>3...Qe7</code>, adding a defender to f7;</li>
+<li><code>3...Nh6</code>, adding another defender to f7.</li>
+</ul>
+</div>
+              </details>
+              <details class="coach-note">
+                <summary>Coach explanation</summary>
+                <div class="prose"><p><code>3...Nf6</code> follows a good opening principle, but principles do not overrule immediate tactics. Black developed a piece while ignoring the direct threat created by White's last move.</p>
+</div>
+              </details>
+              <div class="takeaway"><strong>Transfer rule</strong><blockquote>
+<p>Threat first, plan second.</p>
+</blockquote>
+<p>After every opponent move, identify checks, captures, and mate threats before continuing development or carrying out a plan.</p>
+</div>
+            </div>
+          </div>
+        </article>
+        </div>
+    </section>
+    <section class="lesson-section board-lab" id="lab-2">
+      <div class="section-head">
+        <div class="number">2</div>
+        <div><p class="section-kicker">Board laboratory</p><h2>The Phantom Defender</h2></div>
+      </div>
+      <div class="position-grid">
+        <article class="position-card" id="lab-2-position-1">
+          <div class="position-head">
+            <div>
+              <h3>The Phantom Defender</h3>
+              <div class="position-meta">Board Lesson 2 · Black to move</div>
+            </div>
+            <div class="position-meta">Advanced Pawn · Module 11</div>
+          </div>
+          <div class="board-and-notes">
+            <div class="board-shell">
+              <div class="chessboard" data-fen="4r1k1/8/8/8/1b6/2B5/4N3/3QK3 b - - 0 1" role="img" aria-label="The Phantom Defender"></div>
+            </div>
+            <div>
+              <div class="lab-meta"><p><strong>Position source:</strong> Constructed teaching position</p>
+<p><strong>Lesson goal:</strong> Recognize that a pinned piece may not be a usable defender.</p>
+</div>
+              <h4>Student task</h4>
+              <div class="prose"><p>White's bishop on c3 appears to be defended by the knight on e2.</p>
+<ol>
+<li>Can Black safely capture the bishop?</li>
+<li>After <code>...Bxc3+</code>, can White answer <code>Nxc3</code>?</li>
+<li>Which black piece makes the apparent defender unreliable?</li>
+</ol>
+</div>
+              <div class="fen-box">4r1k1/8/8/8/1b6/2B5/4N3/3QK3 b - - 0 1</div>
+              <div class="board-actions">
+                <button class="mini-btn flip-board" type="button">Flip board</button>
+                <button class="mini-btn copy-fen" type="button">Copy FEN</button>
+              </div>
+              <div class="copy-status" aria-live="polite"></div>
+              <details class="solution">
+                <summary>Reveal solution</summary>
+                <div class="solution-body"><p>Black wins the bishop with:</p>
+<p><code>1...Bxc3+!</code></p>
+<p>White cannot play <code>2.Nxc3</code> because the knight on e2 is absolutely pinned by the rook on e8 against the king on e1. Moving the knight would expose the white king to rook check and is therefore illegal.</p>
+<p>White must answer the check with a king or queen move, leaving Black with the captured bishop.</p>
+</div>
+              </details>
+              <details class="coach-note">
+                <summary>Coach explanation</summary>
+                <div class="prose"><p>Counting one attacker and one defender is not enough. The defender must be legally and tactically capable of recapturing.</p>
+</div>
+              </details>
+              <div class="takeaway"><strong>Transfer rule</strong><blockquote>
+<p>A pinned defender may be no defender at all.</p>
+</blockquote>
+<p>Whenever a piece appears protected, verify whether its defender is pinned, overloaded, blocked, or required for king safety.</p>
+</div>
+            </div>
+          </div>
+        </article>
+        </div>
+    </section>
+    <section class="lesson-section" id="chapter-3">
+      <div class="section-head"><div class="number">3</div><div><p class="section-kicker">Conceptual reference</p><h2>Main Categories of Blunders</h2></div></div>
+      <div class="prose chapter-prose"><h2>3.1 Hanging-Piece Blunders</h2><p>A piece is left undefended or insufficiently defended. Typical causes include moving its only defender, opening an attack on it, overlooking a long-range piece, assuming an exchange is impossible, or forgetting an intermediate move.</p><blockquote><p>After my move, what of mine can be captured?</p></blockquote><h2>3.2 Missed-Check Blunders</h2><p>Checks are forcing and must be examined before quieter ideas. A missed check may win a queen, force mate, create a skewer, interrupt a recapture sequence, gain a tempo, or force the king onto a vulnerable square.</p><h2>3.3 Missed-Capture Blunders</h2><p>A capture may change the material balance immediately. Dangerous captures include captures with check, captures of an undefended piece, exchange sacrifices, removal of a defender, captures that open a file or diagonal, and recaptures made in the wrong order.</p><h2>3.4 Missed-Threat Blunders</h2><p>A threat is not necessarily a check or capture. Examples include mate next move, trapping a queen, promotion, a pawn fork, occupying a decisive square, a discovered attack, or a tactical pawn break.</p><h2>3.5 King-Safety Blunders</h2><p>These include castling into an attack, weakening the pawn shield, opening a file toward the king, allowing a back-rank mate, moving a key defender, accepting a sacrifice without checking the mating continuation, and exposing the king in the center.</p><h2>3.6 Alignment Blunders</h2><p>Pieces become vulnerable when aligned. Inspect ranks, files, diagonals, and knight-fork squares before moving.</p><h2>3.7 Overloaded-Defender Blunders</h2><p>A defender is overloaded when it must protect two or more important targets. It may appear sufficient until one duty is removed.</p><h2>3.8 Zwischenzug Blunders</h2><p>A zwischenzug is an intermediate move played before an expected recapture. Never assume the opponent must recapture immediately.</p><h2>3.9 Positional Blunders</h2><p>A positional blunder may create a permanent weak square, exchange the wrong piece, enter a lost pawn structure, concede a decisive file, destroy a blockade, allow an unstoppable passed pawn, remove the only active piece, or enter an inferior endgame with no counterplay.</p><h2>3.10 Endgame Blunders</h2><p>Common endgame blunders include entering a lost king-and-pawn ending, miscounting pawn races, placing the king on the wrong square, allowing opposition, exchanging the final active rook, checking from the wrong distance, pushing a pawn too early, allowing stalemate, promoting to the wrong piece, or forgetting the fifty-move rule or repetition.</p><h2>3.11 Conversion Blunders</h2><p>A winning position can be lost through unnecessary complications, greed, refusal to simplify, simplification into a drawn ending, exposing the king, allowing perpetual check, using too much time, or trying to win brilliantly instead of safely.</p><h2>3.12 Defensive Blunders</h2><p>In a difficult position, a player may defend only one threat, choose a passive move that permits a stronger attack, exchange the wrong attacker, miss a counterattack, abandon a critical square, or panic and sacrifice material without necessity.</p></div>
+    </section>
+    <section class="lesson-section board-lab" id="lab-3">
+      <div class="section-head"><div class="number">3</div><div><p class="section-kicker">Board laboratory</p><h2>Loose Targets and the Fork Square</h2></div></div>
+      <div class="position-grid"><article class="position-card" id="lab-3-position-1"><div class="position-head"><div><h3>Loose Targets and the Fork Square</h3><div class="position-meta">Board Lesson 3 · White to move</div></div><div class="position-meta">Advanced Pawn · Module 11</div></div><div class="board-and-notes"><div class="board-shell"><div class="chessboard" data-fen="r3k2r/ppp2ppp/2n5/1N6/8/8/PPPP1PPP/R3K2R w KQkq - 0 1" role="img" aria-label="Loose Targets and the Fork Square"></div></div><div><div class="lab-meta"><p><strong>Position source:</strong> Constructed teaching position</p><p><strong>Lesson goal:</strong> Scan for forcing moves that attack two targets.</p></div><h4>Student task</h4><div class="prose"><ol><li>Which black pieces are vulnerable to a knight fork?</li><li>Which checking move reaches the fork square?</li><li>What material does White win after the king moves?</li></ol></div><div class="fen-box">r3k2r/ppp2ppp/2n5/1N6/8/8/PPPP1PPP/R3K2R w KQkq - 0 1</div><div class="board-actions"><button class="mini-btn flip-board" type="button">Flip board</button><button class="mini-btn copy-fen" type="button">Copy FEN</button></div><div class="copy-status" aria-live="polite"></div><details class="solution"><summary>Reveal solution</summary><div class="solution-body"><p>White plays <code>1.Nxc7+!</code>. The knight on c7 checks the king on e8 and attacks the rook on a8. Black must move the king, after which White plays <code>2.Nxa8</code> and wins a rook for the knight.</p></div></details><details class="coach-note"><summary>Coach explanation</summary><div class="prose"><p>The c7-square is tactically loose because White can enter it with check. The check forces Black to respond, giving White time to collect the rook.</p></div></details><div class="takeaway"><strong>Transfer rule</strong><blockquote><p>When two valuable targets fit one knight pattern, inspect every checking jump.</p></blockquote><p>Before moving, scan not only for hanging pieces but also for fork squares, alignments, and forcing entries.</p></div></div></div></article></div>
+    </section>
+    <section class="lesson-section" id="chapter-4"><div class="section-head"><div class="number">4</div><div><p class="section-kicker">Conceptual reference</p><h2>The Complete Blunder-Prevention Process</h2></div></div><div class="prose chapter-prose"><h2>4.1 Step One: Reset After the Opponent's Move</h2><p>Do not continue thinking from the previous position as though nothing changed. Mentally reconstruct the new position and ask what moved, what was attacked, what was defended, what line opened or closed, what square was vacated, what tactical idea appeared, and whether there is an immediate threat.</p><h2>4.2 Step Two: Identify the Opponent's Immediate Intent</h2><p>Check for direct and tactical threats, positional threats, preparation of a pawn break, piece improvement, removal of a defender, creation of an escape square, and prevention of your plan.</p><h2>4.3 Step Three: Scan Forcing Moves for Both Sides</h2><p>Use the standard order: checks, captures, threats. Examine your forcing opportunities and the opponent's forcing replies after each candidate.</p><h2>4.4 Step Four: Generate More Than One Candidate</h2><p>Compare the move you want to play, the safest serious alternative, and the most forcing alternative. Candidate types include forcing, defensive, improving, simplifying, prophylactic, tactical, and quiet moves.</p><h2>4.5 Step Five: Calculate the Opponent's Strongest Reply</h2><p>Do not calculate the most natural reply. Search for the strongest check, sacrifice, zwischenzug, counterattack, quiet trap, simplification, or move that ignores your threat because it creates a greater one.</p><blockquote><p>If I play this move, how would my opponent punish it?</p></blockquote><h2>4.6 Step Six: Continue Until the Position Is Quiet</h2><p>A position is quiet enough to evaluate when immediate forcing continuations have ended, exchanges are resolved, checks have ended, hanging pieces are accounted for, and the tactical sequence has stabilized.</p><h2>4.7 Step Seven: Evaluate the Result</h2><p>Evaluate material, king safety, piece activity, pawn structure, weak squares, passed pawns, initiative, development, space, endgame prospects, and tactical vulnerability.</p><h2>4.8 Step Eight: Perform the Final Blunder Check</h2><p>Visualize the intended move as already played. Then inspect king legality, opponent checks, captures, direct threats, loose pieces, moved defenders, opened lines, queen safety, intermediate moves, and simpler alternatives.</p></div></section>
+    <section class="lesson-section" id="chapter-5"><div class="section-head"><div class="number">5</div><div><p class="section-kicker">Conceptual reference</p><h2>A Compact Practical Checklist</h2></div></div><div class="prose chapter-prose"><h2>Before Choosing a Move</h2><ul><li>What changed?</li><li>What is threatened?</li><li>Are there checks, captures, or direct threats?</li><li>Is any piece loose?</li><li>Is my king safe?</li><li>Is the opponent's king vulnerable?</li></ul><h2>While Calculating</h2><ul><li>What is the opponent's strongest reply?</li><li>Is there a zwischenzug?</li><li>Is a defender pinned or overloaded?</li><li>Does the line end in a quiet position?</li><li>What is the final material count?</li><li>What is the final king-safety situation?</li></ul><h2>Before Playing the Move</h2><ul><li>Place the move mentally on the board.</li><li>Scan opponent checks.</li><li>Scan opponent captures.</li><li>Scan opponent threats.</li><li>Inspect loose pieces and opened lines.</li><li>Compare once with the safest alternative.</li></ul><blockquote><p>What changed? What is threatened? What can they force after my move?</p></blockquote></div></section>
+    <section class="lesson-section" id="chapter-6"><div class="section-head"><div class="number">6</div><div><p class="section-kicker">Conceptual reference</p><h2>Loose Pieces and Tactical Targets</h2></div></div><div class="prose chapter-prose"><h2>6.1 Loose Pieces</h2><p>A loose piece is undefended or inadequately defended. Loose pieces frequently become tactical targets because a forcing move can attack them, a defender can be removed, a double attack can be created, a pin can prevent recapture, or a check can gain time to capture them.</p><blockquote><p>Loose pieces drop off.</p></blockquote><h2>6.2 Undefended Pawns</h2><p>An undefended pawn may open a file when captured, expose a king, allow a piece to invade, become the first target in a combination, or distract a defender.</p><h2>6.3 Loose Squares</h2><p>A square can be tactically loose when it is insufficiently controlled. Examples include f7 and f2 in the opening, d5 or e5 fork squares, back-rank entry squares, promotion squares, and mating squares near the king.</p></div></section>
+    <section class="lesson-section" id="chapter-7"><div class="section-head"><div class="number">7</div><div><p class="section-kicker">Conceptual reference</p><h2>Critical Tactical Warning Signs</h2></div></div><div class="prose chapter-prose"><h2>7.1 Exposed Kings</h2><p>Calculate more carefully when queens remain, files near the king are open, pawn cover is damaged, several enemy pieces point toward the king, or the king has few escape squares.</p><h2>7.2 Unprotected Queens</h2><p>Warning signs include queen and king alignment, exposure to discovered attack, few retreat squares, distance from its own king, and too many defensive duties.</p><h2>7.3 Pinned Pieces</h2><p>A pinned piece may not be a real defender. Determine whether the pin is absolute, relative, tactical rather than geometric, removable by check, or exploitable by sacrifice.</p><h2>7.4 Crowded Back Ranks</h2><p>A king with no escape square is vulnerable to rook checks, queen checks, deflection of the back-rank defender, interference, and exchange sacrifices. Creating luft may be a tactical necessity.</p><h2>7.5 Pawn Advances Near the King</h2><p>Pawn moves cannot be reversed. They may open a diagonal, weaken a color complex, remove an escape square, create a hook for sacrifice, or allow a file to open.</p><h2>7.6 "Free" Material</h2><p>Before accepting material, ask why it is offered, what line opens, whether the capturing piece becomes trapped, whether there is an intermediate check, whether the opponent gains development or initiative, and whether the material is poisoned.</p></div></section>
+    <section class="lesson-section board-lab" id="lab-4"><div class="section-head"><div class="number">4</div><div><p class="section-kicker">Board laboratory</p><h2>Back-Rank Danger and Creating Luft</h2></div></div><div class="position-grid"><article class="position-card" id="lab-4-position-1"><div class="position-head"><div><h3>Back-Rank Danger and Creating Luft</h3><div class="position-meta">Board Lesson 4 · Black to move</div></div><div class="position-meta">Advanced Pawn · Module 11</div></div><div class="board-and-notes"><div class="board-shell"><div class="chessboard" data-fen="6k1/4Rppp/8/q7/8/8/6PP/6K1 b - - 0 1" role="img" aria-label="Back-Rank Danger and Creating Luft"></div></div><div><div class="lab-meta"><p><strong>Position source:</strong> Constructed teaching position</p><p><strong>Lesson goal:</strong> Notice an opponent's mate threat before playing an active queen move.</p></div><h4>Student task</h4><div class="prose"><ol><li>What is White threatening?</li><li>Why does <code>1...Qd5??</code> lose immediately?</li><li>Find a simple move that creates an escape square.</li></ol></div><div class="fen-box">6k1/4Rppp/8/q7/8/8/6PP/6K1 b - - 0 1</div><div class="board-actions"><button class="mini-btn flip-board" type="button">Flip board</button><button class="mini-btn copy-fen" type="button">Copy FEN</button></div><div class="copy-status" aria-live="polite"></div><details class="solution"><summary>Reveal solution</summary><div class="solution-body"><p>White threatens <code>Re8#</code>. The careless continuation is <code>1...Qd5?? 2.Re8#</code>. Black should create luft with <code>1...h6!</code>. After <code>2.Re8+</code>, Black has <code>2...Kh7</code>. The move <code>1...h5</code> also creates an escape square.</p></div></details><details class="coach-note"><summary>Coach explanation</summary><div class="prose"><p>Black's queen may have many attractive moves, but none matter if White has mate in one. The h-pawn move changes the king's geometry by giving it an escape square.</p></div></details><div class="takeaway"><strong>Transfer rule</strong><blockquote><p>Before every non-forcing move, inspect the opponent's checks.</p></blockquote><p>A crowded back rank should immediately trigger a mate scan and consideration of luft.</p></div></div></div></article></div></section>
+    <section class="lesson-section board-lab" id="lab-5"><div class="section-head"><div class="number">5</div><div><p class="section-kicker">Board laboratory</p><h2>The “Free Queen” That Is Not Free</h2></div></div><div class="position-grid"><article class="position-card" id="lab-5-position-1"><div class="position-head"><div><h3>The “Free Queen” That Is Not Free</h3><div class="position-meta">Board Lesson 5 · Black to move</div></div><div class="position-meta">Advanced Pawn · Module 11</div></div><div class="board-and-notes"><div class="board-shell"><div class="chessboard" data-fen="rn1qkbnr/ppp2p1p/3p2p1/4N3/2B1P1b1/2N5/PPPP1PPP/R1BQK2R b KQkq - 0 5" role="img" aria-label="The Free Queen That Is Not Free"></div></div><div><div class="lab-meta"><p><strong>Position source:</strong> Légal's Mate opening pattern after <code>1.e4 e5 2.Nf3 d6 3.Bc4 Bg4 4.Nc3 g6 5.Nxe5</code></p><p><strong>Lesson goal:</strong> Test apparently free material against forcing replies.</p></div><h4>Student task</h4><div class="prose"><p>Black can capture White's queen with <code>...Bxd1</code>.</p><ol><li>Should Black take the queen?</li><li>What forcing move does White have after the capture?</li><li>Calculate until the king is safe or checkmate occurs.</li></ol></div><div class="fen-box">rn1qkbnr/ppp2p1p/3p2p1/4N3/2B1P1b1/2N5/PPPP1PPP/R1BQK2R b KQkq - 0 5</div><div class="board-actions"><button class="mini-btn flip-board" type="button">Flip board</button><button class="mini-btn copy-fen" type="button">Copy FEN</button></div><div class="copy-status" aria-live="polite"></div><details class="solution"><summary>Reveal solution</summary><div class="solution-body"><p>Taking the queen is the blunder: <code>5...Bxd1?? 6.Bxf7+! Ke7 7.Nd5#</code>. White does not recapture the bishop. Instead, White inserts a forcing check and finishes with mate. A safer response is <code>5...dxe5</code>.</p></div></details><details class="coach-note"><summary>Coach explanation</summary><div class="prose"><p>The bishop's pin on the f3-knight is only a pin to the queen, not to the king. White may legally move the knight and sacrifice the queen if the resulting attack is decisive.</p></div></details><div class="takeaway"><strong>Transfer rule</strong><blockquote><p>Before taking free material, ask what checks the opponent gains after the capture.</p></blockquote><p>Material does not matter if the king is checkmated.</p></div></div></div></article></div></section>
+    <section class="lesson-section" id="chapter-8"><div class="section-head"><div class="number">8</div><div><p class="section-kicker">Conceptual reference</p><h2>Blunder Prevention in Different Phases</h2></div></div><div class="prose chapter-prose"><h2>8.1 Opening</h2><p>Opening blunders often involve attacks on f7 or f2, premature queen moves, failure to develop, ignoring the center, castling into an attack, accepting poisoned material, confusing move orders, or treating a relative pin as absolute.</p><p>Opening safety priorities are king safety, development, center control, tactical awareness, and move-order accuracy.</p><h2>8.2 Middlegame</h2><p>Middlegame priorities include identifying forcing moves, inspecting king attacks, tracking loose pieces, comparing candidates, calculating pawn breaks, verifying exchanges, and checking tactical alignments.</p><h2>8.3 Endgame</h2><p>Endgame safety requires precise counting: pawn-race tempi, opposition, corresponding squares, promotion with check, rook activity, king cutoffs, stalemate resources, repetition, and whether an exchange enters a won, drawn, or lost pawn ending.</p></div></section>
+    <section class="lesson-section board-lab" id="lab-6"><div class="section-head"><div class="number">6</div><div><p class="section-kicker">Board laboratory</p><h2>The Same Position, a Different Result</h2></div></div><div class="position-grid"><article class="position-card" id="lab-6-position-1"><div class="position-head"><div><h3>The Same Position, a Different Result · Position A</h3><div class="position-meta">Position A · Black to move</div></div><div class="position-meta">Advanced Pawn · Module 11</div></div><div class="board-and-notes"><div class="board-shell"><div class="chessboard" data-fen="8/8/4k3/8/4K3/4P3/8/8 b - - 0 1" role="img" aria-label="The Same Position, a Different Result Position A"></div></div><div><div class="lab-meta"><p><strong>Position source:</strong> Standard king-and-pawn endgame</p><p><strong>Lesson goal:</strong> Evaluate opposition and side to move before entering a pawn ending.</p></div><h4>Student task</h4><div class="prose"><p>The pieces occupy the same squares in both positions. Only the side to move changes.</p><ol><li>In which position can White force promotion?</li><li>What are the key squares for the pawn on e3?</li><li>Why must this be checked before exchanging the final pieces?</li></ol></div><div class="fen-box">8/8/4k3/8/4K3/4P3/8/8 b - - 0 1</div><div class="board-actions"><button class="mini-btn flip-board" type="button">Flip board</button><button class="mini-btn copy-fen" type="button">Copy FEN</button></div><div class="copy-status" aria-live="polite"></div><details class="solution"><summary>Reveal solution</summary><div class="solution-body"><p>In Position A, Black is to move. White has the opposition. Black must give way, and White can enter one of the pawn's key squares: d5, e5, or f5. For example, <code>1...Kd6 2.Kf5</code>.</p><p>In Position B, White is to move. Black holds the opposition and can keep White's king from occupying a key square, so the position is drawn with correct defense.</p></div></details><details class="coach-note"><summary>Coach explanation</summary><div class="prose"><p>A player may exchange into what appears to be the same king-and-pawn ending and receive a completely different result depending on whose move it is.</p></div></details><div class="takeaway"><strong>Transfer rule</strong><blockquote><p>Before simplifying into a pawn ending, check the side to move, opposition, and key squares.</p></blockquote><p>Do not judge a pawn ending merely by counting pawns.</p></div></div></div></article><article class="position-card" id="lab-6-position-2"><div class="position-head"><div><h3>The Same Position, a Different Result · Position B</h3><div class="position-meta">Position B · White to move</div></div><div class="position-meta">Advanced Pawn · Module 11</div></div><div class="board-and-notes"><div class="board-shell"><div class="chessboard" data-fen="8/8/4k3/8/4K3/4P3/8/8 w - - 0 1" role="img" aria-label="The Same Position, a Different Result Position B"></div></div><div><div class="lab-meta"><p><strong>Position source:</strong> Standard king-and-pawn endgame</p><p><strong>Lesson goal:</strong> Evaluate opposition and side to move before entering a pawn ending.</p></div><h4>Student task</h4><div class="prose"><p>The pieces occupy the same squares in both positions. Only the side to move changes.</p><ol><li>In which position can White force promotion?</li><li>What are the key squares for the pawn on e3?</li><li>Why must this be checked before exchanging the final pieces?</li></ol></div><div class="fen-box">8/8/4k3/8/4K3/4P3/8/8 w - - 0 1</div><div class="board-actions"><button class="mini-btn flip-board" type="button">Flip board</button><button class="mini-btn copy-fen" type="button">Copy FEN</button></div><div class="copy-status" aria-live="polite"></div><details class="solution"><summary>Reveal solution</summary><div class="solution-body"><p>In Position A, Black is to move. White has the opposition and can force entry. In Position B, White is to move. Black holds the opposition and draws with correct defense.</p></div></details><details class="coach-note"><summary>Coach explanation</summary><div class="prose"><p>The side to move changes the result even though every piece occupies the same square.</p></div></details><div class="takeaway"><strong>Transfer rule</strong><blockquote><p>Before simplifying into a pawn ending, check the side to move, opposition, and key squares.</p></blockquote></div></div></div></article></div></section>
+    <section class="lesson-section" id="chapter-9"><div class="section-head"><div class="number">9</div><div><p class="section-kicker">Conceptual reference</p><h2>Blunder Prevention When Winning</h2></div></div><div class="prose chapter-prose"><h2>9.1 Do Not Assume the Game Is Over</h2><p>The losing side may still have perpetual check, stalemate, a fortress, tactical counterplay, a mating attack, a promotion race, or time-pressure chances.</p><h2>9.2 Reduce Counterplay</h2><p>A good winning move may exchange queens, stop a passed pawn, remove the opponent's most active piece, secure the king, create an escape square, or simplify into a technically won ending.</p><h2>9.3 Avoid Unnecessary Brilliance</h2><p>The safest win is usually preferable to the most artistic win. Before sacrificing, verify that the sacrifice is necessary, the continuation is forced, the opponent has no perpetual check, and the resulting ending is actually won.</p><h2>9.4 Recalculate After Every Exchange</h2><p>Simplification changes the position. A favorable middlegame may become a drawn opposite-colored bishop ending, a lost pawn ending, a rook ending with insufficient winning chances, or a stalemate construction.</p></div></section>
+    <section class="lesson-section board-lab" id="lab-7"><div class="section-head"><div class="number">7</div><div><p class="section-kicker">Board laboratory</p><h2>Winning Without Stalemating</h2></div></div><div class="position-grid"><article class="position-card" id="lab-7-position-1"><div class="position-head"><div><h3>Winning Without Stalemating</h3><div class="position-meta">Board Lesson 7 · White to move</div></div><div class="position-meta">Advanced Pawn · Module 11</div></div><div class="board-and-notes"><div class="board-shell"><div class="chessboard" data-fen="k7/8/2K5/1Q6/8/8/8/8 w - - 0 1" role="img" aria-label="Winning Without Stalemating"></div></div><div><div class="lab-meta"><p><strong>Position source:</strong> Constructed elementary endgame position</p><p><strong>Lesson goal:</strong> Perform a legal-move check before completing a winning move.</p></div><h4>Student task</h4><div class="prose"><ol><li>Which queen move immediately throws away the win?</li><li>Why is the position a draw after that move?</li><li>Find the immediate checkmate.</li></ol></div><div class="fen-box">k7/8/2K5/1Q6/8/8/8/8 w - - 0 1</div><div class="board-actions"><button class="mini-btn flip-board" type="button">Flip board</button><button class="mini-btn copy-fen" type="button">Copy FEN</button></div><div class="copy-status" aria-live="polite"></div><details class="solution"><summary>Reveal solution</summary><div class="solution-body"><p>The blunder is <code>1.Qb6??</code>. Black is not in check, but the king on a8 has no legal move, so the result is stalemate. White should instead play <code>1.Qb7#</code>.</p></div></details><details class="coach-note"><summary>Coach explanation</summary><div class="prose"><p>Winning positions still require verification. The stronger side must check not only whether the enemy king is safe, but whether the enemy has any legal move at all.</p></div></details><div class="takeaway"><strong>Transfer rule</strong><blockquote><p>Before a quiet move in a completely winning endgame, check for stalemate.</p></blockquote><p>Ask separately whether the king is in check and whether the opponent has a legal move.</p></div></div></div></article></div></section>
+    <section class="lesson-section" id="chapter-10"><div class="section-head"><div class="number">10</div><div><p class="section-kicker">Conceptual reference</p><h2>Blunder Prevention in Difficult Positions</h2></div></div><div class="prose chapter-prose"><h2>10.1 Do Not Defend Passively by Default</h2><p>Active defensive resources include checks, counterattacks, tactical exchanges, pawn breaks, attacks on the opponent's queen, threats against the king, and sacrifices for a fortress or perpetual check.</p><h2>10.2 Identify the Real Threat</h2><p>Separate the immediate tactical threat, long-term positional threat, bluff, preparation, and a threat that can be ignored because of a stronger counterthreat.</p><h2>10.3 Find the Opponent's Least Convenient Reply</h2><p>A defensive move is stronger if it prevents the threat, improves coordination, attacks something, reduces the attacker's options, and creates tactical risk.</p></div></section>
+    <section class="lesson-section" id="chapter-11"><div class="section-head"><div class="number">11</div><div><p class="section-kicker">Conceptual reference</p><h2>Time Management and Blunder Prevention</h2></div></div><div class="prose chapter-prose"><h2>11.1 Spend Time at Critical Moments</h2><p>Critical moments include the first major deviation from opening knowledge, a possible sacrifice, a central pawn break, a queen exchange, an irreversible pawn move, a transition into an endgame, a position with several forcing moves, and a sudden change in evaluation.</p><h2>11.2 Preserve Time for the Final Check</h2><p>Even in time pressure, reserve a brief safety scan for checks, captures, mate threats, hanging queen, hanging rook, and back-rank danger.</p><h2>11.3 Avoid Recalculating the Same Line</h2><p>Once a line is calculated, summarize its conclusion: wins material, equal, tactically unsafe, unclear, or leads to a favorable ending. Then compare candidates.</p></div></section>
+    <section class="lesson-section" id="chapter-12"><div class="section-head"><div class="number">12</div><div><p class="section-kicker">Conceptual reference</p><h2>Advanced Blunder Prevention</h2></div></div><div class="prose chapter-prose"><h2>12.1 Prophylaxis</h2><p>Prophylaxis means anticipating and preventing the opponent's plan. Ask what the opponent wants, what their best improving move is, what resource they are preparing, which pieces or squares will become vulnerable, and whether you can improve while restricting them.</p><h2>12.2 Tactical Falsification</h2><p>For every serious candidate, attempt to refute it. Search specifically for checks, sacrifices, counterattacks, zwischenzugs, quiet traps, and move-order improvements.</p><h2>12.3 Candidate Contamination</h2><p>Candidate contamination occurs when analysis of one line incorrectly affects another. Reset the mental board when switching candidates.</p><h2>12.4 The Horizon Effect</h2><p>The horizon effect occurs when calculation stops just before the decisive consequence. Extend forcing lines one move further and inspect the final position for new tactics.</p><h2>12.5 Quiet-Move Blindness</h2><p>A quiet move may trap the queen, create an unstoppable threat, remove an escape square, defend everything, prepare a discovered attack, or threaten promotion.</p><h2>12.6 Multi-Purpose Moves</h2><p>A move that develops and defends, attacks and creates luft, centralizes and stops a passed pawn, exchanges an attacker and improves structure, or prevents a tactic while creating a threat is often safer.</p></div></section>
+    <section class="lesson-section" id="chapter-13"><div class="section-head"><div class="number">13</div><div><p class="section-kicker">Conceptual reference</p><h2>Common Misconceptions</h2></div></div><div class="prose chapter-prose"><h2>“Blunders happen because a player is weak.”</h2><p>Even strong players blunder. Complexity, time pressure, fixation, and emotional distortion affect all levels.</p><h2>“Calculating deeper prevents every blunder.”</h2><p>Depth is useless if the correct candidate or forcing reply is never considered.</p><h2>“Only tactics cause blunders.”</h2><p>Strategic exchanges, pawn structures, endgame transitions, and time decisions can also be decisive blunders.</p><h2>“If the opponent's move looks bad, it is safe to respond quickly.”</h2><p>An unusual move may contain a hidden threat. Surprise should trigger caution, not speed.</p><h2>“Winning material proves the combination works.”</h2><p>The final position may contain mate, a trapped queen, perpetual check, or a lost ending.</p><h2>“A defended piece is safe.”</h2><p>A defender may be pinned, overloaded, deflected, or tactically unable to recapture.</p></div></section>
+    <section class="lesson-section" id="chapter-14"><div class="section-head"><div class="number">14</div><div><p class="section-kicker">Conceptual reference</p><h2>Model Decision Routine</h2></div></div><div class="prose chapter-prose"><h2>Phase A: Understand the New Position</h2><ol><li>Reconstruct the board.</li><li>Identify what changed.</li><li>Identify the opponent's threat.</li><li>Mark loose pieces, exposed kings, and tactical alignments.</li></ol><h2>Phase B: Generate Candidates</h2><ol><li>Examine checks.</li><li>Examine captures.</li><li>Examine threats.</li><li>Add at least one safe or prophylactic candidate.</li></ol><h2>Phase C: Test Candidates</h2><ol><li>Calculate the opponent's strongest reply.</li><li>Look for zwischenzugs and counterattacks.</li><li>Continue until the position is quiet.</li><li>Evaluate the resulting position.</li></ol><h2>Phase D: Final Verification</h2><ol><li>Visualize the chosen move.</li><li>Scan opponent checks.</li><li>Scan opponent captures.</li><li>Scan opponent threats.</li><li>Inspect newly loose pieces and opened lines.</li><li>Play the move only after it survives the check.</li></ol></div></section>
+    <section class="lesson-section board-lab" id="lab-8"><div class="section-head"><div class="number">8</div><div><p class="section-kicker">Board laboratory</p><h2>A World Champion's Missing Final Check</h2></div></div><div class="position-grid"><article class="position-card" id="lab-8-position-1"><div class="position-head"><div><h3>A World Champion's Missing Final Check</h3><div class="position-meta">Board Lesson 8 · Black to move</div></div><div class="position-meta">Advanced Pawn · Module 11</div></div><div class="board-and-notes"><div class="board-shell"><div class="chessboard" data-fen="5N1k/q5p1/7p/4P3/pp2Q3/8/1P4PP/2b4K b - - 0 34" role="img" aria-label="A World Champion's Missing Final Check"></div></div><div><div class="lab-meta"><p><strong>Position source:</strong> Deep Fritz–Vladimir Kramnik, Bonn 2006, before Black's 34th move</p><p><strong>Lesson goal:</strong> Apply the final opponent-check scan even in a quiet-looking position.</p></div><h4>Student task</h4><div class="prose"><p>Black is considering <code>34...Qe3</code>. Before playing it, mentally place the queen on e3 and ask:</p><ol><li>What checks will White have?</li><li>Does Black's king have an escape square?</li><li>Can Black block or capture the checking piece?</li></ol></div><div class="fen-box">5N1k/q5p1/7p/4P3/pp2Q3/8/1P4PP/2b4K b - - 0 34</div><div class="board-actions"><button class="mini-btn flip-board" type="button">Flip board</button><button class="mini-btn copy-fen" type="button">Copy FEN</button></div><div class="copy-status" aria-live="polite"></div><details class="solution"><summary>Reveal solution</summary><div class="solution-body"><p>Kramnik played <code>34...Qe3??</code>. White replied <code>35.Qh7#</code>. The move <code>34...Kg8</code> avoided mate and allowed Black to hold the game.</p></div></details><details class="coach-note"><summary>Coach explanation</summary><div class="prose"><p>Black's move attacked and centralized the queen, but it failed the most basic final test: scanning every opponent check. Calculation strength does not replace a final safety check.</p></div></details><div class="takeaway"><strong>Transfer rule</strong><blockquote><p>After choosing a move, visualize it on the board and scan every opponent check before playing it.</p></blockquote></div></div></div></article></div></section>
+    <section class="lesson-section" id="chapter-15"><div class="section-head"><div class="number">15</div><div><p class="section-kicker">Conceptual reference</p><h2>Summary</h2></div></div><div class="prose chapter-prose"><p>Blunder prevention is a structured safety process.</p><ul><li>begin every turn by identifying what changed;</li><li>determine the opponent's immediate threat;</li><li>examine checks, captures, and threats for both sides;</li><li>generate more than one candidate in critical positions;</li><li>calculate the opponent's strongest reply, not the most natural reply;</li><li>continue forcing lines until the position is quiet;</li><li>evaluate the final position rather than the apparent material gain;</li><li>perform a final blunder check before moving;</li><li>treat loose pieces, exposed kings, pins, overloaded defenders, and free material as warning signs;</li><li>adjust the process for openings, middlegames, endgames, winning positions, defensive positions, and time pressure;</li><li>use prophylaxis and tactical falsification to prevent errors before they become visible.</li></ul><blockquote><p>After I make this move, what is the strongest forcing thing my opponent can do?</p></blockquote></div></section>
+        <section class="lesson-section review" id="mastery">
+          <div class="section-head"><div class="number">✓</div><div><p class="section-kicker">Mastery check</p><h2>Final safety routine</h2></div></div>
+          <details><summary>What are the three first questions after an opponent moves?</summary><p>What changed? What is threatened? What forcing moves now exist?</p></details>
+          <details><summary>What does tactical falsification mean?</summary><p>Instead of proving that your candidate works, actively search for the opponent's strongest check, capture, threat, sacrifice, intermediate move, or quiet refutation.</p></details>
+          <details><summary>When is a line quiet enough to evaluate?</summary><p>When immediate forcing moves have ended, exchanges are resolved, hanging pieces are accounted for, and the resulting position can be judged for material, king safety, activity, structure, and endgame prospects.</p></details>
+          <details><summary>What is the final question before touching the piece?</summary><p>After I make this move, what is the strongest forcing thing my opponent can do?</p></details>
+          <div class="lesson-nav-row no-print">
+            <a href="advanced-pawn-m10-lesson-09-discussing-the-game-respectfully.html">&larr; Module 10: Discussing the Game Respectfully</a>
+            <a href="advanced-pawn-index.html">Back to Advanced Pawn Index &rarr;</a>
+          </div>
+        </section>
+        <section class="lesson-section reference-list" id="references">
+          <div class="section-head"><div class="number">R</div><div><p class="section-kicker">Source list</p><h2>References retained from the Markdown lesson</h2></div></div>
+          <div class="prose"><ol><li>Chess.com, “Blunder - Chess Terms”</li><li>Chess.com, “How Are Moves Classified?”</li><li>Chess.com, “How Does Game Review Work?”</li><li>Chess.com, “3 Tips to Avoid Blunders”</li><li>Chess.com, “Spotting and Avoiding Tactics”</li><li>Sigman et al., “Response Time Distributions in Rapid Chess”</li><li>Wang et al., “How to Effectively Overcome Fixation”</li><li>Lichess Practice</li><li>Lichess Puzzles</li><li>ChessMaine, “Kramnik vs Deep Fritz”</li><li>Chess Trap Guide, “Légal's Mate Trap”</li><li>Lichess Practice, “Checkmate Patterns I”</li><li>Old School Chess, “King and Pawn Endgames”</li></ol></div>
+        </section>
+      </main>
+    </div>
+  </div>
+  <footer class="footer"><strong>Advanced Pawn · Module 11:</strong> Blunder Prevention in Chess.</footer>
+  <script>
+    (function(){
+      'use strict';
+      const pieceMap={P:'wP',N:'wN',B:'wB',R:'wR',Q:'wQ',K:'wK',p:'bP',n:'bN',b:'bB',r:'bR',q:'bQ',k:'bK'};
+      const pieceName={P:'white pawn',N:'white knight',B:'white bishop',R:'white rook',Q:'white queen',K:'white king',p:'black pawn',n:'black knight',b:'black bishop',r:'black rook',q:'black queen',k:'black king'};
+      function parseFen(fen){const out=[];fen.split(/\s+/)[0].split('/').forEach(rank=>{for(const ch of rank){if(/\d/.test(ch))for(let i=0;i<Number(ch);i++)out.push(null);else out.push(ch);}});return out;}
+      function renderBoard(node,fen,orientation='white'){
+        const pieces=parseFen(fen);
+        const ranks=orientation==='white'?[8,7,6,5,4,3,2,1]:[1,2,3,4,5,6,7,8];
+        const files=orientation==='white'?['a','b','c','d','e','f','g','h']:['h','g','f','e','d','c','b','a'];
+        node.innerHTML='';
+        ranks.forEach((rank,visualRank)=>{files.forEach((file,visualFile)=>{
+          const fileIndex=file.charCodeAt(0)-97,rankIndex=8-rank,piece=pieces[rankIndex*8+fileIndex];
+          const square=document.createElement('div');square.className='square '+(((fileIndex+rankIndex)%2===0)?'light':'dark');
+          square.setAttribute('aria-label',file+rank+(piece?' '+pieceName[piece]:' empty'));
+          if(piece){const img=document.createElement('img');img.src='../assets/pieces/mpchess/'+pieceMap[piece]+'.svg';img.alt=pieceName[piece];img.draggable=false;square.appendChild(img);}
+          if(visualRank===7){const c=document.createElement('span');c.className='coord-file';c.textContent=file;square.appendChild(c);}
+          if(visualFile===0){const c=document.createElement('span');c.className='coord-rank';c.textContent=rank;square.appendChild(c);}
+          node.appendChild(square);
+        });});node.dataset.orientation=orientation;
+      }
+      document.querySelectorAll('.chessboard').forEach(board=>renderBoard(board,board.dataset.fen,'white'));
+      document.querySelectorAll('.flip-board').forEach(button=>button.addEventListener('click',()=>{const card=button.closest('.position-card');const board=card.querySelector('.chessboard');renderBoard(board,board.dataset.fen,board.dataset.orientation==='white'?'black':'white');}));
+      document.querySelectorAll('.copy-fen').forEach(button=>button.addEventListener('click',async()=>{const card=button.closest('.position-card');const fen=card.querySelector('.chessboard').dataset.fen;const status=card.querySelector('.copy-status');try{await navigator.clipboard.writeText(fen);status.textContent='FEN copied.';}catch(e){status.textContent='Copy failed. Select the FEN text manually.';}setTimeout(()=>status.textContent='',2200);}));
+      const root=document.documentElement,themeToggle=document.getElementById('themeToggle');
+      themeToggle.addEventListener('click',()=>{root.dataset.theme=root.dataset.theme==='dark'?'light':'dark';localStorage.setItem('lesson-theme-v1',root.dataset.theme);localStorage.setItem('chess-lesson-theme',root.dataset.theme);});
+      const bar=document.getElementById('progressBar');
+      const update=()=>{const max=document.documentElement.scrollHeight-window.innerHeight;bar.style.width=(max>0?Math.min(100,Math.max(0,window.scrollY/max*100)):0)+'%';};
+      update();window.addEventListener('scroll',update,{passive:true});
+    })();
+  </script>
+  <script src="pawn-teacher-board.js?v=20260710-teacher-lesson-csv1" defer></script>
+  <script src="lesson-presentation.js?v=20260724-bishop-presentation-v2" defer></script>
+</body>
+</html>
