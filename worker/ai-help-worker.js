@@ -5,6 +5,8 @@ const MAX_MESSAGE_CHARS = 4_000;
 const MAX_CONTEXT_CHARS = 7_000;
 
 const DEFAULT_ALLOWED_ORIGINS = Object.freeze([
+  'https://cddigital.top',
+  'https://www.cddigital.top',
   'https://coachdinosaur.github.io',
   'http://127.0.0.1:8000',
   'http://localhost:8000',
@@ -16,7 +18,7 @@ function jsonResponse(payload, status, origin) {
     'Cache-Control': 'no-store',
     'X-Content-Type-Options': 'nosniff',
     'Referrer-Policy': 'no-referrer',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Max-Age': '86400',
     Vary: 'Origin',
@@ -131,6 +133,13 @@ export default {
       return jsonResponse({ ok: true }, 200, corsOrigin);
     }
 
+    if (request.method === 'GET' && url.pathname === '/health') {
+      if (!corsOrigin) {
+        return jsonResponse({ error: 'Origin not allowed.' }, 403, '');
+      }
+      return jsonResponse({ ok: true, service: 'chess-study-ai' }, 200, corsOrigin);
+    }
+
     if (request.method !== 'POST' || url.pathname !== '/chat') {
       return jsonResponse({ error: 'Not found.' }, 404, corsOrigin);
     }
@@ -170,28 +179,32 @@ export default {
 
     const contextJson = sanitizeContext(body?.context);
     const configuredModel = String(env.GEMINI_MODEL || DEFAULT_MODEL).trim() || DEFAULT_MODEL;
-    const model = configuredModel.startsWith('models/')
-      ? configuredModel
-      : `models/${configuredModel}`;
-    const geminiUrl = 'https://generativelanguage.googleapis.com/v1/interactions';
+    const model = configuredModel.replace(/^models\//, '');
+    const geminiUrl = 'https://generativelanguage.googleapis.com/v1beta/interactions';
 
-    const providerResponse = await fetch(geminiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-goog-api-key': env.GEMINI_API_KEY,
-      },
-      body: JSON.stringify({
-        model,
-        input: buildInteractionInput(messages),
-        system_instruction: buildSystemInstruction(contextJson),
-        generation_config: {
-          thinking_level: 'low',
-          max_output_tokens: 1800,
+    let providerResponse;
+    try {
+      providerResponse = await fetch(geminiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': env.GEMINI_API_KEY,
         },
-        store: false,
-      }),
-    });
+        body: JSON.stringify({
+          model,
+          input: buildInteractionInput(messages),
+          system_instruction: buildSystemInstruction(contextJson),
+          generation_config: {
+            thinking_level: 'low',
+            max_output_tokens: 1800,
+          },
+          store: false,
+        }),
+      });
+    } catch (error) {
+      console.error('Gemini network request failed', error?.message || error);
+      return jsonResponse({ error: 'The AI provider could not be reached. Please try again shortly.' }, 503, corsOrigin);
+    }
 
     const providerText = await providerResponse.text();
     let providerPayload = {};
