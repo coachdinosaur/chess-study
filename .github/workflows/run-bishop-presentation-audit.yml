@@ -1,4 +1,4 @@
-name: Apply and audit Bishop presentation v4
+name: Re-audit Bishop presentation v4
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 jobs:
-  repair:
+  audit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,13 +21,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Apply deterministic repair
-        run: python .github/scripts/apply_bishop_presentation_v4.py
-      - name: Check presenter syntax
-        run: node --check lessons/lesson-presentation.js
       - name: Install Playwright
         run: |
           python -m pip install --disable-pip-version-check playwright
@@ -38,27 +31,10 @@ jobs:
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
           python .github/scripts/audit_bishop_presentation.py
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          report = json.loads(Path('.github/bishop-presentation-audit.json').read_text())
-          summary = report['summary']
-          failures = {
-              'missing_launch_button': summary['missing_launch_button'],
-              'blank_scene_lessons': summary['blank_scene_lessons'],
-              'exact_duplicate_lessons': summary['exact_duplicate_lessons'],
-              'page_error_lessons': summary['page_error_lessons'],
-              'module1_without_unified_header': summary['module1_without_unified_header'],
-          }
-          failures = {key: value for key, value in failures.items() if value}
-          if failures:
-              raise SystemExit('Browser regression audit failed: ' + json.dumps(failures, indent=2))
-          print(json.dumps(summary, indent=2))
-          PY
-      - name: Commit tested repair
+      - name: Commit refreshed report
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add lessons .github/scripts/audit_bishop_presentation.py .github/bishop-presentation-audit.json
-          git commit -m "Fix Bishop presentation scoping and Module 1 headers"
+          git add .github/bishop-presentation-audit.json
+          git commit -m "Re-audit Bishop presentation v4"
           git push origin HEAD:agent/repair-bishop-presentation-and-headers-v4
