@@ -3,7 +3,7 @@
 if (window.__LESSON_PRESENTATION_PHASE_1A__) return;
 window.__LESSON_PRESENTATION_PHASE_1A__ = true;
 window.__LESSON_PRESENTATION_PHASE_2__ = true;
-var VERSION = "20260724-bishop-presentation-v2";
+var VERSION = "20260724-bishop-presentation-v3";
 var scriptUrl = document.currentScript && document.currentScript.src
 ? document.currentScript.src
 : new URL("lesson-presentation.js", window.location.href).href;
@@ -82,54 +82,114 @@ scene.offsetParent !== null
 function textFrom(element) {
 return element && element.textContent ? element.textContent.trim().replace(/\s+/g, " ") : "";
 }
+function normalizedSceneText(value) {
+return String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
+}
+function sceneAnalysisClone(scene) {
+var clone = scene.cloneNode(true);
+clone.querySelectorAll(
+".module-nav, .no-print, .source-note, .fen-box, .lesson-nav-row, .teacher-board-panel, .teacher-board-toggle, [data-open-teacher-board], .presentation-coach-only, script, style"
+).forEach(function (node) { node.remove(); });
+return clone;
+}
+function sceneMediaSignature(scene) {
+var parts = [];
+scene.querySelectorAll("[data-fen]").forEach(function (node) {
+var fen = normalizedSceneText(node.getAttribute("data-fen"));
+if (fen) parts.push("fen:" + fen);
+});
+scene.querySelectorAll("img[src]").forEach(function (image) {
+var src = normalizedSceneText(image.getAttribute("src"));
+if (src) parts.push("img:" + src);
+});
+scene.querySelectorAll("svg[aria-label], canvas[aria-label], iframe[src]").forEach(function (node) {
+var label = normalizedSceneText(node.getAttribute("aria-label") || node.getAttribute("src"));
+if (label) parts.push(node.tagName.toLowerCase() + ":" + label);
+});
+return parts.join("|");
+}
+function sceneBodyText(scene) {
+var clone = sceneAnalysisClone(scene);
+clone.querySelectorAll(
+"h1, h2, h3, .lesson-number, .number, .position-label, .position-meta, .eyebrow, .kicker, .section-kicker"
+).forEach(function (node) { node.remove(); });
+return normalizedSceneText(clone.textContent);
+}
+function sceneFingerprint(scene) {
+var clone = sceneAnalysisClone(scene);
+return normalizedSceneText(clone.textContent) + "|" + sceneMediaSignature(scene);
+}
+function meaningfulScene(scene) {
+if (!scene) return false;
+if (sceneMediaSignature(scene)) return true;
+return sceneBodyText(scene).length >= 24;
+}
+function finalizeScenes(items) {
+var seen = new Set();
+return uniqueElements(items).filter(visibleScene).filter(function (scene) {
+if (!meaningfulScene(scene)) return false;
+var fingerprint = sceneFingerprint(scene);
+if (!fingerprint || seen.has(fingerprint)) return false;
+seen.add(fingerprint);
+return true;
+});
+}
+function titlesEquivalent(first, second) {
+var a = normalizedSceneText(first);
+var b = normalizedSceneText(second);
+if (!a || !b) return false;
+if (a === b) return true;
+var shorter = a.length <= b.length ? a : b;
+var longer = a.length > b.length ? a : b;
+return shorter.length >= 12 && longer.indexOf(shorter) !== -1;
+}
+function addBishopCardContext(card, parentTitle, cardTitle) {
+if (!parentTitle || titlesEquivalent(parentTitle, cardTitle)) return;
+if (card.querySelector(":scope > .presentation-generated-context")) return;
+var context = document.createElement("div");
+context.className = "presentation-generated-context";
+var contextTitle = document.createElement("h2");
+contextTitle.textContent = parentTitle;
+context.appendChild(contextTitle);
+card.insertBefore(context, card.firstChild);
+}
 function sectionHeading(section) {
 return textFrom(section && section.querySelector(".lesson-head h1, .lesson-head h2, .lesson-head h3, h1, h2, h3"));
+}
+function bishopPositionCards(section) {
+return scopedQuery(
+section,
+"> .position, > .exercise-grid > .position, > .exercise-grid > .position-card, > .position-grid > .position-card, > .activity-grid > .position-card, > .answer-grid > .answer-card"
+);
 }
 function collectBishopScenes() {
 var result = [];
 var main = document.querySelector("main.lesson-page") || document.querySelector("main") || document.body;
 var hero = document.querySelector(".hero");
-if (hero && !hero.closest(".lesson")) result.push(hero);
+if (hero) result.push(hero);
 scopedQuery(main, "> section, > article").forEach(function (section) {
 if (section === hero || section.matches(".module-nav, .no-print")) return;
-if (!section.classList.contains("lesson")) {
+var sectionLike = section.classList.contains("lesson") || section.classList.contains("lesson-section");
+if (!sectionLike) {
 result.push(section);
 return;
 }
-var cards = scopedQuery(
-section,
-"> .position, > .exercise-grid > .position, > .position-grid > .position-card, > .activity-grid > .position-card, > .answer-grid > .answer-card"
-);
-if (cards.length) {
+var cards = bishopPositionCards(section);
+if (cards.length <= 1) {
+result.push(section);
+return;
+}
 var parentTitle = sectionHeading(section);
-var parentIntro = scopedQuery(section, "> .lesson-intro, > p")[0];
 cards.forEach(function (card, index) {
 var cardTitle = textFrom(card.querySelector(".position-label, .position-head h3, h3"));
 card.dataset.presentationTitle = parentTitle
-? parentTitle + (cardTitle ? " · " + cardTitle : " · Position " + (index + 1))
+? parentTitle + (cardTitle && !titlesEquivalent(parentTitle, cardTitle) ? " · " + cardTitle : " · Position " + (index + 1))
 : cardTitle || "Position " + (index + 1);
-if (!card.querySelector(":scope > .presentation-generated-context") && (parentTitle || parentIntro)) {
-var context = document.createElement("div");
-context.className = "presentation-generated-context";
-if (parentTitle) {
-var contextTitle = document.createElement("h2");
-contextTitle.textContent = parentTitle;
-context.appendChild(contextTitle);
-}
-if (parentIntro && textFrom(parentIntro)) {
-var contextIntro = document.createElement("p");
-contextIntro.textContent = textFrom(parentIntro);
-context.appendChild(contextIntro);
-}
-card.insertBefore(context, card.firstChild);
-}
+addBishopCardContext(card, parentTitle, cardTitle);
 result.push(card);
 });
-} else {
-result.push(section);
-}
 });
-return uniqueElements(result).filter(visibleScene);
+return finalizeScenes(result);
 }
 function collectStandardScenes() {
 var result = [];
@@ -151,7 +211,7 @@ result.push(section);
 return uniqueElements(result).filter(visibleScene);
 }
 function collectScenes() {
-if (bishopLesson && document.querySelector(".lesson")) return collectBishopScenes();
+if (bishopLesson) return collectBishopScenes();
 return collectStandardScenes();
 }
 function sceneTitle(scene, index) {
@@ -201,7 +261,7 @@ scopedQuery(scene, "> .diagram").length
 ) {
 scene.classList.add("presentation-compact-position-scene");
 }
-if (scene.matches(".weakness-grid, .question-grid, .process-grid, .objective-grid, .checklist")) {
+if (scene.matches(".weakness-grid, .question-grid, .process-grid, .objective-grid, .principle-grid, .method-grid, .concept-grid, .value-grid, .remember-list, .checklist")) {
 scene.classList.add("presentation-grid-scene");
 }
 scene.dataset.presentationIndex = String(index);
@@ -267,6 +327,11 @@ if (action === "exit") exitPresentation();
 });
 }
 function addLaunchButton() {
+var existingLaunch = document.querySelector(".lesson-present-launch");
+if (existingLaunch) {
+launchButton = existingLaunch;
+return;
+}
 launchButton = document.createElement("button");
 launchButton.type = "button";
 launchButton.className = "toolbar-link lesson-present-launch no-print";
