@@ -1,0 +1,53 @@
+name: Apply Advanced Pawn Module 12
+
+on:
+  push:
+    branches:
+      - agent/add-advanced-pawn-module-12-opening-traps
+    paths:
+      - .github/module12-trigger
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/add-advanced-pawn-module-12-opening-traps
+          fetch-depth: 0
+      - name: Decode curriculum files
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import base64, gzip
+          sources = {
+              'lesson': 'lessons/advanced-pawn-m12-lesson-01-basic-opening-traps-in-chess.html',
+              'data': 'lessons/advanced-pawn-module-12-data.js',
+              'advanced-index': 'lessons/advanced-pawn-index.html',
+              'lessons-index': 'lessons/index.html',
+          }
+          root = Path('.github/module12-payload')
+          for key, target_name in sources.items():
+              parts = sorted(root.glob(key + '.part*'), key=lambda p: int(p.name.rsplit('part', 1)[1]))
+              payload = ''.join(p.read_text().strip() for p in parts)
+              target = Path(target_name)
+              target.parent.mkdir(parents=True, exist_ok=True)
+              target.write_bytes(gzip.decompress(base64.b64decode(payload)))
+          Path('.github/module12-trigger').unlink(missing_ok=True)
+          Path('.github/workflows/apply-advanced-pawn-module-12.yml').unlink(missing_ok=True)
+          for item in root.glob('*'):
+              item.unlink()
+          root.rmdir()
+          PY
+      - name: Commit Module 12
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Add Advanced Pawn Module 12 opening traps"
+          git push origin HEAD:agent/add-advanced-pawn-module-12-opening-traps
