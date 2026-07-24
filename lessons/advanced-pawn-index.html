@@ -6,7 +6,7 @@
   <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
   <link rel="apple-touch-icon" href="../assets/pieces/app_icon.png">
   <title>Advanced Pawn Level — Chess Lessons</title>
-  <meta name="description" content="Advanced Pawn / Pawn Plus course: 117 lessons across eleven modules covering checkmate patterns, tactics, draw technique, pawn structure, chess etiquette, and blunder prevention.">
+  <meta name="description" content="Advanced Pawn / Pawn Plus course: 118 lessons across twelve modules covering checkmate patterns, tactics, draw technique, pawn structure, chess etiquette, blunder prevention, and opening-trap recognition.">
   <script>(function(){try{var stored=localStorage.getItem('lesson-theme-v1');if(stored==='light'||stored==='dark')document.documentElement.dataset.theme=stored;}catch(e){}})();</script>
   <link rel="stylesheet" href="endgame-lesson.css">
   <link rel="stylesheet" href="lesson-index.css?v=20260721-course-path">
@@ -35,17 +35,17 @@
     <header class="hero index-hero">
       <p class="eyebrow">Coach Dinosaur Chess Course · Level 2</p>
       <h1 class="chapter-title">Advanced Pawn / Pawn Plus</h1>
-      <p class="chapter-subtitle">The bridge between beginner foundations and Bishop Level. The course begins with mating patterns and tactics, develops practical command of draw rules and defensive technique, then finishes with pawn structure, tournament conduct, and a complete blunder-prevention routine.</p>
+      <p class="chapter-subtitle">The bridge between beginner foundations and Bishop Level. The course begins with mating patterns and tactics, develops practical command of draw rules and defensive technique, then finishes with pawn structure, tournament conduct, blunder prevention, and a complete opening-trap recognition course.</p>
 
       <div class="index-summary" aria-label="Advanced Pawn course summary">
-        <div class="summary-stat"><span class="summary-stat-value">11</span><span class="summary-stat-label">modules</span></div>
-        <div class="summary-stat"><span class="summary-stat-value">117</span><span class="summary-stat-label">lessons</span></div>
-        <div class="summary-stat"><span class="summary-stat-value">130</span><span class="summary-stat-label">legal FEN positions</span></div>
+        <div class="summary-stat"><span class="summary-stat-value">12</span><span class="summary-stat-label">modules</span></div>
+        <div class="summary-stat"><span class="summary-stat-value">118</span><span class="summary-stat-label">lessons</span></div>
+        <div class="summary-stat"><span class="summary-stat-value">146</span><span class="summary-stat-label">legal FEN positions</span></div>
         <div class="summary-stat"><span class="summary-stat-value">Level 2</span><span class="summary-stat-label">bridge curriculum</span></div>
       </div>
     </header>
 
-    <p class="course-note"><strong>Course placement:</strong> complete Pawn Level first, then use this course to build tactical pattern recognition, accurate calculation, practical knowledge of drawn positions, respectful tournament conduct, and a reliable final safety check before moving to Bishop Level. Module 6 separately documents one defective source diagram whose black king is missing; it is not counted among the legal FEN positions.</p>
+    <p class="course-note"><strong>Course placement:</strong> complete Pawn Level first, then use this course to build tactical pattern recognition, accurate calculation, practical knowledge of drawn positions, respectful tournament conduct, a reliable final safety check, and opening-trap recognition before moving to Bishop Level. Module 6 separately documents one defective source diagram whose black king is missing; it is not counted among the legal FEN positions.</p>
 
     <nav class="course-roadmap" aria-labelledby="roadmapTitle">
       <h2 class="roadmap-title" id="roadmapTitle">Module roadmap</h2>
@@ -75,6 +75,7 @@
             <a class="roadmap-link" href="#module-9"><span class="roadmap-number">M9</span><span>Pawn Structure</span></a>
             <a class="roadmap-link" href="#module-10"><span class="roadmap-number">M10</span><span>Chess Etiquette</span></a>
             <a class="roadmap-link" href="#module-11"><span class="roadmap-number">M11</span><span>Blunder Prevention in Chess</span></a>
+            <a class="roadmap-link" href="#module-12"><span class="roadmap-number">M12</span><span>Basic Opening Traps in Chess</span></a>
           </div>
         </section>
       </div>
@@ -97,6 +98,7 @@
   <script src="advanced-pawn-module-9-data.js?v=20260721-m9"></script>
   <script src="advanced-pawn-module-10-data.js?v=20260721-m10"></script>
   <script src="advanced-pawn-module-11-data.js?v=20260724-m11"></script>
+  <script src="advanced-pawn-module-12-data.js?v=20260724-m12"></script>
   <script>
     function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]})}
     function renderModule(course){
@@ -114,7 +116,7 @@
       return '';
     }
     (function(){
-      var modules=[window.ADVANCED_PAWN_MODULE_1,window.ADVANCED_PAWN_MODULE_2,window.ADVANCED_PAWN_MODULE_3,window.ADVANCED_PAWN_MODULE_4,window.ADVANCED_PAWN_MODULE_5,window.ADVANCED_PAWN_MODULE_6,window.ADVANCED_PAWN_MODULE_7,window.ADVANCED_PAWN_MODULE_8,window.ADVANCED_PAWN_MODULE_9,window.ADVANCED_PAWN_MODULE_10,window.ADVANCED_PAWN_MODULE_11].filter(Boolean);
+      var modules=[window.ADVANCED_PAWN_MODULE_1,window.ADVANCED_PAWN_MODULE_2,window.ADVANCED_PAWN_MODULE_3,window.ADVANCED_PAWN_MODULE_4,window.ADVANCED_PAWN_MODULE_5,window.ADVANCED_PAWN_MODULE_6,window.ADVANCED_PAWN_MODULE_7,window.ADVANCED_PAWN_MODULE_8,window.ADVANCED_PAWN_MODULE_9,window.ADVANCED_PAWN_MODULE_10,window.ADVANCED_PAWN_MODULE_11,window.ADVANCED_PAWN_MODULE_12].filter(Boolean);
       document.getElementById('moduleList').innerHTML=modules.map(function(course){var phase=phaseLabel(course.module);return (phase?'<p class="phase-label">'+phase+'</p>':'')+renderModule(course)}).join('');
     })();
     function toggleTheme(){var html=document.documentElement;var next=html.dataset.theme==='dark'?'light':'dark';html.dataset.theme=next;try{localStorage.setItem('lesson-theme-v1',next)}catch(e){}var btn=document.getElementById('themeToggle');if(btn)btn.textContent=next==='dark'?'Light theme':'Dark theme'}

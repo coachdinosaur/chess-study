@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-teacher-fen="rnbqkbnr/pppp1ppp/8/4p3/8/5P2/PPPPP1PP/RNBQKBNR w KQkq e6 0 2">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
+  <link rel="apple-touch-icon" href="../assets/pieces/app_icon.png">
+  <title>Basic Opening Traps in Chess — Advanced Pawn Module 12</title>
+  <meta name="description" content="Advanced Pawn Module 12: thirteen opening-trap families and sixteen interactive FEN exercises focused on recognition, avoidance, defensive calculation, and tactical motifs.">
+  <script>(function(){try{var stored=localStorage.getItem('lesson-theme-v1')||localStorage.getItem('chess-lesson-theme');if(stored==='light'||stored==='dark')document.documentElement.dataset.theme=stored;}catch(e){}})();</script>
+  <link rel="stylesheet" href="advanced-pawn-lesson.css?v=20260724-m12">
+  <link rel="stylesheet" href="pawn-teacher-board.css?v=20260710-teacher-lesson-csv1">
+  <style>
+    .hero-card{min-height:360px}
+    .hero-pieces{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .module-badge{grid-column:1/-1;text-align:center;color:var(--muted);font-weight:850}
+    .chapter-prose h3{margin:1.25rem 0 .45rem;color:var(--accent)}
+    .chapter-prose ul,.chapter-prose ol{padding-left:1.3rem}
+    .chapter-prose li{margin:.35rem 0}
+    .chapter-prose blockquote{margin:1rem 0;padding:.85rem 1rem;border-left:4px solid var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--panel));border-radius:0 14px 14px 0;color:var(--text);font-weight:800}
+    .section-kicker{margin:0 0 .25rem;color:var(--accent);font-size:.78rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+    .concept-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}
+    .concept-card{border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.035);padding:1rem}
+    .concept-card h3{margin:0 0 .4rem;color:var(--accent)}
+    .concept-card p{margin:0;color:var(--muted)}
+    .table-wrap{overflow-x:auto}
+    .trap-table{width:100%;border-collapse:collapse;font-size:.94rem}
+    .trap-table th,.trap-table td{border:1px solid var(--line);padding:.65rem;text-align:left;vertical-align:top}
+    .trap-table th{background:var(--panel-strong);color:var(--accent)}
+    .board-lab{border-color:color-mix(in srgb,var(--accent) 48%,var(--line))}
+    .lab-meta{display:grid;gap:.35rem;margin-bottom:.75rem}
+    .lab-meta p{margin:0;color:var(--muted)}
+    .candidate-row{display:flex;flex-wrap:wrap;gap:.45rem;margin:.65rem 0}
+    .candidate-chip{border:1px solid var(--line);border-radius:999px;background:var(--panel-strong);padding:.38rem .65rem;font-weight:850}
+    .board-lab h4{margin:.85rem 0 .35rem;color:var(--accent);font-size:.9rem;text-transform:uppercase;letter-spacing:.08em}
+    .solution-body{margin-top:.65rem;color:var(--text)}
+    .coach-note{margin-top:.7rem;border:1px solid var(--line);border-radius:15px;padding:.75rem .9rem;background:rgba(255,255,255,.035)}
+    .coach-note summary{cursor:pointer;font-weight:900;color:var(--accent-2)}
+    .takeaway{margin-top:.75rem;border:1px solid color-mix(in srgb,var(--accent-2) 48%,var(--line));border-radius:15px;padding:.8rem .9rem;background:color-mix(in srgb,var(--accent-2) 9%,var(--panel));color:var(--muted)}
+    .takeaway strong{display:block;color:var(--accent-2);margin-bottom:.25rem;text-transform:uppercase;letter-spacing:.08em;font-size:.8rem}
+    .mixed-grid{display:grid;gap:1rem}
+    .checklist-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.45rem 1.4rem}
+    .lesson-nav-row{display:flex;justify-content:space-between;gap:.8rem;margin-top:1.2rem}
+    .lesson-nav-row a{flex:1;max-width:48%;border:1px solid var(--line);border-radius:999px;background:var(--panel-strong);text-decoration:none;padding:.6rem .9rem;font-weight:850}
+    .lesson-nav-row a:last-child{text-align:right;margin-left:auto}
+    @media(max-width:720px){.concept-grid,.checklist-grid{grid-template-columns:1fr}.lesson-nav-row{flex-direction:column}.lesson-nav-row a{max-width:none}.lesson-nav-row a:last-child{text-align:left}}
+</style>
+</head>
+<body>
+  <div class="index-header no-print"><div class="index-header-inner">
+    <div class="index-brand"><div class="index-brand-icon" aria-hidden="true">♟</div><div><div class="index-brand-label">Advanced Pawn · Module 12</div><div class="index-brand-title">Basic Opening Traps in Chess</div></div></div>
+    <div class="index-top-actions"><a class="toolbar-link" href="advanced-pawn-index.html">&larr; Advanced Pawn Index</a><button class="toolbar-link" type="button" id="themeToggle">Toggle theme</button><button class="toolbar-link" type="button" onclick="window.print()">Print / Save PDF</button></div>
+  </div></div>
+  <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+  <div class="page">
+    <section class="hero" id="top"><div><p class="kicker">Advanced Pawn · Module 12 · FEN Lesson Edition</p><h1>Basic Opening Traps in Chess</h1><p class="lead">Recognize the bait, identify the tactical motif, calculate the punishment, and choose the safe defense across thirteen classic trap families and sixteen decision-point positions.</p>
+      <div class="objective-grid"><div class="objective"><strong>Recognize</strong><span>Spot weak king squares, poisoned material, false pins, and trapped-piece geometry.</span></div><div class="objective"><strong>Defend</strong><span>Compare candidate moves and neutralize the opponent's forcing idea.</span></div><div class="objective"><strong>Transfer</strong><span>Use the tactical motif even when the exact move order changes.</span></div></div>
+    </div><div class="hero-card"><div class="hero-pieces"><img src="../assets/pieces/mpchess/wQ.svg" alt="White queen"><img src="../assets/pieces/mpchess/bN.svg" alt="Black knight"><img src="../assets/pieces/mpchess/bQ.svg" alt="Black queen"><div class="module-badge">13 trap families · 13 guided laboratories · 3 mixed tests · 16 legal FEN positions</div></div></div></section>
+    <div class="layout" id="lesson"><nav class="toc" aria-label="Lesson contents"><div class="toc-title">Contents</div><a href="#definition">1. Definition</a><a href="#history">2. History</a><a href="#principles">3. Principles</a><a href="#recognition">4. Recognition</a><a href="#defense">5. Defense</a><a href="#motifs">6. Motifs</a><a href="#families">7. Trap Families</a><a href="#lab-1">8. FEN Lessons</a><a href="#mixed-tests">Mixed Tests</a><a href="#punish">9. Punish Failed Traps</a><a href="#mistakes">10. Mistakes</a><a href="#checklist">11. Checklist</a><a href="#advanced">12. Advanced</a><a href="#summary">13. Summary</a></nav><main>
+      <section class="lesson-section" id="definition"><div class="section-head"><div class="number">1</div><div><p class="section-kicker">Conceptual reference</p><h2>Definition</h2></div></div><div class="prose chapter-prose"><h3>What is an opening trap?</h3>
+<p>An opening trap is a planned tactical idea that becomes effective when the opponent makes a tempting but inaccurate move. The trap may win material, trap a piece, force checkmate, or gain a decisive initiative.</p>
+<h3>Trap, gambit, and tactical variation</h3>
+<p>A <strong>trap</strong> depends on an avoidable mistake. A <strong>gambit</strong> deliberately offers material for activity. A <strong>tactical variation</strong> is forcing but does not necessarily contain bait. The same opening line may contain all three, which is why names alone are not enough.</p>
+<h3>Why traps work</h3>
+<p>Opening traps exploit automatic development, greed, premature queen moves, unresolved king safety, false pins, overloaded defenders, and failure to calculate one forcing move farther.</p></div></section><section class="lesson-section" id="history"><div class="section-head"><div class="number">2</div><div><p class="section-kicker">Conceptual reference</p><h2>Historical Development</h2></div></div><div class="prose chapter-prose"><p>Opening traps appeared in early manuscripts because short tactical games were easy to preserve and teach. Classical traps often punish violations of development and king safety. Later opening theory distinguished sound tactical ideas from dubious hope chess.</p>
+<p>Modern databases and engines have not made traps irrelevant. They have made the defensive lessons clearer: identify the critical decision point, compare safe alternatives, and understand the tactical motif rather than memorizing only the final mate.</p></div></section><section class="lesson-section" id="principles"><div class="section-head"><div class="number">3</div><div><p class="section-kicker">Conceptual reference</p><h2>Fundamental Principles</h2></div></div><div class="prose chapter-prose"><ul>
+<li>Develop pieces while watching immediate threats.</li>
+<li>Do not move the same piece repeatedly without a concrete reason.</li>
+<li>Do not take apparently free material before checking forcing replies.</li>
+<li>Castle only when the destination is safe.</li>
+<li>Question every pin: is the pinned piece protecting a queen or a king?</li>
+<li>Calculate checks, captures, and threats before following a memorized move.</li>
+<li>When the opponent plays an unusual move, ask what bait it creates.</li>
+</ul></div></section><section class="lesson-section" id="recognition"><div class="section-head"><div class="number">4</div><div><p class="section-kicker">Conceptual reference</p><h2>Recognizing Common Trap Themes</h2></div></div><div class="prose chapter-prose"><div class="concept-grid">
+<article class="concept-card"><h3>Weak f2 or f7</h3><p>Queen, bishop, or knight batteries often target the pawn protected only by the king.</p></article>
+<article class="concept-card"><h3>False pin</h3><p>A piece pinned only to the queen may move if the resulting checks are stronger.</p></article>
+<article class="concept-card"><h3>Poisoned material</h3><p>A pawn, piece, or queen appears free but opens a line or loses time.</p></article>
+<article class="concept-card"><h3>Trapped piece</h3><p>Pawn advances remove every retreat square, as in Noah's Ark.</p></article>
+<article class="concept-card"><h3>Intermediate move</h3><p>A check or attack interrupts the expected recapture order.</p></article>
+<article class="concept-card"><h3>Open king file</h3><p>A capture near the castled king opens a rook or queen route.</p></article>
+</div></div></section><section class="lesson-section" id="defense"><div class="section-head"><div class="number">5</div><div><p class="section-kicker">Conceptual reference</p><h2>Defensive Technique</h2></div></div><div class="prose chapter-prose"><ol>
+<li><strong>State the threat.</strong> Do not answer a trap before identifying what it threatens.</li>
+<li><strong>List forcing moves.</strong> Check every opponent check, capture, and direct threat after your candidate.</li>
+<li><strong>Refuse unnecessary material.</strong> Development and king safety often matter more than a pawn.</li>
+<li><strong>Trade attackers.</strong> Exchanges reduce the power of gambit compensation.</li>
+<li><strong>Return material when useful.</strong> Giving back a pawn is cheaper than defending a trapped queen or exposed king.</li>
+<li><strong>Choose multi-purpose moves.</strong> A good defense should develop, cover the key square, and reduce counterplay.</li>
+</ol></div></section><section class="lesson-section" id="motifs"><div class="section-head"><div class="number">6</div><div><p class="section-kicker">Conceptual reference</p><h2>Tactical Motifs Behind Traps</h2></div></div><div class="prose chapter-prose"><p>The thirteen families in this module repeatedly use the same motifs: mating batteries on f2 or f7, deflection, discovered attack, intermediate check, smothered mate, underpromotion, queen skewer, interference, trapped pieces, and opened files toward the king.</p>
+<p>The practical goal is transfer. A student who understands the motif can recognize it in a different opening, while a student who memorizes only the move order becomes helpless the moment somebody moves a pawn one turn earlier. Humanity has invented enough brittle systems already.</p></div></section><section class="lesson-section" id="families"><div class="section-head"><div class="number">7</div><div><p class="section-kicker">Conceptual reference</p><h2>Trap-Family Reference</h2></div></div><div class="prose chapter-prose"><div class="table-wrap"><table class="trap-table"><thead><tr><th>Trap family</th><th>Opening</th><th>Main motif</th><th>Primary target</th></tr></thead><tbody>
+<tr><td>Fool's Mate</td><td>Irregular King's Pawn</td><td>Open diagonal and mate</td><td>King</td></tr>
+<tr><td>Scholar's Mate</td><td>Open Game</td><td>Attack on f7</td><td>King</td></tr>
+<tr><td>Légal Trap</td><td>Philidor-type structure</td><td>False pin and queen sacrifice</td><td>King</td></tr>
+<tr><td>Blackburne Shilling</td><td>Italian Game</td><td>Greed and queen raid</td><td>King</td></tr>
+<tr><td>Fried Liver</td><td>Two Knights Defense</td><td>Nxf7 sacrifice and king hunt</td><td>King</td></tr>
+<tr><td>Elephant Trap</td><td>Queen's Gambit Declined</td><td>Intermediate check</td><td>Queen</td></tr>
+<tr><td>Noah's Ark</td><td>Ruy Lopez</td><td>Bishop trapped by pawns</td><td>Bishop</td></tr>
+<tr><td>Stafford Gambit Trap</td><td>Petrov Defense</td><td>Bxf2+ deflection</td><td>Queen</td></tr>
+<tr><td>Siberian Trap</td><td>Smith-Morra Gambit</td><td>Qh2 mate pattern</td><td>King</td></tr>
+<tr><td>Lasker Trap</td><td>Albin Countergambit</td><td>Underpromotion</td><td>King and material</td></tr>
+<tr><td>Kieninger Trap</td><td>Budapest Gambit</td><td>Smothered mate</td><td>King</td></tr>
+<tr><td>Fishing Pole</td><td>Ruy Lopez</td><td>Open h-file</td><td>King</td></tr>
+<tr><td>Englund Queen Trap</td><td>Englund Gambit</td><td>Queen invasion and interference</td><td>King</td></tr>
+</tbody></table></div></div></section>
+      <section class="lesson-section" id="fen-lessons"><div class="section-head"><div class="number">8</div><div><p class="section-kicker">FEN lesson set</p><h2>Thirteen Guided Trap Families</h2></div></div><div class="prose"><p>Begin from the decision point. State the threat, choose a candidate, and calculate the opponent's strongest reply before opening the solution.</p></div></section>
+      
+    <section class="lesson-section board-lab" id="lab-1">
+      <div class="section-head"><div class="number">1</div><div><p class="section-kicker">Trap laboratory</p><h2>Fool&#x27;s Mate: Do Not Open the King</h2></div></div>
+      <div class="position-grid">
+        <article class="position-card" id="fools-mate">
+          <div class="position-head"><div><h3>Fool&#x27;s Mate: Do Not Open the King</h3><div class="position-meta">White to move · Opened diagonal and mate</div></div><div class="position-meta">Advanced Pawn · Module 12</div></div>
+          <div class="board-and-notes">
+            <div class="board-shell"><div class="chessboard" data-fen="rnbqkbnr/pppp1ppp/8/4p3/8/5P2/PPPPP1PP/RNBQKBNR w KQkq e6 0 2" role="img" aria-label="Fool&#x27;s Mate: Do Not Open the King"></div></div>
+            <div>
+              <div class="lab-meta"><p><strong>Opening:</strong> Irregular King&#x27;s Pawn opening after 1.f3 e5</p><p><strong>Setup:</strong> <code>1.f3 e5</code></p></div>
+              <h4>Student task</h4><ol class="prose"><li>What diagonal did 1.f3 weaken?</li><li>Which natural-looking pawn move allows mate immediately?</li><li>Find a move that keeps the king safe.</li></ol>
+              <h4>Candidate moves</h4><div class="candidate-row"><span class="candidate-chip">2.g4?</span><span class="candidate-chip">2.e4</span><span class="candidate-chip">2.d3</span></div>
+              <div class="fen-box">rnbqkbnr/pppp1ppp/8/4p3/8/5P2/PPPPP1PP/RNBQKBNR w KQkq e6 0 2</div>
+              <div class="board-actions"><button class="mini-btn flip-board" type="button">Flip board</button><button class="mini-btn copy-fen" type="button">Copy FEN</button></div>
+              <div class="copy-status" aria-live="polite"></div>
+              <details class="solution"><summary>Reveal solution</summary><div class="solution-body"><p>The blunder is 2.g4?? Qh4#. White should keep the e1-h4 diagonal closed and develop normally with 2.e4, 2.d3, or 2.g3.</p></div></details>
+              <details class="coach-note"><summary>Coach explanation</summary><div class="prose"><p>The trap works because two pawn moves remove the king&#x27;s diagonal shelter before any piece is developed. The queen does not need a combination when the king&#x27;s door has been left open.</p></div></details>
+              <div class="takeaway"><strong>Transfer rule</strong><p>Do not weaken both f2 and g2 before the king is safe.</p></div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+    <section class="lesson-section board-lab" id="lab-2">
+      <div class="section-head"><div class="number">2</div><div><p class="section-kicker">Trap laboratory</p><h2>Scholar&#x27;s Mate: Defend f7 Before Developing</h2></div></div>
+      <div class="position-grid">
+        <article class="position-card" id="scholars-mate">
+          <div class="position-head"><div><h3>Scholar&#x27;s Mate: Defend f7 Before Developing</h3><div class="position-meta">Black to move · Queen and bishop battery on f7</div></div><div class="position-meta">Advanced Pawn · Module 12</div></div>
+          <div class="board-and-notes">
+            <div class="board-shell"><div class="chessboard" data-fen="r1bqkbnr/pppp1ppp/2n5/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 3 3" role="img" aria-label="Scholar&#x27;s Mate: Defend f7 Before Developing"></div></div>
+            <div>
+              <div class="lab-meta"><p><strong>Opening:</strong> Open Game after 1.e4 e5 2.Bc4 Nc6 3.Qh5</p><p><strong>Setup:</strong> <code>1.e4 e5 2.Bc4 Nc6 3.Qh5</code></p></div>
+              <h4>Student task</h4><ol class="prose"><li>What is White threatening?</li><li>Why does the routine move 3...Nf6 lose?</li><li>Name two defenses that stop mate.</li></ol>
+              <h4>Candidate moves</h4><div class="candidate-row"><span class="candidate-chip">3...Nf6??</span><span class="candidate-chip">3...g6!</span><span class="candidate-chip">3...Qe7</span></div>
+              <div class="fen-box">r1bqkbnr/pppp1ppp/2n5/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 3 3</div>
+              <div class="board-actions"><button class="mini-btn flip-board" type="button">Flip board</button><button class="mini-btn copy-fen" type="button">Copy FEN</button></div>
+              <div class="copy-status" aria-live="polite"></div>
+              <details class="solution"><summary>Reveal solution</summary><div class="solution-body"><p>White threatens Qxf7#. The careless 3...Nf6?? allows 4.Qxf7#. Black can defend with 3...g6!, 3...Qe7, or 3...Nh6.</p></div></details>
+              <details class="coach-note"><summary>Coach explanation</summary><div class="prose"><p>Opening principles are conditional. Developing a knight is useful only after the immediate mate threat has been handled.</p></div></details>
+              <div class="takeaway"><strong>Transfer rule</strong><p>Threat first, development second.</p></div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+    <section class="lesson-section board-lab" id="lab-3">
+      <div class="section-head"><div class="number">3</div><div><p class="section-kicker">Trap laboratory</p><h2>Légal Trap: Test the Pin Before Taking the Queen</h2></div></div>
+      <div class="position-grid">
+        <article class="position-card" id="legal-trap">
+          <div class="position-head"><div><h3>Légal Trap: Test the Pin Before Taking the Queen</h3><div class="position-meta">White to move · False pin, queen sacrifice, and mating net</div></div><div class="position-meta">Advanced Pawn · Module 12</div></div>
+          <div class="board-and-notes">
+            <div class="board-shell"><div class="chessboard" data-fen="r2qkbnr/ppp2ppp/2np4/4p2b/2B1P3/2N2N1P/PPPP1PP1/R1BQK2R w KQkq - 0 1" role="img" aria-label="Légal Trap: Test the Pin Before Taking the Queen"></div></div>
+            <div>
+              <div class="lab-meta"><p><strong>Opening:</strong> Philidor-type structure</p><p><strong>Setup:</strong> <code>A standard Légal-mate structure with the bishop on h5 apparently pinning the f3-knight.</code></p></div>
+              <h4>Student task</h4><ol class="prose"><li>Is the f3-knight absolutely pinned?</li><li>What happens if White plays Nxe5 and Black grabs the queen?</li><li>Which forcing moves matter more than material?</li></ol>
+              <h4>Candidate moves</h4><div class="candidate-row"><span class="candidate-chip">1.Nxe5!</span><span class="candidate-chip">1.d3</span><span class="candidate-chip">1.O-O</span></div>
+              <div class="fen-box">r2qkbnr/ppp2ppp/2np4/4p2b/2B1P3/2N2N1P/PPPP1PP1/R1BQK2R w KQkq - 0 1</div>
+              <div class="board-actions"><button class="mini-btn flip-board" type="button">Flip board</button><button class="mini-btn copy-fen" type="button">Copy FEN</button></div>
+              <div class="copy-status" aria-live="polite"></div>
+              <details class="solution"><summary>Reveal solution</summary><div class="solution-body"><p>1.Nxe5! Bxd1?? 2.Bxf7+ Ke7 3.Nd5#. Black must decline the queen and challenge the attacking knight, for example with ...Nxe5 or ...dxe5 in suitable move orders.</p></div></details>
+              <details class="coach-note"><summary>Coach explanation</summary><div class="prose"><p>The knight is pinned only to the queen, not to the king. White may legally abandon the queen when the resulting checks force mate.</p></div></details>
+              <div class="takeaway"><strong>Transfer rule</strong><p>A relative pin can be broken when the forcing continuation is stronger than the material loss.</p></div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+    <section class="lesson-section board-lab" id="lab-4">
+      <div class="section-head"><div class="number">4</div><div><p class="section-kicker">Trap laboratory</p><h2>Blackburne Shilling Trap: Refuse the Poisoned Pawn</h2></div></div>
+      <div class="position-grid">
+        <article class="position-card" id="blackburne-shilling">
+          <div class="position-head"><div><h3>Blackburne Shilling Trap: Refuse the Poisoned Pawn</h3><div class="position-meta">White to move · Greed, queen raid, and smothered mate</div></div><div class="position-meta">Advanced Pawn · Module 12</div></div>
+          <div class="board-and-notes">
+            <div class="board-shell"><div class="chessboard" data-fen="r1bqkbnr/pppp1ppp/8/4p3/2BnP3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4" role="img" aria-label="Blackburne Shilling Trap: Refuse the Poisoned Pawn"></div></div>
+            <div>
+              <div class="lab-meta"><p><strong>Opening:</strong> Italian Game after 1.e4 e5 2.Nf3 Nc6 3.Bc4 Nd4?!</p><p><strong>Setup:</strong> <code>1.e4 e5 2.Nf3 Nc6 3.Bc4 Nd4?!</code></p></div>
+              <h4>Student task</h4><ol class="prose"><li>Why is the e5-pawn suspiciously available?</li><li>Which greedy capture begins the trap?</li><li>Find a calm developing response.</li></ol>
+              <h4>Candidate moves</h4><div class="candidate-row"><span class="candidate-chip">4.Nxe5?</span><span class="candidate-chip">4.O-O</span><span class="candidate-chip">4.c3</span></div>
+              <div class="fen-box">r1bqkbnr/pppp1ppp/8/4p3/2BnP3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4</div>
+              <div class="board-actions"><button class="mini-btn flip-board" type="button">Flip board</button><button class="mini-btn copy-fen" type="button">Copy FEN</button></div>
+              <div class="copy-status" aria-live="polite"></div>
+              <details class="solution"><summary>Reveal solution</summary><div class="solution-body"><p>4.Nxe5? Qg5! 5.Nxf7? Qxg2 6.Rf1 Qxe4+ 7.Be2 Nf3#. White should ignore the bait and continue with 4.O-O, 4.c3, or another sound developing move.</p></div></details>
+              <details class="coach-note"><summary>Coach explanation</summary><div class="prose"><p>Black&#x27;s awkward knight move invites White to chase material. The queen then attacks g2 and e4 with tempo while White&#x27;s king remains in the center.</p></div></details>
+              <div class="takeaway"><strong>Transfer rule</strong><p>When an opponent violates opening principles, first ask whether the offered pawn is bait.</p></div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+    <section class="lesson-section board-lab" id="lab-5">
+      <div class="section-head"><div class="number">5</div><div><p class="section-kicker">Trap laboratory</p><h2>Fried Liver: Do Not Recapture Automatically</h2></div></div>
+      <div class="position-grid">
+        <article class="position-card" id="fried-liver">
+          <div class="position-head"><div><h3>Fried Liver: Do Not Recapture Automatically</h3><div class="position-meta">Black to move · Nxf7 sacrifice and king hunt</div></div><div class="position-meta">Advanced Pawn · Module 12</div></div>
+          <div class="board-and-notes">
+            <div class="board-shell"><div class="chessboard" data-fen="r1bqkb1r/ppp2ppp/2n2n2/3Pp1N1/2B5/8/PPPP1PPP/RNBQK2R b KQkq - 0 5" role="img" aria-label="Fried Liver: Do Not Recapture Automatically"></div></div>
+            <div>
+              <div class="lab-meta"><p><strong>Opening:</strong> Two Knights Defense after 1.e4 e5 2.Nf3 Nc6 3.Bc4 Nf6 4.Ng5 d5 5.exd5</p><p><strong>Setup:</strong> <code>1.e4 e5 2.Nf3 Nc6 3.Bc4 Nf6 4.Ng5 d5 5.exd5</code></p></div>
+              <h4>Student task</h4><ol class="prose"><li>What happens after the natural 5...Nxd5?</li><li>Which square becomes the tactical target?</li><li>Find the safer defensive move.</li></ol>
+              <h4>Candidate moves</h4><div class="candidate-row"><span class="candidate-chip">5...Nxd5?!</span><span class="candidate-chip">5...Na5!</span><span class="candidate-chip">5...b5</span></div>
+              <div class="fen-box">r1bqkb1r/ppp2ppp/2n2n2/3Pp1N1/2B5/8/PPPP1PPP/RNBQK2R b KQkq - 0 5</div>
+              <div class="board-actions"><button class="mini-btn flip-board" type="button">Flip board</button><button class="mini-btn copy-fen" type="button">Copy FEN</button></div>
+              <div class="copy-status" aria-live="polite"></div>
+              <details class="solution"><summary>Reveal solution</summary><div class="solution-body"><p>5...Nxd5?! permits 6.Nxf7! Kxf7 7.Qf3+ and a dangerous king hunt. The main defensive idea is 5...Na5!, attacking the bishop while avoiding the immediate sacrifice on f7.</p></div></details>
+              <details class="coach-note"><summary>Coach explanation</summary><div class="prose"><p>The opening has reached a critical moment. Automatic recapture ignores the alignment of bishop c4, knight g5, and the vulnerable f7-square.</p></div></details>
+              <div class="takeaway"><strong>Transfer rule</strong><p>Before recapturing in the opening, scan checks and sacrifices against f2 or f7.</p></div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+    <section class="lesson-section board-lab" id="lab-6">
+      <div class="section-head"><div class="number">6</div><div><p class="section-kicker">Trap laboratory</p><h2>Elephant Trap: Finish the Exchange Sequence</h2></div></div>
+      <div class="position-grid">
+        <article class="position-card" id="elephant-trap">
+          <div class="position-head"><div><h3>Elephant Trap: Finish the Exchange Sequence</h3><div class="position-meta">White to move · Intermediate check and queen loss</div></div><div class="position-meta">Advanced Pawn · Module 12</div></div>
+          <div class="board-and-notes">
+            <div class="board-shell"><div class="chessboard" data-fen="r1bqkb1r/pppn1ppp/5n2/3p2B1/3P4/2N5/PP2PPPP/R2QKBNR w KQkq - 0 6" role="img" aria-label="Elephant Trap: Finish the Exchange Sequence"></div></div>
+            <div>
+              <div class="lab-meta"><p><strong>Opening:</strong> Queen&#x27;s Gambit Declined after 1.d4 d5 2.c4 e6 3.Nc3 Nf6 4.Bg5 Nbd7 5.cxd5 exd5</p><p><strong>Setup:</strong> <code>1.d4 d5 2.c4 e6 3.Nc3 Nf6 4.Bg5 Nbd7 5.cxd5 exd5</code></p></div>
+              <h4>Student task</h4><ol class="prose"><li>Can White really win the d5-pawn?</li><li>What intermediate check appears after the queen exchange?</li><li>Choose a safe developing move.</li></ol>
+              <h4>Candidate moves</h4><div class="candidate-row"><span class="candidate-chip">6.Nxd5??</span><span class="candidate-chip">6.e3</span><span class="candidate-chip">6.Nf3</span></div>
+              <div class="fen-box">r1bqkb1r/pppn1ppp/5n2/3p2B1/3P4/2N5/PP2PPPP/R2QKBNR w KQkq - 0 6</div>
+              <div class="board-actions"><button class="mini-btn flip-board" type="button">Flip board</button><button class="mini-btn copy-fen" type="button">Copy FEN</button></div>
+              <div class="copy-status" aria-live="polite"></div>
+              <details class="solution"><summary>Reveal solution</summary><div class="solution-body"><p>6.Nxd5?? Nxd5 7.Bxd8 Bb4+! 8.Qd2 Bxd2+ 9.Kxd2 Kxd8. White appears to win Black&#x27;s queen but loses the own queen after the intermediate check. Play 6.e3 or 6.Nf3 instead.</p></div></details>
+              <details class="coach-note"><summary>Coach explanation</summary><div class="prose"><p>White stops calculation after Bxd8. The move ...Bb4+ changes the recapture order and exposes the queen on d1.</p></div></details>
+              <div class="takeaway"><strong>Transfer rule</strong><p>When queens are exchanged in a tactical line, calculate every check before counting material.</p></div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+    <section class="lesson-section board-lab" id="lab-7">
+      <div class="section-head"><div class="number">7</div><div><p class="section-kicker">Trap laboratory</p><h2>Noah&#x27;s Ark: Preserve the Bishop&#x27;s Escape Route</h2></div></div>
+      <div class="position-grid">
+        <article class="position-card" id="noahs-ark">
+          <div class="position-head"><div><h3>Noah&#x27;s Ark: Preserve the Bishop&#x27;s Escape Route</h3><div class="position-meta">White to move · Bishop trapped by the a-, b-, and c-pawns</div></div><div class="position-meta">Advanced Pawn · Module 12</div></div>
+          <div class="board-and-notes">
+            <div class="board-shell"><div class="chessboard" data-fen="r1bqkbnr/2p2ppp/p2p4/1p6/3pP3/1B6/PPP2PPP/RNBQK2R w KQkq - 0 8" role="img" aria-label="Noah&#x27;s Ark: Preserve the Bishop&#x27;s Escape Route"></div></div>
+            <div>
+              <div class="lab-meta"><p><strong>Opening:</strong> Ruy Lopez after 1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Ba4 d6 5.d4 b5 6.Bb3 Nxd4 7.Nxd4 exd4</p><p><strong>Setup:</strong> <code>1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Ba4 d6 5.d4 b5 6.Bb3 Nxd4 7.Nxd4 exd4</code></p></div>
+              <h4>Student task</h4><ol class="prose"><li>Why is 8.Qxd4 greedy?</li><li>Which pawn advances will trap the bishop?</li><li>Find a move that preserves an escape square.</li></ol>
+              <h4>Candidate moves</h4><div class="candidate-row"><span class="candidate-chip">8.Qxd4??</span><span class="candidate-chip">8.Bd5</span><span class="candidate-chip">8.c3</span></div>
+              <div class="fen-box">r1bqkbnr/2p2ppp/p2p4/1p6/3pP3/1B6/PPP2PPP/RNBQK2R w KQkq - 0 8</div>
+              <div class="board-actions"><button class="mini-btn flip-board" type="button">Flip board</button><button class="mini-btn copy-fen" type="button">Copy FEN</button></div>
+              <div class="copy-status" aria-live="polite"></div>
+              <details class="solution"><summary>Reveal solution</summary><div class="solution-body"><p>8.Qxd4?? c5 9.Qd5 Be6 10.Qc6+ Bd7 11.Qd5 c4 traps the bishop on b3. White should preserve the bishop with 8.Bd5 or use 8.c3 as a practical alternative.</p></div></details>
+              <details class="coach-note"><summary>Coach explanation</summary><div class="prose"><p>The bishop has already retreated twice. The final ...c4 closes its last route while the queen&#x27;s pawn hunt wastes the needed tempo.</p></div></details>
+              <div class="takeaway"><strong>Transfer rule</strong><p>Before winning a pawn, count the retreat squares of every advanced piece.</p></div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+    <section class="lesson-section board-lab" id="lab-8">
+      <div class="section-head"><div class="number">8</div><div><p class="section-kicker">Trap laboratory</p><h2>Stafford Gambit Trap: Open the Center Safely</h2></div></div>
+      <div class="position-grid">
+        <article class="position-card" id="stafford">
+          <div class="position-head"><div><h3>Stafford Gambit Trap: Open the Center Safely</h3><div class="position-meta">White to move · Bxf2+ deflection and queen loss</div></div><div class="position-meta">Advanced Pawn · Module 12</div></div>
+          <div class="board-and-notes">
+            <div class="board-shell"><div class="chessboard" data-fen="r1bqkb1r/ppp2ppp/2p5/4P3/4n3/8/PPPP1PPP/RNBQKB1R w KQkq - 1 6" role="img" aria-label="Stafford Gambit Trap: Open the Center Safely"></div></div>
+            <div>
+              <div class="lab-meta"><p><strong>Opening:</strong> Petrov Defense after 1.e4 e5 2.Nf3 Nf6 3.Nxe5 Nc6 4.Nxc6 dxc6 5.e5 Ne4</p><p><strong>Setup:</strong> <code>1.e4 e5 2.Nf3 Nf6 3.Nxe5 Nc6 4.Nxc6 dxc6 5.e5 Ne4</code></p></div>
+              <h4>Student task</h4><ol class="prose"><li>Why is the knight on e4 dangerous to capture?</li><li>What happens after a slow d-pawn move?</li><li>Find the active defensive move named in the lesson.</li></ol>
+              <h4>Candidate moves</h4><div class="candidate-row"><span class="candidate-chip">6.d3?</span><span class="candidate-chip">6.d4!</span><span class="candidate-chip">6.Be2</span></div>
+              <div class="fen-box">r1bqkb1r/ppp2ppp/2p5/4P3/4n3/8/PPPP1PPP/RNBQKB1R w KQkq - 1 6</div>
+              <div class="board-actions"><button class="mini-btn flip-board" type="button">Flip board</button><button class="mini-btn copy-fen" type="button">Copy FEN</button></div>
+              <div class="copy-status" aria-live="polite"></div>
+              <details class="solution"><summary>Reveal solution</summary><div class="solution-body"><p>6.d3? Bc5 7.dxe4? Bxf2+! 8.Kxf2 Qxd1 wins White&#x27;s queen. The active 6.d4! challenges the bishop&#x27;s future route and keeps the center under control.</p></div></details>
+              <details class="coach-note"><summary>Coach explanation</summary><div class="prose"><p>The knight is protected tactically rather than directly. Once the d-file opens, ...Bxf2+ deflects the king and leaves the queen on d1 undefended.</p></div></details>
+              <div class="takeaway"><strong>Transfer rule</strong><p>When a gambit opens lines toward your king and queen, use active central defense rather than automatic capture.</p></div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+    <section class="lesson-section board-lab" id="lab-9">
+      <div class="section-head"><div class="number">9</div><div><p class="section-kicker">Trap laboratory</p><h2>Siberian Trap: Respect the Qh2 Mate Pattern</h2></div></div>
+      <div class="position-grid">
+        <article class="position-card" id="siberian">
+          <div class="position-head"><div><h3>Siberian Trap: Respect the Qh2 Mate Pattern</h3><div class="position-meta">White to move · Knight jump to d4 and Qh2 mate</div></div><div class="position-meta">Advanced Pawn · Module 12</div></div>
+          <div class="board-and-notes">
+            <div class="board-shell"><div class="chessboard" data-fen="r1b1kb1r/ppqp1ppp/2n1p3/8/2B1P1n1/2N2N2/PP2QPPP/R1B2RK1 w kq - 6 9" role="img" aria-label="Siberian Trap: Respect the Qh2 Mate Pattern"></div></div>
+            <div>
+              <div class="lab-meta"><p><strong>Opening:</strong> Smith-Morra Gambit after 1.e4 c5 2.d4 cxd4 3.c3 dxc3 4.Nxc3 Nc6 5.Nf3 e6 6.Bc4 Qc7 7.O-O Nf6 8.Qe2 Ng4</p><p><strong>Setup:</strong> <code>1.e4 c5 2.d4 cxd4 3.c3 dxc3 4.Nxc3 Nc6 5.Nf3 e6 6.Bc4 Qc7 7.O-O Nf6 8.Qe2 Ng4</code></p></div>
+              <h4>Student task</h4><ol class="prose"><li>What mating square is Black preparing?</li><li>Why does 9.h3 fail?</li><li>Find the defensive knight move.</li></ol>
+              <h4>Candidate moves</h4><div class="candidate-row"><span class="candidate-chip">9.h3??</span><span class="candidate-chip">9.Nb5!</span><span class="candidate-chip">9.Rd1</span></div>
+              <div class="fen-box">r1b1kb1r/ppqp1ppp/2n1p3/8/2B1P1n1/2N2N2/PP2QPPP/R1B2RK1 w kq - 6 9</div>
+              <div class="board-actions"><button class="mini-btn flip-board" type="button">Flip board</button><button class="mini-btn copy-fen" type="button">Copy FEN</button></div>
+              <div class="copy-status" aria-live="polite"></div>
+              <details class="solution"><summary>Reveal solution</summary><div class="solution-body"><p>9.h3?? Nd4! creates the threat ...Nxf3+ followed by ...Qh2#. If 10.Nxd4, then 10...Qh2#. White should play 9.Nb5! and force the queen to move before addressing the knight.</p></div></details>
+              <details class="coach-note"><summary>Coach explanation</summary><div class="prose"><p>The knight on g4 and queen on c7 form a hidden battery against h2. The move ...Nd4 removes defenders and creates two connected threats.</p></div></details>
+              <div class="takeaway"><strong>Transfer rule</strong><p>When queen and knight point toward h2 or h7, calculate every jump that removes the king&#x27;s defenders.</p></div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+    <section class="lesson-section board-lab" id="lab-10">
+      <div class="section-head"><div class="number">10</div><div><p class="section-kicker">Trap laboratory</p><h2>Lasker Trap: Expect the Underpromotion</h2></div></div>
+      <div class="position-grid">
+        <article class="position-card" id="lasker">
+          <div class="position-head"><div><h3>Lasker Trap: Expect the Underpromotion</h3><div class="position-meta">White to move · Underpromotion and queen skewer</div></div><div class="position-meta">Advanced Pawn · Module 12</div></div>
+          <div class="board-and-notes">
+            <div class="board-shell"><div class="chessboard" data-fen="rnbqk1nr/ppp2ppp/8/4P3/1bP5/4p3/PP1B1PPP/RN1QKBNR w KQkq - 0 6" role="img" aria-label="Lasker Trap: Expect the Underpromotion"></div></div>
+            <div>
+              <div class="lab-meta"><p><strong>Opening:</strong> Albin Countergambit after 1.d4 d5 2.c4 e5 3.dxe5 d4 4.e3 Bb4+ 5.Bd2 dxe3</p><p><strong>Setup:</strong> <code>1.d4 d5 2.c4 e5 3.dxe5 d4 4.e3 Bb4+ 5.Bd2 dxe3</code></p></div>
+              <h4>Student task</h4><ol class="prose"><li>Should White capture the bishop on b4?</li><li>Why is promotion to a knight stronger than promotion to a queen?</li><li>Find the safest recapture.</li></ol>
+              <h4>Candidate moves</h4><div class="candidate-row"><span class="candidate-chip">6.Bxb4??</span><span class="candidate-chip">6.fxe3!</span><span class="candidate-chip">6.Qa4+</span></div>
+              <div class="fen-box">rnbqk1nr/ppp2ppp/8/4P3/1bP5/4p3/PP1B1PPP/RN1QKBNR w KQkq - 0 6</div>
+              <div class="board-actions"><button class="mini-btn flip-board" type="button">Flip board</button><button class="mini-btn copy-fen" type="button">Copy FEN</button></div>
+              <div class="copy-status" aria-live="polite"></div>
+              <details class="solution"><summary>Reveal solution</summary><div class="solution-body"><p>6.Bxb4?? exf2+ 7.Ke2 fxg1=N+! The knight promotion gives check and prepares ...Bg4+, skewering the queen. White should accept the structural damage with 6.fxe3!.</p></div></details>
+              <details class="coach-note"><summary>Coach explanation</summary><div class="prose"><p>The advanced pawn is not merely trying to promote. Its check forces the king away from the queen, and underpromotion preserves the exact tactical tempo.</p></div></details>
+              <div class="takeaway"><strong>Transfer rule</strong><p>When a pawn promotes with check, consider every promotion piece, not only the queen.</p></div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+    <section class="lesson-section board-lab" id="lab-11">
+      <div class="section-head"><div class="number">11</div><div><p class="section-kicker">Trap laboratory</p><h2>Kieninger Trap: The Bishop Is Tactically Defended</h2></div></div>
+      <div class="position-grid">
+        <article class="position-card" id="kieninger">
+          <div class="position-head"><div><h3>Kieninger Trap: The Bishop Is Tactically Defended</h3><div class="position-meta">White to move · Smothered mate on d3</div></div><div class="position-meta">Advanced Pawn · Module 12</div></div>
+          <div class="board-and-notes">
+            <div class="board-shell"><div class="chessboard" data-fen="r1b1k2r/ppppqppp/2n5/4n3/1bP2B2/P4N2/1P1NPPPP/R2QKB1R w KQkq - 0 8" role="img" aria-label="Kieninger Trap: The Bishop Is Tactically Defended"></div></div>
+            <div>
+              <div class="lab-meta"><p><strong>Opening:</strong> Budapest Gambit after 1.d4 Nf6 2.c4 e5 3.dxe5 Ng4 4.Bf4 Nc6 5.Nf3 Bb4+ 6.Nbd2 Qe7 7.a3 Ngxe5</p><p><strong>Setup:</strong> <code>1.d4 Nf6 2.c4 e5 3.dxe5 Ng4 4.Bf4 Nc6 5.Nf3 Bb4+ 6.Nbd2 Qe7 7.a3 Ngxe5</code></p></div>
+              <h4>Student task</h4><ol class="prose"><li>Can White safely capture the bishop on b4?</li><li>Which knight move delivers mate?</li><li>How should White reduce the tactical pressure?</li></ol>
+              <h4>Candidate moves</h4><div class="candidate-row"><span class="candidate-chip">8.axb4??</span><span class="candidate-chip">8.Nxe5!</span><span class="candidate-chip">8.e3</span></div>
+              <div class="fen-box">r1b1k2r/ppppqppp/2n5/4n3/1bP2B2/P4N2/1P1NPPPP/R2QKB1R w KQkq - 0 8</div>
+              <div class="board-actions"><button class="mini-btn flip-board" type="button">Flip board</button><button class="mini-btn copy-fen" type="button">Copy FEN</button></div>
+              <div class="copy-status" aria-live="polite"></div>
+              <details class="solution"><summary>Reveal solution</summary><div class="solution-body"><p>8.axb4?? Nd3#. The e2-pawn cannot capture the knight because the queen on e7 pins it to the king. White should first exchange the active knight with 8.Nxe5! Nxe5 and continue development.</p></div></details>
+              <details class="coach-note"><summary>Coach explanation</summary><div class="prose"><p>The bishop appears loose but is defended by a mating threat. Capturing it opens the a-file pawn while leaving d3 available for the knight.</p></div></details>
+              <div class="takeaway"><strong>Transfer rule</strong><p>A piece can be tactically protected by mate even when no piece directly defends it.</p></div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+    <section class="lesson-section board-lab" id="lab-12">
+      <div class="section-head"><div class="number">12</div><div><p class="section-kicker">Trap laboratory</p><h2>Fishing Pole: Do Not Open the h-File</h2></div></div>
+      <div class="position-grid">
+        <article class="position-card" id="fishing-pole">
+          <div class="position-head"><div><h3>Fishing Pole: Do Not Open the h-File</h3><div class="position-meta">White to move · Sacrificed knight and open h-file</div></div><div class="position-meta">Advanced Pawn · Module 12</div></div>
+          <div class="board-and-notes">
+            <div class="board-shell"><div class="chessboard" data-fen="r1bqkb1r/pppp1pp1/2n5/1B2p2p/4P1n1/5N1P/PPPP1PP1/RNBQ1RK1 w kq h6 0 6" role="img" aria-label="Fishing Pole: Do Not Open the h-File"></div></div>
+            <div>
+              <div class="lab-meta"><p><strong>Opening:</strong> Ruy Lopez Berlin after 1.e4 e5 2.Nf3 Nc6 3.Bb5 Nf6 4.O-O Ng4 5.h3 h5</p><p><strong>Setup:</strong> <code>1.e4 e5 2.Nf3 Nc6 3.Bb5 Nf6 4.O-O Ng4 5.h3 h5</code></p></div>
+              <h4>Student task</h4><ol class="prose"><li>Why is the knight on g4 bait?</li><li>Which file opens after hxg4?</li><li>Find a move that refuses the sacrifice.</li></ol>
+              <h4>Candidate moves</h4><div class="candidate-row"><span class="candidate-chip">6.hxg4??</span><span class="candidate-chip">6.d3</span><span class="candidate-chip">6.c3</span></div>
+              <div class="fen-box">r1bqkb1r/pppp1pp1/2n5/1B2p2p/4P1n1/5N1P/PPPP1PP1/RNBQ1RK1 w kq h6 0 6</div>
+              <div class="board-actions"><button class="mini-btn flip-board" type="button">Flip board</button><button class="mini-btn copy-fen" type="button">Copy FEN</button></div>
+              <div class="copy-status" aria-live="polite"></div>
+              <details class="solution"><summary>Reveal solution</summary><div class="solution-body"><p>6.hxg4?? hxg4 7.Nh2 Qh4 gives Black a crushing attack on the opened h-file. White should refuse the bait with 6.d3, 6.c3, or another developing move.</p></div></details>
+              <details class="coach-note"><summary>Coach explanation</summary><div class="prose"><p>The h5-pawn is the fishing pole and the knight is the bait. Capturing the knight removes White&#x27;s own h-pawn and opens a direct rook-and-queen route to the king.</p></div></details>
+              <div class="takeaway"><strong>Transfer rule</strong><p>Do not capture near your castled king until you know which file or diagonal the recapture opens.</p></div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+    <section class="lesson-section board-lab" id="lab-13">
+      <div class="section-head"><div class="number">13</div><div><p class="section-kicker">Trap laboratory</p><h2>Englund Queen Trap: Meet the Check Before Saving the Pawn</h2></div></div>
+      <div class="position-grid">
+        <article class="position-card" id="englund">
+          <div class="position-head"><div><h3>Englund Queen Trap: Meet the Check Before Saving the Pawn</h3><div class="position-meta">White to move · Queen invasion, interference, and back-rank mate</div></div><div class="position-meta">Advanced Pawn · Module 12</div></div>
+          <div class="board-and-notes">
+            <div class="board-shell"><div class="chessboard" data-fen="r1b1kbnr/ppppqppp/2n5/4P3/8/5N2/PPP1PPPP/RNBQKB1R w KQkq - 3 4" role="img" aria-label="Englund Queen Trap: Meet the Check Before Saving the Pawn"></div></div>
+            <div>
+              <div class="lab-meta"><p><strong>Opening:</strong> Englund Gambit after 1.d4 e5 2.dxe5 Nc6 3.Nf3 Qe7</p><p><strong>Setup:</strong> <code>1.d4 e5 2.dxe5 Nc6 3.Nf3 Qe7</code></p></div>
+              <h4>Student task</h4><ol class="prose"><li>Why is 4.Bf4 risky?</li><li>Which check starts the queen raid?</li><li>Find a safer way to develop or return the pawn.</li></ol>
+              <h4>Candidate moves</h4><div class="candidate-row"><span class="candidate-chip">4.Bf4?</span><span class="candidate-chip">4.Qd5</span><span class="candidate-chip">4.Nc3</span></div>
+              <div class="fen-box">r1b1kbnr/ppppqppp/2n5/4P3/8/5N2/PPP1PPPP/RNBQKB1R w KQkq - 3 4</div>
+              <div class="board-actions"><button class="mini-btn flip-board" type="button">Flip board</button><button class="mini-btn copy-fen" type="button">Copy FEN</button></div>
+              <div class="copy-status" aria-live="polite"></div>
+              <details class="solution"><summary>Reveal solution</summary><div class="solution-body"><p>4.Bf4? Qb4+ 5.Bd2 Qxb2 6.Bc3? Bb4 7.Qd2 Bxc3 8.Qxc3 Qc1#. White can use 4.Qd5 to defend the extra pawn carefully or choose 4.Nc3 and prioritize development.</p></div></details>
+              <details class="coach-note"><summary>Coach explanation</summary><div class="prose"><p>Black&#x27;s queen check forces White&#x27;s bishop into the queen&#x27;s route. Each defensive move interferes with another piece until the back rank becomes vulnerable.</p></div></details>
+              <div class="takeaway"><strong>Transfer rule</strong><p>When the enemy queen enters with check, solve king safety before trying to preserve an extra pawn.</p></div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+      <section class="lesson-section" id="mixed-tests"><div class="section-head"><div class="number">✓</div><div><p class="section-kicker">Mixed recognition</p><h2>Identify the Motif Without the Trap Name</h2></div></div><p class="prose">These positions start later in familiar lines. Solve them from board geometry rather than memory.</p></section>
+      
+    <section class="lesson-section board-lab" id="lab-14">
+      <div class="section-head"><div class="number">14</div><div><p class="section-kicker">Mixed recognition test</p><h2>Mixed Test 1: Find the Immediate Mate</h2></div></div>
+      <div class="position-grid">
+        <article class="position-card" id="mixed-scholar">
+          <div class="position-head"><div><h3>Mixed Test 1: Find the Immediate Mate</h3><div class="position-meta">White to move · Mate on f7</div></div><div class="position-meta">Advanced Pawn · Module 12</div></div>
+          <div class="board-and-notes">
+            <div class="board-shell"><div class="chessboard" data-fen="r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4" role="img" aria-label="Mixed Test 1: Find the Immediate Mate"></div></div>
+            <div>
+              <div class="lab-meta"><p><strong>Opening:</strong> Scholar&#x27;s Mate position after 3...Nf6??</p><p><strong>Setup:</strong> <code>1.e4 e5 2.Bc4 Nc6 3.Qh5 Nf6??</code></p></div>
+              <h4>Student task</h4><ol class="prose"><li>List every White check.</li><li>Which move is mate?</li><li>Why can the black king not capture the queen?</li></ol>
+              <h4>Candidate moves</h4><div class="candidate-row"><span class="candidate-chip">4.Qxf7#</span><span class="candidate-chip">4.Qxe5+</span><span class="candidate-chip">4.Bxf7+</span></div>
+              <div class="fen-box">r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4</div>
+              <div class="board-actions"><button class="mini-btn flip-board" type="button">Flip board</button><button class="mini-btn copy-fen" type="button">Copy FEN</button></div>
+              <div class="copy-status" aria-live="polite"></div>
+              <details class="solution"><summary>Reveal solution</summary><div class="solution-body"><p>4.Qxf7#. The bishop on c4 protects the queen, while Black has no legal king escape.</p></div></details>
+              <details class="coach-note"><summary>Coach explanation</summary><div class="prose"><p>This test asks for recognition without naming the trap first. The geometry matters more than the label.</p></div></details>
+              <div class="takeaway"><strong>Transfer rule</strong><p>When queen and bishop both attack f7, inspect Qxf7 immediately.</p></div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+    <section class="lesson-section board-lab" id="lab-15">
+      <div class="section-head"><div class="number">15</div><div><p class="section-kicker">Mixed recognition test</p><h2>Mixed Test 2: Identify the Underpromotion Motif</h2></div></div>
+      <div class="position-grid">
+        <article class="position-card" id="mixed-lasker">
+          <div class="position-head"><div><h3>Mixed Test 2: Identify the Underpromotion Motif</h3><div class="position-meta">White to move · Underpromotion, check, and skewer</div></div><div class="position-meta">Advanced Pawn · Module 12</div></div>
+          <div class="board-and-notes">
+            <div class="board-shell"><div class="chessboard" data-fen="rnbqk1nr/ppp2ppp/8/4P3/1BP5/8/PP2K1PP/RN1Q1BnR w kq - 0 8" role="img" aria-label="Mixed Test 2: Identify the Underpromotion Motif"></div></div>
+            <div>
+              <div class="lab-meta"><p><strong>Opening:</strong> Lasker Trap after 7...fxg1=N+</p><p><strong>Setup:</strong> <code>1.d4 d5 2.c4 e5 3.dxe5 d4 4.e3 Bb4+ 5.Bd2 dxe3 6.Bxb4 exf2+ 7.Ke2 fxg1=N+</code></p></div>
+              <h4>Student task</h4><ol class="prose"><li>Why did Black choose a knight?</li><li>What happens after 8.Rxg1?</li><li>Find the king move that avoids the immediate skewer.</li></ol>
+              <h4>Candidate moves</h4><div class="candidate-row"><span class="candidate-chip">8.Rxg1?</span><span class="candidate-chip">8.Ke1</span><span class="candidate-chip">8.Kd2</span></div>
+              <div class="fen-box">rnbqk1nr/ppp2ppp/8/4P3/1BP5/8/PP2K1PP/RN1Q1BnR w kq - 0 8</div>
+              <div class="board-actions"><button class="mini-btn flip-board" type="button">Flip board</button><button class="mini-btn copy-fen" type="button">Copy FEN</button></div>
+              <div class="copy-status" aria-live="polite"></div>
+              <details class="solution"><summary>Reveal solution</summary><div class="solution-body"><p>The knight promotion gives check. After 8.Rxg1? Bg4+ skewers White&#x27;s queen. White should move the king, commonly 8.Ke1, although the position remains very difficult.</p></div></details>
+              <details class="coach-note"><summary>Coach explanation</summary><div class="prose"><p>Promotion choice is a calculation decision. The knight is worth less materially but produces the exact forcing move Black needs.</p></div></details>
+              <div class="takeaway"><strong>Transfer rule</strong><p>At promotion, evaluate checks and forks before selecting the highest-value piece.</p></div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+    <section class="lesson-section board-lab" id="lab-16">
+      <div class="section-head"><div class="number">16</div><div><p class="section-kicker">Mixed recognition test</p><h2>Mixed Test 3: Find Black&#x27;s Forcing Move</h2></div></div>
+      <div class="position-grid">
+        <article class="position-card" id="mixed-siberian">
+          <div class="position-head"><div><h3>Mixed Test 3: Find Black&#x27;s Forcing Move</h3><div class="position-meta">Black to move · Double threat and Qh2 mate</div></div><div class="position-meta">Advanced Pawn · Module 12</div></div>
+          <div class="board-and-notes">
+            <div class="board-shell"><div class="chessboard" data-fen="r1b1kb1r/ppqp1ppp/2n1p3/8/2B1P1n1/2N2N1P/PP2QPP1/R1B2RK1 b kq - 0 9" role="img" aria-label="Mixed Test 3: Find Black&#x27;s Forcing Move"></div></div>
+            <div>
+              <div class="lab-meta"><p><strong>Opening:</strong> Siberian Trap after 9.h3??</p><p><strong>Setup:</strong> <code>1.e4 c5 2.d4 cxd4 3.c3 dxc3 4.Nxc3 Nc6 5.Nf3 e6 6.Bc4 Qc7 7.O-O Nf6 8.Qe2 Ng4 9.h3??</code></p></div>
+              <h4>Student task</h4><ol class="prose"><li>Find every Black check and threat.</li><li>Which knight move creates two threats?</li><li>What happens if White captures that knight?</li></ol>
+              <h4>Candidate moves</h4><div class="candidate-row"><span class="candidate-chip">9...Nd4!</span><span class="candidate-chip">9...Nf6</span><span class="candidate-chip">9...h5</span></div>
+              <div class="fen-box">r1b1kb1r/ppqp1ppp/2n1p3/8/2B1P1n1/2N2N1P/PP2QPP1/R1B2RK1 b kq - 0 9</div>
+              <div class="board-actions"><button class="mini-btn flip-board" type="button">Flip board</button><button class="mini-btn copy-fen" type="button">Copy FEN</button></div>
+              <div class="copy-status" aria-live="polite"></div>
+              <details class="solution"><summary>Reveal solution</summary><div class="solution-body"><p>9...Nd4! threatens ...Nxf3+ and ...Qh2#. If 10.Nxd4, then 10...Qh2#.</p></div></details>
+              <details class="coach-note"><summary>Coach explanation</summary><div class="prose"><p>The winning move is not a check. It works because it creates connected threats that White cannot answer together.</p></div></details>
+              <div class="takeaway"><strong>Transfer rule</strong><p>After scanning checks and captures, search for quiet moves that create two forcing threats.</p></div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+      <section class="lesson-section" id="punish"><div class="section-head"><div class="number">9</div><div><p class="section-kicker">Conceptual reference</p><h2>How to Punish a Failed Trap</h2></div></div><div class="prose chapter-prose"><p>When the opponent's trap fails, do not rush to win everything immediately. Complete development, secure the king, and attack the pieces that moved repeatedly. A failed trap often leaves the trap-setter behind in development or with misplaced pieces.</p>
+<ul><li>Exchange queens when the opponent's compensation depends on king attack.</li><li>Return part of the extra material to finish development.</li><li>Open the center when the opponent's king remains uncastled.</li><li>Avoid a second trap while trying to punish the first one.</li></ul></div></section><section class="lesson-section" id="mistakes"><div class="section-head"><div class="number">10</div><div><p class="section-kicker">Conceptual reference</p><h2>Common Mistakes When Learning Traps</h2></div></div><div class="prose chapter-prose"><ul>
+<li>Memorizing the final mate but not the decision point.</li>
+<li>Assuming every unusual move is a trap.</li>
+<li>Playing an inferior move only because it contains a trick.</li>
+<li>Ignoring the opponent's best defense.</li>
+<li>Using the trap name as a substitute for calculation.</li>
+<li>Failing to learn what position remains after the trap is declined.</li>
+<li>Believing that winning material means the king is safe.</li>
+</ul></div></section><section class="lesson-section" id="checklist"><div class="section-head"><div class="number">11</div><div><p class="section-kicker">Conceptual reference</p><h2>Universal Trap-Detection Checklist</h2></div></div><div class="prose chapter-prose"><ol class="checklist-grid">
+<li>What changed after the last move?</li><li>Is there a direct mate threat?</li><li>What material is being offered?</li><li>Which line opens after the capture?</li><li>Is a defender pinned or overloaded?</li><li>Can the opponent insert a check?</li><li>Does my queen have a safe retreat?</li><li>Does an advanced piece still have escape squares?</li><li>Can I return material and finish development?</li><li>What is the opponent's strongest forcing reply?</li>
+</ol></div></section><section class="lesson-section" id="advanced"><div class="section-head"><div class="number">12</div><div><p class="section-kicker">Conceptual reference</p><h2>Advanced Understanding of Opening Traps</h2></div></div><div class="prose chapter-prose"><p>A sound trap improves the position even when the opponent declines it. A dubious trap depends on the opponent cooperating. Strong practical play distinguishes between tactical pressure and hope chess.</p>
+<p>Move-order awareness matters. The same motif can appear with one piece on a different square, changing whether a defender is pinned, whether a check exists, or whether the king can castle. Treat the FEN as the truth and the trap name as a hint.</p>
+<p>At higher levels, the most useful trap knowledge is prophylactic: recognize the opponent's intended geometry one move before the threat becomes forcing.</p></div></section><section class="lesson-section" id="summary"><div class="section-head"><div class="number">13</div><div><p class="section-kicker">Conceptual reference</p><h2>Summary</h2></div></div><div class="prose chapter-prose"><p>Opening-trap knowledge should make play safer, not merely sneakier. Recognize weak king squares, poisoned material, false pins, trapped-piece geometry, intermediate checks, underpromotion, and open-file attacks.</p>
+<blockquote>Before accepting the bait, ask what forcing move becomes possible after the capture.</blockquote></div></section>
+      <section class="lesson-section review" id="mastery"><div class="section-head"><div class="number">✓</div><div><p class="section-kicker">Mastery check</p><h2>Check Your Understanding</h2></div></div>
+        <details><summary>What separates a trap from a gambit?</summary><p>A trap depends on an avoidable mistake; a gambit deliberately offers material for activity and may remain playable when declined.</p></details>
+        <details><summary>Why should a trap position begin before the mistake?</summary><p>The student must practise the decision, not merely admire the punishment after the move has already failed.</p></details>
+        <details><summary>What is the universal question before taking material?</summary><p>What forcing move becomes possible after the capture?</p></details>
+        <details><summary>Which motifs repeat across several families?</summary><p>Weak f2/f7, intermediate checks, deflection, false pins, opened king files, trapped pieces, underpromotion, and smothered mate.</p></details>
+        <div class="lesson-nav-row"><a href="advanced-pawn-m11-lesson-01-blunder-prevention-in-chess.html">&larr; Module 11: Blunder Prevention</a><a href="advanced-pawn-index.html">Back to Advanced Pawn Index &rarr;</a></div>
+      </section>
+    </main></div>
+  </div>
+  <footer class="footer"><strong>Advanced Pawn · Module 12:</strong> Basic Opening Traps in Chess.</footer>
+  <script>
+  (function(){'use strict';
+    const pieceMap={P:'wP',N:'wN',B:'wB',R:'wR',Q:'wQ',K:'wK',p:'bP',n:'bN',b:'bB',r:'bR',q:'bQ',k:'bK'};
+    const pieceName={P:'white pawn',N:'white knight',B:'white bishop',R:'white rook',Q:'white queen',K:'white king',p:'black pawn',n:'black knight',b:'black bishop',r:'black rook',q:'black queen',k:'black king'};
+    function parseFen(fen){const out=[];fen.split(/\s+/)[0].split('/').forEach(rank=>{for(const ch of rank){if(/\d/.test(ch))for(let i=0;i<Number(ch);i++)out.push(null);else out.push(ch);}});return out;}
+    function renderBoard(node,fen,orientation='white'){const pieces=parseFen(fen);const ranks=orientation==='white'?[8,7,6,5,4,3,2,1]:[1,2,3,4,5,6,7,8];const files=orientation==='white'?['a','b','c','d','e','f','g','h']:['h','g','f','e','d','c','b','a'];node.innerHTML='';ranks.forEach((rank,vr)=>{files.forEach((file,vf)=>{const fi=file.charCodeAt(0)-97,ri=8-rank,piece=pieces[ri*8+fi];const square=document.createElement('div');square.className='square '+(((fi+ri)%2===0)?'light':'dark');square.setAttribute('aria-label',file+rank+(piece?' '+pieceName[piece]:' empty'));if(piece){const img=document.createElement('img');img.src='../assets/pieces/mpchess/'+pieceMap[piece]+'.svg';img.alt=pieceName[piece];img.draggable=false;square.appendChild(img);}if(vr===7){const c=document.createElement('span');c.className='coord-file';c.textContent=file;square.appendChild(c);}if(vf===0){const c=document.createElement('span');c.className='coord-rank';c.textContent=rank;square.appendChild(c);}node.appendChild(square);});});node.dataset.orientation=orientation;}
+    document.querySelectorAll('.chessboard').forEach(board=>renderBoard(board,board.dataset.fen,'white'));
+    document.querySelectorAll('.flip-board').forEach(button=>button.addEventListener('click',()=>{const card=button.closest('.position-card');const board=card.querySelector('.chessboard');renderBoard(board,board.dataset.fen,board.dataset.orientation==='white'?'black':'white');}));
+    document.querySelectorAll('.copy-fen').forEach(button=>button.addEventListener('click',async()=>{const card=button.closest('.position-card');const fen=card.querySelector('.chessboard').dataset.fen;const status=card.querySelector('.copy-status');try{await navigator.clipboard.writeText(fen);status.textContent='FEN copied.';}catch(e){status.textContent='Copy failed. Select the FEN manually.';}setTimeout(()=>status.textContent='',2200);}));
+    const root=document.documentElement,themeToggle=document.getElementById('themeToggle');themeToggle.addEventListener('click',()=>{root.dataset.theme=root.dataset.theme==='dark'?'light':'dark';localStorage.setItem('lesson-theme-v1',root.dataset.theme);localStorage.setItem('chess-lesson-theme',root.dataset.theme);});
+    const bar=document.getElementById('progressBar');const update=()=>{const max=document.documentElement.scrollHeight-window.innerHeight;bar.style.width=(max>0?Math.min(100,Math.max(0,window.scrollY/max*100)):0)+'%';};update();window.addEventListener('scroll',update,{passive:true});
+  })();
+  </script>
+  <script src="pawn-teacher-board.js?v=20260710-teacher-lesson-csv1" defer></script>
+  <script src="lesson-presentation.js?v=20260724-bishop-presentation-v2" defer></script>
+</body></html>
