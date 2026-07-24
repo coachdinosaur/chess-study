@@ -12,7 +12,6 @@ permissions:
 
 jobs:
   apply-and-test:
-    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -64,4 +63,4 @@ jobs:
           git commit -m "Fix Bishop presentation scoping and Module 1 headers"
           git push origin HEAD:agent/repair-bishop-presentation-and-headers-v4
 
-# Explicit retry after the browser audit exposed the selector-scoping defect.
+# Path-limited retry; lesson commits do not retrigger this workflow.
