@@ -1,0 +1,201 @@
+name: Audit Bishop presentation
+
+on:
+  push:
+    branches:
+      - agent/repair-bishop-presentation-and-headers-v4
+    paths:
+      - .github/workflows/audit-bishop-presentation.yml
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/repair-bishop-presentation-and-headers-v4
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install browser audit tools
+        run: |
+          python -m pip install --disable-pip-version-check playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Run browser audit
+        shell: bash
+        run: |
+          python -m http.server 8000 --bind 127.0.0.1 >/tmp/chess-study-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          python - <<'PY'
+          from __future__ import annotations
+
+          import difflib
+          import json
+          import re
+          from pathlib import Path
+
+          from playwright.sync_api import sync_playwright
+
+          index_text = Path('lessons/bishop-index.html').read_text(encoding='utf-8')
+          filenames = sorted(set(re.findall(r'["\'](bishop-(?:m\d+-)?lesson-[^"\']+\.html)["\']', index_text)))
+
+          report = {
+              'lesson_count': len(filenames),
+              'lessons': [],
+              'summary': {},
+          }
+
+          with sync_playwright() as playwright:
+              browser = playwright.chromium.launch(headless=True)
+              page = browser.new_page(viewport={'width': 1440, 'height': 900})
+
+              for filename in filenames:
+                  url = f'http://127.0.0.1:8000/lessons/{filename}'
+                  errors = []
+                  page_errors = []
+                  page.on('pageerror', lambda error, bucket=page_errors: bucket.append(str(error)))
+                  page.goto(url, wait_until='networkidle')
+                  page.wait_for_timeout(350)
+
+                  header = page.evaluate('''() => {
+                    const header = document.querySelector('.index-header');
+                    const inner = document.querySelector('.index-header-inner');
+                    const icon = document.querySelector('.index-brand-icon');
+                    const action = document.querySelector('.index-top-actions .toolbar-link');
+                    const style = node => node ? getComputedStyle(node) : null;
+                    const rect = node => node ? node.getBoundingClientRect() : null;
+                    return {
+                      header: header ? {display: style(header).display, position: style(header).position, background: style(header).backgroundColor} : null,
+                      inner: inner ? {width: rect(inner).width, maxWidth: style(inner).maxWidth, paddingLeft: style(inner).paddingLeft, minHeight: style(inner).minHeight} : null,
+                      icon: icon ? {width: rect(icon).width, height: rect(icon).height, radius: style(icon).borderRadius} : null,
+                      action: action ? {radius: style(action).borderRadius, minHeight: style(action).minHeight, padding: style(action).padding} : null,
+                      baseCss: Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map(link => link.getAttribute('href')),
+                    };
+                  }''')
+
+                  launch = page.locator('.lesson-present-launch')
+                  launch_count = launch.count()
+                  scenes = []
+                  blank_indices = []
+                  repeated_exact = []
+                  repeated_titles = []
+                  near_duplicates = []
+
+                  if launch_count:
+                      launch.first.click()
+                      page.wait_for_timeout(250)
+                      scene_count = page.locator('.presentation-scene').count()
+                      seen_text = {}
+                      seen_titles = {}
+
+                      for index in range(scene_count):
+                          current = page.locator('.presentation-scene.presentation-current')
+                          if current.count() != 1:
+                              errors.append(f'Expected one current scene at index {index}, found {current.count()}')
+                              break
+
+                          data = page.evaluate('''() => {
+                            const scene = document.querySelector('.presentation-scene.presentation-current');
+                            const label = document.querySelector('.lesson-presentation-scene-label');
+                            if (!scene) return null;
+                            const clone = scene.cloneNode(true);
+                            clone.querySelectorAll('.no-print,.lesson-nav-row,.fen-box,.source-note,.presentation-coach-only,script,style').forEach(node => node.remove());
+                            const text = (clone.innerText || clone.textContent || '').replace(/\s+/g, ' ').trim();
+                            const media = scene.querySelectorAll('[data-fen],img[src],svg,canvas,iframe').length;
+                            return {
+                              title: label ? label.textContent.trim() : '',
+                              text,
+                              media,
+                              rect: {width: scene.getBoundingClientRect().width, height: scene.getBoundingClientRect().height},
+                            };
+                          }''')
+                          if not data:
+                              errors.append(f'Could not read scene {index + 1}')
+                              break
+
+                          normalized = re.sub(r'\s+', ' ', data['text']).strip().lower()
+                          title_key = re.sub(r'\s+', ' ', data['title']).strip().lower()
+                          scenes.append({
+                              'index': index + 1,
+                              'title': data['title'],
+                              'text_length': len(normalized),
+                              'media_count': data['media'],
+                              'preview': data['text'][:180],
+                          })
+
+                          if len(normalized) < 24 and data['media'] == 0:
+                              blank_indices.append(index + 1)
+                          if normalized:
+                              if normalized in seen_text:
+                                  repeated_exact.append([seen_text[normalized], index + 1])
+                              else:
+                                  for prior_text, prior_index in list(seen_text.items()):
+                                      if min(len(prior_text), len(normalized)) >= 60:
+                                          ratio = difflib.SequenceMatcher(None, prior_text, normalized).ratio()
+                                          if ratio >= 0.92:
+                                              near_duplicates.append([prior_index, index + 1, round(ratio, 3)])
+                                  seen_text[normalized] = index + 1
+                          if title_key:
+                              if title_key in seen_titles:
+                                  repeated_titles.append([seen_titles[title_key], index + 1, data['title']])
+                              else:
+                                  seen_titles[title_key] = index + 1
+
+                          if index < scene_count - 1:
+                              page.locator('[data-presentation-action="next"]').click()
+                              page.wait_for_timeout(80)
+
+                      page.locator('[data-presentation-action="exit"]').click()
+                  else:
+                      scene_count = 0
+                      errors.append('Present Lesson button missing')
+
+                  report['lessons'].append({
+                      'file': filename,
+                      'launch_count': launch_count,
+                      'scene_count': scene_count,
+                      'blank_scenes': blank_indices,
+                      'exact_duplicates': repeated_exact,
+                      'near_duplicates': near_duplicates,
+                      'repeated_titles': repeated_titles,
+                      'header': header,
+                      'page_errors': page_errors,
+                      'errors': errors,
+                      'scenes': scenes,
+                  })
+
+              browser.close()
+
+          report['summary'] = {
+              'missing_launch_button': [item['file'] for item in report['lessons'] if item['launch_count'] == 0],
+              'blank_scene_lessons': {item['file']: item['blank_scenes'] for item in report['lessons'] if item['blank_scenes']},
+              'exact_duplicate_lessons': {item['file']: item['exact_duplicates'] for item in report['lessons'] if item['exact_duplicates']},
+              'near_duplicate_lessons': {item['file']: item['near_duplicates'] for item in report['lessons'] if item['near_duplicates']},
+              'repeated_title_lessons': {item['file']: item['repeated_titles'] for item in report['lessons'] if item['repeated_titles']},
+              'page_error_lessons': {item['file']: item['page_errors'] for item in report['lessons'] if item['page_errors']},
+              'module1_without_endgame_css': [
+                  item['file'] for item in report['lessons']
+                  if item['file'].startswith('bishop-m1-') and not any('endgame-lesson.css' in href for href in item['header']['baseCss'])
+              ],
+          }
+
+          Path('.github/bishop-presentation-audit.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
+          print(json.dumps(report['summary'], indent=2))
+          PY
+
+      - name: Commit audit report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/bishop-presentation-audit.json
+          git commit -m "Record Bishop presentation browser audit"
+          git push origin HEAD:agent/repair-bishop-presentation-and-headers-v4
