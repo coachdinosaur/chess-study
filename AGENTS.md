@@ -137,8 +137,6 @@ It contains:
 
 ## Lesson Position Builder Conventions
 
-## Lesson Position Builder Conventions
-
 - **File:** `lesson-position-builder.mjs`
 - **Purpose:** Create, edit, import, export, and manage named FEN position sets
 - **State key:** `state.lessonPositionBuilder` (`{ active: bool }`)

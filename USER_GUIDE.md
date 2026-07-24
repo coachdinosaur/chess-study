@@ -254,8 +254,6 @@ Do not paste an API key into the chat or browser console. The Gemini key belongs
 
 ## Add a Lesson Note
 
-## Add a Lesson Note
-
 > **Where to go:** Three-dot menu → **Show note**
 
 The lesson note is one free-form text area for the whole lesson.
