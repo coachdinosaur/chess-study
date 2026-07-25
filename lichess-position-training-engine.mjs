@@ -42,20 +42,25 @@ export class StockfishPositionEvaluator {
 
   async ensureReady() {
     if (this.readyPromise) return this.readyPromise;
-    this.readyPromise = this.#startWorker();
+    this.readyPromise = this.#startWorker().catch((error) => {
+      this.readyPromise = null;
+      throw error;
+    });
     return this.readyPromise;
   }
 
   async #startWorker() {
     let lastError = null;
     for (const path of ENGINE_CANDIDATES) {
+      let worker = null;
       try {
-        const worker = new Worker(path);
+        worker = new Worker(new URL(path, import.meta.url));
         await this.#initializeWorker(worker);
         this.worker = worker;
         this.enginePath = path;
         return;
       } catch (error) {
+        worker?.terminate();
         lastError = error;
       }
     }
