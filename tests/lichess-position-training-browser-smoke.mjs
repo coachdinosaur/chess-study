@@ -4,16 +4,25 @@ import { chromium } from 'playwright';
 import { Chess } from '../vendor/chess.js';
 
 const BASE_URL = process.env.POSITION_TRAINING_BASE_URL || 'http://127.0.0.1:8000';
-const shardUrl = new URL('../assets/puzzles/lichess-position-training/shard-0000.json', import.meta.url);
-const seedPayload = JSON.parse(await readFile(shardUrl, 'utf8'));
+const datasetBaseUrl = new URL('../assets/puzzles/lichess-position-training/', import.meta.url);
+const manifest = JSON.parse(await readFile(new URL('manifest.json', datasetBaseUrl), 'utf8'));
 const initialPositions = new Map();
 
-for (const record of seedPayload.puzzles || []) {
-  const game = new Chess(record.sourceFen);
-  const repair = String(record.repairMove || '');
-  game.move({ from: repair.slice(0, 2), to: repair.slice(2, 4), promotion: repair[4] || undefined });
-  initialPositions.set(game.fen(), game.turn());
+for (const shard of manifest.shards || []) {
+  const payload = JSON.parse(await readFile(new URL(shard.file, datasetBaseUrl), 'utf8'));
+  for (const record of payload.puzzles || []) {
+    const game = new Chess(record.sourceFen);
+    const repair = String(record.repairMove || '');
+    game.move({
+      from: repair.slice(0, 2),
+      to: repair.slice(2, 4),
+      promotion: repair[4] || undefined,
+    });
+    initialPositions.set(game.fen(), game.turn());
+  }
 }
+
+assert.equal(initialPositions.size, Number(manifest.count), 'smoke test should load every installed puzzle');
 
 function uci(move) {
   return `${move.from}${move.to}${move.promotion || ''}`;
@@ -86,7 +95,7 @@ try {
   }, null, { timeout: 30_000 });
 
   const seenSides = new Set();
-  for (let attempt = 0; attempt < 8 && seenSides.size < 2; attempt += 1) {
+  for (let attempt = 0; attempt < 12 && seenSides.size < 2; attempt += 1) {
     const side = (await overlay.locator('[data-pt-current] dd').first().textContent())?.trim();
     assert.ok(side === 'White' || side === 'Black', `unexpected solver side: ${side}`);
     seenSides.add(side);
@@ -94,17 +103,35 @@ try {
     assert.equal(firstSquare, side === 'White' ? 'a8' : 'h1', `${side} board orientation should face the solver`);
     if (seenSides.size < 2) {
       await overlay.getByRole('button', { name: 'Next position' }).click();
-      await page.waitForFunction(() => !/Loading and validating/i.test(document.querySelector('[data-pt-feedback]')?.textContent || ''), null, { timeout: 30_000 });
+      await page.waitForFunction(
+        () => !/Loading and validating/i.test(document.querySelector('[data-pt-feedback]')?.textContent || ''),
+        null,
+        { timeout: 30_000 },
+      );
     }
   }
-  assert.deepEqual([...seenSides].sort(), ['Black', 'White'], 'seed cycle should exercise both solver colors');
+  assert.deepEqual([...seenSides].sort(), ['Black', 'White'], 'installed dataset should exercise both solver colors');
 
   const side = (await overlay.locator('[data-pt-current] dd').first().textContent())?.trim();
-  const kingSquare = overlay.locator('[data-pt-board] [data-square]').filter({ hasText: side === 'Black' ? '♚' : '♔' }).first();
-  assert.ok(await kingSquare.count(), 'solver king should be present');
-  await kingSquare.click();
-  const legalTarget = overlay.locator('[data-pt-board] .legal-target').first();
-  await legalTarget.waitFor({ state: 'visible' });
+  const pieceSymbols = side === 'White' ? '♔♕♖♗♘♙' : '♚♛♜♝♞♟';
+  const candidateSquares = await overlay.locator('[data-pt-board] [data-square]').evaluateAll(
+    (nodes, symbols) => nodes
+      .filter((node) => symbols.includes(node.textContent || ''))
+      .map((node) => node.dataset.square),
+    pieceSymbols,
+  );
+
+  let legalTarget = null;
+  for (const square of candidateSquares) {
+    await overlay.locator(`[data-pt-board] [data-square="${square}"]`).click();
+    const targets = overlay.locator('[data-pt-board] .legal-target');
+    if (await targets.count()) {
+      legalTarget = targets.first();
+      break;
+    }
+  }
+
+  assert.ok(legalTarget, 'solver should have at least one movable piece');
   await legalTarget.click();
   await page.waitForFunction(() => {
     const text = document.querySelector('[data-pt-feedback]')?.textContent || '';
