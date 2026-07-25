@@ -1,6 +1,7 @@
 import './focus-analysis-popup-core.mjs?v=20260723-live-board-link1';
 import './lichess-position-training.mjs?v=20260725-position-training3';
 import './lichess-position-training-interactions.mjs?v=20260725-board-interaction1';
+import './lichess-position-training-grid-layout.mjs?v=20260725-grid-rows1';
 
 const root = document.documentElement;
 if (root.dataset.embed !== '1' && root.dataset.boardOnly !== '1') {
