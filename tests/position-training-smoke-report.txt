@@ -1,58 +1,58 @@
-Position training smoke result: FAIL
-Commit: 870e5bc865ebd83dce92a82e9f5b75d56e875bdc
+Position training smoke result: PASS
+Commit: 54a0a224d8d160e63b3b54f48c4f5cf23ac3fecc
 Core tests: 0
 Playwright install: 0
 Local server: 0
-Browser smoke: 1
+Browser smoke: 0
 
 --- Core test log ---
 TAP version 13
 # Subtest: repair move makes White the solver when Black moved first
 ok 1 - repair move makes White the solver when Black moved first
   ---
-  duration_ms: 3.732547
+  duration_ms: 4.495988
   type: 'test'
   ...
 # Subtest: repair move makes Black the solver when White moved first
 ok 2 - repair move makes Black the solver when White moved first
   ---
-  duration_ms: 0.726952
+  duration_ms: 0.803789
   type: 'test'
   ...
 # Subtest: engine scores are converted to the solver perspective
 ok 3 - engine scores are converted to the solver perspective
   ---
-  duration_ms: 0.739221
+  duration_ms: 0.813456
   type: 'test'
   ...
 # Subtest: tablebase outcome is also solver-relative
 ok 4 - tablebase outcome is also solver-relative
   ---
-  duration_ms: 0.165286
+  duration_ms: 0.187932
   type: 'test'
   ...
 # Subtest: positions where the solver is losing are rejected as training starts
 ok 5 - positions where the solver is losing are rejected as training starts
   ---
-  duration_ms: 0.250873
+  duration_ms: 0.256291
   type: 'test'
   ...
 # Subtest: a different winning move is accepted without matching a stored line
 ok 6 - a different winning move is accepted without matching a stored line
   ---
-  duration_ms: 0.202772
+  duration_ms: 0.223149
   type: 'test'
   ...
 # Subtest: throwing away a win is rejected
 ok 7 - throwing away a win is rejected
   ---
-  duration_ms: 0.181821
+  duration_ms: 0.247414
   type: 'test'
   ...
 # Subtest: mate-tagged training does not finish before checkmate
 ok 8 - mate-tagged training does not finish before checkmate
   ---
-  duration_ms: 0.201259
+  duration_ms: 0.233929
   type: 'test'
   ...
 1..8
@@ -63,103 +63,92 @@ ok 8 - mate-tagged training does not finish before checkmate
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 80.873464
+# duration_ms 100.40883
 
 --- Browser smoke log ---
-node:internal/modules/run_main:123
-    triggerUncaughtException(
-    ^
-
-locator.waitFor: Error: strict mode violation: getByRole('heading', { name: 'Lichess Position Training' }) resolved to 2 elements:
-    1) <h3>Lichess Position Training</h3> aka getByLabel('Puzzle tab').getByRole('heading', { name: 'Lichess Position Training' })
-    2) <h2 id="positionTrainingTitle">Lichess Position Training</h2> aka getByLabel('Lichess Position Training').getByRole('heading', { name: 'Lichess Position Training' })
-
-Call log:
-  - waiting for getByRole('heading', { name: 'Lichess Position Training' }) to be visible
-
-    at /home/runner/work/chess-study/chess-study/tests/lichess-position-training-browser-smoke.mjs:82:74
-
-Node.js v22.23.1
+Position training browser smoke test passed.
 
 --- Server log ---
-127.0.0.1 - - [25/Jul/2026 11:14:00] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /styles.css?v=20260719-mobile-drag-ui1 HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /focus-analysis-popup.css?v=20260719-focus-analysis1 HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /site-home.css?v=20260719-seo-branding1 HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /focus-analysis-popup.mjs?v=20260719-focus-analysis3 HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /app.js?v=20260719-mobile-drag-ui1 HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /assets/pieces/app_icon.png HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /vendor/xlsx.full.min.js HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /assets/Inter/Inter-VariableFont_opsz,wght.ttf HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /assets/Manrope/Manrope-VariableFont_wght.ttf HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /vendor/chess.js HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /pgn.mjs HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /lesson-position-builder.mjs HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /text-normalization.mjs HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /puzzle-api.mjs HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /focus-analysis-popup-core.mjs?v=20260723-live-board-link1 HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /lichess-position-training.mjs?v=20260725-position-training1 HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /lichess-position-training-core.mjs HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /lichess-position-training-data.mjs HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /lichess-position-training-engine.mjs HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /ai-help-markdown-enhancer.mjs?v=20260718-ai-help2 HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /ai-help-chat.mjs?v=20260718-ai-help3 HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /assets/pieces/mpchess/bR.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /assets/pieces/mpchess/bB.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /assets/openings.tsv HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /assets/pieces/mpchess/bQ.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /assets/pieces/mpchess/bN.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /assets/pieces/mpchess/bK.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /assets/pieces/mpchess/bP.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /assets/pieces/mpchess/wP.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /assets/pieces/mpchess/wB.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /lichess-position-training.css?v=20260725-position-training1 HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /assets/pieces/mpchess/wN.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /assets/pieces/mpchess/wR.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /ai-help-config.mjs HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /assets/pieces/mpchess/wK.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /assets/pieces/mpchess/wQ.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:01] "GET /ai-help-icon.mjs HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /ai-help-chat.css?v=20260719-focus-placement1 HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/bR.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/bB.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/bN.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/bQ.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/bK.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/wR.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/bP.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/wN.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/wP.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/wB.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/wQ.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/wK.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/bR.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/bN.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/bB.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/bQ.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/bK.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/bP.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/wR.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/wP.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/wN.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/wB.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/wQ.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/wK.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/bR.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/bP.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/bN.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/bQ.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/bK.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/wP.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/bB.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/wR.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/wN.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/wB.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/wQ.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/pieces/mpchess/wK.svg HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/puzzles/lichess-position-training/manifest.json HTTP/1.1" 200 -
-127.0.0.1 - - [25/Jul/2026 11:14:02] "GET /assets/puzzles/lichess-position-training/shard-0000.json HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /styles.css?v=20260719-mobile-drag-ui1 HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /site-home.css?v=20260719-seo-branding1 HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /assets/pieces/app_icon.png HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /focus-analysis-popup.css?v=20260719-focus-analysis1 HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /app.js?v=20260719-mobile-drag-ui1 HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /focus-analysis-popup.mjs?v=20260719-focus-analysis3 HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /vendor/xlsx.full.min.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /assets/Inter/Inter-VariableFont_opsz,wght.ttf HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /assets/Manrope/Manrope-VariableFont_wght.ttf HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /vendor/chess.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /pgn.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /lesson-position-builder.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /text-normalization.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /puzzle-api.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /focus-analysis-popup-core.mjs?v=20260723-live-board-link1 HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /lichess-position-training.mjs?v=20260725-position-training1 HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /lichess-position-training-engine.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /lichess-position-training-core.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /lichess-position-training-data.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /ai-help-markdown-enhancer.mjs?v=20260718-ai-help2 HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /ai-help-chat.mjs?v=20260718-ai-help3 HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /assets/openings.tsv HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /assets/pieces/mpchess/bR.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /assets/pieces/mpchess/bN.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /assets/pieces/mpchess/bB.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /assets/pieces/mpchess/bP.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /assets/pieces/mpchess/bQ.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /assets/pieces/mpchess/wP.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /assets/pieces/mpchess/wN.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /assets/pieces/mpchess/bK.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /lichess-position-training.css?v=20260725-position-training1 HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /assets/pieces/mpchess/wR.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /assets/pieces/mpchess/wK.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /assets/pieces/mpchess/wB.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /assets/pieces/mpchess/wQ.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /ai-help-config.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /ai-help-icon.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:26] "GET /ai-help-chat.css?v=20260719-focus-placement1 HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/bR.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/bK.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/wP.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/bQ.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/bB.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/bP.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/bN.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/wR.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/wN.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/wK.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/wB.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/wQ.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/bR.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/bP.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/wP.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/bB.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/bK.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/bQ.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/bN.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/wR.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/wN.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/wB.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/wQ.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/wK.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/bR.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/bN.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/bB.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/bK.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/bQ.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/bP.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/wP.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/wR.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/wN.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/wB.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/wQ.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/pieces/mpchess/wK.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/puzzles/lichess-position-training/manifest.json HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:27] "GET /assets/puzzles/lichess-position-training/shard-0000.json HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:28] "GET /vendor/stockfish/stockfish-18-lite-single.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:28] "GET /vendor/stockfish/stockfish-18-lite-single.wasm HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:16:28] "GET /?embed=1&boardOnly=1 HTTP/1.1" 200 -
 
 --- Playwright install log (tail) ---
 No VM guests are running outdated hypervisor (qemu) binaries on this host.
