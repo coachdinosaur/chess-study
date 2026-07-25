@@ -73,7 +73,7 @@ async function openBoardMenu(page) {
     await iframeElement.waitFor({ state: 'visible' });
     const frame = page.frames().find((item) => item !== page.mainFrame() && item.url().includes('index.html'));
     if (!frame) throw new Error('Teacher Board iframe did not load.');
-    await frame.locator('#currentFenCode').waitFor();
+    await frame.locator('#currentFenCode').waitFor({ state: 'attached' });
 
     await waitFen(frame, (fen) => fen === pageFen, 'Initial page FEN did not load');
     await page.locator('[data-teacher-action="setup"]').click();
