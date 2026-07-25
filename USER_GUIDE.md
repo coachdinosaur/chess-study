@@ -1,6 +1,6 @@
 # Coach Dinosaur Chess Study User Guide
 
-Coach Dinosaur Chess Study is a browser-based chess notebook for building positions, recording lesson lines, studying with Stockfish, adding explanations, and practicing saved variations.
+Coach Dinosaur Chess Study is a browser-based chess notebook for building positions, recording lesson lines, studying with Stockfish, adding explanations, practicing saved variations, presenting published course lessons, and running synchronized teacher/student boards.
 
 Live app:
 
@@ -29,7 +29,7 @@ Use the board to:
 
 - set up a position in **Setup**;
 - play legal moves in **Analysis**;
-- review recorded moves in **Line**;
+- review recorded moves in **Study**;
 - play against Stockfish in **Play**;
 - solve endgame puzzles in **Puzzle**.
 
@@ -37,11 +37,12 @@ Use the board to:
 
 The tools panel contains the main working tabs:
 
+- **Study**: review the board and recorded notation with the tools collapsed.
 - **Setup**: create or change the starting position.
 - **Analysis**: play moves, use Stockfish, practice, and annotate.
-- **Line**: review the recorded lesson tree.
 - **Play**: play a complete game against Stockfish.
 - **Puzzle**: solve endgame puzzles.
+- **Lessons**: create, edit, import, export, and load prepared FEN position sets.
 
 If the tools panel is missing:
 
@@ -66,7 +67,11 @@ Use these exact paths when you know what you want to do.
 - Show engine lines: **Three-dot menu → Show PV lines**
 - Change the starting position: **Tools → Setup**
 - Play and record moves: **Tools → Analysis**
-- Review the lesson tree: **Tools → Line**
+- Review the lesson tree: use the notation panel or **Tools → Study**
+- Open the Lesson Position Builder: **Tools → Lessons**
+- Browse published course lessons: open the **Lesson index** from the app/site navigation
+- Open a floating board while reading a supported lesson: click **Teacher Board** in the lesson header
+- Start a synchronized teacher/student room: open **Live Board** (`live-board.html`)
 - Start engine analysis: click **Analyze** beside the three-dot menu
 - Stop engine analysis: click **Stop** in the same place
 - Flip the board: use **Flip board** in the current tools tab
@@ -198,7 +203,7 @@ Arrow-key navigation does not run while you are typing in a field or choosing a 
 
 > **Where to go:** click **Analyze** beside the three-dot menu
 
-1. Open a legal position in **Analysis** or **Line**.
+1. Open a legal position in **Analysis** or **Study**.
 2. Click **Analyze**.
 3. Wait for the evaluation, depth, and candidate lines to appear.
 4. Click **Stop** when you want to end the search.
@@ -282,7 +287,7 @@ PGN comments are included in exported PGN files.
 
 ## Draw Arrows, Circles, Stars, and Highlights
 
-> **Where to go:** **Tools → Analysis** or **Tools → Line**
+> **Where to go:** **Tools → Analysis** or **Tools → Study**
 
 Use the **Annotate** control when you want to draw without accidentally playing moves.
 
@@ -300,7 +305,7 @@ Annotations are saved in lesson files and the browser draft.
 
 ## Practice a Recorded Lesson
 
-> **Where to go:** **Tools → Analysis** or **Tools → Line**
+> **Where to go:** **Tools → Analysis** or **Tools → Study**
 
 1. Build or open a lesson with recorded moves.
 2. Choose **Selected line** or **Branch drill**.
@@ -321,6 +326,99 @@ During practice:
 - **Reveal move** shows the next move;
 - **Restart** begins the drill again;
 - **Stop practice** returns to normal study mode.
+
+---
+
+# Course Lessons, Presentation, and Teacher Board
+
+## Open a Published Course Lesson
+
+> **Where to go:** open the lesson index, then choose Pawn, Advanced Pawn, Bishop, or a numbered endgame lesson
+
+Published lessons are static reading pages rather than saved `.lesson.json` files. Their shared header normally includes:
+
+- the course level and lesson title;
+- a link back to the correct level index;
+- theme switching;
+- Print / Save PDF;
+- **Present Lesson** on supported pages;
+- **Teacher Board** on supported pages.
+
+On phones, the header actions wrap below the title. In print/PDF output, the lesson header and presentation controls are hidden.
+
+## Present a Lesson to a Class
+
+> **Where to go:** supported lesson header → **Present Lesson**
+
+Presentation mode shows one meaningful lesson section or position at a time.
+
+Controls:
+
+- **Previous** or Left Arrow: return to the previous scene;
+- **Reveal** or Space: open the next hidden answer/detail; when nothing remains to reveal, advance;
+- **Reset** or `R`: close revealed details and reset the current scene;
+- **Next** or Right Arrow: advance;
+- **Exit** or Escape: leave presentation mode.
+
+The browser attempts fullscreen when allowed. A short pulse appears where the teacher clicks, including on same-origin embedded chessboards, so students can follow the pointer on a projected display. Clicking the presentation toolbar or Teacher Board controls does not create the pulse.
+
+## Use the Floating Teacher Board
+
+> **Where to go:** supported lesson header → **Teacher Board**
+
+The Teacher Board opens over the lesson without leaving the page. Use **Max** for a larger board, **_** to minimize it, and **x** to close it.
+
+### Load or build a position
+
+1. Click **Setup**.
+2. Use **Board** to choose:
+   - **Empty**: remove all pieces;
+   - **Start**: load the standard starting position;
+   - **Page**: restore the exact position assigned to the current lesson page.
+3. Choose the palette color (**White** or **Black**) and then a piece.
+4. Click squares on the board to place pieces, or select **Erase** to remove them.
+5. Use the separate **Side to move** White/Black buttons. Changing this does not remove the pieces you placed.
+6. Click **Done** to leave setup and return to normal board movement.
+
+Empty preserves the selected side to move. Start loads all 32 pieces with the selected side to move. Page restores the lesson FEN and updates the side-to-move buttons to match it.
+
+### Other Teacher Board controls
+
+- **Lesson**: import a prepared-position CSV, choose a position, and view its teacher note.
+- **Annotate**: keep marks while interacting; right-click marks squares and Alt + right-drag draws arrows.
+- **Take Back**: undo the last legal or teacher-demonstration move.
+- **Clear marks**: remove annotations.
+- **Flip**: change viewing orientation.
+- **Reset**: return to the current Teacher Board baseline.
+
+The board reports checkmate or stalemate in a compact status overlay. Teacher-demonstration moves may be intentionally illegal or out of turn; the board marks them instead of pretending they were legal game moves.
+
+# Live Board for Teacher and Student
+
+> **Where to go:** open `live-board.html` from the deployed site
+
+Live Board is different from the floating Teacher Board. It creates a synchronized room that a teacher and student can open on different devices.
+
+## Teacher workflow
+
+1. Click **Create teacher room**.
+2. Wait until the room and connection status appear.
+3. Click **Copy student link**.
+4. Send that generated link to the student. Do not send your teacher URL.
+5. Move pieces by click/tap or drag. The student board updates automatically.
+6. Use **Lock student moves** while demonstrating. Unlock it when the student should move.
+
+Teacher controls include Undo, Reset, Flip board, Theme, FEN loading/copying, CSV/XLSX prepared-position import, and short session messages or Lichess links.
+
+## Student workflow
+
+1. Open the secure link supplied by the teacher.
+2. Wait for the board and connection status.
+3. Move pieces when student moves are unlocked.
+4. When locked, watch the synchronized demonstration; the board remains view-only.
+5. Use the Session messages panel to read or send short messages and links.
+
+A room code by itself is not a substitute for the secure generated link. The access details in that link determine whether the page is the teacher or student role.
 
 ---
 
@@ -522,7 +620,7 @@ The app remembers the theme in the current browser.
 
 ## Flip the Board
 
-> **Where to go:** use **Flip board** in Setup, Analysis, or Line
+> **Where to go:** use **Flip board** in Setup, Analysis, or Study
 
 Flipping changes the viewing direction but does not change the position.
 
@@ -592,6 +690,22 @@ Try another saved copy when available.
 
 > **Fix:** click **Flip board** in the current tools tab.
 
+## Teacher Board Empty, Start, or Page Appears Unresponsive
+
+1. Reload the lesson once so the current cache-versioned Teacher Board files are used.
+2. Open **Teacher Board → Setup → Board** and retry the command.
+3. Confirm **Page** is expected to look different from **Start**; Page restores the lesson's assigned FEN.
+4. After **Empty**, select a piece and place it on the board before clicking Done.
+5. Use the separate **Side to move** control rather than the piece-palette color button.
+
+## Live Board Messages or Synchronization Do Not Start
+
+1. Confirm both people opened the current generated links for the same room.
+2. The student should reopen the copied student link rather than typing only the room code.
+3. Wait for the connection status before sending a message or moving.
+4. Reload once if the room was created while scripts were still loading; the page restores teacher credentials for the browser session.
+5. If the board remains disconnected, check internet access and whether Supabase is reachable.
+
 ## AI Help Gives an Unclear App Instruction
 
 1. Ask it to name the exact menu, button, or tab first.
@@ -604,7 +718,10 @@ Try another saved copy when available.
 
 - **Setup**: choose the starting position.
 - **Analysis**: play moves and use the engine.
-- **Line**: review the recorded move tree.
+- **Study**: review the board and recorded move tree with tools collapsed.
+- **Lessons**: manage prepared FEN position sets.
+- **Teacher Board**: a floating demonstration board inside a published lesson page.
+- **Live Board**: a synchronized teacher/student room on a separate page.
 - **FEN**: text describing a chess position.
 - **PGN**: portable chess game notation containing moves, variations, and comments.
 - **Variation**: a side line branching from another position.
@@ -621,6 +738,10 @@ Try another saved copy when available.
 - Use the three-dot menu for opening, saving, importing, exporting, and display controls.
 - Use **Setup** to change the starting position.
 - Use **Analysis** to play and record moves.
+- Use **Study** to review the board and recorded notation with fewer controls visible.
+- Use **Lessons** for prepared FEN position sets.
+- Use **Present Lesson** and **Teacher Board** while teaching from supported published lessons.
+- Use the generated secure student link when starting a Live Board room.
 - Return to an earlier move and play a different move to create a variation.
 - Click **Analyze** beside the three-dot menu to start Stockfish.
 - Use **Save lesson** for a complete app lesson file.

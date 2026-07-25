@@ -11,6 +11,8 @@ It contains:
 - **Advanced Pawn Level** curriculum (12 modules)
 - **Bishop Level** post-beginner/intermediate curriculum (15 modules, 19 lesson pages)
 - **Numbered endgame lessons** (7 chapter pages with embedded SPA iframe)
+- **Shared lesson presentation and Teacher Board systems** used across course levels
+- **Live Board** secure teacher/student synchronized rooms backed by Supabase
 - **AI Help** browser panel backed by a separately deployed Cloudflare Worker and Gemini
 - **Piece asset pipeline** (MetaPost/LuaLaTeX font → 12 SVG pieces)
 - **Local servers** for HTTP hosting (`local_server.py`) and board scanning (`scanner_server.py`)
@@ -34,7 +36,9 @@ It contains:
 | **AI Help client** | `ai-help-chat.mjs`, `ai-help-chat.css`, `ai-help-config.mjs`, `ai-help-icon.mjs` |
 | **AI Help Worker** | `worker/ai-help-worker.js`, `worker/wrangler.jsonc` |
 | **Numbered endgame lessons** | `lessons/01-*.html` … `lessons/07-*.html`, `lessons/endgame-lesson.js`, `lessons/endgame-lesson.css` |
-| **Shared lesson helpers** | `lessons/pawn-teacher-board.js`, `lessons/pawn-teacher-board.css` |
+| **Shared lesson header/presentation** | `lessons/lesson-header.css`, `lessons/lesson-presentation.js`, `lessons/lesson-presentation.css` |
+| **Shared Teacher Board** | `lessons/pawn-teacher-board.js`, `lessons/pawn-teacher-board.css`, `lessons/teacher-board-illegal-moves.mjs` |
+| **Live Board** | `live-board.html`, `live-board.js`, `live-board-realtime.js`, `live-board-room-bootstrap.js`, `live-board-messages-v2.js`, `live-board-drag.js`, `live-board-click-toggle.js` |
 | **Lesson source manuscripts** | `lesson_source/` (Module 1), `lesson_source2/` (Module 2), `lesson_source3/` (Module 3) |
 | **Piece assets** | `assets/pieces/mpchess/` (12 SVGs), `mpchess-pieces/` (font sources) |
 | **Local servers** | `local_server.py`, `scanner_server.py`, `scanner_predict.py`, `start-local.ps1` |
@@ -60,6 +64,11 @@ It contains:
 - Avoid broad search-and-replace without validating every affected file.
 - When modifying generated or repeated lesson pages, test representative files
   and then audit all matching files.
+- Shared lesson CSS/JS changes require a repository-wide audit of every cache-versioned
+  consumer; stale query versions can leave only some lesson families repaired.
+- In embedded/Teacher Board code, treat `window.postMessage()` listener order and
+  propagation as a public contract. A helper may observe an action, but must not swallow
+  an action owned by the main board handler.
 - When you add, remove, or rename a major subsystem, curriculum module, shared
   lesson helper, or top-level file, update `ARCHITECTURE.md` in the same change.
 - Do not change `ARCHITECTURE.md` or `AGENTS.md` unless the task explicitly
@@ -101,8 +110,12 @@ It contains:
 - **Shared CSS/JS:** `endgame-lesson.css`, `endgame-lesson.js`,
   `pawn-teacher-board.css`, `pawn-teacher-board.js`
 - **Teacher Board:** Floating board overlay via `pawn-teacher-board.js`.
-  Supports minimize/maximize/annotate/clear modes. Activated by data attributes
-  on the `<html>` element.
+  Supports minimize/maximize, prepared-position CSV import, setup piece placement,
+  Board presets (**Empty**, **Start**, **Page**), independent piece-palette color and
+  **Side to move**, erasing, Done, annotate, take back, clear marks, flip, reset, and
+  checkmate/stalemate status. **Page** restores `data-teacher-fen`; Empty and Start
+  preserve/use the selected side. `teacher-board-illegal-moves.mjs` may reset its own
+  history for setup actions but must not stop those messages before `app.js` handles them.
 - **Navigation:** Each lesson has Back to Pawn Index link and sequential
   Back/Next lesson links; the last lesson of Module 3 links to Module 4 (the
   series spans modules). Validate all navigation links after editing.
@@ -122,6 +135,42 @@ It contains:
 - **Legacy markup:** Module 1 differs from later generated and FEN-laboratory pages. Audit every Bishop page when changing shared headers or presentation collection.
 - **Presentation mode:** collect intentional top-level sections and direct positions only. Nested candidate cards, student tasks, error notes, and transfer rules must not become standalone scenes.
 - **Navigation:** preserve Back-to-Bishop-Index and sequential links; validate them after editing.
+
+## Shared Lesson Header and Presentation Conventions
+
+- `lessons/lesson-header.css` is the shared Pawn-inspired header contract for Pawn,
+  Advanced Pawn, and Bishop pages. Preserve `.index-header`, `.index-header-inner`,
+  `.index-brand`, `.index-brand-icon`, `.index-brand-label`, `.index-brand-title`, and
+  `.index-top-actions` markup when adding or repairing lessons.
+- `endgame-lesson.css` and `advanced-pawn-lesson.css` import the shared header. Avoid
+  reintroducing level-specific header rules that override it without a deliberate reason.
+- Mobile headers wrap into two action columns and then one column; verify long titles,
+  action wrapping, reading-progress placement, and print hiding.
+- `lesson-presentation.js` collects intentional top-level scenes and direct position cards.
+  Do not let nested candidate cards, student tasks, source notes, coach-only notes, or
+  duplicate content become standalone scenes.
+- Presentation controls are Previous, Reveal, Reset, Next, and Exit, with keyboard and
+  fullscreen behavior. The click pulse must ignore presentation controls and Teacher Board
+  controls, while still working over same-origin board iframes.
+- When changing presentation or Teacher Board assets, update every consumer's cache version
+  and run a stale-reference audit.
+
+## Live Board Conventions
+
+- `live-board.html` is separate from both the SPA and the floating lesson Teacher Board.
+- Teachers create a room and share only the generated student link. Never expose, log, or
+  document the teacher access token.
+- Preserve role-specific credentials in the URL/session lifecycle and the
+  `live-board-session-ready` event dispatched after teacher room creation.
+- `live-board-messages-v2.js` must initialize only once per room/role/token session key,
+  retry when credentials or Supabase are not ready, respond to hash/history changes, and
+  clean up timers/subscriptions on unload.
+- Preserve teacher move locking: a locked student board remains synchronized but view-only.
+- Prepared lessons support CSV/XLSX; FEN loading and orientation/side-to-move must remain
+  synchronized for both roles.
+- Test Live Board changes with separate teacher and student pages or browser contexts.
+  Verify initial board state, click/tap and drag input, undo/reset, lock/unlock, copied link,
+  prepared-position loading, and messages created immediately after a room is created.
 
 ## AI Help Worker Conventions
 
@@ -174,6 +223,9 @@ Before completing a task, verify:
 - [ ] Theme switching works (light/dark)
 - [ ] Back/Next navigation works (when modifying lesson series)
 - [ ] All shared assets load (CSS, JS, SVGs, fonts)
+- [ ] Shared lesson-header, presentation, and Teacher Board cache versions are current across all lesson consumers
+- [ ] Teacher Board Empty, Start, Page, side-to-move, piece placement, and post-setup play work
+- [ ] Live Board teacher/student state, lock, copied student link, prepared positions, and messages work in separate contexts
 - [ ] AI Help changes preserve secrets, allowed origins, CORS preflight, `/health`, rate limits, and deployment instructions
 - [ ] No accidental changes were made outside the requested scope
 

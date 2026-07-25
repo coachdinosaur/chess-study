@@ -1,6 +1,6 @@
 # Chess Lesson Study Board
 
-A framework-free, browser-based chess teaching and study application. It combines a position editor, lesson-tree authoring, Stockfish analysis, tablebase support, practice drills, Play vs Stockfish, endgame puzzles, static lesson pages, and an optional AI chess-help panel.
+A framework-free, browser-based chess teaching and study application. It combines a position editor, lesson-tree authoring, Stockfish analysis, tablebase support, practice drills, Play vs Stockfish, endgame puzzles, static course lessons with classroom presentation and Teacher Board tools, a synchronized teacher/student Live Board, and an optional AI chess-help panel.
 
 ## Live app
 
@@ -30,7 +30,10 @@ For local Windows setup, see [LOCAL_DEPLOYMENT.md](LOCAL_DEPLOYMENT.md).
 - Train with built-in or generated endgame puzzles.
 - Review CSV/XLSX position sets in the Lesson Position Builder.
 - Identify openings from the bundled ECO/opening database.
-- Use static Pawn, Bishop, and numbered endgame lesson pages in `lessons/`.
+- Use static Pawn, Advanced Pawn, Bishop, and numbered endgame lesson pages in `lessons/`.
+- Present supported lessons scene by scene with Previous, Reveal, Reset, Next, Exit, keyboard shortcuts, fullscreen support, and a visible click pulse for classroom projection.
+- Open the floating Teacher Board from supported lesson pages to load Page, Start, Empty, or prepared CSV positions; set the side to move; place pieces; annotate; take back; flip; and reset.
+- Create a secure synchronized Live Board room for a teacher and student, including student-move locking, FEN and lesson-position loading, move history, and session messages.
 - Ask the optional Dyno Bot panel about the visible position and notation on supported desktop-sized layouts.
 
 ## Workspace
@@ -215,6 +218,44 @@ The current lesson book is persisted locally under `setup-analysis-draft-v1`. Pu
 
 Browser storage is local to one browser profile and is not collaborative synchronization.
 
+## Static course lessons and Teacher Board
+
+Static lessons live in `lessons/` and remain printable, self-contained teaching pages. Pawn, Advanced Pawn, and Bishop lesson families share the Pawn-inspired sticky header through `lesson-header.css`, including consistent branding, navigation, theme/print controls, responsive wrapping, and print hiding.
+
+Supported lesson pages add **Present Lesson** through `lesson-presentation.js` and `lesson-presentation.css`. Presentation mode:
+
+- collects meaningful top-level lesson scenes and intentional position cards;
+- avoids duplicate scenes and coach-only/source notes;
+- provides Previous, Reveal, Reset, Next, and Exit controls;
+- supports Left/Right arrows, Space, `R`, and Escape;
+- requests browser fullscreen when available;
+- shows a short click pulse on the lesson or same-origin embedded board so students can follow the teacher's pointer.
+
+The floating **Teacher Board** is separate from the full SPA Setup tab. Its setup tray provides:
+
+- **Board → Empty**: remove every piece while preserving the selected side to move;
+- **Board → Start**: load all 32 starting pieces with White or Black selected to move;
+- **Board → Page**: restore the exact lesson-page FEN;
+- independent piece-palette color and **Side to move** controls;
+- piece placement and erasing, followed by **Done** to return to normal board play;
+- prepared-position CSV import, annotation, take back, mark clearing, flip, reset, and checkmate/stalemate status.
+
+`Page` and imported positions resynchronize the side-to-move selector from their FEN. The setup commands are delivered through the embedded-board `postMessage()` protocol, while `teacher-board-illegal-moves.mjs` keeps demonstration history without swallowing those commands.
+
+## Live Board
+
+`live-board.html` is a separate synchronized teaching surface for one teacher and one student.
+
+Teacher workflow:
+
+1. Open `live-board.html` and choose **Create teacher room**.
+2. Copy the generated secure student link.
+3. Send that link to the student; do not send the teacher URL or teacher access token.
+4. Move pieces by click/tap or drag, load a FEN, or import CSV/XLSX prepared positions.
+5. Use **Lock student moves** when demonstrating, and use Undo, Reset, Flip board, Theme, or session messages as needed.
+
+The student opens the secure link and receives the synchronized position, move list, lock state, and messages. Supabase supplies room state, realtime updates, and message storage. The message module waits for valid room credentials and the `live-board-session-ready` event instead of assuming credentials already exist at `DOMContentLoaded`.
+
 ## Mobile behavior
 
 Mobile-specific behavior includes:
@@ -249,7 +290,7 @@ Common optional parameters include:
 
 Embedded lesson pages communicate with the board through `window.postMessage()` for FEN loading, orientation, annotations, and teacher-board actions.
 
-The floating Teacher Board also evaluates the embedded FEN after moves and position loads. It shows a compact, screen-reader-announced **Checkmate** or **Stalemate** overlay inside the board area, without changing the board size, until the position changes.
+The floating Teacher Board also evaluates the embedded FEN after moves and position loads. It shows a compact, screen-reader-announced **Checkmate** or **Stalemate** overlay inside the board area, without changing the board size, until the position changes. Setup actions include independent piece color and side-to-move state, Empty/Start/Page loading, prepared-position loading, and normal play after leaving setup.
 
 ## Main files
 
@@ -270,6 +311,14 @@ The floating Teacher Board also evaluates the embedded FEN after moves and posit
 | `ai-help-icon.mjs` | Embedded launcher icon data |
 | `worker/ai-help-worker.js` | Cloudflare Worker CORS, validation, rate limiting, Gemini proxy, `/chat`, and `/health` |
 | `worker/wrangler.jsonc` | Worker variables, production origins, model, and rate-limit binding |
+| `live-board.html` | Teacher/student room shell, synchronized board, lesson/FEN controls, messages |
+| `live-board.js` | Live Board position state, legal interaction, move list, lesson/FEN loading |
+| `live-board-realtime.js` | Secure room bootstrap, credentials, Supabase state synchronization |
+| `live-board-messages-v2.js` | Session message lifecycle, realtime subscription, polling fallback |
+| `lessons/lesson-header.css` | Shared Pawn-inspired header across lesson families |
+| `lessons/lesson-presentation.js` / `.css` | Classroom scene mode, reveals, navigation, fullscreen, click pulse |
+| `lessons/pawn-teacher-board.js` / `.css` | Floating lesson Teacher Board UI and parent-side protocol |
+| `lessons/teacher-board-illegal-moves.mjs` | Demonstration moves and Teacher Board history inside the embedded SPA |
 | `vendor/chess.js` | Chess rules, legal moves, FEN, PGN support |
 | `vendor/stockfish/` | Browser-compatible Stockfish bundles |
 | `assets/openings.tsv` | Opening identification database |
@@ -341,6 +390,11 @@ Useful checks after editing JavaScript or documentation:
 node --check app.js
 node --check ai-help-chat.mjs
 node --check worker/ai-help-worker.js
+node --check lessons/pawn-teacher-board.js
+node --check lessons/teacher-board-illegal-moves.mjs
+node --check lessons/lesson-presentation.js
+node --check live-board-realtime.js
+node --check live-board-messages-v2.js
 node tools/test-puzzle-api.mjs
 git diff --check
 ```
@@ -354,6 +408,9 @@ Because the app has no build step, browser testing remains important. Test at mi
 - puzzle sessions
 - analysis/tablebase fallback
 - embedded board mode
+- lesson presentation scene navigation, reveal/reset, and click pulse
+- Teacher Board Empty, Start, Page, side-to-move, piece placement, and normal play after setup
+- Live Board teacher/student synchronization, lock state, prepared positions, and delayed message initialization
 - mobile AI-help hiding
 - lesson JSON and PGN round trips
 
