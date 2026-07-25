@@ -24,6 +24,8 @@ jobs:
 
       - name: Apply Teacher Board setup repair
         run: |
+          python3 scripts/fix-teacher-board-patch-anchor.py
+          rm -f teacher-board-patch-output.txt
           set +e
           python3 scripts/patch-teacher-board-setup.py > teacher-board-patch-output.txt 2>&1
           status=$?
@@ -85,6 +87,7 @@ jobs:
       - name: Remove temporary repair machinery
         run: |
           rm scripts/patch-teacher-board-setup.py
+          rm scripts/fix-teacher-board-patch-anchor.py
           rm scripts/test-teacher-board-setup.js
           rm .github/workflows/repair-teacher-board-setup.yml
           rm -f teacher-board-patch-output.txt
