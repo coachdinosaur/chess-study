@@ -1,0 +1,14 @@
+Baseline manifest count: 200
+Baseline loaded records: 200
+Baseline unique IDs: 200
+Baseline unique FENs: 200
+Candidate manifest count: 500
+Candidate loaded records: 500
+Candidate unique IDs: 500
+Candidate unique FENs: 500
+Candidate duplicate IDs: 0
+Candidate duplicate FENs: 0
+Baseline ID overlaps: 200
+Baseline FEN overlaps: 200
+Eligible unique additions: 300
+First eligible IDs: 00AhO, 00Ahb, 00Al5, 00AoZ, 00Aq4, 00Ar2, 00Au2, 00AuR, 00Aul, 00B2k
