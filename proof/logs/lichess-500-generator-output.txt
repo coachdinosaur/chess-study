@@ -1,0 +1,1 @@
+Created 36 shards with 900 positions in /tmp/lichess-position-candidates
