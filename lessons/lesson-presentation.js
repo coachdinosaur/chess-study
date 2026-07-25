@@ -7,7 +7,7 @@
   var VERSION = "20260725-presentation-click-pulse-v5";
   var scriptUrl = document.currentScript && document.currentScript.src
     ? document.currentScript.src
-    : new URL("lesson-presentation.js", window.location.href).href;
+    : new URL("lesson-presentation.js?v=20260725-presentation-click-pulse-v5", window.location.href).href;
 
   var scenes = [];
   var activeIndex = 0;
