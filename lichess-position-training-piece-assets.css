@@ -1,0 +1,120 @@
+.position-training-square > span {
+  display: block;
+  width: 88%;
+  height: 88%;
+  color: transparent;
+  font-size: 0;
+  line-height: 0;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 0.12rem 0.1rem var(--piece-shadow));
+}
+
+.position-training-square[aria-label$="white k"] > span {
+  background-image: url("./assets/pieces/mpchess/wK.svg");
+}
+
+.position-training-square[aria-label$="white q"] > span {
+  background-image: url("./assets/pieces/mpchess/wQ.svg");
+}
+
+.position-training-square[aria-label$="white r"] > span {
+  background-image: url("./assets/pieces/mpchess/wR.svg");
+}
+
+.position-training-square[aria-label$="white b"] > span {
+  background-image: url("./assets/pieces/mpchess/wB.svg");
+}
+
+.position-training-square[aria-label$="white n"] > span {
+  background-image: url("./assets/pieces/mpchess/wN.svg");
+}
+
+.position-training-square[aria-label$="white p"] > span {
+  background-image: url("./assets/pieces/mpchess/wP.svg");
+}
+
+.position-training-square[aria-label$="black k"] > span {
+  background-image: url("./assets/pieces/mpchess/bK.svg");
+}
+
+.position-training-square[aria-label$="black q"] > span {
+  background-image: url("./assets/pieces/mpchess/bQ.svg");
+}
+
+.position-training-square[aria-label$="black r"] > span {
+  background-image: url("./assets/pieces/mpchess/bR.svg");
+}
+
+.position-training-square[aria-label$="black b"] > span {
+  background-image: url("./assets/pieces/mpchess/bB.svg");
+}
+
+.position-training-square[aria-label$="black n"] > span {
+  background-image: url("./assets/pieces/mpchess/bN.svg");
+}
+
+.position-training-square[aria-label$="black p"] > span {
+  background-image: url("./assets/pieces/mpchess/bP.svg");
+}
+
+.position-training-square.legal-target:has(> span:not(:empty))::after {
+  width: 82%;
+  border: clamp(3px, 0.55vw, 5px) solid var(--legal-capture);
+  background: transparent;
+  box-shadow:
+    inset 0 0 0 1px var(--legal-capture-rim),
+    0 0 0 1px var(--legal-target-halo);
+}
+
+.position-training-promotion button[data-pt-promotion-piece] {
+  color: transparent;
+  font-size: 0;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 88%;
+  filter: drop-shadow(0 0.08rem 0.08rem var(--piece-shadow));
+}
+
+.position-training-board-wrap:has(.position-training-board > .position-training-square:first-child[data-square="a8"])
+  .position-training-promotion button[data-pt-promotion-piece="q"] {
+  background-image: url("./assets/pieces/mpchess/wQ.svg");
+}
+
+.position-training-board-wrap:has(.position-training-board > .position-training-square:first-child[data-square="a8"])
+  .position-training-promotion button[data-pt-promotion-piece="r"] {
+  background-image: url("./assets/pieces/mpchess/wR.svg");
+}
+
+.position-training-board-wrap:has(.position-training-board > .position-training-square:first-child[data-square="a8"])
+  .position-training-promotion button[data-pt-promotion-piece="b"] {
+  background-image: url("./assets/pieces/mpchess/wB.svg");
+}
+
+.position-training-board-wrap:has(.position-training-board > .position-training-square:first-child[data-square="a8"])
+  .position-training-promotion button[data-pt-promotion-piece="n"] {
+  background-image: url("./assets/pieces/mpchess/wN.svg");
+}
+
+.position-training-board-wrap:has(.position-training-board > .position-training-square:first-child[data-square="h1"])
+  .position-training-promotion button[data-pt-promotion-piece="q"] {
+  background-image: url("./assets/pieces/mpchess/bQ.svg");
+}
+
+.position-training-board-wrap:has(.position-training-board > .position-training-square:first-child[data-square="h1"])
+  .position-training-promotion button[data-pt-promotion-piece="r"] {
+  background-image: url("./assets/pieces/mpchess/bR.svg");
+}
+
+.position-training-board-wrap:has(.position-training-board > .position-training-square:first-child[data-square="h1"])
+  .position-training-promotion button[data-pt-promotion-piece="b"] {
+  background-image: url("./assets/pieces/mpchess/bB.svg");
+}
+
+.position-training-board-wrap:has(.position-training-board > .position-training-square:first-child[data-square="h1"])
+  .position-training-promotion button[data-pt-promotion-piece="n"] {
+  background-image: url("./assets/pieces/mpchess/bN.svg");
+}
