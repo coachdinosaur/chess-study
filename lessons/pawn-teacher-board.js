@@ -4,7 +4,7 @@
   var DEFAULT_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
   var STORAGE_PREFIX = "teacher-board-lesson-csv-v1:";
   var STORAGE_VERSION = 1;
-  var TEACHER_CACHE_VERSION = "20260710-teacher-lesson-csv1";
+  var TEACHER_CACHE_VERSION = "20260725-teacher-board-setup1";
   var PIECES = ["K", "Q", "R", "B", "N", "P"];
   var PIECE_LABELS = {
     K: "King",
@@ -21,6 +21,7 @@
   var annotateOpen = false;
   var selectedPiece = "";
   var setupColor = "w";
+  var setupSideToMove = fenSideToMove(teacherFen());
   var boardMenuOpen = false;
   var maximized = false;
   var teacherGameStatusObserver = null;
@@ -221,6 +222,28 @@
 
   function normalizeFenText(value) {
     return String(value == null ? "" : value).trim().replace(/\s+/g, " ");
+  }
+
+  function fenSideToMove(value) {
+    var parts = normalizeFenText(value).split(" ");
+    return parts[1] === "b" ? "b" : "w";
+  }
+
+  function currentTeacherBoardFen() {
+    try {
+      var fenElement = iframe && iframe.contentDocument
+        ? iframe.contentDocument.getElementById("currentFenCode")
+        : null;
+      var current = normalizeFenText(fenElement ? fenElement.textContent : "");
+      return current || teacherFen();
+    } catch (error) {
+      return teacherFen();
+    }
+  }
+
+  function syncSetupSideToMoveFromFen(value) {
+    setupSideToMove = fenSideToMove(value || currentTeacherBoardFen());
+    syncSelectedPieceButtons();
   }
 
   function clearTeacherGameStatus() {
@@ -670,6 +693,16 @@
     ].join("");
   }
 
+  function setupSideToMoveControl() {
+    return [
+      '<div class="teacher-side-to-move" role="group" aria-label="Side to move">',
+      '  <span class="teacher-side-to-move-label">Side to move</span>',
+      '  <button type="button" data-teacher-action="side-to-move" data-teacher-side="w" aria-pressed="' + (setupSideToMove === "w" ? "true" : "false") + '">White</button>',
+      '  <button type="button" data-teacher-action="side-to-move" data-teacher-side="b" aria-pressed="' + (setupSideToMove === "b" ? "true" : "false") + '">Black</button>',
+      '</div>'
+    ].join("");
+  }
+
   function setupBoardMenu() {
     return [
       '<div class="teacher-board-menu-wrap">',
@@ -832,9 +865,10 @@
       '<div class="teacher-board-setup-tray" hidden>',
       '  <div class="teacher-piece-tray">',
       setupBoardMenu(),
-      setupColorToggle(),
-      setupPieceRow(),
-      '    <button type="button" class="teacher-piece-button teacher-piece-eraser" data-teacher-piece="eraser" aria-pressed="false" title="Erase pieces">Erase</button>',
+       setupColorToggle(),
+       setupPieceRow(),
+       '    <button type="button" class="teacher-piece-button teacher-piece-eraser" data-teacher-piece="eraser" aria-pressed="false" title="Erase pieces">Erase</button>',
+       setupSideToMoveControl(),
       '  </div>',
       '  <button type="button" class="teacher-board-tool teacher-setup-done" data-teacher-action="done-setup">Done</button>',
       '</div>',
@@ -900,6 +934,10 @@
     if (boardMenu) {
       boardMenu.hidden = !boardMenuOpen;
     }
+    panel.querySelectorAll('[data-teacher-action="side-to-move"]').forEach(function (button) {
+      var active = button.getAttribute("data-teacher-side") === setupSideToMove;
+      setButtonState(button, active);
+    });
     panel.querySelectorAll("[data-teacher-piece]").forEach(function (button) {
       var active = button.getAttribute("data-teacher-piece") === selectedPiece;
       setButtonState(button, active);
@@ -916,9 +954,10 @@
     }
     tray.innerHTML = [
       setupBoardMenu(),
-      setupColorToggle(),
-      setupPieceRow(),
-      '<button type="button" class="teacher-piece-button teacher-piece-eraser" data-teacher-piece="eraser" aria-pressed="false" title="Erase pieces">Erase</button>'
+       setupColorToggle(),
+       setupPieceRow(),
+       '<button type="button" class="teacher-piece-button teacher-piece-eraser" data-teacher-piece="eraser" aria-pressed="false" title="Erase pieces">Erase</button>',
+       setupSideToMoveControl()
     ].join("");
     syncSelectedPieceButtons();
   }
@@ -1083,6 +1122,8 @@
       return;
     }
 
+    syncSetupSideToMoveFromFen(data.fen || pending.fen);
+
     if (pending.kind === "lesson") {
       var position = lessonPositionById(pending.positionId);
       if (!position) {
@@ -1121,6 +1162,7 @@
     if (data.type === "teacherBoardReady") {
       iframeReady = true;
       observeTeacherGameStatus();
+      syncSetupSideToMoveFromFen();
       sendPendingLessonLoad();
       return;
     }
@@ -1347,6 +1389,13 @@
       renderSetupTrayPieces();
       return;
     }
+    if (action === "side-to-move") {
+      setupSideToMove = button.getAttribute("data-teacher-side") === "b" ? "b" : "w";
+      boardMenuOpen = false;
+      syncSelectedPieceButtons();
+      post("setSideToMove", { side: setupSideToMove });
+      return;
+    }
     if (action === "close") {
       closePanel();
       return;
@@ -1388,7 +1437,7 @@
       selectedPiece = "";
       boardMenuOpen = false;
       syncSelectedPieceButtons();
-      post("emptyTeacherBoard");
+      post("emptyTeacherBoard", { side: setupSideToMove });
       return;
     }
     if (action === "start-board") {
@@ -1396,7 +1445,7 @@
       selectedPiece = "";
       boardMenuOpen = false;
       syncSelectedPieceButtons();
-      post("startTeacherBoard");
+      post("startTeacherBoard", { side: setupSideToMove });
       return;
     }
     if (action === "page-board") {

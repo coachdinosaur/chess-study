@@ -10,7 +10,7 @@ function loadTeacherBoardIllegalMoveSupport() {
       && (boardOnly === '1' || boardOnly === 'true')
       && params.has('_teacher');
     if (isTeacherBoard) {
-      void import('./lessons/teacher-board-illegal-moves.mjs?v=20260711-illegal3').catch((error) => {
+      void import('./lessons/teacher-board-illegal-moves.mjs?v=20260725-teacher-board-setup1').catch((error) => {
         console.warn('[Teacher Board] Illegal-move support failed to load.', error);
       });
     }
