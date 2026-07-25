@@ -16,4 +16,4 @@
 - Core tests: PASS
 - Browser smoke test: PASS
 
-The production dataset was regenerated from real Lichess puzzle rows using the repository generator. The original 100 records remain byte-for-byte equivalent as records, followed by 100 additional unique records.
+The original 100 production records were compared directly with main and remained unchanged. The expanded dataset adds 100 unique records generated from real Lichess puzzle rows.

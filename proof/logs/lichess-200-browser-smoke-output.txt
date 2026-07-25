@@ -1,15 +1,2 @@
-node:internal/modules/run_main:123
-    triggerUncaughtException(
-    ^
-
-AssertionError [ERR_ASSERTION]: unexpected rejected-move feedback: Selection cleared.
-    at file:///home/runner/work/chess-study/chess-study/tests/lichess-position-training-browser-smoke.mjs:159:14 {
-  generatedMessage: false,
-  code: 'ERR_ASSERTION',
-  actual: 'Selection cleared.',
-  expected: /Try another move/i,
-  operator: 'match',
-  diff: 'simple'
-}
-
-Node.js v22.23.1
+Dynamic evaluator accepted a preserving move after 14 attempt(s); intercepted tablebase requests: 0.
+Position training browser smoke test passed.
