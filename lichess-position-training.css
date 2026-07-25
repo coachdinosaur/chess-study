@@ -2,12 +2,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  margin: 0 0 1rem;
-  padding: 1rem;
-  border: 1px solid color-mix(in srgb, var(--accent-strong, #3b82f6) 35%, transparent);
-  border-radius: 14px;
-  background: color-mix(in srgb, var(--accent-strong, #3b82f6) 8%, var(--surface, #fff));
+  gap: var(--space-md, 1rem);
+  margin: 0 0 var(--space-md, 1rem);
+  padding: var(--space-md, 1rem);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-panel, 12px);
+  background: color-mix(in srgb, var(--card-bg) 92%, var(--accent-soft) 8%);
+  color: var(--text);
+  box-shadow: 0 0.45rem 1.25rem var(--panel-shadow);
 }
 
 .position-training-launcher h3,
@@ -17,16 +19,20 @@
 
 .position-training-launcher p + h3,
 .position-training-launcher h3 + p {
-  margin-top: .3rem;
+  margin-top: 0.3rem;
+}
+
+.position-training-launcher h3 {
+  font-family: var(--font-display);
 }
 
 .position-training-eyebrow {
-  margin: 0 0 .25rem;
-  font-size: .74rem;
+  margin: 0 0 0.25rem;
+  font-size: 0.74rem;
   font-weight: 800;
-  letter-spacing: .08em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--accent-strong, #2563eb);
+  color: var(--accent-strong);
 }
 
 body.position-training-open {
@@ -39,8 +45,8 @@ body.position-training-open {
   z-index: 10000;
   display: grid;
   place-items: center;
-  padding: 1rem;
-  background: rgb(15 23 42 / .82);
+  padding: var(--space-md, 1rem);
+  background: var(--modal-scrim);
   backdrop-filter: blur(8px);
 }
 
@@ -52,10 +58,11 @@ body.position-training-open {
   width: min(1180px, 100%);
   max-height: calc(100vh - 2rem);
   overflow: auto;
-  border-radius: 20px;
-  background: var(--surface, #fff);
-  color: var(--text, #111827);
-  box-shadow: 0 24px 80px rgb(0 0 0 / .35);
+  border: 1px solid var(--modal-border);
+  border-radius: calc(var(--radius-panel, 12px) + 8px);
+  background: var(--modal-bg);
+  color: var(--text);
+  box-shadow: 0 1.5rem 5rem var(--modal-shadow);
 }
 
 .position-training-header {
@@ -64,10 +71,10 @@ body.position-training-open {
   z-index: 2;
   display: flex;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem 1.2rem;
-  border-bottom: 1px solid var(--section-divider-soft, #d1d5db);
-  background: color-mix(in srgb, var(--surface, #fff) 94%, transparent);
+  gap: var(--space-md, 1rem);
+  padding: var(--space-md, 1rem) 1.2rem;
+  border-bottom: 1px solid var(--section-divider-soft);
+  background: color-mix(in srgb, var(--modal-bg) 94%, transparent);
   backdrop-filter: blur(10px);
 }
 
@@ -76,21 +83,35 @@ body.position-training-open {
   margin: 0;
 }
 
+.position-training-header h2 {
+  font-family: var(--font-display);
+}
+
 .position-training-header h2 + p {
-  margin-top: .35rem;
   max-width: 70ch;
-  color: var(--muted, #6b7280);
+  margin-top: 0.35rem;
+  color: var(--text-muted);
 }
 
 .position-training-icon-button {
+  flex: 0 0 auto;
   width: 2.4rem;
   height: 2.4rem;
-  border: 0;
-  border-radius: 999px;
-  background: var(--surface-muted, #eef2f7);
-  color: inherit;
+  padding: 0;
+  border: 1px solid var(--button-tonal-border);
+  border-radius: var(--radius-pill, 999px);
+  background: var(--button-tonal-bg);
+  color: var(--text);
+  font: inherit;
   font-size: 1.6rem;
+  line-height: 1;
   cursor: pointer;
+  transition: border-color var(--ease), background var(--ease), box-shadow var(--ease);
+}
+
+.position-training-icon-button:hover {
+  border-color: var(--focus-border);
+  background: color-mix(in srgb, var(--button-tonal-bg) 88%, var(--accent-soft) 12%);
 }
 
 .position-training-content {
@@ -108,22 +129,43 @@ body.position-training-open {
   position: relative;
   width: min(78vh, 100%);
   margin-inline: auto;
+  padding: clamp(0.36rem, 1vw, 0.55rem);
+  border: 1px solid var(--board-frame-shell-border);
+  border-radius: calc(var(--radius-panel, 12px) + 2px);
+  background: linear-gradient(180deg, var(--board-frame-top), var(--board-frame-bottom));
+  box-shadow:
+    0 0.8rem 2rem var(--board-frame-shell-shadow-primary),
+    0 0 0 0.2rem var(--board-frame-shell-shadow-secondary);
 }
 
 .position-training-board {
+  position: relative;
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
+  grid-template-columns: repeat(8, minmax(0, 1fr));
   aspect-ratio: 1;
   overflow: hidden;
-  border: 2px solid #1f2937;
-  border-radius: 12px;
-  box-shadow: 0 16px 35px rgb(0 0 0 / .2);
+  border: 1px solid var(--board-frame-border);
+  border-radius: var(--radius-card, 8px);
+  background: var(--board-light);
+  box-shadow:
+    0 0.7rem 1.7rem var(--board-shadow-primary),
+    0 0 0 0.16rem var(--board-shadow-secondary);
   user-select: none;
+  touch-action: manipulation;
+}
+
+.position-training-board::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px var(--board-grid-gloss);
 }
 
 .position-training-board.is-busy {
   pointer-events: none;
-  opacity: .88;
+  opacity: 0.88;
 }
 
 .position-training-square {
@@ -131,57 +173,87 @@ body.position-training-open {
   display: grid;
   place-items: center;
   min-width: 0;
+  min-height: 0;
   padding: 0;
   border: 0;
   border-radius: 0;
+  background: transparent;
+  color: inherit;
   font: inherit;
   cursor: pointer;
+  isolation: isolate;
 }
 
 .position-training-square.light {
-  background: #f0d9b5;
+  background: var(--board-light);
 }
 
 .position-training-square.dark {
-  background: #b58863;
+  background: var(--board-dark);
 }
 
-.position-training-square > span {
-  font-size: clamp(1.75rem, 6vw, 4.7rem);
-  line-height: 1;
-  filter: drop-shadow(0 2px 1px rgb(0 0 0 / .22));
+.position-training-square:hover::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  box-shadow: inset 0 0 0 2px var(--board-hover-outline);
+}
+
+.position-training-piece {
+  display: block;
+  width: 88%;
+  height: 88%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  filter: drop-shadow(0 0.12rem 0.1rem var(--piece-shadow));
 }
 
 .position-training-square > small {
   position: absolute;
   left: 4px;
   bottom: 2px;
-  font-size: clamp(.48rem, 1.2vw, .72rem);
+  z-index: 4;
+  font-size: clamp(0.48rem, 1.2vw, 0.72rem);
   font-weight: 800;
-  color: rgb(17 24 39 / .66);
+  line-height: 1;
+  pointer-events: none;
+}
+
+.position-training-square.light > small {
+  color: var(--coord-light-color);
+}
+
+.position-training-square.dark > small {
+  color: var(--coord-dark-color);
 }
 
 .position-training-square.selected {
-  box-shadow: inset 0 0 0 5px rgb(250 204 21 / .92);
+  box-shadow: inset 0 0 0 clamp(3px, 0.6vw, 5px) var(--selection);
 }
 
 .position-training-square.legal-target::after {
   content: '';
+  position: absolute;
+  z-index: 2;
   width: 28%;
   aspect-ratio: 1;
+  border: 1px solid var(--legal-target-rim);
   border-radius: 50%;
-  background: rgb(15 23 42 / .34);
+  background: var(--legal-target);
+  box-shadow: 0 0 0 0.16rem var(--legal-target-shadow);
+  pointer-events: none;
 }
 
-.position-training-square.legal-target > span + small,
-.position-training-square.legal-target > span:not(:empty) ~ small {
-  z-index: 2;
-}
-
-.position-training-square.legal-target:has(> span:not(:empty))::after {
+.position-training-square.legal-target:has(.position-training-piece)::after {
   width: 82%;
+  border: clamp(3px, 0.55vw, 5px) solid var(--legal-capture);
   background: transparent;
-  border: 5px solid rgb(185 28 28 / .55);
+  box-shadow:
+    inset 0 0 0 1px var(--legal-capture-rim),
+    0 0 0 1px var(--legal-target-halo);
 }
 
 .position-training-square.hinted {
@@ -189,22 +261,28 @@ body.position-training-open {
 }
 
 @keyframes position-training-hint {
-  from { box-shadow: inset 0 0 0 3px rgb(59 130 246 / .6); }
-  to { box-shadow: inset 0 0 0 8px rgb(59 130 246 / .95); }
+  from {
+    box-shadow: inset 0 0 0 3px color-mix(in srgb, var(--accent) 62%, transparent);
+  }
+  to {
+    box-shadow: inset 0 0 0 8px color-mix(in srgb, var(--accent-strong) 92%, transparent);
+  }
 }
 
 .position-training-promotion {
   position: absolute;
   inset: 50% auto auto 50%;
-  transform: translate(-50%, -50%);
-  z-index: 4;
+  z-index: 6;
   display: flex;
   align-items: center;
-  gap: .45rem;
-  padding: .75rem;
-  border-radius: 12px;
-  background: var(--surface, #fff);
-  box-shadow: 0 18px 45px rgb(0 0 0 / .35);
+  gap: 0.45rem;
+  transform: translate(-50%, -50%);
+  padding: 0.75rem;
+  border: 1px solid var(--modal-border);
+  border-radius: var(--radius-panel, 12px);
+  background: var(--modal-bg);
+  color: var(--text);
+  box-shadow: 0 1.1rem 2.8rem var(--modal-shadow);
 }
 
 .position-training-promotion[hidden] {
@@ -212,101 +290,153 @@ body.position-training-open {
 }
 
 .position-training-promotion p {
-  margin: 0 .35rem 0 0;
+  margin: 0 0.35rem 0 0;
   font-weight: 700;
 }
 
 .position-training-promotion button {
+  display: grid;
+  place-items: center;
   width: 3.2rem;
   height: 3.2rem;
-  border: 1px solid var(--section-divider-soft, #d1d5db);
-  border-radius: 9px;
-  background: var(--surface-muted, #f3f4f6);
-  font-size: 2rem;
+  padding: 0.2rem;
+  border: 1px solid var(--button-tonal-border);
+  border-radius: var(--radius-card, 8px);
+  background: var(--button-tonal-bg);
+  color: var(--text);
   cursor: pointer;
 }
 
+.position-training-promotion button:hover {
+  border-color: var(--focus-border);
+  background: color-mix(in srgb, var(--button-tonal-bg) 86%, var(--accent-soft) 14%);
+}
+
+.position-training-promotion-piece {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  filter: drop-shadow(0 0.08rem 0.08rem var(--piece-shadow));
+}
+
 .position-training-feedback {
-  margin-top: 1rem;
-  padding: .8rem 1rem;
-  border-radius: 11px;
+  margin-top: var(--space-md, 1rem);
+  padding: 0.8rem 1rem;
   border: 1px solid transparent;
+  border-radius: calc(var(--radius-card, 8px) + 3px);
+  color: var(--text);
   font-weight: 650;
 }
 
 .position-training-feedback.info {
-  background: rgb(59 130 246 / .1);
-  border-color: rgb(59 130 246 / .28);
+  border-color: var(--focus-border);
+  background: var(--accent-soft);
 }
 
 .position-training-feedback.success {
-  background: rgb(22 163 74 / .11);
-  border-color: rgb(22 163 74 / .3);
+  border-color: var(--banner-success-border);
+  background: var(--banner-success-bg);
+  color: var(--banner-success-text);
 }
 
 .position-training-feedback.warning {
-  background: rgb(217 119 6 / .12);
-  border-color: rgb(217 119 6 / .32);
+  border-color: var(--banner-warning-border);
+  background: var(--banner-warning-bg);
+  color: var(--banner-warning-text);
 }
 
 .position-training-feedback.danger {
-  background: rgb(220 38 38 / .1);
-  border-color: rgb(220 38 38 / .3);
+  border-color: var(--banner-danger-border);
+  background: var(--banner-danger-bg);
+  color: var(--banner-danger-text);
 }
 
 .position-training-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: .65rem;
-  margin-top: .8rem;
+  gap: 0.65rem;
+  margin-top: 0.8rem;
 }
 
 .position-training-actions button,
 .position-training-launcher button {
   min-height: 2.5rem;
-  padding: .6rem .9rem;
-  border: 1px solid var(--section-divider-soft, #cbd5e1);
-  border-radius: 10px;
-  background: var(--surface-muted, #f1f5f9);
-  color: inherit;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--button-tonal-border);
+  border-radius: calc(var(--radius-card, 8px) + 2px);
+  background: var(--button-tonal-bg);
+  color: var(--text);
+  font: inherit;
   font-weight: 750;
   cursor: pointer;
+  transition: border-color var(--ease), background var(--ease), box-shadow var(--ease), transform var(--ease);
+}
+
+.position-training-actions button:hover:not(:disabled),
+.position-training-launcher button:hover:not(:disabled) {
+  border-color: var(--focus-border);
+  background: color-mix(in srgb, var(--button-tonal-bg) 88%, var(--accent-soft) 12%);
 }
 
 .position-training-actions button.primary,
 .position-training-launcher button.primary {
-  border-color: var(--accent-strong, #2563eb);
-  background: var(--accent-strong, #2563eb);
-  color: #fff;
+  border-color: var(--button-primary-border);
+  background: var(--button-primary-bg);
+  color: var(--button-primary-text);
+}
+
+.position-training-actions button.primary:hover:not(:disabled),
+.position-training-launcher button.primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--button-primary-bg) 92%, var(--panel-strong) 8%);
 }
 
 .position-training-actions button:disabled {
   cursor: wait;
-  opacity: .58;
+  opacity: 0.58;
+}
+
+.position-training-icon-button:focus-visible,
+.position-training-actions button:focus-visible,
+.position-training-launcher button:focus-visible,
+.position-training-promotion button:focus-visible,
+.position-training-card input:focus-visible,
+.position-training-card select:focus-visible,
+.position-training-square:focus-visible {
+  outline: 2px solid var(--focus-border);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 0.25rem var(--focus-ring);
 }
 
 .position-training-sidebar {
   display: grid;
   align-content: start;
-  gap: .85rem;
+  gap: 0.85rem;
 }
 
 .position-training-card {
-  padding: .95rem;
-  border: 1px solid var(--section-divider-soft, #d1d5db);
-  border-radius: 12px;
-  background: var(--surface-muted, #f8fafc);
+  padding: 0.95rem;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-panel, 12px);
+  background: var(--card-bg);
+  color: var(--text);
+  box-shadow: 0 0.35rem 1rem var(--panel-shadow);
 }
 
 .position-training-card h3 {
-  margin: 0 0 .7rem;
+  margin: 0 0 0.7rem;
+  font-family: var(--font-display);
 }
 
 .position-training-card label {
   display: grid;
-  gap: .3rem;
-  margin-top: .65rem;
-  font-size: .88rem;
+  gap: 0.3rem;
+  margin-top: 0.65rem;
+  color: var(--text-muted);
+  font-size: 0.88rem;
   font-weight: 700;
 }
 
@@ -314,53 +444,57 @@ body.position-training-open {
 .position-training-card select {
   width: 100%;
   min-height: 2.35rem;
-  padding: .45rem .55rem;
-  border: 1px solid var(--section-divider-soft, #cbd5e1);
-  border-radius: 8px;
-  background: var(--surface, #fff);
-  color: inherit;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-card, 8px);
+  background: var(--input-bg);
+  color: var(--text);
+  font: inherit;
 }
 
 .position-training-details {
   display: grid;
-  gap: .55rem;
+  gap: 0.55rem;
   margin: 0;
 }
 
 .position-training-details > div {
   display: grid;
-  grid-template-columns: 72px 1fr;
-  gap: .5rem;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 0.5rem;
 }
 
 .position-training-details dt {
-  color: var(--muted, #64748b);
+  color: var(--text-muted);
 }
 
 .position-training-details dd {
   margin: 0;
+  overflow-wrap: anywhere;
   font-weight: 700;
 }
 
 .position-training-repair-note {
-  margin: .8rem 0 0;
-  font-size: .82rem;
+  margin: 0.8rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.82rem;
   line-height: 1.4;
-  color: var(--muted, #64748b);
 }
 
 .position-training-stats {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: .6rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
 }
 
 .position-training-stats > div {
   display: grid;
-  gap: .1rem;
-  padding: .6rem;
-  border-radius: 9px;
-  background: var(--surface, #fff);
+  gap: 0.1rem;
+  padding: 0.6rem;
+  border: 1px solid var(--section-divider-soft);
+  border-radius: calc(var(--radius-card, 8px) + 1px);
+  background: var(--panel-strong);
+  color: var(--text);
   text-align: center;
 }
 
@@ -369,8 +503,8 @@ body.position-training-open {
 }
 
 .position-training-stats span {
-  font-size: .75rem;
-  color: var(--muted, #64748b);
+  color: var(--text-muted);
+  font-size: 0.75rem;
 }
 
 @media (max-width: 860px) {
@@ -397,7 +531,7 @@ body.position-training-open {
 
   .position-training-header,
   .position-training-content {
-    padding: .75rem;
+    padding: 0.75rem;
   }
 
   .position-training-header > div > p:last-child {
@@ -406,6 +540,10 @@ body.position-training-open {
 
   .position-training-sidebar {
     grid-template-columns: 1fr;
+  }
+
+  .position-training-board-wrap {
+    width: 100%;
   }
 
   .position-training-launcher {
