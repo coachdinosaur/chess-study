@@ -186,5 +186,5 @@ export function isTrainingSolved({ game, objective, solverColor, solverMoves, st
   const currentMaterial = materialBalanceForColor(game, solverColor);
   const materialGain = currentMaterial - startMaterial;
   const score = numericWinningScore(evaluation?.solverScore);
-  return (materialGain >= 3 && score >= 150) || score >= 600 || (evaluation?.outcome === 'win' && solverMoves >= 4);
+  return materialGain >= 1 && score >= 100;
 }
