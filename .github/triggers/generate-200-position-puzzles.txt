@@ -1,1 +1,0 @@
-Generate and validate 200 production position-training puzzles.
