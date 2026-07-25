@@ -1,0 +1,102 @@
+name: Position training smoke
+
+on:
+  push:
+    branches:
+      - agent/position-based-puzzle-training
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  smoke:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run and record smoke suite
+        shell: bash
+        run: |
+          set +e
+          node --test tests/lichess-position-training-core.test.mjs > /tmp/core-tests.log 2>&1
+          core_status=$?
+
+          npm install --no-save playwright@1.55.0 > /tmp/playwright-install.log 2>&1
+          install_status=$?
+          if [ "$install_status" -eq 0 ]; then
+            npx playwright install --with-deps chromium >> /tmp/playwright-install.log 2>&1
+            install_status=$?
+          fi
+
+          server_status=1
+          browser_status=1
+          if [ "$install_status" -eq 0 ]; then
+            python3 local_server.py --host 127.0.0.1 --port 8000 > /tmp/chess-study-server.log 2>&1 &
+            echo $! > /tmp/chess-study-server.pid
+            for attempt in {1..30}; do
+              if curl --fail --silent http://127.0.0.1:8000/ > /dev/null; then
+                server_status=0
+                break
+              fi
+              sleep 1
+            done
+            if [ "$server_status" -eq 0 ]; then
+              node tests/lichess-position-training-browser-smoke.mjs > /tmp/browser-smoke.log 2>&1
+              browser_status=$?
+            fi
+          fi
+
+          result=PASS
+          if [ "$core_status" -ne 0 ] || [ "$install_status" -ne 0 ] || [ "$server_status" -ne 0 ] || [ "$browser_status" -ne 0 ]; then
+            result=FAIL
+          fi
+
+          {
+            echo "Position training smoke result: $result"
+            echo "Commit: $GITHUB_SHA"
+            echo "Core tests: $core_status"
+            echo "Playwright install: $install_status"
+            echo "Local server: $server_status"
+            echo "Browser smoke: $browser_status"
+            echo
+            echo "--- Core test log ---"
+            tail -n 80 /tmp/core-tests.log 2>/dev/null || true
+            echo
+            echo "--- Browser smoke log ---"
+            tail -n 120 /tmp/browser-smoke.log 2>/dev/null || true
+            echo
+            echo "--- Server log ---"
+            tail -n 80 /tmp/chess-study-server.log 2>/dev/null || true
+            echo
+            echo "--- Playwright install log (tail) ---"
+            tail -n 40 /tmp/playwright-install.log 2>/dev/null || true
+          } > tests/position-training-smoke-report.txt
+
+      - name: Commit smoke report
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tests/position-training-smoke-report.txt
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "Record position training smoke result [skip ci]"
+          git push origin HEAD:agent/position-based-puzzle-training
+
+      - name: Enforce smoke result
+        shell: bash
+        run: |
+          grep -q '^Position training smoke result: PASS$' tests/position-training-smoke-report.txt

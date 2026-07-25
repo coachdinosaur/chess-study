@@ -1,0 +1,88 @@
+name: Prove Lichess 100-puzzle generation
+
+on:
+  push:
+    branches:
+      - agent/position-based-puzzle-training
+    paths:
+      - .github/workflows/prove-lichess-100.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate-and-validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/position-based-puzzle-training
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Download real Lichess CSV subset
+        run: |
+          curl --fail --location --retry 3 \
+            https://raw.githubusercontent.com/banflam/chess-trainer/main/puzzles_subset.csv \
+            --output /tmp/lichess-puzzles-subset.csv
+          test "$(wc -l < /tmp/lichess-puzzles-subset.csv)" -ge 500
+
+      - name: Generate exactly 100 position-training puzzles
+        run: |
+          rm -rf proof/lichess-100-puzzles
+          mkdir -p proof/lichess-100-puzzles proof/logs
+          node tools/build-lichess-position-training.mjs \
+            --input /tmp/lichess-puzzles-subset.csv \
+            --output proof/lichess-100-puzzles \
+            --limit 100 \
+            --shard-size 25 \
+            --min-rating 0 \
+            --max-rating 4000 \
+            --min-popularity 0 \
+            --min-plays 0 \
+            2>&1 | tee proof/logs/generator-output.txt
+
+      - name: Validate the generated puzzles
+        run: |
+          node tools/validate-lichess-position-training.mjs \
+            --dir proof/lichess-100-puzzles \
+            --report proof/lichess-100-validation.md \
+            --expected-count 100 \
+            2>&1 | tee proof/logs/validator-output.txt
+
+      - name: Record reproducibility details
+        run: |
+          {
+            echo '# 100-puzzle generation proof'
+            echo
+            echo "- Generated: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            echo "- Commit tested: $GITHUB_SHA"
+            echo '- Input: banflam/chess-trainer puzzles_subset.csv (real Lichess puzzle rows)'
+            echo '- Requested records: 100'
+            echo '- Shard size: 25'
+            echo
+            echo '## Files'
+            echo
+            find proof/lichess-100-puzzles -maxdepth 1 -type f -printf '%f\n' | sort | sed 's/^/- /'
+            echo
+            echo '## SHA-256'
+            echo
+            echo '```text'
+            sha256sum proof/lichess-100-puzzles/* | sort
+            echo '```'
+          } > proof/lichess-100-proof.md
+
+      - name: Commit proof artifacts
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add proof/lichess-100-puzzles proof/lichess-100-validation.md proof/lichess-100-proof.md proof/logs
+          git commit -m 'test: add generated 100-puzzle proof artifacts'
+          git push origin HEAD:agent/position-based-puzzle-training
