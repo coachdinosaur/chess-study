@@ -116,7 +116,12 @@ export class LichessPositionTrainingDataSource {
   async next(filters = {}) {
     await this.initialize();
     const maximumChecks = Math.max(50, Number(this.manifest?.shardSize || 1000) * 2);
+    let recentReset = false;
     for (let checked = 0; checked < maximumChecks; checked += 1) {
+      if (!recentReset && checked >= Math.floor(maximumChecks / 2)) {
+        this.recentIds.clear();
+        recentReset = true;
+      }
       if (this.recordCursor >= this.recordOrder.length) {
         await this.#loadNextShard();
       }
@@ -128,7 +133,8 @@ export class LichessPositionTrainingDataSource {
       if (!matchesFilters(record, filters)) continue;
       if (id) {
         this.recentIds.add(id);
-        if (this.recentIds.size > 200) {
+        const recentLimit = Math.max(0, Math.min(200, Number(this.manifest?.count || 0) - 1));
+        if (this.recentIds.size > recentLimit) {
           this.recentIds.delete(this.recentIds.values().next().value);
         }
       }
