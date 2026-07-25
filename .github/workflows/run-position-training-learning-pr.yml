@@ -1,0 +1,30 @@
+name: Run position training learning upgrade
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/run-position-training-learning-pr.yml
+      - scripts/run-position-training-learning-upgrade.sh
+      - scripts/apply-position-training-learning-upgrade.mjs
+      - lichess-position-training-learning.mjs
+      - tests/lichess-position-training-learning.test.mjs
+
+permissions:
+  contents: write
+
+jobs:
+  run:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/expand-position-training-learning
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: bash scripts/run-position-training-learning-upgrade.sh
