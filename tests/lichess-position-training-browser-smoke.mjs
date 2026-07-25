@@ -113,12 +113,12 @@ try {
   assert.deepEqual([...seenSides].sort(), ['Black', 'White'], 'installed dataset should exercise both solver colors');
 
   const side = (await overlay.locator('[data-pt-current] dd').first().textContent())?.trim();
-  const pieceSymbols = side === 'White' ? '♔♕♖♗♘♙' : '♚♛♜♝♞♟';
+  const colorWord = side === 'White' ? 'white' : 'black';
   const candidateSquares = await overlay.locator('[data-pt-board] [data-square]').evaluateAll(
-    (nodes, symbols) => nodes
-      .filter((node) => symbols.includes(node.textContent || ''))
+    (nodes, color) => nodes
+      .filter((node) => (node.getAttribute('aria-label') || '').includes(` ${color} `))
       .map((node) => node.dataset.square),
-    pieceSymbols,
+    colorWord,
   );
 
   let legalTarget = null;
