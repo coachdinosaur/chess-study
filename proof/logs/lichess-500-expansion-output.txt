@@ -1,0 +1,8 @@
+Baseline preserved: 300/300
+New unique puzzles: 200
+Production puzzles: 500
+Production shards: 20
+Unique IDs: 500
+Unique starting FENs: 500
+First new puzzle: 00GAf
+Last new puzzle: 00Q4v
