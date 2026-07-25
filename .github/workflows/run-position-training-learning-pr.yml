@@ -8,6 +8,7 @@ on:
       - .github/workflows/run-position-training-learning-pr.yml
       - scripts/run-position-training-learning-upgrade.sh
       - scripts/apply-position-training-learning-upgrade.mjs
+      - scripts/fix-position-training-patch-script.mjs
       - lichess-position-training-learning.mjs
       - tests/lichess-position-training-learning.test.mjs
 
@@ -27,6 +28,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Relax cosmetic patch matching
+        run: node scripts/fix-position-training-patch-script.mjs
       - name: Run upgrade
         id: upgrade
         shell: bash
