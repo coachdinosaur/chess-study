@@ -99,9 +99,9 @@ export function engineScoreForSolver(score, sideToMove, solverColor) {
 export function tablebaseOutcomeForSolver(category, sideToMove, solverColor) {
   const normalized = String(category || '').toLowerCase();
   if (!['win', 'loss', 'draw', 'cursed-win', 'blessed-loss'].includes(normalized)) return 'unknown';
-  if (normalized === 'draw') return 'draw';
+  if (normalized === 'draw' || normalized === 'cursed-win' || normalized === 'blessed-loss') return 'draw';
 
-  const sideToMoveWins = normalized === 'win' || normalized === 'cursed-win';
+  const sideToMoveWins = normalized === 'win';
   const solverIsSideToMove = sideToMove === solverColor;
   const solverWins = sideToMoveWins === solverIsSideToMove;
   return solverWins ? 'win' : 'loss';
@@ -167,12 +167,16 @@ export function classifyStudentMove({ objective, baseline, afterMove }) {
   return { accepted: true, grade: 'inaccuracy', reason: 'The move remains winning but makes conversion harder.' };
 }
 
-export function isTrainingSolved({ game, objective, solverColor, solverMoves, startMaterial, evaluation }) {
+export function isTrainingSolved({ game, objective, solverColor, solverMoves, startMaterial, evaluation, themes = [] }) {
   if (game.isCheckmate()) {
     return game.turn() !== solverColor;
   }
   if (game.isDraw()) {
     return objective === TRAINING_OBJECTIVE_DRAW;
+  }
+  const requiresCheckmate = themes.some((theme) => theme === 'mate' || /^mateIn\d+$/.test(theme));
+  if (requiresCheckmate) {
+    return false;
   }
   if (objective === TRAINING_OBJECTIVE_DRAW) {
     return solverMoves >= 4 && (evaluation?.outcome === 'draw' || numericWinningScore(evaluation?.solverScore) >= -40);
@@ -182,5 +186,5 @@ export function isTrainingSolved({ game, objective, solverColor, solverMoves, st
   const currentMaterial = materialBalanceForColor(game, solverColor);
   const materialGain = currentMaterial - startMaterial;
   const score = numericWinningScore(evaluation?.solverScore);
-  return (materialGain >= 3 && score >= 150) || score >= 600 || evaluation?.outcome === 'win' && solverMoves >= 4;
+  return (materialGain >= 3 && score >= 150) || score >= 600 || (evaluation?.outcome === 'win' && solverMoves >= 4);
 }
