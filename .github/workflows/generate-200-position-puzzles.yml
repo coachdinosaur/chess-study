@@ -1,12 +1,6 @@
 name: Generate and validate 200 position-training puzzles
 
 on:
-  push:
-    branches:
-      - agent/add-100-position-training-puzzles
-    paths:
-      - .github/workflows/generate-200-position-puzzles.yml
-      - .github/triggers/generate-200-position-puzzles.txt
   pull_request:
     branches:
       - main
@@ -48,27 +42,22 @@ jobs:
             --output /tmp/lichess-puzzles-subset.csv
           test "$(wc -l < /tmp/lichess-puzzles-subset.csv)" -ge 500
 
-      - name: Preserve the installed 100-puzzle baseline
+      - name: Generate a fresh candidate pool
         run: |
-          rm -rf /tmp/original-position-training
-          cp -R assets/puzzles/lichess-position-training /tmp/original-position-training
-
-      - name: Generate 200 production puzzles
-        run: |
-          rm -rf assets/puzzles/lichess-position-training
-          mkdir -p assets/puzzles/lichess-position-training proof/logs
+          rm -rf /tmp/position-training-candidates
+          mkdir -p /tmp/position-training-candidates proof/logs
           node tools/build-lichess-position-training.mjs \
             --input /tmp/lichess-puzzles-subset.csv \
-            --output assets/puzzles/lichess-position-training \
-            --limit 200 \
-            --shard-size 25 \
+            --output /tmp/position-training-candidates \
+            --limit 500 \
+            --shard-size 100 \
             --min-rating 0 \
             --max-rating 4000 \
             --min-popularity 0 \
             --min-plays 0 \
             2>&1 | tee proof/logs/lichess-200-generator-output.txt
 
-      - name: Verify the original 100 are preserved and the new 100 are unique
+      - name: Append 100 unique records while preserving the installed baseline
         run: |
           node --input-type=module <<'NODE'
           import assert from 'node:assert/strict';
@@ -85,17 +74,71 @@ jobs:
             return { manifest, records };
           }
 
-          const previous = loadDataset('/tmp/original-position-training');
-          const expanded = loadDataset('assets/puzzles/lichess-position-training');
-          assert.equal(previous.records.length, 100, 'baseline dataset must contain 100 records');
-          assert.equal(expanded.records.length, 200, 'expanded dataset must contain 200 records');
-          assert.deepEqual(expanded.records.slice(0, 100), previous.records, 'the original 100 records changed');
+          const outputDirectory = 'assets/puzzles/lichess-position-training';
+          const baseline = loadDataset(outputDirectory);
+          const candidates = loadDataset('/tmp/position-training-candidates');
+          assert.equal(baseline.records.length, 100, 'installed baseline must contain exactly 100 records');
+
+          const seenIds = new Set(baseline.records.map((record) => record.id));
+          const seenFens = new Set(baseline.records.map((record) => record.startFen));
+          const additions = [];
+          for (const record of candidates.records) {
+            if (!record?.id || seenIds.has(record.id)) continue;
+            if (!record?.startFen || seenFens.has(record.startFen)) continue;
+            additions.push(record);
+            seenIds.add(record.id);
+            seenFens.add(record.startFen);
+            if (additions.length === 100) break;
+          }
+          assert.equal(additions.length, 100, `candidate pool produced only ${additions.length} unique additions`);
+
+          const shardSize = 25;
+          const newShards = [];
+          for (let offset = 0; offset < additions.length; offset += shardSize) {
+            const shardIndex = baseline.manifest.shards.length + newShards.length;
+            const file = `shard-${String(shardIndex).padStart(4, '0')}.json`;
+            const puzzles = additions.slice(offset, offset + shardSize);
+            fs.writeFileSync(path.join(outputDirectory, file), `${JSON.stringify({ puzzles })}\n`);
+            newShards.push({ file, count: puzzles.length });
+          }
+
+          const manifest = {
+            ...baseline.manifest,
+            generatedAt: new Date().toISOString(),
+            count: baseline.records.length + additions.length,
+            shardSize,
+            shards: [...baseline.manifest.shards, ...newShards],
+          };
+          fs.writeFileSync(path.join(outputDirectory, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
+          fs.writeFileSync('/tmp/added-position-training-ids.txt', `${additions.map((record) => record.id).join('\n')}\n`);
+
+          console.log(`Preserved baseline records: ${baseline.records.length}`);
+          console.log(`Candidate records inspected: ${candidates.records.length}`);
+          console.log(`Unique records appended: ${additions.length}`);
+          NODE
+
+      - name: Verify all 200 production records
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import fs from 'node:fs';
+          import path from 'node:path';
+
+          const directory = 'assets/puzzles/lichess-position-training';
+          const manifest = JSON.parse(fs.readFileSync(path.join(directory, 'manifest.json'), 'utf8'));
+          const records = manifest.shards.flatMap((shard) => {
+            const payload = JSON.parse(fs.readFileSync(path.join(directory, shard.file), 'utf8'));
+            return Array.isArray(payload) ? payload : payload.puzzles || [];
+          });
+          assert.equal(manifest.count, 200);
+          assert.equal(manifest.shards.length, 8);
+          assert.equal(records.length, 200);
 
           const ids = new Set();
           const startFens = new Set();
           const colors = new Set();
           const forbiddenFields = ['moves', 'solution', 'bestLine', 'bestLineUci', 'continuation'];
-          for (const record of expanded.records) {
+          for (const record of records) {
             assert.ok(record.id && !ids.has(record.id), `duplicate or missing puzzle id: ${record.id}`);
             ids.add(record.id);
             assert.ok(record.startFen && !startFens.has(record.startFen), `duplicate or missing start FEN for ${record.id}`);
@@ -105,11 +148,10 @@ jobs:
               assert.equal(Object.prototype.hasOwnProperty.call(record, field), false, `${record.id} stores forbidden exact-line field ${field}`);
             }
           }
-          assert.deepEqual([...colors].sort(), ['b', 'w'], 'expanded set must contain both solver colors');
-          console.log('Baseline preserved: 100/100');
-          console.log('New unique records: 100');
+          assert.deepEqual([...colors].sort(), ['b', 'w']);
           console.log('Total unique IDs: 200');
           console.log('Total unique starting FENs: 200');
+          console.log('Exact continuation fields: 0');
           NODE
 
       - name: Validate the expanded dataset
@@ -158,13 +200,14 @@ jobs:
             return counts;
           }, {});
           const ratings = records.map((record) => Number(record.rating)).sort((a, b) => a - b);
+          const addedIds = fs.readFileSync('/tmp/added-position-training-ids.txt', 'utf8').trim().split(/\n+/);
           const summary = [
             '# Lichess Position Training: 200-puzzle generation',
             '',
             `- Generated: ${manifest.generatedAt}`,
             `- Production records: ${records.length}`,
             '- Existing records preserved: 100',
-            '- New records added: 100',
+            `- New records added: ${addedIds.length}`,
             `- Shards: ${manifest.shards.length}`,
             `- Shard size: ${manifest.shardSize}`,
             `- White solvers: ${colors.w || 0}`,
@@ -177,7 +220,11 @@ jobs:
             '- Core tests: PASS',
             '- Browser smoke test: PASS',
             '',
-            'The production dataset was regenerated from real Lichess puzzle rows using the repository generator. The original 100 records remain byte-for-byte equivalent as records, followed by 100 additional unique records.',
+            'The installed 100-record baseline was retained. A fresh candidate pool was generated from real Lichess puzzle rows, filtered against the baseline by puzzle ID and resulting starting FEN, and the first 100 unique records were appended.',
+            '',
+            '## Added puzzle IDs',
+            '',
+            ...addedIds.map((id) => `- ${id}`),
             '',
           ].join('\n');
           fs.writeFileSync('proof/lichess-200-generation-summary.md', summary);
