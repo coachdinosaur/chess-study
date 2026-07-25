@@ -1,0 +1,52 @@
+name: Position training smoke
+
+on:
+  push:
+    branches:
+      - agent/position-based-puzzle-training
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run core tests
+        run: node --test tests/lichess-position-training-core.test.mjs
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Start local app server
+        run: |
+          python3 local_server.py --host 127.0.0.1 --port 8000 > /tmp/chess-study-server.log 2>&1 &
+          echo $! > /tmp/chess-study-server.pid
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:8000/ > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/chess-study-server.log
+          exit 1
+
+      - name: Run browser smoke test
+        run: node tests/lichess-position-training-browser-smoke.mjs
+
+      - name: Show server log after failure
+        if: failure()
+        run: cat /tmp/chess-study-server.log || true
