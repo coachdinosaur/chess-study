@@ -1,0 +1,31 @@
+name: Add and validate 200 Lichess position puzzles
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/add-200-lichess-puzzles.yml
+      - scripts/append-200-lichess-position-puzzles.mjs
+      - scripts/run-add-200-lichess-puzzles.sh
+
+permissions:
+  contents: write
+
+jobs:
+  generate-validate-and-test:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out expansion branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/add-200-more-lichess-puzzles
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Generate, validate, test, and commit
+        run: bash scripts/run-add-200-lichess-puzzles.sh
