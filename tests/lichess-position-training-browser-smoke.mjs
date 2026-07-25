@@ -121,25 +121,48 @@ try {
     colorWord,
   );
 
-  let legalTarget = null;
+  let acceptedFeedback = '';
+  let lastFeedback = '';
+  let evaluatedMoves = 0;
+
+  moveSearch:
   for (const square of candidateSquares) {
     await overlay.locator(`[data-pt-board] [data-square="${square}"]`).click();
-    const targets = overlay.locator('[data-pt-board] .legal-target');
-    if (await targets.count()) {
-      legalTarget = targets.first();
-      break;
+    const targetSquares = await overlay.locator('[data-pt-board] .legal-target').evaluateAll(
+      (nodes) => nodes.map((node) => node.dataset.square),
+    );
+
+    for (const targetSquare of targetSquares) {
+      await overlay.locator(`[data-pt-board] [data-square="${square}"]`).click();
+      await overlay.locator(`[data-pt-board] [data-square="${targetSquare}"]`).click();
+
+      const promotion = overlay.locator('[data-pt-promotion]:not([hidden])');
+      if (await promotion.count()) {
+        await promotion.locator('[data-pt-promotion-piece="q"]').click();
+      }
+
+      await page.waitForFunction(() => {
+        const next = document.querySelector('[data-pt-action="next"]');
+        const text = document.querySelector('[data-pt-feedback]')?.textContent || '';
+        return next && !next.disabled && !/Checking|Opponent is finding/i.test(text);
+      }, null, { timeout: 45_000 });
+
+      evaluatedMoves += 1;
+      lastFeedback = await overlay.locator('[data-pt-feedback]').innerText();
+      assert.doesNotMatch(lastFeedback, /could not|did not return|timed out/i, `dynamic evaluation failed: ${lastFeedback}`);
+
+      if (/accepted|Solved|Continue from the new position/i.test(lastFeedback)) {
+        acceptedFeedback = lastFeedback;
+        break moveSearch;
+      }
+
+      assert.match(lastFeedback, /Try another move/i, `unexpected rejected-move feedback: ${lastFeedback}`);
     }
   }
 
-  assert.ok(legalTarget, 'solver should have at least one movable piece');
-  await legalTarget.click();
-  await page.waitForFunction(() => {
-    const text = document.querySelector('[data-pt-feedback]')?.textContent || '';
-    return /accepted|Solved|Continue from the new position/i.test(text) || /could not|did not return|timed out/i.test(text);
-  }, null, { timeout: 45_000 });
-  const moveFeedback = await overlay.locator('[data-pt-feedback]').innerText();
-  assert.doesNotMatch(moveFeedback, /could not|did not return|timed out/i, `dynamic reply failed: ${moveFeedback}`);
-  console.log(`Dynamic evaluator completed; intercepted tablebase requests: ${tablebaseRequests}.`);
+  assert.ok(evaluatedMoves > 0, 'solver should have at least one legal move to evaluate');
+  assert.ok(acceptedFeedback, `no objective-preserving move was accepted after ${evaluatedMoves} legal attempts; last feedback: ${lastFeedback}`);
+  console.log(`Dynamic evaluator accepted a preserving move after ${evaluatedMoves} attempt(s); intercepted tablebase requests: ${tablebaseRequests}.`);
 
   await overlay.getByRole('button', { name: 'Close position training' }).click();
   await overlay.waitFor({ state: 'hidden' });
