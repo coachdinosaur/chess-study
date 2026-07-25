@@ -256,9 +256,11 @@ export class PositionTrainingLearning {
     const comparison = engineSan
       ? (sameAsEngine ? `${moveSan} matched the engine's leading candidate.` : `${moveSan} was a valid alternative; the engine's initial candidate was ${engineSan}.`)
       : `${moveSan || 'The move'} preserved the required result.`;
-    const assistance = mistakes || hints
-      ? `You used ${hints} hint${hints === 1 ? '' : 's'} and made ${mistakes} rejected move${mistakes === 1 ? '' : 's'}. This position remains in the review system until it is mastered cleanly.`
-      : 'Solved independently on the first accepted attempt, so the adaptive difficulty will rise slightly.';
+    const assistance = mistakes
+      ? `You used ${hints} hint${hints === 1 ? '' : 's'} and made ${mistakes} rejected move${mistakes === 1 ? '' : 's'}. This position remains in Mistake Review until it is mastered cleanly.`
+      : (hints
+        ? `You solved with ${hints} hint${hints === 1 ? '' : 's'}, so the adaptive rating rises modestly rather than receiving full independent-solve credit.`
+        : 'Solved independently on the first accepted attempt, so the adaptive difficulty will rise slightly.');
     return {
       title: 'Why the solution worked',
       summary: `${verdictReason || 'The move preserved the objective'} The central motif was ${motif}.`,

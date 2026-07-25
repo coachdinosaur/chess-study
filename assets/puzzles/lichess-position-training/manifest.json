@@ -1,10 +1,10 @@
 {
   "format": 1,
-  "generatedAt": "2026-07-25T16:30:15.041Z",
+  "generatedAt": "2026-07-25T22:22:32.932Z",
   "source": "Lichess puzzle database",
   "trainingModel": "position-objective-dynamic-defence",
   "exactLineRequired": false,
-  "count": 200,
+  "count": 300,
   "shardSize": 25,
   "filters": {
     "minRating": 0,
@@ -47,6 +47,22 @@
     },
     {
       "file": "shard-0007.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0008.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0009.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0010.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0011.json",
       "count": 25
     }
   ]

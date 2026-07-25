@@ -133,7 +133,7 @@ export class LichessPositionTrainingDataSource {
       if (!matchesFilters(record, filters)) continue;
       if (id) {
         this.recentIds.add(id);
-        const recentLimit = Math.max(0, Math.min(200, Number(this.manifest?.count || 0) - 1));
+        const recentLimit = Math.max(0, Math.min(500, Number(this.manifest?.count || 0) - 1));
         if (this.recentIds.size > recentLimit) {
           this.recentIds.delete(this.recentIds.values().next().value);
         }
