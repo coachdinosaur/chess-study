@@ -64,15 +64,15 @@ try {
   await page.goto(`${BASE_URL}/`, { waitUntil: 'networkidle', timeout: 60_000 });
   await page.waitForFunction(() => !document.body.classList.contains('loading'));
 
-  await page.locator('[data-action="set-tab"][data-tab="puzzle"]').click();
+  await page.locator('.tab-nav [data-action="set-tab"][data-tab="puzzle"]').click();
   await page.locator('#puzzlePanel').waitFor({ state: 'visible' });
   await page.getByRole('heading', { name: 'Endgame Puzzles' }).waitFor();
   await page.locator('[data-position-training-launcher]').waitFor();
   assert.equal(await page.locator('[data-position-training-launcher]').count(), 1, 'launcher should appear once');
   assert.match(await page.locator('#puzzlePanel').innerText(), /Endgame Puzzles/, 'existing puzzle trainer should remain visible');
 
-  await page.locator('[data-action="set-tab"][data-tab="analysis"]').click();
-  await page.locator('[data-action="set-tab"][data-tab="puzzle"]').click();
+  await page.locator('.tab-nav [data-action="set-tab"][data-tab="analysis"]').click();
+  await page.locator('.tab-nav [data-action="set-tab"][data-tab="puzzle"]').click();
   await page.locator('[data-position-training-launcher]').waitFor();
   assert.equal(await page.locator('[data-position-training-launcher]').count(), 1, 'launcher should survive puzzle-panel rerenders without duplication');
 
@@ -100,8 +100,7 @@ try {
   assert.deepEqual([...seenSides].sort(), ['Black', 'White'], 'seed cycle should exercise both solver colors');
 
   const side = (await page.locator('[data-pt-current] dd').first().textContent())?.trim();
-  const kingLabel = side === 'Black' ? /black k$/i : /white k$/i;
-  const kingSquare = page.locator('[data-pt-board] [data-square]').filter({ has: page.locator('span') }).filter({ hasText: side === 'Black' ? '♚' : '♔' }).first();
+  const kingSquare = page.locator('[data-pt-board] [data-square]').filter({ hasText: side === 'Black' ? '♚' : '♔' }).first();
   assert.ok(await kingSquare.count(), 'solver king should be present');
   await kingSquare.click();
   const legalTarget = page.locator('[data-pt-board] .legal-target').first();
