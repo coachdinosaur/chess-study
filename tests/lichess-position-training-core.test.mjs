@@ -6,6 +6,7 @@ import {
   classifyStudentMove,
   deriveTrainingObjective,
   engineScoreForSolver,
+  isTrainingSolved,
   prepareLichessTrainingPuzzle,
   tablebaseOutcomeForSolver,
 } from '../lichess-position-training-core.mjs';
@@ -43,6 +44,8 @@ test('tablebase outcome is also solver-relative', () => {
   assert.equal(tablebaseOutcomeForSolver('win', 'w', 'b'), 'loss');
   assert.equal(tablebaseOutcomeForSolver('loss', 'b', 'w'), 'win');
   assert.equal(tablebaseOutcomeForSolver('draw', 'b', 'w'), 'draw');
+  assert.equal(tablebaseOutcomeForSolver('cursed-win', 'w', 'w'), 'draw');
+  assert.equal(tablebaseOutcomeForSolver('blessed-loss', 'b', 'w'), 'draw');
 });
 
 test('positions where the solver is losing are rejected as training starts', () => {
@@ -67,4 +70,22 @@ test('throwing away a win is rejected', () => {
     afterMove: { solverScore: { type: 'cp', value: 0 }, outcome: 'draw' },
   });
   assert.equal(result.accepted, false);
+});
+
+test('mate-tagged training does not finish before checkmate', () => {
+  const game = {
+    isCheckmate: () => false,
+    isDraw: () => false,
+    turn: () => 'b',
+  };
+  const solved = isTrainingSolved({
+    game,
+    objective: TRAINING_OBJECTIVE_WIN,
+    solverColor: 'w',
+    solverMoves: 4,
+    startMaterial: 9,
+    evaluation: { outcome: 'win', solverScore: { type: 'cp', value: 10000 } },
+    themes: ['mate'],
+  });
+  assert.equal(solved, false);
 });
