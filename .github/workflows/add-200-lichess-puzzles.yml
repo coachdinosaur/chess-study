@@ -28,4 +28,17 @@ jobs:
         with:
           node-version: '22'
       - name: Generate, validate, test, and commit
-        run: bash scripts/run-add-200-lichess-puzzles.sh
+        shell: bash
+        run: |
+          set +e
+          bash scripts/run-add-200-lichess-puzzles.sh > add-200-lichess-puzzles.log 2>&1
+          status=$?
+          cat add-200-lichess-puzzles.log
+          exit "$status"
+      - name: Upload complete expansion log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: add-200-lichess-puzzles-log
+          path: add-200-lichess-puzzles.log
+          if-no-files-found: error
