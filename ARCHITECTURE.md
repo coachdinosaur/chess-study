@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-Chess Lesson Study Board is a framework-free chess teaching platform served as static files. The repository combines an interactive single-page application, browser Stockfish, Lichess tablebase requests, static lesson sites, an optional AI-help panel, and optional local Python helpers.
+Chess Lesson Study Board is a framework-free chess teaching platform served as static files. The repository combines an interactive single-page application, browser Stockfish, Lichess tablebase requests, static lesson sites with classroom presentation and a floating Teacher Board, a synchronized teacher/student Live Board, an optional AI-help panel, and optional local Python helpers.
 
 There is no bundler and no application build step. Production assets are the committed HTML, CSS, JavaScript, WASM, fonts, images, and data files themselves.
 
@@ -25,19 +25,25 @@ The major subsystems are:
    - Gemini Interactions API, reached only from the Worker
 
 4. **Static lesson sites**
-   - Pawn-level lessons
-   - Bishop-level lessons
+   - Pawn, Advanced Pawn, and Bishop curricula
    - Numbered endgame lessons
-   - Shared static-board and teacher-board helpers
+   - Unified lesson header
+   - Classroom presentation mode
+   - Floating Teacher Board and embedded-board protocol
 
-5. **Vendored browser dependencies and data**
+5. **Live Board collaboration**
+   - `live-board.html` and Live Board interaction modules
+   - Supabase-backed teacher/student rooms
+   - Secure student links, move locking, prepared positions, and session messages
+
+6. **Vendored browser dependencies and data**
    - `vendor/chess.js`
    - `vendor/stockfish/`
    - `vendor/xlsx.full.min.js`
    - `assets/openings.tsv`
    - MPChess SVG pieces
 
-6. **Optional local services**
+7. **Optional local services**
    - `local_server.py`
    - `scanner_server.py`
    - `scanner_predict.py`
@@ -55,6 +61,15 @@ chess-study/
 ├── puzzle-api.mjs
 ├── lesson-position-builder.mjs
 ├── text-normalization.mjs
+│
+├── live-board.html
+├── live-board.css
+├── live-board.js
+├── live-board-realtime.js
+├── live-board-messages-v2.js
+├── live-board-room-bootstrap.js
+├── live-board-drag.js
+├── live-board-click-toggle.js
 │
 ├── ai-help-chat.mjs
 ├── ai-help-chat.css
@@ -85,8 +100,12 @@ chess-study/
 │   ├── pawn-m*-lesson-*.html
 │   ├── bishop-m*-lesson-*.html
 │   ├── 01-*.html ... 07-*.html
+│   ├── lesson-header.css
+│   ├── lesson-presentation.js
+│   ├── lesson-presentation.css
 │   ├── pawn-teacher-board.js
 │   ├── pawn-teacher-board.css
+│   ├── teacher-board-illegal-moves.mjs
 │   ├── endgame-lesson.js
 │   └── endgame-lesson.css
 │
@@ -124,6 +143,28 @@ ai-help-chat.mjs
 └── HTTPS POST /chat
     └── Cloudflare Worker (`worker/ai-help-worker.js`)
         └── Gemini Interactions API (`/v1beta/interactions`)
+
+static lesson HTML
+├── endgame-lesson.css / advanced-pawn-lesson.css
+│   └── lesson-header.css
+├── endgame-lesson.js
+├── lesson-presentation.js
+│   └── lesson-presentation.css
+└── pawn-teacher-board.js
+    ├── pawn-teacher-board.css
+    └── embedded `index.html?embed=1&boardOnly=1`
+        └── teacher-board-illegal-moves.mjs
+
+live-board.html
+├── live-board.js
+├── live-board-click-toggle.js
+├── live-board-drag.js
+├── live-board-display-fixes.js
+├── live-board-realtime.js
+├── live-board-room-bootstrap.js
+├── live-board-lesson-ux.js
+└── live-board-messages-v2.js
+    └── Supabase room state, realtime updates, and messages
 ```
 
 ### Responsibilities
@@ -142,6 +183,14 @@ ai-help-chat.mjs
 | `ai-help-config.mjs` | Public Worker base URL used by the browser client; never contains the Gemini API key |
 | `worker/ai-help-worker.js` | CORS enforcement, request validation, rate limiting, Gemini proxying, response normalization, `/chat` and `/health` routes |
 | `worker/wrangler.jsonc` | Cloudflare Worker name, entry point, Gemini model, allowed origins, and rate-limit binding |
+| `live-board.html` | Teacher/student room shell, board, FEN/lesson controls, move list, and messages |
+| `live-board.js` | Live Board position state, legal moves, imported positions, undo/reset behavior |
+| `live-board-realtime.js` | Room creation/joining, credentials, secure links, Supabase state synchronization |
+| `live-board-messages-v2.js` | Credential-aware message initialization, realtime subscription, refresh/poll lifecycle |
+| `lessons/lesson-header.css` | Shared sticky header contract for Pawn, Advanced Pawn, and Bishop lesson families |
+| `lessons/lesson-presentation.js` / `.css` | Scene collection, reveal/reset/navigation, fullscreen, and click-pulse presentation UI |
+| `lessons/pawn-teacher-board.js` / `.css` | Parent lesson overlay, setup tray, lesson CSV menu, and embedded-board commands |
+| `lessons/teacher-board-illegal-moves.mjs` | Illegal/out-of-turn demonstrations and Teacher Board take-back history in board-only mode |
 | `vendor/chess.js` | Legal moves, FEN, PGN, game termination, attack queries |
 | `vendor/stockfish/` | Browser Stockfish JavaScript and WASM variants |
 
@@ -763,15 +812,73 @@ The message listener accepts commands such as:
 | `setOrientation` | Set White/Black orientation |
 | `setAnnotations` | Replace embedded painted-square marks |
 | `teacherBoardPing` | Same-origin readiness handshake |
-| `teacherBoardAction` / `boardOnlyAction` | Enter/exit setup, choose a piece, clear, flip, reset, annotate |
+| `teacherBoardAction` / `boardOnlyAction` | Enter/exit setup, choose a piece, load setup presets, set side to move, flip, reset, annotate |
 
-The teacher-board wrapper dynamically imports `vendor/chess.js`, observes changes to the embedded board's `#currentFenCode`, and evaluates each settled FEN. A compact absolutely positioned `aria-live="assertive"` overlay reports checkmate with the winning side or stalemate as a draw without adding a layout row or resizing the board. The overlay clears automatically when take-back, reset, setup, or another position produces a non-terminal FEN.
+Important Teacher Board actions include:
 
-Same-origin checks protect request/response operations that include request IDs.
+| Action | Payload / behavior |
+|---|---|
+| `enterTeacherSetup` / `exitTeacherSetup` | Switch the embedded board between setup placement and normal play |
+| `selectTeacherPiece` | Arm a white/black piece or eraser; piece-palette color is independent of side to move |
+| `emptyTeacherBoard` | Clear all pieces and preserve the requested `side` |
+| `startTeacherBoard` | Load the standard 32-piece position with the requested `side` |
+| `setSideToMove` | Rewrite the active-color FEN field without removing placed pieces |
+| `lessonTeacherBoard` | Restore the embedded initial/page position |
+| `loadFen` | Load Page or prepared-position FEN; request IDs receive `teacherBoardLoadResult` |
+| `takeBack` | Restore Teacher Board history across legal and demonstration moves |
+
+The parent wrapper keeps `setupColor` and `setupSideToMove` as separate state. **Page** resolves the lesson's `data-teacher-fen` from `<html>` or `<body>` and falls back to the normal starting position only when no lesson FEN exists. Successful Page or prepared-position loads resynchronize the side-to-move buttons from the loaded FEN.
+
+`teacher-board-illegal-moves.mjs` installs before the main embedded-board message listener. It may reset its own history for setup actions, but it must not call `stopImmediatePropagation()` for Empty, Start, Page/lesson load, or side-to-move commands; otherwise the main board handler never performs the requested action. It still owns Teacher Board take-back/reset interception where required.
+
+The wrapper dynamically imports `vendor/chess.js`, observes changes to the embedded board's `#currentFenCode`, and evaluates each settled FEN. A compact absolutely positioned `aria-live="assertive"` overlay reports checkmate with the winning side or stalemate as a draw without adding a layout row or resizing the board. The overlay clears automatically when take-back, reset, setup, or another position produces a non-terminal FEN.
+
+Same-origin checks protect readiness and request/response operations that include request IDs.
 
 ---
 
-## 19. Persistence
+## 19. Live Board collaboration
+
+The Live Board is a separate page and state machine from the lesson Teacher Board.
+
+### Room and credential lifecycle
+
+```text
+teacher opens live-board.html
+  → live-board-realtime.js creates a Supabase room
+  → teacher credentials are stored for the browser session
+  → URL hash receives room, role, and access data
+  → `live-board-session-ready` is dispatched
+  → state and message modules initialize for that exact session key
+  → teacher copies the generated student-only link
+```
+
+Students should open the generated link rather than manually reusing the teacher URL. Teacher and student access tokens are role-specific and must not be logged, documented, or exposed in screenshots.
+
+`live-board-messages-v2.js` cannot assume credentials exist at `DOMContentLoaded`. It:
+
+- reads room/role/access details from the current URL and teacher session storage;
+- accepts details from `live-board-session-ready`;
+- builds a stable room/role/token session key;
+- prevents duplicate initialization;
+- retries while credentials or Supabase are not ready;
+- reacts to hash/history changes;
+- cleans up timers and realtime subscriptions on unload.
+
+### Interaction and synchronization
+
+- `live-board.js` owns the board position, side to move, move list, FEN loading, lesson-position selection, undo, and reset.
+- `live-board-click-toggle.js` and `live-board-drag.js` keep tap/click and drag input compatible across desktop and touch devices.
+- `live-board-realtime.js` synchronizes room state and the teacher-controlled student lock.
+- `live-board-lesson-ux.js` handles CSV/XLSX prepared-position import and loading feedback.
+- `live-board-messages-v2.js` synchronizes short messages and Lichess links, using realtime updates with refresh/poll support.
+- The teacher may move, load FENs, import prepared positions, undo/reset/flip, and lock student moves. A locked student board remains view-only while continuing to receive synchronized state.
+
+The Live Board must be tested with two pages or browser contexts because a single-page test cannot validate role separation, secure-link state, or teacher/student synchronization.
+
+---
+
+## 20. Persistence
 
 ### localStorage keys
 
@@ -799,7 +906,7 @@ Loaded lesson graphs are normalized and validated before becoming active state.
 
 ---
 
-## 20. Opening book
+## 21. Opening book
 
 `loadOpeningBook()` fetches `assets/openings.tsv` and creates:
 
@@ -810,13 +917,29 @@ Identification prefers the longest matching UCI move prefix, with EPD and PGN-he
 
 ---
 
-## 21. Static lesson architecture
+## 22. Static lesson architecture
 
 The static lesson files are intentionally independent of the SPA framework because there is no framework.
 
-### Pawn and Bishop levels
+### Shared lesson header
 
-These are primarily self-contained teaching pages using shared styles/scripts and static diagrams or teacher-board helpers.
+Pawn and Bishop pages that load `endgame-lesson.css`, and Advanced Pawn pages that load `advanced-pawn-lesson.css`, import `lesson-header.css`. The shared stylesheet standardizes the sticky translucent header, brand icon/label/title, pill-shaped actions, responsive wrapping, focus styles, and print hiding. Header markup remains the shared `.index-header` / `.index-header-inner` / `.index-brand` / `.index-top-actions` contract.
+
+### Classroom presentation
+
+Supported lesson pages load `lesson-presentation.js`, which injects `lesson-presentation.css` and a **Present Lesson** action. Scene collection differs slightly for Bishop's mixed legacy/generated markup, but both paths:
+
+- collect meaningful top-level sections and intentional direct position cards;
+- reject hidden, duplicate, source-only, and coach-only material;
+- expose Previous, Reveal, Reset, Next, and Exit controls;
+- support keyboard navigation and best-effort native fullscreen;
+- preserve same-origin embedded boards and show a projected click pulse for pointer-down events on the lesson or embedded board.
+
+The Teacher Board overlay is deliberately excluded from presentation scenes and click-pulse capture.
+
+### Teacher Board
+
+`pawn-teacher-board.js` is shared by supported Pawn, Advanced Pawn, and Bishop lesson pages. It creates the floating overlay and its lesson/setup controls, while the embedded SPA owns board state and legal interaction. `pawn-teacher-board.css` styles the overlay; `teacher-board-illegal-moves.mjs` extends board-only mode with demonstrations and history.
 
 ### Numbered endgame lessons
 
@@ -826,7 +949,7 @@ Static pages are printable and can use paged-media styling without requiring the
 
 ---
 
-## 22. Optional local services
+## 23. Optional local services
 
 ### Cross-origin-isolated server
 
@@ -853,7 +976,7 @@ The scanner is optional and not used by the GitHub Pages deployment.
 
 ---
 
-## 23. Event bindings
+## 24. Event bindings
 
 `bindEvents()` registers delegated and board-specific handlers.
 
@@ -888,13 +1011,18 @@ The scanner is optional and not used by the GitHub Pages deployment.
 
 ---
 
-## 24. Validation and testing
+## 25. Validation and testing
 
 There is no compile step, so validation combines syntax checks, targeted tests, and browser testing.
 
 ```powershell
 node --check app.js
 node --check ai-help-chat.mjs
+node --check lessons/pawn-teacher-board.js
+node --check lessons/teacher-board-illegal-moves.mjs
+node --check lessons/lesson-presentation.js
+node --check live-board-realtime.js
+node --check live-board-messages-v2.js
 node tools/test-puzzle-api.mjs
 git diff --check
 ```
@@ -915,18 +1043,23 @@ Minimum manual matrix:
 - Focus mode with AI Help closed and open
 - mobile AI-help hiding
 - embed and board-only message actions
+- lesson presentation scene collection, reveal/reset/navigation, fullscreen fallback, and click pulse
+- Teacher Board Empty/Start/Page, independent side to move, piece placement, take-back, and normal play after setup
+- Live Board teacher/student synchronization, secure student link, lock state, prepared positions, and delayed message initialization
 - lesson JSON and PGN round trips
 
 ---
 
-## 25. Architectural constraints
+## 26. Architectural constraints
 
 The current design deliberately favors zero-build deployability and direct debugging. That also creates constraints:
 
 - `app.js` is a large orchestration module.
 - State mutation is global and imperative.
 - DOM structure and CSS selectors form part of the runtime contract.
-- Cache-version strings must be updated when dynamically loaded assets change.
+- Cache-version strings must be updated when dynamically loaded assets change, including every lesson page that consumes shared Teacher Board or presentation assets.
+- Teacher Board message-listener propagation order is part of the runtime contract; helper listeners must not swallow setup actions owned by the main embedded-board listener.
+- Live Board room credentials may arrive after DOM readiness, so credential-dependent modules must initialize from the session-ready lifecycle and remain idempotent.
 - Worker messages must be guarded against stale sessions.
 - Clock ownership must remain explicit during transitions.
 - Setup drag, legal-move drag, pointer drag, and annotation gestures must remain isolated from one another.
