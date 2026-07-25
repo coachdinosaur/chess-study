@@ -11446,71 +11446,56 @@ function activatePremiumFromInput() {
 function renderPuzzleQueueControls(pz) {
   const isGenerating = pz.isGeneratingPuzzleBatch || pz.generating;
   const historyLength = pz.puzzleHistory ? pz.puzzleHistory.length : 0;
-  
+
   let generationStatusMarkup = '';
   if (pz.isGeneratingPuzzleBatch) {
     generationStatusMarkup = `
-      <div class="banner puzzle-generating-banner" style="margin-top: 8px;">
+      <div class="banner puzzle-generating-banner puzzle-generation-status">
         <span class="puzzle-spinner" aria-hidden="true"></span>
         <div>
           <strong>Generating puzzles...</strong>
           <div class="puzzle-generating-detail">${escapeHtml(pz.puzzleBatchStatus)}</div>
           ${(pz.generatingAttempt > 0) ? `
-            <div style="font-size: 0.85em; color: var(--color-text-muted); margin-top: 4px;">
-              ${escapeHtml(puzzleGeneratingDetail())}
-            </div>
+            <div class="puzzle-generating-meta">${escapeHtml(puzzleGeneratingDetail())}</div>
           ` : ''}
         </div>
       </div>
-      <div class="action-row play-start-action-row" style="justify-content: center; margin-top: 8px;">
+      <div class="action-row puzzle-cancel-row">
         <button type="button" class="action-button danger" data-action="cancel-batch-generation">Cancel</button>
       </div>
     `;
   } else {
     generationStatusMarkup = `
-      <div style="text-align: center; color: var(--color-text-muted); font-size: 0.85em; margin-top: 6px;">
+      <div class="puzzle-queue-status">
         ${pz.puzzleQueue.length === 0 ? 'No ready puzzles. Generate 5 more.' : (pz.puzzleBatchStatus || `${pz.puzzleQueue.length} puzzle(s) ready.`)}
       </div>
     `;
   }
 
-  const defaultRemaining = pz.puzzleQueue.filter(p => p.source === 'default').length;
-  const generatedReady = pz.puzzleQueue.filter(p => p.source === 'generated').length;
+  const defaultRemaining = pz.puzzleQueue.filter((puzzle) => puzzle.source === 'default').length;
+  const generatedReady = pz.puzzleQueue.filter((puzzle) => puzzle.source === 'generated').length;
   const totalReady = pz.puzzleQueue.length;
-
-  const clearButtonMarkup = (pz.puzzleHistory && pz.puzzleHistory.length > 0)
-    ? `<button type="button" class="action-button danger" data-action="clear-puzzle-history" style="flex: 1; min-height: 36px;">Clear Previous Puzzles</button>`
+  const clearButtonMarkup = historyLength > 0
+    ? `<button type="button" class="action-button danger puzzle-queue-flex-button" data-action="clear-puzzle-history">Clear Previous Puzzles</button>`
     : '';
 
   return `
-    <div class="puzzle-queue-controls" style="display: flex; flex-direction: column; gap: 10px; background: var(--card-bg, rgba(255, 255, 255, 0.05)); border: 1px solid var(--card-border); border-radius: var(--radius-card); padding: 12px; margin-bottom: 12px;">
-      <div style="display: flex; flex-direction: column; gap: 3px; font-size: 0.9em;">
-        <div style="display: flex; justify-content: space-between;">
-          <span>Default puzzles remaining:</span>
-          <span style="font-weight: 700;">${defaultRemaining} / ${DEFAULT_PUZZLE_COUNT}</span>
-        </div>
-        <div style="display: flex; justify-content: space-between;">
-          <span>Generated puzzles ready:</span>
-          <span style="font-weight: 700;">${generatedReady}</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; border-top: 1px solid var(--card-border); padding-top: 3px; margin-top: 2px; font-weight: 500;">
-          <span>Total ready puzzles:</span>
-          <span style="font-weight: 700;">${totalReady}</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; font-size: 0.9em; color: var(--color-text-muted);">
-          <span>Previous puzzles saved:</span>
-          <span style="font-weight: 700;">${historyLength}</span>
-        </div>
+    <div class="puzzle-queue-controls">
+      <div class="puzzle-queue-summary">
+        <div class="puzzle-queue-row"><span>Default puzzles remaining</span><strong>${defaultRemaining} / ${DEFAULT_PUZZLE_COUNT}</strong></div>
+        <div class="puzzle-queue-row"><span>Generated puzzles ready</span><strong>${generatedReady}</strong></div>
+        <div class="puzzle-queue-row is-total"><span>Total ready puzzles</span><strong>${totalReady}</strong></div>
+        <div class="puzzle-queue-row is-muted"><span>Previous puzzles saved</span><strong>${historyLength}</strong></div>
       </div>
-      <div style="display: flex; flex-direction: column; gap: 8px; width: 100%;">
-        <button type="button" class="action-button tonal" data-action="generate-puzzle-batch" ${ (isGenerating || totalReady >= PUZZLE_QUEUE_MAX) ? 'disabled' : '' }>Generate 5 More Puzzles</button>
-        <button type="button" class="action-button tonal" data-action="restore-default-puzzles" ${ isGenerating ? 'disabled' : '' } style="width: 100%; min-height: 36px;">Reset Default Puzzles</button>
-        <div style="display: flex; gap: 8px; width: 100%;">
-          <button type="button" class="action-button tonal" data-action="save-puzzle-csv" ${ pz.puzzleQueue.length === 0 ? 'disabled' : '' } style="flex: 1; min-height: 36px;">Save Queue as CSV</button>
-          <button type="button" class="action-button tonal" data-action="load-puzzle-csv" ${ isGenerating ? 'disabled' : '' } style="flex: 1; min-height: 36px;">Load CSV Puzzles</button>
+      <div class="puzzle-queue-actions">
+        <button type="button" class="action-button tonal puzzle-queue-full-button" data-action="generate-puzzle-batch" ${(isGenerating || totalReady >= PUZZLE_QUEUE_MAX) ? 'disabled' : ''}>Generate 5 More Puzzles</button>
+        <button type="button" class="action-button tonal puzzle-queue-full-button" data-action="restore-default-puzzles" ${isGenerating ? 'disabled' : ''}>Reset Default Puzzles</button>
+        <div class="puzzle-queue-action-pair">
+          <button type="button" class="action-button tonal puzzle-queue-flex-button" data-action="save-puzzle-csv" ${pz.puzzleQueue.length === 0 ? 'disabled' : ''}>Save Queue as CSV</button>
+          <button type="button" class="action-button tonal puzzle-queue-flex-button" data-action="load-puzzle-csv" ${isGenerating ? 'disabled' : ''}>Load CSV Puzzles</button>
         </div>
-        <div style="display: flex; gap: 8px; width: 100%;">
-          <button type="button" class="action-button tonal" data-action="replay-previous-puzzle" ${ (historyLength === 0 || isGenerating) ? 'disabled' : '' } style="flex: 1; min-height: 36px;">Replay Previous Puzzle</button>
+        <div class="puzzle-queue-action-pair">
+          <button type="button" class="action-button tonal puzzle-queue-flex-button" data-action="replay-previous-puzzle" ${(historyLength === 0 || isGenerating) ? 'disabled' : ''}>Replay Previous Puzzle</button>
           ${clearButtonMarkup}
         </div>
       </div>
@@ -11567,7 +11552,7 @@ function renderPuzzlePanel() {
   const showStartButton = !pz.generating && !pz.sessionActive;
   const buttonText = pz.current ? 'Next Puzzle' : 'Start Puzzle';
   const startButtonMarkup = showStartButton ? `
-    <button type="button" class="action-button primary" data-action="new-puzzle" ${pz.puzzleQueue.length === 0 ? 'disabled' : ''} style="width: 100%;">${buttonText}</button>
+    <button type="button" class="action-button primary puzzle-primary-action" data-action="new-puzzle" ${pz.puzzleQueue.length === 0 ? 'disabled' : ''}>${buttonText}</button>
   ` : '';
 
   let sessionMarkup = '';
@@ -11665,7 +11650,7 @@ function renderPuzzlePanel() {
   }
 
   const resultBanner = pz.lastResult ? `
-    <div class="banner ${pz.lastResult.kind === 'solved' ? 'success' : (pz.lastResult.kind === 'incomplete' ? 'warning' : 'danger')}" style="margin-top: 8px;">
+    <div class="banner puzzle-panel-message ${pz.lastResult.kind === 'solved' ? 'success' : (pz.lastResult.kind === 'incomplete' ? 'warning' : 'danger')}">
       <div>
         <strong>${escapeHtml(pz.lastResult.title || '')}</strong>
         <div>${escapeHtml(pz.lastResult.message || '')}</div>
@@ -11674,7 +11659,7 @@ function renderPuzzlePanel() {
   ` : '';
 
   const errorBanner = pz.apiError ? `
-    <div class="banner warning" style="margin-top: 8px;">
+    <div class="banner warning puzzle-panel-message">
       <div>
         <strong>Puzzle API error</strong>
         <div>${escapeHtml(pz.apiError)}</div>

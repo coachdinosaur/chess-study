@@ -115,7 +115,10 @@ function moveGesture(event) {
   event.preventDefault();
   if (!gesture.moved) {
     gesture.moved = true;
-    dispatchSquareClick(gesture.board, gesture.sourceSquare);
+    const currentSource = gesture.board.querySelector(`[data-square="${gesture.sourceSquare}"]`);
+    if (!currentSource?.classList.contains('selected')) {
+      dispatchSquareClick(gesture.board, gesture.sourceSquare);
+    }
     gesture.board.querySelector(`[data-square="${gesture.sourceSquare}"]`)?.classList.add('is-drag-source');
     showDragPreview(gesture.pieceImage, event.clientX, event.clientY);
   } else {

@@ -11,7 +11,7 @@ import {
 import { PositionTrainingEvaluator } from './lichess-position-training-engine.mjs';
 import { LichessPositionTrainingDataSource } from './lichess-position-training-data.mjs';
 
-const STYLE_URL = './lichess-position-training.css?v=20260725-theme-board2';
+const STYLE_URL = './lichess-position-training.css?v=20260725-board-interaction3';
 const STATS_KEY = 'lichess-position-training-stats-v1';
 const PREFS_KEY = 'lichess-position-training-prefs-v1';
 const HISTORY_KEY = 'lichess-position-training-history-v1';
@@ -372,6 +372,13 @@ class PositionTrainingController {
       return;
     }
 
+    if (square === this.selectedSquare) {
+      this.selectedSquare = '';
+      this.feedback = { kind: 'info', text: 'Selection cleared.' };
+      this.render();
+      return;
+    }
+
     if (piece?.color === this.current.solverColor) {
       this.selectedSquare = square;
       this.render();
@@ -565,10 +572,12 @@ class PositionTrainingController {
     if (this.game && this.selectedSquare) {
       for (const move of this.game.moves({ square: this.selectedSquare, verbose: true })) legalTargets.add(move.to);
     }
-    this.board.innerHTML = boardSquares(orientation).map((square) => {
+    this.board.innerHTML = boardSquares(orientation).map((square, index) => {
       const piece = this.game?.get(square);
       const file = square.charCodeAt(0) - 97;
       const rank = Number(square[1]) - 1;
+      const row = Math.floor(index / 8);
+      const col = index % 8;
       const dark = (file + rank) % 2 === 0;
       const classes = [
         'position-training-square',
@@ -579,7 +588,13 @@ class PositionTrainingController {
       ].filter(Boolean).join(' ');
       const pieceMarkup = piece ? pieceImageMarkup(piece.color, piece.type, 'position-training-piece') : '';
       const pieceLabel = piece ? ` ${piece.color === 'w' ? 'white' : 'black'} ${PIECE_NAMES[piece.type]}` : '';
-      return `<button type="button" class="${classes}" data-square="${square}" aria-label="${square}${pieceLabel}">${pieceMarkup}<small>${square}</small></button>`;
+      const rankLabel = col === 0
+        ? `<small class="position-training-coordinate position-training-rank">${square[1]}</small>`
+        : '';
+      const fileLabel = row === 7
+        ? `<small class="position-training-coordinate position-training-file">${square[0]}</small>`
+        : '';
+      return `<button type="button" class="${classes}" data-square="${square}" aria-label="${square}${pieceLabel}">${pieceMarkup}${rankLabel}${fileLabel}</button>`;
     }).join('');
     this.board.classList.toggle('is-busy', this.busy);
   }

@@ -151,7 +151,7 @@ body.position-training-open {
     0 0.7rem 1.7rem var(--board-shadow-primary),
     0 0 0 0.16rem var(--board-shadow-secondary);
   user-select: none;
-  touch-action: manipulation;
+  touch-action: none;
 }
 
 .position-training-board::after {
@@ -211,10 +211,8 @@ body.position-training-open {
   filter: drop-shadow(0 0.12rem 0.1rem var(--piece-shadow));
 }
 
-.position-training-square > small {
+.position-training-coordinate {
   position: absolute;
-  left: 4px;
-  bottom: 2px;
   z-index: 4;
   font-size: clamp(0.48rem, 1.2vw, 0.72rem);
   font-weight: 800;
@@ -222,11 +220,21 @@ body.position-training-open {
   pointer-events: none;
 }
 
-.position-training-square.light > small {
+.position-training-rank {
+  top: 3px;
+  left: 4px;
+}
+
+.position-training-file {
+  right: 4px;
+  bottom: 3px;
+}
+
+.position-training-square.light > .position-training-coordinate {
   color: var(--coord-light-color);
 }
 
-.position-training-square.dark > small {
+.position-training-square.dark > .position-training-coordinate {
   color: var(--coord-dark-color);
 }
 
@@ -550,4 +558,33 @@ body.position-training-open {
     align-items: stretch;
     flex-direction: column;
   }
+}
+
+
+.position-training-square.is-drag-source .position-training-piece {
+  opacity: 0.42;
+}
+
+.position-training-square.drag-hover {
+  outline: clamp(3px, 0.55vw, 5px) solid var(--focus-border);
+  outline-offset: clamp(-5px, -0.55vw, -3px);
+}
+
+.position-training-drag-preview {
+  position: fixed;
+  z-index: 10002;
+  width: clamp(2.8rem, 7vw, 5rem);
+  height: clamp(2.8rem, 7vw, 5rem);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  filter: drop-shadow(0 0.45rem 0.55rem var(--panel-shadow-strong));
+}
+
+.position-training-drag-preview-piece {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
 }
