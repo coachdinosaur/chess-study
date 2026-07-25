@@ -1,0 +1,44 @@
+{
+  "puzzles": [
+    {
+      "id": "seed-white-queen-conversion",
+      "sourceFen": "7k/8/6K1/8/8/8/3Q4/8 b - - 0 1",
+      "repairMove": "h8g8",
+      "rating": 900,
+      "popularity": 100,
+      "plays": 1000,
+      "themes": ["endgame", "mate"],
+      "gameUrl": ""
+    },
+    {
+      "id": "seed-black-queen-conversion",
+      "sourceFen": "8/8/8/8/8/6k1/3q4/7K w - - 0 1",
+      "repairMove": "h1g1",
+      "rating": 950,
+      "popularity": 100,
+      "plays": 1000,
+      "themes": ["endgame", "mate"],
+      "gameUrl": ""
+    },
+    {
+      "id": "seed-white-rook-conversion",
+      "sourceFen": "7k/R7/5K2/8/8/8/8/8 b - - 0 1",
+      "repairMove": "h8g8",
+      "rating": 1050,
+      "popularity": 100,
+      "plays": 1000,
+      "themes": ["endgame", "mate"],
+      "gameUrl": ""
+    },
+    {
+      "id": "seed-black-rook-conversion",
+      "sourceFen": "8/8/8/8/8/6k1/3r4/7K w - - 0 1",
+      "repairMove": "h1g1",
+      "rating": 1100,
+      "popularity": 100,
+      "plays": 1000,
+      "themes": ["endgame", "mate"],
+      "gameUrl": ""
+    }
+  ]
+}
