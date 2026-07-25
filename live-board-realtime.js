@@ -106,6 +106,13 @@
     hash.set('access', credentials.accessToken);
     hash.set('student', credentials.studentToken);
     history.replaceState(null, '', location.pathname + location.search + '#' + hash.toString());
+    window.dispatchEvent(new CustomEvent('live-board-session-ready', {
+      detail: {
+        roomCode: roomCode,
+        role: 'teacher',
+        accessToken: credentials.accessToken
+      }
+    }));
   }
 
   function studentLink(roomCode, studentToken) {

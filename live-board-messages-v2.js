@@ -10,6 +10,9 @@
   var refreshInFlight = null;
   var stopped = false;
   var lastRenderedSignature = null;
+  var initializedSessionKey = '';
+  var initializationInFlight = false;
+  var initializationTimer = null;
 
   function hashParams() {
     return new URLSearchParams(location.hash.replace(/^#/, ''));
@@ -22,10 +25,40 @@
   function sessionDetails() {
     var hash = hashParams();
     var search = new URLSearchParams(location.search);
+    var roomCode = normalizeRoomCode(hash.get('room') || search.get('room'));
+    var role = hash.get('role') || search.get('role') || '';
+    var accessToken = hash.get('access') || '';
+
+    if (!accessToken && roomCode && role === 'teacher') {
+      try {
+        var saved = JSON.parse(sessionStorage.getItem('live-board-credentials:' + roomCode) || 'null');
+        if (saved && saved.role === 'teacher') accessToken = saved.teacherToken || '';
+      } catch (_) {}
+    }
+
+    return { roomCode: roomCode, role: role, accessToken: accessToken };
+  }
+
+  function validSessionDetails(details) {
+    return Boolean(
+      details &&
+      details.roomCode &&
+      details.accessToken &&
+      (details.role === 'teacher' || details.role === 'student')
+    );
+  }
+
+  function sessionKey(details) {
+    if (!validSessionDetails(details)) return '';
+    return [details.roomCode, details.role, details.accessToken].join('|');
+  }
+
+  function detailsFromReadyEvent(event) {
+    var detail = event && event.detail && typeof event.detail === 'object' ? event.detail : {};
     return {
-      roomCode: normalizeRoomCode(hash.get('room') || search.get('room')),
-      role: hash.get('role') || search.get('role') || '',
-      accessToken: hash.get('access') || ''
+      roomCode: normalizeRoomCode(detail.roomCode),
+      role: detail.role === 'teacher' || detail.role === 'student' ? detail.role : '',
+      accessToken: String(detail.accessToken || '')
     };
   }
 
@@ -176,22 +209,24 @@
     }
   }
 
-  async function initialize() {
+  async function initializeForSession(details) {
     var panel = document.getElementById('sessionMessages');
-    if (!panel) return;
+    if (!panel) return false;
 
-    var details = sessionDetails();
-    if (!details.roomCode || !details.accessToken || !['teacher', 'student'].includes(details.role)) {
-      return;
+    var key = sessionKey(details);
+    if (!key || initializedSessionKey === key || initializationInFlight) {
+      return initializedSessionKey === key;
     }
 
-    if (!window.supabase || typeof window.supabase.createClient !== 'function') {
-      panel.hidden = false;
-      setStatus('Messages could not connect.', true);
-      return;
-    }
+    initializationInFlight = true;
+    try {
+      if (!window.supabase || typeof window.supabase.createClient !== 'function') {
+        panel.hidden = false;
+        setStatus('Messages could not connect.', true);
+        return false;
+      }
 
-    client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+      client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
       auth: {
         persistSession: false,
         autoRefreshToken: false,
@@ -300,20 +335,63 @@
 
     schedulePoll(details);
 
-    window.LiveBoardMessages = {
-      refresh: function () { return refresh(details); }
-    };
+      initializedSessionKey = key;
+      window.LiveBoardMessages = {
+        refresh: function () { return refresh(details); },
+        sessionKey: key
+      };
+      return true;
+    } finally {
+      initializationInFlight = false;
+    }
   }
+
+  function scheduleInitializationCheck(delay) {
+    if (stopped || initializedSessionKey || initializationTimer) return;
+    initializationTimer = window.setTimeout(function () {
+      initializationTimer = null;
+      initializeWhenReady();
+    }, Math.max(100, Number(delay) || 400));
+  }
+
+  async function initializeWhenReady(preferredDetails) {
+    if (stopped || initializedSessionKey || initializationInFlight) return;
+
+    var details = validSessionDetails(preferredDetails) ? preferredDetails : sessionDetails();
+    if (!validSessionDetails(details)) {
+      scheduleInitializationCheck(document.hidden ? 1500 : 400);
+      return;
+    }
+
+    try {
+      var started = await initializeForSession(details);
+      if (!started && !initializedSessionKey) scheduleInitializationCheck(1000);
+    } catch (error) {
+      console.warn('Could not initialize Live Board messages.', error);
+      setStatus('Messages could not connect.', true);
+      scheduleInitializationCheck(1200);
+    }
+  }
+
+  function handleSessionReady(event) {
+    var details = detailsFromReadyEvent(event);
+    initializeWhenReady(validSessionDetails(details) ? details : null);
+  }
+
+  window.addEventListener('live-board-session-ready', handleSessionReady);
+  window.addEventListener('hashchange', function () { initializeWhenReady(); });
+  window.addEventListener('popstate', function () { initializeWhenReady(); });
 
   window.addEventListener('beforeunload', function () {
     stopped = true;
+    if (initializationTimer) window.clearTimeout(initializationTimer);
     if (pollTimer) window.clearTimeout(pollTimer);
     if (realtimeChannel) realtimeChannel.unsubscribe();
   });
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initialize, { once: true });
+    document.addEventListener('DOMContentLoaded', function () { initializeWhenReady(); }, { once: true });
   } else {
-    initialize();
+    initializeWhenReady();
   }
 })();
