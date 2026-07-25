@@ -577,8 +577,10 @@ function installTeacherBoardIllegalMoveSupport() {
       }
       if (data.action === 'emptyTeacherBoard'
         || data.action === 'startTeacherBoard'
-        || data.action === 'lessonTeacherBoard') {
-        event.stopImmediatePropagation();
+        || data.action === 'lessonTeacherBoard'
+        || data.action === 'setSideToMove') {
+        // Reset this helper's history, but allow the main embedded-board
+        // listener to perform the requested setup action.
         suppressHistoryCapture = true;
         teacherHistory.length = 0;
         baselineTeacherFen = '';

@@ -454,6 +454,7 @@
 .teacher-board-icon-button:focus-visible,
 .teacher-board-tool:focus-visible,
 .teacher-color-toggle:focus-visible,
+.teacher-side-to-move button:focus-visible,
 .teacher-piece-button:focus-visible,
 .teacher-board-menu button:focus-visible,
 .teacher-lesson-position-item:focus-visible,
@@ -504,6 +505,42 @@
 .teacher-color-toggle.is-active {
   background: color-mix(in srgb, var(--gold, #8ad8b7) 24%, var(--panel-strong, #1c2b30));
   color: var(--text, #f7faf5);
+}
+
+.teacher-side-to-move {
+  display: inline-flex;
+  align-items: center;
+  gap: .2rem;
+  border: 1px solid color-mix(in srgb, var(--line, rgba(52, 74, 78, 0.92)) 72%, transparent);
+  border-radius: 999px;
+  padding: .18rem;
+  background: rgba(0, 0, 0, .16);
+}
+
+.teacher-side-to-move-label {
+  padding: 0 .42rem 0 .5rem;
+  color: var(--muted, #b9c8c5);
+  font-size: .7rem;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.teacher-side-to-move button {
+  border: 0;
+  border-radius: 999px;
+  padding: .32rem .52rem;
+  color: var(--muted, #b9c8c5);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: .72rem;
+  font-weight: 900;
+}
+
+.teacher-side-to-move button:hover,
+.teacher-side-to-move button.is-active {
+  color: #071012;
+  background: var(--gold, #8ad8b7);
 }
 
 .teacher-piece-button {

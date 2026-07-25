@@ -11762,8 +11762,10 @@ function commitBoardOnlyFenInput(value, options = {}) {
   return true;
 }
 
-function resetBoardOnlyToStartFen() {
-  commitStrictFenInput(DEFAULT_POSITION, { render: true, showError: false });
+function resetBoardOnlyToStartFen(side = 'w') {
+  const parts = String(DEFAULT_POSITION).split(/\s+/);
+  parts[1] = side === 'b' ? 'b' : 'w';
+  commitStrictFenInput(parts.join(' '), { render: true, showError: false });
   if (state.boardOnlyMode) {
     state.activeTab = state.boardOnlyTeacherSetupActive ? TAB_SETUP : TAB_ANALYSIS;
     renderAll();
@@ -11781,10 +11783,10 @@ function resetBoardOnlyToInitialFen() {
   }
 }
 
-function clearBoardOnlyTeacherSetup() {
+function clearBoardOnlyTeacherSetup(side = '') {
   const nextMeta = {
     ...DEFAULT_META,
-    activeColor: state.setup.meta.activeColor === 'b' ? 'b' : 'w',
+    activeColor: side === 'b' ? 'b' : (side === 'w' ? 'w' : (state.setup.meta.activeColor === 'b' ? 'b' : 'w')),
     castling: '-',
     enPassant: '-',
     halfmove: 0,
@@ -11796,6 +11798,23 @@ function clearBoardOnlyTeacherSetup() {
     state.setup.armedPiece = null;
     renderAll();
   }
+}
+
+function setBoardOnlySideToMove(side) {
+  if (!state.boardOnlyMode) {
+    return;
+  }
+  const parts = String(state.setupFen || DEFAULT_POSITION).trim().split(/\s+/);
+  if (parts.length < 4) {
+    return;
+  }
+  parts[1] = side === 'b' ? 'b' : 'w';
+  parts[3] = '-';
+  if (parts.length < 5) parts[4] = '0';
+  if (parts.length < 6) parts[5] = '1';
+  commitBoardOnlyFenInput(parts.slice(0, 6).join(' '), { render: true });
+  state.activeTab = state.boardOnlyTeacherSetupActive ? TAB_SETUP : TAB_ANALYSIS;
+  renderAll();
 }
 
 function selectBoardOnlyTeacherPiece(piece) {
@@ -11829,10 +11848,13 @@ function handleTeacherBoardAction(action, data = {}) {
       selectBoardOnlyTeacherPiece(data.piece);
       break;
     case 'emptyTeacherBoard':
-      clearBoardOnlyTeacherSetup();
+      clearBoardOnlyTeacherSetup(data.side);
       break;
     case 'startTeacherBoard':
-      resetBoardOnlyToStartFen();
+      resetBoardOnlyToStartFen(data.side);
+      break;
+    case 'setSideToMove':
+      setBoardOnlySideToMove(data.side);
       break;
     case 'lessonTeacherBoard':
       resetBoardOnlyToInitialFen();
