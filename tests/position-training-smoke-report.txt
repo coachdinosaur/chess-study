@@ -1,0 +1,178 @@
+Position training smoke result: FAIL
+Commit: 64a485bf6badaec0f23aad623e5357f215251037
+Core tests: 0
+Playwright install: 0
+Local server: 0
+Browser smoke: 1
+
+--- Core test log ---
+TAP version 13
+# Subtest: repair move makes White the solver when Black moved first
+ok 1 - repair move makes White the solver when Black moved first
+  ---
+  duration_ms: 3.610758
+  type: 'test'
+  ...
+# Subtest: repair move makes Black the solver when White moved first
+ok 2 - repair move makes Black the solver when White moved first
+  ---
+  duration_ms: 0.716575
+  type: 'test'
+  ...
+# Subtest: engine scores are converted to the solver perspective
+ok 3 - engine scores are converted to the solver perspective
+  ---
+  duration_ms: 0.69965
+  type: 'test'
+  ...
+# Subtest: tablebase outcome is also solver-relative
+ok 4 - tablebase outcome is also solver-relative
+  ---
+  duration_ms: 0.161901
+  type: 'test'
+  ...
+# Subtest: positions where the solver is losing are rejected as training starts
+ok 5 - positions where the solver is losing are rejected as training starts
+  ---
+  duration_ms: 0.234389
+  type: 'test'
+  ...
+# Subtest: a different winning move is accepted without matching a stored line
+ok 6 - a different winning move is accepted without matching a stored line
+  ---
+  duration_ms: 0.1946
+  type: 'test'
+  ...
+# Subtest: throwing away a win is rejected
+ok 7 - throwing away a win is rejected
+  ---
+  duration_ms: 0.187579
+  type: 'test'
+  ...
+# Subtest: mate-tagged training does not finish before checkmate
+ok 8 - mate-tagged training does not finish before checkmate
+  ---
+  duration_ms: 0.212476
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 76.141462
+
+--- Browser smoke log ---
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+locator.click: Error: strict mode violation: locator('[data-action="set-tab"][data-tab="analysis"]') resolved to 2 elements:
+    1) <button type="button" data-tab="analysis" data-action="set-tab" class="site-intro-button">Analyze a position</button> aka getByRole('button', { name: 'Analyze a position' })
+    2) <button type="button" class="tab-chip" data-tab="analysis" data-action="set-tab">Analysis</button> aka getByRole('button', { name: 'Analysis' })
+
+Call log:
+  - waiting for locator('[data-action="set-tab"][data-tab="analysis"]')
+
+    at /home/runner/work/chess-study/chess-study/tests/lichess-position-training-browser-smoke.mjs:74:70
+
+Node.js v22.23.1
+
+--- Server log ---
+127.0.0.1 - - [25/Jul/2026 11:11:50] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /site-home.css?v=20260719-seo-branding1 HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /styles.css?v=20260719-mobile-drag-ui1 HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /focus-analysis-popup.css?v=20260719-focus-analysis1 HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /app.js?v=20260719-mobile-drag-ui1 HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /focus-analysis-popup.mjs?v=20260719-focus-analysis3 HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /assets/pieces/app_icon.png HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /vendor/xlsx.full.min.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /assets/Inter/Inter-VariableFont_opsz,wght.ttf HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /assets/Manrope/Manrope-VariableFont_wght.ttf HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /vendor/chess.js HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /pgn.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /puzzle-api.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /lesson-position-builder.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /text-normalization.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /focus-analysis-popup-core.mjs?v=20260723-live-board-link1 HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /lichess-position-training.mjs?v=20260725-position-training1 HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /ai-help-chat.mjs?v=20260718-ai-help3 HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /ai-help-markdown-enhancer.mjs?v=20260718-ai-help2 HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /assets/openings.tsv HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /assets/pieces/mpchess/bN.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /assets/pieces/mpchess/bQ.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /assets/pieces/mpchess/bR.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /assets/pieces/mpchess/bB.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /assets/pieces/mpchess/bK.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /assets/pieces/mpchess/bP.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /assets/pieces/mpchess/wB.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /assets/pieces/mpchess/wN.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /lichess-position-training-engine.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /lichess-position-training-core.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /assets/pieces/mpchess/wP.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /lichess-position-training-data.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /ai-help-config.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /ai-help-icon.mjs HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /assets/pieces/mpchess/wQ.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /assets/pieces/mpchess/wK.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /assets/pieces/mpchess/wR.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /lichess-position-training.css?v=20260725-position-training1 HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:52] "GET /ai-help-chat.css?v=20260719-focus-placement1 HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:53] "GET /assets/pieces/mpchess/bR.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:53] "GET /assets/pieces/mpchess/bB.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:53] "GET /assets/pieces/mpchess/bK.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:53] "GET /assets/pieces/mpchess/bN.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:53] "GET /assets/pieces/mpchess/wP.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:53] "GET /assets/pieces/mpchess/bQ.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:53] "GET /assets/pieces/mpchess/bP.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:53] "GET /assets/pieces/mpchess/wR.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:53] "GET /assets/pieces/mpchess/wN.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:53] "GET /assets/pieces/mpchess/wB.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:53] "GET /assets/pieces/mpchess/wQ.svg HTTP/1.1" 200 -
+127.0.0.1 - - [25/Jul/2026 11:11:53] "GET /assets/pieces/mpchess/wK.svg HTTP/1.1" 200 -
+
+--- Playwright install log (tail) ---
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+Downloading Chromium 140.0.7339.16 (playwright build v1187) from https://cdn.playwright.dev/dbazure/download/playwright/builds/chromium/1187/chromium-linux.zip
+|                                                                                |   0% of 173.7 MiB
+|■■■■■■■■                                                                        |  10% of 173.7 MiB
+|■■■■■■■■■■■■■■■■                                                                |  20% of 173.7 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 173.7 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 173.7 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 173.7 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 173.7 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 173.7 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 173.7 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 173.7 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 173.7 MiB
+Chromium 140.0.7339.16 (playwright build v1187) downloaded to /home/runner/.cache/ms-playwright/chromium-1187
+Downloading FFMPEG playwright build v1011 from https://cdn.playwright.dev/dbazure/download/playwright/builds/ffmpeg/1011/ffmpeg-linux.zip
+|                                                                                |   0% of 2.3 MiB
+|■■■■■■■■                                                                        |  10% of 2.3 MiB
+|■■■■■■■■■■■■■■■■                                                                |  20% of 2.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 2.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 2.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 2.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 2.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 2.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 2.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 2.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 2.3 MiB
+FFMPEG playwright build v1011 downloaded to /home/runner/.cache/ms-playwright/ffmpeg-1011
+Downloading Chromium Headless Shell 140.0.7339.16 (playwright build v1187) from https://cdn.playwright.dev/dbazure/download/playwright/builds/chromium/1187/chromium-headless-shell-linux.zip
+|                                                                                |   0% of 104.3 MiB
+|■■■■■■■■                                                                        |  10% of 104.3 MiB
+|■■■■■■■■■■■■■■■■                                                                |  20% of 104.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 104.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 104.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 104.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 104.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 104.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 104.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 104.3 MiB
+|■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 104.3 MiB
+Chromium Headless Shell 140.0.7339.16 (playwright build v1187) downloaded to /home/runner/.cache/ms-playwright/chromium_headless_shell-1187
