@@ -1,0 +1,84 @@
+name: Repair Teacher Board setup
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+concurrency:
+  group: repair-teacher-board-setup
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    if: github.head_ref == 'agent/repair-teacher-board-setup'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/repair-teacher-board-setup
+          fetch-depth: 0
+
+      - name: Apply Teacher Board setup repair
+        run: python3 scripts/patch-teacher-board-setup.py
+
+      - name: Validate JavaScript and asset references
+        run: |
+          node --check app.js
+          node --check lessons/pawn-teacher-board.js
+          node --check lessons/teacher-board-illegal-moves.mjs
+          node --check text-normalization.mjs
+          git diff --check
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          version = '20260725-teacher-board-setup1'
+          parent = Path('lessons/pawn-teacher-board.js').read_text(encoding='utf-8')
+          app = Path('app.js').read_text(encoding='utf-8')
+          illegal = Path('lessons/teacher-board-illegal-moves.mjs').read_text(encoding='utf-8')
+          css = Path('lessons/pawn-teacher-board.css').read_text(encoding='utf-8')
+
+          assert 'data-teacher-action="side-to-move"' in parent
+          assert 'setSideToMove' in parent and "case 'setSideToMove':" in app
+          assert 'clearBoardOnlyTeacherSetup(data.side)' in app
+          assert 'resetBoardOnlyToStartFen(data.side)' in app
+          assert 'allow the main embedded-board' in illegal
+          assert '.teacher-side-to-move' in css
+
+          stale = []
+          for path in Path('.').rglob('*'):
+              if path.is_file() and path.suffix.lower() in {'.html', '.js', '.mjs'}:
+                  text = path.read_text(encoding='utf-8')
+                  for match in re.findall(r'pawn-teacher-board\.(?:js|css)\?v=([^\'\"\s<>]+)', text):
+                      if match != version:
+                          stale.append(f'{path}: {match}')
+          assert not stale, 'Stale Teacher Board references:\n' + '\n'.join(stale[:40])
+          PY
+
+      - name: Install Chromium test runtime
+        run: |
+          npm install --prefix /tmp/teacher-board-pw --no-save --no-package-lock playwright@1.55.0
+          /tmp/teacher-board-pw/node_modules/.bin/playwright install --with-deps chromium
+
+      - name: Browser-test setup controls
+        run: |
+          python3 -m http.server 8000 >/tmp/teacher-board-server.log 2>&1 &
+          node scripts/test-teacher-board-setup.js
+
+      - name: Remove temporary repair machinery
+        run: |
+          rm scripts/patch-teacher-board-setup.py
+          rm scripts/test-teacher-board-setup.js
+          rm .github/workflows/repair-teacher-board-setup.yml
+
+      - name: Commit production repair
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Repair Teacher Board setup controls"
+          git push origin HEAD:agent/repair-teacher-board-setup
