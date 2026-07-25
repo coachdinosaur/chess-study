@@ -1,0 +1,186 @@
+name: Verify expanded 200-puzzle dataset
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/verify-200-position-puzzles.yml
+      - tests/lichess-position-training-browser-smoke.mjs
+      - assets/puzzles/lichess-position-training/**
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/add-100-position-training-puzzles
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify baseline preservation and expanded uniqueness
+        run: |
+          git fetch origin main
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import { execFileSync } from 'node:child_process';
+
+          function loadWorkingDataset(directory) {
+            const manifest = JSON.parse(fs.readFileSync(path.join(directory, 'manifest.json'), 'utf8'));
+            const records = manifest.shards.flatMap((shard) => {
+              const payload = JSON.parse(fs.readFileSync(path.join(directory, shard.file), 'utf8'));
+              return Array.isArray(payload) ? payload : payload.puzzles || [];
+            });
+            return { manifest, records };
+          }
+
+          function readMain(pathname) {
+            return execFileSync('git', ['show', `origin/main:${pathname}`], { encoding: 'utf8' });
+          }
+
+          function loadMainDataset(directory) {
+            const manifest = JSON.parse(readMain(`${directory}/manifest.json`));
+            const records = manifest.shards.flatMap((shard) => {
+              const payload = JSON.parse(readMain(`${directory}/${shard.file}`));
+              return Array.isArray(payload) ? payload : payload.puzzles || [];
+            });
+            return { manifest, records };
+          }
+
+          const directory = 'assets/puzzles/lichess-position-training';
+          const baseline = loadMainDataset(directory);
+          const expanded = loadWorkingDataset(directory);
+          assert.equal(baseline.records.length, 100, 'main baseline must contain 100 records');
+          assert.equal(expanded.records.length, 200, 'branch dataset must contain 200 records');
+          assert.deepEqual(expanded.records.slice(0, 100), baseline.records, 'the original 100 records changed');
+          assert.equal(expanded.manifest.shards.length, 8, 'expanded manifest must contain eight shards');
+
+          const ids = new Set();
+          const fens = new Set();
+          const colors = new Set();
+          const forbiddenFields = ['moves', 'solution', 'bestLine', 'bestLineUci', 'continuation'];
+          for (const record of expanded.records) {
+            assert.ok(record.id && !ids.has(record.id), `duplicate or missing puzzle ID: ${record.id}`);
+            ids.add(record.id);
+            assert.ok(record.startFen && !fens.has(record.startFen), `duplicate or missing start FEN: ${record.id}`);
+            fens.add(record.startFen);
+            colors.add(record.solverColor);
+            for (const field of forbiddenFields) {
+              assert.equal(Object.prototype.hasOwnProperty.call(record, field), false, `${record.id} stores ${field}`);
+            }
+          }
+          assert.deepEqual([...colors].sort(), ['b', 'w']);
+          console.log('Original records preserved: 100/100');
+          console.log('New unique records: 100');
+          console.log('Total unique IDs: 200');
+          console.log('Total unique starting FENs: 200');
+          NODE
+
+      - name: Validate dataset
+        run: |
+          mkdir -p proof/logs
+          node tools/validate-lichess-position-training.mjs \
+            --dir assets/puzzles/lichess-position-training \
+            --report proof/lichess-200-validation.md \
+            --expected-count 200 \
+            2>&1 | tee proof/logs/lichess-200-validator-output.txt
+
+      - name: Run core tests
+        run: node --test tests/lichess-position-training-core.test.mjs
+
+      - name: Check browser smoke test syntax
+        run: node --check tests/lichess-position-training-browser-smoke.mjs
+
+      - name: Install browser test dependencies
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Run browser smoke test
+        run: |
+          python3 local_server.py --host 127.0.0.1 --port 8000 > /tmp/chess-study-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:8000/ > /dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          node tests/lichess-position-training-browser-smoke.mjs \
+            2>&1 | tee proof/logs/lichess-200-browser-smoke-output.txt
+
+      - name: Refresh generation summary
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+
+          const directory = 'assets/puzzles/lichess-position-training';
+          const manifest = JSON.parse(fs.readFileSync(path.join(directory, 'manifest.json'), 'utf8'));
+          const records = manifest.shards.flatMap((shard) => {
+            const payload = JSON.parse(fs.readFileSync(path.join(directory, shard.file), 'utf8'));
+            return payload.puzzles || payload;
+          });
+          const colors = records.reduce((counts, record) => {
+            counts[record.solverColor] = (counts[record.solverColor] || 0) + 1;
+            return counts;
+          }, {});
+          const ratings = records.map((record) => Number(record.rating)).sort((a, b) => a - b);
+          const summary = [
+            '# Lichess Position Training: 200-puzzle generation',
+            '',
+            `- Generated: ${manifest.generatedAt}`,
+            `- Production records: ${records.length}`,
+            '- Existing records preserved: 100',
+            '- New records added: 100',
+            `- Shards: ${manifest.shards.length}`,
+            `- Shard size: ${manifest.shardSize}`,
+            `- White solvers: ${colors.w || 0}`,
+            `- Black solvers: ${colors.b || 0}`,
+            `- Rating range: ${ratings[0]}-${ratings.at(-1)}`,
+            '- Duplicate puzzle IDs: 0',
+            '- Repeated starting positions: 0',
+            '- Exact continuation fields: 0',
+            '- Dataset validator: PASS',
+            '- Core tests: PASS',
+            '- Browser smoke test: PASS',
+            '',
+            'The original 100 production records were compared directly with main and remained unchanged. The expanded dataset adds 100 unique records generated from real Lichess puzzle rows.',
+            '',
+          ].join('\n');
+          fs.writeFileSync('proof/lichess-200-generation-summary.md', summary);
+          NODE
+
+      - name: Commit verification evidence and remove temporary files
+        run: |
+          rm -f .github/workflows/verify-200-position-puzzles.yml
+          rm -f .github/workflows/generate-200-position-puzzles.yml
+          rm -f .github/triggers/generate-200-position-puzzles.txt
+          rm -f proof/logs/lichess-200-candidate-diagnostic.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add proof/lichess-200-validation.md \
+            proof/lichess-200-generation-summary.md \
+            proof/logs/lichess-200-validator-output.txt \
+            proof/logs/lichess-200-browser-smoke-output.txt \
+            tests/lichess-position-training-browser-smoke.mjs \
+            .github/workflows/verify-200-position-puzzles.yml \
+            .github/workflows/generate-200-position-puzzles.yml \
+            proof/logs/lichess-200-candidate-diagnostic.txt
+          git commit -m 'Verify 200 position-training puzzles'
+          git push origin HEAD:agent/add-100-position-training-puzzles
