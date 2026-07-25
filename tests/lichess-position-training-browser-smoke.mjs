@@ -79,7 +79,7 @@ try {
   await page.getByRole('button', { name: 'Open position training' }).click();
   const overlay = page.locator('.position-training-overlay');
   await overlay.waitFor({ state: 'visible' });
-  await page.getByRole('heading', { name: 'Lichess Position Training' }).waitFor();
+  await overlay.getByRole('heading', { name: 'Lichess Position Training' }).waitFor();
   await page.waitForFunction(() => {
     const feedback = document.querySelector('[data-pt-feedback]')?.textContent || '';
     return !/Loading and validating/i.test(feedback) && document.querySelector('[data-pt-current] dd');
@@ -87,34 +87,34 @@ try {
 
   const seenSides = new Set();
   for (let attempt = 0; attempt < 8 && seenSides.size < 2; attempt += 1) {
-    const side = (await page.locator('[data-pt-current] dd').first().textContent())?.trim();
+    const side = (await overlay.locator('[data-pt-current] dd').first().textContent())?.trim();
     assert.ok(side === 'White' || side === 'Black', `unexpected solver side: ${side}`);
     seenSides.add(side);
-    const firstSquare = await page.locator('[data-pt-board] [data-square]').first().getAttribute('data-square');
+    const firstSquare = await overlay.locator('[data-pt-board] [data-square]').first().getAttribute('data-square');
     assert.equal(firstSquare, side === 'White' ? 'a8' : 'h1', `${side} board orientation should face the solver`);
     if (seenSides.size < 2) {
-      await page.getByRole('button', { name: 'Next position' }).click();
+      await overlay.getByRole('button', { name: 'Next position' }).click();
       await page.waitForFunction(() => !/Loading and validating/i.test(document.querySelector('[data-pt-feedback]')?.textContent || ''), null, { timeout: 30_000 });
     }
   }
   assert.deepEqual([...seenSides].sort(), ['Black', 'White'], 'seed cycle should exercise both solver colors');
 
-  const side = (await page.locator('[data-pt-current] dd').first().textContent())?.trim();
-  const kingSquare = page.locator('[data-pt-board] [data-square]').filter({ hasText: side === 'Black' ? '♚' : '♔' }).first();
+  const side = (await overlay.locator('[data-pt-current] dd').first().textContent())?.trim();
+  const kingSquare = overlay.locator('[data-pt-board] [data-square]').filter({ hasText: side === 'Black' ? '♚' : '♔' }).first();
   assert.ok(await kingSquare.count(), 'solver king should be present');
   await kingSquare.click();
-  const legalTarget = page.locator('[data-pt-board] .legal-target').first();
+  const legalTarget = overlay.locator('[data-pt-board] .legal-target').first();
   await legalTarget.waitFor({ state: 'visible' });
   await legalTarget.click();
   await page.waitForFunction(() => {
     const text = document.querySelector('[data-pt-feedback]')?.textContent || '';
     return /accepted|Solved|Continue from the new position/i.test(text) || /could not|did not return|timed out/i.test(text);
   }, null, { timeout: 45_000 });
-  const moveFeedback = await page.locator('[data-pt-feedback]').innerText();
+  const moveFeedback = await overlay.locator('[data-pt-feedback]').innerText();
   assert.doesNotMatch(moveFeedback, /could not|did not return|timed out/i, `dynamic reply failed: ${moveFeedback}`);
   assert.ok(tablebaseRequests >= 3, 'tablebase evaluation should run before and after a student move');
 
-  await page.getByRole('button', { name: 'Close position training' }).click();
+  await overlay.getByRole('button', { name: 'Close position training' }).click();
   await overlay.waitFor({ state: 'hidden' });
 
   const embedPage = await context.newPage();
