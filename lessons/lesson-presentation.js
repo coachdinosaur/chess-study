@@ -1,13 +1,13 @@
 (function () {
   "use strict";
 
-  if (window.__LESSON_PRESENTATION_V4__) return;
-  window.__LESSON_PRESENTATION_V4__ = true;
+  if (window.__LESSON_PRESENTATION_V5__) return;
+  window.__LESSON_PRESENTATION_V5__ = true;
 
-  var VERSION = "20260724-bishop-presentation-v4";
+  var VERSION = "20260725-presentation-click-pulse-v5";
   var scriptUrl = document.currentScript && document.currentScript.src
     ? document.currentScript.src
-    : new URL("lesson-presentation.js", window.location.href).href;
+    : new URL("lesson-presentation.js?v=20260725-presentation-click-pulse-v5", window.location.href).href;
 
   var scenes = [];
   var activeIndex = 0;
@@ -19,6 +19,7 @@
   var launchButton = null;
   var nativeFullscreenRequested = false;
   var bishopLesson = false;
+  var iframePointerDocuments = new WeakSet();
 
   function assetUrl(filename) {
     return new URL(filename, scriptUrl).href;
@@ -574,6 +575,92 @@
     }, 0);
   }
 
+  function presentationIsActive() {
+    return Boolean(document.body && document.body.classList.contains("lesson-presentation-active"));
+  }
+
+  function shouldIgnorePresentationPointer(target) {
+    return Boolean(
+      target &&
+      target.closest &&
+      target.closest(
+        ".lesson-presentation-toolbar, .lesson-present-launch, " +
+        ".teacher-board-panel, .teacher-board-toggle, [data-open-teacher-board]"
+      )
+    );
+  }
+
+  function showPresentationClickIndicator(clientX, clientY) {
+    if (!presentationIsActive()) return;
+    if (!Number.isFinite(clientX) || !Number.isFinite(clientY)) return;
+
+    var indicators = document.querySelectorAll(".lesson-presentation-click-indicator");
+    if (indicators.length >= 12 && indicators[0]) indicators[0].remove();
+
+    var indicator = document.createElement("span");
+    indicator.className = "lesson-presentation-click-indicator";
+    indicator.setAttribute("aria-hidden", "true");
+    indicator.style.left = clientX + "px";
+    indicator.style.top = clientY + "px";
+    document.body.appendChild(indicator);
+
+    var removeIndicator = function () {
+      if (indicator.parentNode) indicator.remove();
+    };
+    indicator.addEventListener("animationend", removeIndicator, { once: true });
+    window.setTimeout(removeIndicator, 1100);
+  }
+
+  function validPresentationPointer(event) {
+    if (!event || event.isPrimary === false) return false;
+    return typeof event.button !== "number" || event.button === 0;
+  }
+
+  function onPresentationPointerDown(event) {
+    if (!presentationIsActive() || !validPresentationPointer(event)) return;
+    if (shouldIgnorePresentationPointer(event.target)) return;
+    showPresentationClickIndicator(event.clientX, event.clientY);
+  }
+
+  function bindFramePointerIndicator(frame) {
+    if (!frame || frame.dataset.presentationClickIndicatorBound === "true") return;
+    frame.dataset.presentationClickIndicatorBound = "true";
+
+    var bindDocument = function () {
+      try {
+        var frameDocument = frame.contentDocument;
+        if (!frameDocument || iframePointerDocuments.has(frameDocument)) return;
+        iframePointerDocuments.add(frameDocument);
+        frameDocument.addEventListener("pointerdown", function (event) {
+          if (!presentationIsActive() || !validPresentationPointer(event)) return;
+          var rect = frame.getBoundingClientRect();
+          var frameWindow = frame.contentWindow;
+          var viewportWidth = frameWindow && frameWindow.innerWidth
+            ? frameWindow.innerWidth
+            : frame.clientWidth || rect.width;
+          var viewportHeight = frameWindow && frameWindow.innerHeight
+            ? frameWindow.innerHeight
+            : frame.clientHeight || rect.height;
+          var scaleX = viewportWidth ? rect.width / viewportWidth : 1;
+          var scaleY = viewportHeight ? rect.height / viewportHeight : 1;
+          showPresentationClickIndicator(
+            rect.left + event.clientX * scaleX,
+            rect.top + event.clientY * scaleY
+          );
+        }, true);
+      } catch (error) {
+        // Cross-origin frames cannot expose pointer events to the lesson page.
+      }
+    };
+
+    frame.addEventListener("load", bindDocument);
+    bindDocument();
+  }
+
+  function bindBoardFramePointerIndicators() {
+    document.querySelectorAll("iframe").forEach(bindFramePointerIndicator);
+  }
+
   function requestNativeFullscreen() {
     if (!document.documentElement.requestFullscreen || document.fullscreenElement) return;
     nativeFullscreenRequested = true;
@@ -597,6 +684,9 @@
 
   function exitPresentation() {
     if (!document.body.classList.contains("lesson-presentation-active")) return;
+    document.querySelectorAll(".lesson-presentation-click-indicator").forEach(function (indicator) {
+      indicator.remove();
+    });
     document.body.classList.remove("lesson-presentation-active");
     document.documentElement.classList.remove("lesson-presentation-root-active");
     scenes.forEach(function (scene) {
@@ -672,6 +762,8 @@
     scenes.forEach(prepareScene);
     createToolbar();
     addLaunchButton();
+    document.addEventListener("pointerdown", onPresentationPointerDown, true);
+    bindBoardFramePointerIndicators();
     document.addEventListener("keydown", onKeyDown);
     document.addEventListener("fullscreenchange", onFullscreenChange);
   }
