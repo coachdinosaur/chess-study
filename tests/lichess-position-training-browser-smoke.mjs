@@ -127,13 +127,15 @@ try {
 
   moveSearch:
   for (const square of candidateSquares) {
-    await overlay.locator(`[data-pt-board] [data-square="${square}"]`).click();
+    const sourceSquare = overlay.locator(`[data-pt-board] [data-square="${square}"]`);
+    await sourceSquare.click();
     const targetSquares = await overlay.locator('[data-pt-board] .legal-target').evaluateAll(
       (nodes) => nodes.map((node) => node.dataset.square),
     );
 
     for (const targetSquare of targetSquares) {
-      await overlay.locator(`[data-pt-board] [data-square="${square}"]`).click();
+      const sourceIsSelected = await sourceSquare.evaluate((node) => node.classList.contains('selected'));
+      if (!sourceIsSelected) await sourceSquare.click();
       await overlay.locator(`[data-pt-board] [data-square="${targetSquare}"]`).click();
 
       const promotion = overlay.locator('[data-pt-promotion]:not([hidden])');
