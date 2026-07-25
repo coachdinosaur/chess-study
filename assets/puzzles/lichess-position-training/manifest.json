@@ -1,0 +1,19 @@
+{
+  "format": 1,
+  "generatedAt": "2026-07-25T00:00:00.000Z",
+  "source": "Bundled smoke-test seed; replace with shards generated from the official Lichess puzzle database",
+  "trainingModel": "position-objective-dynamic-defence",
+  "exactLineRequired": false,
+  "count": 4,
+  "shardSize": 2000,
+  "filters": {
+    "minRating": 700,
+    "maxRating": 2600,
+    "minPopularity": 80,
+    "minPlays": 50,
+    "excludedThemes": ["veryLong"]
+  },
+  "shards": [
+    { "file": "shard-0000.json", "count": 4 }
+  ]
+}
