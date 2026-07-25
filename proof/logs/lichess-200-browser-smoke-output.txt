@@ -1,0 +1,2 @@
+Dynamic evaluator accepted a preserving move after 14 attempt(s); intercepted tablebase requests: 0.
+Position training browser smoke test passed.
