@@ -1,0 +1,76 @@
+name: Apply presentation click indicator
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.head_ref == 'agent/add-presentation-click-indicator'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/add-presentation-click-indicator
+          fetch-depth: 0
+
+      - name: Apply production patch
+        run: python3 .github/scripts/apply-presentation-click-indicator.py
+
+      - name: Validate static changes
+        run: |
+          node --check lessons/lesson-presentation.js
+          git diff --check
+          python3 - <<'PY'
+          from pathlib import Path
+
+          version = "20260725-presentation-click-pulse-v5"
+          js = Path("lessons/lesson-presentation.js").read_text(encoding="utf-8")
+          css = Path("lessons/lesson-presentation.css").read_text(encoding="utf-8")
+          assert "__LESSON_PRESENTATION_V5__" in js
+          assert "onPresentationPointerDown" in js
+          assert "bindBoardFramePointerIndicators" in js
+          assert "lesson-presentation-click-indicator" in css
+          assert "@keyframes lesson-presentation-click-pulse" in css
+          pages = []
+          stale = []
+          for page in Path("lessons").glob("*.html"):
+              text = page.read_text(encoding="utf-8")
+              if "lesson-presentation.js" not in text:
+                  continue
+              pages.append(page)
+              if f"lesson-presentation.js?v={version}" not in text:
+                  stale.append(page)
+          assert pages
+          assert not stale, "Stale presentation references: " + ", ".join(map(str, stale[:10]))
+          print(f"Validated {len(pages)} presentation-enabled lesson pages")
+          PY
+
+      - name: Install Chromium test runtime
+        run: |
+          npm install --prefix /tmp/presentation-pw --no-save --no-package-lock playwright@1.55.0
+          /tmp/presentation-pw/node_modules/.bin/playwright install --with-deps chromium
+
+      - name: Browser-test click feedback
+        run: |
+          python3 -m http.server 8000 >/tmp/presentation-server.log 2>&1 &
+          node .github/scripts/test-presentation-click.js
+
+      - name: Remove temporary patch machinery
+        run: |
+          rm -f .github/workflows/add-presentation-click-indicator.yml
+          rm -f .github/workflows/apply-presentation-click-indicator.yml
+          rm -f .github/scripts/apply-presentation-click-indicator.py
+          rm -f .github/scripts/test-presentation-click.js
+
+      - name: Commit production changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lessons .github
+          git commit -m "Add click pulse to lesson presentation mode"
+          git push origin HEAD:agent/add-presentation-click-indicator
