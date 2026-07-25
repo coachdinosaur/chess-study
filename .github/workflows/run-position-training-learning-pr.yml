@@ -27,4 +27,19 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: bash scripts/run-position-training-learning-upgrade.sh
+      - name: Run upgrade
+        id: upgrade
+        shell: bash
+        run: |
+          set +e
+          bash scripts/run-position-training-learning-upgrade.sh > position-training-upgrade.log 2>&1
+          status=$?
+          cat position-training-upgrade.log
+          exit "$status"
+      - name: Upload complete upgrade log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: position-training-upgrade-log
+          path: position-training-upgrade.log
+          if-no-files-found: error
