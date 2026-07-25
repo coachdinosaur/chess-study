@@ -1,0 +1,48 @@
+name: Patch position training theme source
+
+on:
+  push:
+    branches:
+      - agent/align-position-training-theme-board
+    paths:
+      - .github/workflows/patch-position-training-theme-source.yml
+      - tools/patch-position-training-theme-source.mjs
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-validate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Patch trainer source
+        run: node tools/patch-position-training-theme-source.mjs
+
+      - name: Validate JavaScript and core behavior
+        run: |
+          node --check lichess-position-training.mjs
+          node --test tests/lichess-position-training-core.test.mjs
+
+      - name: Commit patched trainer
+        shell: bash
+        run: |
+          if git diff --quiet -- lichess-position-training.mjs; then
+            echo "Patch produced no changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lichess-position-training.mjs
+          git commit -m "Use main app piece assets in position trainer"
+          git push origin HEAD:agent/align-position-training-theme-board
