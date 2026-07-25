@@ -1,0 +1,65 @@
+name: Repair Live Board message lifecycle
+
+on:
+  push:
+    branches:
+      - agent/repair-live-board-message-lifecycle
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/repair-live-board-message-lifecycle
+          fetch-depth: 0
+
+      - name: Apply lifecycle repair
+        run: python3 scripts/patch-live-board-message-lifecycle.py
+
+      - name: Validate JavaScript and production references
+        run: |
+          node --check live-board-messages-v2.js
+          node --check live-board-realtime.js
+          git diff --check
+          python3 - <<'PY'
+          from pathlib import Path
+
+          messages = Path('live-board-messages-v2.js').read_text(encoding='utf-8')
+          realtime = Path('live-board-realtime.js').read_text(encoding='utf-8')
+          html = Path('live-board.html').read_text(encoding='utf-8')
+
+          assert 'initializeForSession' in messages
+          assert 'initializeWhenReady' in messages
+          assert 'live-board-session-ready' in messages
+          assert 'live-board-session-ready' in realtime
+          assert '20260725-message-lifecycle1' in html
+          assert "document.addEventListener('DOMContentLoaded', initialize" not in messages
+          PY
+
+      - name: Install Chromium test runtime
+        run: |
+          npm install --prefix /tmp/live-board-pw --no-save --no-package-lock playwright@1.55.0
+          /tmp/live-board-pw/node_modules/.bin/playwright install --with-deps chromium
+
+      - name: Browser-test teacher and student message lifecycle
+        run: |
+          python3 -m http.server 8000 >/tmp/live-board-server.log 2>&1 &
+          node scripts/test-live-board-message-lifecycle.js
+
+      - name: Remove temporary repair machinery
+        run: |
+          rm scripts/patch-live-board-message-lifecycle.py
+          rm scripts/test-live-board-message-lifecycle.js
+          rm .github/workflows/repair-live-board-message-lifecycle.yml
+
+      - name: Commit production repair
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add live-board.html live-board-messages-v2.js live-board-realtime.js scripts .github/workflows
+          git commit -m "Repair Live Board message lifecycle"
+          git push origin HEAD:agent/repair-live-board-message-lifecycle
