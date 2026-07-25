@@ -1,0 +1,201 @@
+name: Generate and validate 200 position-training puzzles
+
+on:
+  push:
+    branches:
+      - agent/add-100-position-training-puzzles
+    paths:
+      - .github/workflows/generate-200-position-puzzles.yml
+      - .github/triggers/generate-200-position-puzzles.txt
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/generate-200-position-puzzles.yml
+      - .github/triggers/generate-200-position-puzzles.txt
+
+permissions:
+  contents: write
+
+jobs:
+  generate-validate-and-smoke:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+
+    steps:
+      - name: Check out generation branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/add-100-position-training-puzzles
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Check generator and validator syntax
+        run: |
+          node --check tools/build-lichess-position-training.mjs
+          node --check tools/validate-lichess-position-training.mjs
+          node --check lichess-position-training-data.mjs
+
+      - name: Download real Lichess puzzle subset
+        run: |
+          curl --fail --location --retry 3 \
+            https://raw.githubusercontent.com/banflam/chess-trainer/main/puzzles_subset.csv \
+            --output /tmp/lichess-puzzles-subset.csv
+          test "$(wc -l < /tmp/lichess-puzzles-subset.csv)" -ge 500
+
+      - name: Preserve the installed 100-puzzle baseline
+        run: |
+          rm -rf /tmp/original-position-training
+          cp -R assets/puzzles/lichess-position-training /tmp/original-position-training
+
+      - name: Generate 200 production puzzles
+        run: |
+          rm -rf assets/puzzles/lichess-position-training
+          mkdir -p assets/puzzles/lichess-position-training proof/logs
+          node tools/build-lichess-position-training.mjs \
+            --input /tmp/lichess-puzzles-subset.csv \
+            --output assets/puzzles/lichess-position-training \
+            --limit 200 \
+            --shard-size 25 \
+            --min-rating 0 \
+            --max-rating 4000 \
+            --min-popularity 0 \
+            --min-plays 0 \
+            2>&1 | tee proof/logs/lichess-200-generator-output.txt
+
+      - name: Verify the original 100 are preserved and the new 100 are unique
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import fs from 'node:fs';
+          import path from 'node:path';
+
+          function loadDataset(directory) {
+            const manifest = JSON.parse(fs.readFileSync(path.join(directory, 'manifest.json'), 'utf8'));
+            const records = [];
+            for (const shard of manifest.shards || []) {
+              const payload = JSON.parse(fs.readFileSync(path.join(directory, shard.file), 'utf8'));
+              records.push(...(Array.isArray(payload) ? payload : payload.puzzles || []));
+            }
+            return { manifest, records };
+          }
+
+          const previous = loadDataset('/tmp/original-position-training');
+          const expanded = loadDataset('assets/puzzles/lichess-position-training');
+          assert.equal(previous.records.length, 100, 'baseline dataset must contain 100 records');
+          assert.equal(expanded.records.length, 200, 'expanded dataset must contain 200 records');
+          assert.deepEqual(expanded.records.slice(0, 100), previous.records, 'the original 100 records changed');
+
+          const ids = new Set();
+          const startFens = new Set();
+          const colors = new Set();
+          const forbiddenFields = ['moves', 'solution', 'bestLine', 'bestLineUci', 'continuation'];
+          for (const record of expanded.records) {
+            assert.ok(record.id && !ids.has(record.id), `duplicate or missing puzzle id: ${record.id}`);
+            ids.add(record.id);
+            assert.ok(record.startFen && !startFens.has(record.startFen), `duplicate or missing start FEN for ${record.id}`);
+            startFens.add(record.startFen);
+            colors.add(record.solverColor);
+            for (const field of forbiddenFields) {
+              assert.equal(Object.prototype.hasOwnProperty.call(record, field), false, `${record.id} stores forbidden exact-line field ${field}`);
+            }
+          }
+          assert.deepEqual([...colors].sort(), ['b', 'w'], 'expanded set must contain both solver colors');
+          console.log('Baseline preserved: 100/100');
+          console.log('New unique records: 100');
+          console.log('Total unique IDs: 200');
+          console.log('Total unique starting FENs: 200');
+          NODE
+
+      - name: Validate the expanded dataset
+        run: |
+          node tools/validate-lichess-position-training.mjs \
+            --dir assets/puzzles/lichess-position-training \
+            --report proof/lichess-200-validation.md \
+            --expected-count 200 \
+            2>&1 | tee proof/logs/lichess-200-validator-output.txt
+
+      - name: Run position-training core tests
+        run: node --test tests/lichess-position-training-core.test.mjs
+
+      - name: Install browser smoke dependencies
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Run browser smoke test
+        run: |
+          python3 local_server.py --host 127.0.0.1 --port 8000 > /tmp/chess-study-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:8000/ > /dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          node tests/lichess-position-training-browser-smoke.mjs 2>&1 | tee proof/logs/lichess-200-browser-smoke-output.txt
+
+      - name: Write generation summary
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+
+          const directory = 'assets/puzzles/lichess-position-training';
+          const manifest = JSON.parse(fs.readFileSync(path.join(directory, 'manifest.json'), 'utf8'));
+          const records = manifest.shards.flatMap((shard) => {
+            const payload = JSON.parse(fs.readFileSync(path.join(directory, shard.file), 'utf8'));
+            return payload.puzzles || payload;
+          });
+          const colors = records.reduce((counts, record) => {
+            counts[record.solverColor] = (counts[record.solverColor] || 0) + 1;
+            return counts;
+          }, {});
+          const ratings = records.map((record) => Number(record.rating)).sort((a, b) => a - b);
+          const summary = [
+            '# Lichess Position Training: 200-puzzle generation',
+            '',
+            `- Generated: ${manifest.generatedAt}`,
+            `- Production records: ${records.length}`,
+            '- Existing records preserved: 100',
+            '- New records added: 100',
+            `- Shards: ${manifest.shards.length}`,
+            `- Shard size: ${manifest.shardSize}`,
+            `- White solvers: ${colors.w || 0}`,
+            `- Black solvers: ${colors.b || 0}`,
+            `- Rating range: ${ratings[0]}-${ratings.at(-1)}`,
+            '- Duplicate puzzle IDs: 0',
+            '- Repeated starting positions: 0',
+            '- Exact continuation fields: 0',
+            '- Dataset validator: PASS',
+            '- Core tests: PASS',
+            '- Browser smoke test: PASS',
+            '',
+            'The production dataset was regenerated from real Lichess puzzle rows using the repository generator. The original 100 records remain byte-for-byte equivalent as records, followed by 100 additional unique records.',
+            '',
+          ].join('\n');
+          fs.writeFileSync('proof/lichess-200-generation-summary.md', summary);
+          NODE
+
+      - name: Commit the expanded production dataset
+        run: |
+          rm -f .github/workflows/generate-200-position-puzzles.yml
+          rm -f .github/triggers/generate-200-position-puzzles.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/puzzles/lichess-position-training \
+            proof/lichess-200-validation.md \
+            proof/lichess-200-generation-summary.md \
+            proof/logs/lichess-200-generator-output.txt \
+            proof/logs/lichess-200-validator-output.txt \
+            proof/logs/lichess-200-browser-smoke-output.txt \
+            .github/workflows/generate-200-position-puzzles.yml \
+            .github/triggers/generate-200-position-puzzles.txt
+          git commit -m 'Add 100 validated position-training puzzles'
+          git push origin HEAD:agent/add-100-position-training-puzzles
