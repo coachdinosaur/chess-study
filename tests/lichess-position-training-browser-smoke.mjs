@@ -93,6 +93,17 @@ try {
     const feedback = document.querySelector('[data-pt-feedback]')?.textContent || '';
     return !/Loading and validating/i.test(feedback) && document.querySelector('[data-pt-current] dd');
   }, null, { timeout: 30_000 });
+  await overlay.getByRole('heading', { name: 'Learning progress' }).waitFor();
+  await overlay.getByRole('heading', { name: 'Theme performance' }).waitFor();
+  assert.equal(await overlay.locator('[data-pt-pref="difficultyMode"]').inputValue(), 'adaptive');
+  const hintButton = overlay.locator('[data-pt-action="hint"]');
+  await hintButton.click();
+  await hintButton.click();
+  assert.equal(await overlay.locator('[data-pt-board] .hinted-from').count(), 1, 'second hint should identify a source piece');
+  await hintButton.click();
+  assert.equal(await overlay.locator('[data-pt-board] .hinted-target').count(), 1, 'third hint should identify a destination');
+  await hintButton.click();
+  assert.match(await overlay.locator('[data-pt-feedback]').innerText(), /Full reveal|leading candidate/i);
 
   const seenSides = new Set();
   for (let attempt = 0; attempt < 12 && seenSides.size < 2; attempt += 1) {

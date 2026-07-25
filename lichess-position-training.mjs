@@ -10,8 +10,9 @@ import {
 } from './lichess-position-training-core.mjs';
 import { PositionTrainingEvaluator } from './lichess-position-training-engine.mjs';
 import { LichessPositionTrainingDataSource } from './lichess-position-training-data.mjs';
+import { PositionTrainingLearning } from './lichess-position-training-learning.mjs';
 
-const STYLE_URL = './lichess-position-training.css?v=20260725-board-interaction3';
+const STYLE_URL = './lichess-position-training.css?v=20260726-learning1';
 const STATS_KEY = 'lichess-position-training-stats-v1';
 const PREFS_KEY = 'lichess-position-training-prefs-v1';
 const HISTORY_KEY = 'lichess-position-training-history-v1';
@@ -90,6 +91,7 @@ function loadStats() {
 
 function loadPrefs() {
   return {
+    difficultyMode: 'adaptive',
     minRating: 800,
     maxRating: 2400,
     theme: 'any',
@@ -143,6 +145,7 @@ class PositionTrainingController {
   constructor() {
     this.dataSource = new LichessPositionTrainingDataSource();
     this.evaluator = new PositionTrainingEvaluator();
+    this.learning = new PositionTrainingLearning();
     this.stats = loadStats();
     this.prefs = loadPrefs();
     this.game = null;
@@ -154,6 +157,13 @@ class PositionTrainingController {
     this.solverMoves = 0;
     this.selectedSquare = '';
     this.hintSquare = '';
+    this.hintFrom = '';
+    this.hintTo = '';
+    this.hintLevel = 0;
+    this.explanation = null;
+    this.reviewMode = false;
+    this.lastAcceptedMove = '';
+    this.lastVerdict = null;
     this.pendingPromotion = null;
     this.busy = false;
     this.completed = false;
@@ -185,8 +195,9 @@ class PositionTrainingController {
               <div class="position-training-promotion" data-pt-promotion hidden></div>
             </div>
             <div class="position-training-feedback info" data-pt-feedback aria-live="polite"></div>
+            <section class="position-training-explanation" data-pt-explanation hidden></section>
             <div class="position-training-actions">
-              <button type="button" data-pt-action="hint">Concept hint</button>
+              <button type="button" data-pt-action="hint">Hint 1 of 4</button>
               <button type="button" data-pt-action="reset">Reset position</button>
               <button type="button" class="primary" data-pt-action="next">Next position</button>
             </div>
@@ -198,6 +209,12 @@ class PositionTrainingController {
             </section>
             <section class="position-training-card">
               <h3>Filters</h3>
+              <label>Difficulty
+                <select data-pt-pref="difficultyMode">
+                  <option value="adaptive">Adaptive</option>
+                  <option value="fixed">Fixed range</option>
+                </select>
+              </label>
               <label>Minimum rating
                 <input type="number" min="400" max="3200" step="100" data-pt-pref="minRating">
               </label>
@@ -207,6 +224,7 @@ class PositionTrainingController {
               <label>Theme
                 <select data-pt-pref="theme">
                   <option value="any">Any theme</option>
+                  <option value="weakest">Weakest theme</option>
                   <option value="endgame">Endgame</option>
                   <option value="mate">Mate</option>
                   <option value="fork">Fork</option>
@@ -221,6 +239,16 @@ class PositionTrainingController {
             <section class="position-training-card">
               <h3>Separate statistics</h3>
               <div class="position-training-stats" data-pt-stats></div>
+            </section>
+            <section class="position-training-card">
+              <h3>Learning progress</h3>
+              <div data-pt-learning></div>
+              <button type="button" class="position-training-review-button" data-pt-action="review">Review mistakes</button>
+              <p class="position-training-mode-note" data-pt-mode-note></p>
+            </section>
+            <section class="position-training-card">
+              <h3>Theme performance</h3>
+              <div data-pt-theme-dashboard></div>
             </section>
           </aside>
         </div>
@@ -256,14 +284,26 @@ class PositionTrainingController {
     this.completed = false;
     this.selectedSquare = '';
     this.hintSquare = '';
+    this.hintFrom = '';
+    this.hintTo = '';
+    this.hintLevel = 0;
+    this.explanation = null;
+    this.lastAcceptedMove = '';
+    this.lastVerdict = null;
     this.pendingPromotion = null;
     this.feedback = { kind: 'info', text: 'Loading and validating a position…' };
     this.render();
 
     try {
       let accepted = null;
+      const reviewRecord = this.reviewMode ? this.learning.nextReview() : null;
+      if (this.reviewMode && !reviewRecord) {
+        this.reviewMode = false;
+        throw new Error('No saved mistakes are available for review.');
+      }
+      const effectiveFilters = this.learning.effectiveFilters(this.prefs);
       for (let attempt = 0; attempt < 16; attempt += 1) {
-        const raw = await this.dataSource.next(this.prefs);
+        const raw = reviewRecord || await this.dataSource.next(effectiveFilters);
         let prepared;
         try {
           prepared = prepareLichessTrainingPuzzle(raw);
@@ -285,6 +325,7 @@ class PositionTrainingController {
       this.initialBaseline = accepted.baseline;
       this.startMaterial = materialBalanceForColor(this.game, this.current.solverColor);
       this.solverMoves = 0;
+      this.learning.beginPuzzle(this.current, { reviewMode: this.reviewMode });
       this.stats.started += 1;
       this.#saveStats();
       this.feedback = {
@@ -306,29 +347,39 @@ class PositionTrainingController {
     this.solverMoves = 0;
     this.selectedSquare = '';
     this.hintSquare = '';
+    this.hintFrom = '';
+    this.hintTo = '';
+    this.explanation = null;
     this.pendingPromotion = null;
     this.completed = false;
     this.feedback = { kind: 'info', text: 'Position reset. Find your own continuation.' };
     this.render();
   }
 
+  async toggleReviewMode() {
+    if (this.busy) return;
+    if (!this.learning.reviewCount()) {
+      this.feedback = { kind: 'info', text: 'No mistakes are saved for review yet.' };
+      this.render();
+      return;
+    }
+    this.reviewMode = !this.reviewMode;
+    await this.loadNext();
+  }
+
   async showHint() {
     if (!this.current || this.busy || this.completed) return;
-    const themes = this.current.themes.map(humanTheme).filter(Boolean);
-    if (!this.hintSquare) {
-      const bestMove = this.turnBaseline?.bestMove || '';
-      this.hintSquare = /^[a-h][1-8]/.test(bestMove) ? bestMove.slice(0, 2) : '';
-      const concept = themes.length ? `Theme: ${themes.slice(0, 3).join(', ')}.` : 'Look for forcing moves, loose pieces, and king safety.';
-      this.feedback = {
-        kind: 'info',
-        text: this.hintSquare ? `${concept} Consider which role the highlighted piece can play.` : concept,
-      };
-    } else {
-      this.feedback = {
-        kind: 'info',
-        text: 'The trainer deliberately does not reveal a mandatory sequence. Calculate a candidate and test whether it preserves the objective.',
-      };
-    }
+    const hint = this.learning.nextHint({
+      puzzle: this.current,
+      bestMove: this.turnBaseline?.bestMove || this.initialBaseline?.bestMove || '',
+      objectiveText: objectiveLabel(this.objective),
+      humanTheme,
+    });
+    this.hintLevel = hint.level;
+    this.hintFrom = hint.from || '';
+    this.hintTo = hint.to || '';
+    this.hintSquare = this.hintFrom;
+    this.feedback = { kind: 'info', text: hint.text };
     this.render();
   }
 
@@ -340,12 +391,13 @@ class PositionTrainingController {
     const field = event.target.closest('[data-pt-pref]');
     if (!field) return;
     const key = field.dataset.ptPref;
-    this.prefs[key] = key === 'theme' ? field.value : Number(field.value);
+    this.prefs[key] = ['theme', 'difficultyMode'].includes(key) ? field.value : Number(field.value);
     if (this.prefs.minRating > this.prefs.maxRating) {
       [this.prefs.minRating, this.prefs.maxRating] = [this.prefs.maxRating, this.prefs.minRating];
       this.#syncPreferenceInputs();
     }
     localStorage.setItem(PREFS_KEY, JSON.stringify(this.prefs));
+    this.render();
   }
 
   #handleClick(event) {
@@ -354,6 +406,7 @@ class PositionTrainingController {
     if (action === 'next') return this.loadNext();
     if (action === 'reset') return this.resetCurrent();
     if (action === 'hint') return this.showHint();
+    if (action === 'review') return this.toggleReviewMode();
 
     const promotion = event.target.closest('[data-pt-promotion-piece]')?.dataset.ptPromotionPiece;
     if (promotion) return this.#commitPendingPromotion(promotion);
@@ -416,6 +469,8 @@ class PositionTrainingController {
     this.busy = true;
     this.selectedSquare = '';
     this.hintSquare = '';
+    this.hintFrom = '';
+    this.hintTo = '';
     this.feedback = { kind: 'info', text: `Checking ${applied.san} against the position objective…` };
     this.render();
 
@@ -430,12 +485,16 @@ class PositionTrainingController {
         this.game = new Chess(beforeFen);
         this.stats.mistakes += 1;
         this.stats.streak = 0;
+        this.learning.recordMistake({ puzzle: this.current, moveSan: applied.san, reason: verdict.reason });
+        this.explanation = this.learning.buildMistakeExplanation({ puzzle: this.current, moveSan: applied.san, reason: verdict.reason });
         this.#saveStats();
         this.feedback = { kind: 'danger', text: `${verdict.reason} Try another move.` };
         return;
       }
 
       this.solverMoves += 1;
+      this.lastAcceptedMove = applied.san;
+      this.lastVerdict = verdict;
       if (isTrainingSolved({
         game: this.game,
         objective: this.objective,
@@ -443,6 +502,7 @@ class PositionTrainingController {
         solverMoves: this.solverMoves,
         startMaterial: this.startMaterial,
         evaluation: afterMove,
+        themes: this.current.themes,
       })) {
         this.#complete(`Solved with ${applied.san}. ${verdict.reason}`);
         return;
@@ -465,6 +525,7 @@ class PositionTrainingController {
             solverMoves: this.solverMoves,
             startMaterial: this.startMaterial,
             evaluation: terminalEvaluation,
+            themes: this.current.themes,
           })) {
             this.#complete('Solved. The opponent has no successful continuation.');
           } else {
@@ -483,6 +544,7 @@ class PositionTrainingController {
         solverMoves: this.solverMoves,
         startMaterial: this.startMaterial,
         evaluation: this.turnBaseline,
+        themes: this.current.themes,
       })) {
         this.#complete(`Solved after ${applied.san} ${opponentMove.san}. The objective is securely converted.`);
         return;
@@ -507,6 +569,14 @@ class PositionTrainingController {
     this.stats.streak += 1;
     this.stats.bestStreak = Math.max(this.stats.bestStreak, this.stats.streak);
     this.#saveStats();
+    this.explanation = this.learning.recordSolved({
+      puzzle: this.current,
+      moveSan: this.lastAcceptedMove,
+      objectiveText: objectiveLabel(this.objective),
+      verdictReason: this.lastVerdict?.reason || message,
+      bestMove: this.initialBaseline?.bestMove || '',
+    });
+    if (this.reviewMode && !this.learning.reviewCount()) this.reviewMode = false;
     saveHistory({
       id: this.current.id,
       solvedAt: new Date().toISOString(),
@@ -536,6 +606,19 @@ class PositionTrainingController {
     feedback.className = `position-training-feedback ${this.feedback.kind}`;
     feedback.textContent = this.feedback.text;
 
+    const explanation = this.overlay.querySelector('[data-pt-explanation]');
+    if (this.explanation) {
+      explanation.hidden = false;
+      explanation.innerHTML = `
+        <h3>${escapeHtml(this.explanation.title)}</h3>
+        <p>${escapeHtml(this.explanation.summary)}</p>
+        <ul>${this.explanation.bullets.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>
+      `;
+    } else {
+      explanation.hidden = true;
+      explanation.innerHTML = '';
+    }
+
     const current = this.overlay.querySelector('[data-pt-current]');
     if (!this.current) {
       current.innerHTML = '<p>No position loaded.</p>';
@@ -559,7 +642,38 @@ class PositionTrainingController {
       <div><strong>${this.stats.bestStreak}</strong><span>Best</span></div>
     `;
 
-    for (const button of this.overlay.querySelectorAll('[data-pt-action="hint"], [data-pt-action="reset"], [data-pt-action="next"]')) {
+    const reviewCount = this.learning.reviewCount();
+    this.overlay.querySelector('[data-pt-learning]').innerHTML = `
+      <div class="position-training-learning-grid">
+        <div class="position-training-learning-metric"><strong>${this.learning.adaptiveRating()}</strong><span>Adaptive rating</span></div>
+        <div class="position-training-learning-metric"><strong>${reviewCount}</strong><span>Review queue</span></div>
+      </div>
+    `;
+    const reviewButton = this.overlay.querySelector('[data-pt-action="review"]');
+    reviewButton.textContent = this.reviewMode ? 'Leave mistake review' : `Review mistakes (${reviewCount})`;
+    reviewButton.disabled = this.busy || reviewCount === 0;
+    reviewButton.classList.toggle('primary', this.reviewMode);
+    this.overlay.querySelector('[data-pt-mode-note]').textContent = this.reviewMode
+      ? 'Review mode is active. Two clean, hint-free review solves retire a puzzle.'
+      : (this.prefs.difficultyMode === 'adaptive'
+        ? 'Adaptive mode selects puzzles near your current training rating.'
+        : 'Fixed mode uses the selected rating range.');
+
+    const dashboardRows = this.learning.dashboard();
+    this.overlay.querySelector('[data-pt-theme-dashboard]').innerHTML = dashboardRows.length
+      ? `<table class="position-training-theme-table"><thead><tr><th>Theme</th><th>Attempts</th><th>Accuracy</th></tr></thead><tbody>${dashboardRows.map((row) => `<tr><td>${escapeHtml(humanTheme(row.theme))}</td><td>${row.attempts}</td><td>${Math.round(row.accuracy * 100)}%</td></tr>`).join('')}</tbody></table>`
+      : '<p class="position-training-theme-empty">Complete positions to build a theme profile.</p>';
+
+    const adaptive = this.prefs.difficultyMode === 'adaptive';
+    for (const key of ['minRating', 'maxRating']) {
+      const field = this.overlay.querySelector(`[data-pt-pref="${key}"]`);
+      if (field) field.disabled = adaptive;
+    }
+    const hintButton = this.overlay.querySelector('[data-pt-action="hint"]');
+    hintButton.textContent = `Hint ${Math.min(4, this.learning.hintLevel() + 1)} of 4`;
+    hintButton.disabled = this.busy || this.completed || this.learning.hintLevel() >= 4;
+
+    for (const button of this.overlay.querySelectorAll('[data-pt-action="reset"], [data-pt-action="next"]')) {
       button.disabled = this.busy;
     }
     this.#renderPromotion();
@@ -585,6 +699,8 @@ class PositionTrainingController {
         square === this.selectedSquare ? 'selected' : '',
         legalTargets.has(square) ? 'legal-target' : '',
         square === this.hintSquare ? 'hinted' : '',
+        square === this.hintFrom ? 'hinted-from' : '',
+        square === this.hintTo ? 'hinted-target' : '',
       ].filter(Boolean).join(' ');
       const pieceMarkup = piece ? pieceImageMarkup(piece.color, piece.type, 'position-training-piece') : '';
       const pieceLabel = piece ? ` ${piece.color === 'w' ? 'white' : 'black'} ${PIECE_NAMES[piece.type]}` : '';
@@ -627,7 +743,7 @@ function installLauncher() {
     <div>
       <p class="position-training-eyebrow">Independent mode</p>
       <h3>Lichess Position Training</h3>
-      <p>Train from database positions against dynamic defence. Any move that preserves the objective can be accepted; the existing Endgame vs Stockfish trainer remains unchanged.</p>
+      <p>Train against dynamic defence with adaptive difficulty, progressive hints, mistake review, explanations, and theme performance tracking. The existing Endgame vs Stockfish trainer remains unchanged.</p>
     </div>
     <button type="button" class="action-button primary">Open position training</button>
   `;
