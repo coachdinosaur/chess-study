@@ -1,0 +1,117 @@
+name: Install validated 100-puzzle set
+
+on:
+  push:
+    branches:
+      - agent/position-based-puzzle-training
+    paths:
+      - .github/workflows/install-100-puzzles.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install validated puzzles into app dataset
+        shell: bash
+        run: |
+          set -euo pipefail
+          target='assets/puzzles/lichess-position-training'
+          source='proof/lichess-100-puzzles'
+          mkdir -p "$target"
+          rm -f "$target"/shard-*.json
+          cp "$source"/manifest.json "$target"/manifest.json
+          cp "$source"/shard-*.json "$target"/
+
+      - name: Validate installed dataset
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/validate-lichess-position-training.mjs \
+            --dir assets/puzzles/lichess-position-training \
+            --report docs/lichess-position-training-validation.md \
+            --expected-count 100
+
+      - name: Run core tests
+        shell: bash
+        run: node --test tests/lichess-position-training-core.test.mjs
+
+      - name: Install Playwright
+        shell: bash
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Run browser smoke test against installed dataset
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 local_server.py --host 127.0.0.1 --port 8000 > /tmp/chess-study-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:8000/ > /dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          POSITION_TRAINING_BASE_URL=http://127.0.0.1:8000 \
+            node tests/lichess-position-training-browser-smoke.mjs
+
+      - name: Record installation report
+        shell: bash
+        run: |
+          set -euo pipefail
+          count=$(node -e "const m=require('./assets/puzzles/lichess-position-training/manifest.json'); console.log(m.count)")
+          shards=$(node -e "const m=require('./assets/puzzles/lichess-position-training/manifest.json'); console.log(m.shards.length)")
+          white=$(grep -E '^- White:' docs/lichess-position-training-validation.md | sed 's/^- White: //')
+          black=$(grep -E '^- Black:' docs/lichess-position-training-validation.md | sed 's/^- Black: //')
+          cat > docs/lichess-100-app-installation.md <<EOF
+          # Lichess 100-puzzle app installation
+
+          - Result: **PASS**
+          - Installed: $(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          - Source: validated proof dataset in \`proof/lichess-100-puzzles\`
+          - App dataset path: \`assets/puzzles/lichess-position-training\`
+          - Positions: $count
+          - Shards: $shards
+          - White solvers: $white
+          - Black solvers: $black
+          - Exact continuation fields: 0
+          - Core tests: PASS
+          - Browser smoke test: PASS
+          - Existing Endgame Puzzles mode: preserved
+          EOF
+
+      - name: Commit installed dataset
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add \
+            assets/puzzles/lichess-position-training/manifest.json \
+            assets/puzzles/lichess-position-training/shard-*.json \
+            docs/lichess-position-training-validation.md \
+            docs/lichess-100-app-installation.md
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m 'Install validated 100-puzzle dataset in app [skip ci]'
+          git push origin HEAD:agent/position-based-puzzle-training
