@@ -1,0 +1,70 @@
+name: Fix position training cache bust
+
+on:
+  push:
+    branches:
+      - agent/fix-position-training-cache-bust
+    paths:
+      - .github/workflows/fix-position-training-cache-bust.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-test:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Bump parent module cache key
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+          old = './focus-analysis-popup.mjs?v=20260719-focus-analysis3'
+          new = './focus-analysis-popup.mjs?v=20260725-position-training2'
+          if old not in text:
+              raise SystemExit(f'Expected cache key not found: {old}')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+
+      - name: Run core tests
+        run: node --test tests/lichess-position-training-core.test.mjs
+
+      - name: Install browser test dependency
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Run browser smoke test
+        shell: bash
+        run: |
+          python3 local_server.py --host 127.0.0.1 --port 8000 > /tmp/chess-study-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:8000/ > /dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          node tests/lichess-position-training-browser-smoke.mjs
+
+      - name: Commit cache-bust fix and remove workflow
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/fix-position-training-cache-bust.yml
+          git add index.html
+          git commit -m 'Refresh position training module cache key [skip ci]'
+          git push origin HEAD:agent/fix-position-training-cache-bust
