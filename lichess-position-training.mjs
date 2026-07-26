@@ -187,7 +187,7 @@ class PositionTrainingController {
         <header class="position-training-header">
           <div>
             <p class="position-training-eyebrow">Separate puzzle mode</p>
-            <h2 id="positionTrainingTitle">Lichess Position Training</h2>
+            <h2 id="positionTrainingTitle">Position Study</h2>
             <p class="position-training-library-count" data-pt-library-count data-state="loading" aria-live="polite">Loading puzzle library…</p>
           </div>
           <button type="button" class="position-training-icon-button" data-pt-action="close" aria-label="Close position training">×</button>
