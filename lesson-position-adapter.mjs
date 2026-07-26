@@ -137,15 +137,17 @@ export function lessonBookFromPositions(inputs = [], options = {}) {
     throw new TypeError('Position set must be an array.');
   }
   const usedPositionIds = new Set();
-  const lessons = inputs.map((input, index) => {
+  const positions = inputs.map((input, index) => {
     const position = normalizeLessonPosition(input, { fallbackId: `position-${index + 1}` });
     position.id = allocateStableId(position.id, usedPositionIds, `position-${index + 1}`);
-    return lessonDocumentFromPosition(position, {
-      ...options,
-      lessonId: position.id,
-      activeTab: options.activeTab || 'analysis',
-    });
+    return position;
   });
+  const lessons = positions.map((position) => lessonDocumentFromPosition(position, {
+    ...options,
+    lessonId: position.id,
+    activeTab: options.activeTab || 'analysis',
+  }));
+  const defaultPosition = positions.find((position) => position.isDefault);
   return normalizeLessonBook({
     id: options.bookId || options.id || options.title || 'position-set-lessons',
     title: options.title || 'Position set lessons',
@@ -153,7 +155,7 @@ export function lessonBookFromPositions(inputs = [], options = {}) {
       tags: normalizeTags(options.tags),
       description: String(options.description ?? '').trim(),
     },
-    activeLessonId: lessons[0]?.id || null,
+    activeLessonId: defaultPosition?.id || lessons[0]?.id || null,
     lessons,
   });
 }
