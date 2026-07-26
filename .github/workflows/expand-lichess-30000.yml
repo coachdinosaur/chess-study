@@ -151,3 +151,5 @@ Track puzzle IDs reported as incorrectly graded, engine/tablebase failures, empt
           git diff --cached --check
           git commit -m "Add 20000 more Lichess puzzles for mini soft launch"
           git push origin HEAD:agent/add-20000-more-lichess-puzzles
+
+# Recovery trigger after PR #88 was merged before generation.
