@@ -23,7 +23,21 @@ jobs:
           fetch-depth: 0
 
       - name: Apply feature payload and integration patches
-        run: python scripts/apply-teacher-puzzle-assignments.py
+        run: |
+          mkdir -p proof/logs
+          set +e
+          python scripts/apply-teacher-puzzle-assignments.py > proof/logs/teacher-puzzle-bootstrap.txt 2>&1
+          status=$?
+          set -e
+          cat proof/logs/teacher-puzzle-bootstrap.txt
+          if [ "$status" -ne 0 ]; then
+            git add proof/logs/teacher-puzzle-bootstrap.txt
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "Capture teacher assignment bootstrap failure"
+            git push origin HEAD:agent/teacher-puzzle-assignments
+            exit "$status"
+          fi
 
       - name: Validate JavaScript syntax
         run: |
