@@ -19,6 +19,9 @@ The major subsystems are:
    - `lichess-position-training.mjs` and its core, data, engine, learning, interaction, and layout modules
    - `assets/puzzles/lichess-position-training/manifest.json` plus 1,200 shard files
    - `lesson-position-builder.mjs`
+   - `lesson-model.mjs`, `lesson-migrations.mjs`, and `lesson-position-adapter.mjs`
+   - `lesson-position-interoperability-core.mjs`, `lesson-position-interoperability-export-guard.mjs`, and `lesson-position-interoperability.mjs`
+   - `lesson-variation-tree.mjs`
    - `text-normalization.mjs`
 
 3. **AI chess-help subsystem**
