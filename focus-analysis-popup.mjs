@@ -1,7 +1,7 @@
 import './focus-analysis-popup-core.mjs?v=20260723-live-board-link1';
 import './lesson-position-interoperability-export-guard.mjs?v=20260726-stage2-validation1';
 import './lesson-position-interoperability.mjs?v=20260726-stage2';
-import './lichess-position-training.mjs?v=20260726-terminal-state1';
+import './lichess-position-training.mjs?v=20260726-header-copy2';
 import './lichess-position-training-interactions.mjs?v=20260725-board-interaction1';
 import './lichess-position-training-grid-layout.mjs?v=20260725-grid-rows1';
 import './lichess-position-training-style-refresh.mjs?v=20260726-post-answer-layout1';

@@ -188,7 +188,6 @@ class PositionTrainingController {
           <div>
             <p class="position-training-eyebrow">Separate puzzle mode</p>
             <h2 id="positionTrainingTitle">Lichess Position Training</h2>
-            <p>Play the position, preserve the objective, and face dynamic defence. No stored continuation is treated as the only correct line.</p>
             <p class="position-training-library-count" data-pt-library-count data-state="loading" aria-live="polite">Loading puzzle library…</p>
           </div>
           <button type="button" class="position-training-icon-button" data-pt-action="close" aria-label="Close position training">×</button>
