@@ -10,6 +10,8 @@ PAYLOAD_FILES = [
     ROOT / f"scripts/current-teacher-puzzle-payload-{index}.txt"
     for index in range(1, 5)
 ]
+CSS_MEMBER = "management/puzzle-assignments.css"
+CSS_PAYLOAD_FILE = ROOT / "scripts/current-teacher-puzzle-css-payload.txt"
 
 
 def replace_once(path: str, old: str, new: str) -> None:
@@ -26,14 +28,23 @@ encoded = "".join(path.read_text(encoding="utf-8").strip() for path in PAYLOAD_F
 payload = base64.b64decode(encoded, validate=True)
 
 with zipfile.ZipFile(io.BytesIO(payload)) as archive:
-    corrupt_member = archive.testzip()
-    if corrupt_member:
-        raise SystemExit(f"Corrupt archive member: {corrupt_member}")
     for member in archive.infolist():
         destination = (ROOT / member.filename).resolve()
         if destination != ROOT and ROOT not in destination.parents:
             raise SystemExit(f"Unsafe archive member: {member.filename}")
-    archive.extractall(ROOT)
+        if member.filename == CSS_MEMBER:
+            continue
+        archive.extract(member, ROOT)
+
+css_encoded = CSS_PAYLOAD_FILE.read_text(encoding="utf-8").strip()
+css_payload = base64.b64decode(css_encoded, validate=True)
+with zipfile.ZipFile(io.BytesIO(css_payload)) as css_archive:
+    corrupt_member = css_archive.testzip()
+    if corrupt_member:
+        raise SystemExit(f"Corrupt CSS archive member: {corrupt_member}")
+    if css_archive.namelist() != [CSS_MEMBER]:
+        raise SystemExit("The CSS payload contains unexpected files.")
+    css_archive.extract(CSS_MEMBER, ROOT)
 
 replace_once(
     "management/teacher.html",
@@ -164,3 +175,5 @@ required = [
 missing = [path for path in required if not (ROOT / path).is_file()]
 if missing:
     raise SystemExit("Missing extracted files: " + ", ".join(missing))
+
+print("Teacher puzzle assignment payload applied.")
