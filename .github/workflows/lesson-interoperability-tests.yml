@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'app.js'
+      - 'index.html'
       - 'pgn.mjs'
       - 'styles.css'
       - 'lesson-model.mjs'
@@ -26,6 +27,7 @@ on:
       - main
     paths:
       - 'app.js'
+      - 'index.html'
       - 'pgn.mjs'
       - 'styles.css'
       - 'lesson-model.mjs'
