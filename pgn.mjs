@@ -221,10 +221,11 @@ function formatPgnMoveToken(parentFen, san, forceMoveNumber) {
   return san;
 }
 
-function buildVariationSequence(nodes, parentId, forcedChildId = '') {
+function buildVariationSequence(nodes, parentId, forcedChildId = '', skipInitialSiblings = false) {
   const parts = [];
   let currentParentId = parentId;
   let overrideChildId = forcedChildId;
+  let suppressSiblings = skipInitialSiblings;
   let forceMoveNumber = true;
   const seenParents = new Set();
 
@@ -252,9 +253,12 @@ function buildVariationSequence(nodes, parentId, forcedChildId = '') {
       parts.push(`{${comment}}`);
     }
 
-    const siblingIds = parentNode.children.filter((id) => id !== childId && nodes[id]);
+    const siblingIds = suppressSiblings
+      ? []
+      : parentNode.children.filter((id) => id !== childId && nodes[id]);
+    suppressSiblings = false;
     siblingIds.forEach((siblingId) => {
-      const variation = buildVariationSequence(nodes, parentNode.id, siblingId);
+      const variation = buildVariationSequence(nodes, parentNode.id, siblingId, true);
       if (variation) {
         parts.push(`(${variation})`);
       }

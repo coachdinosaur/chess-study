@@ -243,3 +243,17 @@ The combined suites cover:
 - existing-lesson preservation;
 - duplicate lesson IDs and default activation;
 - enhanced export validation.
+
+
+## Main-line and recursive variation behavior
+
+The runtime uses `lesson-variation-tree.mjs` for preferred-continuation semantics:
+
+- the first valid child of a position becomes its main line;
+- later children remain variations until explicitly promoted;
+- navigation does not rewrite `selectedChildId`;
+- **Make main line** updates only the selected move's immediate parent;
+- the same rules apply recursively inside variations and sub-variations;
+- comments remain comment data, while parentheses remain variation notation in PGN.
+
+See `LESSON_VARIATIONS_AND_MAIN_LINES.md` for the user workflow, PGN rules, persistence contract, and validation checklist.

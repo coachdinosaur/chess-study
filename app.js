@@ -3,6 +3,12 @@ document.body.dataset.appVersion = "board-debug-20260707";
 
 import { Chess, DEFAULT_POSITION, validateFen } from './vendor/chess.js';
 import { buildPgnFromLessonTree, parsePgnToLessonTree, splitPgnGames, extractPgnHeaders } from './pgn.mjs';
+import {
+  appendChildPreservingMainLine,
+  ensureExistingChildMainLine,
+  isNodeMainLine,
+  promoteNodeToMainLine,
+} from './lesson-variation-tree.mjs';
 import { createLessonPositionBuilder } from './lesson-position-builder.mjs';
 import { normalizeEditableText } from './text-normalization.mjs';
 import {
@@ -4838,7 +4844,7 @@ function syncAnalysisGameFromTree(options = {}) {
 }
 
 function jumpToAnalysisNode(nodeId, options = {}) {
-  const { syncSelection = true } = options;
+  const { syncSelection = false } = options;
   const nextNode = getAnalysisNode(nodeId);
   if (!nextNode) {
     return;
@@ -6146,14 +6152,19 @@ function applyAnalysisMove(move) {
     promotion: move.promotion,
   });
   const existingChildId = findExistingAnalysisChildId(currentNode, applied);
+  let createdAsVariation = false;
 
   if (existingChildId) {
-    currentNode.selectedChildId = existingChildId;
-    applyAnalysisPathSelection(existingChildId);
+    if (state.play.active) {
+      currentNode.selectedChildId = existingChildId;
+      applyAnalysisPathSelection(existingChildId);
+    } else {
+      ensureExistingChildMainLine(state.analysis.nodes, currentNode.id, existingChildId);
+    }
     state.analysis.currentNodeId = existingChildId;
   } else {
     const nodeId = allocateAnalysisNodeId();
-    state.analysis.nodes[nodeId] = {
+    const insertion = appendChildPreservingMainLine(state.analysis.nodes, currentNode.id, {
       id: nodeId,
       parentId: currentNode.id,
       from: applied.from,
@@ -6164,10 +6175,13 @@ function applyAnalysisMove(move) {
       children: [],
       selectedChildId: null,
       comment: '',
-    };
-    currentNode.children.push(nodeId);
-    currentNode.selectedChildId = nodeId;
-    applyAnalysisPathSelection(nodeId);
+    });
+    if (state.play.active) {
+      currentNode.selectedChildId = nodeId;
+      applyAnalysisPathSelection(nodeId);
+    } else {
+      createdAsVariation = insertion.addedAsVariation;
+    }
     state.analysis.currentNodeId = nodeId;
   }
 
@@ -6215,9 +6229,12 @@ function applyAnalysisMove(move) {
     renderAll();
     return;
   }
+  const variationNotice = createdAsVariation
+    ? ' Added as a variation. Use Make main line to promote it.'
+    : '';
   state.analysis.boardMessage = shouldKeepAnalysisLive
-      ? `Current move: ${applied.san}. Stockfish is following the new board position.`
-      : `Current move: ${applied.san}. Analyze the current board position for fresh evaluation.`;
+      ? `Current move: ${applied.san}. Stockfish is following the new board position.${variationNotice}`
+      : `Current move: ${applied.san}. Analyze the current board position for fresh evaluation.${variationNotice}`;
   if (shouldKeepAnalysisLive && !state.engine.stopping) {
     queueEngineSearchForFen(state.analysis.currentFen);
   } else if (wasAnalysisActive) {
@@ -7212,7 +7229,7 @@ function renderNotationInlineComment(comment) {
   if (!preview) {
     return '';
   }
-  return `<span class="notation-inline-comment">{${escapeHtml(preview)}}</span>`;
+  return `<span class="notation-inline-comment">${escapeHtml(preview)}</span>`;
 }
 
 function currentAnalysisCommentContext() {
@@ -7238,9 +7255,75 @@ function renderNotationRootComment() {
   }
   return `
     <div class="notation-root-comment">
-      <span class="notation-inline-comment">{${escapeHtml(preview)}}</span>
+      <span class="notation-inline-comment">${escapeHtml(preview)}</span>
     </div>
   `;
+}
+
+
+function currentVariationControlState() {
+  if (state.practice.active || state.play.active) {
+    return null;
+  }
+  const currentNode = getCurrentAnalysisNode();
+  if (!currentNode?.parentId) {
+    return null;
+  }
+  const parentNode = getAnalysisNode(currentNode.parentId);
+  if (!parentNode || !Array.isArray(parentNode.children) || parentNode.children.length < 2) {
+    return null;
+  }
+  return {
+    currentNode,
+    parentNode,
+    isMainLine: isNodeMainLine(state.analysis.nodes, currentNode.id),
+  };
+}
+
+function renderNotationMainLineControl() {
+  const control = currentVariationControlState();
+  if (!control) {
+    return '';
+  }
+  if (control.isMainLine) {
+    return `
+      <section class="notation-mainline-control" aria-label="Main-line status">
+        <div class="notation-mainline-copy">
+          <span class="notation-mainline-label">${escapeHtml(control.currentNode.san)} is the main line</span>
+          <span class="notation-mainline-detail">Forward navigation and selected-line practice follow this move.</span>
+        </div>
+        <span class="notation-mainline-badge">Main line</span>
+      </section>
+    `;
+  }
+  return `
+    <section class="notation-mainline-control" aria-label="Variation controls">
+      <div class="notation-mainline-copy">
+        <span class="notation-mainline-label">${escapeHtml(control.currentNode.san)} is a variation</span>
+        <span class="notation-mainline-detail">Promoting it keeps the current main continuation as a side variation.</span>
+      </div>
+      <button type="button" class="action-button tonal" data-action="make-main-line">Make main line</button>
+    </section>
+  `;
+}
+
+function makeCurrentMoveMainLine() {
+  const currentNode = getCurrentAnalysisNode();
+  if (!currentNode) {
+    return;
+  }
+  const result = promoteNodeToMainLine(state.analysis.nodes, currentNode.id);
+  if (!result.ok) {
+    syncLessonFileStatus(result.reason || 'Unable to promote this move.');
+    return;
+  }
+  const message = result.changed
+    ? `${currentNode.san} is now the main line from the previous position.`
+    : `${currentNode.san} is already the main line.`;
+  state.analysis.boardMessage = message;
+  syncLessonFileStatus(message);
+  schedulePersist();
+  renderAll();
 }
 
 function renderNotationCommentEditor() {
@@ -7282,7 +7365,7 @@ function renderNotationMoveToken(node, forceLeadingNumber = false) {
 
   return `${moveNumberMarkup}<button
       type="button"
-      class="notation-move ${state.analysis.currentNodeId === node.id ? 'is-current' : ''}"
+      class="notation-move ${isNodeMainLine(state.analysis.nodes, node.id) ? 'is-main-line' : 'is-variation'} ${state.analysis.currentNodeId === node.id ? 'is-current' : ''}"
       data-action="jump-node"
       data-node-id="${node.id}"
     >${escapeHtml(node.san)}</button>${inlineCommentMarkup ? ` ${inlineCommentMarkup}` : ''}`;
@@ -7299,13 +7382,17 @@ function renderNotationStaticMoveToken(node, forceLeadingNumber = false) {
     moveNumberMarkup = `<span class="notation-move-number">${moveNumberForPly(ply)}...</span>`;
   }
 
-  return `${moveNumberMarkup}<span class="notation-move ${state.analysis.currentNodeId === node.id ? 'is-current' : ''}">${escapeHtml(node.san)}</span>`;
+  return `${moveNumberMarkup}<span class="notation-move ${isNodeMainLine(state.analysis.nodes, node.id) ? 'is-main-line' : 'is-variation'} ${state.analysis.currentNodeId === node.id ? 'is-current' : ''}">${escapeHtml(node.san)}</span>`;
 }
 
 function renderNotationVariation(parentId, childId) {
   return `
     <div class="notation-variation">
-      ${renderNotationBranchSequence(parentId, { forcedChildId: childId, skipInitialSiblings: true })}
+      <span class="notation-variation-paren" aria-hidden="true">(</span>
+      <div class="notation-variation-body">
+        ${renderNotationBranchSequence(parentId, { forcedChildId: childId, skipInitialSiblings: true })}
+      </div>
+      <span class="notation-variation-paren" aria-hidden="true">)</span>
     </div>
   `;
 }
@@ -7531,6 +7618,7 @@ function renderNotationPanel() {
         ${renderNotationRootComment()}
         ${renderNotationBranchSequence(state.analysis.rootId)}
       </div>
+      ${renderNotationMainLineControl()}
       ${renderNotationCommentEditor()}
       ${renderNotationPvBlock()}
       ${renderNotationNote()}
@@ -9020,6 +9108,9 @@ function handleDocumentClick(event) {
         break;
       }
       navigateToAnalysisEnd();
+      break;
+    case 'make-main-line':
+      makeCurrentMoveMainLine();
       break;
     case 'jump-node':
       if (state.play.active) {

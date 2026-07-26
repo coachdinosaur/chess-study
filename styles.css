@@ -4938,3 +4938,30 @@ html[data-board-only="1"] .eval-bar-wrap {
 @media (max-width: 520px) {
   .puzzle-queue-action-pair { display: grid; }
 }
+
+
+/* Lesson main-line and recursive variation controls */
+.notation-variation {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0.24rem;
+  padding-left: 0.7rem;
+  border-left: 0;
+}
+.notation-variation-body { min-width: 0; display: grid; gap: 0.4rem; }
+.notation-variation-paren { color: var(--text-soft); font-family: var(--font-display); font-size: 1.06em; font-weight: 700; line-height: 1.55; }
+.notation-move.is-variation { color: var(--text-muted); }
+.notation-move.is-variation:hover,
+.notation-move.is-variation.is-current { color: var(--accent-strong); }
+.notation-mainline-control { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.65rem 0.75rem; border: 1px solid var(--card-border); border-radius: var(--radius-card); background: var(--card-bg); }
+.notation-mainline-copy { min-width: 0; display: grid; gap: 0.12rem; }
+.notation-mainline-label { color: var(--text); font-weight: 700; }
+.notation-mainline-detail { color: var(--text-muted); font-size: 0.82rem; line-height: 1.4; }
+.notation-mainline-badge { flex: 0 0 auto; padding: 0.28rem 0.55rem; border-radius: var(--radius-pill); background: var(--accent-soft); color: var(--accent-strong); font-size: 0.78rem; font-weight: 700; }
+.notation-mainline-control .action-button { flex: 0 0 auto; min-height: 2rem; padding: 0.35rem 0.65rem; font-size: 0.82rem; }
+@media (max-width: 760px) {
+  .notation-mainline-control { align-items: stretch; flex-direction: column; }
+  .notation-mainline-control .action-button,
+  .notation-mainline-badge { align-self: flex-start; }
+  .notation-variation { padding-left: 0.35rem; }
+}
