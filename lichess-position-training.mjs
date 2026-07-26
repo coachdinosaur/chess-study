@@ -12,7 +12,7 @@ import { PositionTrainingEvaluator } from './lichess-position-training-engine.mj
 import { LichessPositionTrainingDataSource } from './lichess-position-training-data.mjs';
 import { PositionTrainingLearning } from './lichess-position-training-learning.mjs';
 
-const STYLE_URL = './lichess-position-training.css?v=20260726-assignment-sizing1';
+const STYLE_URL = './lichess-position-training-desktop-fit.css?v=20260726-desktop-fit2';
 const STATS_KEY = 'lichess-position-training-stats-v1';
 const PREFS_KEY = 'lichess-position-training-prefs-v1';
 const HISTORY_KEY = 'lichess-position-training-history-v1';
