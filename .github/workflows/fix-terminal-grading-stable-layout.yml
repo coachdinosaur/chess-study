@@ -1,0 +1,401 @@
+name: Fix terminal grading and stable trainer layout
+
+on:
+  push:
+    branches:
+      - agent/fix-terminal-grading-stable-layout
+    paths:
+      - '.github/workflows/fix-terminal-grading-stable-layout.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch-test-and-clean:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Apply terminal-state and stable-layout repair
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          def require_replace(text, old, new, label):
+              if old not in text:
+                  raise SystemExit(f'Missing expected block: {label}')
+              return text.replace(old, new, 1)
+
+          controller_path = Path('lichess-position-training.mjs')
+          controller = controller_path.read_text(encoding='utf-8')
+
+          controller, count = re.subn(
+              r"const STYLE_URL = '[^']+';",
+              "const STYLE_URL = './lichess-position-training-desktop-fit.css?v=20260726-terminal-layout1';",
+              controller,
+              count=1,
+          )
+          if count != 1:
+              raise SystemExit('Could not update trainer stylesheet cache key')
+
+          controller = require_replace(
+              controller,
+              '''            <div class="position-training-feedback info" data-pt-feedback aria-live="polite"></div>
+            <section class="position-training-explanation" data-pt-explanation hidden></section>
+            <div class="position-training-actions">''',
+              '''            <div class="position-training-feedback info" data-pt-feedback aria-live="polite"></div>
+            <div class="position-training-actions">''',
+              'remove explanation from board column',
+          )
+
+          controller = require_replace(
+              controller,
+              '''            <section class="position-training-card">
+              <h3>Current objective</h3>
+              <div data-pt-current></div>
+            </section>
+            <section class="position-training-card">
+              <h3>Filters</h3>''',
+              '''            <section class="position-training-card position-training-objective-card">
+              <h3>Current objective</h3>
+              <div data-pt-current></div>
+            </section>
+            <section class="position-training-card position-training-explanation-card" data-pt-explanation-card hidden>
+              <h3>Move explanation</h3>
+              <section class="position-training-explanation" data-pt-explanation></section>
+            </section>
+            <section class="position-training-card position-training-filters-card">
+              <h3>Filters</h3>''',
+              'insert sidebar explanation card',
+          )
+
+          controller = require_replace(
+              controller,
+              '''            <section class="position-training-card">
+              <h3>Separate statistics</h3>''',
+              '''            <section class="position-training-card position-training-stats-card">
+              <h3>Separate statistics</h3>''',
+              'name statistics card',
+          )
+          controller = require_replace(
+              controller,
+              '''            <section class="position-training-card">
+              <h3>Learning progress</h3>''',
+              '''            <section class="position-training-card position-training-learning-card">
+              <h3>Learning progress</h3>''',
+              'name learning card',
+          )
+          controller = require_replace(
+              controller,
+              '''            <section class="position-training-card">
+              <h3>Theme performance</h3>''',
+              '''            <section class="position-training-card position-training-theme-card">
+              <h3>Theme performance</h3>''',
+              'name theme card',
+          )
+
+          explanation_pattern = re.compile(
+              r"    const explanation = this\.overlay\.querySelector\('\[data-pt-explanation\]'\);\n"
+              r"    if \(this\.explanation\) \{\n"
+              r"      explanation\.hidden = false;\n"
+              r"      explanation\.innerHTML = `\n"
+              r"        <h3>\$\{escapeHtml\(this\.explanation\.title\)\}</h3>\n"
+              r"        <p>\$\{escapeHtml\(this\.explanation\.summary\)\}</p>\n"
+              r"        <ul>\$\{this\.explanation\.bullets\.map\(\(item\) => `<li>\$\{escapeHtml\(item\)\}</li>`\)\.join\(''\)\}</ul>\n"
+              r"      `;\n"
+              r"    \} else \{\n"
+              r"      explanation\.hidden = true;\n"
+              r"      explanation\.innerHTML = '';\n"
+              r"    \}",
+          )
+          explanation_replacement = '''    const explanation = this.overlay.querySelector('[data-pt-explanation]');
+    const explanationCard = this.overlay.querySelector('[data-pt-explanation-card]');
+    if (this.explanation) {
+      explanationCard.hidden = false;
+      explanation.innerHTML = `
+        <h3>${escapeHtml(this.explanation.title)}</h3>
+        <p>${escapeHtml(this.explanation.summary)}</p>
+        <ul>${this.explanation.bullets.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>
+      `;
+    } else {
+      explanationCard.hidden = true;
+      explanation.innerHTML = '';
+    }'''
+          controller, count = explanation_pattern.subn(explanation_replacement, controller, count=1)
+          if count != 1:
+              raise SystemExit('Could not move explanation visibility to sidebar card')
+
+          controller = require_replace(
+              controller,
+              '''    try {
+      const afterMove = await this.evaluator.evaluate(this.game.fen(), this.current.solverColor, { movetime: 750 });''',
+              '''    try {
+      if (this.game.isCheckmate()) {
+        this.solverMoves += 1;
+        this.lastAcceptedMove = applied.san;
+        this.lastVerdict = {
+          accepted: true,
+          grade: 'excellent',
+          reason: 'Checkmate completes the winning objective.',
+        };
+        this.#complete(`Solved with ${applied.san}. Checkmate.`);
+        return;
+      }
+
+      const afterMove = await this.evaluator.evaluate(this.game.fen(), this.current.solverColor, { movetime: 750 });''',
+              'grade checkmate before engine evaluation',
+          )
+          controller_path.write_text(controller, encoding='utf-8')
+
+          engine_path = Path('lichess-position-training-engine.mjs')
+          engine = engine_path.read_text(encoding='utf-8')
+          engine = require_replace(
+              engine,
+              '''    const game = new Chess(fen);
+    const sideToMove = game.turn();
+
+    if (countPieces(fen) <= 7) {''',
+              '''    const game = new Chess(fen);
+    const sideToMove = game.turn();
+
+    if (game.isCheckmate()) {
+      const solverWon = sideToMove !== solverColor;
+      return {
+        source: 'terminal',
+        outcome: solverWon ? 'win' : 'loss',
+        solverScore: { type: 'mate', value: solverWon ? 1 : -1 },
+        category: 'checkmate',
+        bestMove: '',
+        depth: 0,
+        pv: [],
+      };
+    }
+
+    if (game.isDraw()) {
+      return {
+        source: 'terminal',
+        outcome: 'draw',
+        solverScore: { type: 'cp', value: 0 },
+        category: 'draw',
+        bestMove: '',
+        depth: 0,
+        pv: [],
+      };
+    }
+
+    if (countPieces(fen) <= 7) {''',
+              'handle terminal positions before tablebase or Stockfish',
+          )
+          engine_path.write_text(engine, encoding='utf-8')
+
+          css_path = Path('lichess-position-training-desktop-fit.css')
+          css = css_path.read_text(encoding='utf-8')
+          css = require_replace(
+              css,
+              '''/* Put the most useful information first without changing the data model. */
+.position-training-card:nth-child(1) { order: 1; }
+.position-training-card:nth-child(4) { order: 2; }
+.position-training-card:nth-child(2) { order: 3; }
+.position-training-card:nth-child(3) { order: 4; }
+.position-training-card:nth-child(5) { order: 5; }
+
+.position-training-card:first-child {''',
+              '''/* Stable semantic ordering. Explanations live in the sidebar so the board never shrinks. */
+.position-training-objective-card { order: 1; }
+.position-training-explanation-card { order: 2; }
+.position-training-learning-card { order: 3; }
+.position-training-filters-card { order: 4; }
+.position-training-stats-card { order: 5; }
+.position-training-theme-card { order: 6; }
+
+.position-training-objective-card {''',
+              'replace brittle card ordering',
+          )
+
+          css = require_replace(
+              css,
+              '''.position-training-repair-note {
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--section-divider-soft);
+  font-size: 0.76rem;
+}
+''',
+              '''.position-training-repair-note {
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--section-divider-soft);
+  font-size: 0.76rem;
+}
+
+.position-training-explanation-card[hidden] {
+  display: none;
+}
+
+.position-training-explanation-card .position-training-explanation {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.position-training-explanation-card .position-training-explanation > h3 {
+  margin: 0 0 0.35rem;
+  font-size: 0.92rem;
+}
+''',
+              'style sidebar explanation card',
+          )
+
+          css = require_replace(
+              css,
+              '    grid-template-rows: minmax(0, 1fr) auto auto auto;',
+              '    grid-template-rows: minmax(0, 1fr) 3.2rem auto;',
+              'reserve stable feedback row',
+          )
+
+          css = require_replace(
+              css,
+              '''  .position-training-feedback {
+    margin-top: 0.65rem;
+  }
+
+  .position-training-explanation {
+    max-height: 7rem;
+    overflow: auto;
+  }''',
+              '''  .position-training-feedback {
+    box-sizing: border-box;
+    height: 100%;
+    min-height: 0;
+    margin-top: 0.65rem;
+    overflow: auto;
+    display: flex;
+    align-items: center;
+  }
+
+  .position-training-explanation-card .position-training-explanation {
+    max-height: 10rem;
+    overflow: auto;
+  }''',
+              'keep board size independent from response content',
+          )
+          css_path.write_text(css, encoding='utf-8')
+
+          wrapper_path = Path('focus-analysis-popup.mjs')
+          wrapper = wrapper_path.read_text(encoding='utf-8')
+          wrapper, count = re.subn(
+              r"import './lichess-position-training\.mjs\?v=[^']+';",
+              "import './lichess-position-training.mjs?v=20260726-terminal-layout1';",
+              wrapper,
+              count=1,
+          )
+          if count != 1:
+              raise SystemExit('Could not update trainer module cache key')
+          wrapper_path.write_text(wrapper, encoding='utf-8')
+
+          test_path = Path('tests/lichess-position-training-terminal.test.mjs')
+          test_path.write_text('''import test from 'node:test';
+import assert from 'node:assert/strict';
+import { PositionTrainingEvaluator } from '../lichess-position-training-engine.mjs';
+
+const CHECKMATE_FEN = '3Q2k1/5ppp/8/8/7P/8/P3pqPK/8 b - - 0 1';
+const STALEMATE_FEN = '7k/5K2/6Q1/8/8/8/8/8 b - - 0 1';
+
+test('delivered checkmate is a terminal win without starting Stockfish', async () => {
+  const evaluator = new PositionTrainingEvaluator();
+  let engineCalled = false;
+  evaluator.stockfish.analyse = async () => {
+    engineCalled = true;
+    throw new Error('Stockfish must not run for terminal checkmate.');
+  };
+
+  const result = await evaluator.evaluate(CHECKMATE_FEN, 'w');
+  assert.equal(engineCalled, false);
+  assert.equal(result.source, 'terminal');
+  assert.equal(result.outcome, 'win');
+  assert.deepEqual(result.solverScore, { type: 'mate', value: 1 });
+  assert.equal(result.bestMove, '');
+  evaluator.dispose();
+});
+
+test('the checkmated side receives a terminal loss', async () => {
+  const evaluator = new PositionTrainingEvaluator();
+  const result = await evaluator.evaluate(CHECKMATE_FEN, 'b');
+  assert.equal(result.source, 'terminal');
+  assert.equal(result.outcome, 'loss');
+  assert.deepEqual(result.solverScore, { type: 'mate', value: -1 });
+  evaluator.dispose();
+});
+
+test('terminal draw is returned without starting Stockfish', async () => {
+  const evaluator = new PositionTrainingEvaluator();
+  let engineCalled = false;
+  evaluator.stockfish.analyse = async () => {
+    engineCalled = true;
+    throw new Error('Stockfish must not run for terminal draw.');
+  };
+
+  const result = await evaluator.evaluate(STALEMATE_FEN, 'w');
+  assert.equal(engineCalled, false);
+  assert.equal(result.source, 'terminal');
+  assert.equal(result.outcome, 'draw');
+  assert.deepEqual(result.solverScore, { type: 'cp', value: 0 });
+  evaluator.dispose();
+});
+''', encoding='utf-8')
+          PY
+
+      - name: Validate syntax and tests
+        shell: bash
+        run: |
+          node --check lichess-position-training.mjs
+          node --check lichess-position-training-engine.mjs
+          node --check focus-analysis-popup.mjs
+          node --test tests/*lichess-position-training*.test.mjs tests/puzzle-assignment-core.test.mjs
+
+      - name: Validate repair ordering and layout invariants
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          js = Path('lichess-position-training.mjs').read_text(encoding='utf-8')
+          engine = Path('lichess-position-training-engine.mjs').read_text(encoding='utf-8')
+          css = Path('lichess-position-training-desktop-fit.css').read_text(encoding='utf-8')
+
+          play_start = js.index('async #playStudentMove(candidate)')
+          play_end = js.index('  #complete(message)', play_start)
+          play = js[play_start:play_end]
+          assert play.index('this.game.isCheckmate()') < play.index('this.evaluator.evaluate(')
+          assert 'data-pt-explanation-card' in js
+          assert 'position-training-explanation-card' in js
+          assert 'grid-template-rows: minmax(0, 1fr) 3.2rem auto;' in css
+          assert '.position-training-explanation-card .position-training-explanation' in css
+          assert 'position-training-card:nth-child' not in css
+          assert engine.index('game.isCheckmate()') < engine.index('countPieces(fen) <= 7')
+          assert engine.index('game.isDraw()') < engine.index('countPieces(fen) <= 7')
+          print('Terminal grading order: PASS')
+          print('Stable board layout: PASS')
+          PY
+          git diff --check
+
+      - name: Remove temporary workflow and commit product changes
+        shell: bash
+        run: |
+          rm .github/workflows/fix-terminal-grading-stable-layout.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Fix terminal grading and stabilize trainer layout'
+          git push origin HEAD:agent/fix-terminal-grading-stable-layout
