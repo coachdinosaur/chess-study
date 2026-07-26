@@ -97,3 +97,5 @@ Existing lesson files remain compatible:
 6. Add a branch inside that variation and confirm that it appears as a sub-variation.
 7. Save and reopen the lesson and confirm that all preferred branches remain selected.
 8. Export PGN and confirm comments use braces while variations and sub-variations use parentheses.
+
+Implementation validation is automated in the lesson interoperability workflow.
