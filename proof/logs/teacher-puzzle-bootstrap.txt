@@ -1,1 +1,1 @@
-python: can't open file '/home/runner/work/chess-study/chess-study/scripts/apply-teacher-puzzle-assignments.py': [Errno 2] No such file or directory
+Teacher puzzle assignment payload applied.
