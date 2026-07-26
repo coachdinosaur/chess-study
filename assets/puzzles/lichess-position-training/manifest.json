@@ -1,10 +1,10 @@
 {
   "format": 1,
-  "generatedAt": "2026-07-26T03:41:35.536Z",
+  "generatedAt": "2026-07-26T05:17:05.470Z",
   "source": "Lichess puzzle database",
   "trainingModel": "position-objective-dynamic-defence",
   "exactLineRequired": false,
-  "count": 2000,
+  "count": 5000,
   "shardSize": 25,
   "filters": {
     "minRating": 0,
@@ -335,6 +335,486 @@
     },
     {
       "file": "shard-0079.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0080.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0081.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0082.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0083.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0084.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0085.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0086.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0087.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0088.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0089.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0090.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0091.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0092.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0093.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0094.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0095.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0096.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0097.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0098.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0099.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0100.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0101.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0102.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0103.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0104.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0105.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0106.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0107.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0108.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0109.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0110.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0111.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0112.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0113.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0114.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0115.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0116.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0117.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0118.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0119.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0120.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0121.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0122.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0123.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0124.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0125.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0126.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0127.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0128.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0129.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0130.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0131.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0132.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0133.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0134.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0135.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0136.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0137.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0138.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0139.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0140.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0141.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0142.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0143.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0144.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0145.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0146.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0147.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0148.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0149.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0150.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0151.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0152.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0153.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0154.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0155.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0156.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0157.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0158.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0159.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0160.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0161.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0162.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0163.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0164.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0165.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0166.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0167.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0168.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0169.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0170.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0171.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0172.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0173.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0174.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0175.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0176.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0177.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0178.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0179.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0180.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0181.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0182.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0183.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0184.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0185.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0186.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0187.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0188.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0189.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0190.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0191.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0192.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0193.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0194.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0195.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0196.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0197.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0198.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0199.json",
       "count": 25
     }
   ]
