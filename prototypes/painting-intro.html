@@ -309,7 +309,7 @@
       pointer-events: none;
     }
 
-    .plan-arrow path {
+    .plan-arrow > path {
       fill: none;
       stroke: rgba(212, 154, 54, 0.95);
       stroke-width: 18;
@@ -320,7 +320,7 @@
       filter: drop-shadow(0 2px 2px rgba(50, 32, 9, 0.18));
     }
 
-    .intro.is-playing .plan-arrow path { animation: draw-arrow 1.15s 3.55s var(--ease) forwards; }
+    .intro.is-playing .plan-arrow > path { animation: draw-arrow 1.15s 3.55s var(--ease) forwards; }
 
     .circle-mark {
       position: absolute;
@@ -650,7 +650,7 @@
     .intro.is-finished .board-card { transform: rotate(-4deg) !important; }
     .intro.is-finished .logo { transform: rotate(3deg) !important; }
     .intro.is-finished .title span::after { opacity: 1; transform: scaleX(1); }
-    .intro.is-finished .plan-arrow path { stroke-dashoffset: 0; }
+    .intro.is-finished .plan-arrow > path { stroke-dashoffset: 0; }
     .intro.is-finished .sequence-progress::after { transform: scaleX(1); }
 
     @keyframes fade-in { to { opacity: 1; } }
