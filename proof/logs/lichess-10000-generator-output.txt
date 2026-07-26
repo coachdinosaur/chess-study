@@ -1,0 +1,26 @@
+{
+  "generation": {
+    "scanned": 10878,
+    "existingIds": 5000,
+    "excludedVeryLong": 878,
+    "malformed": 0,
+    "invalidRepairMove": 0,
+    "invalidFenOrMove": 0,
+    "invalidSolverPosition": 0,
+    "duplicateNewIds": 0,
+    "duplicatePositions": 0
+  },
+  "validation": {
+    "total": 10000,
+    "shards": 400,
+    "shardSize": 25,
+    "duplicateIds": 0,
+    "repeatedStartingPositions": 0,
+    "forbiddenContinuationFields": 0,
+    "ratingMin": 399,
+    "ratingMax": 3002,
+    "ratingMedian": 1353,
+    "whiteToSolve": 5213,
+    "blackToSolve": 4787
+  }
+}
