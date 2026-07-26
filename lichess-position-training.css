@@ -588,3 +588,64 @@ body.position-training-open {
   user-select: none;
   -webkit-user-drag: none;
 }
+
+
+/* Desktop board sizing aligned with the main chessboard. */
+@media (min-width: 861px) {
+  .position-training-dialog {
+    width: min(1280px, calc(100vw - 2rem));
+    max-height: calc(100dvh - 2rem);
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .position-training-content {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 320px);
+    min-height: 0;
+    overflow: hidden;
+    align-items: start;
+  }
+
+  .position-training-main,
+  .position-training-sidebar {
+    max-height: calc(100dvh - 8.5rem);
+    overflow: auto;
+    scrollbar-gutter: stable;
+  }
+
+  .position-training-main {
+    display: grid;
+    align-content: start;
+    padding-right: 0.15rem;
+  }
+
+  .position-training-sidebar {
+    padding-right: 0.2rem;
+  }
+
+  .position-training-board-wrap {
+    width: min(760px, calc(100vw - 390px), calc(100dvh - 11rem));
+    max-width: 100%;
+  }
+}
+
+@media (min-width: 861px) and (max-height: 760px) {
+  .position-training-header {
+    padding-block: 0.75rem;
+  }
+
+  .position-training-content {
+    gap: 0.9rem;
+    padding: 0.9rem;
+  }
+
+  .position-training-main,
+  .position-training-sidebar {
+    max-height: calc(100dvh - 7rem);
+  }
+
+  .position-training-board-wrap {
+    width: min(680px, calc(100vw - 380px), calc(100dvh - 8.5rem));
+  }
+}

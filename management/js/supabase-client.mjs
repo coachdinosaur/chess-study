@@ -7,7 +7,7 @@ import {
 let client = null;
 
 export function configurationMessage() {
-  return 'Management is not configured yet. Add the Supabase project URL and publishable key in management/js/config.mjs, then apply management migrations 001 through 009.';
+  return 'Management is not configured yet. Add the Supabase project URL and publishable key in management/js/config.mjs, then apply management migrations 001 through 010.';
 }
 
 export function getSupabase() {

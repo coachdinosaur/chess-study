@@ -1,0 +1,10 @@
+PASS: teacher stylesheet
+PASS: teacher module
+PASS: student Supabase client
+PASS: student runner
+PASS: desktop width-and-height sizing
+PASS: teacher auth gate
+PASS: fixed puzzle preview
+PASS: token-scoped student RPC
+PASS: migration RLS
+PASS: no service role key
