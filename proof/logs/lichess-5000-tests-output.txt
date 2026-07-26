@@ -1,0 +1,148 @@
+TAP version 13
+# Subtest: repair move makes White the solver when Black moved first
+ok 1 - repair move makes White the solver when Black moved first
+  ---
+  duration_ms: 6.130115
+  type: 'test'
+  ...
+# Subtest: repair move makes Black the solver when White moved first
+ok 2 - repair move makes Black the solver when White moved first
+  ---
+  duration_ms: 1.54779
+  type: 'test'
+  ...
+# Subtest: engine scores are converted to the solver perspective
+ok 3 - engine scores are converted to the solver perspective
+  ---
+  duration_ms: 1.500011
+  type: 'test'
+  ...
+# Subtest: tablebase outcome is also solver-relative
+ok 4 - tablebase outcome is also solver-relative
+  ---
+  duration_ms: 0.373384
+  type: 'test'
+  ...
+# Subtest: positions where the solver is losing are rejected as training starts
+ok 5 - positions where the solver is losing are rejected as training starts
+  ---
+  duration_ms: 0.432235
+  type: 'test'
+  ...
+# Subtest: a different winning move is accepted without matching a stored line
+ok 6 - a different winning move is accepted without matching a stored line
+  ---
+  duration_ms: 0.355321
+  type: 'test'
+  ...
+# Subtest: throwing away a win is rejected
+ok 7 - throwing away a win is rejected
+  ---
+  duration_ms: 0.296342
+  type: 'test'
+  ...
+# Subtest: mate-tagged training does not finish before checkmate
+ok 8 - mate-tagged training does not finish before checkmate
+  ---
+  duration_ms: 0.346465
+  type: 'test'
+  ...
+# Subtest: post-answer content stays in one explicit trainer grid column
+ok 9 - post-answer content stays in one explicit trainer grid column
+  ---
+  duration_ms: 1.021351
+  type: 'test'
+  ...
+# Subtest: trainer coordinates use the reduced label size
+ok 10 - trainer coordinates use the reduced label size
+  ---
+  duration_ms: 0.187529
+  type: 'test'
+  ...
+# Subtest: cache refresh loads the post-answer repair stylesheet
+ok 11 - cache refresh loads the post-answer repair stylesheet
+  ---
+  duration_ms: 0.143687
+  type: 'test'
+  ...
+# Subtest: progressive hints reveal concept, source, target, then move
+ok 12 - progressive hints reveal concept, source, target, then move
+  ---
+  duration_ms: 6.418582
+  type: 'test'
+  ...
+# Subtest: mistakes enter review and two clean review solves retire the puzzle
+ok 13 - mistakes enter review and two clean review solves retire the puzzle
+  ---
+  duration_ms: 2.3271
+  type: 'test'
+  ...
+# Subtest: adaptive filters follow the rating and weakest theme
+ok 14 - adaptive filters follow the rating and weakest theme
+  ---
+  duration_ms: 0.590939
+  type: 'test'
+  ...
+# Subtest: theme dashboard records attempts, mistakes, hints and solves
+ok 15 - theme dashboard records attempts, mistakes, hints and solves
+  ---
+  duration_ms: 0.984021
+  type: 'test'
+  ...
+# Subtest: delivered checkmate is a terminal win without starting Stockfish
+ok 16 - delivered checkmate is a terminal win without starting Stockfish
+  ---
+  duration_ms: 3.660791
+  type: 'test'
+  ...
+# Subtest: the checkmated side receives a terminal loss
+ok 17 - the checkmated side receives a terminal loss
+  ---
+  duration_ms: 0.611909
+  type: 'test'
+  ...
+# Subtest: terminal draw is returned without starting Stockfish
+ok 18 - terminal draw is returned without starting Stockfish
+  ---
+  duration_ms: 0.347016
+  type: 'test'
+  ...
+# Subtest: student-level presets expose bounded rating ranges and assignment sizes
+ok 19 - student-level presets expose bounded rating ranges and assignment sizes
+  ---
+  duration_ms: 0.978901
+  type: 'test'
+  ...
+# Subtest: assignment settings clamp unsafe numeric values
+ok 20 - assignment settings clamp unsafe numeric values
+  ---
+  duration_ms: 0.762999
+  type: 'test'
+  ...
+# Subtest: puzzle selection freezes unique snapshots matching rating and theme
+ok 21 - puzzle selection freezes unique snapshots matching rating and theme
+  ---
+  duration_ms: 1.647034
+  type: 'test'
+  ...
+# Subtest: selection rejects a request with too few matching records
+ok 22 - selection rejects a request with too few matching records
+  ---
+  duration_ms: 0.519266
+  type: 'test'
+  ...
+# Subtest: snapshot removes unrelated source fields
+ok 23 - snapshot removes unrelated source fields
+  ---
+  duration_ms: 0.259623
+  type: 'test'
+  ...
+1..23
+# tests 23
+# suites 0
+# pass 23
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 172.644728
