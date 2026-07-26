@@ -23,7 +23,7 @@ This rule applies independently at every position in the tree. A move can theref
 
 ## Make main line
 
-When the selected move has siblings and is not currently preferred, the notation area shows **Make main line**. Main-line moves display a status badge instead of a promotion button.
+When the selected move has siblings and is not currently preferred, the notation area shows **Make main line**. Main-line moves display a status badge instead of a promotion button. Main-line moves display a status badge instead of a promotion button.
 
 Selecting it:
 

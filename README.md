@@ -248,7 +248,7 @@ PGN import/export supports:
 - comments
 - multi-game browsing and selection
 
-Use JSON when complete application state matters. Use PGN for chess notation interchange. See [LESSON_DATA_ARCHITECTURE.md](LESSON_DATA_ARCHITECTURE.md) for the shared lesson model and [LESSON_POSITION_INTEROPERABILITY.md](LESSON_POSITION_INTEROPERABILITY.md) for Position Set conversion rules.
+Use JSON when complete application state matters. Use PGN for chess notation interchange. See [LESSON_DATA_ARCHITECTURE.md](LESSON_DATA_ARCHITECTURE.md) for the shared lesson model and [LESSON_POSITION_INTEROPERABILITY.md](LESSON_POSITION_INTEROPERABILITY.md) for Position Set conversion rules. See [LESSON_DATA_ARCHITECTURE.md](LESSON_DATA_ARCHITECTURE.md) for the shared lesson model and [LESSON_POSITION_INTEROPERABILITY.md](LESSON_POSITION_INTEROPERABILITY.md) for Position Set conversion rules.
 
 ### Browser draft
 
