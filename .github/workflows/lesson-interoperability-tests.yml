@@ -3,6 +3,10 @@ name: Lesson interoperability tests
 on:
   pull_request:
     paths:
+      - 'app.js'
+      - 'index.html'
+      - 'pgn.mjs'
+      - 'styles.css'
       - 'lesson-model.mjs'
       - 'lesson-migrations.mjs'
       - 'lesson-position-adapter.mjs'
@@ -10,15 +14,22 @@ on:
       - 'lesson-position-interoperability-core.mjs'
       - 'lesson-position-interoperability-export-guard.mjs'
       - 'lesson-position-interoperability.mjs'
+      - 'lesson-variation-tree.mjs'
       - 'focus-analysis-popup.mjs'
       - 'tests/lesson-*.test.mjs'
       - 'LESSON_DATA_ARCHITECTURE.md'
       - 'LESSON_POSITION_INTEROPERABILITY.md'
+      - 'LESSON_VARIATIONS_AND_MAIN_LINES.md'
+      - 'USER_GUIDE.md'
       - '.github/workflows/lesson-interoperability-tests.yml'
   push:
     branches:
       - main
     paths:
+      - 'app.js'
+      - 'index.html'
+      - 'pgn.mjs'
+      - 'styles.css'
       - 'lesson-model.mjs'
       - 'lesson-migrations.mjs'
       - 'lesson-position-adapter.mjs'
@@ -26,8 +37,13 @@ on:
       - 'lesson-position-interoperability-core.mjs'
       - 'lesson-position-interoperability-export-guard.mjs'
       - 'lesson-position-interoperability.mjs'
+      - 'lesson-variation-tree.mjs'
       - 'focus-analysis-popup.mjs'
       - 'tests/lesson-*.test.mjs'
+      - 'LESSON_DATA_ARCHITECTURE.md'
+      - 'LESSON_POSITION_INTEROPERABILITY.md'
+      - 'LESSON_VARIATIONS_AND_MAIN_LINES.md'
+      - 'USER_GUIDE.md'
       - '.github/workflows/lesson-interoperability-tests.yml'
   workflow_dispatch:
 
@@ -43,6 +59,8 @@ jobs:
 
       - name: Check module syntax
         run: |
+          node --check app.js
+          node --check pgn.mjs
           node --check lesson-model.mjs
           node --check lesson-migrations.mjs
           node --check lesson-position-adapter.mjs
@@ -50,9 +68,11 @@ jobs:
           node --check lesson-position-interoperability-core.mjs
           node --check lesson-position-interoperability-export-guard.mjs
           node --check lesson-position-interoperability.mjs
+          node --check lesson-variation-tree.mjs
           node --check focus-analysis-popup.mjs
 
-      - name: Run lesson foundation and interoperability tests
+      - name: Run lesson foundation, interoperability, and variation tests
         run: |
           node --test tests/lesson-data-foundation.test.mjs
           node --test tests/lesson-position-interoperability.test.mjs
+          node --test tests/lesson-variation-tree.test.mjs

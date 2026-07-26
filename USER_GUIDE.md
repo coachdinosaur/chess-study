@@ -37,12 +37,12 @@ Use the board to:
 
 The tools panel contains the main working tabs:
 
-- **Study**: review the board and recorded notation with the tools collapsed.
+- **Study**: review the board and recorded notation, manage the selected main line, and work with nested variations while the tools are collapsed.
 - **Setup**: create or change the starting position.
 - **Analysis**: play moves, use Stockfish, practice, and annotate.
 - **Play**: play a complete game against Stockfish.
 - **Puzzle**: choose the legacy Endgame Puzzle mode or the separate Lichess Position Training mode.
-- **Lessons**: create, edit, import, export, and load prepared FEN position sets.
+- **Position Sets**: create, edit, import, export, and load prepared FEN position sets.
 
 If the tools panel is missing:
 
@@ -68,7 +68,7 @@ Use these exact paths when you know what you want to do.
 - Change the starting position: **Tools → Setup**
 - Play and record moves: **Tools → Analysis**
 - Review the lesson tree: use the notation panel or **Tools → Study**
-- Open the Lesson Position Builder: **Tools → Lessons**
+- Open the Position Set Builder: **Tools → Position Sets**
 - Browse published course lessons: open the **Lesson index** from the app/site navigation
 - Open a floating board while reading a supported lesson: click **Teacher Board** in the lesson header
 - Start a synchronized teacher/student room: open **Live Board** (`live-board.html`)
@@ -199,6 +199,27 @@ Keyboard shortcuts:
 
 Arrow-key navigation does not run while you are typing in a field or choosing a promotion piece.
 
+## Choose the Main Line and Build Sub-Variations
+
+> **Where to go:** notation tree in **Study** or **Analysis**
+
+The first move recorded from a position becomes its main line. When that position already has a continuation, every later new move is added as a variation instead of silently replacing the main line.
+
+To change the main line:
+
+1. Click the variation move in the notation tree.
+2. Confirm the notation area says that the selected move is a variation.
+3. Click **Make main line**.
+4. The former main continuation remains saved as a side variation.
+
+Clicking or replaying a variation only navigates to it. Navigation does not promote it.
+
+To create a sub-variation, enter any existing variation, navigate to the position where the nested branch should begin, and play a different move. The same first-continuation rule applies at every depth.
+
+In the app, comments appear as styled prose without surrounding braces. In exported PGN, comments correctly use `{comment}` while variations and sub-variations use `(moves)`. Parentheses cannot be used for PGN comments because PGN readers interpret them as move branches.
+
+See `LESSON_VARIATIONS_AND_MAIN_LINES.md` for the complete behavior and compatibility rules.
+
 ---
 
 ## Analyze a Position with Stockfish
@@ -316,7 +337,7 @@ Annotations are saved in lesson files and the browser draft.
 
 Practice types:
 
-- **Selected line** follows the currently displayed lesson line from the starting position.
+- **Selected line** follows the saved preferred main-line choices from the starting position.
 - **Branch drill** starts from the current position and accepts any recorded child move.
 
 During practice:
