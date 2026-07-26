@@ -25,7 +25,6 @@
     :root {
       color-scheme: light;
       --paper: #f5f2e9;
-      --paper-bright: #fbfaf6;
       --ink: #111b22;
       --muted: #53626f;
       --teal: #1b747c;
@@ -41,7 +40,8 @@
 
     * { box-sizing: border-box; }
 
-    html, body {
+    html,
+    body {
       min-height: 100%;
       margin: 0;
     }
@@ -59,7 +59,7 @@
       position: relative;
       display: grid;
       min-height: 100svh;
-      grid-template-rows: 1fr auto;
+      grid-template-rows: minmax(0, 1fr) auto;
       overflow: hidden;
       isolation: isolate;
     }
@@ -133,21 +133,21 @@
     .prototype-badge,
     .skip {
       position: fixed;
-      top: 1.35rem;
+      top: clamp(.7rem, 1.8vh, 1.15rem);
       z-index: 30;
       border: 1px solid rgba(255,255,255,.76);
       border-radius: 999px;
-      background: rgba(255,255,255,.8);
-      box-shadow: 0 10px 28px rgba(27,46,47,.1);
+      background: rgba(255,255,255,.82);
+      box-shadow: 0 9px 24px rgba(27,46,47,.1);
       backdrop-filter: blur(18px);
     }
 
     .prototype-badge {
       left: 50%;
       margin: 0;
-      padding: .72rem 1.45rem;
+      padding: .58rem 1.2rem;
       color: var(--teal-deep);
-      font-size: .72rem;
+      font-size: .68rem;
       font-weight: 850;
       letter-spacing: .14em;
       text-transform: uppercase;
@@ -156,11 +156,11 @@
     }
 
     .skip {
-      right: 1.5rem;
-      min-height: 2.75rem;
-      padding: .68rem 1.15rem;
+      right: 1.25rem;
+      min-height: 2.45rem;
+      padding: .55rem 1rem;
       color: #31414f;
-      font-size: .8rem;
+      font-size: .76rem;
       font-weight: 760;
       cursor: pointer;
       transition: transform 160ms ease, color 160ms ease, background 160ms ease;
@@ -168,7 +168,7 @@
 
     .skip:hover {
       color: var(--teal-deep);
-      background: rgba(255,255,255,.96);
+      background: rgba(255,255,255,.97);
       transform: translateY(-1px);
     }
 
@@ -179,46 +179,48 @@
 
     .scene {
       display: grid;
-      width: min(1440px, calc(100vw - 4rem));
+      width: min(1360px, calc(100vw - 3rem));
       min-height: 0;
+      height: 100%;
       margin: 0 auto;
-      padding: clamp(6rem, 9vh, 7.5rem) 0 clamp(1.25rem, 3vh, 2.5rem);
-      grid-template-columns: minmax(26rem, .94fr) minmax(31rem, 1.06fr);
+      padding: clamp(4.5rem, 8vh, 5.7rem) 0 clamp(.4rem, 1.2vh, .8rem);
+      grid-template-columns: minmax(20rem, .92fr) minmax(26rem, 1.08fr);
       align-items: center;
-      gap: clamp(3rem, 5.5vw, 6.5rem);
+      gap: clamp(2rem, 4vw, 5rem);
     }
 
     .visual {
       position: relative;
       display: grid;
       min-width: 0;
+      min-height: 0;
       place-items: center;
     }
 
     .board-shadow {
       position: absolute;
-      width: 88%;
+      width: 86%;
       aspect-ratio: 1.12;
       border-radius: 50%;
-      background: rgba(20,39,39,.21);
-      filter: blur(36px);
+      background: rgba(20,39,39,.2);
+      filter: blur(32px);
       opacity: 0;
-      transform: translateY(38%) rotate(-5deg);
+      transform: translateY(36%) rotate(-4deg);
     }
 
     .board-card {
       position: relative;
-      width: min(39vw, 35rem);
+      width: min(35vw, calc(100svh - 16rem), 32rem);
       aspect-ratio: 1;
-      padding: clamp(.78rem, 1.4vw, 1.05rem);
+      padding: clamp(.68rem, 1vw, .9rem);
       border: 1px solid rgba(255,255,255,.86);
-      border-radius: clamp(1.7rem, 3vw, 2.45rem);
+      border-radius: clamp(1.45rem, 2.4vw, 2.15rem);
       background: linear-gradient(145deg, rgba(255,255,255,.96), rgba(235,239,233,.9));
       box-shadow:
-        0 32px 72px rgba(25,42,43,.18),
+        0 26px 58px rgba(25,42,43,.17),
         inset 0 1px 0 rgba(255,255,255,.92);
       opacity: 0;
-      transform: translateY(30px) rotate(-4deg) scale(.95);
+      transform: translateY(24px) rotate(-4deg) scale(.96);
       backdrop-filter: blur(18px);
     }
 
@@ -228,7 +230,7 @@
       aspect-ratio: 1;
       overflow: hidden;
       border: 1px solid rgba(48,80,68,.2);
-      border-radius: clamp(1rem, 2vw, 1.55rem);
+      border-radius: clamp(.85rem, 1.5vw, 1.3rem);
       background: var(--cream);
     }
 
@@ -236,7 +238,6 @@
       display: grid;
       width: 100%;
       height: 100%;
-      aspect-ratio: 1;
       grid-template-columns: repeat(8, minmax(0, 1fr));
       grid-template-rows: repeat(8, minmax(0, 1fr));
     }
@@ -271,7 +272,7 @@
       width: 80%;
       height: 80%;
       object-fit: contain;
-      filter: drop-shadow(0 4px 4px rgba(11,24,22,.25));
+      filter: drop-shadow(0 3px 3px rgba(11,24,22,.24));
       opacity: 0;
       transform: translateY(-16%) scale(.76);
     }
@@ -289,12 +290,12 @@
     .plan-arrow .shaft {
       fill: none;
       stroke: rgba(221,162,49,.94);
-      stroke-width: 10;
+      stroke-width: 9;
       stroke-linecap: round;
       stroke-linejoin: round;
       stroke-dasharray: 430;
       stroke-dashoffset: 430;
-      filter: drop-shadow(0 3px 2px rgba(89,58,10,.17));
+      filter: drop-shadow(0 3px 2px rgba(89,58,10,.16));
     }
 
     .circle-mark {
@@ -304,42 +305,42 @@
       right: 12.4%;
       width: 12.8%;
       aspect-ratio: 1;
-      border: clamp(.16rem, .4vw, .3rem) solid rgba(221,162,49,.94);
+      border: clamp(.14rem, .3vw, .25rem) solid rgba(221,162,49,.94);
       border-radius: 50%;
-      box-shadow: 0 0 0 1px rgba(13,92,101,.52) inset;
+      box-shadow: 0 0 0 1px rgba(13,92,101,.5) inset;
       opacity: 0;
-      transform: scale(1.45) rotate(8deg);
+      transform: scale(1.4) rotate(8deg);
     }
 
     .copy {
       position: relative;
       z-index: 5;
       min-width: 0;
-      max-width: 42rem;
+      max-width: 39rem;
     }
 
     .eyebrow,
     .title,
     .lede {
       opacity: 0;
-      transform: translateY(20px);
+      transform: translateY(18px);
     }
 
     .eyebrow {
       display: inline-flex;
       align-items: center;
-      gap: .9rem;
-      margin: 0 0 1.25rem;
+      gap: .78rem;
+      margin: 0 0 clamp(.7rem, 1.8vh, 1rem);
       color: var(--teal-deep);
-      font-size: clamp(.76rem, 1vw, .9rem);
+      font-size: clamp(.7rem, .85vw, .82rem);
       font-weight: 850;
       letter-spacing: .16em;
       text-transform: uppercase;
     }
 
     .eyebrow::before {
-      width: 2.7rem;
-      height: .3rem;
+      width: 2.35rem;
+      height: .26rem;
       border-radius: 999px;
       background: var(--gold);
       content: "";
@@ -348,9 +349,9 @@
     .title {
       margin: 0;
       font-family: "Manrope", "Inter", sans-serif;
-      font-size: clamp(3.65rem, 6.25vw, 6.7rem);
+      font-size: clamp(3.2rem, min(5.5vw, 9.8vh), 5.8rem);
       font-weight: 730;
-      letter-spacing: -.065em;
+      letter-spacing: -.064em;
       line-height: .91;
     }
 
@@ -380,49 +381,49 @@
     }
 
     .lede {
-      max-width: 45ch;
-      margin: clamp(1.35rem, 2.6vh, 2rem) 0 0;
+      max-width: 44ch;
+      margin: clamp(.8rem, 2vh, 1.3rem) 0 0;
       color: var(--muted);
-      font-size: clamp(1rem, 1.3vw, 1.2rem);
+      font-size: clamp(.9rem, 1.05vw, 1.05rem);
       font-weight: 470;
-      line-height: 1.58;
+      line-height: 1.52;
     }
 
     .controls {
       position: relative;
       z-index: 25;
       display: grid;
-      width: min(1010px, calc(100vw - 3rem));
-      gap: .85rem;
-      margin: 0 auto clamp(1rem, 2.5vh, 1.5rem);
+      width: min(930px, calc(100vw - 2.5rem));
+      gap: .48rem;
+      margin: 0 auto clamp(.4rem, 1.1vh, .7rem);
     }
 
     .sequence-status,
     .workspace-list {
       opacity: 0;
-      transform: translateY(18px);
+      transform: translateY(14px);
     }
 
     .sequence-status {
       display: grid;
-      min-height: 5.25rem;
-      padding: .82rem 1.25rem;
+      min-height: 4.15rem;
+      padding: .55rem 1rem;
       grid-template-columns: 1fr auto;
       align-items: stretch;
       border: 1px solid rgba(255,255,255,.82);
-      border-radius: 1.25rem;
+      border-radius: 1.1rem;
       background: rgba(255,255,255,.8);
-      box-shadow: 0 16px 38px rgba(21,40,42,.12);
+      box-shadow: 0 13px 30px rgba(21,40,42,.11);
       backdrop-filter: blur(20px);
     }
 
     .timeline {
       display: grid;
       margin: 0;
-      padding: .15rem 1.15rem .05rem 0;
+      padding: .08rem .9rem .02rem 0;
       grid-template-columns: repeat(5, minmax(0, 1fr));
       align-items: center;
-      gap: .75rem;
+      gap: .55rem;
       list-style: none;
     }
 
@@ -431,16 +432,16 @@
       display: grid;
       height: 100%;
       align-content: center;
-      gap: .66rem;
+      gap: .48rem;
       color: var(--teal-deep);
-      font-size: .76rem;
+      font-size: .69rem;
       font-weight: 690;
       text-align: center;
     }
 
     .timeline li::after {
       width: 100%;
-      height: .24rem;
+      height: .22rem;
       border-radius: 999px;
       background: rgba(27,116,124,.16);
       content: "";
@@ -453,11 +454,11 @@
 
     .stage-counter {
       display: grid;
-      min-width: 7rem;
+      min-width: 6.25rem;
       place-items: center;
       border-left: 1px solid rgba(13,92,101,.16);
       color: #394a57;
-      font-size: .88rem;
+      font-size: .8rem;
       font-weight: 790;
       letter-spacing: .08em;
     }
@@ -477,22 +478,22 @@
       margin: 0;
       padding: 0;
       grid-template-columns: repeat(6, minmax(0, 1fr));
-      gap: .68rem;
+      gap: .55rem;
       list-style: none;
     }
 
     .workspace-list li {
       display: flex;
-      min-height: 3.25rem;
+      min-height: 2.7rem;
       align-items: center;
       justify-content: center;
-      gap: .62rem;
+      gap: .52rem;
       border: 1px solid rgba(255,255,255,.86);
       border-radius: 999px;
       background: rgba(255,255,255,.82);
-      box-shadow: 0 9px 24px rgba(20,40,41,.085);
+      box-shadow: 0 8px 20px rgba(20,40,41,.08);
       color: var(--teal-deep);
-      font-size: .82rem;
+      font-size: .76rem;
       font-weight: 730;
       backdrop-filter: blur(16px);
     }
@@ -501,12 +502,12 @@
       border-color: rgba(13,92,101,.25);
       background: var(--teal);
       color: var(--white);
-      box-shadow: 0 13px 28px rgba(13,92,101,.22);
+      box-shadow: 0 11px 24px rgba(13,92,101,.21);
     }
 
     .workspace-list svg {
-      width: 1.15rem;
-      height: 1.15rem;
+      width: 1.02rem;
+      height: 1.02rem;
       flex: 0 0 auto;
       fill: none;
       stroke: currentColor;
@@ -521,7 +522,7 @@
       bottom: 0;
       left: 0;
       z-index: 40;
-      height: .2rem;
+      height: .18rem;
       overflow: hidden;
       background: rgba(27,116,124,.08);
     }
@@ -603,61 +604,183 @@
     @keyframes underline { to { opacity: 1; transform: scaleX(1); } }
     @keyframes progress { to { transform: scaleX(1); } }
 
-    @media (max-width: 1120px) {
-      .intro { overflow: visible; }
-      .scene {
-        width: min(920px, calc(100vw - 2rem));
-        padding-top: 6.6rem;
-        grid-template-columns: minmax(21rem, .92fr) minmax(25rem, 1.08fr);
-        gap: 2.5rem;
+    @media (min-width: 901px) {
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
       }
-      .board-card { width: min(42vw, 30rem); }
-      .title { font-size: clamp(3.4rem, 7.5vw, 5.8rem); }
-      .controls { width: min(900px, calc(100vw - 2rem)); }
+
+      .intro {
+        height: 100svh;
+        min-height: 0;
+      }
     }
 
-    @media (max-width: 820px) {
-      .intro { display: block; }
+    @media (min-width: 901px) and (max-height: 720px) {
+      .prototype-badge,
+      .skip { top: .55rem; }
+
+      .prototype-badge {
+        padding: .5rem 1rem;
+        font-size: .63rem;
+      }
+
+      .skip {
+        min-height: 2.2rem;
+        padding: .45rem .85rem;
+        font-size: .71rem;
+      }
+
+      .scene {
+        padding-top: 3.8rem;
+        padding-bottom: .25rem;
+        gap: 2rem;
+      }
+
+      .board-card {
+        width: min(34vw, calc(100svh - 15rem), 28.5rem);
+        padding: .62rem;
+      }
+
+      .eyebrow { margin-bottom: .55rem; }
+
+      .title {
+        font-size: clamp(3rem, min(5.1vw, 9.2vh), 4.7rem);
+      }
+
+      .lede {
+        margin-top: .65rem;
+        font-size: .88rem;
+        line-height: 1.42;
+      }
+
+      .controls {
+        gap: .34rem;
+        margin-bottom: .25rem;
+      }
+
+      .sequence-status {
+        min-height: 3.55rem;
+        padding: .4rem .85rem;
+      }
+
+      .timeline li {
+        gap: .36rem;
+        font-size: .64rem;
+      }
+
+      .workspace-list li {
+        min-height: 2.25rem;
+        font-size: .7rem;
+      }
+    }
+
+    @media (max-width: 900px) {
+      body { overflow: auto; }
+
+      .intro {
+        display: block;
+        min-height: 100svh;
+        overflow: hidden;
+      }
+
       .scene {
         display: block;
         width: min(680px, calc(100vw - 1.5rem));
-        padding: 6rem 0 2rem;
+        height: auto;
+        padding: 5.7rem 0 1.8rem;
       }
-      .visual { margin-bottom: 2rem; }
-      .board-card { width: min(82vw, 29rem); }
-      .copy { margin: 0 auto; text-align: center; }
+
+      .visual { margin-bottom: 1.8rem; }
+
+      .board-card {
+        width: min(78vw, 28rem);
+        margin: 0 auto;
+      }
+
+      .copy {
+        margin: 0 auto;
+        text-align: center;
+      }
+
       .eyebrow { justify-content: center; }
-      .title { margin: 0 auto; font-size: clamp(3.1rem, 12.6vw, 5.5rem); }
+
+      .title {
+        margin: 0 auto;
+        font-size: clamp(3rem, 12vw, 5.2rem);
+      }
+
       .title-line { white-space: normal; }
-      .lede { margin-right: auto; margin-left: auto; }
-      .controls { width: min(680px, calc(100vw - 1.5rem)); margin-bottom: 1.25rem; }
+
+      .lede {
+        margin-right: auto;
+        margin-left: auto;
+      }
+
+      .controls {
+        width: min(680px, calc(100vw - 1.5rem));
+        margin-bottom: 1rem;
+      }
+
       .workspace-list { grid-template-columns: repeat(3, 1fr); }
     }
 
     @media (max-width: 560px) {
       .prototype-badge {
-        left: .75rem;
-        max-width: 62vw;
+        left: .65rem;
+        max-width: 60vw;
         overflow: hidden;
-        padding: .65rem .9rem;
+        padding: .55rem .8rem;
         text-overflow: ellipsis;
         transform: none;
       }
-      .skip { right: .75rem; }
-      .scene { padding-top: 5.75rem; }
-      .title { font-size: clamp(2.85rem, 14vw, 4.35rem); }
-      .lede { font-size: .98rem; }
-      .controls { width: calc(100vw - 1rem); }
-      .sequence-status { min-height: 4.8rem; padding: .7rem; }
-      .timeline { gap: .35rem; padding-right: .65rem; }
-      .timeline li { gap: .52rem; font-size: .61rem; }
-      .stage-counter { min-width: 4.35rem; font-size: .74rem; }
-      .workspace-list { grid-template-columns: repeat(2, 1fr); gap: .52rem; }
-      .workspace-list li { min-height: 2.9rem; font-size: .75rem; }
+
+      .skip { right: .65rem; }
+
+      .scene { padding-top: 5.2rem; }
+
+      .title { font-size: clamp(2.75rem, 13.5vw, 4.15rem); }
+
+      .lede { font-size: .95rem; }
+
+      .controls { width: calc(100vw - .8rem); }
+
+      .sequence-status {
+        min-height: 4.35rem;
+        padding: .6rem;
+      }
+
+      .timeline {
+        gap: .3rem;
+        padding-right: .55rem;
+      }
+
+      .timeline li {
+        gap: .42rem;
+        font-size: .58rem;
+      }
+
+      .stage-counter {
+        min-width: 4rem;
+        font-size: .7rem;
+      }
+
+      .workspace-list {
+        grid-template-columns: repeat(2, 1fr);
+        gap: .46rem;
+      }
+
+      .workspace-list li {
+        min-height: 2.65rem;
+        font-size: .72rem;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
+      *,
+      *::before,
+      *::after {
         animation-duration: 1ms !important;
         animation-delay: 0ms !important;
         animation-iteration-count: 1 !important;
@@ -685,8 +808,8 @@
             <div class="board" data-board aria-hidden="true"></div>
             <svg class="plan-arrow" viewBox="0 0 800 800" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
               <defs>
-                <marker id="arrowHead" markerWidth="26" markerHeight="26" refX="23" refY="13" orient="auto" markerUnits="userSpaceOnUse">
-                  <path d="M 0 2 L 25 13 L 0 24 Z" fill="rgba(221, 162, 49, 0.94)"></path>
+                <marker id="arrowHead" markerWidth="20" markerHeight="20" refX="18" refY="10" orient="auto" markerUnits="userSpaceOnUse">
+                  <path d="M 0 1 L 19 10 L 0 19 Z" fill="rgba(221, 162, 49, 0.94)"></path>
                 </marker>
               </defs>
               <path class="shaft" d="M 360 630 C 430 525, 520 410, 615 260" marker-end="url(#arrowHead)"></path>
