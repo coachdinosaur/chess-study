@@ -13,9 +13,17 @@ Every position may have one preferred continuation.
 
 This rule applies independently at every position in the tree. A move can therefore be the main continuation inside a side variation without becoming part of the lesson's top-level main line.
 
+## Quick example
+
+1. Record `1.e4` from the starting position. It becomes the main line.
+2. Return to the starting position and record `1.d4`. It remains a variation.
+3. Click `1.d4`. Merely opening it does not change the saved main line.
+4. Click **Make main line** only when `1.d4` should become preferred. The former `1.e4` line remains stored as a variation.
+5. Enter either branch and record a different continuation later in the line to create a sub-variation.
+
 ## Make main line
 
-When the selected move has siblings and is not currently preferred, the notation area shows **Make main line**.
+When the selected move has siblings and is not currently preferred, the notation area shows **Make main line**. Main-line moves display a status badge instead of a promotion button.
 
 Selecting it:
 

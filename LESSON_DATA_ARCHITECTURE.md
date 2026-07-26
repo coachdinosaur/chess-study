@@ -19,6 +19,12 @@ Stage 2 connects the foundation to the existing main-app workflow. It adds the v
 
 See [LESSON_POSITION_INTEROPERABILITY.md](LESSON_POSITION_INTEROPERABILITY.md) for the implemented Stage 2 behavior, storage keys, conversion mapping, limitations, and validation commands.
 
+### Stage 3: main-line and recursive variation controls
+
+Stage 3 makes preferred-continuation changes explicit. New moves no longer replace an existing main line, navigation no longer mutates branch preference, **Make main line** promotes only the selected local branch, and the same rules apply recursively to sub-variations.
+
+See [LESSON_VARIATIONS_AND_MAIN_LINES.md](LESSON_VARIATIONS_AND_MAIN_LINES.md) for the user workflow, PGN punctuation rules, persistence contract, and validation checklist.
+
 ## Product boundary
 
 The app has two related but different types of teaching material:
@@ -153,6 +159,19 @@ A node export uses that node's exact FEN and comment. It records `sourceLessonId
 - `lesson-position-interoperability.mjs` connects the existing builder, tabs, menus, import/export, and browser storage.
 - `lesson-position-export-validation.mjs` and `lesson-position-interoperability-export-guard.mjs` preserve the established export validation behavior.
 
+### `lesson-variation-tree.mjs`
+
+Provides:
+
+- preferred-child lookup with first-valid-child fallback;
+- first-child insertion as the local main line;
+- later-child insertion as a variation;
+- non-promoting traversal of recorded branches;
+- explicit local promotion through **Make main line**;
+- recursive variation-depth calculation for nested branches.
+
+The module mutates only the affected parent node and never removes siblings or descendants.
+
 ## File-format policy
 
 | Format | Responsibility |
@@ -208,6 +227,9 @@ Completed:
 3. Add explicit **Open in Study**, **Open in Analysis**, and **Create New Lesson** actions.
 4. Add **Create Lessons from Set** and **Add current position to Position Set**.
 5. Add optional CSV/XLSX metadata and validated enhanced export.
+6. Preserve existing main lines when adding new moves.
+7. Add explicit **Make main line** promotion.
+8. Support recursively nested sub-variations and standards-compliant PGN export.
 
 Remaining recommended work:
 
@@ -224,6 +246,7 @@ Run:
 ```bash
 node --test tests/lesson-data-foundation.test.mjs
 node --test tests/lesson-position-interoperability.test.mjs
+node --test tests/lesson-variation-tree.test.mjs
 ```
 
 The combined suites cover:
@@ -242,8 +265,12 @@ The combined suites cover:
 - app-compatible lesson entry creation;
 - existing-lesson preservation;
 - duplicate lesson IDs and default activation;
-- enhanced export validation.
-
+- enhanced export validation;
+- first-child main-line selection;
+- non-promoting variation traversal;
+- explicit local promotion;
+- recursive sub-variation behavior;
+- PGN comment/variation punctuation and round-trip structure.
 
 ## Main-line and recursive variation behavior
 

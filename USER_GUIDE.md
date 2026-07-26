@@ -212,6 +212,8 @@ To change the main line:
 3. Click **Make main line**.
 4. The former main continuation remains saved as a side variation.
 
+The **Make main line** button appears only when the selected move has siblings and is not already the preferred continuation.
+
 Clicking or replaying a variation only navigates to it. Navigation does not promote it.
 
 To create a sub-variation, enter any existing variation, navigate to the position where the nested branch should begin, and play a different move. The same first-continuation rule applies at every depth.

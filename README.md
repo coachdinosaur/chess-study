@@ -19,7 +19,7 @@ For local Windows setup, see [LOCAL_DEPLOYMENT.md](LOCAL_DEPLOYMENT.md).
   - Desktop uses native drag-and-drop.
   - Touch and pen use pointer-based dragging with a floating piece preview.
   - Tap-to-select and tap-to-move remain available.
-- Record a lesson as a branching move tree with main lines and variations.
+- Record a lesson as a recursive move tree: the first continuation becomes the main line, later moves remain variations, and any selected side line can be promoted explicitly with **Make main line**.
 - Add PGN comments, lesson notes, arrows, circles, stars, and colored square highlights.
 - Import and export PGN, including comments, variations, and multi-game files.
 - Save and reopen lesson JSON files and multi-lesson books.
@@ -28,7 +28,7 @@ For local Windows setup, see [LOCAL_DEPLOYMENT.md](LOCAL_DEPLOYMENT.md).
 - Practice a selected line or drill any recorded branch.
 - Play against Stockfish with Elo, side, speed, starting-position, and clock settings.
 - Train in separate Endgame Puzzle and Lichess Position Training modes, with a current production library of 30,000 validated Lichess-derived positions.
-- Review CSV/XLSX position sets in the Lesson Position Builder.
+- Review CSV/XLSX position sets in the Position Set Builder and open or convert them into Study and Analysis lessons.
 - Identify openings from the bundled ECO/opening database.
 - Use static Pawn, Advanced Pawn, Bishop, and numbered endgame lesson pages in `lessons/`.
 - Present supported lessons scene by scene with Previous, Reveal, Reset, Next, Exit, keyboard shortcuts, fullscreen support, and a visible click pulse for classroom projection.
@@ -42,14 +42,29 @@ The single-page application is organized around six tabs:
 
 | Tab | Purpose |
 |---|---|
-| Study | Board and notation with the tools panel collapsed |
+| Study | Lesson review, main-line selection, nested variations, comments, and practice with the tools panel collapsed |
 | Setup | Position construction, FEN editing, scanner input, castling and en passant controls |
 | Analysis | Stockfish/tablebase analysis, annotations, and practice controls |
 | Play | Play vs Stockfish |
 | Puzzle | Separate Endgame Puzzle and Lichess Position Training modes, including adaptive learning and Mistake Review |
-| Lessons | CSV/XLSX Lesson Position Builder |
+| Position Sets | CSV/XLSX Position Set Builder and lesson-conversion workflow |
 
 The lesson title input is intentionally hidden while the Play or Puzzle tab is active so game controls receive the available space. The title remains part of the lesson state and returns on the other tabs.
+
+## Study main lines, variations, and comments
+
+Study and Analysis use the same recursive lesson tree. Every position has at most one preferred continuation:
+
+- the first recorded move becomes the main line from that position;
+- later new moves from the same position are stored as variations;
+- clicking, replaying, or navigating to a variation does not promote it;
+- selecting a side variation exposes **Make main line**;
+- promotion changes only that immediate branch point and preserves the former main continuation as a variation;
+- the same behavior applies inside variations, so sub-variations can be nested to any practical depth.
+
+The on-screen notation displays comments as styled prose and encloses variation groups in parentheses. Exported PGN preserves the standard distinction: `{comment}` is a comment and `(moves)` is a variation.
+
+See [LESSON_VARIATIONS_AND_MAIN_LINES.md](LESSON_VARIATIONS_AND_MAIN_LINES.md) for the full workflow, persistence rules, PGN behavior, and validation checklist.
 
 ## Board interaction
 
@@ -216,7 +231,7 @@ Lesson files preserve app-specific state such as:
 
 - title and setup FEN
 - board orientation
-- move tree and selected branches
+- recursive move tree, nested variations, and the selected main-line continuation at each branch point
 - comments and note
 - annotations
 - visibility preferences
@@ -229,15 +244,15 @@ The app supports individual `.lesson.json` files and multi-lesson `.lesson-book.
 PGN import/export supports:
 
 - non-standard starting FENs
-- main lines and nested variations
+- main lines, variations, and recursively nested sub-variations
 - comments
 - multi-game browsing and selection
 
-Use JSON when complete application state matters. Use PGN for chess notation interchange.
+Use JSON when complete application state matters. Use PGN for chess notation interchange. See [LESSON_DATA_ARCHITECTURE.md](LESSON_DATA_ARCHITECTURE.md) for the shared lesson model and [LESSON_POSITION_INTEROPERABILITY.md](LESSON_POSITION_INTEROPERABILITY.md) for Position Set conversion rules. See [LESSON_DATA_ARCHITECTURE.md](LESSON_DATA_ARCHITECTURE.md) for the shared lesson model and [LESSON_POSITION_INTEROPERABILITY.md](LESSON_POSITION_INTEROPERABILITY.md) for Position Set conversion rules. See [LESSON_DATA_ARCHITECTURE.md](LESSON_DATA_ARCHITECTURE.md) for the shared lesson model and [LESSON_POSITION_INTEROPERABILITY.md](LESSON_POSITION_INTEROPERABILITY.md) for Position Set conversion rules.
 
 ### Browser draft
 
-The current lesson book is persisted locally under `setup-analysis-draft-v1`. Puzzle settings, queue, history, theme, AI endpoint, and Lesson Position Builder state use separate localStorage keys.
+The current lesson book is persisted locally under `setup-analysis-draft-v1`. Puzzle settings, queue, history, theme, AI endpoint, and Position Set Builder state use separate localStorage keys.
 
 Browser storage is local to one browser profile and is not collaborative synchronization.
 

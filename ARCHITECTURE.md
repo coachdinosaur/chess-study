@@ -19,6 +19,9 @@ The major subsystems are:
    - `lichess-position-training.mjs` and its core, data, engine, learning, interaction, and layout modules
    - `assets/puzzles/lichess-position-training/manifest.json` plus 1,200 shard files
    - `lesson-position-builder.mjs`
+   - `lesson-model.mjs`, `lesson-migrations.mjs`, and `lesson-position-adapter.mjs`
+   - `lesson-position-interoperability-core.mjs`, `lesson-position-interoperability-export-guard.mjs`, and `lesson-position-interoperability.mjs`
+   - `lesson-variation-tree.mjs`
    - `text-normalization.mjs`
 
 3. **AI chess-help subsystem**
@@ -70,6 +73,13 @@ chess-study/
 ├── lichess-position-training-grid-layout.mjs
 ├── lichess-position-training-style-refresh.mjs
 ├── lesson-position-builder.mjs
+├── lesson-model.mjs
+├── lesson-migrations.mjs
+├── lesson-position-adapter.mjs
+├── lesson-position-interoperability-core.mjs
+├── lesson-position-interoperability-export-guard.mjs
+├── lesson-position-interoperability.mjs
+├── lesson-variation-tree.mjs
 ├── text-normalization.mjs
 │
 ├── live-board.html
@@ -144,6 +154,12 @@ index.html
     ├── pgn.mjs
     ├── puzzle-api.mjs
     ├── lesson-position-builder.mjs
+    ├── lesson-model.mjs / lesson-migrations.mjs
+    ├── lesson-position-adapter.mjs
+    ├── lesson-position-interoperability-core.mjs
+    ├── lesson-position-interoperability-export-guard.mjs
+    ├── lesson-position-interoperability.mjs
+    ├── lesson-variation-tree.mjs
     └── text-normalization.mjs
 
 focus-analysis-popup.mjs
@@ -212,6 +228,11 @@ live-board.html
 | `lichess-position-training-learning.mjs` | Adaptive rating, progressive hints, theme metrics, success explanations, and Mistake Review scheduling |
 | `management/js/puzzle-assignment-*.mjs` | Teacher assignment selection/lifecycle and token-scoped student assignment runtime |
 | `lesson-position-builder.mjs` | CSV/XLSX import, field normalization, position-set CRUD, persistence, and builder UI |
+| `lesson-model.mjs` / `lesson-migrations.mjs` | Versioned lesson contracts, normalization, stable IDs, compatibility detection, and non-destructive migration |
+| `lesson-position-adapter.mjs` | Converts rich lesson roots or selected nodes to flat positions and converts position sets into lesson documents/books |
+| `lesson-position-interoperability-core.mjs` / `lesson-position-interoperability.mjs` | Connect Position Sets to Study, Analysis, lesson-book persistence, optional spreadsheet metadata, and conversion actions |
+| `lesson-position-interoperability-export-guard.mjs` | Preserves validation before metadata-aware CSV/XLSX export |
+| `lesson-variation-tree.mjs` | Preferred-child lookup, first-child main-line insertion, non-promoting variation traversal, explicit promotion, and recursive variation-depth semantics |
 | `text-normalization.mjs` | Unicode repair, punctuation normalization, and editable-text cleanup |
 | `ai-help-chat.mjs` | Dyno Bot launcher and panel, bounded context collection, endpoint storage, transcript state, timeout and request lifecycle |
 | `ai-help-chat.css` | Floating panel layout, themes, responsive hiding, Focus-mode placement |
@@ -358,20 +379,20 @@ html[data-active-tab="puzzle"] .lesson-title-input {
 
 | Tab | Constant | Purpose |
 |---|---|---|
-| Study | `TAB_STUDY` | Board and notation with tools collapsed |
+| Study | `TAB_STUDY` | Lesson review, explicit main-line selection, recursive variations, comments, and practice with tools collapsed |
 | Setup | `TAB_SETUP` | Position construction and validation |
 | Analysis | `TAB_ANALYSIS` | Engine/tablebase analysis, annotations, practice |
 | Play | `TAB_PLAY` | Play vs Stockfish |
 | Puzzle | `TAB_PUZZLE` | Legacy Endgame Puzzle controls plus the separately mounted Lichess Position Training launcher |
-| Lessons | `TAB_LESSONS` | Lesson Position Builder |
+| Position Sets | `TAB_LESSONS` | CSV/XLSX Position Set Builder and rich-lesson conversion actions |
 
 Important transitions:
 
 - Leaving an active Play game stops it.
 - Leaving Puzzle cancels active generation.
 - Entering Setup during a puzzle copies the live puzzle position into setup state.
-- Entering Lessons opens the builder controller.
-- Leaving Lessons closes the builder.
+- Entering Position Sets (`TAB_LESSONS`) opens the builder controller.
+- Leaving Position Sets closes the builder.
 - Play and Puzzle hide the lesson-title input through the active-tab CSS contract.
 
 ---
@@ -522,13 +543,20 @@ Each recorded position is a node:
 
 Important operations include:
 
-- jumping to a node
-- reconstructing the selected root-to-node path
-- following `selectedChildId` for the displayed continuation
-- adding a variation without flattening existing branches
-- validating loaded trees for reachability, legality, FEN consistency, cycles, and parent/child integrity
+- jumping to a node without rewriting the saved preferred continuation;
+- reconstructing the selected root-to-node path;
+- following `selectedChildId` for forward navigation and selected-line practice;
+- recording the first child of a position as its main line;
+- adding later children as side variations without flattening or replacing existing branches;
+- explicitly promoting a selected side move with **Make main line**;
+- applying the same branch rule recursively inside variations and sub-variations;
+- validating loaded trees for reachability, legality, FEN consistency, cycles, and parent/child integrity.
 
-`pgn.mjs` converts this structure to and from PGN variations and comments.
+`lesson-variation-tree.mjs` owns preferred-continuation semantics. A valid `selectedChildId` is authoritative; otherwise the first valid child is the fallback. Ordinary Study/Analysis navigation does not mutate it. Explicit promotion updates only the selected move's immediate parent, so descendants and unrelated branch choices remain intact. Play mode keeps its separate active-game-line behavior.
+
+`pgn.mjs` converts the tree to and from standards-compliant PGN. Comments use braces, variation sequences use parentheses, and recursive export suppresses the initial sibling scan inside a forced side line so a variation cannot rediscover its main-line sibling and recurse indefinitely.
+
+See `LESSON_DATA_ARCHITECTURE.md`, `LESSON_POSITION_INTEROPERABILITY.md`, and `LESSON_VARIATIONS_AND_MAIN_LINES.md` for the versioned data contracts, Position Set bridge, and user-facing branch rules.
 
 ---
 
