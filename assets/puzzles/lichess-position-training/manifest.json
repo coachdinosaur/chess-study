@@ -1,10 +1,10 @@
 {
   "format": 1,
-  "generatedAt": "2026-07-26T03:31:37.773Z",
+  "generatedAt": "2026-07-26T03:41:35.536Z",
   "source": "Lichess puzzle database",
   "trainingModel": "position-objective-dynamic-defence",
   "exactLineRequired": false,
-  "count": 1000,
+  "count": 2000,
   "shardSize": 25,
   "filters": {
     "minRating": 0,
@@ -175,6 +175,166 @@
     },
     {
       "file": "shard-0039.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0040.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0041.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0042.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0043.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0044.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0045.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0046.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0047.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0048.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0049.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0050.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0051.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0052.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0053.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0054.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0055.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0056.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0057.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0058.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0059.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0060.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0061.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0062.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0063.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0064.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0065.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0066.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0067.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0068.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0069.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0070.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0071.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0072.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0073.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0074.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0075.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0076.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0077.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0078.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0079.json",
       "count": 25
     }
   ]

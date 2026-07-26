@@ -1,0 +1,8 @@
+Baseline preserved: 1000/1000
+New unique puzzles: 1000
+Production puzzles: 2000
+Production shards: 80
+Unique IDs: 2000
+Unique starting positions: 2000
+First new puzzle: 00f99
+Last new puzzle: 01OSA
