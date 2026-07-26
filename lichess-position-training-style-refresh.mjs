@@ -1,8 +1,11 @@
-const STYLE_URL = './lichess-position-training-desktop-fit.css?v=20260726-terminal-layout1';
+const STYLE_URL = './lichess-position-training-post-answer-fix.css?v=20260726-post-answer-layout1';
 
 function installLatestTrainerStyles() {
-  for (const link of document.querySelectorAll('link[rel="stylesheet"][href*="lichess-position-training-desktop-fit.css"]')) {
-    link.remove();
+  for (const link of document.querySelectorAll('link[rel="stylesheet"]')) {
+    const href = link.getAttribute('href') || '';
+    if (href.includes('lichess-position-training-desktop-fit.css') || href.includes('lichess-position-training-post-answer-fix.css')) {
+      link.remove();
+    }
   }
 
   const link = document.createElement('link');
