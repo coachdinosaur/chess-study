@@ -1,0 +1,50 @@
+name: Validate student puzzle assignment updates
+
+on:
+  pull_request:
+    paths:
+      - 'management/**'
+      - 'tests/puzzle-assignment-core.test.mjs'
+      - '.github/workflows/validate-student-puzzle-assignment-updates.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check management/js/puzzle-assignment-lifecycle.mjs
+          node --check management/js/teacher-shell.mjs
+          node --check management/js/puzzle-assignment-student.mjs
+
+      - name: Run assignment core tests
+        run: node --test tests/puzzle-assignment-core.test.mjs
+
+      - name: Verify lifecycle safeguards
+        run: |
+          grep -q "confirmation !== 'DELETE'" management/js/puzzle-assignment-lifecycle.mjs
+          grep -q "\.from('puzzle_assignments')\.delete()" management/js/puzzle-assignment-lifecycle.mjs
+          grep -q "setAssignmentStatus(assignmentId, 'published')" management/js/puzzle-assignment-lifecycle.mjs
+          grep -q "Students have started" management/js/puzzle-assignment-lifecycle.mjs
+          grep -q "access_token_hash: hash" management/js/puzzle-assignment-lifecycle.mjs
+          ! grep -R "service_role\|SUPABASE_SERVICE" management/js/puzzle-assignment-lifecycle.mjs
+
+      - name: Verify student and published assignment design
+        run: |
+          grep -q "puzzle-assignment-polish.css" management/assignment.html
+          grep -q "border-radius: 0" management/puzzle-assignment-polish.css
+          grep -q "assignment-admin-card" management/puzzle-assignment-polish.css
+          grep -q "assignment-management-summary" management/puzzle-assignment-polish.css
+          grep -q "assignment-progress-track" management/puzzle-assignment-polish.css
+          grep -q "puzzle-assignment-lifecycle.mjs" management/js/teacher-shell.mjs
+
+      - name: Check whitespace
+        run: git diff --check origin/main...HEAD

@@ -8,6 +8,19 @@
   <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
   <link rel="stylesheet" href="./management.css?v=20260726-puzzle-assignments1">
   <link rel="stylesheet" href="./puzzle-assignments.css?v=20260726-puzzle-assignments1">
+  <link rel="stylesheet" href="./puzzle-assignment-polish.css?v=20260726-assignment-management2">
+  <style>
+    .assignment-square,
+    .assignment-square:hover {
+      animation: none !important;
+      transition: none !important;
+    }
+    .assignment-square:hover::before {
+      content: none !important;
+      animation: none !important;
+      box-shadow: none !important;
+    }
+  </style>
 </head>
 <body class="assignment-page">
   <div id="assignmentLoading" class="assignment-loading" aria-live="polite">
@@ -24,7 +37,7 @@
         <h1 id="assignmentTitle">Puzzle assignment</h1>
         <p id="assignmentInstructions" class="muted"></p>
       </div>
-      <div class="assignment-header-meta">
+      <div class="assignment-header-meta" aria-label="Assignment progress">
         <span id="assignmentProgress" class="chip">Puzzle 1</span>
         <span id="assignmentScore" class="chip">Score 0%</span>
         <span id="assignmentDue" class="chip">No due date</span>
@@ -55,7 +68,7 @@
           </div>
         </section>
 
-        <section class="assignment-card">
+        <section class="assignment-card assignment-scoring-card">
           <h3>How scoring works</h3>
           <p class="muted">The score is based on clean first-attempt solves. A valid alternative move is accepted when it preserves the position's objective.</p>
         </section>
