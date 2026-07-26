@@ -1,0 +1,48 @@
+name: Remove Lichess training header copy
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - '.github/workflows/remove-lichess-training-header-copy.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    if: github.event.pull_request.head.ref == 'agent/remove-lichess-training-header-copy'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Remove header copy and refresh cache keys
+        run: python scripts/remove-lichess-training-header-copy.py
+
+      - name: Validate change
+        run: |
+          node --check lichess-position-training.mjs
+          node --check focus-analysis-popup.mjs
+          ! grep -Fq 'Play the position, preserve the objective, and face dynamic defence.' lichess-position-training.mjs
+          ! grep -Fq 'No stored continuation is treated as the only correct line.' lichess-position-training.mjs
+          grep -Fq "lichess-position-training.mjs?v=20260726-header-copy2" focus-analysis-popup.mjs
+          grep -Fq 'focus-analysis-popup.mjs?v=20260726-training-copy1' index.html
+          git diff --check
+
+      - name: Commit product changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lichess-position-training.mjs focus-analysis-popup.mjs index.html
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo 'Header copy is already removed.'
+          else
+            git commit -m "Remove Lichess training header copy"
+            git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          fi
