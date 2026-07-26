@@ -26,6 +26,19 @@ jobs:
           python scripts/update-study-docs-lessons.py
           git diff --check
 
+      - name: Commit generated documentation
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md ARCHITECTURE.md USER_GUIDE.md LESSON_DATA_ARCHITECTURE.md LESSON_VARIATIONS_AND_MAIN_LINES.md
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo 'Documentation is already generated.'
+          else
+            git commit -m "Update Study variation documentation"
+            git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          fi
+
       - name: Validate README documentation
         run: |
           grep -Fq 'recursive move tree: the first continuation becomes the main line' README.md
@@ -42,11 +55,14 @@ jobs:
             exit 1
           fi
 
-      - name: Validate architecture module inventory
-        run: |
-          grep -Fq 'lesson-model.mjs`, `lesson-migrations.mjs`, and `lesson-position-adapter.mjs' ARCHITECTURE.md
-          grep -Fq '├── lesson-variation-tree.mjs' ARCHITECTURE.md
-          grep -Fq '| `lesson-variation-tree.mjs` | Preferred-child lookup' ARCHITECTURE.md
+      - name: Validate architecture module list
+        run: grep -Fq 'lesson-model.mjs`, `lesson-migrations.mjs`, and `lesson-position-adapter.mjs' ARCHITECTURE.md
+
+      - name: Validate architecture repository map
+        run: grep -Fq '├── lesson-variation-tree.mjs' ARCHITECTURE.md
+
+      - name: Validate architecture responsibility table
+        run: grep -Fq '| `lesson-variation-tree.mjs` | Preferred-child lookup' ARCHITECTURE.md
 
       - name: Validate architecture tab contracts
         run: |
@@ -75,12 +91,3 @@ jobs:
           node --test tests/lesson-data-foundation.test.mjs
           node --test tests/lesson-position-interoperability.test.mjs
           node --test tests/lesson-variation-tree.test.mjs
-
-      - name: Commit documentation updates
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md ARCHITECTURE.md USER_GUIDE.md LESSON_DATA_ARCHITECTURE.md LESSON_VARIATIONS_AND_MAIN_LINES.md
-          git diff --cached --check
-          git commit -m "Update Study variation documentation"
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}
