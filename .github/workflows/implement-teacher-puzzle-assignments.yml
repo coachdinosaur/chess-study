@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - agent/teacher-puzzle-assignments
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
