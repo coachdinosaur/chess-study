@@ -1,0 +1,8 @@
+Baseline preserved: 500/500
+New unique puzzles: 500
+Production puzzles: 1000
+Production shards: 40
+Unique IDs: 1000
+Unique starting positions: 1000
+First new puzzle: 000Pw
+Last new puzzle: 00f7K

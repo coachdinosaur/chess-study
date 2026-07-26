@@ -1,10 +1,10 @@
 {
   "format": 1,
-  "generatedAt": "2026-07-25T22:53:00.672Z",
+  "generatedAt": "2026-07-26T03:31:37.773Z",
   "source": "Lichess puzzle database",
   "trainingModel": "position-objective-dynamic-defence",
   "exactLineRequired": false,
-  "count": 500,
+  "count": 1000,
   "shardSize": 25,
   "filters": {
     "minRating": 0,
@@ -95,6 +95,86 @@
     },
     {
       "file": "shard-0019.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0020.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0021.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0022.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0023.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0024.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0025.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0026.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0027.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0028.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0029.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0030.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0031.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0032.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0033.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0034.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0035.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0036.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0037.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0038.json",
+      "count": 25
+    },
+    {
+      "file": "shard-0039.json",
       "count": 25
     }
   ]
