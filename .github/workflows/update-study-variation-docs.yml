@@ -42,14 +42,20 @@ jobs:
             exit 1
           fi
 
-      - name: Validate architecture documentation
+      - name: Validate architecture module inventory
         run: |
           grep -Fq 'lesson-model.mjs`, `lesson-migrations.mjs`, and `lesson-position-adapter.mjs' ARCHITECTURE.md
           grep -Fq '├── lesson-variation-tree.mjs' ARCHITECTURE.md
           grep -Fq '| `lesson-variation-tree.mjs` | Preferred-child lookup' ARCHITECTURE.md
+
+      - name: Validate architecture tab contracts
+        run: |
           grep -Fq '| Study | `TAB_STUDY` | Lesson review, explicit main-line selection' ARCHITECTURE.md
           grep -Fq '| Position Sets | `TAB_LESSONS` | CSV/XLSX Position Set Builder' ARCHITECTURE.md
           grep -Fq 'Entering Position Sets (`TAB_LESSONS`)' ARCHITECTURE.md
+
+      - name: Validate architecture lesson-tree semantics
+        run: |
           grep -Fq '`lesson-variation-tree.mjs` owns preferred-continuation semantics' ARCHITECTURE.md
           grep -Fq 'recursive export suppresses the initial sibling scan' ARCHITECTURE.md
 
