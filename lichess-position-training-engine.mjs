@@ -185,6 +185,31 @@ export class PositionTrainingEvaluator {
     const game = new Chess(fen);
     const sideToMove = game.turn();
 
+    if (game.isCheckmate()) {
+      const solverWon = sideToMove !== solverColor;
+      return {
+        source: 'terminal',
+        outcome: solverWon ? 'win' : 'loss',
+        solverScore: { type: 'mate', value: solverWon ? 1 : -1 },
+        category: 'checkmate',
+        bestMove: '',
+        depth: 0,
+        pv: [],
+      };
+    }
+
+    if (game.isDraw()) {
+      return {
+        source: 'terminal',
+        outcome: 'draw',
+        solverScore: { type: 'cp', value: 0 },
+        category: 'draw',
+        bestMove: '',
+        depth: 0,
+        pv: [],
+      };
+    }
+
     if (countPieces(fen) <= 7) {
       try {
         const data = await fetchTablebase(fen);
