@@ -20,7 +20,12 @@ jobs:
           fetch-depth: 0
 
       - name: Apply guarded implementation
-        run: python scripts/implement-study-variations.py
+        run: |
+          python scripts/implement-study-variations.py
+          git restore --source=HEAD -- \
+            .github/workflows/lesson-interoperability-tests.yml \
+            .github/workflows/build-study-mainline-controls.yml \
+            scripts/implement-study-variations.py
 
       - name: Validate finished implementation
         run: |
