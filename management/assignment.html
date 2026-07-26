@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Student Puzzle Assignment | CD Digital Chess</title>
+  <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
+  <link rel="stylesheet" href="./management.css?v=20260726-puzzle-assignments1">
+  <link rel="stylesheet" href="./puzzle-assignments.css?v=20260726-puzzle-assignments1">
+</head>
+<body class="assignment-page">
+  <div id="assignmentLoading" class="assignment-loading" aria-live="polite">
+    <h1>Loading puzzle assignment</h1>
+    <p>Preparing the exact positions selected by your teacher…</p>
+  </div>
+
+  <div id="assignmentError" class="assignment-error" role="alert" hidden></div>
+
+  <main id="assignmentShell" class="assignment-shell" hidden>
+    <header class="assignment-header">
+      <div class="assignment-header-copy">
+        <span id="assignmentStudent" class="muted">Student</span>
+        <h1 id="assignmentTitle">Puzzle assignment</h1>
+        <p id="assignmentInstructions" class="muted"></p>
+      </div>
+      <div class="assignment-header-meta">
+        <span id="assignmentProgress" class="chip">Puzzle 1</span>
+        <span id="assignmentScore" class="chip">Score 0%</span>
+        <span id="assignmentDue" class="chip">No due date</span>
+      </div>
+    </header>
+
+    <section class="assignment-workspace">
+      <div class="assignment-board-column">
+        <div id="assignmentBoardWrap" class="assignment-board-wrap">
+          <div id="assignmentBoard" class="assignment-board" aria-label="Student puzzle board"></div>
+        </div>
+      </div>
+
+      <aside id="assignmentSidePanel" class="assignment-side-panel">
+        <section class="assignment-card">
+          <h2>Position</h2>
+          <div id="assignmentPositionMeta" class="assignment-stat-grid"></div>
+          <div id="assignmentThemes" class="assignment-theme-list"></div>
+        </section>
+
+        <section class="assignment-card">
+          <h2>Coach feedback</h2>
+          <p id="assignmentFeedback" class="assignment-feedback info" aria-live="polite">Preparing the position…</p>
+          <div class="assignment-actions">
+            <button id="assignmentHintButton" class="button-secondary" type="button">Hint</button>
+            <button id="assignmentResetButton" class="button-secondary" type="button">Reset position</button>
+            <button id="assignmentNextButton" class="button" type="button" hidden>Next puzzle</button>
+          </div>
+        </section>
+
+        <section class="assignment-card">
+          <h3>How scoring works</h3>
+          <p class="muted">The score is based on clean first-attempt solves. A valid alternative move is accepted when it preserves the position's objective.</p>
+        </section>
+      </aside>
+    </section>
+
+    <section id="assignmentResults" class="assignment-results" hidden></section>
+  </main>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script type="module" src="./js/puzzle-assignment-student.mjs?v=20260726-puzzle-assignments1"></script>
+</body>
+</html>
