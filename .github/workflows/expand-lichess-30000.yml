@@ -1,0 +1,270 @@
+name: Expand Lichess puzzle library to 30000
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/expand-lichess-30000.yml
+  push:
+    branches:
+      - agent/add-20000-more-lichess-puzzles
+    paths:
+      - .github/workflows/expand-lichess-30000.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  expand:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Check out expansion branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/add-20000-more-lichess-puzzles
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install streaming decompressor
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y zstd
+
+      - name: Prepare proven expansion generator
+        shell: bash
+        run: |
+          mkdir -p scripts
+          curl --fail --location --retry 3 --silent --show-error \
+            https://raw.githubusercontent.com/coachdinosaur/chess-study/cb8ff0a8d549f13af85380c5d4315c3a1ec75be7/scripts/expand-lichess-5000.mjs \
+            --output scripts/expand-lichess-30000.mjs
+          sed -i \
+            -e 's/const START_COUNT = 2000;/const START_COUNT = 10000;/' \
+            -e 's/const ADD_COUNT = 3000;/const ADD_COUNT = 20000;/' \
+            -e 's/Lichess 5,000-puzzle/Lichess 30,000-puzzle/g' \
+            -e 's/lichess-5000-/lichess-30000-/g' \
+            scripts/expand-lichess-30000.mjs
+          grep -q 'const START_COUNT = 10000;' scripts/expand-lichess-30000.mjs
+          grep -q 'const ADD_COUNT = 20000;' scripts/expand-lichess-30000.mjs
+
+      - name: Generate 20,000 additional puzzles
+        shell: bash
+        run: |
+          mkdir -p proof/logs
+          set +e
+          set +o pipefail
+          curl --fail --location --retry 3 --silent --show-error \
+            https://database.lichess.org/lichess_db_puzzle.csv.zst \
+            | zstd -dc \
+            | node scripts/expand-lichess-30000.mjs 2>&1 \
+            | tee proof/logs/lichess-30000-generator-output.txt
+          statuses=("${PIPESTATUS[@]}")
+          set -e
+          set -o pipefail
+          if [ "${statuses[2]}" -ne 0 ]; then
+            echo "Generator failed with exit code ${statuses[2]}."
+            exit "${statuses[2]}"
+          fi
+          if [ "${statuses[3]}" -ne 0 ]; then
+            echo "Generator log capture failed with exit code ${statuses[3]}."
+            exit "${statuses[3]}"
+          fi
+
+      - name: Validate all 30,000 records
+        run: |
+          node scripts/expand-lichess-30000.mjs --validate-only \
+            | tee proof/logs/lichess-30000-validator-output.txt
+
+      - name: Run trainer and assignment tests
+        shell: bash
+        run: |
+          mapfile -t test_files < <(find tests -maxdepth 1 -type f \
+            \( -name '*lichess-position-training*.test.mjs' -o -name 'puzzle-assignment-core.test.mjs' \) \
+            | sort)
+          if [ "${#test_files[@]}" -eq 0 ]; then
+            echo "No matching tests found."
+            exit 1
+          fi
+          node --test "${test_files[@]}" \
+            | tee proof/logs/lichess-30000-tests-output.txt
+
+      - name: Update documentation for mini soft launch
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_required(path, old, new, minimum=1):
+              file = Path(path)
+              text = file.read_text(encoding='utf-8')
+              count = text.count(old)
+              if count < minimum:
+                  raise SystemExit(f'{path}: missing expected text: {old!r}')
+              file.write_text(text.replace(old, new), encoding='utf-8')
+
+          replace_required(
+              'README.md',
+              'current production library of 10,000 validated Lichess-derived positions',
+              'current production library of 30,000 validated Lichess-derived positions',
+          )
+          replace_required(
+              'README.md',
+              'backed by 10,000 validated Lichess-derived positions in 400 shards of 25 records',
+              'backed by 30,000 validated Lichess-derived positions in 1,200 shards of 25 records',
+          )
+          replace_required(
+              'README.md',
+              'Production manifest and 400 immutable 25-puzzle shards (10,000 positions)',
+              'Production manifest and 1,200 immutable 25-puzzle shards (30,000 positions)',
+          )
+          replace_required(
+              'README.md',
+              '- [LICHESS_POSITION_TRAINING.md](LICHESS_POSITION_TRAINING.md)\n- [LOCAL_DEPLOYMENT.md](LOCAL_DEPLOYMENT.md)',
+              '- [LICHESS_POSITION_TRAINING.md](LICHESS_POSITION_TRAINING.md)\n- [MINI_SOFT_LAUNCH.md](MINI_SOFT_LAUNCH.md)\n- [LOCAL_DEPLOYMENT.md](LOCAL_DEPLOYMENT.md)',
+          )
+
+          replace_required(
+              'USER_GUIDE.md',
+              '10,000 Lichess-derived positions',
+              '30,000 Lichess-derived positions',
+          )
+
+          replace_required(
+              'ARCHITECTURE.md',
+              'plus 400 shard files',
+              'plus 1,200 shard files',
+          )
+          replace_required(
+              'ARCHITECTURE.md',
+              '- 10,000 puzzles',
+              '- 30,000 puzzles',
+          )
+          replace_required(
+              'ARCHITECTURE.md',
+              '- 400 sequential shards',
+              '- 1,200 sequential shards',
+          )
+
+          replace_required(
+              'management/README.md',
+              'currently 10,000 puzzles across 400 shards',
+              'currently 30,000 puzzles across 1,200 shards',
+          )
+
+          replace_required(
+              'LICHESS_POSITION_TRAINING.md',
+              '10,000',
+              '30,000',
+              minimum=2,
+          )
+          replace_required(
+              'LICHESS_POSITION_TRAINING.md',
+              '| Shards | 400 |',
+              '| Shards | 1,200 |',
+          )
+          replace_required(
+              'LICHESS_POSITION_TRAINING.md',
+              '| Last shard | `shard-0399.json` |',
+              '| Last shard | `shard-1199.json` |',
+          )
+          replace_required(
+              'LICHESS_POSITION_TRAINING.md',
+              'lichess-10000-',
+              'lichess-30000-',
+          )
+
+          launch = '''# Mini Soft Launch: 30,000 Lichess Puzzles
+
+The 30,000-puzzle release is the mini soft-launch baseline for Lichess Position Training and teacher-managed puzzle assignments.
+
+## Launch scope
+
+The mini soft launch is intended for a limited group of real teachers and students rather than broad public promotion. It validates the complete production path with manageable exposure:
+
+- 30,000 validated Lichess-derived positions;
+- 1,200 immutable shards with 25 positions each;
+- manifest-driven library count and on-demand shard loading;
+- fixed and adaptive training modes;
+- progressive hints and Mistake Review;
+- terminal checkmate and draw grading before engine evaluation;
+- stable desktop, tablet, and mobile trainer layouts;
+- teacher-generated assignments with frozen puzzle snapshots;
+- secure per-student links, progress tracking, archive/restore, duplication, and permanent deletion.
+
+## Readiness checks before inviting users
+
+1. Confirm `main` reports 30,000 puzzles and 1,200 shards.
+2. Confirm the deployed trainer displays “30,000 Lichess puzzles available.”
+3. Sample positions across low, medium, and high ratings and multiple themes.
+4. Verify a delivered checkmate succeeds immediately without an engine request.
+5. Verify board dimensions remain unchanged before and after feedback.
+6. Generate, preview, publish, and complete a teacher assignment using a test student.
+7. Verify assignment progress and scores appear in the teacher dashboard.
+8. Verify archive, restore, duplicate, replacement-link, and permanent-delete behavior.
+9. Test Firefox and Chromium on desktop plus at least one phone or tablet.
+10. Confirm Supabase migration 010, RLS, backups, and production configuration are active.
+
+## What to monitor
+
+During the mini soft launch, collect:
+
+- puzzle IDs reported as incorrectly graded;
+- engine or tablebase failures and response times;
+- filters that return no matching position;
+- board resizing, overflow, or mobile interaction defects;
+- assignment-link, publication, and progress-sync failures;
+- browser storage and IndexedDB cache problems;
+- teacher and student confusion about objectives, hints, or results.
+
+Record the exact puzzle ID, browser, device, move played, and screenshot for any grading report. “It failed somehow” is emotionally valid but diagnostically decorative.
+
+## Boundaries
+
+- Free-trainer learning progress is browser-local, not account-synchronized.
+- Student assignment progress is stored in Supabase and requires the private assignment link.
+- The main library can expand without changing already-published frozen assignments.
+- Merging the dataset does not by itself confirm that the public deployment has finished.
+- This milestone is a limited operational test, not a claim that every commercial, legal, support, monitoring, and recovery requirement is complete.
+'''
+          Path('MINI_SOFT_LAUNCH.md').write_text(launch, encoding='utf-8')
+          PY
+
+      - name: Check final dataset and documentation
+        shell: bash
+        run: |
+          git diff --check
+          node - <<'NODE'
+          const manifest = require('./assets/puzzles/lichess-position-training/manifest.json');
+          if (manifest.count !== 30000) throw new Error(`Expected 30000 puzzles, found ${manifest.count}`);
+          if (manifest.shards.length !== 1200) throw new Error(`Expected 1200 shards, found ${manifest.shards.length}`);
+          if (manifest.shardSize !== 25) throw new Error(`Expected shard size 25, found ${manifest.shardSize}`);
+          if (manifest.shards[0]?.file !== 'shard-0000.json') throw new Error('Unexpected first shard.');
+          if (manifest.shards.at(-1)?.file !== 'shard-1199.json') throw new Error('Unexpected final shard.');
+          console.log('Puzzles:', manifest.count, 'Shards:', manifest.shards.length);
+          NODE
+          test -f assets/puzzles/lichess-position-training/shard-0400.json
+          test -f assets/puzzles/lichess-position-training/shard-1199.json
+          test -f MINI_SOFT_LAUNCH.md
+          grep -q '30,000' README.md
+          grep -q '30,000' USER_GUIDE.md
+          grep -q '30,000' ARCHITECTURE.md
+          grep -q '30,000' management/README.md
+          grep -q '30,000' LICHESS_POSITION_TRAINING.md
+
+      - name: Commit production dataset and remove temporary machinery
+        shell: bash
+        run: |
+          rm scripts/expand-lichess-30000.mjs
+          rm .github/workflows/expand-lichess-30000.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "Add 20000 more Lichess puzzles for mini soft launch"
+          git push origin HEAD:agent/add-20000-more-lichess-puzzles
