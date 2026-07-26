@@ -12,11 +12,12 @@ import { PositionTrainingEvaluator } from './lichess-position-training-engine.mj
 import { LichessPositionTrainingDataSource } from './lichess-position-training-data.mjs';
 import { PositionTrainingLearning } from './lichess-position-training-learning.mjs';
 
-const STYLE_URL = './lichess-position-training-desktop-fit.css?v=20260726-visual-redesign3';
+const STYLE_URL = './lichess-position-training-desktop-fit.css?v=20260726-library-count1';
 const STATS_KEY = 'lichess-position-training-stats-v1';
 const PREFS_KEY = 'lichess-position-training-prefs-v1';
 const HISTORY_KEY = 'lichess-position-training-history-v1';
 const HISTORY_MAX = 200;
+const PUZZLE_COUNT_FORMATTER = new Intl.NumberFormat('en-US');
 
 const PIECE_ASSETS = Object.freeze({
   w: Object.freeze({
@@ -166,6 +167,9 @@ class PositionTrainingController {
     this.lastVerdict = null;
     this.pendingPromotion = null;
     this.busy = false;
+    this.libraryCount = null;
+    this.libraryCountStatus = 'loading';
+    this.libraryMetadataPromise = null;
     this.completed = false;
     this.feedback = { kind: 'info', text: 'Choose a position to begin.' };
     this.overlay = null;
@@ -185,6 +189,7 @@ class PositionTrainingController {
             <p class="position-training-eyebrow">Separate puzzle mode</p>
             <h2 id="positionTrainingTitle">Lichess Position Training</h2>
             <p>Play the position, preserve the objective, and face dynamic defence. No stored continuation is treated as the only correct line.</p>
+            <p class="position-training-library-count" data-pt-library-count data-state="loading" aria-live="polite">Loading puzzle library…</p>
           </div>
           <button type="button" class="position-training-icon-button" data-pt-action="close" aria-label="Close position training">×</button>
         </header>
@@ -265,10 +270,42 @@ class PositionTrainingController {
 
   async open() {
     this.ensureOverlay();
+    this.loadLibraryMetadata();
     this.overlay.hidden = false;
     document.body.classList.add('position-training-open');
     document.addEventListener('keydown', this.boundKeydown);
     if (!this.current) await this.loadNext();
+  }
+
+  async loadLibraryMetadata() {
+    if (this.libraryCountStatus === 'ready') {
+      this.#renderLibraryCount();
+      return this.libraryCount;
+    }
+    if (this.libraryMetadataPromise) return this.libraryMetadataPromise;
+
+    this.libraryCountStatus = 'loading';
+    this.#renderLibraryCount();
+    this.libraryMetadataPromise = this.dataSource.initialize()
+      .then((manifest) => {
+        const declaredCount = Number(manifest?.count);
+        const shardCount = Array.isArray(manifest?.shards)
+          ? manifest.shards.reduce((total, shard) => total + Math.max(0, Number(shard?.count) || 0), 0)
+          : 0;
+        this.libraryCount = Number.isFinite(declaredCount) && declaredCount > 0 ? declaredCount : shardCount;
+        this.libraryCountStatus = this.libraryCount > 0 ? 'ready' : 'unavailable';
+        return this.libraryCount;
+      })
+      .catch(() => {
+        this.libraryCount = null;
+        this.libraryCountStatus = 'unavailable';
+        return null;
+      })
+      .finally(() => {
+        this.libraryMetadataPromise = null;
+        this.#renderLibraryCount();
+      });
+    return this.libraryMetadataPromise;
   }
 
   close() {
@@ -599,7 +636,24 @@ class PositionTrainingController {
     }
   }
 
+  #renderLibraryCount() {
+    let text = 'Loading puzzle library…';
+    if (this.libraryCountStatus === 'ready') {
+      text = `${PUZZLE_COUNT_FORMATTER.format(this.libraryCount)} Lichess puzzles available`;
+    } else if (this.libraryCountStatus === 'unavailable') {
+      text = 'Puzzle library count unavailable';
+    }
+    for (const element of document.querySelectorAll('[data-pt-library-count]')) {
+      element.textContent = text;
+      element.dataset.state = this.libraryCountStatus;
+      element.title = this.libraryCountStatus === 'ready'
+        ? 'Total validated Lichess positions installed in this app'
+        : text;
+    }
+  }
+
   render() {
+    this.#renderLibraryCount();
     if (!this.overlay) return;
     this.#renderBoard();
     const feedback = this.overlay.querySelector('[data-pt-feedback]');
@@ -744,11 +798,13 @@ function installLauncher() {
       <p class="position-training-eyebrow">Independent mode</p>
       <h3>Lichess Position Training</h3>
       <p>Train against dynamic defence with adaptive difficulty, progressive hints, mistake review, explanations, and theme performance tracking. The existing Endgame vs Stockfish trainer remains unchanged.</p>
+      <p class="position-training-library-count" data-pt-library-count data-state="loading" aria-live="polite">Loading puzzle library…</p>
     </div>
     <button type="button" class="action-button primary">Open position training</button>
   `;
   launcher.querySelector('button').addEventListener('click', () => controller.open());
   panel.prepend(launcher);
+  controller.loadLibraryMetadata();
 }
 
 ensureStyles();
