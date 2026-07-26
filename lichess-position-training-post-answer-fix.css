@@ -1,0 +1,54 @@
+@import url('./lichess-position-training-desktop-fit.css?v=20260726-terminal-layout1');
+
+/*
+ * Keep all main-column content in the same explicit grid column. Without this,
+ * the visible explanation can create an implicit second column after a move,
+ * collapsing the board and action row into a narrow strip.
+ */
+.position-training-coordinate {
+  font-size: clamp(0.42rem, 0.8vw, 0.62rem);
+  font-weight: 780;
+}
+
+@media (min-width: 861px) {
+  .position-training-main {
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+  }
+
+  .position-training-board-wrap,
+  .position-training-feedback,
+  .position-training-explanation,
+  .position-training-actions {
+    grid-column: 1;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .position-training-board-wrap {
+    justify-self: center;
+  }
+
+  .position-training-feedback,
+  .position-training-explanation {
+    overflow-wrap: anywhere;
+  }
+
+  .position-training-actions {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    width: 100%;
+  }
+
+  .position-training-actions button[data-pt-action='next'] {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 860px) {
+  .position-training-coordinate {
+    font-size: clamp(0.4rem, 1.5vw, 0.58rem);
+  }
+}
