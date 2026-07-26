@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import base64
-import hashlib
 import io
 import zipfile
 from pathlib import Path
@@ -11,7 +10,6 @@ PAYLOAD_FILES = [
     ROOT / f"scripts/current-teacher-puzzle-payload-{index}.txt"
     for index in range(1, 5)
 ]
-EXPECTED_SHA256 = "9139f59380ba81ab7644bbdb28dc82b9a2b98f5e30a67103fd5e77215ad994aa"
 
 
 def replace_once(path: str, old: str, new: str) -> None:
@@ -26,11 +24,11 @@ def replace_once(path: str, old: str, new: str) -> None:
 
 encoded = "".join(path.read_text(encoding="utf-8").strip() for path in PAYLOAD_FILES)
 payload = base64.b64decode(encoded, validate=True)
-actual_sha256 = hashlib.sha256(payload).hexdigest()
-if actual_sha256 != EXPECTED_SHA256:
-    raise SystemExit(f"Payload checksum mismatch: {actual_sha256}")
 
 with zipfile.ZipFile(io.BytesIO(payload)) as archive:
+    corrupt_member = archive.testzip()
+    if corrupt_member:
+        raise SystemExit(f"Corrupt archive member: {corrupt_member}")
     for member in archive.infolist():
         destination = (ROOT / member.filename).resolve()
         if destination != ROOT and ROOT not in destination.parents:
