@@ -240,9 +240,16 @@
     align-items: stretch;
   }
 
+  /*
+   * Keep the board dimensions stable. Feedback and the optional explanation
+   * share one fixed response track, so revealing more text scrolls internally
+   * instead of stealing height from the chessboard.
+   */
   .position-training-main {
     display: grid;
-    grid-template-rows: minmax(0, 1fr) auto auto auto;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) 8.6rem auto;
+    row-gap: 0.5rem;
     min-width: 0;
     min-height: 0;
     overflow: hidden;
@@ -250,6 +257,7 @@
   }
 
   .position-training-board-wrap {
+    grid-row: 1;
     width: auto;
     height: 100%;
     max-width: 100%;
@@ -266,16 +274,38 @@
   }
 
   .position-training-feedback {
-    margin-top: 0.65rem;
+    box-sizing: border-box;
+    grid-row: 2;
+    align-self: start;
+    width: 100%;
+    height: 3.2rem;
+    min-height: 3.2rem;
+    margin: 0;
+    overflow: auto;
+    display: flex;
+    align-items: center;
   }
 
   .position-training-explanation {
-    max-height: 7rem;
+    box-sizing: border-box;
+    grid-row: 2;
+    align-self: end;
+    width: 100%;
+    height: 4.8rem;
+    max-height: 4.8rem;
+    margin: 0;
     overflow: auto;
   }
 
+  .position-training-explanation[hidden] {
+    display: block !important;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
   .position-training-actions {
-    margin-top: 0.5rem;
+    grid-row: 3;
+    margin-top: 0;
   }
 
   .position-training-sidebar {
@@ -308,8 +338,20 @@
     padding: 0.75rem;
   }
 
+  .position-training-main {
+    grid-template-rows: minmax(0, 1fr) 7.6rem auto;
+    row-gap: 0.4rem;
+  }
+
   .position-training-feedback {
-    padding: 0.58rem 0.72rem;
+    height: 2.8rem;
+    min-height: 2.8rem;
+    padding: 0.5rem 0.7rem;
+  }
+
+  .position-training-explanation {
+    height: 4.35rem;
+    max-height: 4.35rem;
   }
 
   .position-training-actions {
@@ -329,6 +371,10 @@
 @media (max-width: 860px) {
   .position-training-board-wrap {
     width: 100%;
+  }
+
+  .position-training-explanation[hidden] {
+    display: none !important;
   }
 
   .position-training-actions button[data-pt-action='next'] {
