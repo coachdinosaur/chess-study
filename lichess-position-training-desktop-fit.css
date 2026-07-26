@@ -1,3 +1,5 @@
+@import url('./lichess-position-training.css?v=20260726-assignment-sizing1');
+
 @media (min-width: 861px) {
   .position-training-dialog {
     width: min(1280px, calc(100vw - 2rem));
