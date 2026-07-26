@@ -20,6 +20,16 @@
     0 0.85rem 2rem color-mix(in srgb, var(--board-shadow-primary) 72%, transparent);
 }
 
+/* Do not animate or decorate squares merely because the pointer passes over them. */
+.position-training-square {
+  transition: none;
+}
+
+.position-training-square:hover::before {
+  content: none;
+  box-shadow: none;
+}
+
 .position-training-header {
   background: var(--modal-bg);
   backdrop-filter: none;
