@@ -1,1 +1,0 @@
-Trigger the one-use workflow that makes the Position Study launcher wording consistent.

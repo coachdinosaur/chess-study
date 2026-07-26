@@ -638,7 +638,7 @@ class PositionTrainingController {
   #renderLibraryCount() {
     let text = 'Loading puzzle library…';
     if (this.libraryCountStatus === 'ready') {
-      text = `${PUZZLE_COUNT_FORMATTER.format(this.libraryCount)} Lichess puzzles available`;
+      text = `${PUZZLE_COUNT_FORMATTER.format(this.libraryCount)} positions available`;
     } else if (this.libraryCountStatus === 'unavailable') {
       text = 'Puzzle library count unavailable';
     }
@@ -795,11 +795,11 @@ function installLauncher() {
   launcher.innerHTML = `
     <div>
       <p class="position-training-eyebrow">Independent mode</p>
-      <h3>Lichess Position Training</h3>
+      <h3>Position Study</h3>
       <p>Train against dynamic defence with adaptive difficulty, progressive hints, mistake review, explanations, and theme performance tracking. The existing Endgame vs Stockfish trainer remains unchanged.</p>
       <p class="position-training-library-count" data-pt-library-count data-state="loading" aria-live="polite">Loading puzzle library…</p>
     </div>
-    <button type="button" class="action-button primary">Open position training</button>
+    <button type="button" class="action-button primary">Open position study</button>
   `;
   launcher.querySelector('button').addEventListener('click', () => controller.open());
   panel.prepend(launcher);
