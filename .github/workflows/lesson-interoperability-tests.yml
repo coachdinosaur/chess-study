@@ -6,7 +6,9 @@ on:
       - 'lesson-model.mjs'
       - 'lesson-migrations.mjs'
       - 'lesson-position-adapter.mjs'
+      - 'lesson-position-export-validation.mjs'
       - 'lesson-position-interoperability-core.mjs'
+      - 'lesson-position-interoperability-export-guard.mjs'
       - 'lesson-position-interoperability.mjs'
       - 'focus-analysis-popup.mjs'
       - 'tests/lesson-*.test.mjs'
@@ -20,7 +22,9 @@ on:
       - 'lesson-model.mjs'
       - 'lesson-migrations.mjs'
       - 'lesson-position-adapter.mjs'
+      - 'lesson-position-export-validation.mjs'
       - 'lesson-position-interoperability-core.mjs'
+      - 'lesson-position-interoperability-export-guard.mjs'
       - 'lesson-position-interoperability.mjs'
       - 'focus-analysis-popup.mjs'
       - 'tests/lesson-*.test.mjs'
@@ -42,7 +46,9 @@ jobs:
           node --check lesson-model.mjs
           node --check lesson-migrations.mjs
           node --check lesson-position-adapter.mjs
+          node --check lesson-position-export-validation.mjs
           node --check lesson-position-interoperability-core.mjs
+          node --check lesson-position-interoperability-export-guard.mjs
           node --check lesson-position-interoperability.mjs
           node --check focus-analysis-popup.mjs
 
