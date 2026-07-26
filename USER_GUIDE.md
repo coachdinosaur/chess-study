@@ -31,7 +31,7 @@ Use the board to:
 - play legal moves in **Analysis**;
 - review recorded moves in **Study**;
 - play against Stockfish in **Play**;
-- solve endgame puzzles in **Puzzle**.
+- solve endgame puzzles or train on Lichess-derived positions in **Puzzle**.
 
 ### 3. The tools panel
 
@@ -41,7 +41,7 @@ The tools panel contains the main working tabs:
 - **Setup**: create or change the starting position.
 - **Analysis**: play moves, use Stockfish, practice, and annotate.
 - **Play**: play a complete game against Stockfish.
-- **Puzzle**: solve endgame puzzles.
+- **Puzzle**: choose the legacy Endgame Puzzle mode or the separate Lichess Position Training mode.
 - **Lessons**: create, edit, import, export, and load prepared FEN position sets.
 
 If the tools panel is missing:
@@ -72,6 +72,8 @@ Use these exact paths when you know what you want to do.
 - Browse published course lessons: open the **Lesson index** from the app/site navigation
 - Open a floating board while reading a supported lesson: click **Teacher Board** in the lesson header
 - Start a synchronized teacher/student room: open **Live Board** (`live-board.html`)
+- Open Lichess Position Training: **Tools → Puzzle → Lichess Position Training**
+- Open a teacher puzzle assignment: use the private assignment link sent by the teacher
 - Start engine analysis: click **Analyze** beside the three-dot menu
 - Stop engine analysis: click **Stop** in the same place
 - Flip the board: use **Flip board** in the current tools tab
@@ -577,9 +579,13 @@ During a game, the panel shows clocks and provides controls such as Resign and O
 
 ---
 
-# Endgame Puzzles
+# Puzzle Training
 
-> **Where to go:** **Tools → Puzzle**
+The Puzzle tab contains two separate modes. Progress and solving rules from one mode do not overwrite the other.
+
+## Endgame Puzzles
+
+> **Where to go:** **Tools → Puzzle → Endgame Puzzles**
 
 1. Choose an objective or select a random objective.
 2. Choose the difficulty.
@@ -587,15 +593,43 @@ During a game, the panel shows clocks and provides controls such as Resign and O
 4. Start or load a puzzle.
 5. Play your solution on the board.
 
-Possible objectives include:
+Possible objectives include checkmate, gaining a piece, and holding a draw. The panel tracks solved puzzles, failed puzzles, current streak, and best streak.
 
-- checkmate;
-- gain a piece;
-- hold the draw.
+The free-plan daily limit and premium activation apply to this legacy endgame mode.
 
-The panel tracks solved puzzles, failed puzzles, current streak, and best streak.
+## Lichess Position Training
 
-The free plan has a daily limit. Premium removes that limit when a valid activation key is entered in the Puzzle tab.
+> **Where to go:** **Tools → Puzzle → Lichess Position Training**
+
+The current production library contains **10,000 Lichess-derived positions**. The total shown in the launcher and trainer header comes from the live manifest, so it updates with future dataset expansions.
+
+1. Choose **Adaptive** difficulty or a **Fixed range**.
+2. Choose any theme, a specific motif, or the weakest recorded theme.
+3. Play a move that preserves the displayed objective.
+4. Continue against dynamic defence until the objective is completed or lost.
+5. Use **Next position** to continue, or **Review mistakes** to revisit due positions.
+
+Important behavior:
+
+- The stored Lichess continuation is not the required answer. Other moves are accepted when they preserve the required result.
+- Checkmate and terminal draws are recognized immediately before an engine request.
+- Rating and theme filters select positions from the installed shard library.
+- Hints progress from concept, to source piece, to target square, to the engine's leading candidate.
+- A mistake lowers the adaptive rating and places the position in Mistake Review.
+- Two independent clean review solves retire a mastered position.
+- Progress is saved in the current browser profile, not in an account cloud save.
+
+For deeper details, see [LICHESS_POSITION_TRAINING.md](LICHESS_POSITION_TRAINING.md).
+
+## Complete a Teacher Puzzle Assignment
+
+A teacher can send a private student assignment link. Students do not need a management-dashboard account.
+
+- Open only the complete link provided by the teacher; its private token identifies the assignment.
+- The assigned puzzle snapshots remain frozen even if the main library later expands.
+- Progress and results are saved to the assignment record.
+- An archived or permanently deleted assignment link stops working.
+- Do not post the private assignment link publicly.
 
 ---
 
