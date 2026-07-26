@@ -20,7 +20,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Update existing documentation
+      - name: Update tests and documentation
         shell: bash
         run: |
           python - <<'PY'
@@ -33,6 +33,36 @@ jobs:
               if count != 1:
                   raise SystemExit(f'{path}: expected one anchor, found {count}: {old!r}')
               file.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          replace_once(
+              'tests/lesson-data-foundation.test.mjs',
+              '''  const book = lessonBookFromPositions([
+    { id: 'same', title: 'First', fen: START_FEN, isDefault: true },
+    { id: 'same', title: 'Second', fen: E4_FEN },
+  ], { title: 'Set conversion' });
+
+  assert.deepEqual(book.lessons.map((lesson) => lesson.id), ['same', 'same-2']);
+  assert.equal(book.activeLessonId, 'same');
+
+  const positions = positionsFromLessonBook(book);
+  assert.deepEqual(positions.map((position) => position.title), ['First', 'Second']);
+  assert.deepEqual(positions.map((position) => position.fen), [START_FEN, E4_FEN]);
+  assert.deepEqual(positions.map((position) => position.id), ['same', 'same-2']);
+  assert.equal(positions[0].isDefault, true);''',
+              '''  const book = lessonBookFromPositions([
+    { id: 'same', title: 'First', fen: START_FEN },
+    { id: 'same', title: 'Second', fen: E4_FEN, isDefault: true },
+  ], { title: 'Set conversion' });
+
+  assert.deepEqual(book.lessons.map((lesson) => lesson.id), ['same', 'same-2']);
+  assert.equal(book.activeLessonId, 'same-2');
+
+  const positions = positionsFromLessonBook(book);
+  assert.deepEqual(positions.map((position) => position.title), ['First', 'Second']);
+  assert.deepEqual(positions.map((position) => position.fen), [START_FEN, E4_FEN]);
+  assert.deepEqual(positions.map((position) => position.id), ['same', 'same-2']);
+  assert.equal(positions[1].isDefault, true);'''
+          )
 
           replace_once(
               'README.md',
@@ -77,13 +107,6 @@ jobs:
 ├── lesson-migrations.mjs
 ├── lesson-position-adapter.mjs
 ├── puzzle-api.mjs'''
-          )
-          replace_once(
-              'ARCHITECTURE.md',
-              '''    ├── pgn.mjs
-    ├── puzzle-api.mjs''',
-              '''    ├── pgn.mjs
-    ├── puzzle-api.mjs'''
           )
           replace_once(
               'ARCHITECTURE.md',
