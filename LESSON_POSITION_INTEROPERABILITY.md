@@ -49,7 +49,7 @@ source_lesson_id
 source_node_id
 ```
 
-The first seven established fields keep their existing meaning. The additional fields are optional:
+The established fields keep their existing meaning. The additional fields are optional:
 
 | Column | Meaning |
 |---|---|
@@ -59,6 +59,14 @@ The first seven established fields keep their existing meaning. The additional f
 | `source_node_id` | Original move-tree node identifier |
 
 CSV and XLSX imports continue through the existing Position Set Builder. The interoperability layer reads the optional metadata columns after the established importer has loaded and validated the positions.
+
+Enhanced CSV/XLSX export retains the builder's validation gate. Export is blocked when:
+
+- the set is empty;
+- an ID is duplicated;
+- a position FEN is malformed or illegal;
+- no default position is selected;
+- more than one default position is selected.
 
 ## Storage
 
@@ -112,16 +120,25 @@ Before conversion, Stage 2 dispatches the app's existing synchronous `beforeunlo
 | File | Responsibility |
 |---|---|
 | `lesson-position-interoperability-core.mjs` | Pure metadata normalization, spreadsheet projection, app-compatible lesson conversion, draft append, and CSV metadata parsing |
+| `lesson-position-export-validation.mjs` | Pure set-level export validation for empty sets, IDs, FENs, and default selection |
+| `lesson-position-interoperability-export-guard.mjs` | Browser export gate using the app's bundled chess legality validator |
 | `lesson-position-interoperability.mjs` | Runtime labels, fields, buttons, builder integration, import/export interception, browser storage, and lesson-book activation |
-| `lesson-position-interoperability-core.mjs` | Uses Stage 1's `lesson-model.mjs` and `lesson-position-adapter.mjs` contracts |
-| `focus-analysis-popup.mjs` | Loads the Stage 2 runtime after the main app initializes |
-| `tests/lesson-position-interoperability.test.mjs` | Pure Stage 2 conversion and compatibility tests |
+| `lesson-model.mjs` / `lesson-position-adapter.mjs` | Stage 1 contracts reused by Stage 2 |
+| `focus-analysis-popup.mjs` | Loads the export guard and Stage 2 runtime after the main app initializes |
+| `tests/lesson-position-interoperability.test.mjs` | Pure Stage 2 conversion, metadata, compatibility, and export-validation tests |
+| `.github/workflows/lesson-interoperability-tests.yml` | Targeted syntax and Node test checks for Stage 1 and Stage 2 |
 
 ## Validation
 
 ```powershell
+node --check lesson-model.mjs
+node --check lesson-migrations.mjs
+node --check lesson-position-adapter.mjs
+node --check lesson-position-export-validation.mjs
 node --check lesson-position-interoperability-core.mjs
+node --check lesson-position-interoperability-export-guard.mjs
 node --check lesson-position-interoperability.mjs
+node --check focus-analysis-popup.mjs
 node --test tests/lesson-data-foundation.test.mjs
 node --test tests/lesson-position-interoperability.test.mjs
 ```
@@ -130,7 +147,7 @@ Manual browser checks should cover:
 
 1. Existing CSV import without optional columns.
 2. CSV and XLSX import with prompts, tags, and source IDs.
-3. Enhanced CSV/XLSX export.
+3. Enhanced CSV/XLSX export and each validation failure.
 4. Open selected position in Study and Analysis.
 5. Create one lesson while preserving existing lessons.
 6. Convert a full set while preserving order and selecting its default position.
