@@ -207,18 +207,18 @@ test('exports the selected tree node rather than flattening to the root', () => 
 
 test('converts an ordered position set into a lesson book and back', () => {
   const book = lessonBookFromPositions([
-    { id: 'same', title: 'First', fen: START_FEN, isDefault: true },
-    { id: 'same', title: 'Second', fen: E4_FEN },
+    { id: 'same', title: 'First', fen: START_FEN },
+    { id: 'same', title: 'Second', fen: E4_FEN, isDefault: true },
   ], { title: 'Set conversion' });
 
   assert.deepEqual(book.lessons.map((lesson) => lesson.id), ['same', 'same-2']);
-  assert.equal(book.activeLessonId, 'same');
+  assert.equal(book.activeLessonId, 'same-2');
 
   const positions = positionsFromLessonBook(book);
   assert.deepEqual(positions.map((position) => position.title), ['First', 'Second']);
   assert.deepEqual(positions.map((position) => position.fen), [START_FEN, E4_FEN]);
   assert.deepEqual(positions.map((position) => position.id), ['same', 'same-2']);
-  assert.equal(positions[0].isDefault, true);
+  assert.equal(positions[1].isDefault, true);
 });
 
 test('builds backward-compatible spreadsheet rows with optional metadata', () => {
