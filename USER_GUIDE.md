@@ -601,7 +601,7 @@ The free-plan daily limit and premium activation apply to this legacy endgame mo
 
 > **Where to go:** **Tools → Puzzle → Lichess Position Training**
 
-The current production library contains **10,000 Lichess-derived positions**. The total shown in the launcher and trainer header comes from the live manifest, so it updates with future dataset expansions.
+The current production library contains **30,000 Lichess-derived positions**. The total shown in the launcher and trainer header comes from the live manifest, so it updates with future dataset expansions.
 
 1. Choose **Adaptive** difficulty or a **Fixed range**.
 2. Choose any theme, a specific motif, or the weakest recorded theme.

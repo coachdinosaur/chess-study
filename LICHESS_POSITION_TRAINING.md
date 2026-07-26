@@ -12,11 +12,11 @@ The production manifest is `assets/puzzles/lichess-position-training/manifest.js
 
 | Property | Current value |
 |---|---:|
-| Puzzles | 10,000 |
-| Shards | 400 |
+| Puzzles | 30,000 |
+| Shards | 1,200 |
 | Records per shard | 25 |
 | First shard | `shard-0000.json` |
-| Last shard | `shard-0399.json` |
+| Last shard | `shard-1199.json` |
 | Exact stored line required | No |
 | Excluded source theme | `veryLong` |
 
@@ -54,7 +54,7 @@ Dataset expansions must:
 9. Reject exact-continuation fields.
 10. Run trainer, terminal-state, layout, adaptive-learning, and assignment-selection tests.
 
-Validation evidence for the current release is stored under `proof/lichess-10000-*.md` and `proof/logs/lichess-10000-*.txt`.
+Validation evidence for the current release is stored under `proof/lichess-30000-*.md` and `proof/logs/lichess-30000-*.txt`.
 
 ## Runtime data loading
 
@@ -62,7 +62,7 @@ Validation evidence for the current release is stored under `proof/lichess-10000
 
 Network JSON uses `cache: no-cache`. Successful responses are stored in IndexedDB database `lichess-position-training-cache-v1`, store `shards`. When a fetch fails, the loader can use the cached manifest or shard.
 
-Only a small active shard is loaded into memory. Expanding the library therefore increases static data size without requiring all 10,000 records to be downloaded at trainer startup.
+Only a small active shard is loaded into memory. Expanding the library therefore increases static data size without requiring all 30,000 records to be downloaded at trainer startup.
 
 ## Objective and move grading
 

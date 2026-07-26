@@ -60,7 +60,7 @@ Migration 010 adds teacher-owned puzzle assignments, frozen position snapshots, 
 
 ## Teacher puzzle assignments
 
-The assignment builder selects validated positions from the app's installed Lichess Position Training library, currently 10,000 puzzles across 400 shards. Generation happens before publication so the teacher can inspect or replace the frozen puzzle set.
+The assignment builder selects validated positions from the app's installed Lichess Position Training library, currently 30,000 puzzles across 1,200 shards. Generation happens before publication so the teacher can inspect or replace the frozen puzzle set.
 
 Publishing creates a separate private link for every assigned student. The browser generates random bearer tokens, while Supabase stores only SHA-256 token hashes. Students open `assignment.html` directly and do not receive teacher-dashboard credentials.
 
