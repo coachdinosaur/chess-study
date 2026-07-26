@@ -1,0 +1,52 @@
+name: Lesson interoperability tests
+
+on:
+  pull_request:
+    paths:
+      - 'lesson-model.mjs'
+      - 'lesson-migrations.mjs'
+      - 'lesson-position-adapter.mjs'
+      - 'lesson-position-interoperability-core.mjs'
+      - 'lesson-position-interoperability.mjs'
+      - 'focus-analysis-popup.mjs'
+      - 'tests/lesson-*.test.mjs'
+      - 'LESSON_DATA_ARCHITECTURE.md'
+      - 'LESSON_POSITION_INTEROPERABILITY.md'
+      - '.github/workflows/lesson-interoperability-tests.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'lesson-model.mjs'
+      - 'lesson-migrations.mjs'
+      - 'lesson-position-adapter.mjs'
+      - 'lesson-position-interoperability-core.mjs'
+      - 'lesson-position-interoperability.mjs'
+      - 'focus-analysis-popup.mjs'
+      - 'tests/lesson-*.test.mjs'
+      - '.github/workflows/lesson-interoperability-tests.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Check module syntax
+        run: |
+          node --check lesson-model.mjs
+          node --check lesson-migrations.mjs
+          node --check lesson-position-adapter.mjs
+          node --check lesson-position-interoperability-core.mjs
+          node --check lesson-position-interoperability.mjs
+          node --check focus-analysis-popup.mjs
+
+      - name: Run lesson foundation and interoperability tests
+        run: |
+          node --test tests/lesson-data-foundation.test.mjs
+          node --test tests/lesson-position-interoperability.test.mjs
