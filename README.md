@@ -1,6 +1,6 @@
 # Chess Lesson Study Board
 
-A framework-free, browser-based chess teaching and study application. It combines a position editor, lesson-tree authoring, Stockfish analysis, tablebase support, practice drills, Play vs Stockfish, endgame puzzles, static course lessons with classroom presentation and Teacher Board tools, a synchronized teacher/student Live Board, and an optional AI chess-help panel.
+A framework-free, browser-based chess teaching and study application. It combines a position editor, lesson-tree authoring, Stockfish analysis, tablebase support, practice drills, Play vs Stockfish, separate endgame and Lichess position-training modes, teacher-managed student puzzle assignments, static course lessons with classroom presentation and Teacher Board tools, a synchronized teacher/student Live Board, and an optional AI chess-help panel.
 
 ## Live app
 
@@ -27,7 +27,7 @@ For local Windows setup, see [LOCAL_DEPLOYMENT.md](LOCAL_DEPLOYMENT.md).
 - Probe the public Lichess tablebase for eligible endgames.
 - Practice a selected line or drill any recorded branch.
 - Play against Stockfish with Elo, side, speed, starting-position, and clock settings.
-- Train with built-in or generated endgame puzzles.
+- Train in separate Endgame Puzzle and Lichess Position Training modes, with a current production library of 10,000 validated Lichess-derived positions.
 - Review CSV/XLSX position sets in the Lesson Position Builder.
 - Identify openings from the bundled ECO/opening database.
 - Use static Pawn, Advanced Pawn, Bishop, and numbered endgame lesson pages in `lessons/`.
@@ -46,7 +46,7 @@ The single-page application is organized around six tabs:
 | Setup | Position construction, FEN editing, scanner input, castling and en passant controls |
 | Analysis | Stockfish/tablebase analysis, annotations, and practice controls |
 | Play | Play vs Stockfish |
-| Puzzle | Endgame puzzle queue and active puzzle sessions |
+| Puzzle | Separate Endgame Puzzle and Lichess Position Training modes, including adaptive learning and Mistake Review |
 | Lessons | CSV/XLSX Lesson Position Builder |
 
 The lesson title input is intentionally hidden while the Play or Puzzle tab is active so game controls receive the available space. The title remains part of the lesson state and returns on the other tabs.
@@ -107,9 +107,13 @@ The clock system is designed to avoid assigning browser-processing delay to the 
 
 The Play and Puzzle interfaces also hide the lesson title. During an active Play game, PGN comments and PV lines are temporarily hidden and restored after the game ends.
 
-## Endgame puzzles
+## Puzzle modes
 
-The Puzzle tab provides:
+The Puzzle tab contains two independent trainers. They share reusable chess rules, board assets, Stockfish, and tablebase infrastructure, but they keep separate solving rules, persistence, statistics, and interfaces.
+
+### Endgame puzzles
+
+The legacy Endgame Puzzle mode provides:
 
 - built-in tablebase-checked endgame positions
 - generated puzzle batches
@@ -122,7 +126,26 @@ The Puzzle tab provides:
 - legality filtering on every puzzle ingestion path
 - optional tablebase-assisted candidate verification
 
-Puzzle sessions reuse the Play-vs-Engine move machinery but are untimed.
+Endgame sessions reuse the Play-vs-Engine move machinery but are untimed.
+
+### Lichess Position Training
+
+Lichess Position Training is a separate objective-preservation trainer backed by 10,000 validated Lichess-derived positions in 400 shards of 25 records. The interface reads the total from the dataset manifest, loads shards on demand, and caches successfully fetched JSON in IndexedDB.
+
+The database's first move is applied only to reconstruct the position presented to the solver. The remaining source continuation is deliberately not stored or treated as the only correct line. A student move is accepted when it preserves the position's required result or completes the objective; alternative winning or drawing moves can therefore be valid.
+
+The trainer includes:
+
+- Fixed rating-range and adaptive difficulty modes
+- theme filtering, including weakest-theme practice
+- four progressive hint levels
+- adaptive rating and theme statistics stored in the browser
+- Mistake Review with spaced clean-solve retirement
+- terminal checkmate and draw handling before tablebase or Stockfish evaluation
+- stable desktop board sizing before and after feedback appears
+- teacher-generated assignments with frozen puzzle snapshots and secure student links
+
+See [LICHESS_POSITION_TRAINING.md](LICHESS_POSITION_TRAINING.md) for the complete user, data, evaluator, learning, and assignment reference.
 
 ## Analysis and tablebase
 
@@ -302,7 +325,13 @@ The floating Teacher Board also evaluates the embedded FEN after moves and posit
 | `focus-analysis-popup.mjs` | Movable Focus-mode tablebase/PV analysis window |
 | `focus-analysis-popup.css` | Focus analysis window presentation and responsive sizing |
 | `pgn.mjs` | PGN parsing, multi-game splitting, lesson-tree import/export |
-| `puzzle-api.mjs` | Endgame puzzle generation and verification using a dedicated worker |
+| `puzzle-api.mjs` | Legacy endgame puzzle generation and verification using a dedicated worker |
+| `lichess-position-training.mjs` | Separate Lichess trainer controller, board, filters, feedback, history, and library-count display |
+| `lichess-position-training-core.mjs` | Position reconstruction, objective derivation, move classification, and solved-state rules |
+| `lichess-position-training-data.mjs` | Manifest/shard loading, rating/theme filtering, randomization, and IndexedDB fallback cache |
+| `lichess-position-training-engine.mjs` | Solver-relative tablebase and Stockfish evaluation, including terminal-state handling |
+| `lichess-position-training-learning.mjs` | Adaptive rating, progressive hints, theme metrics, explanations, and Mistake Review |
+| `assets/puzzles/lichess-position-training/` | Production manifest and 400 immutable 25-puzzle shards (10,000 positions) |
 | `lesson-position-builder.mjs` | CSV/XLSX lesson-position workflow |
 | `text-normalization.mjs` | Unicode and punctuation normalization |
 | `ai-help-chat.mjs` | Dyno Bot UI, context collection, request lifecycle |
@@ -418,5 +447,6 @@ Because the app has no build step, browser testing remains important. Test at mi
 
 - [ARCHITECTURE.md](ARCHITECTURE.md)
 - [USER_GUIDE.md](USER_GUIDE.md)
+- [LICHESS_POSITION_TRAINING.md](LICHESS_POSITION_TRAINING.md)
 - [LOCAL_DEPLOYMENT.md](LOCAL_DEPLOYMENT.md)
 - [Lesson index](lessons/index.html)
