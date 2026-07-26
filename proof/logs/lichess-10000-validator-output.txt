@@ -1,0 +1,15 @@
+{
+  "validation": {
+    "total": 10000,
+    "shards": 400,
+    "shardSize": 25,
+    "duplicateIds": 0,
+    "repeatedStartingPositions": 0,
+    "forbiddenContinuationFields": 0,
+    "ratingMin": 399,
+    "ratingMax": 3002,
+    "ratingMedian": 1353,
+    "whiteToSolve": 5213,
+    "blackToSolve": 4787
+  }
+}
