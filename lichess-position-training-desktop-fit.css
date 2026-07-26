@@ -45,6 +45,37 @@
   line-height: 1.35;
 }
 
+.position-training-library-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: fit-content;
+  margin-top: 0.55rem !important;
+  padding: 0.3rem 0.55rem;
+  border: 1px solid color-mix(in srgb, var(--focus-border) 34%, var(--section-divider-soft));
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--accent-soft) 72%, var(--card-bg) 28%);
+  color: var(--accent-strong);
+  font-size: 0.78rem;
+  font-weight: 760;
+  line-height: 1.2;
+}
+
+.position-training-library-count::before {
+  content: '';
+  width: 0.45rem;
+  height: 0.45rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.position-training-library-count[data-state='unavailable'] {
+  border-color: var(--section-divider-soft);
+  background: var(--panel-strong);
+  color: var(--text-muted);
+}
+
 .position-training-feedback {
   border-radius: 6px;
   box-shadow: none;
