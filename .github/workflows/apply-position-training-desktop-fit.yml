@@ -1,0 +1,53 @@
+name: Apply position training desktop fit
+
+on:
+  push:
+    branches:
+      - agent/fix-position-training-desktop-fit
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/fix-position-training-desktop-fit
+          fetch-depth: 0
+
+      - name: Wire exact-fit stylesheet
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('lichess-position-training.mjs')
+          text = path.read_text(encoding='utf-8')
+          old = "const STYLE_URL = './lichess-position-training.css?v=20260726-assignment-sizing1';"
+          new = "const STYLE_URL = './lichess-position-training-desktop-fit.css?v=20260726-desktop-fit2';"
+          if old not in text and new not in text:
+              raise SystemExit('Expected stylesheet marker was not found.')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+
+      - name: Validate desktop fit
+        run: |
+          node --check lichess-position-training.mjs
+          grep -F "lichess-position-training-desktop-fit.css?v=20260726-desktop-fit2" lichess-position-training.mjs
+          grep -F "height: calc(100dvh - 2rem)" lichess-position-training-desktop-fit.css
+          grep -F "grid-template-rows: minmax(0, 1fr) auto auto auto" lichess-position-training-desktop-fit.css
+          grep -F "height: 100%" lichess-position-training-desktop-fit.css
+          git diff --check
+
+      - name: Commit exact-fit correction
+        run: |
+          git rm .github/workflows/apply-position-training-desktop-fit.yml
+          git add lichess-position-training.mjs lichess-position-training-desktop-fit.css
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Fix Lichess position training desktop fit"
+          git push origin HEAD:agent/fix-position-training-desktop-fit
