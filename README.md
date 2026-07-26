@@ -27,7 +27,7 @@ For local Windows setup, see [LOCAL_DEPLOYMENT.md](LOCAL_DEPLOYMENT.md).
 - Probe the public Lichess tablebase for eligible endgames.
 - Practice a selected line or drill any recorded branch.
 - Play against Stockfish with Elo, side, speed, starting-position, and clock settings.
-- Train in separate Endgame Puzzle and Lichess Position Training modes, with a current production library of 10,000 validated Lichess-derived positions.
+- Train in separate Endgame Puzzle and Lichess Position Training modes, with a current production library of 30,000 validated Lichess-derived positions.
 - Review CSV/XLSX position sets in the Lesson Position Builder.
 - Identify openings from the bundled ECO/opening database.
 - Use static Pawn, Advanced Pawn, Bishop, and numbered endgame lesson pages in `lessons/`.
@@ -130,7 +130,7 @@ Endgame sessions reuse the Play-vs-Engine move machinery but are untimed.
 
 ### Lichess Position Training
 
-Lichess Position Training is a separate objective-preservation trainer backed by 10,000 validated Lichess-derived positions in 400 shards of 25 records. The interface reads the total from the dataset manifest, loads shards on demand, and caches successfully fetched JSON in IndexedDB.
+Lichess Position Training is a separate objective-preservation trainer backed by 30,000 validated Lichess-derived positions in 1,200 shards of 25 records. The interface reads the total from the dataset manifest, loads shards on demand, and caches successfully fetched JSON in IndexedDB.
 
 The database's first move is applied only to reconstruct the position presented to the solver. The remaining source continuation is deliberately not stored or treated as the only correct line. A student move is accepted when it preserves the position's required result or completes the objective; alternative winning or drawing moves can therefore be valid.
 
@@ -331,7 +331,7 @@ The floating Teacher Board also evaluates the embedded FEN after moves and posit
 | `lichess-position-training-data.mjs` | Manifest/shard loading, rating/theme filtering, randomization, and IndexedDB fallback cache |
 | `lichess-position-training-engine.mjs` | Solver-relative tablebase and Stockfish evaluation, including terminal-state handling |
 | `lichess-position-training-learning.mjs` | Adaptive rating, progressive hints, theme metrics, explanations, and Mistake Review |
-| `assets/puzzles/lichess-position-training/` | Production manifest and 400 immutable 25-puzzle shards (10,000 positions) |
+| `assets/puzzles/lichess-position-training/` | Production manifest and 1,200 immutable 25-puzzle shards (30,000 positions) |
 | `lesson-position-builder.mjs` | CSV/XLSX lesson-position workflow |
 | `text-normalization.mjs` | Unicode and punctuation normalization |
 | `ai-help-chat.mjs` | Dyno Bot UI, context collection, request lifecycle |
@@ -448,5 +448,6 @@ Because the app has no build step, browser testing remains important. Test at mi
 - [ARCHITECTURE.md](ARCHITECTURE.md)
 - [USER_GUIDE.md](USER_GUIDE.md)
 - [LICHESS_POSITION_TRAINING.md](LICHESS_POSITION_TRAINING.md)
+- [MINI_SOFT_LAUNCH.md](MINI_SOFT_LAUNCH.md)
 - [LOCAL_DEPLOYMENT.md](LOCAL_DEPLOYMENT.md)
 - [Lesson index](lessons/index.html)

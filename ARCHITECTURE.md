@@ -17,7 +17,7 @@ The major subsystems are:
    - `pgn.mjs`
    - `puzzle-api.mjs`
    - `lichess-position-training.mjs` and its core, data, engine, learning, interaction, and layout modules
-   - `assets/puzzles/lichess-position-training/manifest.json` plus 400 shard files
+   - `assets/puzzles/lichess-position-training/manifest.json` plus 1,200 shard files
    - `lesson-position-builder.mjs`
    - `text-normalization.mjs`
 
@@ -694,8 +694,8 @@ Objectives include checkmate, material gain, and holding a draw. All queue/histo
 
 The installed production dataset is declared by `assets/puzzles/lichess-position-training/manifest.json`:
 
-- 10,000 puzzles
-- 400 sequential shards
+- 30,000 puzzles
+- 1,200 sequential shards
 - 25 puzzles per shard
 - `exactLineRequired: false`
 - `veryLong` excluded
