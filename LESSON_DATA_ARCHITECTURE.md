@@ -2,16 +2,22 @@
 
 This document defines the shared lesson-data foundation used to make the main app's rich lesson workflow and flat CSV/XLSX position-set workflow interoperable.
 
-## Scope of Stage 1
+## Stage status
 
-Stage 1 adds reusable data modules and tests. It does **not** yet rename tabs, change visible workflows, migrate browser storage, or wire conversion buttons into Study, Analysis, or the Position Set Builder.
+### Stage 1: shared foundation
 
-The foundation consists of:
+Stage 1 added reusable data modules and tests without changing visible workflows or browser storage:
 
 - `lesson-model.mjs`
 - `lesson-migrations.mjs`
 - `lesson-position-adapter.mjs`
 - `tests/lesson-data-foundation.test.mjs`
+
+### Stage 2: Position Set interoperability
+
+Stage 2 connects the foundation to the existing main-app workflow. It adds the visible Position Sets terminology, explicit Study/Analysis and lesson-conversion actions, optional CSV/XLSX metadata, collision-safe lesson-book append, and export validation.
+
+See [LESSON_POSITION_INTEROPERABILITY.md](LESSON_POSITION_INTEROPERABILITY.md) for the implemented Stage 2 behavior, storage keys, conversion mapping, limitations, and validation commands.
 
 ## Product boundary
 
@@ -59,7 +65,7 @@ A position set is not a substitute for a branching lesson. The shared `LessonPos
 }
 ```
 
-`lessonState` remains the full-fidelity app state. Stage 1 deliberately treats it as an owned rich object rather than flattening it.
+`lessonState` remains the full-fidelity app state. The shared foundation deliberately treats it as an owned rich object rather than flattening it.
 
 ### Lesson book
 
@@ -75,6 +81,8 @@ A position set is not a substitute for a branching lesson. The shared `LessonPos
 ```
 
 Every entry in `lessons` is a normalized lesson document.
+
+The current main app still persists its established flattened version-2 lesson-book payload. Stage 2 converts positions into that established runtime shape so existing hydration and save/open behavior remain authoritative.
 
 ### Shared lesson position
 
@@ -139,6 +147,12 @@ Converts:
 
 A node export uses that node's exact FEN and comment. It records `sourceLessonId` and `sourceNodeId` so later UI stages can trace where the position came from.
 
+### Stage 2 runtime modules
+
+- `lesson-position-interoperability-core.mjs` converts flat positions into app-compatible lesson entries and appends them without replacing current lessons.
+- `lesson-position-interoperability.mjs` connects the existing builder, tabs, menus, import/export, and browser storage.
+- `lesson-position-export-validation.mjs` and `lesson-position-interoperability-export-guard.mjs` preserve the established export validation behavior.
+
 ## File-format policy
 
 | Format | Responsibility |
@@ -172,28 +186,36 @@ Existing files that omit the optional columns remain valid.
 
 ## Compatibility rules
 
-Stage 1 must preserve:
+The interoperability system must preserve:
 
 - raw current lesson state;
 - current `{ id, lessonState }` lesson-book entries;
+- the main app's flattened version-2 draft and lesson-book payload;
 - existing CSV field names;
 - snake_case spreadsheet aliases;
 - comments, branches, annotations, and unknown rich lesson-state fields;
 - order of position-set conversion;
-- predictable duplicate-ID suffixes.
+- predictable duplicate-ID suffixes;
+- existing lessons when new lessons are created from positions;
+- Play, Puzzle, engine, tablebase, Live Board, embed, and board-only behavior.
 
 ## Integration sequence
 
-Later stages should consume these modules rather than reproduce conversion logic in `app.js`.
+Completed:
 
-Recommended order:
+1. Define the shared `LessonPosition` contract.
+2. Add versioned normalization and migrations.
+3. Add explicit **Open in Study**, **Open in Analysis**, and **Create New Lesson** actions.
+4. Add **Create Lessons from Set** and **Add current position to Position Set**.
+5. Add optional CSV/XLSX metadata and validated enhanced export.
 
-1. Wire the Position Set Builder to `LessonPosition`.
-2. Add explicit **Open in Study**, **Open in Analysis**, and **Create Lesson** actions.
-3. Add **Add current position/tree node to Position Set**.
-4. Improve Study into non-destructive Review and Teach modes.
-5. Extract file I/O and storage behind separate modules.
-6. Add IndexedDB only after the model and UI integrations are stable.
+Remaining recommended work:
+
+1. Add durable lesson-level prompt and tag fields as part of Study/Teach integration.
+2. Add explicit selected-tree-node export from Analysis.
+3. Improve Study into non-destructive Review and Teach modes.
+4. Extract file I/O and storage behind separate modules.
+5. Add IndexedDB only after the model and UI integrations are stable.
 
 ## Testing
 
@@ -201,11 +223,12 @@ Run:
 
 ```bash
 node --test tests/lesson-data-foundation.test.mjs
+node --test tests/lesson-position-interoperability.test.mjs
 ```
 
-The suite covers:
+The combined suites cover:
 
-- CSV-style aliases;
+- CSV-style aliases and optional metadata;
 - FEN validation;
 - stable ID allocation;
 - legacy single-lesson migration;
@@ -215,4 +238,8 @@ The suite covers:
 - position/lesson round trips;
 - selected-node export;
 - ordered set/book conversion;
-- spreadsheet-row projection.
+- spreadsheet-row projection;
+- app-compatible lesson entry creation;
+- existing-lesson preservation;
+- duplicate lesson IDs and default activation;
+- enhanced export validation.
