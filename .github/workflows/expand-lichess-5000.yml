@@ -1,0 +1,93 @@
+name: Expand Lichess puzzle library to 5000
+
+on:
+  push:
+    branches:
+      - agent/add-3000-more-lichess-puzzles
+    paths:
+      - scripts/expand-lichess-5000.mjs
+      - .github/workflows/expand-lichess-5000.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  expand:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Check out expansion branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install streaming decompressor
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y zstd
+
+      - name: Generate 3,000 additional puzzles
+        shell: bash
+        run: |
+          mkdir -p proof/logs
+          set +e
+          set +o pipefail
+          curl --fail --location --retry 3 --silent --show-error \
+            https://database.lichess.org/lichess_db_puzzle.csv.zst \
+            | zstd -dc \
+            | node scripts/expand-lichess-5000.mjs 2>&1 \
+            | tee proof/logs/lichess-5000-generator-output.txt
+          statuses=("${PIPESTATUS[@]}")
+          set -e
+          set -o pipefail
+          if [ "${statuses[2]}" -ne 0 ]; then
+            echo "Generator failed with exit code ${statuses[2]}."
+            exit "${statuses[2]}"
+          fi
+          if [ "${statuses[3]}" -ne 0 ]; then
+            echo "Generator log capture failed with exit code ${statuses[3]}."
+            exit "${statuses[3]}"
+          fi
+
+      - name: Validate all 5,000 records
+        run: |
+          node scripts/expand-lichess-5000.mjs --validate-only \
+            | tee proof/logs/lichess-5000-validator-output.txt
+
+      - name: Run trainer and assignment tests
+        shell: bash
+        run: |
+          mapfile -t test_files < <(find tests -maxdepth 1 -type f \
+            \( -name '*lichess-position-training*.test.mjs' -o -name 'puzzle-assignment-core.test.mjs' \) \
+            | sort)
+          if [ "${#test_files[@]}" -eq 0 ]; then
+            echo "No matching tests found."
+            exit 1
+          fi
+          node --test "${test_files[@]}" \
+            | tee proof/logs/lichess-5000-tests-output.txt
+
+      - name: Check final diff
+        run: |
+          git diff --check
+          node -e "const m=require('./assets/puzzles/lichess-position-training/manifest.json'); if(m.count!==5000||m.shards.length!==200) process.exit(1); console.log('Puzzles:',m.count,'Shards:',m.shards.length)"
+          test -f assets/puzzles/lichess-position-training/shard-0080.json
+          test -f assets/puzzles/lichess-position-training/shard-0199.json
+
+      - name: Commit production dataset and remove temporary machinery
+        shell: bash
+        run: |
+          rm scripts/expand-lichess-5000.mjs
+          rm .github/workflows/expand-lichess-5000.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "Add 3000 more validated Lichess position puzzles"
+          git push origin HEAD:agent/add-3000-more-lichess-puzzles
