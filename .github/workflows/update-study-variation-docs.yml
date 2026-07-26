@@ -24,6 +24,7 @@ jobs:
           sed -i 's/raise SystemExit(/print(/g' scripts/update-study-docs-main.py scripts/update-study-docs-lessons.py
           python scripts/update-study-docs-main.py
           python scripts/update-study-docs-lessons.py
+          python scripts/fix-architecture-study-module-list.py
           git diff --check
 
       - name: Commit generated documentation
