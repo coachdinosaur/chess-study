@@ -1,0 +1,11 @@
+Result: PASS
+Records: 2000
+Shards: 80
+Duplicate IDs: 0
+Repeated starting positions: 0
+Exact continuation fields: 0
+Rating range: 399-2871
+White solvers: 1050
+Black solvers: 950
+Warnings: 0
+Errors: 0

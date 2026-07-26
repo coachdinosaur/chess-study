@@ -1,0 +1,112 @@
+TAP version 13
+# Subtest: repair move makes White the solver when Black moved first
+ok 1 - repair move makes White the solver when Black moved first
+  ---
+  duration_ms: 9.233885
+  type: 'test'
+  ...
+# Subtest: repair move makes Black the solver when White moved first
+ok 2 - repair move makes Black the solver when White moved first
+  ---
+  duration_ms: 1.173104
+  type: 'test'
+  ...
+# Subtest: engine scores are converted to the solver perspective
+ok 3 - engine scores are converted to the solver perspective
+  ---
+  duration_ms: 1.112191
+  type: 'test'
+  ...
+# Subtest: tablebase outcome is also solver-relative
+ok 4 - tablebase outcome is also solver-relative
+  ---
+  duration_ms: 0.317103
+  type: 'test'
+  ...
+# Subtest: positions where the solver is losing are rejected as training starts
+ok 5 - positions where the solver is losing are rejected as training starts
+  ---
+  duration_ms: 0.425516
+  type: 'test'
+  ...
+# Subtest: a different winning move is accepted without matching a stored line
+ok 6 - a different winning move is accepted without matching a stored line
+  ---
+  duration_ms: 0.371465
+  type: 'test'
+  ...
+# Subtest: throwing away a win is rejected
+ok 7 - throwing away a win is rejected
+  ---
+  duration_ms: 0.339225
+  type: 'test'
+  ...
+# Subtest: mate-tagged training does not finish before checkmate
+ok 8 - mate-tagged training does not finish before checkmate
+  ---
+  duration_ms: 0.342
+  type: 'test'
+  ...
+# Subtest: progressive hints reveal concept, source, target, then move
+ok 9 - progressive hints reveal concept, source, target, then move
+  ---
+  duration_ms: 6.21567
+  type: 'test'
+  ...
+# Subtest: mistakes enter review and two clean review solves retire the puzzle
+ok 10 - mistakes enter review and two clean review solves retire the puzzle
+  ---
+  duration_ms: 2.541285
+  type: 'test'
+  ...
+# Subtest: adaptive filters follow the rating and weakest theme
+ok 11 - adaptive filters follow the rating and weakest theme
+  ---
+  duration_ms: 0.663602
+  type: 'test'
+  ...
+# Subtest: theme dashboard records attempts, mistakes, hints and solves
+ok 12 - theme dashboard records attempts, mistakes, hints and solves
+  ---
+  duration_ms: 1.002235
+  type: 'test'
+  ...
+# Subtest: student-level presets expose bounded rating ranges and assignment sizes
+ok 13 - student-level presets expose bounded rating ranges and assignment sizes
+  ---
+  duration_ms: 1.424014
+  type: 'test'
+  ...
+# Subtest: assignment settings clamp unsafe numeric values
+ok 14 - assignment settings clamp unsafe numeric values
+  ---
+  duration_ms: 1.176341
+  type: 'test'
+  ...
+# Subtest: puzzle selection freezes unique snapshots matching rating and theme
+ok 15 - puzzle selection freezes unique snapshots matching rating and theme
+  ---
+  duration_ms: 2.899585
+  type: 'test'
+  ...
+# Subtest: selection rejects a request with too few matching records
+ok 16 - selection rejects a request with too few matching records
+  ---
+  duration_ms: 0.699469
+  type: 'test'
+  ...
+# Subtest: snapshot removes unrelated source fields
+ok 17 - snapshot removes unrelated source fields
+  ---
+  duration_ms: 0.372788
+  type: 'test'
+  ...
+1..17
+# tests 17
+# suites 0
+# pass 17
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 119.691694

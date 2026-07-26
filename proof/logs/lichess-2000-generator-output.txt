@@ -1,0 +1,11 @@
+CSV rows scanned: 2147
+Existing puzzles preserved: 1000
+New eligible puzzles accepted: 1000
+First new puzzle: 00f99
+Last new puzzle: 01OSA
+Rejected malformed: 0
+Rejected duplicate ID: 1000
+Rejected duplicate position: 0
+Rejected excluded theme: 147
+Rejected filters: 0
+Rejected illegal FEN/repair move: 0
