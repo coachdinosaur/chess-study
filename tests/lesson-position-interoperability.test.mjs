@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { validatePositionSetExport } from '../lesson-position-export-validation.mjs';
 import {
   APP_LESSON_BOOK_VERSION,
   APP_LESSON_VERSION,
@@ -152,4 +153,43 @@ test('extracts optional metadata columns from CSV and Excel-style rows', () => {
   assert.deepEqual(metadata[0].tags, ['opening', 'centre']);
   assert.equal(metadata[0].sourceLessonId, 'lesson-a');
   assert.equal(metadata[0].sourceNodeId, 'root');
+});
+
+test('accepts a valid export set with one default position', () => {
+  const result = validatePositionSetExport([
+    { id: 'start', title: 'Start', fen: START_FEN, isDefault: true },
+    { id: 'e4', title: 'After e4', fen: E4_FEN },
+  ], { validateFen: () => ({ ok: true }) });
+  assert.equal(result.ok, true);
+  assert.deepEqual(result.errors, []);
+});
+
+test('rejects export when the set is empty or lacks a default', () => {
+  assert.equal(validatePositionSetExport([]).ok, false);
+  const result = validatePositionSetExport([
+    { id: 'start', title: 'Start', fen: START_FEN },
+  ]);
+  assert.equal(result.ok, false);
+  assert.match(result.errors.join(' '), /default position/i);
+});
+
+test('rejects duplicate IDs and illegal FEN before enhanced export', () => {
+  const result = validatePositionSetExport([
+    { id: 'same', title: 'First', fen: START_FEN, isDefault: true },
+    { id: 'same', title: 'Second', fen: E4_FEN },
+  ], {
+    validateFen: (fen) => fen === E4_FEN ? { ok: false, error: 'Illegal test FEN.' } : { ok: true },
+  });
+  assert.equal(result.ok, false);
+  assert.match(result.errors.join(' '), /duplicate position ID/i);
+  assert.match(result.errors.join(' '), /illegal test FEN/i);
+});
+
+test('rejects multiple default positions', () => {
+  const result = validatePositionSetExport([
+    { id: 'start', title: 'Start', fen: START_FEN, isDefault: true },
+    { id: 'e4', title: 'After e4', fen: E4_FEN, isDefault: true },
+  ]);
+  assert.equal(result.ok, false);
+  assert.match(result.errors.join(' '), /only one default/i);
 });
