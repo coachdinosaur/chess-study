@@ -9,7 +9,9 @@ try {
   const profile = await currentProfile();
   const adminLink = document.querySelector('#platformAdminLink');
   if (adminLink && profile?.is_admin) adminLink.hidden = false;
-  if (profile?.is_teacher) await import('./puzzle-assignment-lifecycle.mjs?v=20260726-assignment-management2');
+  if (profile?.role === 'teacher' && profile?.account_status === 'approved') {
+    await import('./puzzle-assignment-lifecycle.mjs?v=20260726-assignment-management2');
+  }
 } catch {
   // The main dashboard owns the visible authentication error state.
 }
