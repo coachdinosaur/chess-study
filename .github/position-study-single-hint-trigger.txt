@@ -1,1 +1,1 @@
-Trigger the one-use workflow that removes generic explanations and replaces progressive hints with one piece highlight.
+Retrigger the one-use workflow that removes generic explanations and replaces progressive hints with one piece highlight.
