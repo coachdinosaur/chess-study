@@ -7353,8 +7353,8 @@ function openMoveAnnotationMenu(nodeId, clientX, clientY) {
     return;
   }
   const margin = 8;
-  const menuWidth = 310;
-  const menuHeight = 250;
+  const menuWidth = 360;
+  const menuHeight = 520;
   const viewportWidth = window.visualViewport?.width ?? window.innerWidth;
   const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
   moveAnnotationMenuState = {
@@ -7404,21 +7404,32 @@ function renderMoveAnnotationMenu() {
     return '';
   }
   const currentNag = moveNagFromValue(node.nag);
-  const options = MOVE_ANNOTATIONS.map((annotation) => {
-    const selected = currentNag === annotation.nag;
+  const groupNames = [...new Set(MOVE_ANNOTATIONS.map((annotation) => annotation.group || 'Other'))];
+  const groups = groupNames.map((groupName) => {
+    const options = MOVE_ANNOTATIONS
+      .filter((annotation) => (annotation.group || 'Other') === groupName)
+      .map((annotation) => {
+        const selected = currentNag === annotation.nag;
+        return `
+          <button
+            type="button"
+            class="move-annotation-option ${selected ? 'is-selected' : ''}"
+            data-action="set-move-annotation"
+            data-node-id="${escapeHtml(node.id)}"
+            data-nag="${annotation.nag}"
+            role="menuitemradio"
+            aria-checked="${selected}"
+          >
+            <span class="move-annotation-option-glyph">${escapeHtml(annotation.glyph)}</span>
+            <span class="move-annotation-option-label">${escapeHtml(annotation.label)}</span>
+          </button>
+        `;
+      }).join('');
     return `
-      <button
-        type="button"
-        class="move-annotation-option ${selected ? 'is-selected' : ''}"
-        data-action="set-move-annotation"
-        data-node-id="${escapeHtml(node.id)}"
-        data-nag="${annotation.nag}"
-        role="menuitemradio"
-        aria-checked="${selected}"
-      >
-        <span class="move-annotation-option-glyph">${escapeHtml(annotation.glyph)}</span>
-        <span class="move-annotation-option-label">${escapeHtml(annotation.label)}</span>
-      </button>
+      <section class="move-annotation-group" aria-label="${escapeHtml(groupName)}">
+        <div class="move-annotation-group-title">${escapeHtml(groupName)}</div>
+        <div class="move-annotation-option-grid">${options}</div>
+      </section>
     `;
   }).join('');
   return `
@@ -7430,9 +7441,9 @@ function renderMoveAnnotationMenu() {
     >
       <div class="move-annotation-menu-head">
         <strong>Annotate ${escapeHtml(node.san)}</strong>
-        <span>Choose one glyph</span>
+        <span>Move or position</span>
       </div>
-      <div class="move-annotation-option-grid">${options}</div>
+      ${groups}
       <button
         type="button"
         class="move-annotation-clear"

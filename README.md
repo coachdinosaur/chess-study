@@ -20,7 +20,7 @@ For local Windows setup, see [LOCAL_DEPLOYMENT.md](LOCAL_DEPLOYMENT.md).
   - Touch and pen use pointer-based dragging with a floating piece preview.
   - Tap-to-select and tap-to-move remain available.
 - Record a lesson as a recursive move tree: the first continuation becomes the main line, later moves remain variations, and any selected side line can be promoted explicitly with **Make main line**.
-- Add PGN comments, standard move-annotation glyphs (`!`, `?`, `!!`, `??`, `!?`, `?!`), lesson notes, arrows, circles, stars, and colored square highlights.
+- Add PGN comments, move-quality glyphs (`!`, `?`, `!!`, `??`, `!?`, `?!`, `□`), position-evaluation glyphs (`=`, `∞`, `⩲`, `⩱`, `±`, `∓`, `+−`, `−+`), lesson notes, arrows, circles, stars, and colored square highlights.
 - Import and export PGN, including comments, variations, and multi-game files.
 - Save and reopen lesson JSON files and multi-lesson books.
 - Analyze positions with browser Stockfish and up to three principal variations.
