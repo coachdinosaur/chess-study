@@ -6,6 +6,7 @@ on:
       - 'app.js'
       - 'index.html'
       - 'pgn.mjs'
+      - 'move-annotations.mjs'
       - 'styles.css'
       - 'lesson-model.mjs'
       - 'lesson-migrations.mjs'
@@ -17,6 +18,7 @@ on:
       - 'lesson-variation-tree.mjs'
       - 'focus-analysis-popup.mjs'
       - 'tests/lesson-*.test.mjs'
+      - 'tests/move-annotations.test.mjs'
       - 'LESSON_DATA_ARCHITECTURE.md'
       - 'LESSON_POSITION_INTEROPERABILITY.md'
       - 'LESSON_VARIATIONS_AND_MAIN_LINES.md'
@@ -29,6 +31,7 @@ on:
       - 'app.js'
       - 'index.html'
       - 'pgn.mjs'
+      - 'move-annotations.mjs'
       - 'styles.css'
       - 'lesson-model.mjs'
       - 'lesson-migrations.mjs'
@@ -40,6 +43,7 @@ on:
       - 'lesson-variation-tree.mjs'
       - 'focus-analysis-popup.mjs'
       - 'tests/lesson-*.test.mjs'
+      - 'tests/move-annotations.test.mjs'
       - 'LESSON_DATA_ARCHITECTURE.md'
       - 'LESSON_POSITION_INTEROPERABILITY.md'
       - 'LESSON_VARIATIONS_AND_MAIN_LINES.md'
@@ -61,6 +65,7 @@ jobs:
         run: |
           node --check app.js
           node --check pgn.mjs
+          node --check move-annotations.mjs
           node --check lesson-model.mjs
           node --check lesson-migrations.mjs
           node --check lesson-position-adapter.mjs
@@ -71,8 +76,9 @@ jobs:
           node --check lesson-variation-tree.mjs
           node --check focus-analysis-popup.mjs
 
-      - name: Run lesson foundation, interoperability, and variation tests
+      - name: Run lesson foundation, interoperability, variation, and annotation tests
         run: |
+          node --test tests/move-annotations.test.mjs
           node --test tests/lesson-data-foundation.test.mjs
           node --test tests/lesson-position-interoperability.test.mjs
           node --test tests/lesson-variation-tree.test.mjs

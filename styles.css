@@ -4965,3 +4965,112 @@ html[data-board-only="1"] .eval-bar-wrap {
   .notation-mainline-badge { align-self: flex-start; }
   .notation-variation { padding-left: 0.35rem; }
 }
+/* Move-quality annotation glyphs and the notation context menu. */
+.notation-move-nag {
+  margin-left: 0.04em;
+  color: var(--accent-strong);
+  font-weight: 850;
+}
+
+.move-annotation-menu {
+  position: fixed;
+  z-index: 1200;
+  display: grid;
+  gap: 0.65rem;
+  width: min(19rem, calc(100vw - 1rem));
+  padding: 0.75rem;
+  border: 1px solid var(--overflow-menu-border);
+  border-radius: var(--radius-panel);
+  background: var(--overflow-menu-bg);
+  color: var(--text);
+  box-shadow: 0 18px 42px var(--overflow-menu-shadow);
+  backdrop-filter: blur(16px);
+}
+
+.move-annotation-menu-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0 0.15rem;
+}
+
+.move-annotation-menu-head strong {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+}
+
+.move-annotation-menu-head span {
+  color: var(--text-soft);
+  font-size: 0.72rem;
+}
+
+.move-annotation-option-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.move-annotation-option,
+.move-annotation-clear {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.45rem;
+  padding: 0.45rem 0.58rem;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-card);
+  background: var(--control-bg);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.move-annotation-option:hover,
+.move-annotation-option:focus-visible,
+.move-annotation-clear:hover,
+.move-annotation-clear:focus-visible,
+.move-annotation-option.is-selected {
+  outline: none;
+  border-color: var(--focus-border);
+  background: var(--overflow-item-selected-bg);
+  color: var(--accent-strong);
+}
+
+.move-annotation-option-glyph {
+  min-width: 1.55rem;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 850;
+  text-align: center;
+}
+
+.move-annotation-option-label {
+  min-width: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.move-annotation-clear {
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 750;
+}
+
+.move-annotation-clear:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+@media (max-width: 420px) {
+  .move-annotation-option-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .move-annotation-menu {
+    max-height: calc(100vh - 1rem);
+    overflow-y: auto;
+  }
+}
