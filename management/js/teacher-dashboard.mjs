@@ -1,6 +1,15 @@
 import { getSupabase, readableError, requireProfile, signOut } from './supabase-client.mjs';
 import { loadLessonCatalog } from './lesson-catalog.mjs';
 import { escapeHtml, formatDate, setBusy, setStatus } from './ui.mjs';
+import {
+  clearCoachSession,
+  createCoachSession,
+  elapsedCoachSessionMinutes,
+  formatCoachSessionElapsed,
+  loadCoachSession,
+  recommendCoachLesson,
+  saveCoachSession,
+} from './coach-session-command.mjs?v=20260727-coach-session1';
 
 const STATUS_LABELS = Object.freeze({
   not_started: 'Not yet taught',
@@ -24,6 +33,21 @@ const elements = {
   saveNotes: document.querySelector('#saveStudentNotesButton'),
   archiveStudent: document.querySelector('#archiveStudentButton'),
   exportStudent: document.querySelector('#exportStudentButton'),
+  coachSessionSummary: document.querySelector('#coachSessionSummary'),
+  coachSessionState: document.querySelector('#coachSessionState'),
+  coachLastSessionValue: document.querySelector('#coachLastSessionValue'),
+  coachLastSessionDetail: document.querySelector('#coachLastSessionDetail'),
+  coachNextStepValue: document.querySelector('#coachNextStepValue'),
+  coachNextStepDetail: document.querySelector('#coachNextStepDetail'),
+  coachRecommendedLessonValue: document.querySelector('#coachRecommendedLessonValue'),
+  coachRecommendedLessonDetail: document.querySelector('#coachRecommendedLessonDetail'),
+  coachAssignmentValue: document.querySelector('#coachAssignmentValue'),
+  coachAssignmentDetail: document.querySelector('#coachAssignmentDetail'),
+  coachSessionTimer: document.querySelector('#coachSessionTimer'),
+  coachSessionElapsed: document.querySelector('#coachSessionElapsed'),
+  startCoachSession: document.querySelector('#startCoachSessionButton'),
+  endCoachSession: document.querySelector('#endCoachSessionButton'),
+  openRecommendedLesson: document.querySelector('#openRecommendedLessonLink'),
   sessionPanel: document.querySelector('#sessionPanel'),
   sessionForm: document.querySelector('#sessionForm'),
   sessionId: document.querySelector('#sessionId'),
@@ -52,6 +76,10 @@ const app = {
   catalog: [],
   progress: [],
   sessions: [],
+  coachSession: null,
+  coachSessionTimer: null,
+  assignmentSummary: null,
+  assignmentSummaryLoaded: false,
 };
 
 function selectedStudent() {
@@ -90,6 +118,159 @@ function formatSessionDate(value) {
     month: 'short',
     day: 'numeric',
   }).format(date);
+}
+
+function updateCoachSessionTimer() {
+  if (!elements.coachSessionElapsed || !app.coachSession) return;
+  elements.coachSessionElapsed.textContent = formatCoachSessionElapsed(app.coachSession);
+}
+
+function stopCoachSessionTimer() {
+  if (app.coachSessionTimer) window.clearInterval(app.coachSessionTimer);
+  app.coachSessionTimer = null;
+}
+
+function ensureCoachSessionTimer() {
+  stopCoachSessionTimer();
+  if (!app.coachSession) return;
+  updateCoachSessionTimer();
+  app.coachSessionTimer = window.setInterval(updateCoachSessionTimer, 1000);
+}
+
+function activeCoachRecommendation() {
+  return recommendCoachLesson({
+    catalog: app.catalog,
+    progress: app.progress,
+    sessions: app.sessions,
+    preferredLessonKey: app.coachSession?.studentId === app.selectedStudentId
+      ? app.coachSession.lessonKey
+      : '',
+  });
+}
+
+function syncActiveCoachSessionLesson() {
+  if (app.coachSession?.studentId !== app.selectedStudentId) return;
+  app.coachSession.lessonKey = elements.sessionLessonKey.value;
+  saveCoachSession(window.sessionStorage, app.coachSession);
+  renderCoachSessionCommand();
+}
+
+function renderCoachSessionCommand() {
+  const student = selectedStudent();
+  if (!student || !elements.coachSessionState) return;
+
+  const latest = app.sessions[0] || null;
+  const recommendation = activeCoachRecommendation();
+  const activeStudent = app.coachSession
+    ? app.students.find((item) => item.id === app.coachSession.studentId) || null
+    : null;
+  const activeForSelected = app.coachSession?.studentId === student.id;
+  const archived = Boolean(student.archived_at);
+
+  elements.coachLastSessionValue.textContent = latest
+    ? formatSessionDate(latest.session_date)
+    : 'No session recorded';
+  elements.coachLastSessionDetail.textContent = latest
+    ? `${latest.lesson_title || 'General coaching session'}${latest.duration_minutes ? ` · ${latest.duration_minutes} minutes` : ''}`
+    : 'Start the first session when the student is ready.';
+
+  elements.coachNextStepValue.textContent = latest?.next_step ? 'Carry forward' : 'Not set yet';
+  elements.coachNextStepDetail.textContent = latest?.next_step
+    || 'Add a next step when logging the session.';
+
+  elements.coachRecommendedLessonValue.textContent = recommendation?.lesson.title
+    || 'No available lesson';
+  elements.coachRecommendedLessonDetail.textContent = recommendation
+    ? `${recommendation.reason} · ${recommendation.lesson.level}${recommendation.lesson.module ? ` · ${recommendation.lesson.module}` : ''}`
+    : 'Update the curriculum when another lesson becomes available.';
+  elements.openRecommendedLesson.hidden = !recommendation;
+  if (recommendation) elements.openRecommendedLesson.href = recommendation.lesson.url;
+
+  const assignment = app.assignmentSummary?.studentId === student.id
+    ? app.assignmentSummary.assignment
+    : null;
+  if (!app.assignmentSummaryLoaded) {
+    elements.coachAssignmentValue.textContent = 'Loading assignments…';
+    elements.coachAssignmentDetail.textContent = 'Recent assignment progress will appear here.';
+  } else if (assignment) {
+    elements.coachAssignmentValue.textContent = assignment.title;
+    elements.coachAssignmentDetail.textContent =
+      `${String(assignment.status || 'not started').replaceAll('_', ' ')} · `
+      + `${assignment.currentIndex}/${assignment.puzzleCount} completed · score ${assignment.score}%`;
+  } else {
+    elements.coachAssignmentValue.textContent = 'No published assignment';
+    elements.coachAssignmentDetail.textContent = 'Create a focused puzzle assignment when follow-up work is needed.';
+  }
+
+  if (activeForSelected) {
+    elements.coachSessionState.textContent = 'Session running';
+    elements.coachSessionSummary.textContent =
+      `Coaching ${student.display_name}. Open the lesson or Live Board, then end here to log the session.`;
+  } else if (activeStudent) {
+    elements.coachSessionState.textContent = 'Another session running';
+    elements.coachSessionSummary.textContent =
+      `A session is running for ${activeStudent.display_name}. Select that student to continue it, or start a new session here.`;
+  } else {
+    elements.coachSessionState.textContent = archived ? 'Archived' : 'Ready';
+    elements.coachSessionSummary.textContent = archived
+      ? 'Restore this student before recording another coaching session.'
+      : 'Review the latest context, then start a focused coaching session.';
+  }
+
+  elements.startCoachSession.hidden = activeForSelected;
+  elements.startCoachSession.disabled = archived;
+  elements.endCoachSession.hidden = !activeForSelected;
+  elements.coachSessionTimer.hidden = !activeForSelected;
+  if (activeForSelected) updateCoachSessionTimer();
+}
+
+function clearActiveCoachSession() {
+  app.coachSession = null;
+  clearCoachSession(window.sessionStorage);
+  stopCoachSessionTimer();
+}
+
+function startCoachSession() {
+  const student = selectedStudent();
+  if (!student || student.archived_at) return;
+
+  const activeStudent = app.coachSession
+    ? app.students.find((item) => item.id === app.coachSession.studentId) || null
+    : null;
+  if (activeStudent && activeStudent.id !== student.id) {
+    const replace = window.confirm(
+      `A coaching session is already running for ${activeStudent.display_name}. End it and start a new session for ${student.display_name}?`
+    );
+    if (!replace) return;
+  }
+
+  const recommendation = activeCoachRecommendation();
+  app.coachSession = createCoachSession({
+    studentId: student.id,
+    lessonKey: recommendation?.lesson.key || '',
+  });
+  saveCoachSession(window.sessionStorage, app.coachSession);
+  resetSessionForm();
+  if (app.coachSession.lessonKey) elements.sessionLessonKey.value = app.coachSession.lessonKey;
+  ensureCoachSessionTimer();
+  renderCoachSessionCommand();
+  setStatus(elements.status, `Coaching session started for ${student.display_name}.`, 'success');
+}
+
+function endCoachSession() {
+  const student = selectedStudent();
+  if (!student || app.coachSession?.studentId !== student.id) return;
+
+  const duration = elapsedCoachSessionMinutes(app.coachSession);
+  const lessonKey = app.coachSession.lessonKey;
+  clearActiveCoachSession();
+
+  if (!elements.sessionDuration.value.trim()) elements.sessionDuration.value = String(duration);
+  if (!elements.sessionLessonKey.value && lessonKey) elements.sessionLessonKey.value = lessonKey;
+  renderCoachSessionCommand();
+  setStatus(elements.status, 'Session timer stopped. Complete the notes, homework, and next step, then save the session.', 'neutral');
+  elements.sessionPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  elements.sessionNotes.focus({ preventScroll: true });
 }
 
 function visibleStudents() {
@@ -217,6 +398,7 @@ function renderCurriculum() {
 
   const { searched, displayed, terms } = filteredCurriculum();
   renderSummary(searched);
+  renderCoachSessionCommand();
   elements.lessonSearchResult.textContent = `${displayed.length} of ${searched.length} matching lessons shown`;
   elements.lessonSearchResult.hidden = false;
   elements.lessonSearchEmpty.hidden = displayed.length > 0;
@@ -281,6 +463,7 @@ function renderSessions() {
   const student = selectedStudent();
   if (!student) return;
   const archived = Boolean(student.archived_at);
+  renderCoachSessionCommand();
 
   if (!app.sessions.length) {
     elements.sessionList.innerHTML = '<div class="empty">No coaching sessions recorded yet.</div>';
@@ -328,7 +511,13 @@ async function loadStudents({ preserveSelection = true } = {}) {
 
   app.students = data || [];
   if (!preserveSelection || !app.students.some((student) => student.id === app.selectedStudentId)) {
-    app.selectedStudentId = app.students.find((student) => !student.archived_at)?.id || app.students[0]?.id || null;
+    const activeSessionStudent = app.students.find((student) =>
+      student.id === app.coachSession?.studentId && !student.archived_at
+    );
+    app.selectedStudentId = activeSessionStudent?.id
+      || app.students.find((student) => !student.archived_at)?.id
+      || app.students[0]?.id
+      || null;
   }
   renderStudents();
   await loadStudentData();
@@ -361,7 +550,13 @@ async function loadStudentData() {
 
   app.progress = progressResult.data || [];
   app.sessions = sessionsResult.data || [];
+  document.dispatchEvent(new CustomEvent('coach-session:request-assignment-summary', {
+    detail: { studentId: student.id },
+  }));
   resetSessionForm();
+  if (app.coachSession?.studentId === student.id && app.coachSession.lessonKey) {
+    elements.sessionLessonKey.value = app.coachSession.lessonKey;
+  }
   renderCurriculum();
   renderSessions();
 }
@@ -387,6 +582,8 @@ async function createStudent(event) {
     if (error) throw error;
 
     app.selectedStudentId = data.id;
+    app.assignmentSummary = null;
+    app.assignmentSummaryLoaded = false;
     elements.studentViewFilter.value = 'active';
     elements.studentSearch.value = '';
     elements.createStudentForm.reset();
@@ -422,9 +619,10 @@ async function toggleArchiveStudent() {
   const student = selectedStudent();
   if (!student) return;
   const restoring = Boolean(student.archived_at);
+  const hasActiveSession = app.coachSession?.studentId === student.id;
   const question = restoring
     ? `Restore ${student.display_name} to the active student list?`
-    : `Archive ${student.display_name}? Their lesson and session history will be preserved.`;
+    : `Archive ${student.display_name}? Their lesson and session history will be preserved.${hasActiveSession ? ' The running session timer will stop.' : ''}`;
   if (!window.confirm(question)) return;
 
   setBusy(elements.archiveStudent, true, restoring ? 'Restoring…' : 'Archiving…');
@@ -435,6 +633,7 @@ async function toggleArchiveStudent() {
       .update({ archived_at: restoring ? null : new Date().toISOString() })
       .eq('id', student.id);
     if (error) throw error;
+    if (!restoring && hasActiveSession) clearActiveCoachSession();
     elements.studentViewFilter.value = restoring ? 'active' : 'archived';
     await loadStudents();
     setStatus(elements.status, restoring ? 'Student restored.' : 'Student archived.', 'success');
@@ -495,8 +694,13 @@ async function saveSession(event) {
   setBusy(elements.saveSession, true, elements.sessionId.value ? 'Saving…' : 'Adding…');
   setStatus(elements.status, '');
   try {
+    const sessionId = elements.sessionId.value;
     const lesson = app.catalog.find((item) => item.key === elements.sessionLessonKey.value) || null;
-    const durationValue = elements.sessionDuration.value.trim();
+    let durationValue = elements.sessionDuration.value.trim();
+    if (!sessionId && !durationValue && app.coachSession?.studentId === student.id) {
+      durationValue = String(elapsedCoachSessionMinutes(app.coachSession));
+      elements.sessionDuration.value = durationValue;
+    }
     const duration = durationValue === '' ? null : Number(durationValue);
     if (duration !== null && (!Number.isInteger(duration) || duration < 0 || duration > 600)) {
       throw new Error('Duration must be a whole number from 0 to 600 minutes.');
@@ -523,7 +727,6 @@ async function saveSession(event) {
     };
 
     const supabase = getSupabase();
-    const sessionId = elements.sessionId.value;
     const request = sessionId
       ? supabase.from('coaching_sessions').update(row).eq('id', sessionId).eq('student_id', student.id)
       : supabase.from('coaching_sessions').insert(row);
@@ -533,6 +736,7 @@ async function saveSession(event) {
     app.sessions = app.sessions.filter((item) => item.id !== data.id);
     app.sessions.push(data);
     app.sessions.sort((a, b) => `${b.session_date}${b.created_at}`.localeCompare(`${a.session_date}${a.created_at}`));
+    if (!sessionId && app.coachSession?.studentId === student.id) clearActiveCoachSession();
     resetSessionForm();
     renderSessions();
     setStatus(elements.status, sessionId ? 'Coaching session updated.' : 'Coaching session added.', 'success');
@@ -544,6 +748,10 @@ async function saveSession(event) {
 }
 
 function editSession(sessionId) {
+  if (app.coachSession?.studentId === app.selectedStudentId) {
+    setStatus(elements.status, 'End and log the running session before editing an earlier record.', 'warning');
+    return;
+  }
   const session = sessionFor(sessionId);
   if (!session) return;
   elements.sessionId.value = session.id;
@@ -563,6 +771,10 @@ async function deleteSession(sessionId) {
   const session = sessionFor(sessionId);
   const student = selectedStudent();
   if (!session || !student || student.archived_at) return;
+  if (app.coachSession?.studentId === student.id) {
+    setStatus(elements.status, 'End and log the running session before deleting an earlier record.', 'warning');
+    return;
+  }
   if (!window.confirm(`Delete the coaching session from ${formatSessionDate(session.session_date)}?`)) return;
 
   try {
@@ -587,6 +799,7 @@ function prefillSession(lessonKey) {
   if (!lesson) return;
   resetSessionForm();
   elements.sessionLessonKey.value = lesson.key;
+  syncActiveCoachSessionLesson();
   elements.sessionPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
   elements.sessionNotes.focus({ preventScroll: true });
 }
@@ -644,6 +857,8 @@ function exportStudentCsv() {
 
 async function selectStudent(studentId) {
   app.selectedStudentId = studentId;
+  app.assignmentSummary = null;
+  app.assignmentSummaryLoaded = false;
   renderStudents();
   try {
     await loadStudentData();
@@ -656,6 +871,8 @@ async function handleStudentViewChange() {
   const students = visibleStudents();
   if (!students.some((student) => student.id === app.selectedStudentId)) {
     app.selectedStudentId = students[0]?.id || null;
+    app.assignmentSummary = null;
+    app.assignmentSummaryLoaded = false;
     await loadStudentData();
   }
   renderStudents();
@@ -667,10 +884,19 @@ async function initialize() {
     if (!app.profile) return;
     elements.profileName.textContent = app.profile.display_name;
     app.catalog = await loadLessonCatalog();
+    app.coachSession = loadCoachSession(window.sessionStorage);
     populateLevelFilter();
     populateSessionLessons();
     resetSessionForm();
     await loadStudents({ preserveSelection: false });
+    if (app.coachSession && !app.students.some((student) =>
+      student.id === app.coachSession.studentId && !student.archived_at
+    )) {
+      clearActiveCoachSession();
+      renderCoachSessionCommand();
+    } else {
+      ensureCoachSessionTimer();
+    }
   } catch (error) {
     setStatus(elements.status, readableError(error), 'error');
   }
@@ -683,7 +909,10 @@ elements.studentViewFilter?.addEventListener('change', () => handleStudentViewCh
 elements.saveNotes?.addEventListener('click', saveStudentNotes);
 elements.archiveStudent?.addEventListener('click', toggleArchiveStudent);
 elements.exportStudent?.addEventListener('click', exportStudentCsv);
+elements.startCoachSession?.addEventListener('click', startCoachSession);
+elements.endCoachSession?.addEventListener('click', endCoachSession);
 elements.sessionForm?.addEventListener('submit', saveSession);
+elements.sessionLessonKey?.addEventListener('change', syncActiveCoachSessionLesson);
 elements.cancelSessionEdit?.addEventListener('click', resetSessionForm);
 elements.lessonSearch?.addEventListener('input', renderCurriculum);
 elements.levelFilter?.addEventListener('change', renderCurriculum);
@@ -709,6 +938,15 @@ elements.sessionList?.addEventListener('click', (event) => {
   if (!button) return;
   if (button.dataset.action === 'edit-session') editSession(button.dataset.sessionId);
   if (button.dataset.action === 'delete-session') deleteSession(button.dataset.sessionId);
+});
+
+document.addEventListener('coach-session:assignment-summary', (event) => {
+  const detail = event.detail;
+  if (!detail || typeof detail.studentId !== 'string') return;
+  if (detail.studentId !== app.selectedStudentId) return;
+  app.assignmentSummary = detail;
+  app.assignmentSummaryLoaded = true;
+  renderCoachSessionCommand();
 });
 
 initialize();

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Student Workspace | CD Digital Chess</title>
+  <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
+  <link rel="stylesheet" href="./management.css?v=20260723-hardening1">
+  <link rel="stylesheet" href="./student-workspace.css?v=20260727-student-workspace1">
+</head>
+<body class="student-workspace-page">
+  <div id="studentWorkspaceLoading" class="student-workspace-loading" aria-live="polite">
+    <h1>Opening your workspace</h1>
+    <p class="muted">Loading the lessons and work selected by your coach…</p>
+  </div>
+
+  <div id="studentWorkspaceError" class="student-workspace-error" role="alert" hidden></div>
+
+  <main id="studentWorkspaceShell" class="student-workspace-shell" hidden>
+    <header class="student-workspace-hero">
+      <div>
+        <p class="student-workspace-eyebrow">Coach-controlled student workspace</p>
+        <h1 id="studentWorkspaceStudent">Student</h1>
+        <p id="studentWorkspaceCoach" class="muted">Prepared by your coach</p>
+      </div>
+      <span id="studentWorkspaceUpdated" class="student-workspace-updated"></span>
+    </header>
+
+    <div class="student-workspace-grid">
+      <div class="student-workspace-column">
+        <section id="studentWorkspaceInstructionsCard" class="student-workspace-card student-workspace-instructions" hidden>
+          <p class="student-workspace-eyebrow">From your coach</p>
+          <p id="studentWorkspaceInstructions" class="student-workspace-copy"></p>
+        </section>
+
+        <section id="studentWorkspaceHomeworkCard" class="student-workspace-card" hidden>
+          <h2>Homework</h2>
+          <p id="studentWorkspaceHomework" class="student-workspace-copy"></p>
+          <span id="studentWorkspaceDue" class="chip student-workspace-due" hidden></span>
+        </section>
+
+        <section id="studentWorkspaceAssignmentsCard" class="student-workspace-card" hidden>
+          <div class="section-head">
+            <div>
+              <h2>Puzzle work</h2>
+              <p class="muted">Assignments and results selected by your coach.</p>
+            </div>
+          </div>
+          <div id="studentWorkspaceAssignments" class="student-workspace-task-list"></div>
+        </section>
+      </div>
+
+      <div class="student-workspace-column">
+        <section id="studentWorkspaceLessonCard" class="student-workspace-card" hidden>
+          <p class="student-workspace-eyebrow">Assigned lesson</p>
+          <h2 id="studentWorkspaceLessonTitle">Lesson</h2>
+          <a id="studentWorkspaceLessonLink" class="button" href="#" target="_blank" rel="noopener">Open lesson</a>
+        </section>
+
+        <section id="studentWorkspacePositionCard" class="student-workspace-card" hidden>
+          <p class="student-workspace-eyebrow">Assigned position</p>
+          <h2 id="studentWorkspacePositionTitle">Position to study</h2>
+          <div id="studentWorkspaceBoard" class="student-workspace-board" aria-label="Assigned chess position"></div>
+          <a id="studentWorkspacePositionLink" class="button-secondary" href="#" target="_blank" rel="noopener">Open study board</a>
+        </section>
+
+        <section id="studentWorkspaceLiveBoardCard" class="student-workspace-card" hidden>
+          <p class="student-workspace-eyebrow">Live lesson</p>
+          <h2>Join your coach’s board</h2>
+          <p class="muted">Use this only when your coach asks you to join.</p>
+          <a id="studentWorkspaceLiveBoardLink" class="button" href="#" target="_blank" rel="noopener">Join Live Board</a>
+        </section>
+
+        <section class="student-workspace-card">
+          <h3>Your coach controls this page</h3>
+          <p class="muted">There is no student account to manage. Keep this private link and return to it whenever your coach updates your work.</p>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script type="module" src="./js/student-workspace.mjs?v=20260727-student-workspace1"></script>
+</body>
+</html>

@@ -10,6 +10,8 @@ This directory provides a private teacher dashboard for the framework-free CD Di
 - Students do not create management accounts, supply email addresses, join with class codes, or open the management dashboard.
 - Teachers track curriculum lessons as Not yet taught, Taught, Needs practice, or Completed.
 - Teachers record dated coaching sessions, duration, homework, and next steps.
+- The selected-student Coach Session Command Center brings the latest session, next step, recommended curriculum lesson, latest puzzle-assignment result, a reload-safe timer, lesson access, Live Board access, and the existing session form into one workflow.
+- Approved teachers publish one coach-controlled workspace per student. The same permanent private link reflects the current instructions, homework, due date, assigned lesson, FEN position, secure Live Board student link, published puzzle work, progress, and scores.
 - Approved teachers generate, publish, monitor, edit, duplicate, archive, restore, and permanently delete Lichess puzzle assignments for their students.
 - Teachers can export account data and ordinary teacher accounts can permanently delete themselves after password confirmation.
 - Platform administrators can approve or suspend teachers, grant or remove administrator access, and inspect limited management audit metadata.
@@ -21,12 +23,37 @@ This directory provides a private teacher dashboard for the framework-free CD Di
 - `reset-password.html` — password update after a recovery email
 - `pending.html` — pending or suspended teacher status
 - `teacher.html` — private student, session, curriculum, and published puzzle-assignment dashboard
+- `student-workspace.html` — permanent token-scoped view of only the work selected by the coach
 - `assignment.html` — token-scoped student puzzle runner; students do not sign in to the management dashboard
 - `account.html` — password change, full data export, and account deletion
 - `admin.html` — teacher-account approval, administrator ownership, and audit history
 - `privacy.html` — operational privacy notice requiring legal review before public launch
 
 The retired anonymous student join page, student dashboard, and their JavaScript files are intentionally removed.
+
+## Coach Session Command Center
+
+The command center is shown for the selected student in `teacher.html`. It does not create a parallel session record or require another database table.
+
+- **Start coaching session** chooses a useful lesson from curriculum state, preferring Needs practice, the latest unfinished lesson, previously taught work, and then the next available lesson.
+- The running timer is kept in `sessionStorage` under `coach-session-command-v1`, survives a dashboard reload for up to 12 hours, and remains associated with one student.
+- **Open recommended lesson** and **Open Live Board** keep the teaching tools one click from the student's current context.
+- **End and log session** transfers elapsed minutes and the recommended lesson into the existing coaching-session form, where the teacher completes notes, homework, and the next step before saving.
+- The latest puzzle-assignment status, completion count, and score are summarized through an in-page event from the assignment dashboard. Private link tokens are not included.
+- Archived students can be reviewed but cannot start another timed session.
+
+No timer state is stored in Supabase. The durable coaching record remains the existing `coaching_sessions` row created only when the teacher saves the form.
+
+## Coach-controlled student workspace
+
+The workspace is a coach-owned publication surface, not an independent learner dashboard:
+
+- One `student_workspaces` row and permanent bearer link belong to each teacher-managed student.
+- The coach chooses the instructions, homework and due date, curriculum lesson, optional FEN position, and secure Live Board **student** link.
+- All currently published puzzle assignments for that student appear automatically with completion and score. The workspace token can open and save only assignments belonging to the same active student and teacher.
+- Students do not register, browse the coach dashboard, change assignments, or select their own curriculum.
+- The coach can pause the workspace while preserving its setup, or replace the permanent link to revoke the old token immediately.
+- Plaintext workspace tokens stay in the coach browser; Supabase stores only SHA-256 hashes. A missing local token must be replaced, not recovered from the database.
 
 ## Database migrations
 
@@ -43,6 +70,9 @@ supabase/migrations/007_management_audit_log.sql
 supabase/migrations/008_management_approval_policies.sql
 supabase/migrations/009_platform_admin_management.sql
 supabase/migrations/010_teacher_puzzle_assignments.sql
+supabase/migrations/20260722151113_add_live_board_rooms.sql
+supabase/migrations/20260722152107_fix_live_board_pgcrypto_search_path.sql
+supabase/migrations/20260727054209_coach_controlled_student_workspace.sql
 ```
 
 Migrations 006 through 009 add the V2.1 hardening foundation:
@@ -57,6 +87,8 @@ Migrations 006 through 009 add the V2.1 hardening foundation:
 The migrations automatically approve existing teacher accounts and assign the earliest existing teacher as the first platform administrator. New teachers start as pending.
 
 Migration 010 adds teacher-owned puzzle assignments, frozen position snapshots, per-student assignment records, attempts/results, token-scoped student RPCs, and cascading cleanup policies.
+
+Migration `20260727054209` adds teacher-owned student workspaces, RLS policies, revocable permanent-link hashes, token-scoped read access, and workspace-authorized puzzle loading/saving. Apply it before loading the new editor; the static frontend does not modify production schema itself.
 
 ## Teacher puzzle assignments
 
@@ -138,6 +170,12 @@ Test at minimum:
 12. Teacher generates an assignment, previews/replaces positions, publishes it, and copies a student-specific private link.
 13. Student opens the link without a management login, completes positions, and the teacher sees progress and scores.
 14. Archive disables access, restore re-enables it, duplicate produces new tokens, and permanent deletion removes all dependent assignment records.
+15. Starting a coaching session shows the timer, restores it after a dashboard reload, opens the recommended lesson and Live Board, and prefills duration/lesson when ending.
+16. Switching students keeps the active session associated with its original student and requires confirmation before replacing it.
+17. Teacher creates a workspace, copies the permanent private link, and the student sees only the selected instructions, homework, lesson, position, Live Board invitation, and published puzzle work.
+18. Student completes a workspace puzzle assignment and the same score/progress appears in both the workspace and `/management`.
+19. Pausing the workspace blocks the student page; replacing its link blocks the old URL and enables only the new URL.
+20. A workspace link for Student A cannot open or save a puzzle-assignment row belonging to Student B.
 
 ## Production boundaries
 

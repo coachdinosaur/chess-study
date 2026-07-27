@@ -1,0 +1,248 @@
+.student-workspace-editor {
+  overflow: hidden;
+}
+
+.student-workspace-heading {
+  align-items: flex-start;
+}
+
+.student-workspace-kicker {
+  margin: 0 0 5px;
+  color: var(--accent);
+  font-size: .78rem;
+  font-weight: 900;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+
+.student-workspace-editor .status {
+  margin-bottom: 14px;
+}
+
+.student-workspace-publish-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #09171a;
+}
+
+.student-workspace-publish-row p {
+  margin: 0;
+  font-size: .86rem;
+}
+
+.student-workspace-two-column {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  align-items: start;
+}
+
+.student-workspace-position {
+  min-width: 0;
+  margin: 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.student-workspace-position legend {
+  padding: 0 7px;
+  color: var(--accent-strong);
+  font-weight: 800;
+}
+
+.student-workspace-position input {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .86rem;
+}
+
+.student-workspace-actions {
+  padding-top: 2px;
+}
+
+.student-workspace-page {
+  --workspace-surface: #0b191c;
+  min-height: 100vh;
+}
+
+.student-workspace-loading,
+.student-workspace-error {
+  width: min(720px, calc(100% - 32px));
+  margin: 12vh auto 0;
+  padding: clamp(24px, 5vw, 44px);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--panel);
+  text-align: center;
+}
+
+.student-workspace-shell {
+  width: min(1120px, calc(100% - 28px));
+  margin: 0 auto;
+  padding: 28px 0 60px;
+}
+
+.student-workspace-hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+  padding: clamp(22px, 4vw, 38px);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 92% 10%, rgba(130, 213, 178, .16), transparent 22rem),
+    var(--panel);
+}
+
+.student-workspace-eyebrow {
+  margin: 0 0 8px;
+  color: var(--accent);
+  font-size: .78rem;
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.student-workspace-hero h1 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 4rem);
+  line-height: 1;
+  letter-spacing: -.045em;
+}
+
+.student-workspace-hero p {
+  margin-bottom: 0;
+}
+
+.student-workspace-updated {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: .85rem;
+}
+
+.student-workspace-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(300px, .95fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.student-workspace-column {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+}
+
+.student-workspace-card {
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--workspace-surface);
+}
+
+.student-workspace-card h2,
+.student-workspace-card h3,
+.student-workspace-card p {
+  margin-top: 0;
+}
+
+.student-workspace-card p:last-child {
+  margin-bottom: 0;
+}
+
+.student-workspace-instructions {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+}
+
+.student-workspace-copy {
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+.student-workspace-due {
+  display: inline-flex;
+  margin-top: 8px;
+}
+
+.student-workspace-board {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  width: min(100%, 480px);
+  aspect-ratio: 1;
+  margin: 14px auto;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.student-workspace-square {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+}
+
+.student-workspace-square.light {
+  background: #d7e6dc;
+}
+
+.student-workspace-square.dark {
+  background: #5b8876;
+}
+
+.student-workspace-piece {
+  width: 84%;
+  height: 84%;
+  pointer-events: none;
+  user-select: none;
+}
+
+.student-workspace-task-list {
+  display: grid;
+  gap: 10px;
+}
+
+.student-workspace-task {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+}
+
+.student-workspace-task h3,
+.student-workspace-task p {
+  margin: 0;
+}
+
+.student-workspace-task p {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: .88rem;
+}
+
+@media (max-width: 760px) {
+  .student-workspace-two-column,
+  .student-workspace-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .student-workspace-publish-row,
+  .student-workspace-hero {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .student-workspace-task {
+    grid-template-columns: 1fr;
+  }
+}

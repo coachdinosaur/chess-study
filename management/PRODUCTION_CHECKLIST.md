@@ -12,8 +12,10 @@
 
 ## Database and access control
 
-- [ ] Migrations 001 through 009 are present in production.
+- [ ] Every file in `supabase/migrations` is present in production, including puzzle assignments and coach-controlled student workspaces.
 - [ ] RLS tests verify Teacher A cannot read or modify Teacher B's students, progress, or sessions.
+- [ ] Workspace-token tests verify a student can read only the selected coach content and their own published puzzle assignments.
+- [ ] Pausing a workspace or replacing its permanent link immediately blocks the previous bearer token.
 - [ ] Suspended teachers cannot read or write private coaching records.
 - [ ] Administrator RPCs reject ordinary teachers.
 - [ ] The final platform administrator cannot be removed or self-delete.

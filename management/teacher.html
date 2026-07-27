@@ -6,9 +6,10 @@
   <title>Teacher Dashboard | CD Digital Chess</title>
   <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
   <link rel="stylesheet" href="./management.css?v=20260723-hardening1">
-  <link rel="stylesheet" href="./teacher-search.css?v=20260723-hardening1">
+  <link rel="stylesheet" href="./teacher-search.css?v=20260727-coach-session1">
   <link rel="stylesheet" href="./hardening.css?v=20260723-hardening1">
   <link rel="stylesheet" href="./puzzle-assignments.css?v=20260726-puzzle-assignments1">
+  <link rel="stylesheet" href="./student-workspace.css?v=20260727-student-workspace1">
 </head>
 <body>
   <div class="portal-shell">
@@ -87,6 +88,126 @@
               <button id="saveStudentNotesButton" class="button-secondary" type="button">Save notes</button>
               <button id="exportStudentButton" class="button-secondary" type="button">Export student CSV</button>
             </div>
+          </article>
+
+          <article class="panel coach-session-command" id="coachSessionCommand" aria-labelledby="coachSessionCommandTitle">
+            <div class="section-head coach-session-command-head">
+              <div>
+                <p class="coach-session-kicker">Coach Session Command Center</p>
+                <h2 id="coachSessionCommandTitle">Prepare the next session</h2>
+                <p id="coachSessionSummary" class="panel-copy">Review the latest context, then start a focused coaching session.</p>
+              </div>
+              <span id="coachSessionState" class="chip">Ready</span>
+            </div>
+
+            <div class="coach-session-context">
+              <section class="coach-session-context-card" aria-labelledby="coachLastSessionLabel">
+                <span id="coachLastSessionLabel">Last session</span>
+                <strong id="coachLastSessionValue">No session recorded</strong>
+                <p id="coachLastSessionDetail">Start the first session when the student is ready.</p>
+              </section>
+              <section class="coach-session-context-card" aria-labelledby="coachNextStepLabel">
+                <span id="coachNextStepLabel">Next step</span>
+                <strong id="coachNextStepValue">Not set yet</strong>
+                <p id="coachNextStepDetail">Add a next step when logging the session.</p>
+              </section>
+              <section class="coach-session-context-card" aria-labelledby="coachRecommendedLessonLabel">
+                <span id="coachRecommendedLessonLabel">Recommended lesson</span>
+                <strong id="coachRecommendedLessonValue">Loading curriculum…</strong>
+                <p id="coachRecommendedLessonDetail">The recommendation follows the student's lesson progress.</p>
+              </section>
+              <section class="coach-session-context-card" aria-labelledby="coachAssignmentLabel">
+                <span id="coachAssignmentLabel">Latest puzzle work</span>
+                <strong id="coachAssignmentValue">Loading assignments…</strong>
+                <p id="coachAssignmentDetail">Recent assignment progress will appear here.</p>
+              </section>
+            </div>
+
+            <div class="coach-session-toolbar">
+              <div id="coachSessionTimer" class="coach-session-timer" hidden>
+                <span>Session running</span>
+                <strong id="coachSessionElapsed">00:00:00</strong>
+              </div>
+              <div class="inline-actions coach-session-actions">
+                <button id="startCoachSessionButton" class="button" type="button">Start coaching session</button>
+                <button id="endCoachSessionButton" class="button" type="button" hidden>End and log session</button>
+                <a id="openRecommendedLessonLink" class="button-secondary" href="../lessons/index.html" target="_blank" rel="noopener" hidden>Open recommended lesson</a>
+                <a class="button-secondary" href="../live-board.html" target="_blank" rel="noopener">Open Live Board</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel student-workspace-editor" id="studentWorkspacePanel" aria-labelledby="studentWorkspaceTitle">
+            <div class="section-head student-workspace-heading">
+              <div>
+                <p class="student-workspace-kicker">Coach-controlled student workspace</p>
+                <h2 id="studentWorkspaceTitle">One private link, controlled by you</h2>
+                <p id="studentWorkspaceDescription" class="panel-copy">Select a student to prepare their coach-controlled workspace.</p>
+              </div>
+              <span id="studentWorkspaceState" class="chip">Loading</span>
+            </div>
+
+            <div id="studentWorkspaceStatus" class="status" aria-live="polite" hidden></div>
+
+            <form id="studentWorkspaceForm" class="form-grid" hidden>
+              <div class="student-workspace-publish-row">
+                <label class="checkbox-row">
+                  <input id="studentWorkspacePublished" type="checkbox" checked>
+                  Publish this workspace
+                </label>
+                <p class="muted">Pause it to make the private link unavailable without deleting the coach setup.</p>
+              </div>
+
+              <div class="form-row">
+                <label for="studentWorkspaceInstructions">Coach instructions</label>
+                <textarea id="studentWorkspaceInstructions" maxlength="4000" placeholder="A short personal message: what to focus on, how to work, and what to bring to the next lesson."></textarea>
+              </div>
+
+              <div class="student-workspace-two-column">
+                <div class="form-row">
+                  <label for="studentWorkspaceHomework">Homework</label>
+                  <textarea id="studentWorkspaceHomework" maxlength="4000" placeholder="The work you want this student to complete."></textarea>
+                </div>
+                <div class="form-row">
+                  <label for="studentWorkspaceDueAt">Homework due</label>
+                  <input id="studentWorkspaceDueAt" type="datetime-local">
+                </div>
+              </div>
+
+              <div class="student-workspace-two-column">
+                <div class="form-row">
+                  <label for="studentWorkspaceLesson">Assigned lesson</label>
+                  <select id="studentWorkspaceLesson">
+                    <option value="">No assigned lesson</option>
+                  </select>
+                </div>
+                <div class="form-row">
+                  <label for="studentWorkspaceLiveBoardUrl">Live Board student link</label>
+                  <input id="studentWorkspaceLiveBoardUrl" type="url" maxlength="2048" placeholder="Paste the secure student link from Live Board">
+                </div>
+              </div>
+
+              <fieldset class="student-workspace-position">
+                <legend>Assigned position</legend>
+                <div class="student-workspace-two-column">
+                  <div class="form-row">
+                    <label for="studentWorkspacePositionTitle">Position title</label>
+                    <input id="studentWorkspacePositionTitle" maxlength="160" placeholder="Rook ending: active king">
+                  </div>
+                  <div class="form-row">
+                    <label for="studentWorkspacePositionFen">FEN</label>
+                    <input id="studentWorkspacePositionFen" maxlength="200" spellcheck="false" placeholder="Paste a legal FEN">
+                  </div>
+                </div>
+              </fieldset>
+
+              <div class="inline-actions student-workspace-actions">
+                <button id="saveStudentWorkspaceButton" class="button" type="submit">Save workspace</button>
+                <button id="copyStudentWorkspaceLinkButton" class="button-secondary" type="button" hidden disabled>Copy private link</button>
+                <a id="openStudentWorkspaceLink" class="button-secondary" href="#" target="_blank" rel="noopener" hidden>Preview as student</a>
+                <button id="reissueStudentWorkspaceLinkButton" class="button-danger" type="button" hidden>Replace private link</button>
+              </div>
+            </form>
           </article>
 
           <article class="panel" id="sessionPanel">
@@ -179,8 +300,9 @@
   </div>
 
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  <script type="module" src="./js/teacher-dashboard.mjs?v=20260723-management-v2"></script>
+  <script type="module" src="./js/teacher-dashboard.mjs?v=20260727-coach-session1"></script>
   <script type="module" src="./js/teacher-shell.mjs?v=20260723-hardening1"></script>
-  <script type="module" src="./js/puzzle-assignment-dashboard.mjs?v=20260726-puzzle-assignments1"></script>
+  <script type="module" src="./js/puzzle-assignment-dashboard.mjs?v=20260727-coach-session1"></script>
+  <script type="module" src="./js/student-workspace-dashboard.mjs?v=20260727-student-workspace1"></script>
 </body>
 </html>
