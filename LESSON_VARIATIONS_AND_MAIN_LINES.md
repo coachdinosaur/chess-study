@@ -6,7 +6,7 @@ This document defines how the main app records and presents branching lesson lin
 
 Every position may have one preferred continuation.
 
-- The first move recorded from a position becomes that position's main line.
+- The first move recorded from a position becomes the main line.
 - A later new move from the same position is added as a variation.
 - Opening or replaying a variation does not automatically promote it.
 - Main-line changes require the explicit **Make main line** action.
@@ -69,7 +69,7 @@ There is no special sub-variation file type or separate storage system. The less
 
 ## Comments and PGN punctuation
 
-The app's notation view displays comments as styled prose without surrounding punctuation.
+The app's notation view displays comments as styled prose. Main-line comments are visually enclosed in parentheses so they remain distinct from the following move. Comments inside a variation use the variation's surrounding parentheses, avoiding doubled punctuation.
 
 PGN files retain standard syntax:
 
@@ -81,7 +81,7 @@ PGN files retain standard syntax:
 - `(variation)` is a recursive annotation variation.
 - Nested parentheses represent sub-variations.
 
-Parentheses cannot replace comment braces in exported PGN because PGN readers interpret parentheses as moves branching from the current position. The app may hide braces visually, but its import and export must preserve the standard distinction.
+Parentheses cannot replace comment braces in exported PGN because PGN readers interpret parentheses as moves branching from the current position. The app may add visual punctuation, but its import and export must preserve the standard distinction.
 
 ## Persistence and compatibility
 
