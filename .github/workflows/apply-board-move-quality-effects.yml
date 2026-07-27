@@ -1,0 +1,47 @@
+name: Apply board move-quality effects
+
+on:
+  push:
+    branches:
+      - feature/board-move-quality-effects
+    paths:
+      - 'tools/apply_board_move_quality_effects.py'
+      - '.github/workflows/apply-board-move-quality-effects.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/board-move-quality-effects
+          fetch-depth: 1
+          show-progress: false
+
+      - name: Apply board effect changes
+        run: python tools/apply_board_move_quality_effects.py
+
+      - name: Validate board move-quality effects
+        run: |
+          node --check app.js
+          node --check move-annotations.mjs
+          node --test tests/move-annotations.test.mjs
+          node --test tests/lesson-data-foundation.test.mjs
+          node --test tests/lesson-position-interoperability.test.mjs
+          node --test tests/lesson-variation-tree.test.mjs
+          grep -q 'move-quality-board-effect' app.js
+          grep -q 'move-quality-board-effect' styles.css
+          git diff --check
+
+      - name: Commit implementation
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app.js styles.css USER_GUIDE.md
+          git commit -m "Show move-quality glyphs on the board"
+          git push origin HEAD:feature/board-move-quality-effects
