@@ -8555,6 +8555,12 @@ function handleDocumentContextMenu(event) {
     openMoveAnnotationMenu(notationMove.dataset.nodeId || '', event.clientX, event.clientY);
     return;
   }
+  if (state.boardOnlyMode && event.shiftKey) {
+    event.preventDefault();
+    event.stopPropagation();
+    state.annotations.suppressContextMenu = false;
+    return;
+  }
   const square = squareFromEventTarget(event.target);
   if (annotationsVisible() && square) {
     event.preventDefault();
