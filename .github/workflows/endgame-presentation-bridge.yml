@@ -8,6 +8,7 @@ on:
       - opened
       - synchronize
       - reopened
+      - edited
     paths:
       - '.github/endgame-presentation-trigger'
       - '.github/endgame-presentation-payload.b64'
