@@ -12,11 +12,22 @@
     : "lesson-presentation-legacy.js?v=20260725-presentation-click-pulse-v5";
   var marker = isEndgame ? "data-endgame-presentation-runtime" : "data-lesson-presentation-legacy";
 
-  if (document.querySelector("script[" + marker + "]")) return;
+  if (!document.querySelector("script[" + marker + "]")) {
+    var script = document.createElement("script");
+    script.src = new URL(runtime, currentUrl).href;
+    script.async = false;
+    script.setAttribute(marker, "");
+    document.body.appendChild(script);
+  }
 
-  var script = document.createElement("script");
-  script.src = new URL(runtime, currentUrl).href;
-  script.async = false;
-  script.setAttribute(marker, "");
-  document.body.appendChild(script);
+  if (!document.querySelector("script[data-presentation-click-toggle-runtime]")) {
+    var toggleScript = document.createElement("script");
+    toggleScript.src = new URL(
+      "presentation-click-toggle.js?v=20260727-click-animation-toggle-v1",
+      currentUrl
+    ).href;
+    toggleScript.async = false;
+    toggleScript.setAttribute("data-presentation-click-toggle-runtime", "");
+    document.body.appendChild(toggleScript);
+  }
 })();
