@@ -17,6 +17,11 @@ on:
       - 'lesson-position-interoperability.mjs'
       - 'lesson-variation-tree.mjs'
       - 'focus-analysis-popup.mjs'
+      - 'lessons/endgame-lesson.js'
+      - 'lessons/lesson-presentation.js'
+      - 'lessons/lesson-presentation-legacy.js'
+      - 'lessons/endgame-presentation.js'
+      - 'lessons/endgame-presentation.css'
       - 'tests/lesson-*.test.mjs'
       - 'tests/move-annotations.test.mjs'
       - 'LESSON_DATA_ARCHITECTURE.md'
@@ -42,6 +47,11 @@ on:
       - 'lesson-position-interoperability.mjs'
       - 'lesson-variation-tree.mjs'
       - 'focus-analysis-popup.mjs'
+      - 'lessons/endgame-lesson.js'
+      - 'lessons/lesson-presentation.js'
+      - 'lessons/lesson-presentation-legacy.js'
+      - 'lessons/endgame-presentation.js'
+      - 'lessons/endgame-presentation.css'
       - 'tests/lesson-*.test.mjs'
       - 'tests/move-annotations.test.mjs'
       - 'LESSON_DATA_ARCHITECTURE.md'
@@ -75,10 +85,15 @@ jobs:
           node --check lesson-position-interoperability.mjs
           node --check lesson-variation-tree.mjs
           node --check focus-analysis-popup.mjs
+          node --check lessons/endgame-lesson.js
+          node --check lessons/lesson-presentation.js
+          node --check lessons/lesson-presentation-legacy.js
+          node --check lessons/endgame-presentation.js
 
-      - name: Run lesson foundation, interoperability, variation, and annotation tests
+      - name: Run lesson foundation, interoperability, variation, presentation, and annotation tests
         run: |
           node --test tests/move-annotations.test.mjs
+          node --test tests/lesson-endgame-presentation.test.mjs
           node --test tests/lesson-data-foundation.test.mjs
           node --test tests/lesson-position-interoperability.test.mjs
           node --test tests/lesson-variation-tree.test.mjs
