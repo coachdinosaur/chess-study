@@ -90,6 +90,11 @@ async function applyPreparedChallenge() {
     applyFenButton.click();
     await nextFrame();
 
+    const loadedFen = document.getElementById('setupFenCode')?.textContent?.trim().replace(/\s+/g, ' ');
+    if (loadedFen !== preparedChallenge.fen) {
+      throw new Error('The prepared starting position is invalid.');
+    }
+
     await clickTab('play');
 
     const skillSlider = document.getElementById('engineSkillSlider');
@@ -239,9 +244,17 @@ function lockPreparedControls(playPanel) {
   });
 
   const startPositionLabel = playPanel.querySelector('[data-select-id="playStartPositionSelect"] .custom-select-value');
-  if (startPositionLabel) {
+  if (startPositionLabel && startPositionLabel.textContent !== 'Prepared position') {
     startPositionLabel.textContent = 'Prepared position';
   }
+
+  document.querySelectorAll('[data-action="set-tab"]').forEach((button) => {
+    if (button.dataset.tab !== 'play') {
+      button.disabled = true;
+      button.setAttribute('aria-disabled', 'true');
+      button.title = 'This link opens a game prepared by your coach.';
+    }
+  });
 }
 
 function ensurePreparedNotice(playPanel) {
