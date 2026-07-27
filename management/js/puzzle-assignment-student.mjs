@@ -7,6 +7,7 @@ import {
 } from '../../lichess-position-training-core.mjs';
 import { PositionTrainingEvaluator } from '../../lichess-position-training-engine.mjs';
 import { getSupabase, readableError } from './supabase-client.mjs';
+import { studentWorkspaceLink } from './student-workspace-core.mjs';
 
 const PIECE_ASSETS = Object.freeze({
   w: Object.freeze({ k: '../assets/pieces/mpchess/wK.svg', q: '../assets/pieces/mpchess/wQ.svg', r: '../assets/pieces/mpchess/wR.svg', b: '../assets/pieces/mpchess/wB.svg', n: '../assets/pieces/mpchess/wN.svg', p: '../assets/pieces/mpchess/wP.svg' }),
@@ -54,6 +55,8 @@ const elements = {
 
 const app = {
   token: '',
+  studentAssignmentId: '',
+  workspaceMode: false,
   payload: null,
   puzzles: [],
   attempts: new Map(),
@@ -82,9 +85,22 @@ function escapeHtml(value) {
     .replaceAll("'", '&#039;');
 }
 
-function parseToken() {
+function parseAccess() {
   const params = new URLSearchParams(location.hash.replace(/^#/, ''));
-  return params.get('token') || '';
+  const workspaceToken = params.get('workspace') || '';
+  const studentAssignmentId = params.get('assignment') || '';
+  if (workspaceToken || studentAssignmentId) {
+    return {
+      token: workspaceToken,
+      studentAssignmentId,
+      workspaceMode: true,
+    };
+  }
+  return {
+    token: params.get('token') || '',
+    studentAssignmentId: '',
+    workspaceMode: false,
+  };
 }
 
 function formatDate(value) {
@@ -187,7 +203,10 @@ function elapsedSeconds() {
 
 async function saveAttempt({ finished, solved, firstAttempt = false, san = '' }) {
   const supabase = getSupabase();
-  const { data, error } = await supabase.rpc('save_puzzle_assignment_attempt', {
+  const rpcName = app.workspaceMode
+    ? 'save_workspace_puzzle_assignment_attempt'
+    : 'save_puzzle_assignment_attempt';
+  const args = {
     p_token: app.token,
     p_puzzle_id: app.puzzle.id,
     p_position_number: app.index + 1,
@@ -198,7 +217,9 @@ async function saveAttempt({ finished, solved, firstAttempt = false, san = '' })
     p_hints_used: app.hintsUsed,
     p_elapsed_seconds: elapsedSeconds(),
     p_last_move_san: san,
-  });
+  };
+  if (app.workspaceMode) args.p_student_assignment_id = app.studentAssignmentId;
+  const { data, error } = await supabase.rpc(rpcName, args);
   if (error) throw error;
   app.lastSave = data;
   app.payload.progress = { ...app.payload.progress, status: data.status, score: data.score };
@@ -406,16 +427,27 @@ function showResults() {
       <div><strong>${hints}</strong><span>Hints</span></div>
     </div>
     <p>${score >= app.payload.assignment.passing_score ? 'Passing target reached.' : `Passing target: ${app.payload.assignment.passing_score}%.`}</p>
-    <a class="button-secondary" href="../index.html">Return to CD Digital Chess</a>
+    <a class="button-secondary" href="${app.workspaceMode ? studentWorkspaceLink(app.token) : '../index.html'}">${app.workspaceMode ? 'Return to my workspace' : 'Return to CD Digital Chess'}</a>
   `;
 }
 
 async function initialize() {
   try {
-    app.token = parseToken();
+    const access = parseAccess();
+    app.token = access.token;
+    app.studentAssignmentId = access.studentAssignmentId;
+    app.workspaceMode = access.workspaceMode;
     if (!app.token) throw new Error('The assignment link is missing its access token.');
+    if (app.workspaceMode && !app.studentAssignmentId) {
+      throw new Error('The student workspace assignment link is incomplete.');
+    }
     const supabase = getSupabase();
-    const { data, error } = await supabase.rpc('get_puzzle_assignment_by_token', { p_token: app.token });
+    const rpcName = app.workspaceMode
+      ? 'get_workspace_puzzle_assignment'
+      : 'get_puzzle_assignment_by_token';
+    const args = { p_token: app.token };
+    if (app.workspaceMode) args.p_student_assignment_id = app.studentAssignmentId;
+    const { data, error } = await supabase.rpc(rpcName, args);
     if (error) throw error;
     app.payload = data;
     app.puzzles = Array.isArray(data.puzzles) ? data.puzzles : [];

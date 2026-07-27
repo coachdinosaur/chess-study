@@ -120,6 +120,102 @@
   min-height: 88px;
 }
 
+.coach-session-command {
+  position: relative;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--accent) 42%, var(--line));
+  background:
+    radial-gradient(circle at 100% 0, color-mix(in srgb, var(--accent) 13%, transparent), transparent 22rem),
+    color-mix(in srgb, var(--panel) 94%, transparent);
+}
+
+.coach-session-command::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--accent);
+}
+
+.coach-session-command-head {
+  align-items: flex-start;
+}
+
+.coach-session-kicker {
+  margin: 0 0 6px !important;
+  color: var(--accent-strong);
+  font-size: .76rem;
+  font-weight: 900;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.coach-session-context {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.coach-session-context-card {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: color-mix(in srgb, #09171a 88%, transparent);
+}
+
+.coach-session-context-card > span,
+.coach-session-timer > span {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--muted);
+  font-size: .74rem;
+  font-weight: 850;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.coach-session-context-card > strong {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.coach-session-context-card > p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: .88rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.coach-session-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: end;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid color-mix(in srgb, var(--line) 75%, transparent);
+}
+
+.coach-session-timer {
+  flex: 0 0 auto;
+}
+
+.coach-session-timer > strong {
+  color: var(--accent-strong);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 1.3rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .04em;
+}
+
+.coach-session-actions {
+  justify-content: flex-end;
+  margin-top: 0;
+}
+
 input:disabled,
 textarea:disabled,
 select:disabled {
@@ -137,12 +233,22 @@ select:disabled {
 @media (max-width: 700px) {
   .curriculum-filters,
   .student-filters,
-  .session-form-grid {
+  .session-form-grid,
+  .coach-session-context {
     grid-template-columns: 1fr;
     width: 100%;
   }
 
   .student-detail-head {
     align-items: flex-start;
+  }
+
+  .coach-session-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .coach-session-actions {
+    justify-content: flex-start;
   }
 }

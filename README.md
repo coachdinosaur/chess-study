@@ -1,6 +1,6 @@
 # Chess Lesson Study Board
 
-A framework-free, browser-based chess teaching and study application. It combines a position editor, lesson-tree authoring, Stockfish analysis, tablebase support, practice drills, Play vs Stockfish, separate Endgame Puzzle and Position Study modes, teacher-managed student puzzle assignments, static course lessons with classroom presentation and Teacher Board tools, a synchronized teacher/student Live Board, and an optional AI chess-help panel.
+A framework-free, browser-based chess teaching and study application. It combines a position editor, lesson-tree authoring, Stockfish analysis, tablebase support, practice drills, Play vs Stockfish, separate Endgame Puzzle and Position Study modes, coach-controlled student workspaces and puzzle assignments, static course lessons with classroom presentation and Teacher Board tools, a synchronized teacher/student Live Board, and an optional AI chess-help panel.
 
 ## Live app
 
@@ -34,6 +34,8 @@ For local Windows setup, see [LOCAL_DEPLOYMENT.md](LOCAL_DEPLOYMENT.md).
 - Present supported lessons scene by scene with Previous, Reveal, Reset, Next, Exit, keyboard shortcuts, fullscreen support, and a visible click pulse for classroom projection.
 - Open the floating Teacher Board from supported lesson pages to load Page, Start, Empty, or prepared CSV positions; set the side to move; place pieces; annotate; take back; flip; and reset.
 - Create a secure synchronized Live Board room for a teacher and student, including student-move locking, FEN and lesson-position loading, move history, and session messages.
+- Run a selected student's lesson from the management Coach Session Command Center, with the latest session, next step, curriculum recommendation, puzzle progress, timer, lesson access, Live Board access, and session-log handoff in one workflow.
+- Publish one permanent private workspace per student—without a student account—and control its instructions, homework, due date, assigned lesson, FEN position, Live Board invitation, puzzle work, and visible results from `/management`.
 - Ask the optional Dyno Bot panel about the visible position and notation on supported desktop-sized layouts.
 
 ## Workspace
@@ -351,6 +353,9 @@ The floating Teacher Board also evaluates the embedded FEN after moves and posit
 | `lichess-position-training-learning.mjs` | Adaptive rating, hint accounting, theme metrics, and Mistake Review state |
 | `position-study-single-hint-patch.mjs` | Active one-use piece-hint behavior, `Hint used` state, launcher copy, and suppression of generic explanation panels |
 | `assets/puzzles/lichess-position-training/` | Production manifest and 1,200 immutable 25-puzzle shards (30,000 positions) |
+| `management/teacher.html` / `management/js/teacher-dashboard.mjs` | Private coach dashboard, student records, curriculum progress, session command center, and coaching-session logs |
+| `management/js/coach-session-command.mjs` | Session recommendation, elapsed-time, and reload-safe timer-state helpers |
+| `management/student-workspace.html` / `management/js/student-workspace*.mjs` | Permanent token-scoped student workspace plus the coach-only editor and puzzle-assignment handoff |
 | `lesson-position-builder.mjs` | CSV/XLSX lesson-position workflow |
 | `text-normalization.mjs` | Unicode and punctuation normalization |
 | `ai-help-chat.mjs` | Dyno Bot UI, context collection, request lifecycle |

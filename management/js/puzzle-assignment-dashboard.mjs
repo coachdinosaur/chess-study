@@ -66,6 +66,37 @@ function currentStudent() {
   return state.students.find((student) => student.id === id) || null;
 }
 
+function dispatchCoachAssignmentSummary() {
+  const studentId = selectedStudentFromMainDashboard();
+  if (!studentId) return;
+
+  const assignment = state.assignments.find((item) =>
+    state.studentAssignments.some((row) =>
+      row.assignment_id === item.id && row.student_id === studentId
+    )
+  ) || null;
+  const row = assignment
+    ? state.studentAssignments.find((item) =>
+      item.assignment_id === assignment.id && item.student_id === studentId
+    )
+    : null;
+
+  document.dispatchEvent(new CustomEvent('coach-session:assignment-summary', {
+    detail: {
+      studentId,
+      assignment: assignment && row ? {
+        id: assignment.id,
+        title: assignment.title,
+        status: row.status,
+        currentIndex: Number(row.current_index) || 0,
+        puzzleCount: Number(assignment.puzzle_count) || 0,
+        score: Number(row.score) || 0,
+        dueAt: assignment.due_at || '',
+      } : null,
+    },
+  }));
+}
+
 function setLocalStatus(message = '', tone = '') {
   const element = document.querySelector('#puzzleAssignmentStatus');
   if (!element) return;
@@ -454,6 +485,7 @@ function renderHistory() {
   if (!list) return;
   if (!state.assignments.length) {
     list.innerHTML = '<div class="empty">No puzzle assignments have been published yet.</div>';
+    dispatchCoachAssignmentSummary();
     return;
   }
   const students = new Map(state.students.map((student) => [student.id, student]));
@@ -483,6 +515,7 @@ function renderHistory() {
       </article>
     `;
   }).join('');
+  dispatchCoachAssignmentSummary();
 }
 
 async function copyStudentLink(rowId) {
@@ -552,6 +585,7 @@ function bindEvents() {
         document.querySelector('#puzzleAssignmentLevel').value = selected.puzzle_level || 'advanced_beginner';
         applyPreset(selected.puzzle_level || 'advanced_beginner');
       }
+      dispatchCoachAssignmentSummary();
     });
   });
 }
@@ -562,9 +596,17 @@ async function initialize() {
     if (!state.profile) return;
     injectInterface();
     await Promise.all([loadStudents(), loadAssignmentHistory()]);
+    dispatchCoachAssignmentSummary();
   } catch (error) {
     setLocalStatus(readableError(error), 'error');
   }
 }
+
+document.addEventListener('coach-session:request-assignment-summary', (event) => {
+  const studentId = event.detail?.studentId;
+  if (typeof studentId !== 'string' || !studentId) return;
+  state.currentStudentId = studentId;
+  dispatchCoachAssignmentSummary();
+});
 
 initialize();

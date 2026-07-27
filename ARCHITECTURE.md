@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-Chess Lesson Study Board is a framework-free chess teaching platform served as static files. The repository combines an interactive single-page application, browser Stockfish, Lichess tablebase requests, separate legacy Endgame Puzzle and user-facing Position Study runtimes, teacher-managed student puzzle assignments, static lesson sites with classroom presentation and a floating Teacher Board, a synchronized teacher/student Live Board, an optional AI-help panel, and optional local Python helpers.
+Chess Lesson Study Board is a framework-free chess teaching platform served as static files. The repository combines an interactive single-page application, browser Stockfish, Lichess tablebase requests, separate legacy Endgame Puzzle and user-facing Position Study runtimes, coach-controlled student workspaces and puzzle assignments, static lesson sites with classroom presentation and a floating Teacher Board, a synchronized teacher/student Live Board, an optional AI-help panel, and optional local Python helpers.
 
 There is no bundler and no application build step. Production assets are the committed HTML, CSS, JavaScript, WASM, fonts, images, and data files themselves.
 
@@ -175,13 +175,21 @@ focus-analysis-popup.mjs
     └── lichess-position-training-learning.mjs
 
 management/teacher.html
+├── teacher-dashboard.mjs
+│   └── coach-session-command.mjs
 ├── puzzle-assignment-dashboard.mjs
-└── puzzle-assignment-lifecycle.mjs
-    └── Supabase assignment RPCs and RLS
+├── puzzle-assignment-lifecycle.mjs
+└── student-workspace-dashboard.mjs
+    └── teacher-owned Supabase rows and RLS
 
 management/assignment.html
 └── puzzle-assignment-student.mjs
-    └── token-scoped Supabase assignment access
+    ├── per-assignment token access
+    └── student-workspace token access
+
+management/student-workspace.html
+└── student-workspace.mjs
+    └── permanent token-scoped workspace RPCs
 
 ai-help-chat.mjs
 ├── ai-help-config.mjs
@@ -229,7 +237,10 @@ live-board.html
 | `lichess-position-training-engine.mjs` | Resolves terminal states, tablebase positions, and Stockfish scores from the solver's perspective |
 | `lichess-position-training-learning.mjs` | Adaptive rating, hint accounting, theme metrics, and Mistake Review scheduling |
 | `position-study-single-hint-patch.mjs` | Active one-use source-piece hint, `Hint used` state, launcher copy, and suppression of generic success/mistake explanations |
+| `management/js/teacher-dashboard.mjs` | Teacher-owned students, curriculum progress, coaching-session records, and Coach Session Command Center orchestration |
+| `management/js/coach-session-command.mjs` | Pure lesson recommendation, elapsed-time, and sessionStorage validation helpers for an active coaching session |
 | `management/js/puzzle-assignment-*.mjs` | Teacher assignment selection/lifecycle and token-scoped student assignment runtime |
+| `management/js/student-workspace*.mjs` | Coach-only workspace editing, permanent-link generation, token-scoped student rendering, and assignment-link authorization |
 | `lesson-position-builder.mjs` | CSV/XLSX import, field normalization, position-set CRUD, persistence, and builder UI |
 | `lesson-model.mjs` / `lesson-migrations.mjs` | Versioned lesson contracts, normalization, stable IDs, compatibility detection, and non-destructive migration |
 | `lesson-position-adapter.mjs` | Converts rich lesson roots or selected nodes to flat positions and converts position sets into lesson documents/books |
