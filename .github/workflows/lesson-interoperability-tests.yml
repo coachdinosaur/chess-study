@@ -22,6 +22,7 @@ on:
       - 'lessons/lesson-presentation-legacy.js'
       - 'lessons/endgame-presentation.js'
       - 'lessons/endgame-presentation.css'
+      - 'lessons/presentation-click-toggle.js'
       - 'tests/lesson-*.test.mjs'
       - 'tests/move-annotations.test.mjs'
       - 'LESSON_DATA_ARCHITECTURE.md'
@@ -52,6 +53,7 @@ on:
       - 'lessons/lesson-presentation-legacy.js'
       - 'lessons/endgame-presentation.js'
       - 'lessons/endgame-presentation.css'
+      - 'lessons/presentation-click-toggle.js'
       - 'tests/lesson-*.test.mjs'
       - 'tests/move-annotations.test.mjs'
       - 'LESSON_DATA_ARCHITECTURE.md'
@@ -89,6 +91,7 @@ jobs:
           node --check lessons/lesson-presentation.js
           node --check lessons/lesson-presentation-legacy.js
           node --check lessons/endgame-presentation.js
+          node --check lessons/presentation-click-toggle.js
 
       - name: Run lesson foundation, interoperability, variation, presentation, and annotation tests
         run: |
