@@ -110,10 +110,32 @@ jobs:
           exit 1
 
       - name: Commit generated feature
+        id: commit
+        shell: bash
         run: |
+          set +e
           rm -f bootstrap.log validation.log tools/apply_move_annotation_runtime.py
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "Add move annotation glyphs"
-          git push origin HEAD:feature/move-annotation-glyphs
+          {
+            git add -A
+            git commit -m "Add move annotation glyphs"
+            git push origin HEAD:feature/move-annotation-glyphs
+          } > commit.log 2>&1
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Upload commit log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: move-annotation-commit-log
+          path: commit.log
+          if-no-files-found: error
+
+      - name: Stop after commit failure
+        if: steps.commit.outputs.status != '0'
+        run: |
+          cat commit.log
+          exit 1
