@@ -27,7 +27,7 @@ For local Windows setup, see [LOCAL_DEPLOYMENT.md](LOCAL_DEPLOYMENT.md).
 - Probe the public Lichess tablebase for eligible endgames.
 - Practice a selected line or drill any recorded branch.
 - Play against Stockfish with Elo, side, speed, starting-position, and clock settings.
-- Train in separate Endgame Puzzle and Position Study modes, with a current production library of 30,000 validated Lichess-derived positions.
+- Train in separate Endgame Puzzle and Position Study modes, with a current production library of 50,000 validated Lichess-derived positions.
 - Review CSV/XLSX position sets in the Position Set Builder and open or convert them into Study and Analysis lessons.
 - Identify openings from the bundled ECO/opening database.
 - Use static Pawn, Advanced Pawn, Bishop, and numbered endgame lesson pages in `lessons/`.
@@ -147,7 +147,7 @@ Endgame sessions reuse the Play-vs-Engine move machinery but are untimed.
 
 ### Position Study
 
-Position Study is a separate objective-preservation trainer backed by 30,000 validated Lichess-derived positions in 1,200 shards of 25 records. The interface reads the total from the dataset manifest, loads shards on demand, and caches successfully fetched JSON in IndexedDB.
+Position Study is a separate objective-preservation trainer backed by 50,000 validated Lichess-derived positions in 2,000 shards of 25 records. The interface reads the total from the dataset manifest, loads shards on demand, and caches successfully fetched JSON in IndexedDB.
 
 Position Study is the user-facing name. Existing module filenames, asset paths, browser-storage keys, and IndexedDB names retain the `lichess-position-training` identifier for compatibility.
 
@@ -352,7 +352,7 @@ The floating Teacher Board also evaluates the embedded FEN after moves and posit
 | `lichess-position-training-engine.mjs` | Solver-relative tablebase and Stockfish evaluation, including terminal-state handling |
 | `lichess-position-training-learning.mjs` | Adaptive rating, hint accounting, theme metrics, and Mistake Review state |
 | `position-study-single-hint-patch.mjs` | Active one-use piece-hint behavior, `Hint used` state, launcher copy, and suppression of generic explanation panels |
-| `assets/puzzles/lichess-position-training/` | Production manifest and 1,200 immutable 25-puzzle shards (30,000 positions) |
+| `assets/puzzles/lichess-position-training/` | Production manifest and 2,000 immutable 25-puzzle shards (50,000 positions) |
 | `management/teacher.html` / `management/js/teacher-dashboard.mjs` | Private coach dashboard, student records, curriculum progress, session command center, and coaching-session logs |
 | `management/js/coach-session-command.mjs` | Session recommendation, elapsed-time, and reload-safe timer-state helpers |
 | `management/student-workspace.html` / `management/js/student-workspace*.mjs` | Permanent token-scoped student workspace plus the coach-only editor and puzzle-assignment handoff |
