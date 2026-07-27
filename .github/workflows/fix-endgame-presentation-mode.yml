@@ -1,0 +1,445 @@
+name: Repair endgame lesson presentation
+
+on:
+  push:
+    branches:
+      - fix/endgame-presentation-mode
+    paths:
+      - '.github/workflows/fix-endgame-presentation-mode.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/endgame-presentation-mode
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Repair endgame scene collection and layout
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path, old, new):
+              file_path = Path(path)
+              text = file_path.read_text(encoding='utf-8')
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{path}: expected one anchor, found {count}')
+              file_path.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          js = 'lessons/lesson-presentation.js'
+
+          replace_once(
+              js,
+              '  var bishopLesson = false;\n  var iframePointerDocuments = new WeakSet();',
+              '  var bishopLesson = false;\n  var endgameLesson = false;\n  var iframePointerDocuments = new WeakSet();',
+          )
+
+          replace_once(
+              js,
+              '''  function isBishopLessonPage() {
+    if (/(?:^|\\/)bishop(?:-m\\d+)?-[^/]+\\.html$/i.test(window.location.pathname)) return true;
+    var label = document.querySelector(".index-brand-label");
+    return Boolean(label && /bishop level/i.test(label.textContent || ""));
+  }
+''',
+              '''  function isBishopLessonPage() {
+    if (/(?:^|\\/)bishop(?:-m\\d+)?-[^/]+\\.html$/i.test(window.location.pathname)) return true;
+    var label = document.querySelector(".index-brand-label");
+    return Boolean(label && /bishop level/i.test(label.textContent || ""));
+  }
+
+  function isEndgameLessonPage() {
+    if (document.documentElement.getAttribute("data-lesson-series") === "endgame") return true;
+    return /(?:^|\\/)0[1-7]-[^/]+\\.html$/i.test(window.location.pathname);
+  }
+''',
+          )
+
+          replace_once(
+              js,
+              '      scene.offsetParent !== null\n',
+              '      (scene.offsetParent !== null || scene.classList.contains("presentation-generated-scene"))\n',
+          )
+
+          replace_once(
+              js,
+              '''  function bishopPositionCards(section) {
+''',
+              '''  function createGeneratedScene(parent, nodes, parentTitle, childTitle, className) {
+    var validNodes = uniqueElements(nodes || []).filter(function (node) {
+      return node && node.parentElement === parent;
+    });
+    if (!validNodes.length) return null;
+
+    var wrapper = document.createElement("section");
+    wrapper.className = "presentation-generated-scene " + (className || "");
+    wrapper.dataset.presentationTitle = parentTitle
+      ? parentTitle + (childTitle ? " · " + childTitle : "")
+      : childTitle || "Lesson section";
+    parent.insertBefore(wrapper, validNodes[0]);
+
+    if (parentTitle || childTitle) {
+      var context = document.createElement("div");
+      context.className = "presentation-generated-context";
+      if (parentTitle) {
+        var heading = document.createElement("h2");
+        heading.textContent = parentTitle;
+        context.appendChild(heading);
+      }
+      if (childTitle && !titlesEquivalent(parentTitle, childTitle)) {
+        var subheading = document.createElement("p");
+        subheading.textContent = childTitle;
+        context.appendChild(subheading);
+      }
+      wrapper.appendChild(context);
+    }
+
+    validNodes.forEach(function (node) {
+      wrapper.appendChild(node);
+    });
+    return wrapper;
+  }
+
+  function directChildTitle(node, fallback) {
+    if (!node) return fallback || "Lesson point";
+    var heading = node.querySelector(":scope > h2, :scope > h3, :scope > .position-label");
+    return textFrom(heading) || fallback || "Lesson point";
+  }
+
+  function bishopPositionCards(section) {
+''',
+          )
+
+          replace_once(
+              js,
+              '''  function collectStandardScenes() {
+''',
+              '''  function collectEndgameScenes() {
+    var result = [];
+    var root = document.querySelector(".lesson-page") || document.querySelector("main") || document.body;
+    var hero = root.querySelector(":scope > .hero");
+    var chapterTitle = textFrom(hero && hero.querySelector("h1")) || document.title || "Endgame lesson";
+    if (hero) result.push(hero);
+
+    var goals = root.querySelector(":scope > .goals");
+    if (goals) {
+      var goalsScene = createGeneratedScene(root, [goals], chapterTitle, "Learning goals", "presentation-endgame-goals-scene");
+      if (goalsScene) result.push(goalsScene);
+    }
+
+    root.querySelectorAll(":scope > .lesson").forEach(function (section) {
+      var parentTitle = sectionHeading(section) || chapterTitle;
+      var introNodes = directMatches(section, ["> .lesson-head", "> .lesson-intro"]);
+      var introScene = createGeneratedScene(
+        section,
+        introNodes,
+        parentTitle,
+        "Lesson introduction",
+        "presentation-endgame-intro-scene"
+      );
+      if (introScene) result.push(introScene);
+
+      var children = Array.prototype.slice.call(section.children);
+      var consumed = new Set();
+      children.forEach(function (child, index) {
+        if (!child || child === introScene || consumed.has(child)) return;
+        if (child.matches(".no-print, .source-note, .lesson-nav-row")) return;
+
+        if (child.matches(".position")) {
+          var positionTitle = directChildTitle(child, "Position " + (index + 1));
+          addPositionContext(child, parentTitle, positionTitle, index);
+          result.push(child);
+          return;
+        }
+
+        if (child.matches(".position-label")) {
+          var next = children[index + 1];
+          if (next && next.matches(".moveline")) {
+            var lineNodes = [child, next];
+            consumed.add(next);
+            var note = children[index + 2];
+            if (note && note.matches(".position-note.note-soft, .move-note, .line-note")) {
+              lineNodes.push(note);
+              consumed.add(note);
+            }
+            var lineScene = createGeneratedScene(
+              section,
+              lineNodes,
+              parentTitle,
+              textFrom(child) || "Main line",
+              "presentation-endgame-line-scene"
+            );
+            if (lineScene) result.push(lineScene);
+            return;
+          }
+        }
+
+        var childTitle = directChildTitle(child, "Lesson point " + (index + 1));
+        addPositionContext(child, parentTitle, childTitle, index);
+        result.push(child);
+      });
+    });
+
+    root.querySelectorAll(":scope > .test-section .test-card").forEach(function (card, index) {
+      var number = textFrom(card.querySelector(".test-number")) || "Test " + (index + 1);
+      var question = textFrom(card.querySelector(".test-question"));
+      card.dataset.presentationTitle = chapterTitle + " · " + number + (question ? " · " + question : "");
+      result.push(card);
+    });
+
+    root.querySelectorAll(":scope > .checklist").forEach(function (checklist) {
+      checklist.dataset.presentationTitle = chapterTitle + " · Chapter checklist";
+      result.push(checklist);
+    });
+
+    return finalizeScenes(result);
+  }
+
+  function collectStandardScenes() {
+''',
+          )
+
+          replace_once(
+              js,
+              '''  function collectScenes() {
+    return bishopLesson ? collectBishopScenes() : collectStandardScenes();
+  }
+''',
+              '''  function collectScenes() {
+    if (endgameLesson) return collectEndgameScenes();
+    return bishopLesson ? collectBishopScenes() : collectStandardScenes();
+  }
+''',
+          )
+
+          replace_once(
+              js,
+              '''    var positionLabel = scene.querySelector(".position-label, .position-meta");
+    if (positionLabel && textFrom(positionLabel)) return textFrom(positionLabel);
+''',
+              '''    var positionLabel = scene.querySelector(".position-label, .position-meta");
+    if (positionLabel && textFrom(positionLabel)) return textFrom(positionLabel);
+    var testNumber = scene.querySelector(".test-number");
+    if (testNumber && textFrom(testNumber)) return textFrom(testNumber);
+''',
+          )
+
+          replace_once(
+              js,
+              '''      scene.matches(".position, .position-card, .answer-card") ||
+''',
+              '''      scene.matches(".position, .position-card, .answer-card, .test-card") ||
+''',
+          )
+
+          replace_once(
+              js,
+              '''    bishopLesson = isBishopLessonPage();
+    if (bishopLesson) document.body.classList.add("lesson-presentation-bishop-page");
+''',
+              '''    bishopLesson = isBishopLessonPage();
+    endgameLesson = isEndgameLessonPage();
+    if (bishopLesson) document.body.classList.add("lesson-presentation-bishop-page");
+    if (endgameLesson) document.body.classList.add("lesson-presentation-endgame-page");
+''',
+          )
+
+          css = Path('lessons/lesson-presentation.css')
+          css_text = css.read_text(encoding='utf-8')
+          css_anchor = '''.presentation-generated-context{
+  display:none;
+}
+'''
+          css_insert = '''.presentation-generated-context{
+  display:none;
+}
+.presentation-generated-scene{
+  display:contents;
+}
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-current>.presentation-generated-context{
+  display:block !important;
+  width:min(1450px,100%);
+  margin:0 auto clamp(.8rem,1.8vh,1.4rem);
+}
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-current>.presentation-generated-context h2{
+  margin:0 0 .45rem !important;
+}
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-current>.presentation-generated-context p{
+  max-width:80ch;
+  margin:0 !important;
+  color:var(--ink-soft,var(--muted,#b9c6c3));
+}
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-current.presentation-generated-scene,
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-current.checklist,
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-current.rule-box,
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-current.recap{
+  width:min(1500px,100%) !important;
+  margin-inline:auto !important;
+}
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-current .lesson-head{
+  width:min(1450px,100%);
+  margin:0 auto clamp(1rem,2.3vh,1.8rem) !important;
+}
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-current .lesson-intro,
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-current.goals,
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-current .goals{
+  width:min(1100px,100%);
+  margin-inline:auto !important;
+}
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-position-scene .position-body{
+  width:min(1500px,100%);
+  display:grid !important;
+  grid-template-columns:minmax(420px,min(66vh,760px)) minmax(320px,1fr) !important;
+  gap:clamp(1.35rem,3.5vw,3.5rem) !important;
+  align-items:center !important;
+  margin:clamp(.5rem,1.5vh,1.25rem) auto 0 !important;
+}
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-position-scene .diagram{
+  width:min(66vh,760px) !important;
+  max-width:100% !important;
+  margin:0 auto !important;
+}
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-position-scene .board,
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-position-scene .board-screen,
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-position-scene .board-static,
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-position-scene .board-grid{
+  width:min(66vh,760px) !important;
+  max-width:100% !important;
+  aspect-ratio:1 / 1 !important;
+  margin-inline:auto !important;
+}
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-position-scene .board-iframe{
+  width:min(66vh,760px) !important;
+  height:min(66vh,760px) !important;
+  min-height:0 !important;
+  max-width:100% !important;
+  display:block;
+}
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-position-scene .position-note{
+  min-width:0;
+  padding:clamp(1rem,2vw,1.75rem) !important;
+  border:1px solid var(--panel-border,var(--line,#43545a));
+  border-radius:18px;
+  background:color-mix(in srgb,var(--panel-bg,var(--panel,#1b2a2e)) 94%,transparent);
+  box-shadow:0 18px 48px rgba(0,0,0,.16);
+}
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-position-scene .caption{
+  max-width:min(66vh,760px);
+  margin:.65rem auto 0 !important;
+  color:var(--ink-soft,var(--muted,#b9c6c3));
+  text-align:center;
+  font-size:clamp(.88rem,1vw,1.05rem) !important;
+}
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-current.test-card{
+  width:min(1250px,100%) !important;
+  display:grid !important;
+  grid-template-columns:minmax(420px,min(66vh,720px)) minmax(280px,1fr) !important;
+  grid-template-areas:"head head" "board question" "board fen";
+  gap:clamp(.8rem,2vw,1.5rem) clamp(1.35rem,3vw,3rem) !important;
+  align-content:center !important;
+  align-items:center !important;
+  margin-inline:auto !important;
+}
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-current.test-card>.test-card-head{grid-area:head;}
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-current.test-card>.test-question{grid-area:question;}
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-current.test-card>.test-diagram{grid-area:board;}
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-current.test-card>.test-fen{grid-area:fen;overflow-wrap:anywhere;}
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-current.test-card .board,
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-current.test-card .board-screen,
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-current.test-card .board-static,
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-current.test-card .board-grid,
+body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-current.test-card .board-iframe{
+  width:min(66vh,720px) !important;
+  height:min(66vh,720px) !important;
+  max-width:100% !important;
+  margin-inline:auto !important;
+}
+'''
+          if css_text.count(css_anchor) != 1:
+              raise SystemExit(f'lessons/lesson-presentation.css: expected one context anchor, found {css_text.count(css_anchor)}')
+          css_text = css_text.replace(css_anchor, css_insert, 1)
+
+          mobile_anchor = '''  body.lesson-presentation-active .presentation-scene.presentation-current.hero,body.lesson-presentation-active .presentation-current .board-and-notes,body.lesson-presentation-active .presentation-current .two-col,body.lesson-presentation-bishop-page.lesson-presentation-active .presentation-position-scene .position-body,body.lesson-presentation-bishop-page.lesson-presentation-active .presentation-current.presentation-compact-position-scene{
+    grid-template-columns:1fr !important;
+  }
+'''
+          mobile_replace = '''  body.lesson-presentation-active .presentation-scene.presentation-current.hero,body.lesson-presentation-active .presentation-current .board-and-notes,body.lesson-presentation-active .presentation-current .two-col,body.lesson-presentation-bishop-page.lesson-presentation-active .presentation-position-scene .position-body,body.lesson-presentation-bishop-page.lesson-presentation-active .presentation-current.presentation-compact-position-scene,body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-position-scene .position-body,body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-current.test-card{
+    grid-template-columns:1fr !important;
+  }
+  body.lesson-presentation-endgame-page.lesson-presentation-active .presentation-current.test-card{
+    grid-template-areas:"head" "question" "board" "fen";
+  }
+'''
+          if css_text.count(mobile_anchor) != 1:
+              raise SystemExit(f'lessons/lesson-presentation.css: expected one mobile anchor, found {css_text.count(mobile_anchor)}')
+          css_text = css_text.replace(mobile_anchor, mobile_replace, 1)
+          css.write_text(css_text, encoding='utf-8')
+
+          test = Path('tests/lesson-endgame-presentation.test.mjs')
+          test.write_text('''import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+
+const presentation = readFileSync(new URL('../lessons/lesson-presentation.js', import.meta.url), 'utf8');
+const presentationCss = readFileSync(new URL('../lessons/lesson-presentation.css', import.meta.url), 'utf8');
+const endgameRuntime = readFileSync(new URL('../lessons/endgame-lesson.js', import.meta.url), 'utf8');
+
+test('endgame lessons use their own complete scene collector', () => {
+  assert.match(presentation, /function isEndgameLessonPage\(\)/);
+  assert.match(presentation, /function collectEndgameScenes\(\)/);
+  assert.match(presentation, /root\.querySelectorAll\(\":scope > \\.lesson\"\)/);
+  assert.match(presentation, /root\.querySelectorAll\(\":scope > \\.test-section \\.test-card\"\)/);
+  assert.match(presentation, /if \(endgameLesson\) return collectEndgameScenes\(\)/);
+});
+
+test('endgame position and test scenes receive presentation layouts', () => {
+  assert.match(presentationCss, /lesson-presentation-endgame-page/);
+  assert.match(presentationCss, /presentation-generated-scene/);
+  assert.match(presentationCss, /presentation-position-scene \\.position-body/);
+  assert.match(presentationCss, /presentation-current\.test-card/);
+});
+
+test('the shared endgame runtime loads presentation mode', () => {
+  assert.match(endgameRuntime, /function loadLessonPresentation\(\)/);
+  assert.match(endgameRuntime, /lesson-presentation\.js/);
+});
+''', encoding='utf-8')
+
+          workflow = Path('.github/workflows/lesson-interoperability-tests.yml')
+          workflow_text = workflow.read_text(encoding='utf-8')
+          test_anchor = '          node --test tests/move-annotations.test.mjs\n'
+          test_insert = test_anchor + '          node --test tests/lesson-endgame-presentation.test.mjs\n'
+          if workflow_text.count(test_anchor) != 1:
+              raise SystemExit(f'CI workflow: expected one test anchor, found {workflow_text.count(test_anchor)}')
+          workflow.write_text(workflow_text.replace(test_anchor, test_insert, 1), encoding='utf-8')
+          PY
+
+          node --check lessons/lesson-presentation.js
+          node --check lessons/endgame-lesson.js
+          node --test tests/lesson-endgame-presentation.test.mjs
+          node --test tests/move-annotations.test.mjs
+          node --test tests/lesson-data-foundation.test.mjs
+          node --test tests/lesson-position-interoperability.test.mjs
+          node --test tests/lesson-variation-tree.test.mjs
+          git diff --check
+
+          rm .github/workflows/fix-endgame-presentation-mode.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "Complete endgame lesson presentation mode"
+          git push origin HEAD:fix/endgame-presentation-mode
