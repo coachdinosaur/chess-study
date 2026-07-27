@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-Chess Lesson Study Board is a framework-free chess teaching platform served as static files. The repository combines an interactive single-page application, browser Stockfish, Lichess tablebase requests, separate legacy endgame and Lichess position-training runtimes, teacher-managed student puzzle assignments, static lesson sites with classroom presentation and a floating Teacher Board, a synchronized teacher/student Live Board, an optional AI-help panel, and optional local Python helpers.
+Chess Lesson Study Board is a framework-free chess teaching platform served as static files. The repository combines an interactive single-page application, browser Stockfish, Lichess tablebase requests, separate legacy Endgame Puzzle and user-facing Position Study runtimes, teacher-managed student puzzle assignments, static lesson sites with classroom presentation and a floating Teacher Board, a synchronized teacher/student Live Board, an optional AI-help panel, and optional local Python helpers.
 
 There is no bundler and no application build step. Production assets are the committed HTML, CSS, JavaScript, WASM, fonts, images, and data files themselves.
 
@@ -17,6 +17,7 @@ The major subsystems are:
    - `pgn.mjs`
    - `puzzle-api.mjs`
    - `lichess-position-training.mjs` and its core, data, engine, learning, interaction, and layout modules
+   - `position-study-single-hint-patch.mjs` for the active one-use hint and explanation-suppression behavior
    - `assets/puzzles/lichess-position-training/manifest.json` plus 1,200 shard files
    - `lesson-position-builder.mjs`
    - `lesson-model.mjs`, `lesson-migrations.mjs`, and `lesson-position-adapter.mjs`
@@ -69,6 +70,7 @@ chess-study/
 ├── lichess-position-training-data.mjs
 ├── lichess-position-training-engine.mjs
 ├── lichess-position-training-learning.mjs
+├── position-study-single-hint-patch.mjs
 ├── lichess-position-training-interactions.mjs
 ├── lichess-position-training-grid-layout.mjs
 ├── lichess-position-training-style-refresh.mjs
@@ -221,11 +223,12 @@ live-board.html
 | `styles.css` | Theme tokens, responsive layout, board and panel styling, clocks, drag previews, active-tab rules |
 | `pgn.mjs` | Lesson-tree to PGN conversion, PGN parsing, comments, variations, multi-game splitting |
 | `puzzle-api.mjs` | Legacy endgame-puzzle generation and verification with a dedicated Stockfish worker and optional tablebase checks |
-| `lichess-position-training.mjs` | Separate modal trainer controller, board rendering, filters, objective flow, history, and library-count display |
+| `lichess-position-training.mjs` | Internal Position Study modal controller, board rendering, filters, objective flow, history, and library-count display |
 | `lichess-position-training-core.mjs` | Applies the repair move, derives solver-relative objectives, classifies moves, and determines solved states |
 | `lichess-position-training-data.mjs` | Loads the manifest and randomized shards, filters rating/themes, avoids recent repeats, and falls back to IndexedDB cache |
 | `lichess-position-training-engine.mjs` | Resolves terminal states, tablebase positions, and Stockfish scores from the solver's perspective |
-| `lichess-position-training-learning.mjs` | Adaptive rating, progressive hints, theme metrics, success explanations, and Mistake Review scheduling |
+| `lichess-position-training-learning.mjs` | Adaptive rating, hint accounting, theme metrics, and Mistake Review scheduling |
+| `position-study-single-hint-patch.mjs` | Active one-use source-piece hint, `Hint used` state, launcher copy, and suppression of generic success/mistake explanations |
 | `management/js/puzzle-assignment-*.mjs` | Teacher assignment selection/lifecycle and token-scoped student assignment runtime |
 | `lesson-position-builder.mjs` | CSV/XLSX import, field normalization, position-set CRUD, persistence, and builder UI |
 | `lesson-model.mjs` / `lesson-migrations.mjs` | Versioned lesson contracts, normalization, stable IDs, compatibility detection, and non-destructive migration |
@@ -383,7 +386,7 @@ html[data-active-tab="puzzle"] .lesson-title-input {
 | Setup | `TAB_SETUP` | Position construction and validation |
 | Analysis | `TAB_ANALYSIS` | Engine/tablebase analysis, annotations, practice |
 | Play | `TAB_PLAY` | Play vs Stockfish |
-| Puzzle | `TAB_PUZZLE` | Legacy Endgame Puzzle controls plus the separately mounted Lichess Position Training launcher |
+| Puzzle | `TAB_PUZZLE` | Legacy Endgame Puzzle controls plus the separately mounted Position Study launcher |
 | Position Sets | `TAB_LESSONS` | CSV/XLSX Position Set Builder and rich-lesson conversion actions |
 
 Important transitions:
@@ -691,7 +694,7 @@ The request cache is in-memory for the browser session.
 
 ## 14. Puzzle systems
 
-The Puzzle tab exposes two independent runtimes. The legacy endgame system remains owned by `app.js`; Lichess Position Training is mounted as a separate module and does not reuse the endgame queue, objective rules, history, or statistics.
+The Puzzle tab exposes two independent runtimes. The legacy endgame system remains owned by `app.js`; Position Study is mounted separately and does not reuse the endgame queue, objective rules, history, or statistics. The product UI uses **Position Study**, while existing source filenames, asset paths, storage keys, and IndexedDB names retain `lichess-position-training` for compatibility.
 
 ### 14.1 Legacy endgame puzzle system
 
@@ -718,7 +721,7 @@ startPuzzleSession(puzzle)
 
 Objectives include checkmate, material gain, and holding a draw. All queue/history/CSV ingestion paths run legality filtering before persistence.
 
-### 14.2 Lichess Position Training runtime
+### 14.2 Position Study runtime
 
 The installed production dataset is declared by `assets/puzzles/lichess-position-training/manifest.json`:
 
@@ -755,7 +758,7 @@ terminal checkmate/draw?
   → continue with dynamic defence until solved or failed
 ```
 
-The learning module keeps a separate browser-local state under `lichess-position-training-learning-v1`. It tracks adaptive rating, hints, theme attempts/solves/mistakes, and up to 120 review positions. Progressive hints reveal concept, source piece, target square, then the engine's leading candidate. Two independent clean review solves retire a position.
+The learning module keeps separate browser-local state under `lichess-position-training-learning-v1`. It tracks adaptive rating, hint use, theme attempts/solves/mistakes, and up to 120 review positions. The active Position Study patch permits one hint per position: it highlights only the source piece from the current engine candidate and reveals no destination square, notation, arrow, motif, or full move. After use, the button reads **Hint used** and remains disabled for that position, including after Reset. Generic generated success and mistake explanations are suppressed; the normal move/objective feedback remains. Two independent clean, hint-free review solves retire a position.
 
 The general count, preferences, statistics, and history use separate localStorage keys. Shard payloads are cached in IndexedDB database `lichess-position-training-cache-v1`; successful network responses replace cached entries.
 
