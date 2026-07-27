@@ -1,55 +1,79 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 440 208" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 208" role="img" aria-labelledby="title desc">
   <title id="title">All 32 chessmen</title>
   <desc id="desc">Black's sixteen chessmen above White's sixteen chessmen in their starting arrangement.</desc>
   <defs>
     <filter id="pieceShadow" x="-30%" y="-30%" width="160%" height="170%">
-      <feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#000000" flood-opacity="0.28"/>
+      <feDropShadow dx="0" dy="3" stdDeviation="2" flood-color="#000000" flood-opacity="0.3"/>
     </filter>
+    <style>
+      .piece {
+        font-family: "Segoe UI Symbol", "Noto Sans Symbols 2", "DejaVu Sans", serif;
+        font-size: 38px;
+        font-weight: 400;
+        text-anchor: middle;
+        dominant-baseline: middle;
+      }
+      .black-piece { fill: #0b1115; }
+      .white-piece {
+        fill: #ffffff;
+        stroke: #0b1115;
+        stroke-width: .65px;
+        paint-order: stroke fill;
+      }
+      .army-label {
+        font-family: Inter, Arial, sans-serif;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 1.6px;
+      }
+    </style>
   </defs>
 
-  <rect x="4" y="4" width="432" height="92" rx="20" fill="#0f1d24" fill-opacity="0.5" stroke="#ffffff" stroke-opacity="0.12"/>
-  <rect x="4" y="112" width="432" height="92" rx="20" fill="#ffffff" fill-opacity="0.07" stroke="#ffffff" stroke-opacity="0.16"/>
-  <path d="M28 104H412" stroke="#8ad8b7" stroke-opacity="0.42" stroke-width="2" stroke-linecap="round"/>
+  <rect x="4" y="4" width="432" height="92" rx="20" fill="#e8eef1" stroke="#ffffff" stroke-opacity="0.22"/>
+  <rect x="4" y="112" width="432" height="92" rx="20" fill="#102027" stroke="#ffffff" stroke-opacity="0.16"/>
+  <path d="M28 104H412" stroke="#8ad8b7" stroke-opacity="0.58" stroke-width="2" stroke-linecap="round"/>
+  <text x="24" y="18" class="army-label" fill="#40515b">BLACK · 16</text>
+  <text x="24" y="126" class="army-label" fill="#b8d8cd">WHITE · 16</text>
 
-  <g filter="url(#pieceShadow)">
+  <g filter="url(#pieceShadow)" aria-hidden="true">
     <!-- Black back rank -->
-    <image href="../assets/pieces/mpchess/bR.svg" xlink:href="../assets/pieces/mpchess/bR.svg" x="22" y="12" width="42" height="42"/>
-    <image href="../assets/pieces/mpchess/bN.svg" xlink:href="../assets/pieces/mpchess/bN.svg" x="72" y="12" width="42" height="42"/>
-    <image href="../assets/pieces/mpchess/bB.svg" xlink:href="../assets/pieces/mpchess/bB.svg" x="122" y="12" width="42" height="42"/>
-    <image href="../assets/pieces/mpchess/bQ.svg" xlink:href="../assets/pieces/mpchess/bQ.svg" x="172" y="12" width="42" height="42"/>
-    <image href="../assets/pieces/mpchess/bK.svg" xlink:href="../assets/pieces/mpchess/bK.svg" x="222" y="12" width="42" height="42"/>
-    <image href="../assets/pieces/mpchess/bB.svg" xlink:href="../assets/pieces/mpchess/bB.svg" x="272" y="12" width="42" height="42"/>
-    <image href="../assets/pieces/mpchess/bN.svg" xlink:href="../assets/pieces/mpchess/bN.svg" x="322" y="12" width="42" height="42"/>
-    <image href="../assets/pieces/mpchess/bR.svg" xlink:href="../assets/pieces/mpchess/bR.svg" x="372" y="12" width="42" height="42"/>
+    <text class="piece black-piece" x="45" y="39">♜</text>
+    <text class="piece black-piece" x="95" y="39">♞</text>
+    <text class="piece black-piece" x="145" y="39">♝</text>
+    <text class="piece black-piece" x="195" y="39">♛</text>
+    <text class="piece black-piece" x="245" y="39">♚</text>
+    <text class="piece black-piece" x="295" y="39">♝</text>
+    <text class="piece black-piece" x="345" y="39">♞</text>
+    <text class="piece black-piece" x="395" y="39">♜</text>
 
     <!-- Black pawns -->
-    <image href="../assets/pieces/mpchess/bP.svg" xlink:href="../assets/pieces/mpchess/bP.svg" x="22" y="52" width="42" height="42"/>
-    <image href="../assets/pieces/mpchess/bP.svg" xlink:href="../assets/pieces/mpchess/bP.svg" x="72" y="52" width="42" height="42"/>
-    <image href="../assets/pieces/mpchess/bP.svg" xlink:href="../assets/pieces/mpchess/bP.svg" x="122" y="52" width="42" height="42"/>
-    <image href="../assets/pieces/mpchess/bP.svg" xlink:href="../assets/pieces/mpchess/bP.svg" x="172" y="52" width="42" height="42"/>
-    <image href="../assets/pieces/mpchess/bP.svg" xlink:href="../assets/pieces/mpchess/bP.svg" x="222" y="52" width="42" height="42"/>
-    <image href="../assets/pieces/mpchess/bP.svg" xlink:href="../assets/pieces/mpchess/bP.svg" x="272" y="52" width="42" height="42"/>
-    <image href="../assets/pieces/mpchess/bP.svg" xlink:href="../assets/pieces/mpchess/bP.svg" x="322" y="52" width="42" height="42"/>
-    <image href="../assets/pieces/mpchess/bP.svg" xlink:href="../assets/pieces/mpchess/bP.svg" x="372" y="52" width="42" height="42"/>
+    <text class="piece black-piece" x="45" y="76">♟</text>
+    <text class="piece black-piece" x="95" y="76">♟</text>
+    <text class="piece black-piece" x="145" y="76">♟</text>
+    <text class="piece black-piece" x="195" y="76">♟</text>
+    <text class="piece black-piece" x="245" y="76">♟</text>
+    <text class="piece black-piece" x="295" y="76">♟</text>
+    <text class="piece black-piece" x="345" y="76">♟</text>
+    <text class="piece black-piece" x="395" y="76">♟</text>
 
     <!-- White pawns -->
-    <image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="22" y="114" width="42" height="42"/>
-    <image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="72" y="114" width="42" height="42"/>
-    <image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="122" y="114" width="42" height="42"/>
-    <image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="172" y="114" width="42" height="42"/>
-    <image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="222" y="114" width="42" height="42"/>
-    <image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="272" y="114" width="42" height="42"/>
-    <image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="322" y="114" width="42" height="42"/>
-    <image href="../assets/pieces/mpchess/wP.svg" xlink:href="../assets/pieces/mpchess/wP.svg" x="372" y="114" width="42" height="42"/>
+    <text class="piece white-piece" x="45" y="148">♟</text>
+    <text class="piece white-piece" x="95" y="148">♟</text>
+    <text class="piece white-piece" x="145" y="148">♟</text>
+    <text class="piece white-piece" x="195" y="148">♟</text>
+    <text class="piece white-piece" x="245" y="148">♟</text>
+    <text class="piece white-piece" x="295" y="148">♟</text>
+    <text class="piece white-piece" x="345" y="148">♟</text>
+    <text class="piece white-piece" x="395" y="148">♟</text>
 
     <!-- White back rank -->
-    <image href="../assets/pieces/mpchess/wR.svg" xlink:href="../assets/pieces/mpchess/wR.svg" x="22" y="156" width="42" height="42"/>
-    <image href="../assets/pieces/mpchess/wN.svg" xlink:href="../assets/pieces/mpchess/wN.svg" x="72" y="156" width="42" height="42"/>
-    <image href="../assets/pieces/mpchess/wB.svg" xlink:href="../assets/pieces/mpchess/wB.svg" x="122" y="156" width="42" height="42"/>
-    <image href="../assets/pieces/mpchess/wQ.svg" xlink:href="../assets/pieces/mpchess/wQ.svg" x="172" y="156" width="42" height="42"/>
-    <image href="../assets/pieces/mpchess/wK.svg" xlink:href="../assets/pieces/mpchess/wK.svg" x="222" y="156" width="42" height="42"/>
-    <image href="../assets/pieces/mpchess/wB.svg" xlink:href="../assets/pieces/mpchess/wB.svg" x="272" y="156" width="42" height="42"/>
-    <image href="../assets/pieces/mpchess/wN.svg" xlink:href="../assets/pieces/mpchess/wN.svg" x="322" y="156" width="42" height="42"/>
-    <image href="../assets/pieces/mpchess/wR.svg" xlink:href="../assets/pieces/mpchess/wR.svg" x="372" y="156" width="42" height="42"/>
+    <text class="piece white-piece" x="45" y="185">♜</text>
+    <text class="piece white-piece" x="95" y="185">♞</text>
+    <text class="piece white-piece" x="145" y="185">♝</text>
+    <text class="piece white-piece" x="195" y="185">♛</text>
+    <text class="piece white-piece" x="245" y="185">♚</text>
+    <text class="piece white-piece" x="295" y="185">♝</text>
+    <text class="piece white-piece" x="345" y="185">♞</text>
+    <text class="piece white-piece" x="395" y="185">♜</text>
   </g>
 </svg>
