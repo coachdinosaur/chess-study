@@ -1,17 +1,10 @@
-name: Apply move annotation glyphs
+name: Restore board-only context menu behavior
 
 on:
   push:
     branches:
       - feature/move-annotation-glyphs
     paths:
-      - 'tools/apply_move_annotation_glyphs.py'
-      - '.github/workflows/apply-move-annotation-glyphs.yml'
-  pull_request:
-    branches:
-      - main
-    paths:
-      - 'tools/apply_move_annotation_glyphs.py'
       - '.github/workflows/apply-move-annotation-glyphs.yml'
   workflow_dispatch:
 
@@ -19,7 +12,7 @@ permissions:
   contents: write
 
 jobs:
-  apply:
+  patch:
     runs-on: ubuntu-latest
     steps:
       - name: Check out feature branch
@@ -29,113 +22,26 @@ jobs:
           fetch-depth: 1
           show-progress: false
 
-      - name: Prepare move annotation runtime
+      - name: Restore existing board-only shortcut
         run: |
           python - <<'PY'
-          import ast
-          import base64
-          import zlib
           from pathlib import Path
 
-          wrapper_path = Path('tools/apply_move_annotation_glyphs.py')
-          wrapper_tree = ast.parse(wrapper_path.read_text(encoding='utf-8'))
-          exec_call = wrapper_tree.body[1].value
-          decode_call = exec_call.args[0]
-          decompress_call = decode_call.func.value
-          b85_call = decompress_call.args[0]
-          payload = ast.literal_eval(b85_call.args[0])
-          source = zlib.decompress(base64.b85decode(payload)).decode('utf-8')
-          source = source.replace(
-              "    replace_once('.github/workflows/lesson-interoperability-tests.yml', WORKFLOW_OLD, WORKFLOW_NEW)\n"
-              "    replace_once('.github/workflows/lesson-interoperability-tests.yml', WORKFLOW_TEST_OLD, WORKFLOW_TEST_NEW)\n\n",
-              '',
-          )
-          Path('tools/apply_move_annotation_runtime.py').write_text(source, encoding='utf-8')
+          path = Path('app.js')
+          text = path.read_text(encoding='utf-8')
+          old = """    openMoveAnnotationMenu(notationMove.dataset.nodeId || '', event.clientX, event.clientY);\n    return;\n  }\n  const square = squareFromEventTarget(event.target);\n"""
+          new = """    openMoveAnnotationMenu(notationMove.dataset.nodeId || '', event.clientX, event.clientY);\n    return;\n  }\n  if (state.boardOnlyMode && event.shiftKey) {\n    event.preventDefault();\n    event.stopPropagation();\n    state.annotations.suppressContextMenu = false;\n    return;\n  }\n  const square = squareFromEventTarget(event.target);\n"""
+          if text.count(old) != 1:
+              raise SystemExit(f'Expected one context-menu anchor, found {text.count(old)}.')
+          path.write_text(text.replace(old, new), encoding='utf-8')
           PY
 
-      - name: Apply move annotation implementation
-        id: apply
-        shell: bash
+      - name: Validate and commit
         run: |
-          set +e
-          python -u tools/apply_move_annotation_runtime.py > bootstrap.log 2>&1
-          status=$?
-          echo "status=$status" >> "$GITHUB_OUTPUT"
-          exit 0
-
-      - name: Upload bootstrap log
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: move-annotation-bootstrap-log
-          path: bootstrap.log
-          if-no-files-found: error
-
-      - name: Stop after bootstrap failure
-        if: steps.apply.outputs.status != '0'
-        run: |
-          cat bootstrap.log
-          exit 1
-
-      - name: Validate JavaScript and tests
-        id: validate
-        shell: bash
-        run: |
-          set +e
-          {
-            node --check app.js
-            node --check pgn.mjs
-            node --check move-annotations.mjs
-            node --test tests/move-annotations.test.mjs
-            node --test tests/lesson-data-foundation.test.mjs
-            node --test tests/lesson-position-interoperability.test.mjs
-            node --test tests/lesson-variation-tree.test.mjs
-          } > validation.log 2>&1
-          status=$?
-          echo "status=$status" >> "$GITHUB_OUTPUT"
-          exit 0
-
-      - name: Upload validation log
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: move-annotation-validation-log
-          path: validation.log
-          if-no-files-found: error
-
-      - name: Stop after validation failure
-        if: steps.validate.outputs.status != '0'
-        run: |
-          cat validation.log
-          exit 1
-
-      - name: Commit generated feature
-        id: commit
-        shell: bash
-        run: |
-          set +e
-          rm -f bootstrap.log validation.log tools/apply_move_annotation_runtime.py
+          node --check app.js
+          node --test tests/move-annotations.test.mjs
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          {
-            git add -A
-            git commit -m "Add move annotation glyphs"
-            git push origin HEAD:feature/move-annotation-glyphs
-          } > commit.log 2>&1
-          status=$?
-          echo "status=$status" >> "$GITHUB_OUTPUT"
-          exit 0
-
-      - name: Upload commit log
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: move-annotation-commit-log
-          path: commit.log
-          if-no-files-found: error
-
-      - name: Stop after commit failure
-        if: steps.commit.outputs.status != '0'
-        run: |
-          cat commit.log
-          exit 1
+          git add app.js
+          git commit -m "Preserve board-only context menu behavior"
+          git push origin HEAD:feature/move-annotation-glyphs
