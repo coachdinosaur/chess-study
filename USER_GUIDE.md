@@ -314,11 +314,13 @@ PGN comments are included in exported PGN files.
 
 > **Where to go:** notation tree in **Study** or **Analysis**
 
-1. Right-click the move you want to judge. On a touch device, long-press the move.
-2. Choose `!`, `?`, `!!`, `??`, `!?`, or `?!` from the popup menu.
+1. Right-click the move you want to annotate. On a touch device, long-press the move.
+2. Choose a glyph from **Move quality** or **Position evaluation**.
 3. Choose **Clear annotation** to remove the glyph.
 
-The glyph is shown directly after the move, such as `Nf5!`. Move annotations are saved in lesson JSON and preserved when PGN is imported or exported. The six visible choices use the standard PGN NAG meanings.
+Move-quality choices are `!`, `?`, `!!`, `??`, `!?`, `?!`, and `□` for a forced or only move. Position-evaluation choices are `=`, `∞`, `⩲`, `⩱`, `±`, `∓`, `+−`, and `−+`.
+
+The glyph is shown directly after the move, such as `Nf5!` or `Nf5⩲`. Move annotations are saved in lesson JSON and preserved when PGN is imported or exported. The punctuation move-quality glyphs are exported as familiar suffixes; positional glyphs use their standard numeric PGN NAG values for compatibility.
 
 ## Draw Arrows, Circles, Stars, and Highlights
 

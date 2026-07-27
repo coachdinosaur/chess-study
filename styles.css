@@ -4965,7 +4965,7 @@ html[data-board-only="1"] .eval-bar-wrap {
   .notation-mainline-badge { align-self: flex-start; }
   .notation-variation { padding-left: 0.35rem; }
 }
-/* Move-quality annotation glyphs and the notation context menu. */
+/* Move-quality and position-evaluation glyphs with the notation context menu. */
 .notation-move-nag {
   margin-left: 0.04em;
   color: var(--accent-strong);
@@ -4977,8 +4977,10 @@ html[data-board-only="1"] .eval-bar-wrap {
   z-index: 1200;
   display: grid;
   gap: 0.65rem;
-  width: min(19rem, calc(100vw - 1rem));
+  width: min(22rem, calc(100vw - 1rem));
+  max-height: calc(100vh - 1rem);
   padding: 0.75rem;
+  overflow-y: auto;
   border: 1px solid var(--overflow-menu-border);
   border-radius: var(--radius-panel);
   background: var(--overflow-menu-bg);
@@ -5003,6 +5005,20 @@ html[data-board-only="1"] .eval-bar-wrap {
 .move-annotation-menu-head span {
   color: var(--text-soft);
   font-size: 0.72rem;
+}
+
+.move-annotation-group {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.move-annotation-group-title {
+  padding: 0 0.15rem;
+  color: var(--text-soft);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .move-annotation-option-grid {
@@ -5069,8 +5085,4 @@ html[data-board-only="1"] .eval-bar-wrap {
     grid-template-columns: 1fr;
   }
 
-  .move-annotation-menu {
-    max-height: calc(100vh - 1rem);
-    overflow-y: auto;
-  }
 }
