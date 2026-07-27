@@ -1,0 +1,45 @@
+name: Apply additional move glyphs
+
+on:
+  push:
+    branches:
+      - feature/additional-move-glyphs
+    paths:
+      - 'tools/apply_additional_move_glyphs.py'
+      - '.github/workflows/apply-additional-move-glyphs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/additional-move-glyphs
+          fetch-depth: 1
+          show-progress: false
+
+      - name: Apply UI and documentation changes
+        run: python tools/apply_additional_move_glyphs.py
+
+      - name: Validate glyph support
+        run: |
+          node --check app.js
+          node --check pgn.mjs
+          node --check move-annotations.mjs
+          node --test tests/move-annotations.test.mjs
+          node --test tests/lesson-data-foundation.test.mjs
+          node --test tests/lesson-position-interoperability.test.mjs
+          node --test tests/lesson-variation-tree.test.mjs
+
+      - name: Commit generated changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app.js styles.css README.md USER_GUIDE.md
+          git commit -m "Expand move annotation glyphs"
+          git push origin HEAD:feature/additional-move-glyphs
