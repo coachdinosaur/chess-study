@@ -1,6 +1,6 @@
 # Chess Lesson Study Board
 
-A framework-free, browser-based chess teaching and study application. It combines a position editor, lesson-tree authoring, Stockfish analysis, tablebase support, practice drills, Play vs Stockfish, separate endgame and Lichess position-training modes, teacher-managed student puzzle assignments, static course lessons with classroom presentation and Teacher Board tools, a synchronized teacher/student Live Board, and an optional AI chess-help panel.
+A framework-free, browser-based chess teaching and study application. It combines a position editor, lesson-tree authoring, Stockfish analysis, tablebase support, practice drills, Play vs Stockfish, separate Endgame Puzzle and Position Study modes, teacher-managed student puzzle assignments, static course lessons with classroom presentation and Teacher Board tools, a synchronized teacher/student Live Board, and an optional AI chess-help panel.
 
 ## Live app
 
@@ -27,7 +27,7 @@ For local Windows setup, see [LOCAL_DEPLOYMENT.md](LOCAL_DEPLOYMENT.md).
 - Probe the public Lichess tablebase for eligible endgames.
 - Practice a selected line or drill any recorded branch.
 - Play against Stockfish with Elo, side, speed, starting-position, and clock settings.
-- Train in separate Endgame Puzzle and Lichess Position Training modes, with a current production library of 30,000 validated Lichess-derived positions.
+- Train in separate Endgame Puzzle and Position Study modes, with a current production library of 30,000 validated Lichess-derived positions.
 - Review CSV/XLSX position sets in the Position Set Builder and open or convert them into Study and Analysis lessons.
 - Identify openings from the bundled ECO/opening database.
 - Use static Pawn, Advanced Pawn, Bishop, and numbered endgame lesson pages in `lessons/`.
@@ -46,7 +46,7 @@ The single-page application is organized around six tabs:
 | Setup | Position construction, FEN editing, scanner input, castling and en passant controls |
 | Analysis | Stockfish/tablebase analysis, annotations, and practice controls |
 | Play | Play vs Stockfish |
-| Puzzle | Separate Endgame Puzzle and Lichess Position Training modes, including adaptive learning and Mistake Review |
+| Puzzle | Separate Endgame Puzzle and Position Study modes, including adaptive learning and Mistake Review |
 | Position Sets | CSV/XLSX Position Set Builder and lesson-conversion workflow |
 
 The lesson title input is intentionally hidden while the Play or Puzzle tab is active so game controls receive the available space. The title remains part of the lesson state and returns on the other tabs.
@@ -143,9 +143,11 @@ The legacy Endgame Puzzle mode provides:
 
 Endgame sessions reuse the Play-vs-Engine move machinery but are untimed.
 
-### Lichess Position Training
+### Position Study
 
-Lichess Position Training is a separate objective-preservation trainer backed by 30,000 validated Lichess-derived positions in 1,200 shards of 25 records. The interface reads the total from the dataset manifest, loads shards on demand, and caches successfully fetched JSON in IndexedDB.
+Position Study is a separate objective-preservation trainer backed by 30,000 validated Lichess-derived positions in 1,200 shards of 25 records. The interface reads the total from the dataset manifest, loads shards on demand, and caches successfully fetched JSON in IndexedDB.
+
+Position Study is the user-facing name. Existing module filenames, asset paths, browser-storage keys, and IndexedDB names retain the `lichess-position-training` identifier for compatibility.
 
 The database's first move is applied only to reconstruct the position presented to the solver. The remaining source continuation is deliberately not stored or treated as the only correct line. A student move is accepted when it preserves the position's required result or completes the objective; alternative winning or drawing moves can therefore be valid.
 
@@ -153,7 +155,8 @@ The trainer includes:
 
 - Fixed rating-range and adaptive difficulty modes
 - theme filtering, including weakest-theme practice
-- four progressive hint levels
+- one-use hint that highlights only the piece to move, without revealing the destination, notation, motif, arrow, or full move
+- concise move and objective feedback, with generic success and mistake explanation panels suppressed
 - adaptive rating and theme statistics stored in the browser
 - Mistake Review with spaced clean-solve retirement
 - terminal checkmate and draw handling before tablebase or Stockfish evaluation
@@ -341,11 +344,12 @@ The floating Teacher Board also evaluates the embedded FEN after moves and posit
 | `focus-analysis-popup.css` | Focus analysis window presentation and responsive sizing |
 | `pgn.mjs` | PGN parsing, multi-game splitting, lesson-tree import/export |
 | `puzzle-api.mjs` | Legacy endgame puzzle generation and verification using a dedicated worker |
-| `lichess-position-training.mjs` | Separate Lichess trainer controller, board, filters, feedback, history, and library-count display |
+| `lichess-position-training.mjs` | Internal Position Study controller, board, filters, objective feedback, history, and library-count display |
 | `lichess-position-training-core.mjs` | Position reconstruction, objective derivation, move classification, and solved-state rules |
 | `lichess-position-training-data.mjs` | Manifest/shard loading, rating/theme filtering, randomization, and IndexedDB fallback cache |
 | `lichess-position-training-engine.mjs` | Solver-relative tablebase and Stockfish evaluation, including terminal-state handling |
-| `lichess-position-training-learning.mjs` | Adaptive rating, progressive hints, theme metrics, explanations, and Mistake Review |
+| `lichess-position-training-learning.mjs` | Adaptive rating, hint accounting, theme metrics, and Mistake Review state |
+| `position-study-single-hint-patch.mjs` | Active one-use piece-hint behavior, `Hint used` state, launcher copy, and suppression of generic explanation panels |
 | `assets/puzzles/lichess-position-training/` | Production manifest and 1,200 immutable 25-puzzle shards (30,000 positions) |
 | `lesson-position-builder.mjs` | CSV/XLSX lesson-position workflow |
 | `text-normalization.mjs` | Unicode and punctuation normalization |
