@@ -14,7 +14,7 @@ body:has(#white-chessmen) .hero .poster-icon {
   display: block;
   width: min(100%, 30rem);
   aspect-ratio: 440 / 208;
-  background: url("pawn-10-all-chessmen.svg?v=20260727-full-armies1") center / contain no-repeat;
+  background: url("pawn-10-all-chessmen.svg?v=20260727-full-armies2") center / contain no-repeat;
   font-size: 0;
   line-height: 0;
   text-shadow: none;
