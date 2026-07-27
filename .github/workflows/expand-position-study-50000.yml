@@ -1,0 +1,177 @@
+name: Expand Position Study library to 50000
+
+on:
+  push:
+    branches:
+      - feature/add-20000-position-study-puzzles
+    paths:
+      - '.github/workflows/expand-position-study-50000.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  expand:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out expansion branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/add-20000-position-study-puzzles
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Generate, validate, document, and commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y zstd
+          mkdir -p scripts proof/logs
+
+          curl --fail --location --retry 3 --silent --show-error \
+            https://raw.githubusercontent.com/coachdinosaur/chess-study/cb8ff0a8d549f13af85380c5d4315c3a1ec75be7/scripts/expand-lichess-5000.mjs \
+            --output scripts/expand-lichess-50000.mjs
+
+          sed -i \
+            -e 's/const START_COUNT = 2000;/const START_COUNT = 30000;/' \
+            -e 's/const ADD_COUNT = 3000;/const ADD_COUNT = 20000;/' \
+            -e 's/Lichess 5,000-puzzle/Lichess 50,000-puzzle/g' \
+            -e 's/lichess-5000-/lichess-50000-/g' \
+            scripts/expand-lichess-50000.mjs
+
+          grep -q 'const START_COUNT = 30000;' scripts/expand-lichess-50000.mjs
+          grep -q 'const ADD_COUNT = 20000;' scripts/expand-lichess-50000.mjs
+
+          set +e
+          set +o pipefail
+          curl --fail --location --retry 3 --silent --show-error \
+            https://database.lichess.org/lichess_db_puzzle.csv.zst \
+            | zstd -dc \
+            | node scripts/expand-lichess-50000.mjs 2>&1 \
+            | tee proof/logs/lichess-50000-generator-output.txt
+          statuses=("${PIPESTATUS[@]}")
+          set -e
+          set -o pipefail
+          test "${statuses[2]}" -eq 0
+          test "${statuses[3]}" -eq 0
+
+          node scripts/expand-lichess-50000.mjs --validate-only \
+            | tee proof/logs/lichess-50000-validator-output.txt
+
+          mapfile -t test_files < <(find tests -maxdepth 1 -type f \
+            \( -name '*lichess-position-training*.test.mjs' -o -name 'puzzle-assignment-core.test.mjs' \) \
+            | sort)
+          test "${#test_files[@]}" -gt 0
+          node --test "${test_files[@]}" \
+            | tee proof/logs/lichess-50000-tests-output.txt
+
+          python - <<'PY'
+          from pathlib import Path
+
+          def swap(path, old, new, minimum=1):
+              file_path = Path(path)
+              text = file_path.read_text(encoding='utf-8')
+              count = text.count(old)
+              if count < minimum:
+                  raise SystemExit(f'{path}: missing {old!r}')
+              file_path.write_text(text.replace(old, new), encoding='utf-8')
+
+          swap(
+              'README.md',
+              'current production library of 30,000 validated Lichess-derived positions',
+              'current production library of 50,000 validated Lichess-derived positions',
+          )
+          swap(
+              'README.md',
+              'backed by 30,000 validated Lichess-derived positions in 1,200 shards of 25 records',
+              'backed by 50,000 validated Lichess-derived positions in 2,000 shards of 25 records',
+          )
+          swap(
+              'README.md',
+              'Production manifest and 1,200 immutable 25-puzzle shards (30,000 positions)',
+              'Production manifest and 2,000 immutable 25-puzzle shards (50,000 positions)',
+          )
+          swap('USER_GUIDE.md', '30,000 Lichess-derived positions', '50,000 Lichess-derived positions')
+          swap('ARCHITECTURE.md', 'plus 1,200 shard files', 'plus 2,000 shard files')
+          swap('ARCHITECTURE.md', '- 30,000 puzzles', '- 50,000 puzzles')
+          swap('ARCHITECTURE.md', '- 1,200 sequential shards', '- 2,000 sequential shards')
+          swap(
+              'management/README.md',
+              'currently 30,000 puzzles across 1,200 shards',
+              'currently 50,000 puzzles across 2,000 shards',
+          )
+          swap('LICHESS_POSITION_TRAINING.md', '| Puzzles | 30,000 |', '| Puzzles | 50,000 |')
+          swap('LICHESS_POSITION_TRAINING.md', '| Shards | 1,200 |', '| Shards | 2,000 |')
+          swap(
+              'LICHESS_POSITION_TRAINING.md',
+              '| Last shard | `shard-1199.json` |',
+              '| Last shard | `shard-1999.json` |',
+          )
+          swap(
+              'LICHESS_POSITION_TRAINING.md',
+              'proof/lichess-30000-*.md` and `proof/logs/lichess-30000-*.txt',
+              'proof/lichess-50000-*.md` and `proof/logs/lichess-50000-*.txt',
+          )
+          swap(
+              'LICHESS_POSITION_TRAINING.md',
+              'without requiring all 30,000 records to be downloaded',
+              'without requiring all 50,000 records to be downloaded',
+          )
+
+          mini = Path('MINI_SOFT_LAUNCH.md')
+          mini_text = mini.read_text(encoding='utf-8')
+          if '30,000' not in mini_text or '1,200' not in mini_text:
+              raise SystemExit('MINI_SOFT_LAUNCH.md: expected 30,000 / 1,200 baseline text')
+          mini.write_text(
+              mini_text.replace('30,000', '50,000').replace('1,200', '2,000'),
+              encoding='utf-8',
+          )
+          PY
+
+          git diff --check
+
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const manifestPath = './assets/puzzles/lichess-position-training/manifest.json';
+          const manifest = require(manifestPath);
+          if (manifest.count !== 50000) throw new Error(`Expected 50000 puzzles, found ${manifest.count}`);
+          if (manifest.shards.length !== 2000) throw new Error(`Expected 2000 shards, found ${manifest.shards.length}`);
+          if (manifest.shardSize !== 25) throw new Error(`Expected shard size 25, found ${manifest.shardSize}`);
+          if (manifest.shards[0]?.file !== 'shard-0000.json') throw new Error('First shard is not shard-0000.json');
+          if (manifest.shards.at(-1)?.file !== 'shard-1999.json') throw new Error('Last shard is not shard-1999.json');
+          const shardFiles = fs.readdirSync(path.dirname(manifestPath)).filter((file) => /^shard-\d{4}\.json$/.test(file)).sort();
+          if (shardFiles.length !== 2000) throw new Error(`Expected 2000 physical shards, found ${shardFiles.length}`);
+          if (shardFiles[0] !== 'shard-0000.json' || shardFiles.at(-1) !== 'shard-1999.json') throw new Error('Physical shard range is incomplete');
+          console.log('Puzzles:', manifest.count, 'Shards:', manifest.shards.length);
+          NODE
+
+          test -f assets/puzzles/lichess-position-training/shard-1200.json
+          test -f assets/puzzles/lichess-position-training/shard-1999.json
+          test -f proof/lichess-50000-expansion-summary.md
+          test -f proof/lichess-50000-validation.md
+          test -f proof/logs/lichess-50000-generator-output.txt
+          test -f proof/logs/lichess-50000-validator-output.txt
+          test -f proof/logs/lichess-50000-tests-output.txt
+          grep -q '50,000' README.md USER_GUIDE.md ARCHITECTURE.md management/README.md LICHESS_POSITION_TRAINING.md MINI_SOFT_LAUNCH.md
+          grep -q '2,000' README.md ARCHITECTURE.md management/README.md LICHESS_POSITION_TRAINING.md MINI_SOFT_LAUNCH.md
+
+          rm scripts/expand-lichess-50000.mjs
+          rm .github/workflows/expand-position-study-50000.yml
+          test ! -f scripts/expand-lichess-50000.mjs
+          test ! -f .github/workflows/expand-position-study-50000.yml
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git diff --cached --check
+          git commit -m 'Add 20000 more Position Study puzzles'
+          git push origin HEAD:feature/add-20000-position-study-puzzles
