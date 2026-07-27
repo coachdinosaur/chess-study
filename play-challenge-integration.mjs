@@ -1,7 +1,7 @@
 import {
   buildPlayChallengeLink,
   readPlayChallenge,
-} from './play-challenge-link.mjs?v=20260727-student-game-link1';
+} from './play-challenge-link.mjs?v=20260727-student-game-link2';
 
 const DRAFT_STORAGE_KEY = 'setup-analysis-draft-v1';
 const INITIAL_POSITION = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
@@ -13,6 +13,7 @@ const STATUS_ID = 'playChallengeCopyStatus';
 let preparedChallenge = null;
 let preparedChallengeError = '';
 let preparedChallengeApplied = false;
+let preparedChallengeApplying = false;
 let playPanelObserver = null;
 let copyResetTimer = null;
 
@@ -49,17 +50,32 @@ function nextFrame() {
   return new Promise((resolve) => window.requestAnimationFrame(() => resolve()));
 }
 
+async function waitForElement(selector, timeoutMs = 2500) {
+  const startedAt = Date.now();
+  while (Date.now() - startedAt < timeoutMs) {
+    const element = document.querySelector(selector);
+    if (element) {
+      return element;
+    }
+    await nextFrame();
+  }
+  return null;
+}
+
 async function clickTab(tab) {
   const button = document.querySelector(`[data-action="set-tab"][data-tab="${tab}"]`);
-  if (!button) {
+  if (!(button instanceof HTMLButtonElement)) {
     throw new Error(`The ${tab} tab is unavailable.`);
+  }
+  if (button.disabled) {
+    throw new Error(`The ${tab} tab is locked before the prepared game can be loaded.`);
   }
   button.click();
   await nextFrame();
 }
 
 async function setSelectValue(id, value) {
-  const select = document.getElementById(id);
+  const select = await waitForElement(`#${id}`);
   if (!(select instanceof HTMLSelectElement)) {
     throw new Error(`The prepared game control ${id} is unavailable.`);
   }
@@ -69,21 +85,21 @@ async function setSelectValue(id, value) {
 }
 
 async function applyPreparedChallenge() {
-  if (!preparedChallenge || preparedChallengeApplied) {
+  if (!preparedChallenge || preparedChallengeApplied || preparedChallengeApplying) {
     return;
   }
-  preparedChallengeApplied = true;
+  preparedChallengeApplying = true;
 
   try {
     await clickTab('setup');
-    const fenInput = document.getElementById('fenInput');
+    const fenInput = await waitForElement('#fenInput');
     if (!(fenInput instanceof HTMLTextAreaElement)) {
       throw new Error('The board setup field is unavailable.');
     }
     fenInput.value = preparedChallenge.fen;
     fenInput.dispatchEvent(new Event('input', { bubbles: true }));
 
-    const applyFenButton = document.querySelector('[data-action="apply-fen"]');
+    const applyFenButton = await waitForElement('[data-action="apply-fen"]');
     if (!(applyFenButton instanceof HTMLButtonElement)) {
       throw new Error('The board setup action is unavailable.');
     }
@@ -97,7 +113,7 @@ async function applyPreparedChallenge() {
 
     await clickTab('play');
 
-    const skillSlider = document.getElementById('engineSkillSlider');
+    const skillSlider = await waitForElement('#engineSkillSlider');
     if (!(skillSlider instanceof HTMLInputElement)) {
       throw new Error('The engine strength control is unavailable.');
     }
@@ -110,12 +126,16 @@ async function applyPreparedChallenge() {
     await setSelectValue('playTimeSelect-native', preparedChallenge.timeControl);
     await setSelectValue('playSpeedSelect-native', preparedChallenge.thinkingSpeed);
 
+    preparedChallengeApplied = true;
+    preparedChallengeError = '';
     document.documentElement.dataset.playChallenge = 'prepared';
-    enhancePlayPanel();
   } catch (error) {
+    preparedChallengeApplied = false;
     preparedChallengeError = error?.message || 'The prepared game could not be loaded.';
     document.documentElement.dataset.playChallenge = 'error';
     await clickTab('play').catch(() => {});
+  } finally {
+    preparedChallengeApplying = false;
     enhancePlayPanel();
   }
 }
@@ -219,7 +239,7 @@ function ensureCoachCopyControl(playPanel) {
 }
 
 function lockPreparedControls(playPanel) {
-  if (!preparedChallenge) {
+  if (!preparedChallengeApplied || preparedChallengeError) {
     return;
   }
 
@@ -257,8 +277,16 @@ function lockPreparedControls(playPanel) {
   });
 }
 
+function removeNotice(playPanel, id) {
+  playPanel.querySelector(`#${id}`)?.remove();
+}
+
 function ensurePreparedNotice(playPanel) {
-  if (!preparedChallenge || playPanel.querySelector(`#${NOTICE_ID}`)) {
+  if (!preparedChallengeApplied || preparedChallengeError) {
+    removeNotice(playPanel, NOTICE_ID);
+    return;
+  }
+  if (playPanel.querySelector(`#${NOTICE_ID}`)) {
     return;
   }
   const article = playPanel.querySelector('.lesson-section');
@@ -280,7 +308,11 @@ function ensurePreparedNotice(playPanel) {
 }
 
 function ensureErrorNotice(playPanel) {
-  if (!preparedChallengeError || playPanel.querySelector(`#${ERROR_ID}`)) {
+  if (!preparedChallengeError) {
+    removeNotice(playPanel, ERROR_ID);
+    return;
+  }
+  if (playPanel.querySelector(`#${ERROR_ID}`)) {
     return;
   }
   const article = playPanel.querySelector('.lesson-section');
@@ -323,12 +355,15 @@ function observePlayPanel() {
 }
 
 async function initialize() {
+  await waitForElement('#playPanel');
   observePlayPanel();
-  enhancePlayPanel();
+
   if (preparedChallenge) {
     await applyPreparedChallenge();
   } else if (preparedChallengeError) {
     await clickTab('play').catch(() => {});
+    enhancePlayPanel();
+  } else {
     enhancePlayPanel();
   }
 }
