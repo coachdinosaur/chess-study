@@ -1,5 +1,6 @@
 import { Chess, DEFAULT_POSITION, parsePgn, validateFen } from './vendor/chess.js';
 import { normalizeEditableText } from './text-normalization.mjs';
+import { moveNagFromPgnEntry, moveNagPgnToken } from './move-annotations.mjs';
 
 const ROOT_NODE_ID = 'root';
 const APP_SITE_NAME = 'Chess Lesson Study Board';
@@ -175,6 +176,7 @@ function appendImportedVariationEntry(tree, parentId, parentFen, entry) {
     children: [],
     selectedChildId: null,
     comment,
+    nag: moveNagFromPgnEntry(entry),
   };
   parentNode.children.push(nodeId);
   if (!parentNode.selectedChildId) {
@@ -247,7 +249,11 @@ function buildVariationSequence(nodes, parentId, forcedChildId = '', skipInitial
       break;
     }
 
-    parts.push(formatPgnMoveToken(parentNode.fen, childNode.san, forceMoveNumber));
+    const nagToken = moveNagPgnToken(childNode.nag);
+    const moveToken = nagToken.startsWith('$')
+      ? `${childNode.san} ${nagToken}`
+      : `${childNode.san}${nagToken}`;
+    parts.push(formatPgnMoveToken(parentNode.fen, moveToken, forceMoveNumber));
     const comment = sanitizeCommentForPgn(childNode.comment);
     if (comment) {
       parts.push(`{${comment}}`);

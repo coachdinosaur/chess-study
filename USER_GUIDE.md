@@ -310,6 +310,16 @@ PGN comments are attached to individual positions. They are different from the l
 
 PGN comments are included in exported PGN files.
 
+## Add a Move Annotation Glyph
+
+> **Where to go:** notation tree in **Study** or **Analysis**
+
+1. Right-click the move you want to judge. On a touch device, long-press the move.
+2. Choose `!`, `?`, `!!`, `??`, `!?`, or `?!` from the popup menu.
+3. Choose **Clear annotation** to remove the glyph.
+
+The glyph is shown directly after the move, such as `Nf5!`. Move annotations are saved in lesson JSON and preserved when PGN is imported or exported. The six visible choices use the standard PGN NAG meanings.
+
 ## Draw Arrows, Circles, Stars, and Highlights
 
 > **Where to go:** **Tools → Analysis** or **Tools → Study**

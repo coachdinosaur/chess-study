@@ -4,6 +4,12 @@ document.body.dataset.appVersion = "board-debug-20260707";
 import { Chess, DEFAULT_POSITION, validateFen } from './vendor/chess.js';
 import { buildPgnFromLessonTree, parsePgnToLessonTree, splitPgnGames, extractPgnHeaders } from './pgn.mjs';
 import {
+  MOVE_ANNOTATIONS,
+  moveNagFromValue,
+  moveNagGlyph,
+  moveNagLabel,
+} from './move-annotations.mjs';
+import {
   appendChildPreservingMainLine,
   ensureExistingChildMainLine,
   isNodeMainLine,
@@ -848,6 +854,12 @@ const state = {
 };
 
 let lessonPositionBuilder = null;
+let moveAnnotationMenuState = {
+  open: false,
+  nodeId: '',
+  x: 0,
+  y: 0,
+};
 let setupDragPreviewEl = null;
 let boardPointerDragPreviewEl = null;
 
@@ -3789,6 +3801,7 @@ function validateAndNormalizeLessonNodes(rawNodes, rootId, currentNodeId, setupF
       to: String(rawNode.to).trim(),
       promotion: normalizePromotionValue(rawNode.promotion),
       san: String(rawNode.san || '').trim(),
+      nag: moveNagFromValue(rawNode.nag),
     };
   });
 
@@ -7326,6 +7339,113 @@ function makeCurrentMoveMainLine() {
   renderAll();
 }
 
+function closeMoveAnnotationMenu() {
+  if (!moveAnnotationMenuState.open) {
+    return;
+  }
+  moveAnnotationMenuState = { open: false, nodeId: '', x: 0, y: 0 };
+  document.querySelector('.move-annotation-menu')?.remove();
+}
+
+function openMoveAnnotationMenu(nodeId, clientX, clientY) {
+  const node = getAnalysisNode(nodeId);
+  if (!node || node.id === state.analysis.rootId || state.practice.active || state.play.active) {
+    return;
+  }
+  const margin = 8;
+  const menuWidth = 310;
+  const menuHeight = 250;
+  const viewportWidth = window.visualViewport?.width ?? window.innerWidth;
+  const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+  moveAnnotationMenuState = {
+    open: true,
+    nodeId: node.id,
+    x: Math.round(clamp(clientX, margin, Math.max(margin, viewportWidth - menuWidth - margin))),
+    y: Math.round(clamp(clientY, margin, Math.max(margin, viewportHeight - menuHeight - margin))),
+  };
+  renderNotationPanel();
+  window.requestAnimationFrame(() => {
+    const menu = document.querySelector('.move-annotation-menu');
+    const selected = menu?.querySelector('.move-annotation-option.is-selected');
+    (selected || menu?.querySelector('.move-annotation-option'))?.focus();
+  });
+}
+
+function applyMoveAnnotation(nodeId, value) {
+  const node = getAnalysisNode(nodeId);
+  if (!node || node.id === state.analysis.rootId) {
+    closeMoveAnnotationMenu();
+    return;
+  }
+  const nag = moveNagFromValue(value);
+  if (nag) {
+    node.nag = nag;
+  } else {
+    delete node.nag;
+  }
+  const glyph = moveNagGlyph(nag);
+  const message = glyph
+    ? `${node.san}${glyph} annotated as ${moveNagLabel(nag).toLowerCase()}.`
+    : `Move annotation cleared from ${node.san}.`;
+  moveAnnotationMenuState = { open: false, nodeId: '', x: 0, y: 0 };
+  state.analysis.boardMessage = message;
+  syncLessonFileStatus(message);
+  schedulePersist();
+  renderNotationPanel();
+}
+
+function renderMoveAnnotationMenu() {
+  if (!moveAnnotationMenuState.open) {
+    return '';
+  }
+  const node = getAnalysisNode(moveAnnotationMenuState.nodeId);
+  if (!node) {
+    moveAnnotationMenuState = { open: false, nodeId: '', x: 0, y: 0 };
+    return '';
+  }
+  const currentNag = moveNagFromValue(node.nag);
+  const options = MOVE_ANNOTATIONS.map((annotation) => {
+    const selected = currentNag === annotation.nag;
+    return `
+      <button
+        type="button"
+        class="move-annotation-option ${selected ? 'is-selected' : ''}"
+        data-action="set-move-annotation"
+        data-node-id="${escapeHtml(node.id)}"
+        data-nag="${annotation.nag}"
+        role="menuitemradio"
+        aria-checked="${selected}"
+      >
+        <span class="move-annotation-option-glyph">${escapeHtml(annotation.glyph)}</span>
+        <span class="move-annotation-option-label">${escapeHtml(annotation.label)}</span>
+      </button>
+    `;
+  }).join('');
+  return `
+    <div
+      class="move-annotation-menu"
+      role="menu"
+      aria-label="Move annotation for ${escapeHtml(node.san)}"
+      style="left: ${moveAnnotationMenuState.x}px; top: ${moveAnnotationMenuState.y}px;"
+    >
+      <div class="move-annotation-menu-head">
+        <strong>Annotate ${escapeHtml(node.san)}</strong>
+        <span>Choose one glyph</span>
+      </div>
+      <div class="move-annotation-option-grid">${options}</div>
+      <button
+        type="button"
+        class="move-annotation-clear"
+        data-action="set-move-annotation"
+        data-node-id="${escapeHtml(node.id)}"
+        data-nag=""
+        role="menuitem"
+        ${currentNag ? '' : 'disabled'}
+      >Clear annotation</button>
+    </div>
+  `;
+}
+
 function renderNotationCommentEditor() {
   if (!state.pgnCommentsVisible) {
     return '';
@@ -7355,6 +7475,8 @@ function renderNotationMoveToken(node, forceLeadingNumber = false) {
   const ply = getAnalysisPly(node.id);
   const isBlackMove = isBlackMoveForPly(ply);
   const inlineCommentMarkup = renderNotationInlineComment(node.comment);
+  const nagGlyph = moveNagGlyph(node.nag);
+  const nagLabel = moveNagLabel(node.nag);
   let moveNumberMarkup = '';
 
   if (!isBlackMove) {
@@ -7368,12 +7490,15 @@ function renderNotationMoveToken(node, forceLeadingNumber = false) {
       class="notation-move ${isNodeMainLine(state.analysis.nodes, node.id) ? 'is-main-line' : 'is-variation'} ${state.analysis.currentNodeId === node.id ? 'is-current' : ''}"
       data-action="jump-node"
       data-node-id="${node.id}"
-    >${escapeHtml(node.san)}</button>${inlineCommentMarkup ? ` ${inlineCommentMarkup}` : ''}`;
+      title="${escapeHtml(nagLabel ? `${nagLabel}. Right-click or long-press to change annotation.` : 'Right-click or long-press to annotate this move.')}"
+    >${escapeHtml(node.san)}${nagGlyph ? `<span class="notation-move-nag" aria-label="${escapeHtml(nagLabel)}">${escapeHtml(nagGlyph)}</span>` : ''}</button>${inlineCommentMarkup ? ` ${inlineCommentMarkup}` : ''}`;
 }
 
 function renderNotationStaticMoveToken(node, forceLeadingNumber = false) {
   const ply = getAnalysisPly(node.id);
   const isBlackMove = isBlackMoveForPly(ply);
+  const nagGlyph = moveNagGlyph(node.nag);
+  const nagLabel = moveNagLabel(node.nag);
   let moveNumberMarkup = '';
 
   if (!isBlackMove) {
@@ -7382,7 +7507,7 @@ function renderNotationStaticMoveToken(node, forceLeadingNumber = false) {
     moveNumberMarkup = `<span class="notation-move-number">${moveNumberForPly(ply)}...</span>`;
   }
 
-  return `${moveNumberMarkup}<span class="notation-move ${isNodeMainLine(state.analysis.nodes, node.id) ? 'is-main-line' : 'is-variation'} ${state.analysis.currentNodeId === node.id ? 'is-current' : ''}">${escapeHtml(node.san)}</span>`;
+  return `${moveNumberMarkup}<span class="notation-move ${isNodeMainLine(state.analysis.nodes, node.id) ? 'is-main-line' : 'is-variation'} ${state.analysis.currentNodeId === node.id ? 'is-current' : ''}" title="${escapeHtml(nagLabel)}">${escapeHtml(node.san)}${nagGlyph ? `<span class="notation-move-nag" aria-label="${escapeHtml(nagLabel)}">${escapeHtml(nagGlyph)}</span>` : ''}</span>`;
 }
 
 function renderNotationVariation(parentId, childId) {
@@ -7618,6 +7743,7 @@ function renderNotationPanel() {
         ${renderNotationRootComment()}
         ${renderNotationBranchSequence(state.analysis.rootId)}
       </div>
+      ${renderMoveAnnotationMenu()}
       ${renderNotationMainLineControl()}
       ${renderNotationCommentEditor()}
       ${renderNotationPvBlock()}
@@ -8415,10 +8541,18 @@ function handleDocumentMouseUp(event) {
 }
 
 function handleDocumentContextMenu(event) {
-  if (state.boardOnlyMode && event.shiftKey) {
+  const notationMove = event.target instanceof Element
+    ? event.target.closest('.notation-move[data-node-id]')
+    : null;
+  if (
+    notationMove
+    && (state.activeTab === TAB_STUDY || state.activeTab === TAB_ANALYSIS)
+    && !state.practice.active
+    && !state.play.active
+  ) {
     event.preventDefault();
     event.stopPropagation();
-    state.annotations.suppressContextMenu = false;
+    openMoveAnnotationMenu(notationMove.dataset.nodeId || '', event.clientX, event.clientY);
     return;
   }
   const square = squareFromEventTarget(event.target);
@@ -8799,6 +8933,10 @@ function handleBoardPointerCancel(event) {
 
 function handleDocumentClick(event) {
   const clickTarget = event.target;
+  const clickedInsideMoveAnnotationMenu = clickTarget instanceof Element && Boolean(clickTarget.closest('.move-annotation-menu'));
+  if (!clickedInsideMoveAnnotationMenu) {
+    closeMoveAnnotationMenu();
+  }
   const clickedInsideHeaderMenu = clickTarget instanceof Element && Boolean(clickTarget.closest('.lesson-overflow'));
   if (!clickedInsideHeaderMenu) {
     closeHeaderMenus();
@@ -9108,6 +9246,9 @@ function handleDocumentClick(event) {
         break;
       }
       navigateToAnalysisEnd();
+      break;
+    case 'set-move-annotation':
+      applyMoveAnnotation(actionEl.dataset.nodeId || '', actionEl.dataset.nag || '');
       break;
     case 'make-main-line':
       makeCurrentMoveMainLine();
@@ -9430,6 +9571,11 @@ function handleDocumentKeydown(event) {
   if (event.key === 'Escape' && dom.puzzleResultModal && !dom.puzzleResultModal.hidden) {
     event.preventDefault();
     dismissPuzzleResultModal();
+    return;
+  }
+  if (event.key === 'Escape' && moveAnnotationMenuState.open) {
+    event.preventDefault();
+    closeMoveAnnotationMenu();
     return;
   }
   if (event.key === 'Escape') {
