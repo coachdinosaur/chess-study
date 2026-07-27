@@ -7,6 +7,12 @@ on:
     paths:
       - 'tools/apply_additional_move_glyphs.py'
       - '.github/workflows/apply-additional-move-glyphs.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'tools/apply_additional_move_glyphs.py'
+      - '.github/workflows/apply-additional-move-glyphs.yml'
   workflow_dispatch:
 
 permissions:
