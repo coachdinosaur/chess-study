@@ -1,10 +1,10 @@
-# Lichess Position Training
+# Position Study
 
-This document is the product and implementation reference for the separate Lichess Position Training mode and its teacher-managed student assignments.
+This document is the product and implementation reference for the separate Position Study mode and its teacher-managed student assignments. Existing internal module filenames, asset paths, storage keys, and IndexedDB names retain the `lichess-position-training` identifier for compatibility.
 
 ## Product boundary
 
-Lichess Position Training is not the legacy Endgame Puzzle system. It keeps separate UI, objective rules, history, statistics, learning state, data loading, and assignment behavior. The two modes share only reusable chess infrastructure such as `chess.js`, MPChess pieces, Stockfish, tablebase access, and legal-move interaction.
+Position Study is not the legacy Endgame Puzzle system. It keeps separate UI, objective rules, history, statistics, learning state, data loading, and assignment behavior. The two modes share only reusable chess infrastructure such as `chess.js`, MPChess pieces, Stockfish, tablebase access, and legal-move interaction.
 
 ## Current production library
 
@@ -92,18 +92,15 @@ Browser-local learning is stored under `lichess-position-training-learning-v1`.
 - The review queue stores at most 120 portable puzzle snapshots.
 - Two independent clean review solves retire a position.
 
-Hints have four levels:
+Each position offers one optional hint. It highlights only the piece that should move, based on the current engine candidate. It does not reveal the destination square, SAN/UCI notation, an arrow, the motif, or the complete move. After use, the button reads **Hint used** and remains disabled for that position; Reset does not restore it. If no reliable engine candidate is available, the current feedback remains unchanged and the hint is not marked as used.
 
-1. objective and concepts;
-2. source piece;
-3. target square;
-4. engine-leading move, while still noting that alternatives may preserve the objective.
+Generic generated success and mistake explanations, including the former **Why the solution worked** panel, are suppressed. Position Study retains concise move-validity and objective feedback from the evaluator.
 
 General trainer statistics, preferences, and history use their own localStorage keys and do not share state with Endgame Puzzles.
 
 ## Interface and layout guarantees
 
-The desktop board is square, flush, and stable before and after feedback appears. Feedback and explanations use a reserved response track, so their visibility does not resize the board. Long text scrolls inside the response area. All main-column content is pinned to one explicit CSS grid column to prevent an implicit-column collapse after answering.
+The desktop board is square, flush, and stable before and after feedback appears. Evaluator feedback uses the reserved response track, so its visibility does not resize the board. The legacy explanation container is kept hidden and cleared by the active Position Study patch. Long feedback text scrolls inside the response area. All main-column content is pinned to one explicit CSS grid column to prevent an implicit-column collapse after answering.
 
 The action row remains horizontal on desktop, and board file/rank coordinates use the reduced label size. Tablet and mobile use normal document flow and responsive board sizing.
 
@@ -140,11 +137,12 @@ Archiving disables student access while retaining results. Restoring republishes
 
 | File | Responsibility |
 |---|---|
-| `lichess-position-training.mjs` | Trainer controller and user interface |
+| `lichess-position-training.mjs` | Internal Position Study controller and user interface |
 | `lichess-position-training-core.mjs` | Position reconstruction, objectives, move classification |
 | `lichess-position-training-data.mjs` | Manifest/shard loading and IndexedDB cache |
 | `lichess-position-training-engine.mjs` | Tablebase/Stockfish evaluation and terminal outcomes |
-| `lichess-position-training-learning.mjs` | Adaptive rating, hints, review, explanations |
+| `lichess-position-training-learning.mjs` | Adaptive rating, hint accounting, theme metrics, and review state |
+| `position-study-single-hint-patch.mjs` | Active one-use source-piece hint, `Hint used` state, launcher copy, and generic-explanation suppression |
 | `lichess-position-training-interactions.mjs` | Board interaction behavior |
 | `lichess-position-training-grid-layout.mjs` | Explicit desktop grid rows |
 | `lichess-position-training-post-answer-fix.css` | Stable single-column post-answer layout |
@@ -165,7 +163,9 @@ After runtime, layout, dataset, or assignment changes, test at minimum:
 - delivered checkmate succeeds without starting Stockfish;
 - terminal draw returns the correct solver-relative result;
 - board dimensions do not change after feedback appears;
-- Hint, Reset, and Next remain usable on desktop and mobile;
+- Hint highlights only the source piece, can be used once per position, changes to **Hint used**, and is not restored by Reset;
+- no destination, notation, arrow, motif, full move, or generic explanation panel is revealed;
+- Reset and Next remain usable on desktop and mobile;
 - Mistake Review adds, schedules, and retires positions correctly;
 - assignment generation freezes unique matching snapshots;
 - published student links load without a management login;
