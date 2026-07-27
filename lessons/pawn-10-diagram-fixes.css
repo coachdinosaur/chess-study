@@ -3,6 +3,31 @@
    responsive sizes. Keep the original artwork, but create breathing room for
    the text and separate the inventory totals from the pawn rows. */
 
+/* The hero promises 32 chessmen, so show both complete starting armies instead
+   of one sample of each white piece type. The old inline images remain as a
+   harmless fallback for browsers without :has() support. */
+body:has(#white-chessmen) .hero .poster-card {
+  gap: .35rem;
+}
+
+body:has(#white-chessmen) .hero .poster-icon {
+  display: block;
+  width: min(100%, 30rem);
+  aspect-ratio: 440 / 208;
+  background: url("pawn-10-all-chessmen.svg?v=20260727-full-armies1") center / contain no-repeat;
+  font-size: 0;
+  line-height: 0;
+  text-shadow: none;
+}
+
+body:has(#white-chessmen) .hero .poster-icon .lesson-piece-icon {
+  display: none;
+}
+
+body:has(#white-chessmen) .hero .poster-title {
+  margin-top: .55rem;
+}
+
 #piece-or-pawn .board-shell svg .title {
   font-size: 20px !important;
 }
@@ -67,12 +92,21 @@
 }
 
 @media (max-width: 560px) {
+  body:has(#white-chessmen) .hero .poster-icon {
+    width: 100%;
+  }
+
   #piece-or-pawn .board-shell svg .title {
     font-size: 18px !important;
   }
 }
 
 @media print {
+  body:has(#white-chessmen) .hero .poster-icon {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
   #piece-or-pawn .board-shell svg image,
   #piece-or-pawn .board-shell svg text,
   #white-chessmen .board-shell svg > rect:last-of-type,
