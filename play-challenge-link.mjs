@@ -17,6 +17,33 @@ export const PLAY_CHALLENGE_SPEEDS = Object.freeze(['instant', 'fast', 'normal',
 const TIME_CONTROL_SET = new Set(PLAY_CHALLENGE_TIME_CONTROLS);
 const SIDE_SET = new Set(PLAY_CHALLENGE_SIDES);
 const SPEED_SET = new Set(PLAY_CHALLENGE_SPEEDS);
+const COMPACT_PARAM = 'pc';
+
+const SIDE_CODES = Object.freeze({
+  white: 'w',
+  black: 'b',
+  random: 'r',
+});
+const TIME_CONTROL_CODES = Object.freeze({
+  none: 'n',
+  '1+0': 'a',
+  '3+2': 'b',
+  '5+0': 'c',
+  '10+0': 'd',
+  '15+10': 'e',
+  '30+0': 'f',
+  '45+45': 'g',
+});
+const SPEED_CODES = Object.freeze({
+  instant: 'i',
+  fast: 'f',
+  normal: 'n',
+  slow: 's',
+});
+
+const SIDE_VALUES = Object.freeze(Object.fromEntries(Object.entries(SIDE_CODES).map(([value, code]) => [code, value])));
+const TIME_CONTROL_VALUES = Object.freeze(Object.fromEntries(Object.entries(TIME_CONTROL_CODES).map(([value, code]) => [code, value])));
+const SPEED_VALUES = Object.freeze(Object.fromEntries(Object.entries(SPEED_CODES).map(([value, code]) => [code, value])));
 
 function normalizeSkill(value) {
   const skill = Number(String(value ?? '').trim());
@@ -60,24 +87,57 @@ export function normalizePlayChallenge(config = {}) {
   };
 }
 
+function encodeCompactFen(fen) {
+  return fen.replaceAll('/', '.').replaceAll(' ', '_');
+}
+
+function decodeCompactFen(value) {
+  return String(value || '').replaceAll('_', ' ').replaceAll('.', '/');
+}
+
+function encodeCompactChallenge(challenge) {
+  return [
+    PLAY_CHALLENGE_VERSION,
+    encodeCompactFen(challenge.fen),
+    String(challenge.skill),
+    SIDE_CODES[challenge.side],
+    TIME_CONTROL_CODES[challenge.timeControl],
+    SPEED_CODES[challenge.thinkingSpeed],
+  ].join('~');
+}
+
+function decodeCompactChallenge(payload) {
+  const parts = String(payload || '').split('~');
+  if (parts.length !== 6 || parts[0] !== PLAY_CHALLENGE_VERSION) {
+    throw new Error('This prepared game link uses an unsupported format.');
+  }
+  return normalizePlayChallenge({
+    fen: decodeCompactFen(parts[1]),
+    skill: parts[2],
+    side: SIDE_VALUES[parts[3]],
+    timeControl: TIME_CONTROL_VALUES[parts[4]],
+    thinkingSpeed: SPEED_VALUES[parts[5]],
+  });
+}
+
 export function buildPlayChallengeLink(config, locationObject = globalThis.location) {
   const challenge = normalizePlayChallenge(config);
   const url = new URL(locationObject?.href || String(locationObject || ''));
   url.search = '';
   url.hash = '';
-  url.searchParams.set('playChallenge', PLAY_CHALLENGE_VERSION);
-  url.searchParams.set('playFen', challenge.fen);
-  url.searchParams.set('playSkill', String(challenge.skill));
-  url.searchParams.set('playSide', challenge.side);
-  url.searchParams.set('playTime', challenge.timeControl);
-  url.searchParams.set('playSpeed', challenge.thinkingSpeed);
-  return url.toString();
+  return `${url.toString()}?${COMPACT_PARAM}=${encodeCompactChallenge(challenge)}`;
 }
 
 export function readPlayChallenge(locationObject = globalThis.location) {
   const search = locationObject?.search
     ?? new URL(locationObject?.href || String(locationObject || '')).search;
   const params = new URLSearchParams(search);
+  const compactPayload = params.get(COMPACT_PARAM);
+  if (compactPayload) {
+    return decodeCompactChallenge(compactPayload);
+  }
+
+  // Backward compatibility for links created by the first implementation.
   if (params.get('playChallenge') !== PLAY_CHALLENGE_VERSION) {
     return null;
   }
