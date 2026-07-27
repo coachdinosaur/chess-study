@@ -1,61 +1,84 @@
-name: Bridge endgame presentation repair
+name: Lesson interoperability tests
 
 on:
+  pull_request:
+    paths:
+      - 'app.js'
+      - 'index.html'
+      - 'pgn.mjs'
+      - 'move-annotations.mjs'
+      - 'styles.css'
+      - 'lesson-model.mjs'
+      - 'lesson-migrations.mjs'
+      - 'lesson-position-adapter.mjs'
+      - 'lesson-position-export-validation.mjs'
+      - 'lesson-position-interoperability-core.mjs'
+      - 'lesson-position-interoperability-export-guard.mjs'
+      - 'lesson-position-interoperability.mjs'
+      - 'lesson-variation-tree.mjs'
+      - 'focus-analysis-popup.mjs'
+      - 'tests/lesson-*.test.mjs'
+      - 'tests/move-annotations.test.mjs'
+      - 'LESSON_DATA_ARCHITECTURE.md'
+      - 'LESSON_POSITION_INTEROPERABILITY.md'
+      - 'LESSON_VARIATIONS_AND_MAIN_LINES.md'
+      - 'USER_GUIDE.md'
+      - '.github/workflows/lesson-interoperability-tests.yml'
   push:
     branches:
       - main
     paths:
+      - 'app.js'
+      - 'index.html'
+      - 'pgn.mjs'
+      - 'move-annotations.mjs'
+      - 'styles.css'
+      - 'lesson-model.mjs'
+      - 'lesson-migrations.mjs'
+      - 'lesson-position-adapter.mjs'
+      - 'lesson-position-export-validation.mjs'
+      - 'lesson-position-interoperability-core.mjs'
+      - 'lesson-position-interoperability-export-guard.mjs'
+      - 'lesson-position-interoperability.mjs'
+      - 'lesson-variation-tree.mjs'
+      - 'focus-analysis-popup.mjs'
+      - 'tests/lesson-*.test.mjs'
+      - 'tests/move-annotations.test.mjs'
+      - 'LESSON_DATA_ARCHITECTURE.md'
+      - 'LESSON_POSITION_INTEROPERABILITY.md'
+      - 'LESSON_VARIATIONS_AND_MAIN_LINES.md'
+      - 'USER_GUIDE.md'
       - '.github/workflows/lesson-interoperability-tests.yml'
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  repair:
+  test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: fix/endgame-presentation-mode
-          fetch-depth: 0
+      - name: Check out repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Complete branch repair and restore main workflow
-        shell: bash
+      - name: Check module syntax
         run: |
-          set -euo pipefail
-          cp lessons/lesson-presentation.js lessons/lesson-presentation-legacy.js
-          base64 -d .github/endgame-presentation-payload.b64 > /tmp/endgame-presentation-payload.tar.gz
-          tar -xzf /tmp/endgame-presentation-payload.tar.gz
-          rm -f .github/endgame-presentation-payload.b64
-          rm -f .github/workflows/fix-endgame-presentation-mode.yml
+          node --check app.js
+          node --check pgn.mjs
+          node --check move-annotations.mjs
+          node --check lesson-model.mjs
+          node --check lesson-migrations.mjs
+          node --check lesson-position-adapter.mjs
+          node --check lesson-position-export-validation.mjs
+          node --check lesson-position-interoperability-core.mjs
+          node --check lesson-position-interoperability-export-guard.mjs
+          node --check lesson-position-interoperability.mjs
+          node --check lesson-variation-tree.mjs
+          node --check focus-analysis-popup.mjs
 
-          node --check lessons/endgame-lesson.js
-          node --check lessons/lesson-presentation.js
-          node --check lessons/lesson-presentation-legacy.js
-          node --check lessons/endgame-presentation.js
-          node --test tests/lesson-endgame-presentation.test.mjs
+      - name: Run lesson foundation, interoperability, variation, and annotation tests
+        run: |
           node --test tests/move-annotations.test.mjs
           node --test tests/lesson-data-foundation.test.mjs
           node --test tests/lesson-position-interoperability.test.mjs
           node --test tests/lesson-variation-tree.test.mjs
-          git diff --check
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git diff --cached --check
-          git commit -m "Complete endgame lesson presentation mode"
-          git push origin HEAD:fix/endgame-presentation-mode
-
-          git fetch origin main
-          git switch --force-create main origin/main
-          base64 -d > .github/workflows/lesson-interoperability-tests.yml <<'OLD_WORKFLOW'
-          bmFtZTogTGVzc29uIGludGVyb3BlcmFiaWxpdHkgdGVzdHMKCm9uOgogIHB1bGxfcmVxdWVzdDoKICAgIHBhdGhzOgogICAgICAtICdhcHAuanMnCiAgICAgIC0gJ2luZGV4Lmh0bWwnCiAgICAgIC0gJ3Bnbi5tanMnCiAgICAgIC0gJ21vdmUtYW5ub3RhdGlvbnMubWpzJwogICAgICAtICdzdHlsZXMuY3NzJwogICAgICAtICdsZXNzb24tbW9kZWwubWpzJwogICAgICAtICdsZXNzb24tbWlncmF0aW9ucy5tanMnCiAgICAgIC0gJ2xlc3Nvbi1wb3NpdGlvbi1hZGFwdGVyLm1qcycKICAgICAgLSAnbGVzc29uLXBvc2l0aW9uLWV4cG9ydC12YWxpZGF0aW9uLm1qcycKICAgICAgLSAnbGVzc29uLXBvc2l0aW9uLWludGVyb3BlcmFiaWxpdHktY29yZS5tanMnCiAgICAgIC0gJ2xlc3Nvbi1wb3NpdGlvbi1pbnRlcm9wZXJhYmlsaXR5LWV4cG9ydC1ndWFyZC5tanMnCiAgICAgIC0gJ2xlc3Nvbi1wb3NpdGlvbi1pbnRlcm9wZXJhYmlsaXR5Lm1qcycKICAgICAgLSAnbGVzc29uLXZhcmlhdGlvbi10cmVlLm1qcycKICAgICAgLSAnZm9jdXMtYW5hbHlzaXMtcG9wdXAubWpzJwogICAgICAtICd0ZXN0cy9sZXNzb24tKi50ZXN0Lm1qcycKICAgICAgLSAndGVzdHMvbW92ZS1hbm5vdGF0aW9ucy50ZXN0Lm1qcycKICAgICAgLSAnTEVTU09OX0RBVEFfQVJDSElURUNUVVJFLm1kJwogICAgICAtICdMRVNTT05fUE9TSVRJT05fSU5URVJPUEVSQUJJTElUWS5tZCcKICAgICAgLSAnTEVTU09OX1ZBUklBVElPTlNfQU5EX01BSU5fTElORVMubWQnCiAgICAgIC0gJ1VTRVJfR1VJREUubWQnCiAgICAgIC0gJy5naXRodWIvd29ya2Zsb3dzL2xlc3Nvbi1pbnRlcm9wZXJhYmlsaXR5LXRlc3RzLnltbCcKICBwdXNoOgogICAgYnJhbmNoZXM6CiAgICAgIC0gbWFpbgogICAgcGF0aHM6CiAgICAgIC0gJ2FwcC5qcycKICAgICAgLSAnaW5kZXguaHRtbCcKICAgICAgLSAncGduLm1qcycKICAgICAgLSAnbW92ZS1hbm5vdGF0aW9ucy5tanMnCiAgICAgIC0gJ3N0eWxlcy5jc3MnCiAgICAgIC0gJ2xlc3Nvbi1tb2RlbC5tanMnCiAgICAgIC0gJ2xlc3Nvbi1taWdyYXRpb25zLm1qcycKICAgICAgLSAnbGVzc29uLXBvc2l0aW9uLWFkYXB0ZXIubWpzJwogICAgICAtICdsZXNzb24tcG9zaXRpb24tZXhwb3J0LXZhbGlkYXRpb24ubWpzJwogICAgICAtICdsZXNzb24tcG9zaXRpb24taW50ZXJvcGVyYWJpbGl0eS1jb3JlLm1qcycKICAgICAgLSAnbGVzc29uLXBvc2l0aW9uLWludGVyb3BlcmFiaWxpdHktZXhwb3J0LWd1YXJkLm1qcycKICAgICAgLSAnbGVzc29uLXBvc2l0aW9uLWludGVyb3BlcmFiaWxpdHkubWpzJwogICAgICAtICdsZXNzb24tdmFyaWF0aW9uLXRyZWUubWpzJwogICAgICAtICdmb2N1cy1hbmFseXNpcy1wb3B1cC5tanMnCiAgICAgIC0gJ3Rlc3RzL2xlc3Nvbi0qLnRlc3QubWpzJwogICAgICAtICd0ZXN0cy9tb3ZlLWFubm90YXRpb25zLnRlc3QubWpzJwogICAgICAtICdMRVNTT05fREFUQV9BUkNISVRFQ1RVUkUubWQnCiAgICAgIC0gJ0xFU1NPTl9QT1NJVElPTl9JTlRFUk9QRVJBQklMSVRZLm1kJwogICAgICAtICdMRVNTT05fVkFSSUFUSU9OU19BTkRfTUFJTl9MSU5FUy5tZCcKICAgICAgLSAnVVNFUl9HVUlERS5tZCcKICAgICAgLSAnLmdpdGh1Yi93b3JrZmxvd3MvbGVzc29uLWludGVyb3BlcmFiaWxpdHktdGVzdHMueW1sJwogIHdvcmtmbG93X2Rpc3BhdGNoOgoKcGVybWlzc2lvbnM6CiAgY29udGVudHM6IHJlYWQKCmpvYnM6CiAgdGVzdDoKICAgIHJ1bnMtb246IHVidW50dS1sYXRlc3QKICAgIHN0ZXBzOgogICAgICAtIG5hbWU6IENoZWNrIG91dCByZXBvc2l0b3J5CiAgICAgICAgdXNlczogYWN0aW9ucy9jaGVja291dEB2NAoKICAgICAgLSBuYW1lOiBDaGVjayBtb2R1bGUgc3ludGF4CiAgICAgICAgcnVuOiB8CiAgICAgICAgICBub2RlIC0tY2hlY2sgYXBwLmpzCiAgICAgICAgICBub2RlIC0tY2hlY2sgcGduLm1qcwogICAgICAgICAgbm9kZSAtLWNoZWNrIG1vdmUtYW5ub3RhdGlvbnMubWpzCiAgICAgICAgICBub2RlIC0tY2hlY2sgbGVzc29uLW1vZGVsLm1qcwogICAgICAgICAgbm9kZSAtLWNoZWNrIGxlc3Nvbi1taWdyYXRpb25zLm1qcwogICAgICAgICAgbm9kZSAtLWNoZWNrIGxlc3Nvbi1wb3NpdGlvbi1hZGFwdGVyLm1qcwogICAgICAgICAgbm9kZSAtLWNoZWNrIGxlc3Nvbi1wb3NpdGlvbi1leHBvcnQtdmFsaWRhdGlvbi5tanMKICAgICAgICAgIG5vZGUgLS1jaGVjayBsZXNzb24tcG9zaXRpb24taW50ZXJvcGVyYWJpbGl0eS1jb3JlLm1qcwogICAgICAgICAgbm9kZSAtLWNoZWNrIGxlc3Nvbi1wb3NpdGlvbi1pbnRlcm9wZXJhYmlsaXR5LWV4cG9ydC1ndWFyZC5tanMKICAgICAgICAgIG5vZGUgLS1jaGVjayBsZXNzb24tcG9zaXRpb24taW50ZXJvcGVyYWJpbGl0eS5tanMKICAgICAgICAgIG5vZGUgLS1jaGVjayBsZXNzb24tdmFyaWF0aW9uLXRyZWUubWpzCiAgICAgICAgICBub2RlIC0tY2hlY2sgZm9jdXMtYW5hbHlzaXMtcG9wdXAubWpzCgogICAgICAtIG5hbWU6IFJ1biBsZXNzb24gZm91bmRhdGlvbiwgaW50ZXJvcGVyYWJpbGl0eSwgdmFyaWF0aW9uLCBhbmQgYW5ub3RhdGlvbiB0ZXN0cwogICAgICAgIHJ1bjogfAogICAgICAgICAgbm9kZSAtLXRlc3QgdGVzdHMvbW92ZS1hbm5vdGF0aW9ucy50ZXN0Lm1qcwogICAgICAgICAgbm9kZSAtLXRlc3QgdGVzdHMvbGVzc29uLWRhdGEtZm91bmRhdGlvbi50ZXN0Lm1qcwogICAgICAgICAgbm9kZSAtLXRlc3QgdGVzdHMvbGVzc29uLXBvc2l0aW9uLWludGVyb3BlcmFiaWxpdHkudGVzdC5tanMKICAgICAgICAgIG5vZGUgLS10ZXN0IHRlc3RzL2xlc3Nvbi12YXJpYXRpb24tdHJlZS50ZXN0Lm1qcwo=
-          OLD_WORKFLOW
-          git add .github/workflows/lesson-interoperability-tests.yml
-          git commit -m "Restore lesson interoperability workflow"
-          git push origin HEAD:main
