@@ -6,7 +6,7 @@ import './position-study-single-hint-patch.mjs?v=20260726-single-hint1';
 import './lichess-position-training-interactions.mjs?v=20260725-board-interaction1';
 import './lichess-position-training-grid-layout.mjs?v=20260725-grid-rows1';
 import './lichess-position-training-style-refresh.mjs?v=20260726-post-answer-layout1';
-import './play-challenge-integration.mjs?v=20260727-student-game-link1';
+import './play-challenge-integration.mjs?v=20260727-student-game-link2';
 
 const root = document.documentElement;
 if (root.dataset.embed !== '1' && root.dataset.boardOnly !== '1') {
