@@ -322,6 +322,8 @@ Move-quality choices are `!`, `?`, `!!`, `??`, `!?`, `?!`, and `□` for a force
 
 The glyph is shown directly after the move, such as `Nf5!` or `Nf5⩲`. Move annotations are saved in lesson JSON and preserved when PGN is imported or exported. The punctuation move-quality glyphs are exported as familiar suffixes; positional glyphs use their standard numeric PGN NAG values for compatibility.
 
+When an annotated move is selected in **Study** or **Analysis**, its move-quality glyph also appears as a colored badge beside the piece on the move's destination square. Position-evaluation glyphs remain in the notation only, so the board does not become a traveling punctuation convention.
+
 ## Draw Arrows, Circles, Stars, and Highlights
 
 > **Where to go:** **Tools → Analysis** or **Tools → Study**

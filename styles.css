@@ -5086,3 +5086,59 @@ html[data-board-only="1"] .eval-bar-wrap {
   }
 
 }
+
+
+/* Board badge for the selected move's move-quality annotation. */
+.board-square {
+  position: relative;
+}
+
+.move-quality-board-effect {
+  position: absolute;
+  top: 4%;
+  right: 4%;
+  z-index: 9;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 38%;
+  min-width: 1.05rem;
+  max-width: 2.15rem;
+  aspect-ratio: 1;
+  padding: 0 0.08em;
+  border: 2px solid rgba(255, 255, 255, 0.88);
+  border-radius: 50%;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: clamp(0.64rem, calc(var(--board-size, 42rem) / 44), 1.05rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.08em;
+  text-align: center;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 0.12rem 0.28rem rgba(0, 0, 0, 0.34);
+  pointer-events: none;
+  user-select: none;
+}
+
+.move-quality-board-effect::after {
+  content: '';
+  position: absolute;
+  left: 4%;
+  bottom: -8%;
+  width: 30%;
+  height: 30%;
+  border-radius: 15% 0 45% 0;
+  background: inherit;
+  transform: rotate(34deg);
+  z-index: -1;
+}
+
+.move-quality-board-effect.is-nag-1 { background: #5c9b3a; }
+.move-quality-board-effect.is-nag-2 { background: #d49319; }
+.move-quality-board-effect.is-nag-3 { background: #249cb7; }
+.move-quality-board-effect.is-nag-4 { background: #c84c4c; }
+.move-quality-board-effect.is-nag-5 { background: #2b9b86; }
+.move-quality-board-effect.is-nag-6 { background: #3c91cf; }
+.move-quality-board-effect.is-nag-7 { background: #6f7883; }
