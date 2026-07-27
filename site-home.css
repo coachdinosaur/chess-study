@@ -150,3 +150,37 @@ body.focus-mode-active .site-intro {
     padding-bottom: 0.5rem;
   }
 }
+
+/* Keep Study comments visually attached to the move they explain. */
+.notation-tree > .notation-segment > .notation-line .notation-inline-comment {
+  margin-right: 0.5rem;
+}
+
+.notation-tree > .notation-segment > .notation-line .notation-inline-comment::before {
+  content: "(";
+  margin-right: 0.08em;
+}
+
+.notation-tree > .notation-segment > .notation-line .notation-inline-comment::after {
+  content: ")";
+  margin-left: 0.08em;
+}
+
+/* Shrink-wrap a variation so its closing parenthesis follows its final text. */
+.notation-variation {
+  width: fit-content;
+  max-width: 100%;
+  grid-template-columns: auto minmax(0, auto) auto;
+  justify-content: start;
+  align-items: baseline;
+  column-gap: 0;
+}
+
+.notation-variation-body {
+  min-width: 0;
+  margin-left: 0.18rem;
+}
+
+.notation-variation-paren {
+  align-self: baseline;
+}
