@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 
 import {
   MOVE_ANNOTATIONS,
+  moveNagDetails,
   moveNagFromPgnEntry,
   moveNagFromValue,
   moveNagGlyph,
@@ -29,6 +30,9 @@ test('move annotation helpers normalize quality and positional NAG values', () =
   assert.equal(moveNagPgnToken(14), '$14');
   assert.equal(moveNagFromPgnEntry({ suffix: '!?', nag: '2' }), 5);
   assert.equal(moveNagFromPgnEntry({ nag: '$15' }), 15);
+  assert.equal(moveNagDetails('??')?.group, 'Move quality');
+  assert.equal(moveNagDetails('$14')?.group, 'Position evaluation');
+  assert.equal(moveNagDetails('$255'), null);
 });
 
 test('PGN import and export preserve quality glyphs and positional NAG values', () => {
