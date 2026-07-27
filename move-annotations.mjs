@@ -42,14 +42,18 @@ export function moveNagFromValue(value) {
   return Number.isInteger(numeric) && numeric > 0 && numeric <= 255 ? numeric : null;
 }
 
-export function moveNagGlyph(value) {
+export function moveNagDetails(value) {
   const nag = moveNagFromValue(value);
-  return nag ? (BY_NAG.get(nag)?.glyph || '') : '';
+  return nag ? (BY_NAG.get(nag) || null) : null;
+}
+
+export function moveNagGlyph(value) {
+  return moveNagDetails(value)?.glyph || '';
 }
 
 export function moveNagLabel(value) {
   const nag = moveNagFromValue(value);
-  return nag ? (BY_NAG.get(nag)?.label || `NAG $${nag}`) : '';
+  return nag ? (moveNagDetails(nag)?.label || `NAG $${nag}`) : '';
 }
 
 export function moveNagPgnToken(value) {
@@ -57,7 +61,7 @@ export function moveNagPgnToken(value) {
   if (!nag) {
     return '';
   }
-  const annotation = BY_NAG.get(nag);
+  const annotation = moveNagDetails(nag);
   return annotation?.pgnSuffix ? annotation.glyph : `$${nag}`;
 }
 

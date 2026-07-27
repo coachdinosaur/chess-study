@@ -5,6 +5,7 @@ import { Chess, DEFAULT_POSITION, validateFen } from './vendor/chess.js';
 import { buildPgnFromLessonTree, parsePgnToLessonTree, splitPgnGames, extractPgnHeaders } from './pgn.mjs';
 import {
   MOVE_ANNOTATIONS,
+  moveNagDetails,
   moveNagFromValue,
   moveNagGlyph,
   moveNagLabel,
@@ -6993,6 +6994,42 @@ function submitDraggedBoardMove(fromSquare, toSquare) {
   return true;
 }
 
+function currentMoveQualityBoardEffect() {
+  if (
+    (state.activeTab !== TAB_STUDY && state.activeTab !== TAB_ANALYSIS)
+    || state.practice.active
+    || state.play.active
+  ) {
+    return null;
+  }
+  const node = getCurrentAnalysisNode();
+  if (!node || node.id === state.analysis.rootId || !SQUARE_PATTERN.test(node.to)) {
+    return null;
+  }
+  const annotation = moveNagDetails(node.nag);
+  if (!annotation || annotation.group !== 'Move quality') {
+    return null;
+  }
+  return {
+    square: node.to,
+    nag: annotation.nag,
+    glyph: annotation.glyph,
+    label: annotation.label,
+  };
+}
+
+function renderMoveQualityBoardEffect(effect) {
+  if (!effect) {
+    return '';
+  }
+  return `<span
+    class="move-quality-board-effect is-nag-${effect.nag}"
+    role="img"
+    aria-label="${escapeHtml(effect.label)}"
+    title="${escapeHtml(effect.label)}"
+  >${escapeHtml(effect.glyph)}</span>`;
+}
+
 function buildBoardMarkup() {
   const pieces = currentDisplayPieces();
   const selectedSquare = state.activeTab === TAB_SETUP ? null : state.analysis.selectedSquare;
@@ -7005,6 +7042,7 @@ function buildBoardMarkup() {
   );
   const boardDragMoves = currentBoardDragMoves();
   const draggableSources = new Set(boardDragMoves.map((move) => move.from));
+  const moveQualityEffect = currentMoveQualityBoardEffect();
   let markup = '';
   for (let row = 0; row < 8; row += 1) {
     for (let col = 0; col < 8; col += 1) {
@@ -7041,6 +7079,7 @@ function buildBoardMarkup() {
               <img class="board-piece" src="${PIECE_ASSETS[piece]}" alt="">
             </div>
           ` : ''}
+          ${moveQualityEffect?.square === square ? renderMoveQualityBoardEffect(moveQualityEffect) : ''}
         </div>
       `;
     }
@@ -7392,6 +7431,7 @@ function applyMoveAnnotation(nodeId, value) {
   syncLessonFileStatus(message);
   schedulePersist();
   renderNotationPanel();
+  renderBoard();
 }
 
 function renderMoveAnnotationMenu() {
