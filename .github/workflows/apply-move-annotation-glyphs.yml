@@ -7,6 +7,12 @@ on:
     paths:
       - 'tools/apply_move_annotation_glyphs.py'
       - '.github/workflows/apply-move-annotation-glyphs.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'tools/apply_move_annotation_glyphs.py'
+      - '.github/workflows/apply-move-annotation-glyphs.yml'
   workflow_dispatch:
 
 permissions:
@@ -42,5 +48,3 @@ jobs:
           git add -A
           git commit -m "Add move annotation glyphs"
           git push origin HEAD:feature/move-annotation-glyphs
-
-# Trigger the implementation workflow after creation.
