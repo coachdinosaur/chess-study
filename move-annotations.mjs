@@ -1,10 +1,19 @@
 const RAW_MOVE_ANNOTATIONS = [
-  { nag: 1, glyph: '!', label: 'Good move' },
-  { nag: 2, glyph: '?', label: 'Mistake' },
-  { nag: 3, glyph: '!!', label: 'Brilliant move' },
-  { nag: 4, glyph: '??', label: 'Blunder' },
-  { nag: 5, glyph: '!?', label: 'Interesting move' },
-  { nag: 6, glyph: '?!', label: 'Dubious move' },
+  { nag: 1, glyph: '!', label: 'Good move', group: 'Move quality', pgnSuffix: true },
+  { nag: 2, glyph: '?', label: 'Mistake', group: 'Move quality', pgnSuffix: true },
+  { nag: 3, glyph: '!!', label: 'Brilliant move', group: 'Move quality', pgnSuffix: true },
+  { nag: 4, glyph: '??', label: 'Blunder', group: 'Move quality', pgnSuffix: true },
+  { nag: 5, glyph: '!?', label: 'Interesting move', group: 'Move quality', pgnSuffix: true },
+  { nag: 6, glyph: '?!', label: 'Dubious move', group: 'Move quality', pgnSuffix: true },
+  { nag: 7, glyph: '□', label: 'Forced / only move', group: 'Move quality' },
+  { nag: 10, glyph: '=', label: 'Equal position', group: 'Position evaluation' },
+  { nag: 13, glyph: '∞', label: 'Unclear position', group: 'Position evaluation' },
+  { nag: 14, glyph: '⩲', label: 'White slightly better', group: 'Position evaluation' },
+  { nag: 15, glyph: '⩱', label: 'Black slightly better', group: 'Position evaluation' },
+  { nag: 16, glyph: '±', label: 'White better', group: 'Position evaluation' },
+  { nag: 17, glyph: '∓', label: 'Black better', group: 'Position evaluation' },
+  { nag: 18, glyph: '+−', label: 'White winning', group: 'Position evaluation' },
+  { nag: 19, glyph: '−+', label: 'Black winning', group: 'Position evaluation' },
 ];
 
 export const MOVE_ANNOTATIONS = Object.freeze(
@@ -48,7 +57,8 @@ export function moveNagPgnToken(value) {
   if (!nag) {
     return '';
   }
-  return BY_NAG.get(nag)?.glyph || `$${nag}`;
+  const annotation = BY_NAG.get(nag);
+  return annotation?.pgnSuffix ? annotation.glyph : `$${nag}`;
 }
 
 export function moveNagFromPgnEntry(entry) {
