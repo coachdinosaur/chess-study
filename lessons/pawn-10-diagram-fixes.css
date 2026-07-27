@@ -75,54 +75,50 @@ body:has(#white-chessmen) .hero .poster-title {
   font-size: 20px !important;
 }
 
-#piece-or-pawn .board-shell svg image[x="58"] {
-  transform-box: fill-box;
-  transform-origin: center;
-  transform: translate(-10px, 2px) scale(.72);
+/* Replace the cramped source-SVG icons with a centered, complete visual group.
+   The source keeps the accessible text and box geometry; this overlay supplies
+   the five piece types and the two pawn examples at a readable size. */
+#piece-or-pawn .board-shell.compact {
+  position: relative;
 }
 
-#piece-or-pawn .board-shell svg image[x="98"] {
-  transform-box: fill-box;
-  transform-origin: center;
-  transform: translate(-18px, 2px) scale(.72);
+#piece-or-pawn .board-shell.compact::after {
+  content: "";
+  position: absolute;
+  inset: .8rem;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    url("../assets/pieces/mpchess/wK.svg") 13.5% 86% / 7% auto no-repeat,
+    url("../assets/pieces/mpchess/bQ.svg") 20% 86% / 7% auto no-repeat,
+    url("../assets/pieces/mpchess/wR.svg") 26.5% 86% / 7% auto no-repeat,
+    url("../assets/pieces/mpchess/wN.svg") 33% 86% / 7% auto no-repeat,
+    url("../assets/pieces/mpchess/wB.svg") 39.5% 86% / 7% auto no-repeat,
+    url("../assets/pieces/mpchess/wP.svg") 70% 86% / 7% auto no-repeat,
+    url("../assets/pieces/mpchess/bP.svg") 77% 86% / 7% auto no-repeat;
 }
 
-#piece-or-pawn .board-shell svg image[x="138"] {
-  transform-box: fill-box;
-  transform-origin: center;
-  transform: translate(-26px, 2px) scale(.72);
-}
-
-#piece-or-pawn .board-shell svg image[x="310"] {
-  transform-box: fill-box;
-  transform-origin: center;
-  transform: translate(-4px, 2px) scale(.72);
-}
-
+#piece-or-pawn .board-shell svg image[x="58"],
+#piece-or-pawn .board-shell svg image[x="98"],
+#piece-or-pawn .board-shell svg image[x="138"],
+#piece-or-pawn .board-shell svg image[x="310"],
 #piece-or-pawn .board-shell svg image[x="350"] {
-  transform-box: fill-box;
-  transform-origin: center;
-  transform: translate(-12px, 2px) scale(.72);
+  display: none;
 }
 
 #piece-or-pawn .board-shell svg text.label[x="196"] {
-  font-size: 15px !important;
-  transform: translate(-42px, -8px);
-}
-
-#piece-or-pawn .board-shell svg text.small[x="196"] {
-  font-size: 9.5px !important;
-  transform: translate(-42px, -5px);
+  font-size: 16px !important;
+  transform: translate(-57px, -8px);
 }
 
 #piece-or-pawn .board-shell svg text.label[x="410"] {
-  font-size: 15px !important;
-  transform: translate(-14px, -8px);
+  font-size: 16px !important;
+  transform: translate(-29px, -8px);
 }
 
+#piece-or-pawn .board-shell svg text.small[x="196"],
 #piece-or-pawn .board-shell svg text.small[x="410"] {
-  font-size: 10px !important;
-  transform: translate(-14px, -5px);
+  display: none;
 }
 
 #white-chessmen .board-shell svg > rect:last-of-type,
@@ -145,7 +141,8 @@ body:has(#white-chessmen) .hero .poster-title {
 }
 
 @media print {
-  body:has(#white-chessmen) .hero .poster-icon {
+  body:has(#white-chessmen) .hero .poster-icon,
+  #piece-or-pawn .board-shell.compact::after {
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
   }
