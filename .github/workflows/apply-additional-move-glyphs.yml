@@ -30,7 +30,28 @@ jobs:
           show-progress: false
 
       - name: Apply UI and documentation changes
-        run: python tools/apply_additional_move_glyphs.py
+        id: apply
+        shell: bash
+        run: |
+          set +e
+          python tools/apply_additional_move_glyphs.py > patch.log 2>&1
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Upload patch log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: additional-glyph-patch-log
+          path: patch.log
+          if-no-files-found: error
+
+      - name: Stop after patch failure
+        if: steps.apply.outputs.status != '0'
+        run: |
+          cat patch.log
+          exit 1
 
       - name: Validate glyph support
         run: |
@@ -44,6 +65,7 @@ jobs:
 
       - name: Commit generated changes
         run: |
+          rm -f patch.log
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add app.js styles.css README.md USER_GUIDE.md
