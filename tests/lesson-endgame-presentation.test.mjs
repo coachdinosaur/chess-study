@@ -6,6 +6,7 @@ const dispatcher = readFileSync(new URL('../lessons/lesson-presentation.js', imp
 const runtime = readFileSync(new URL('../lessons/endgame-presentation.js', import.meta.url), 'utf8');
 const css = readFileSync(new URL('../lessons/endgame-presentation.css', import.meta.url), 'utf8');
 const endgameLoader = readFileSync(new URL('../lessons/endgame-lesson.js', import.meta.url), 'utf8');
+const clickToggle = readFileSync(new URL('../lessons/presentation-click-toggle.js', import.meta.url), 'utf8');
 
 const lessonFiles = [
   '01-king-pawn-rule-of-square.html',
@@ -21,6 +22,27 @@ test('presentation dispatcher routes endgame pages to the dedicated runtime', ()
   assert.match(dispatcher, /data-lesson-series/);
   assert.match(dispatcher, /endgame-presentation\.js/);
   assert.match(dispatcher, /lesson-presentation-legacy\.js/);
+});
+
+test('presentation dispatcher loads the shared click-animation toggle', () => {
+  assert.match(dispatcher, /presentation-click-toggle\.js/);
+  assert.match(dispatcher, /data-presentation-click-toggle-runtime/);
+  assert.ok(
+    dispatcher.indexOf('presentation-click-toggle.js') > dispatcher.indexOf('document.body.appendChild(script)'),
+    'toggle helper should be appended after the selected presentation runtime',
+  );
+});
+
+test('click-animation toggle supports both presentation toolbars and persists the choice', () => {
+  assert.match(clickToggle, /lesson-presentation-click-animation-v1/);
+  assert.match(clickToggle, /\.lesson-presentation-toolbar/);
+  assert.match(clickToggle, /\.endgame-presentation-toolbar/);
+  assert.match(clickToggle, /Click animation: /);
+  assert.match(clickToggle, /aria-pressed/);
+  assert.match(clickToggle, /localStorage\.setItem/);
+  assert.match(clickToggle, /presentation-click-animation-disabled/);
+  assert.match(clickToggle, /lesson-presentation-click-indicator/);
+  assert.match(clickToggle, /endgame-presentation-click-indicator/);
 });
 
 test('dedicated runtime collects the complete endgame page structures', () => {
