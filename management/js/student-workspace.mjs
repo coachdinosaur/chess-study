@@ -48,6 +48,12 @@ function formatDate(value, { includeTime = true } = {}) {
     : { dateStyle: 'medium' }).format(date);
 }
 
+function formatTeacherName(value) {
+  const name = String(value || '').trim();
+  if (!name) return 'your teacher';
+  return /^teacher\b/i.test(name) ? name : `Teacher ${name}`;
+}
+
 function setError(error) {
   elements.loading.hidden = true;
   elements.shell.hidden = true;
@@ -140,7 +146,7 @@ function render(payload, token) {
 
   document.title = `${student.display_name || 'Student'} Workspace | CD Digital Chess`;
   elements.student.textContent = student.display_name || 'Student workspace';
-  elements.coach.textContent = `Prepared by ${payload.coach?.display_name || 'your coach'}`;
+  elements.coach.textContent = `Prepared by ${formatTeacherName(payload.coach?.display_name)}`;
   elements.updated.textContent = workspace.updated_at
     ? `Updated ${formatDate(workspace.updated_at)}`
     : '';
