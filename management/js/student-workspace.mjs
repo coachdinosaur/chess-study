@@ -1,6 +1,9 @@
 import { Chess } from '../../vendor/chess.js';
 import { getSupabase, readableError } from './supabase-client.mjs';
-import { workspaceAssignmentLink } from './student-workspace-core.mjs';
+import {
+  liveBoardStudentLink,
+  workspaceAssignmentLink,
+} from './student-workspace-core.mjs';
 
 const PIECE_ASSETS = Object.freeze({
   w: Object.freeze({ k: '../assets/pieces/mpchess/wK.svg', q: '../assets/pieces/mpchess/wQ.svg', r: '../assets/pieces/mpchess/wR.svg', b: '../assets/pieces/mpchess/wB.svg', n: '../assets/pieces/mpchess/wN.svg', p: '../assets/pieces/mpchess/wP.svg' }),
@@ -70,6 +73,7 @@ function renderPosition(fen) {
       squares.push(`${file}${rank}`);
     }
   }
+
   elements.positionBoard.innerHTML = '';
   for (const square of squares) {
     const piece = game.get(square);
@@ -163,8 +167,8 @@ function render(payload, token) {
     elements.positionLink.href = studyUrl.href;
   }
 
-  elements.liveBoardCard.hidden = !workspace.live_board_url;
-  elements.liveBoardLink.href = workspace.live_board_url || '#';
+  elements.liveBoardCard.hidden = true;
+  elements.liveBoardLink.href = '#';
 
   renderAssignments(assignments, token);
   elements.loading.hidden = true;
@@ -172,16 +176,40 @@ function render(payload, token) {
   elements.shell.hidden = false;
 }
 
+async function refreshLiveBoard(token) {
+  try {
+    const supabase = getSupabase();
+    const { data, error } = await supabase.rpc('get_student_workspace_live_board_by_token', {
+      p_token: token,
+    });
+    if (error) throw error;
+
+    const active = Boolean(data?.active && data?.room_code);
+    elements.liveBoardCard.hidden = !active;
+    elements.liveBoardLink.href = active
+      ? liveBoardStudentLink(data.room_code, token)
+      : '#';
+  } catch (error) {
+    console.warn('Could not refresh the Live Board session.', error);
+    elements.liveBoardCard.hidden = true;
+    elements.liveBoardLink.href = '#';
+  }
+}
+
 async function initialize() {
   try {
     const token = parseToken();
     if (!token) throw new Error('The private student workspace link is missing its access token.');
+
     const supabase = getSupabase();
     const { data, error } = await supabase.rpc('get_student_workspace_by_token', {
       p_token: token,
     });
     if (error) throw error;
+
     render(data, token);
+    await refreshLiveBoard(token);
+    window.setInterval(() => refreshLiveBoard(token), 15000);
   } catch (error) {
     setError(error);
   }
