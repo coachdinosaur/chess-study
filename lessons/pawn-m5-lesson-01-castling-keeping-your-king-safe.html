@@ -7,87 +7,68 @@
   <meta name="description" content="Pawn Level Module 5 lesson: learn the castling move and why it keeps the king safe.">
   <style>
     :root {
-      --bg: #071012; --bg-2: #0b1517; --panel: rgba(27, 42, 46, 0.92); --panel-strong: rgba(28, 43, 48, 0.98);
-      --text: #f7faf5; --muted: #b9c6c3; --line: rgba(52, 74, 78, 0.92); --gold: #8ad8b7; --blue: #3d8dff;
-      --green: #65d28a; --orange: #ffae5a; --red: #ff6b6b; --purple: #b990ff;
-      --shadow: 0 22px 60px rgba(0,0,0,.45); --radius: 24px; --max: 1180px;
+      --bg:#071012; --bg-2:#0b1517; --panel:rgba(27,42,46,.92); --panel-strong:rgba(28,43,48,.98);
+      --text:#f7faf5; --muted:#b9c6c3; --line:rgba(52,74,78,.92); --gold:#8ad8b7; --blue:#3d8dff;
+      --green:#65d28a; --orange:#ffae5a; --red:#ff6b6b; --shadow:0 22px 60px rgba(0,0,0,.45); --radius:24px; --max:1180px;
     }
     [data-theme="light"] {
-      --bg: #f6f7f8; --bg-2: #edf1f3; --panel: rgba(255, 255, 255, 0.94); --panel-strong: rgba(255, 255, 255, 0.98);
-      --text: #172127; --muted: #52606a; --line: rgba(190, 202, 207, 0.9); --shadow: 0 20px 50px rgba(17,28,35,0.16); --gold: #1d6f78;
+      --bg:#f6f7f8; --bg-2:#edf1f3; --panel:rgba(255,255,255,.94); --panel-strong:rgba(255,255,255,.98);
+      --text:#172127; --muted:#52606a; --line:rgba(190,202,207,.9); --shadow:0 20px 50px rgba(17,28,35,.16); --gold:#1d6f78;
     }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body { margin: 0; color: var(--text); font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; line-height: 1.55; background: radial-gradient(circle at top left, rgba(61,141,255,.35), transparent 35rem), radial-gradient(circle at top right, rgba(243,197,95,.18), transparent 34rem), linear-gradient(135deg, var(--bg), var(--bg-2)); overflow-x: hidden; }
-    img { max-width: 100%; height: auto; display: block; }
-    a { color: inherit; } button { font: inherit; }
-    .skip-link { position: absolute; left: -999px; top: 1rem; background: var(--gold); color: #111827; padding: .65rem 1rem; border-radius: 999px; z-index: 999; }
-    .skip-link:focus { left: 1rem; }
-    .topbar { position: sticky; top: 0; z-index: 20; backdrop-filter: blur(16px); background: color-mix(in srgb, var(--bg) 78%, transparent); border-bottom: 1px solid var(--line); }
-    .topbar-inner { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .75rem 0; }
-    .brand { display: flex; align-items: center; gap: .7rem; font-weight: 800; letter-spacing: .01em; }
-    .brand-icon { width: 2.4rem; height: 2.4rem; border-radius: .8rem; display: grid; place-items: center; background: linear-gradient(135deg, var(--gold), color-mix(in srgb, var(--gold) 30%, transparent)); color: #13203a; box-shadow: 0 10px 30px color-mix(in srgb, var(--gold) 25%, transparent); }
-    .top-actions { display: flex; gap: .5rem; flex-wrap: wrap; justify-content: flex-end; }
-    .btn { border: 1px solid var(--line); color: var(--text); background: var(--panel); border-radius: 999px; padding: .55rem .9rem; cursor: pointer; transition: transform .18s ease, background .18s ease; }
-    .btn:hover { transform: translateY(-1px); background: var(--panel-strong); }
-    .progress { height: 3px; background: rgba(255,255,255,.08); }
-    .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--gold), var(--green), var(--blue)); }
-    .page { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; }
-    .hero { padding: clamp(2rem, 4vw, 4rem) 0 1.4rem; display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 520px); gap: clamp(1.25rem, 4vw, 3rem); align-items: center; }
-    .kicker { color: var(--gold); text-transform: uppercase; font-weight: 850; letter-spacing: .14em; font-size: .85rem; margin: 0 0 .75rem; }
-    h1, h2, h3 { line-height: 1.08; margin: 0; }
-    h1 { font-size: clamp(2.35rem, 7vw, 5.7rem); letter-spacing: -.055em; }
-    h2 { font-size: clamp(1.65rem, 4vw, 3.15rem); letter-spacing: -.035em; }
-    h3 { font-size: clamp(1.18rem, 2.2vw, 1.55rem); letter-spacing: -.015em; }
-    .lead { font-size: clamp(1.05rem, 1.9vw, 1.34rem); color: var(--muted); max-width: 64ch; }
-    .hero-card { border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--line); background: var(--panel); }
-    .objective-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .8rem; margin: 1rem 0 2rem; }
-    .objective { padding: 1rem; border: 1px solid var(--line); border-radius: 18px; background: var(--panel); min-height: 8rem; }
-    .objective strong { display: block; margin-bottom: .45rem; font-size: 1.03rem; }
-    .objective span { color: var(--muted); font-size: .95rem; }
-    .layout { display: grid; grid-template-columns: 245px minmax(0, 1fr); gap: 1.25rem; align-items: start; padding: 1rem 0 4rem; }
-    .toc { position: sticky; top: 4.5rem; border: 1px solid var(--line); border-radius: 20px; background: var(--panel); padding: 1rem; }
-    .toc-title { font-weight: 850; margin-bottom: .7rem; color: var(--gold); }
-    .toc a { display: block; text-decoration: none; color: var(--muted); padding: .55rem .65rem; border-radius: 12px; font-size: .95rem; }
-    .toc a:hover { color: var(--text); background: var(--panel-strong); }
-    main { min-width: 0; }
-    .lesson-section { border: 1px solid var(--line); background: var(--panel); border-radius: var(--radius); padding: clamp(1rem, 3vw, 2rem); margin-bottom: 1.1rem; box-shadow: 0 14px 40px rgba(0,0,0,.14); scroll-margin-top: 5.5rem; }
-    .section-head { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1rem; }
-    .number { flex: 0 0 auto; width: 2.45rem; height: 2.45rem; display: grid; place-items: center; border-radius: 999px; font-weight: 900; color: #111827; background: var(--gold); box-shadow: 0 10px 22px rgba(243,197,95,.25); }
-    .section-text p { color: var(--muted); margin: .75rem 0 0; }
-    figure { margin: 0; }
-    .two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, .9fr); gap: 1rem; align-items: center; }
-    .callout { border: 1px solid color-mix(in srgb, var(--gold) 42%, var(--line)); border-radius: 20px; padding: 1rem; background: color-mix(in srgb, var(--gold) 12%, var(--panel)); }
-    .callout-title { color: var(--gold); font-weight: 900; margin-bottom: .35rem; }
-    ul.clean { padding-left: 1.2rem; margin: .7rem 0 0; color: var(--muted); }
-    ul.clean li { margin: .35rem 0; }
-    details.quiz { border: 1px solid var(--line); background: rgba(255,255,255,.055); border-radius: 16px; padding: .9rem 1rem; margin-top: .75rem; }
-    details.quiz summary { cursor: pointer; font-weight: 800; }
-    details.quiz p { color: var(--muted); margin-bottom: 0; }
-    .footer { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; padding: 2rem 0 3rem; color: var(--muted); border-top: 1px solid var(--line); }
-    @media (max-width: 980px) { .hero { grid-template-columns: 1fr; } .layout { grid-template-columns: 1fr; } .toc { position: static; overflow-x: auto; white-space: nowrap; } .toc a { display: inline-block; } }
-    @media (max-width: 720px) { .topbar-inner, .page, .footer { width: min(100% - 22px, var(--max)); } .topbar-inner { align-items: flex-start; } .brand span:last-child { display: none; } .objective-grid, .two-col { grid-template-columns: 1fr; } .lesson-section { border-radius: 18px; } .section-head { gap: .75rem; } .number { width: 2.15rem; height: 2.15rem; } }
-    @media print { :root, [data-theme="light"], [data-theme="dark"] { --bg: #ffffff; --bg-2: #ffffff; --panel: #ffffff; --panel-strong: #ffffff; --text: #111827; --muted: #374151; --line: #d1d5db; --shadow: none; } body { background: #ffffff; } .topbar, .toc, .btn, .progress { display: none !important; } .page, .footer { width: 100%; } .hero { padding-top: 0; } .layout { display: block; padding: 0; } .lesson-section, .objective { break-inside: avoid; box-shadow: none; } }
-    .gold { color: var(--gold); }
-    .blue { color: var(--blue); }
-    .red { color: var(--red); }
-    code.inline { background: color-mix(in srgb, var(--blue) 14%, var(--panel)); border: 1px solid color-mix(in srgb, var(--blue) 35%, var(--line)); border-radius: 8px; color: color-mix(in srgb, var(--blue) 82%, var(--text)); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: .98em; font-weight: 850; padding: .08rem .38rem; white-space: nowrap; }
-    .module-hero-visual { min-height: 420px; display: grid; align-content: center; gap: 1rem; padding: clamp(1.2rem, 4vw, 2rem); background: radial-gradient(circle at 10% 15%, rgba(243,197,95,.25), transparent 16rem), radial-gradient(circle at 90% 85%, rgba(101,210,138,.22), transparent 16rem), linear-gradient(135deg, rgba(255,255,255,.11), rgba(255,255,255,.035)); }
-    .hero-note { color: var(--muted); border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,.055); padding: .9rem 1rem; margin: 0; }
-    .board-panel { border: 1px solid var(--line); border-radius: 22px; background: rgba(255,255,255,.055); padding: 1rem; overflow: hidden; margin-top: 1rem; }
-    .board-panel h3 { margin-bottom: .45rem; }
-    .board-panel p { color: var(--muted); margin: .35rem 0 1rem; }
-    .board-wrap { display: flex; justify-content: center; align-items: center; overflow-x: auto; padding: .7rem; border-radius: 18px; border: 1px solid var(--line); background: #f8fafc; }
-    .lesson-svg { width: 100%; height: auto; display: block; }
-    .summary-box { border: 1px solid color-mix(in srgb, var(--green) 42%, var(--line)); border-radius: 18px; background: color-mix(in srgb, var(--green) 12%, var(--panel)); color: var(--text); padding: .9rem 1rem; font-weight: 800; margin-top: 1rem; }
-    .warning-box { border: 1px solid color-mix(in srgb, var(--orange) 45%, var(--line)); border-radius: 18px; background: color-mix(in srgb, var(--orange) 12%, var(--panel)); color: var(--text); padding: .9rem 1rem; font-weight: 800; margin-top: 1rem; }
-    @media print { .board-panel, .summary-box, .warning-box { break-inside: avoid; box-shadow: none; } .board-wrap { overflow: visible; } .lesson-svg { max-width: 330px; } }
-    .lesson-piece-icon { width: 100%; height: 100%; object-fit: contain; display: block; filter: drop-shadow(0 8px 18px rgba(0,0,0,.28)); }
-    .lesson-nav-row { display: flex; justify-content: space-between; gap: 1rem; margin-top: 1.5rem; }
-    .lesson-nav-row a { border: 1px solid var(--line); color: var(--text); background: var(--panel); border-radius: 999px; padding: .55rem .9rem; text-decoration: none; transition: transform .18s ease, background .18s ease; }
-    .lesson-nav-row a:hover { color: var(--text); background: var(--panel-strong); }
-    .overlay-arrow { fill: none; stroke: #ef4444; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 6,4; }
-    .overlay-dot { fill: #ef4444; opacity: 0.85; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; color:var(--text); font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; line-height:1.55; background:radial-gradient(circle at top left,rgba(61,141,255,.35),transparent 35rem),radial-gradient(circle at top right,rgba(243,197,95,.18),transparent 34rem),linear-gradient(135deg,var(--bg),var(--bg-2)); overflow-x:hidden; }
+    img { max-width:100%; height:auto; display:block; }
+    a { color:inherit; } button { font:inherit; }
+    .skip-link { position:absolute; left:-999px; top:1rem; background:var(--gold); color:#111827; padding:.65rem 1rem; border-radius:999px; z-index:999; }
+    .skip-link:focus { left:1rem; }
+    .progress { height:3px; background:rgba(255,255,255,.08); }
+    .progress-bar { height:100%; width:0; background:linear-gradient(90deg,var(--gold),var(--green),var(--blue)); }
+    .page,.footer { width:min(var(--max),calc(100% - 32px)); margin:0 auto; }
+    .hero { padding:clamp(2rem,4vw,4rem) 0 1.4rem; display:grid; grid-template-columns:minmax(0,1fr) minmax(320px,520px); gap:clamp(1.25rem,4vw,3rem); align-items:center; }
+    .kicker { color:var(--gold); text-transform:uppercase; font-weight:850; letter-spacing:.14em; font-size:.85rem; margin:0 0 .75rem; }
+    h1,h2,h3 { line-height:1.08; margin:0; }
+    h1 { font-size:clamp(2.35rem,7vw,5.7rem); letter-spacing:-.055em; }
+    h2 { font-size:clamp(1.65rem,4vw,3.15rem); letter-spacing:-.035em; }
+    .lead { font-size:clamp(1.05rem,1.9vw,1.34rem); color:var(--muted); max-width:64ch; }
+    .hero-card { border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow); border:1px solid var(--line); background:var(--panel); }
+    .module-hero-visual { min-height:420px; display:grid; align-content:center; padding:clamp(1.2rem,4vw,2rem); background:radial-gradient(circle at 10% 15%,rgba(243,197,95,.25),transparent 16rem),radial-gradient(circle at 90% 85%,rgba(101,210,138,.22),transparent 16rem),linear-gradient(135deg,rgba(255,255,255,.11),rgba(255,255,255,.035)); }
+    .hero-note { color:var(--muted); border:1px solid var(--line); border-radius:18px; background:rgba(255,255,255,.055); padding:.9rem 1rem; margin:0; }
+    .gold { color:var(--gold); }
+    .objective-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.8rem; margin:1rem 0 2rem; }
+    .objective { padding:1rem; border:1px solid var(--line); border-radius:18px; background:var(--panel); min-height:8rem; }
+    .objective strong { display:block; margin-bottom:.45rem; font-size:1.03rem; }
+    .objective span { color:var(--muted); font-size:.95rem; }
+    .layout { display:grid; grid-template-columns:245px minmax(0,1fr); gap:1.25rem; align-items:start; padding:1rem 0 4rem; }
+    .toc { position:sticky; top:4.5rem; border:1px solid var(--line); border-radius:20px; background:var(--panel); padding:1rem; }
+    .toc-title { font-weight:850; margin-bottom:.7rem; color:var(--gold); }
+    .toc a { display:block; text-decoration:none; color:var(--muted); padding:.55rem .65rem; border-radius:12px; font-size:.95rem; }
+    .toc a:hover { color:var(--text); background:var(--panel-strong); }
+    main { min-width:0; }
+    .lesson-section { border:1px solid var(--line); background:var(--panel); border-radius:var(--radius); padding:clamp(1rem,3vw,2rem); margin-bottom:1.1rem; box-shadow:0 14px 40px rgba(0,0,0,.14); scroll-margin-top:5.5rem; }
+    .section-head { display:flex; gap:1rem; align-items:flex-start; margin-bottom:1rem; }
+    .number { flex:0 0 auto; width:2.45rem; height:2.45rem; display:grid; place-items:center; border-radius:999px; font-weight:900; color:#111827; background:var(--gold); }
+    .section-text p,.lesson-section>p { color:var(--muted); }
+    .section-text p { margin:.75rem 0 0; }
+    code.inline { background:color-mix(in srgb,var(--blue) 14%,var(--panel)); border:1px solid color-mix(in srgb,var(--blue) 35%,var(--line)); border-radius:8px; color:color-mix(in srgb,var(--blue) 82%,var(--text)); font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace; font-weight:850; padding:.08rem .38rem; white-space:nowrap; }
+    .callout,.summary-box { border-radius:18px; padding:.9rem 1rem; margin-top:1rem; }
+    .callout { border:1px solid color-mix(in srgb,var(--gold) 42%,var(--line)); background:color-mix(in srgb,var(--gold) 12%,var(--panel)); }
+    .callout-title { color:var(--gold); font-weight:900; margin-bottom:.35rem; }
+    .summary-box { border:1px solid color-mix(in srgb,var(--green) 42%,var(--line)); background:color-mix(in srgb,var(--green) 12%,var(--panel)); font-weight:800; }
+    .board-panel { width:min(100%,620px); margin:1rem auto 0; border:1px solid var(--line); border-radius:22px; background:rgba(255,255,255,.055); padding:1rem; overflow:hidden; }
+    .board-wrap { width:min(100%,552px); margin:0 auto; display:flex; justify-content:center; align-items:center; overflow:hidden; padding:.7rem; border-radius:18px; border:1px solid var(--line); background:#f8fafc; }
+    .lesson-svg { width:min(100%,520px); max-width:520px; height:auto; display:block; margin-inline:auto; }
+    .figure { overflow:hidden; border:1px solid var(--line); border-radius:20px; background:rgba(0,0,0,.18); margin:1.2rem 0 0; }
+    .figure figcaption,.board-panel figcaption { color:var(--muted); font-size:.92rem; padding:.8rem 1rem; border-top:1px solid var(--line); background:rgba(0,0,0,.12); }
+    details.quiz { border:1px solid var(--line); background:rgba(255,255,255,.055); border-radius:16px; padding:.9rem 1rem; margin-top:.75rem; }
+    details.quiz summary { cursor:pointer; font-weight:800; }
+    details.quiz p { color:var(--muted); margin-bottom:0; }
+    .lesson-nav-row { display:flex; justify-content:space-between; gap:1rem; margin-top:1.5rem; }
+    .lesson-nav-row a { border:1px solid var(--line); background:var(--panel); border-radius:999px; padding:.55rem .9rem; text-decoration:none; }
+    .footer { padding:2rem 0 3rem; color:var(--muted); border-top:1px solid var(--line); }
+    @media (max-width:980px) { .hero,.layout { grid-template-columns:1fr; } .toc { position:static; overflow-x:auto; white-space:nowrap; } .toc a { display:inline-block; } }
+    @media (max-width:720px) { .page,.footer { width:min(100% - 22px,var(--max)); } .objective-grid { grid-template-columns:1fr; } .lesson-section { border-radius:18px; } .section-head { gap:.75rem; } .number { width:2.15rem; height:2.15rem; } .lesson-nav-row { flex-direction:column; } }
+    @media print { :root,[data-theme="light"],[data-theme="dark"] { --bg:#fff; --bg-2:#fff; --panel:#fff; --panel-strong:#fff; --text:#111827; --muted:#374151; --line:#d1d5db; --shadow:none; } body { background:#fff; } .index-header,.toc,.progress { display:none!important; } .page,.footer { width:100%; } .hero { padding-top:0; } .layout { display:block; padding:0; } .lesson-section,.objective,.board-panel { break-inside:avoid; box-shadow:none; } .lesson-svg { max-width:330px; } }
   </style>
   <link rel="stylesheet" href="endgame-lesson.css">
   <link rel="stylesheet" href="pawn-teacher-board.css?v=20260725-teacher-board-setup1">
@@ -96,18 +77,8 @@
   <a class="skip-link" href="#lesson">Skip to lesson</a>
   <div class="index-header no-print">
     <div class="index-header-inner">
-      <div class="index-brand">
-        <div class="index-brand-icon" aria-hidden="true">♟</div>
-        <div>
-          <div class="index-brand-label">Pawn Level</div>
-          <div class="index-brand-title">Castling: Keeping Your King Safe</div>
-        </div>
-      </div>
-      <div class="index-top-actions">
-        <a class="toolbar-link" href="pawn-index.html">&larr; Back to Pawn Index</a>
-        <button class="toolbar-link" type="button" id="themeToggle">Toggle theme</button>
-        <button class="toolbar-link" type="button" onclick="window.print()">Print / Save PDF</button>
-      </div>
+      <div class="index-brand"><div class="index-brand-icon" aria-hidden="true">♟</div><div><div class="index-brand-label">Pawn Level</div><div class="index-brand-title">Castling: Keeping Your King Safe</div></div></div>
+      <div class="index-top-actions"><a class="toolbar-link" href="pawn-index.html">&larr; Back to Pawn Index</a><button class="toolbar-link" type="button" id="themeToggle">Toggle theme</button><button class="toolbar-link" type="button" onclick="window.print()">Print / Save PDF</button></div>
     </div>
   </div>
   <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
@@ -116,49 +87,35 @@
       <div>
         <p class="kicker">Pawn Level &middot; Module 5 &middot; Lesson 1</p>
         <h1>Castling: Keeping Your King Safe</h1>
-        <p class="lead">Castling is the only move in chess that moves two pieces at once: the king and the rook. It helps keep the king safe and brings the rook into play.</p>
+        <p class="lead">Castling is the only move in chess that moves two pieces at once: the king and one rook. It helps keep the king safe and brings the rook into play.</p>
         <div class="objective-grid" aria-label="Learning objectives">
           <div class="objective"><strong>Castling move</strong><span>Learn the special move that moves king and rook together.</span></div>
-          <div class="objective"><strong>King safety</strong><span>Understand why castling keeps the king protected.</span></div>
+          <div class="objective"><strong>King safety</strong><span>Understand why castling helps protect the king.</span></div>
           <div class="objective"><strong>Kingside castling</strong><span>Learn kingside castling, written as O-O.</span></div>
-          <div class="objective"><strong>Rook activation</strong><span>See how castling also brings the rook to the center.</span></div>
+          <div class="objective"><strong>Rook activation</strong><span>See how castling also brings the rook toward the center.</span></div>
         </div>
       </div>
-      <figure class="hero-card" aria-label="Castling visual">
-        <div class="module-hero-visual">
-          <div style="text-align:center;padding:1rem;">
-            <img src="../assets/pieces/mpchess/wK.svg" alt="" style="width:3.6rem;height:3.6rem;display:inline-block;">
-            <img src="../assets/pieces/mpchess/wR.svg" alt="" style="width:3.6rem;height:3.6rem;display:inline-block;margin-left:.5rem;">
-            <p class="hero-note"><strong class="gold">King + Rook</strong> &mdash; castling moves both at once.</p>
-          </div>
-        </div>
-      </figure>
+      <figure class="hero-card" aria-label="Castling visual"><div class="module-hero-visual"><div style="text-align:center;padding:1rem;"><img src="../assets/pieces/mpchess/wK.svg" alt="" style="width:3.6rem;height:3.6rem;display:inline-block;"><img src="../assets/pieces/mpchess/wR.svg" alt="" style="width:3.6rem;height:3.6rem;display:inline-block;margin-left:.5rem;"><p class="hero-note"><strong class="gold">King + Rook</strong> &mdash; castling moves both in one turn.</p></div></div></figure>
     </section>
     <div class="layout" id="lesson">
-      <nav class="toc" aria-label="Lesson contents">
-        <div class="toc-title">Contents</div>
-        <a href="#what">1. What Is Castling?</a>
-        <a href="#kingside">2. Kingside Castling</a>
-        <a href="#why">3. Why Castle?</a>
-        <a href="#check">Review Questions</a>
-      </nav>
+      <nav class="toc" aria-label="Lesson contents"><div class="toc-title">Contents</div><a href="#what">1. What Is Castling?</a><a href="#kingside">2. Kingside Castling</a><a href="#why">3. Why Castle?</a><a href="#check">Review Questions</a></nav>
       <main>
         <section class="lesson-section" id="what">
-          <div class="section-head"><div class="number">1</div><div class="section-text"><h2>What Is Castling?</h2><p>Castling is a special move involving the king and a rook. It is the only move where two pieces move at the same time.</p></div></div>
-          <p style="color:var(--muted);">In castling, the king moves two squares toward the rook, and then the rook jumps over the king to the square beside it.</p>
-          <div class="callout">
-            <div class="callout-title">Key fact</div>
-            Castling is counted as one move, not two. The king always moves first when castling.
-          </div>
+          <div class="section-head"><div class="number">1</div><div class="section-text"><h2>What Is Castling?</h2><p>Castling is a special move involving the king and one rook. It is the only move where two pieces move during the same turn.</p></div></div>
+          <p>In castling, the king moves exactly two squares toward the rook. The rook then moves to the square immediately beside the king, on the other side.</p>
+          <div class="callout"><div class="callout-title">Key fact</div>Castling counts as one move, not two. Move the king first when performing it on a physical board.</div>
         </section>
         <section class="lesson-section" id="kingside">
-          <div class="section-head"><div class="number">2</div><div class="section-text"><h2>Kingside Castling</h2><p>Kingside castling is also called "short castling" and is written as <code class="inline">O-O</code>.</p></div></div>
-          <p style="color:var(--muted);">The king moves from e1 to g1, and the h1 rook moves from h1 to f1. For Black, the king moves from e8 to g8, and the h8 rook moves to f8.</p>
+          <div class="section-head"><div class="number">2</div><div class="section-text"><h2>Kingside Castling</h2><p>Kingside castling is also called short castling and is written as <code class="inline">O-O</code>.</p></div></div>
+          <p>The White king moves from e1 to g1, and the h1 rook moves from h1 to f1. For Black, the king moves from e8 to g8, and the h8 rook moves to f8.</p>
           <div class="board-panel">
             <div class="board-wrap">
-              <svg class="lesson-svg" viewbox="0 0 316 316" role="img" aria-label="Kingside castling: before and after">
-                <defs><style>.lbl{font:14px Arial,sans-serif;fill:#334155;font-weight:700}.arr{fill:none;stroke:#ef4444;stroke-width:2.5;stroke-linecap:round}</style></defs>
-                <rect x="0" y="0" width="360" height="360" fill="#ffffff" rx="14"/>
+              <svg class="lesson-svg" viewBox="0 0 316 316" preserveAspectRatio="xMidYMid meet" role="img" aria-label="White kingside castling: king on e1 moves to g1 and rook on h1 moves to f1">
+                <defs>
+                  <style>.lbl{font:14px Arial,sans-serif;fill:#334155;font-weight:700}.arr{fill:none;stroke:#ef4444;stroke-width:3;stroke-linecap:round}.target{fill:#facc15;opacity:.32}</style>
+                  <marker id="castle-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#ef4444"/></marker>
+                </defs>
+                <rect x="0" y="0" width="316" height="316" fill="#ffffff" rx="14"/>
                 <g transform="translate(16,10)">
                   <rect x="0" y="0" width="35" height="35" fill="#eee3cb"/><rect x="35" y="0" width="35" height="35" fill="#71925a"/><rect x="70" y="0" width="35" height="35" fill="#eee3cb"/><rect x="105" y="0" width="35" height="35" fill="#71925a"/><rect x="140" y="0" width="35" height="35" fill="#eee3cb"/><rect x="175" y="0" width="35" height="35" fill="#71925a"/><rect x="210" y="0" width="35" height="35" fill="#eee3cb"/><rect x="245" y="0" width="35" height="35" fill="#71925a"/>
                   <rect x="0" y="35" width="35" height="35" fill="#71925a"/><rect x="35" y="35" width="35" height="35" fill="#eee3cb"/><rect x="70" y="35" width="35" height="35" fill="#71925a"/><rect x="105" y="35" width="35" height="35" fill="#eee3cb"/><rect x="140" y="35" width="35" height="35" fill="#71925a"/><rect x="175" y="35" width="35" height="35" fill="#eee3cb"/><rect x="210" y="35" width="35" height="35" fill="#71925a"/><rect x="245" y="35" width="35" height="35" fill="#eee3cb"/>
@@ -168,55 +125,30 @@
                   <rect x="0" y="175" width="35" height="35" fill="#71925a"/><rect x="35" y="175" width="35" height="35" fill="#eee3cb"/><rect x="70" y="175" width="35" height="35" fill="#71925a"/><rect x="105" y="175" width="35" height="35" fill="#eee3cb"/><rect x="140" y="175" width="35" height="35" fill="#71925a"/><rect x="175" y="175" width="35" height="35" fill="#eee3cb"/><rect x="210" y="175" width="35" height="35" fill="#71925a"/><rect x="245" y="175" width="35" height="35" fill="#eee3cb"/>
                   <rect x="0" y="210" width="35" height="35" fill="#eee3cb"/><rect x="35" y="210" width="35" height="35" fill="#71925a"/><rect x="70" y="210" width="35" height="35" fill="#eee3cb"/><rect x="105" y="210" width="35" height="35" fill="#71925a"/><rect x="140" y="210" width="35" height="35" fill="#eee3cb"/><rect x="175" y="210" width="35" height="35" fill="#71925a"/><rect x="210" y="210" width="35" height="35" fill="#eee3cb"/><rect x="245" y="210" width="35" height="35" fill="#71925a"/>
                   <rect x="0" y="245" width="35" height="35" fill="#71925a"/><rect x="35" y="245" width="35" height="35" fill="#eee3cb"/><rect x="70" y="245" width="35" height="35" fill="#71925a"/><rect x="105" y="245" width="35" height="35" fill="#eee3cb"/><rect x="140" y="245" width="35" height="35" fill="#71925a"/><rect x="175" y="245" width="35" height="35" fill="#eee3cb"/><rect x="210" y="245" width="35" height="35" fill="#71925a"/><rect x="245" y="245" width="35" height="35" fill="#eee3cb"/>
-                  <image href="../assets/pieces/mpchess/wK.svg" x="140" y="210" width="35" height="35"/>
-                  <image href="../assets/pieces/mpchess/wR.svg" x="245" y="210" width="35" height="35"/>
-                  <image href="../assets/pieces/mpchess/wR.svg" x="0" y="210" width="35" height="35"/>
-                  <text x="157.5" y="202" class="lbl" fill="#ef4444" font-size="11">O-O</text>
-                  <path class="arr" d="M157.5,192 L192.5,192"/>
-                  <path class="arr" d="M262.5,192 L227.5,192"/>
-                  <g class="lbl">
-                    <text x="17.5" y="295" text-anchor="middle">a</text><text x="52.5" y="295" text-anchor="middle">b</text><text x="87.5" y="295" text-anchor="middle">c</text><text x="122.5" y="295" text-anchor="middle">d</text><text x="157.5" y="295" text-anchor="middle">e</text><text x="192.5" y="295" text-anchor="middle">f</text><text x="227.5" y="295" text-anchor="middle">g</text><text x="262.5" y="295" text-anchor="middle">h</text>
-                    <text x="-10" y="18" text-anchor="middle">8</text><text x="-10" y="53" text-anchor="middle">7</text><text x="-10" y="88" text-anchor="middle">6</text><text x="-10" y="123" text-anchor="middle">5</text><text x="-10" y="158" text-anchor="middle">4</text><text x="-10" y="193" text-anchor="middle">3</text><text x="-10" y="228" text-anchor="middle">2</text><text x="-10" y="263" text-anchor="middle">1</text>
-                  </g>
+                  <rect class="target" x="175" y="245" width="35" height="35"/><rect class="target" x="210" y="245" width="35" height="35"/>
+                  <image href="../assets/pieces/mpchess/wK.svg" x="140" y="245" width="35" height="35"/><image href="../assets/pieces/mpchess/wR.svg" x="245" y="245" width="35" height="35"/>
+                  <text x="210" y="220" class="lbl" fill="#ef4444" text-anchor="middle">O-O</text>
+                  <path class="arr" d="M157.5 232 L227.5 232" marker-end="url(#castle-arrow)"/><path class="arr" d="M262.5 240 L192.5 240" marker-end="url(#castle-arrow)"/>
+                  <g class="lbl"><text x="17.5" y="295" text-anchor="middle">a</text><text x="52.5" y="295" text-anchor="middle">b</text><text x="87.5" y="295" text-anchor="middle">c</text><text x="122.5" y="295" text-anchor="middle">d</text><text x="157.5" y="295" text-anchor="middle">e</text><text x="192.5" y="295" text-anchor="middle">f</text><text x="227.5" y="295" text-anchor="middle">g</text><text x="262.5" y="295" text-anchor="middle">h</text><text x="-10" y="18" text-anchor="middle">8</text><text x="-10" y="53" text-anchor="middle">7</text><text x="-10" y="88" text-anchor="middle">6</text><text x="-10" y="123" text-anchor="middle">5</text><text x="-10" y="158" text-anchor="middle">4</text><text x="-10" y="193" text-anchor="middle">3</text><text x="-10" y="228" text-anchor="middle">2</text><text x="-10" y="263" text-anchor="middle">1</text></g>
                 </g>
               </svg>
             </div>
-            <figcaption style="color:var(--muted);font-size:.92rem;padding:.8rem 1rem;border-top:1px solid var(--line);background:rgba(0,0,0,.12);">White kingside castling: king moves e1&rarr;g1, rook moves h1&rarr;f1.</figcaption>
+            <figcaption>White kingside castling: king e1&rarr;g1; rook h1&rarr;f1. The yellow squares are the destinations.</figcaption>
           </div>
-          <figure class="figure">
-            <img src="../pawn_m5/pawn_m5_1.webp" width="1672" height="941" loading="lazy" decoding="async" alt="Supplementary illustration for kingside castling">
-            <figcaption>Example of a kingside castled position with the king safely behind pawns.</figcaption>
-          </figure>
+          <figure class="figure"><img src="../pawn_m5/pawn_m5_1.webp" width="1672" height="941" loading="lazy" decoding="async" alt="Example of a kingside-castled position"><figcaption>Example of a kingside-castled position with the king sheltered behind pawns.</figcaption></figure>
         </section>
-        <section class="lesson-section" id="why">
-          <div class="section-head"><div class="number">3</div><div class="section-text"><h2>Why Castle?</h2><p>Castling has two big benefits: it moves the king to a safer position and activates the rook.</p></div></div>
-          <p style="color:var(--muted);">After castling, the king is usually protected by a wall of pawns. The rook also moves toward the center where it becomes more useful.</p>
-          <div class="summary-box">After kingside castling, White's king is on g1, protected by pawns on f2, g2, and h2. The rook on f1 is ready to help attack.</div>
-        </section>
-        <section class="lesson-section" id="check">
-          <div class="section-head"><div class="number">&check;</div><div class="section-text"><h2>Review Questions</h2><p>Use these questions to check understanding.</p></div></div>
-          <details class="quiz"><summary>How many pieces move during castling?</summary><p>Two: the king and one rook.</p></details>
-          <details class="quiz"><summary>In kingside castling, where does the White king move to?</summary><p>The king moves from e1 to g1.</p></details>
-          <details class="quiz"><summary>What is the notation for kingside castling?</summary><p>O-O.</p></details>
-          <div class="lesson-nav-row">
-            <a href="pawn-m4-lesson-10-activity-checkmate-or-stalemate.html">&larr; Previous lesson</a>
-            <a href="pawn-m5-lesson-02-queenside-castling.html">Next lesson &rarr;</a>
-          </div>
-        </section>
+        <section class="lesson-section" id="why"><div class="section-head"><div class="number">3</div><div class="section-text"><h2>Why Castle?</h2><p>Castling has two big benefits: it moves the king toward safety and activates the rook.</p></div></div><p>After castling, the king is usually protected by a wall of pawns. The rook also moves toward the center, where it can join the game more quickly.</p><div class="summary-box">After kingside castling, White's king is on g1, usually protected by pawns on f2, g2, and h2. The rook on f1 is ready to help.</div></section>
+        <section class="lesson-section" id="check"><div class="section-head"><div class="number">&check;</div><div class="section-text"><h2>Review Questions</h2><p>Use these questions to check understanding.</p></div></div><details class="quiz"><summary>How many pieces move during castling?</summary><p>Two: the king and one rook.</p></details><details class="quiz"><summary>In kingside castling, where does the White king move?</summary><p>From e1 to g1.</p></details><details class="quiz"><summary>Where does the h1 rook move?</summary><p>From h1 to f1.</p></details><details class="quiz"><summary>What is the notation for kingside castling?</summary><p>O-O.</p></details><div class="lesson-nav-row"><a href="pawn-m4-lesson-10-activity-checkmate-or-stalemate.html">&larr; Previous lesson</a><a href="pawn-m5-lesson-02-queenside-castling.html">Next lesson &rarr;</a></div></section>
       </main>
     </div>
   </div>
   <footer class="footer"><strong>End of Pawn Level Module 5 &middot; Lesson 1:</strong> Castling: Keeping Your King Safe.</footer>
   <script>
-    const root = document.documentElement;
-    const themeToggle = document.getElementById('themeToggle');
-    const storedTheme = localStorage.getItem('chess-lesson-theme');
-    if (storedTheme === 'light' || storedTheme === 'dark') root.dataset.theme = storedTheme;
-    themeToggle.addEventListener('click', () => { root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark'; localStorage.setItem('chess-lesson-theme', root.dataset.theme); });
-    const progressBar = document.getElementById('progressBar');
-    const updateProgress = () => { const max = document.documentElement.scrollHeight - window.innerHeight; const pct = max > 0 ? (window.scrollY / max) * 100 : 0; progressBar.style.width = Math.min(100, Math.max(0, pct)) + '%'; };
-    updateProgress();
-    window.addEventListener('scroll', updateProgress, { passive: true });
+    const root=document.documentElement; const themeToggle=document.getElementById('themeToggle'); const storedTheme=localStorage.getItem('chess-lesson-theme');
+    if(storedTheme==='light'||storedTheme==='dark') root.dataset.theme=storedTheme;
+    themeToggle.addEventListener('click',()=>{root.dataset.theme=root.dataset.theme==='dark'?'light':'dark';localStorage.setItem('chess-lesson-theme',root.dataset.theme);});
+    const progressBar=document.getElementById('progressBar'); const updateProgress=()=>{const max=document.documentElement.scrollHeight-window.innerHeight;const pct=max>0?(window.scrollY/max)*100:0;progressBar.style.width=Math.min(100,Math.max(0,pct))+'%';};
+    updateProgress(); window.addEventListener('scroll',updateProgress,{passive:true});
   </script>
   <script src="endgame-lesson.js" defer></script>
   <script src="pawn-teacher-board.js?v=20260725-teacher-board-setup1" defer></script>
