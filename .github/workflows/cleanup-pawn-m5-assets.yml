@@ -1,0 +1,199 @@
+name: Cleanup Pawn Module 5 assets
+
+on:
+  push:
+    paths:
+      - ".github/workflows/cleanup-pawn-m5-assets.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply source-level lesson repairs
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          root = Path('.')
+          lessons = root / 'lessons'
+
+          def read(name):
+              return (lessons / name).read_text(encoding='utf-8')
+
+          def write(name, text):
+              (lessons / name).write_text(text, encoding='utf-8')
+
+          def remove_figure_for_image(text, filename):
+              pattern = re.compile(
+                  r'\n?\s*<figure class="figure">\s*'
+                  r'<img[^>]+src="\.\./pawn_m5/' + re.escape(filename) + r'"[^>]*>\s*'
+                  r'<figcaption>.*?</figcaption>\s*'
+                  r'</figure>',
+                  re.IGNORECASE | re.DOTALL,
+              )
+              updated, count = pattern.subn('', text)
+              if count != 1:
+                  raise RuntimeError(f'Expected one figure for {filename}, found {count}')
+              return updated
+
+          # Lesson 3: remove unreliable image and put the five-rule wording in HTML.
+          name = 'pawn-m5-lesson-03-when-castling-is-not-allowed.html'
+          text = read(name)
+          text = text.replace(
+              'Pawn Level Module 5 lesson: learn the four conditions that prevent castling.',
+              'Pawn Level Module 5 lesson: learn the five requirements for legal castling.'
+          )
+          text = text.replace(
+              'Castling is a special move, and there are four conditions that prevent you from using it.',
+              'Castling is a special move, and five requirements must be met before you may use it.'
+          )
+          text = remove_figure_for_image(text, 'pawn_m5_3.webp')
+          old_summary = ('<div class="summary-box">All four conditions must be met for castling to be legal: '
+                         '1) King has not moved. 2) Rook has not moved. 3) King is not in check. '
+                         '4) King does not pass through check. 5) No pieces between king and rook.</div>')
+          new_summary = ('<div class="summary-box">All five requirements must be met for castling to be legal: '
+                         '1) The king has not moved. 2) The chosen rook has not moved. '
+                         '3) The king is not in check. 4) The king does not cross or finish on an attacked square. '
+                         '5) No pieces stand between the king and rook.</div>')
+          if old_summary not in text:
+              raise RuntimeError('Lesson 3 summary text was not found')
+          text = text.replace(old_summary, new_summary)
+          write(name, text)
+
+          # Lesson 4: remove supplementary image.
+          name = 'pawn-m5-lesson-04-activity-is-castling-allowed.html'
+          text = remove_figure_for_image(read(name), 'pawn_m5_4.webp')
+          write(name, text)
+
+          # Lesson 5: remove supplementary image and labels drawn across the board.
+          name = 'pawn-m5-lesson-05-en-passant.html'
+          text = read(name)
+          text = remove_figure_for_image(text, 'pawn_m5_5.webp')
+          text, label_count = re.subn(r'\n\s*<text class="ep-label"[^>]*>.*?</text>', '', text)
+          if label_count != 4:
+              raise RuntimeError(f'Expected four en passant board labels, found {label_count}')
+          write(name, text)
+
+          # Lesson 6: remove supplementary image and encode the legal e5-d6 arrow in SVG.
+          name = 'pawn-m5-lesson-06-activity-en-passant.html'
+          text = read(name)
+          text = remove_figure_for_image(text, 'pawn_m5_6.webp')
+          old_defs = ('<defs><style>.lbl{font:14px Arial,sans-serif;fill:#334155;font-weight:700}'
+                      '.arr{fill:none;stroke:#ef4444;stroke-width:2.5;stroke-linecap:round}</style></defs>')
+          new_defs = ('<defs><style>.lbl{font:14px Arial,sans-serif;fill:#334155;font-weight:700}'
+                      '.arr{fill:none;stroke:#ef4444;stroke-width:2.5;stroke-linecap:round}</style>'
+                      '<marker id="activity-arrowhead" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">'
+                      '<path d="M0 0 L8 4 L0 8 Z" fill="#ef4444"/></marker></defs>')
+          if old_defs not in text:
+              raise RuntimeError('Lesson 6 arrow definition was not found')
+          text = text.replace(old_defs, new_defs, 1)
+          old_arrow = '<path class="arr" d="M140,115 L112.5,115"/>'
+          new_arrow = '<path class="arr" d="M157.5 122.5 L122.5 87.5" marker-end="url(#activity-arrowhead)"/>'
+          if old_arrow not in text:
+              raise RuntimeError('Lesson 6 horizontal arrow was not found')
+          text = text.replace(old_arrow, new_arrow, 1)
+          write(name, text)
+
+          # Lessons 7 and 8: remove supplementary images.
+          for lesson, image in [
+              ('pawn-m5-lesson-07-writing-castling-and-en-passant.html', 'pawn_m5_7.webp'),
+              ('pawn-m5-lesson-08-important-rule-about-en-passant.html', 'pawn_m5_8.webp'),
+          ]:
+              write(lesson, remove_figure_for_image(read(lesson), image))
+
+          # Remove temporary CSS-only workarounds, keeping the useful SVG size cap.
+          css_path = lessons / 'pawn-10-diagram-fixes.css'
+          css = css_path.read_text(encoding='utf-8')
+
+          blocks = [
+              r'\n/\* Module 5 supplementary artwork.*?\nfigure\.figure:has\(> img:is\(.*?\n\}\n',
+              r'\n/\* The en-passant example.*?\n#diagram \.lesson-svg \.ep-label \{.*?\n\}\n',
+              r'\n/\* Position 1 in the en-passant activity.*?\n#pos1 \.board-wrap:has\(path\.arr\)::after \{.*?\n\}\n',
+              r'\n/\* Lesson 3 names five separate castling requirements.*?\n#blocked \.summary-box::after \{.*?\n\}\n',
+          ]
+          for pattern in blocks:
+              css, count = re.subn(pattern, '\n', css, count=1, flags=re.DOTALL)
+              if count != 1:
+                  raise RuntimeError(f'Expected temporary CSS block not found: {pattern[:45]}')
+
+          # Remove the small-screen pseudo-arrow adjustments left inside the media query.
+          for selector in ['before', 'after']:
+              pattern = rf'\n\s*#pos1 \.board-wrap:has\(path\.arr\)::{selector} \{{.*?\n\s*\}}'
+              css, count = re.subn(pattern, '', css, count=1, flags=re.DOTALL)
+              if count != 1:
+                  raise RuntimeError(f'Expected mobile pseudo-arrow {selector} block not found')
+
+          css_path.write_text(css.rstrip() + '\n', encoding='utf-8')
+
+          # Delete obsolete Module 5 image files. Lesson 1 remains because it is still used.
+          for number in range(2, 9):
+              image = root / 'pawn_m5' / f'pawn_m5_{number}.webp'
+              if not image.exists():
+                  raise RuntimeError(f'Expected obsolete image is missing before cleanup: {image}')
+              image.unlink()
+
+          # Validate the completed cleanup.
+          all_text = '\n'.join(p.read_text(encoding='utf-8') for p in lessons.glob('*.html'))
+          for number in range(2, 9):
+              token = f'pawn_m5_{number}.webp'
+              if token in all_text:
+                  raise RuntimeError(f'Remaining lesson reference: {token}')
+
+          css = css_path.read_text(encoding='utf-8')
+          forbidden_css = [
+              'Module 5 supplementary artwork',
+              '#diagram .lesson-svg .ep-label',
+              '#pos1 .board-wrap:has(path.arr)',
+              '#blocked .summary-box::after',
+          ]
+          for token in forbidden_css:
+              if token in css:
+                  raise RuntimeError(f'Temporary CSS workaround remains: {token}')
+
+          lesson5 = read('pawn-m5-lesson-05-en-passant.html')
+          if 'class="ep-label"' in lesson5:
+              raise RuntimeError('Overlapping en passant labels remain in Lesson 5')
+
+          lesson6 = read('pawn-m5-lesson-06-activity-en-passant.html')
+          if 'M157.5 122.5 L122.5 87.5' not in lesson6 or 'activity-arrowhead' not in lesson6:
+              raise RuntimeError('Correct Lesson 6 diagonal arrow was not encoded')
+
+          lesson3 = read('pawn-m5-lesson-03-when-castling-is-not-allowed.html')
+          if 'All five requirements must be met' not in lesson3 or 'there are four conditions' in lesson3:
+              raise RuntimeError('Lesson 3 five-requirement wording is incomplete')
+          PY
+
+      - name: Verify cleanup
+        shell: bash
+        run: |
+          git diff --check
+          test ! -e pawn_m5/pawn_m5_2.webp
+          test ! -e pawn_m5/pawn_m5_3.webp
+          test ! -e pawn_m5/pawn_m5_4.webp
+          test ! -e pawn_m5/pawn_m5_5.webp
+          test ! -e pawn_m5/pawn_m5_6.webp
+          test ! -e pawn_m5/pawn_m5_7.webp
+          test ! -e pawn_m5/pawn_m5_8.webp
+          ! grep -R -E 'pawn_m5_[2-8]\.webp' lessons
+          grep -q 'M157.5 122.5 L122.5 87.5' lessons/pawn-m5-lesson-06-activity-en-passant.html
+          grep -q 'All five requirements must be met' lessons/pawn-m5-lesson-03-when-castling-is-not-allowed.html
+
+      - name: Commit completed cleanup
+        shell: bash
+        run: |
+          rm -f .github/workflows/cleanup-pawn-m5-assets.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Complete Pawn Module 5 visual cleanup"
+          git push
