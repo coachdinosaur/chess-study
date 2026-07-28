@@ -24,6 +24,51 @@ export function workspaceAssignmentLink(
   return base.href;
 }
 
+function normalizeLiveBoardRoomCode(value) {
+  return String(value || '')
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '')
+    .slice(0, 12);
+}
+
+function liveBoardUrl(locationObject = globalThis.location) {
+  const url = new URL('../live-board.html', locationObject.href);
+  url.search = '';
+  return url;
+}
+
+export function liveBoardStudentLink(
+  roomCode,
+  studentToken,
+  locationObject = globalThis.location,
+) {
+  const url = liveBoardUrl(locationObject);
+  url.hash = new URLSearchParams({
+    room: normalizeLiveBoardRoomCode(roomCode),
+    role: 'student',
+    access: String(studentToken || ''),
+  }).toString();
+  return url.href;
+}
+
+export function liveBoardTeacherLink(
+  roomCode,
+  teacherToken,
+  studentToken,
+  locationObject = globalThis.location,
+) {
+  const url = liveBoardUrl(locationObject);
+  url.hash = new URLSearchParams({
+    room: normalizeLiveBoardRoomCode(roomCode),
+    role: 'teacher',
+    access: String(teacherToken || ''),
+    student: String(studentToken || ''),
+  }).toString();
+  return url.href;
+}
+
+// Retained for old saved records and callers while the dashboard moves away
+// from manually pasted Live Board URLs.
 export function validateStudentLiveBoardUrl(value, locationObject = globalThis.location) {
   const text = String(value || '').trim();
   if (!text) return '';
