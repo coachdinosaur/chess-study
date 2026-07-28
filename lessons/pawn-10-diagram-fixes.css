@@ -130,6 +130,66 @@ body:has(#white-chessmen) .hero .poster-title {
   transform: translateY(12px);
 }
 
+/* Shared Pawn Level board sizing.
+   Generated SVG boards should remain readable rather than expanding to fill
+   the entire lesson or presentation canvas. */
+body .lesson-section .board-panel {
+  width: min(100%, 640px);
+  max-width: 640px;
+  margin-inline: auto;
+}
+
+body .lesson-section .board-panel .board-wrap {
+  width: min(100%, 560px);
+  max-width: 560px;
+  margin-inline: auto;
+}
+
+body .lesson-section .board-panel .board-wrap > svg,
+body .lesson-section .board-panel .lesson-svg {
+  width: min(100%, 520px) !important;
+  max-width: 520px !important;
+  height: auto !important;
+  margin-inline: auto !important;
+}
+
+body.lesson-presentation-active .presentation-scene.presentation-current .board-wrap {
+  width: min(62vh, 620px) !important;
+  max-width: 100% !important;
+  margin-inline: auto !important;
+}
+
+body.lesson-presentation-active .presentation-scene.presentation-current .board-panel {
+  width: min(100%, 640px) !important;
+  max-width: 640px !important;
+  margin-inline: auto !important;
+}
+
+body.lesson-presentation-active .presentation-scene.presentation-current .board-panel .board-wrap {
+  width: min(56vh, 560px) !important;
+  max-width: 100% !important;
+}
+
+body.lesson-presentation-active .presentation-scene.presentation-current .board-panel .board-wrap > svg,
+body.lesson-presentation-active .presentation-scene.presentation-current .board-panel .lesson-svg {
+  width: 100% !important;
+  max-width: 520px !important;
+  max-height: 56vh !important;
+  height: auto !important;
+}
+
+@media (max-width: 1050px), (max-height: 720px) {
+  body.lesson-presentation-active .presentation-scene.presentation-current .board-panel .board-wrap {
+    width: min(46vh, 470px) !important;
+  }
+
+  body.lesson-presentation-active .presentation-scene.presentation-current .board-panel .board-wrap > svg,
+  body.lesson-presentation-active .presentation-scene.presentation-current .board-panel .lesson-svg {
+    max-width: 440px !important;
+    max-height: 46vh !important;
+  }
+}
+
 @media (max-width: 560px) {
   body:has(#white-chessmen) .hero .poster-icon {
     width: 100%;
@@ -137,6 +197,12 @@ body:has(#white-chessmen) .hero .poster-title {
 
   #piece-or-pawn .board-shell svg .title {
     font-size: 18px !important;
+  }
+
+  body .lesson-section .board-panel,
+  body .lesson-section .board-panel .board-wrap {
+    width: 100%;
+    max-width: 100%;
   }
 }
 
@@ -155,5 +221,10 @@ body:has(#white-chessmen) .hero .poster-title {
   #black-chessmen .board-shell svg > text {
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
+  }
+
+  body .lesson-section .board-panel .board-wrap > svg,
+  body .lesson-section .board-panel .lesson-svg {
+    max-width: 330px !important;
   }
 }
