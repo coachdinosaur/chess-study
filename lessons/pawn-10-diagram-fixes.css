@@ -146,7 +146,8 @@ body .lesson-section .board-panel .board-wrap {
 }
 
 body .lesson-section .board-panel .board-wrap > svg,
-body .lesson-section .board-panel .lesson-svg {
+body .lesson-section .board-panel .lesson-svg,
+body .lesson-section .figure .lesson-svg {
   width: min(100%, 520px) !important;
   max-width: 520px !important;
   height: auto !important;
@@ -171,11 +172,82 @@ body.lesson-presentation-active .presentation-scene.presentation-current .board-
 }
 
 body.lesson-presentation-active .presentation-scene.presentation-current .board-panel .board-wrap > svg,
-body.lesson-presentation-active .presentation-scene.presentation-current .board-panel .lesson-svg {
-  width: 100% !important;
-  max-width: 520px !important;
+body.lesson-presentation-active .presentation-scene.presentation-current .board-panel .lesson-svg,
+body.lesson-presentation-active .presentation-scene.presentation-current .figure .lesson-svg {
+  width: min(56vh, 520px) !important;
+  max-width: 100% !important;
   max-height: 56vh !important;
   height: auto !important;
+  margin-inline: auto !important;
+}
+
+/* Module 5 supplementary artwork was generated independently from the precise
+   lesson boards and contains unreliable piece placement and coordinate labels.
+   Hide it and keep the verified SVG positions as the teaching visuals. */
+figure.figure:has(> img:is(
+  [src$="pawn_m5_3.webp"],
+  [src$="pawn_m5_4.webp"],
+  [src$="pawn_m5_5.webp"],
+  [src$="pawn_m5_6.webp"],
+  [src$="pawn_m5_7.webp"],
+  [src$="pawn_m5_8.webp"]
+)) {
+  display: none !important;
+}
+
+/* The en-passant example already has a highlighted destination and a caption.
+   Remove labels drawn across several board squares. */
+#diagram .lesson-svg .ep-label {
+  display: none !important;
+}
+
+/* Position 1 in the en-passant activity originally drew a horizontal arrow
+   from e5 toward d5. Hide it and overlay the legal diagonal move e5-d6. */
+#pos1 .board-wrap:has(path.arr) {
+  position: relative;
+}
+
+#pos1 .board-wrap:has(path.arr) path.arr {
+  display: none !important;
+}
+
+#pos1 .board-wrap:has(path.arr)::before {
+  content: "";
+  position: absolute;
+  z-index: 4;
+  left: 44%;
+  top: 31%;
+  width: 15.5%;
+  border-top: 3px solid #ef4444;
+  transform: rotate(45deg);
+  transform-origin: left center;
+  pointer-events: none;
+}
+
+#pos1 .board-wrap:has(path.arr)::after {
+  content: "";
+  position: absolute;
+  z-index: 5;
+  left: 43.7%;
+  top: 30.7%;
+  width: .65rem;
+  height: .65rem;
+  border-left: 3px solid #ef4444;
+  border-bottom: 3px solid #ef4444;
+  transform: translate(-20%, -20%) rotate(45deg);
+  pointer-events: none;
+}
+
+/* Lesson 3 names five separate castling requirements. Keep the visible summary
+   consistent with the material instead of claiming there are four. */
+#blocked .summary-box {
+  font-size: 0;
+}
+
+#blocked .summary-box::after {
+  content: "All five conditions must be met for castling to be legal: 1) The king has not moved. 2) The chosen rook has not moved. 3) The king is not in check. 4) The king does not cross or finish on an attacked square. 5) No pieces stand between the king and rook.";
+  font-size: 1rem;
+  line-height: 1.55;
 }
 
 @media (max-width: 1050px), (max-height: 720px) {
@@ -184,7 +256,8 @@ body.lesson-presentation-active .presentation-scene.presentation-current .board-
   }
 
   body.lesson-presentation-active .presentation-scene.presentation-current .board-panel .board-wrap > svg,
-  body.lesson-presentation-active .presentation-scene.presentation-current .board-panel .lesson-svg {
+  body.lesson-presentation-active .presentation-scene.presentation-current .board-panel .lesson-svg,
+  body.lesson-presentation-active .presentation-scene.presentation-current .figure .lesson-svg {
     max-width: 440px !important;
     max-height: 46vh !important;
   }
@@ -203,6 +276,17 @@ body.lesson-presentation-active .presentation-scene.presentation-current .board-
   body .lesson-section .board-panel .board-wrap {
     width: 100%;
     max-width: 100%;
+  }
+
+  #pos1 .board-wrap:has(path.arr)::before {
+    border-top-width: 2px;
+  }
+
+  #pos1 .board-wrap:has(path.arr)::after {
+    width: .5rem;
+    height: .5rem;
+    border-left-width: 2px;
+    border-bottom-width: 2px;
   }
 }
 
@@ -224,7 +308,8 @@ body.lesson-presentation-active .presentation-scene.presentation-current .board-
   }
 
   body .lesson-section .board-panel .board-wrap > svg,
-  body .lesson-section .board-panel .lesson-svg {
+  body .lesson-section .board-panel .lesson-svg,
+  body .lesson-section .figure .lesson-svg {
     max-width: 330px !important;
   }
 }
