@@ -1,0 +1,766 @@
+name: One-time student Live Board lifecycle
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/one-time-student-live-board-lifecycle.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Implement permanent student Live Board entry point
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          WORKFLOW = Path('.github/workflows/one-time-student-live-board-lifecycle.yml')
+
+          def replace_once(path, old, new):
+              file = Path(path)
+              text = file.read_text(encoding='utf-8')
+              if old not in text:
+                  raise SystemExit(f'Expected text was not found in {path}: {old[:120]!r}')
+              file.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          # Shared URL helpers. Tokens stay in URL fragments and are not sent in HTTP requests.
+          core = Path('management/js/student-workspace-core.mjs')
+          core_text = core.read_text(encoding='utf-8')
+          if 'export function liveBoardStudentLink' not in core_text:
+              core_text += '''
+
+function normalizeLiveBoardRoomCode(value) {
+  return String(value || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
+}
+
+function liveBoardUrl(locationObject = globalThis.location) {
+  const url = new URL('../live-board.html', locationObject.href);
+  url.search = '';
+  return url;
+}
+
+export function liveBoardStudentLink(roomCode, studentToken, locationObject = globalThis.location) {
+  const url = liveBoardUrl(locationObject);
+  url.hash = new URLSearchParams({
+    room: normalizeLiveBoardRoomCode(roomCode),
+    role: 'student',
+    access: String(studentToken || ''),
+  }).toString();
+  return url.href;
+}
+
+export function liveBoardTeacherLink(
+  roomCode,
+  teacherToken,
+  studentToken,
+  locationObject = globalThis.location,
+) {
+  const url = liveBoardUrl(locationObject);
+  url.hash = new URLSearchParams({
+    room: normalizeLiveBoardRoomCode(roomCode),
+    role: 'teacher',
+    access: String(teacherToken || ''),
+    student: String(studentToken || ''),
+  }).toString();
+  return url.href;
+}
+'''
+              core.write_text(core_text, encoding='utf-8')
+
+          # Teacher dashboard markup: replace the manually pasted expiring URL with lifecycle controls.
+          replace_once(
+              'management/teacher.html',
+              '''              <div class="student-workspace-two-column">
+                <div class="form-row">
+                  <label for="studentWorkspaceLesson">Assigned lesson</label>
+                  <select id="studentWorkspaceLesson">
+                    <option value="">No assigned lesson</option>
+                  </select>
+                </div>
+                <div class="form-row">
+                  <label for="studentWorkspaceLiveBoardUrl">Live Board student link</label>
+                  <input id="studentWorkspaceLiveBoardUrl" type="url" maxlength="2048" placeholder="Paste the secure student link from Live Board">
+                </div>
+              </div>
+''',
+              '''              <div class="form-row">
+                <label for="studentWorkspaceLesson">Assigned lesson</label>
+                <select id="studentWorkspaceLesson">
+                  <option value="">No assigned lesson</option>
+                </select>
+              </div>
+
+              <fieldset class="student-workspace-position">
+                <legend>Live Board session</legend>
+                <p id="studentWorkspaceLiveBoardSummary" class="muted">Save the workspace before starting a Live Board session.</p>
+                <div class="inline-actions student-workspace-live-board-actions">
+                  <button id="startStudentWorkspaceLiveBoardButton" class="button" type="button">Start Live Board session</button>
+                  <a id="resumeStudentWorkspaceLiveBoardLink" class="button-secondary" href="#" target="_blank" rel="noopener" hidden>Resume teacher board</a>
+                  <button id="endStudentWorkspaceLiveBoardButton" class="button-danger" type="button" hidden>End Live Board session</button>
+                </div>
+                <p class="muted">The student keeps the same permanent workspace link. A temporary synchronized room appears there only while a session is active.</p>
+              </fieldset>
+'''
+          )
+          replace_once(
+              'management/teacher.html',
+              '>Open Live Board</a>',
+              '>Open temporary Live Board</a>'
+          )
+          replace_once(
+              'management/teacher.html',
+              './js/student-workspace-dashboard.mjs?v=20260727-student-workspace1',
+              './js/student-workspace-dashboard.mjs?v=20260728-live-board-lifecycle1'
+          )
+          replace_once(
+              'management/student-workspace.html',
+              './js/student-workspace.mjs?v=20260727-student-workspace1',
+              './js/student-workspace.mjs?v=20260728-live-board-lifecycle1'
+          )
+
+          dashboard = Path('management/js/student-workspace-dashboard.mjs')
+          text = dashboard.read_text(encoding='utf-8')
+          text = text.replace(
+              '''import {
+  randomAccessToken,
+  sha256Hex,
+  studentWorkspaceLink,
+  validateStudentLiveBoardUrl,
+} from './student-workspace-core.mjs';''',
+              '''import {
+  liveBoardTeacherLink,
+  randomAccessToken,
+  sha256Hex,
+  studentWorkspaceLink,
+} from './student-workspace-core.mjs';''',
+              1,
+          )
+          text = text.replace(
+              "const TOKEN_STORE_KEY = 'chess-study-student-workspace-links-v1';",
+              "const TOKEN_STORE_KEY = 'chess-study-student-workspace-links-v1';\nconst LIVE_BOARD_STORE_KEY = 'chess-study-student-live-board-v1';\nconst DEFAULT_POSITION = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';",
+              1,
+          )
+          text = text.replace(
+              "  liveBoardUrl: document.querySelector('#studentWorkspaceLiveBoardUrl'),",
+              "  liveBoardSummary: document.querySelector('#studentWorkspaceLiveBoardSummary'),\n  startLiveBoard: document.querySelector('#startStudentWorkspaceLiveBoardButton'),\n  resumeLiveBoard: document.querySelector('#resumeStudentWorkspaceLiveBoardLink'),\n  endLiveBoard: document.querySelector('#endStudentWorkspaceLiveBoardButton'),",
+              1,
+          )
+          text = text.replace(
+              '''  workspace: null,
+  loadVersion: 0,''',
+              '''  workspace: null,
+  liveBoard: null,
+  loadVersion: 0,''',
+              1,
+          )
+          token_anchor = '''function tokenForWorkspace() {
+  return state.workspace?.id ? readTokenStore()[state.workspace.id] || '' : '';
+}
+'''
+          helpers = token_anchor + '''
+function readLiveBoardStore() {
+  try {
+    const value = JSON.parse(localStorage.getItem(LIVE_BOARD_STORE_KEY) || '{}');
+    return value && typeof value === 'object' ? value : {};
+  } catch {
+    return {};
+  }
+}
+
+function storeLiveBoardCredentials(workspaceId, credentials) {
+  const store = readLiveBoardStore();
+  store[workspaceId] = credentials;
+  localStorage.setItem(LIVE_BOARD_STORE_KEY, JSON.stringify(store));
+}
+
+function clearLiveBoardCredentials(workspaceId) {
+  const store = readLiveBoardStore();
+  delete store[workspaceId];
+  localStorage.setItem(LIVE_BOARD_STORE_KEY, JSON.stringify(store));
+}
+
+function liveBoardCredentialsForWorkspace() {
+  return state.workspace?.id ? readLiveBoardStore()[state.workspace.id] || null : null;
+}
+
+function makeRoomCode() {
+  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const bytes = new Uint8Array(6);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (byte) => alphabet[byte % alphabet.length]).join('');
+}
+
+function formatLiveBoardExpiry(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return new Intl.DateTimeFormat(undefined, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(date);
+}
+
+function renderLiveBoardSession(student, workspace, archived, token) {
+  const active = Boolean(state.liveBoard?.active && state.liveBoard.room_code);
+  const credentials = liveBoardCredentialsForWorkspace();
+  const canResume = Boolean(
+    active
+    && credentials?.roomCode === state.liveBoard.room_code
+    && credentials?.teacherToken
+    && token
+  );
+
+  elements.startLiveBoard.hidden = active && canResume;
+  elements.startLiveBoard.disabled = archived || !workspace || !workspace.is_published || !token;
+  elements.startLiveBoard.textContent = active ? 'Start replacement session' : 'Start Live Board session';
+  elements.resumeLiveBoard.hidden = !canResume;
+  elements.endLiveBoard.hidden = !active;
+  elements.endLiveBoard.disabled = archived || !workspace;
+
+  if (canResume) {
+    elements.resumeLiveBoard.href = liveBoardTeacherLink(
+      state.liveBoard.room_code,
+      credentials.teacherToken,
+      token,
+    );
+  } else {
+    elements.resumeLiveBoard.href = '#';
+  }
+
+  if (!workspace) {
+    elements.liveBoardSummary.textContent = 'Save the workspace before starting a Live Board session.';
+  } else if (archived) {
+    elements.liveBoardSummary.textContent = 'Archived students cannot start or resume Live Board sessions.';
+  } else if (!workspace.is_published) {
+    elements.liveBoardSummary.textContent = 'Publish the workspace before starting a Live Board session.';
+  } else if (active) {
+    const expires = formatLiveBoardExpiry(state.liveBoard.expires_at);
+    elements.liveBoardSummary.textContent = `Room ${state.liveBoard.room_code} is active${expires ? ` until ${expires}` : ''}. ${student.display_name} joins from the same permanent workspace link.`;
+  } else if (workspace.active_live_board_room_code) {
+    elements.liveBoardSummary.textContent = 'The previous Live Board session expired. Start a new session shortly before class.';
+  } else {
+    elements.liveBoardSummary.textContent = `${student.display_name} will see a Join Live Board button here only while you have an active session.`;
+  }
+}
+'''
+          if token_anchor not in text:
+              raise SystemExit('student-workspace-dashboard token anchor not found')
+          text = text.replace(token_anchor, helpers, 1)
+
+          text = text.replace(
+              "  elements.liveBoardUrl.value = workspace?.live_board_url || '';\n",
+              '',
+              1,
+          )
+          render_tail = '''  if (workspace && !token) {
+    setStatus(
+      elements.status,
+      'This browser does not have the raw private link. Reissue it to replace the old link.',
+      'warning',
+    );
+  } else {
+    setStatus(elements.status, '');
+  }
+}'''
+          render_replacement = '''  if (workspace && !token) {
+    setStatus(
+      elements.status,
+      'This browser does not have the raw private link. Reissue it to replace the old link.',
+      'warning',
+    );
+  } else {
+    setStatus(elements.status, '');
+  }
+
+  renderLiveBoardSession(student, workspace, archived, token);
+}'''
+          if render_tail not in text:
+              raise SystemExit('student-workspace-dashboard render tail not found')
+          text = text.replace(render_tail, render_replacement, 1)
+
+          text = text.replace(
+              "    .select('id, teacher_id, student_id, is_published, teacher_instructions, homework, due_at, lesson_key, lesson_title, lesson_url, position_title, position_fen, live_board_url, token_rotated_at, created_at, updated_at')",
+              "    .select('id, teacher_id, student_id, is_published, teacher_instructions, homework, due_at, lesson_key, lesson_title, lesson_url, position_title, position_fen, active_live_board_room_code, live_board_started_at, token_rotated_at, created_at, updated_at')",
+              1,
+          )
+          fetch_helper_anchor = '''async function loadWorkspace(studentId = selectedStudentId()) {'''
+          fetch_helper = '''async function fetchLiveBoardSession(workspaceId) {
+  if (!workspaceId) return { active: false };
+  const supabase = getSupabase();
+  const { data, error } = await supabase.rpc('get_teacher_student_workspace_live_board', {
+    p_workspace_id: workspaceId,
+  });
+  if (error) throw error;
+  return data || { active: false };
+}
+
+async function loadWorkspace(studentId = selectedStudentId()) {'''
+          if fetch_helper_anchor not in text:
+              raise SystemExit('loadWorkspace anchor not found')
+          text = text.replace(fetch_helper_anchor, fetch_helper, 1)
+          text = text.replace(
+              '''  state.studentId = studentId;
+  state.workspace = data || null;
+  render();''',
+              '''  state.studentId = studentId;
+  state.workspace = data || null;
+  state.liveBoard = state.workspace
+    ? await fetchLiveBoardSession(state.workspace.id)
+    : { active: false };
+  render();''',
+              1,
+          )
+          text = text.replace(
+              "    live_board_url: validateStudentLiveBoardUrl(elements.liveBoardUrl.value),",
+              "    live_board_url: null,",
+              1,
+          )
+          text = text.replace(
+              '''    state.workspace = result.data;
+    if (token) storeToken(result.data.id, token);
+    render();''',
+              '''    state.workspace = result.data;
+    state.liveBoard = await fetchLiveBoardSession(result.data.id);
+    if (token) storeToken(result.data.id, token);
+    render();''',
+              1,
+          )
+          reissue_anchor = '''    const token = randomAccessToken();
+    const supabase = getSupabase();'''
+          reissue_replacement = '''    const supabase = getSupabase();
+    if (state.workspace.active_live_board_room_code || state.liveBoard?.active) {
+      const ended = await supabase.rpc('end_student_workspace_live_board', {
+        p_workspace_id: state.workspace.id,
+      });
+      if (ended.error) throw ended.error;
+      clearLiveBoardCredentials(state.workspace.id);
+      state.liveBoard = { active: false };
+    }
+    const token = randomAccessToken();'''
+          if reissue_anchor not in text:
+              raise SystemExit('reissue anchor not found')
+          text = text.replace(reissue_anchor, reissue_replacement, 1)
+
+          initialize_anchor = '''async function initialize() {'''
+          lifecycle_functions = '''async function startLiveBoardSession() {
+  const student = selectedStudent();
+  const workspace = state.workspace;
+  const studentToken = tokenForWorkspace();
+  if (!student || !workspace || student.archived_at || !workspace.is_published) return;
+  if (!studentToken) {
+    setStatus(elements.status, 'Reissue the private workspace link before starting a Live Board session.', 'warning');
+    return;
+  }
+  if (state.liveBoard?.active && !window.confirm(`Replace ${student.display_name}'s active Live Board session?`)) return;
+
+  const popup = window.open('about:blank', '_blank');
+  if (popup) popup.opener = null;
+  setBusy(elements.startLiveBoard, true, 'Starting…');
+  setStatus(elements.status, '');
+
+  try {
+    const roomCode = makeRoomCode();
+    const teacherToken = randomAccessToken();
+    const supabase = getSupabase();
+    const { data, error } = await supabase.rpc('start_student_workspace_live_board', {
+      p_workspace_id: workspace.id,
+      p_room_code: roomCode,
+      p_teacher_token: teacherToken,
+      p_student_token: studentToken,
+      p_fen: workspace.position_fen || DEFAULT_POSITION,
+      p_orientation: 'white',
+    });
+    if (error) throw error;
+
+    storeLiveBoardCredentials(workspace.id, { roomCode: data.room_code, teacherToken });
+    state.workspace.active_live_board_room_code = data.room_code;
+    state.workspace.live_board_started_at = data.started_at || new Date().toISOString();
+    state.liveBoard = data;
+    render();
+
+    const url = liveBoardTeacherLink(data.room_code, teacherToken, studentToken);
+    if (popup) popup.location.replace(url);
+    else window.open(url, '_blank', 'noopener');
+    setStatus(elements.status, `Live Board session started for ${student.display_name}. Their permanent workspace now shows Join Live Board.`, 'success');
+  } catch (error) {
+    if (popup) popup.close();
+    setStatus(elements.status, readableError(error), 'error');
+  } finally {
+    setBusy(elements.startLiveBoard, false);
+  }
+}
+
+async function endLiveBoardSession() {
+  const student = selectedStudent();
+  const workspace = state.workspace;
+  if (!student || !workspace) return;
+  if (!window.confirm(`End ${student.display_name}'s current Live Board session?`)) return;
+
+  setBusy(elements.endLiveBoard, true, 'Ending…');
+  setStatus(elements.status, '');
+  try {
+    const supabase = getSupabase();
+    const { error } = await supabase.rpc('end_student_workspace_live_board', {
+      p_workspace_id: workspace.id,
+    });
+    if (error) throw error;
+    clearLiveBoardCredentials(workspace.id);
+    state.workspace.active_live_board_room_code = null;
+    state.workspace.live_board_started_at = null;
+    state.liveBoard = { active: false };
+    render();
+    setStatus(elements.status, 'Live Board session ended. The permanent student workspace remains available.', 'success');
+  } catch (error) {
+    setStatus(elements.status, readableError(error), 'error');
+  } finally {
+    setBusy(elements.endLiveBoard, false);
+  }
+}
+
+async function initialize() {'''
+          if initialize_anchor not in text:
+              raise SystemExit('initialize anchor not found')
+          text = text.replace(initialize_anchor, lifecycle_functions, 1)
+          text = text.replace(
+              '''elements.reissue?.addEventListener('click', () => reissueWorkspaceLink());''',
+              '''elements.reissue?.addEventListener('click', () => reissueWorkspaceLink());
+elements.startLiveBoard?.addEventListener('click', () => startLiveBoardSession());
+elements.endLiveBoard?.addEventListener('click', () => endLiveBoardSession());''',
+              1,
+          )
+          dashboard.write_text(text, encoding='utf-8')
+
+          # Student view resolves the currently active temporary room from the permanent workspace token.
+          student = Path('management/js/student-workspace.mjs')
+          text = student.read_text(encoding='utf-8')
+          text = text.replace(
+              "import { workspaceAssignmentLink } from './student-workspace-core.mjs';",
+              "import { liveBoardStudentLink, workspaceAssignmentLink } from './student-workspace-core.mjs';",
+              1,
+          )
+          text = text.replace(
+              '''  elements.liveBoardCard.hidden = !workspace.live_board_url;
+  elements.liveBoardLink.href = workspace.live_board_url || '#';''',
+              '''  elements.liveBoardCard.hidden = true;
+  elements.liveBoardLink.href = '#';''',
+              1,
+          )
+          student_init_anchor = '''async function initialize() {'''
+          student_live = '''async function refreshLiveBoard(token) {
+  try {
+    const supabase = getSupabase();
+    const { data, error } = await supabase.rpc('get_student_workspace_live_board_by_token', {
+      p_token: token,
+    });
+    if (error) throw error;
+    const active = Boolean(data?.active && data?.room_code);
+    elements.liveBoardCard.hidden = !active;
+    elements.liveBoardLink.href = active
+      ? liveBoardStudentLink(data.room_code, token)
+      : '#';
+  } catch (error) {
+    console.warn('Could not refresh the Live Board session.', error);
+    elements.liveBoardCard.hidden = true;
+    elements.liveBoardLink.href = '#';
+  }
+}
+
+async function initialize() {'''
+          if student_init_anchor not in text:
+              raise SystemExit('student workspace initialize anchor not found')
+          text = text.replace(student_init_anchor, student_live, 1)
+          text = text.replace(
+              '''    render(data, token);
+  } catch (error) {''',
+              '''    render(data, token);
+    await refreshLiveBoard(token);
+    window.setInterval(() => refreshLiveBoard(token), 15000);
+  } catch (error) {''',
+              1,
+          )
+          student.write_text(text, encoding='utf-8')
+
+          # Source-controlled migration matching the already applied production migration.
+          migration = Path('supabase/migrations/20260728124500_student_workspace_live_board_sessions.sql')
+          migration.write_text(r'''-- Permanent student workspace entry point with temporary per-lesson Live Board rooms.
+begin;
+
+alter table public.student_workspaces
+  add column if not exists active_live_board_room_code text,
+  add column if not exists live_board_started_at timestamptz;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conname = 'student_workspaces_active_live_board_room_fkey'
+      and conrelid = 'public.student_workspaces'::regclass
+  ) then
+    alter table public.student_workspaces
+      add constraint student_workspaces_active_live_board_room_fkey
+      foreign key (active_live_board_room_code)
+      references public.live_board_rooms(room_code)
+      on delete set null;
+  end if;
+end;
+$$;
+
+create index if not exists student_workspaces_active_live_board_room_idx
+  on public.student_workspaces (active_live_board_room_code)
+  where active_live_board_room_code is not null;
+
+create or replace function public.start_student_workspace_live_board(
+  p_workspace_id uuid,
+  p_room_code text,
+  p_teacher_token text,
+  p_student_token text,
+  p_fen text default 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+  p_orientation text default 'white'
+) returns jsonb
+language plpgsql
+security definer
+set search_path = pg_catalog, public, extensions
+as $$
+declare
+  v_workspace public.student_workspaces%rowtype;
+  v_room public.live_board_rooms%rowtype;
+  v_student_hash text;
+begin
+  if auth.uid() is null or not private.is_teacher() then
+    raise exception 'Teacher access is required.';
+  end if;
+
+  select * into v_workspace
+  from public.student_workspaces
+  where id = p_workspace_id and teacher_id = auth.uid();
+  if not found then raise exception 'Student workspace was not found.'; end if;
+
+  if not exists (
+    select 1 from public.managed_students student
+    where student.id = v_workspace.student_id
+      and student.teacher_id = auth.uid()
+      and student.archived_at is null
+  ) then
+    raise exception 'This student workspace is no longer active.';
+  end if;
+
+  if p_room_code !~ '^[A-Z0-9]{6,12}$' then raise exception 'Invalid room code.'; end if;
+  if char_length(coalesce(p_teacher_token, '')) < 32
+     or char_length(coalesce(p_student_token, '')) < 32 then
+    raise exception 'Room tokens are too short.';
+  end if;
+  if p_orientation not in ('white', 'black') then raise exception 'Invalid orientation.'; end if;
+
+  v_student_hash := encode(extensions.digest(convert_to(p_student_token, 'UTF8'), 'sha256'), 'hex');
+  if v_student_hash <> v_workspace.access_token_hash then
+    raise exception 'The current private workspace link is required to start a Live Board session.';
+  end if;
+
+  delete from public.live_board_rooms where expires_at <= now();
+  if v_workspace.active_live_board_room_code is not null then
+    delete from public.live_board_rooms where room_code = v_workspace.active_live_board_room_code;
+  end if;
+
+  insert into public.live_board_rooms (
+    room_code, teacher_token_hash, student_token_hash, student_short_token_hash,
+    fen, pgn, orientation
+  ) values (
+    p_room_code,
+    encode(extensions.digest(convert_to(p_teacher_token, 'UTF8'), 'sha256'), 'hex'),
+    v_student_hash,
+    encode(extensions.digest(convert_to(left(p_student_token, 16), 'UTF8'), 'sha256'), 'hex'),
+    p_fen,
+    '',
+    p_orientation
+  ) returning * into v_room;
+
+  update public.student_workspaces
+  set active_live_board_room_code = v_room.room_code,
+      live_board_started_at = now()
+  where id = v_workspace.id;
+
+  return jsonb_build_object(
+    'active', true,
+    'room_code', v_room.room_code,
+    'expires_at', v_room.expires_at,
+    'started_at', now()
+  );
+exception
+  when unique_violation then raise exception 'Room code already exists. Try again.';
+end;
+$$;
+
+create or replace function public.get_teacher_student_workspace_live_board(p_workspace_id uuid)
+returns jsonb
+language plpgsql
+security definer
+set search_path = pg_catalog, public
+as $$
+declare
+  v_room public.live_board_rooms%rowtype;
+  v_workspace public.student_workspaces%rowtype;
+begin
+  if auth.uid() is null or not private.is_teacher() then raise exception 'Teacher access is required.'; end if;
+  select * into v_workspace from public.student_workspaces
+  where id = p_workspace_id and teacher_id = auth.uid();
+  if not found then raise exception 'Student workspace was not found.'; end if;
+  if v_workspace.active_live_board_room_code is null then return jsonb_build_object('active', false); end if;
+  select * into v_room from public.live_board_rooms
+  where room_code = v_workspace.active_live_board_room_code and expires_at > now();
+  if not found then return jsonb_build_object('active', false); end if;
+  return jsonb_build_object(
+    'active', true,
+    'room_code', v_room.room_code,
+    'expires_at', v_room.expires_at,
+    'started_at', v_workspace.live_board_started_at
+  );
+end;
+$$;
+
+create or replace function public.end_student_workspace_live_board(p_workspace_id uuid)
+returns boolean
+language plpgsql
+security definer
+set search_path = pg_catalog, public
+as $$
+declare
+  v_room_code text;
+begin
+  if auth.uid() is null or not private.is_teacher() then raise exception 'Teacher access is required.'; end if;
+  select active_live_board_room_code into v_room_code
+  from public.student_workspaces
+  where id = p_workspace_id and teacher_id = auth.uid();
+  if not found then raise exception 'Student workspace was not found.'; end if;
+  update public.student_workspaces
+  set active_live_board_room_code = null, live_board_started_at = null
+  where id = p_workspace_id and teacher_id = auth.uid();
+  if v_room_code is not null then delete from public.live_board_rooms where room_code = v_room_code; end if;
+  return true;
+end;
+$$;
+
+create or replace function public.get_student_workspace_live_board_by_token(p_token text)
+returns jsonb
+language plpgsql
+security definer
+set search_path = pg_catalog, public, extensions
+as $$
+declare
+  v_hash text;
+  v_workspace public.student_workspaces%rowtype;
+  v_room public.live_board_rooms%rowtype;
+begin
+  if p_token is null or char_length(p_token) < 32 or char_length(p_token) > 512 then
+    return jsonb_build_object('active', false);
+  end if;
+  v_hash := encode(extensions.digest(convert_to(p_token, 'UTF8'), 'sha256'), 'hex');
+  select workspace.* into v_workspace
+  from public.student_workspaces workspace
+  join public.managed_students student
+    on student.id = workspace.student_id
+   and student.teacher_id = workspace.teacher_id
+   and student.archived_at is null
+  where workspace.access_token_hash = v_hash and workspace.is_published;
+  if not found or v_workspace.active_live_board_room_code is null then
+    return jsonb_build_object('active', false);
+  end if;
+  select * into v_room from public.live_board_rooms
+  where room_code = v_workspace.active_live_board_room_code
+    and student_token_hash = v_hash
+    and expires_at > now();
+  if not found then return jsonb_build_object('active', false); end if;
+  return jsonb_build_object('active', true, 'room_code', v_room.room_code, 'expires_at', v_room.expires_at);
+end;
+$$;
+
+revoke all on function public.start_student_workspace_live_board(uuid,text,text,text,text,text) from public, anon;
+revoke all on function public.get_teacher_student_workspace_live_board(uuid) from public, anon;
+revoke all on function public.end_student_workspace_live_board(uuid) from public, anon;
+revoke all on function public.get_student_workspace_live_board_by_token(text) from public;
+grant execute on function public.start_student_workspace_live_board(uuid,text,text,text,text,text) to authenticated;
+grant execute on function public.get_teacher_student_workspace_live_board(uuid) to authenticated;
+grant execute on function public.end_student_workspace_live_board(uuid) to authenticated;
+grant execute on function public.get_student_workspace_live_board_by_token(text) to anon, authenticated;
+
+commit;
+''', encoding='utf-8')
+
+          # Update operational documentation.
+          replace_once(
+              'management/README.md',
+              '- Approved teachers publish one coach-controlled workspace per student. The same permanent private link reflects the current instructions, homework, due date, assigned lesson, FEN position, secure Live Board student link, published puzzle work, progress, and scores.',
+              '- Approved teachers publish one coach-controlled workspace per student. The same permanent private link reflects the current instructions, homework, due date, assigned lesson, FEN position, active temporary Live Board session, published puzzle work, progress, and scores.'
+          )
+          replace_once(
+              'management/README.md',
+              '- The coach chooses the instructions, homework and due date, curriculum lesson, optional FEN position, and secure Live Board **student** link.',
+              '- The coach chooses the instructions, homework and due date, curriculum lesson, and optional FEN position, then starts, resumes, or ends a temporary Live Board session from the same student record.'
+          )
+          replace_once(
+              'management/README.md',
+              '- Students do not register, browse the coach dashboard, change assignments, or select their own curriculum.',
+              '- Students do not register, browse the coach dashboard, change assignments, or select their own curriculum. Their permanent workspace automatically shows **Join Live Board** only while the coach has an active temporary room.'
+          )
+
+          # Focused URL-helper regression coverage.
+          Path('tests/student-workspace-live-board.test.mjs').write_text('''import test from 'node:test';
+import assert from 'node:assert/strict';
+
+import {
+  liveBoardStudentLink,
+  liveBoardTeacherLink,
+} from '../management/js/student-workspace-core.mjs';
+
+const locationObject = { href: 'https://cddigital.top/management/teacher.html' };
+
+test('student Live Board link keeps credentials in the fragment', () => {
+  const url = new URL(liveBoardStudentLink('abc234', 'student-secret', locationObject));
+  const hash = new URLSearchParams(url.hash.slice(1));
+  assert.equal(url.pathname, '/live-board.html');
+  assert.equal(url.search, '');
+  assert.equal(hash.get('room'), 'ABC234');
+  assert.equal(hash.get('role'), 'student');
+  assert.equal(hash.get('access'), 'student-secret');
+});
+
+test('teacher Live Board link carries teacher and student credentials', () => {
+  const url = new URL(liveBoardTeacherLink('xyz789', 'teacher-secret', 'student-secret', locationObject));
+  const hash = new URLSearchParams(url.hash.slice(1));
+  assert.equal(hash.get('room'), 'XYZ789');
+  assert.equal(hash.get('role'), 'teacher');
+  assert.equal(hash.get('access'), 'teacher-secret');
+  assert.equal(hash.get('student'), 'student-secret');
+});
+''', encoding='utf-8')
+
+          if WORKFLOW.exists():
+              WORKFLOW.unlink()
+          PY
+
+      - name: Validate JavaScript and focused tests
+        run: |
+          node --check management/js/student-workspace-core.mjs
+          node --check management/js/student-workspace-dashboard.mjs
+          node --check management/js/student-workspace.mjs
+          node --test tests/student-workspace-live-board.test.mjs
+
+      - name: Commit completed lifecycle integration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Integrate permanent student Live Board sessions"
+          git push
