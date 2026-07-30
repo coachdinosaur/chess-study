@@ -39,7 +39,9 @@ jobs:
           npm test
 
       - name: Verify combined-site integration
-        run: node --test tests/opening-book-integration.test.mjs
+        run: |
+          node --test tests/opening-book-integration.test.mjs
+          node --test tests/endgame-trainer-integration.test.mjs
 
       - name: Publish opening book at /openings/
         shell: bash

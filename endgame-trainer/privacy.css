@@ -1,0 +1,353 @@
+.privacy-body {
+  background:
+    radial-gradient(circle at 50% -20%, rgba(94, 234, 212, 0.07), transparent 34%),
+    var(--bg);
+}
+
+.privacy-page {
+  width: min(100%, 1160px);
+  margin: 0 auto;
+  padding: 72px 24px 40px;
+}
+
+.policy-hero {
+  max-width: 850px;
+  padding: 48px 0 64px;
+}
+
+.policy-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 44px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 650;
+  transition: color 180ms ease, transform 180ms var(--ease-out);
+}
+
+.policy-back:hover {
+  color: var(--emerald);
+  transform: translateX(-3px);
+}
+
+.policy-hero .hero-badge {
+  margin-bottom: 24px;
+}
+
+.policy-hero h1 {
+  max-width: 760px;
+}
+
+.policy-lede {
+  max-width: 64ch;
+  margin-top: 28px;
+  color: var(--muted);
+  font-size: clamp(17px, 1.5vw, 20px);
+  font-weight: 350;
+  line-height: 1.75;
+  text-wrap: pretty;
+}
+
+.policy-updated {
+  margin-top: 24px;
+  color: var(--emerald);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.policy-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 84px;
+}
+
+.policy-summary article {
+  min-height: 190px;
+  padding: 26px;
+  border: 1px solid var(--line-soft);
+  border-radius: 20px;
+  background: var(--panel);
+}
+
+.policy-summary article > span {
+  display: block;
+  margin-bottom: 28px;
+  color: var(--emerald);
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-style: italic;
+}
+
+.policy-summary strong {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.policy-summary p {
+  color: var(--muted);
+  font-size: 14.5px;
+  font-weight: 350;
+  line-height: 1.65;
+}
+
+.policy-layout {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: clamp(42px, 7vw, 92px);
+  align-items: start;
+}
+
+.policy-toc {
+  position: sticky;
+  top: 116px;
+  padding: 22px;
+  border: 1px solid var(--line-soft);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.policy-toc > p {
+  margin-bottom: 15px;
+  color: var(--muted-soft);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.policy-toc nav {
+  display: grid;
+  gap: 4px;
+}
+
+.policy-toc a {
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.35;
+  transition: color 180ms ease, background-color 180ms ease;
+}
+
+.policy-toc a:hover {
+  color: var(--text);
+  background: rgba(94, 234, 212, 0.08);
+}
+
+.policy-content {
+  min-width: 0;
+}
+
+.policy-section {
+  scroll-margin-top: 118px;
+  border-top: 1px solid var(--line-soft);
+  padding: 44px 0 54px;
+}
+
+.policy-section:first-child {
+  border-top-color: rgba(94, 234, 212, 0.32);
+}
+
+.policy-number {
+  margin-bottom: 12px;
+  color: var(--emerald);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-style: italic;
+}
+
+.policy-section h2 {
+  margin-bottom: 22px;
+  font-size: clamp(28px, 3.4vw, 42px);
+}
+
+.policy-section > p:not(.policy-number),
+.policy-section li,
+.policy-section dd {
+  color: var(--muted);
+  font-size: 16.5px;
+  font-weight: 350;
+  line-height: 1.75;
+}
+
+.policy-section > p + p,
+.policy-section ul + p {
+  margin-top: 20px;
+}
+
+.policy-section ul {
+  display: grid;
+  gap: 12px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.policy-section li {
+  position: relative;
+  padding: 16px 18px 16px 46px;
+  border: 1px solid var(--line-soft);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.policy-section li::before {
+  content: "";
+  position: absolute;
+  top: 25px;
+  left: 20px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--emerald);
+  box-shadow: 0 0 0 5px rgba(94, 234, 212, 0.08);
+}
+
+.policy-section li strong,
+.policy-section li span {
+  display: block;
+}
+
+.policy-section li strong {
+  color: var(--text);
+  font-weight: 650;
+}
+
+.policy-section li span {
+  margin-top: 3px;
+}
+
+.policy-note {
+  margin-top: 24px;
+  padding: 20px 22px;
+  border: 1px solid rgba(94, 234, 212, 0.25);
+  border-radius: 14px;
+  background: rgba(94, 234, 212, 0.08);
+  color: #d7fff5;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.policy-contact dl {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.policy-contact dl div {
+  display: grid;
+  grid-template-columns: 100px minmax(0, 1fr);
+  gap: 22px;
+  align-items: baseline;
+  padding: 18px 20px;
+  border: 1px solid var(--line-soft);
+  border-radius: 14px;
+  background: var(--panel);
+}
+
+.policy-contact dt {
+  color: var(--muted-soft);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.policy-contact dd {
+  margin: 0;
+}
+
+.policy-contact a {
+  color: var(--emerald);
+  text-decoration: underline;
+  text-decoration-color: rgba(94, 234, 212, 0.35);
+  text-underline-offset: 4px;
+}
+
+.policy-contact a:hover {
+  text-decoration-color: currentColor;
+}
+
+.policy-footer {
+  margin-top: 34px;
+}
+
+@media (max-width: 900px) {
+  .policy-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .policy-summary article {
+    min-height: 0;
+  }
+
+  .policy-summary article > span {
+    margin-bottom: 16px;
+  }
+
+  .policy-layout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .policy-toc {
+    position: static;
+  }
+
+  .policy-toc nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .privacy-page {
+    padding: 28px 16px 24px;
+  }
+
+  .policy-hero {
+    padding: 26px 0 48px;
+  }
+
+  .policy-back {
+    margin-bottom: 34px;
+  }
+
+  .policy-summary {
+    margin-bottom: 54px;
+  }
+
+  .policy-toc nav {
+    grid-template-columns: 1fr;
+  }
+
+  .policy-section {
+    scroll-margin-top: 20px;
+    padding: 36px 0 44px;
+  }
+
+  .policy-contact dl div {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 440px) {
+  .policy-summary article,
+  .policy-toc {
+    padding: 20px;
+  }
+
+  .policy-section li {
+    padding: 16px 16px 16px 40px;
+  }
+
+  .policy-section li::before {
+    left: 16px;
+  }
+}

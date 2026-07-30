@@ -2,13 +2,13 @@
 
 ## 1. Overview
 
-Chess Lesson Study Board is a chess teaching platform served as static files. The repository combines a framework-free interactive single-page application, browser Stockfish, Lichess tablebase requests, separate legacy Endgame Puzzle and user-facing Position Study runtimes, coach-controlled student workspaces and puzzle assignments, static lesson sites with classroom presentation and a floating Teacher Board, a synchronized teacher/student Live Board, a separately built Catalan opening course, an optional AI-help panel, and optional local Python helpers.
+Chess Lesson Study Board is a chess teaching platform served as static files. The repository combines a framework-free interactive single-page application, browser Stockfish, Lichess tablebase requests, separate legacy Endgame Puzzle and user-facing Position Study runtimes, coach-controlled student workspaces and puzzle assignments, static lesson sites with classroom presentation and a floating Teacher Board, a synchronized teacher/student Live Board, a separately built Catalan opening course, a standalone Endgame Trainer landing and privacy site, an optional AI-help panel, and optional local Python helpers.
 
-The main Study Board and lesson sites have no bundler or application build
-step. Their production assets are committed directly. Catalan Atelier is the
-one isolated build boundary: GitHub Pages compiles `apps/opening-book/` and
-mounts its generated output at `/openings/` before uploading the combined
-static artifact.
+The main Study Board, lesson sites, and Endgame Trainer site have no bundler or
+application build step. Their production assets are committed directly.
+Catalan Atelier is the one isolated build boundary: GitHub Pages compiles
+`apps/opening-book/` and mounts its generated output at `/openings/` before
+uploading the combined static artifact.
 
 The major subsystems are:
 
@@ -47,19 +47,25 @@ The major subsystems are:
    - Browser-local Stockfish and interactive board
    - GitHub Pages build mounted at `/openings/`
 
-6. **Live Board collaboration**
+6. **Standalone Endgame Trainer site**
+   - Static landing page in `endgame-trainer/index.html`
+   - Android privacy policy in `endgame-trainer/privacy-policy/index.html`
+   - Local styles, favicon, and app preview images
+   - Direct GitHub Pages routes under `/endgame-trainer/`
+
+7. **Live Board collaboration**
    - `live-board.html` and Live Board interaction modules
    - Supabase-backed teacher/student rooms
    - Secure student links, move locking, prepared positions, and session messages
 
-7. **Vendored browser dependencies and data**
+8. **Vendored browser dependencies and data**
    - `vendor/chess.js`
    - `vendor/stockfish/`
    - `vendor/xlsx.full.min.js`
    - `assets/openings.tsv`
    - MPChess SVG pieces
 
-8. **Optional local services**
+9. **Optional local services**
    - `local_server.py`
    - `scanner_server.py`
    - `scanner_predict.py`
@@ -140,6 +146,17 @@ chess-study/
 │   ├── teacher-board-illegal-moves.mjs
 │   ├── endgame-lesson.js
 │   └── endgame-lesson.css
+│
+├── endgame-trainer/
+│   ├── index.html
+│   ├── styles.css
+│   ├── privacy.css
+│   ├── privacy-policy/
+│   │   └── index.html
+│   └── assets/
+│       ├── favicon.png
+│       ├── light-portrait.png
+│       └── puzzle-landscape.png
 │
 ├── local_server.py
 ├── scanner_server.py
@@ -296,7 +313,8 @@ apps/opening-book/
 | `vendor/chess.js` | Legal moves, FEN, PGN, game termination, attack queries |
 | `vendor/stockfish/` | Browser Stockfish JavaScript and WASM variants |
 | `apps/opening-book/` | React/Vite Catalan Atelier source, Markdown chapters, local assets, and tests |
-| `.github/workflows/pages.yml` | Tests and builds Catalan Atelier, mounts `dist/` at `/openings/`, and uploads the combined static artifact |
+| `endgame-trainer/` | Self-contained Endgame Trainer landing page, clean-route privacy policy, styles, favicon, and app previews |
+| `.github/workflows/pages.yml` | Tests combined-site routes, builds Catalan Atelier, mounts `dist/` at `/openings/`, and uploads the combined static artifact |
 
 ---
 
@@ -1103,7 +1121,32 @@ framework-free SPA and static lesson architecture.
 
 ---
 
-## 23. Static lesson architecture
+## 23. Standalone Endgame Trainer site
+
+`endgame-trainer/` is a self-contained static site with no build step and no
+dependency on the Study Board runtime. GitHub Pages publishes the committed
+directory directly:
+
+```text
+endgame-trainer/index.html
+  -> /endgame-trainer/
+
+endgame-trainer/privacy-policy/index.html
+  -> /endgame-trainer/privacy-policy/
+```
+
+Both pages use relative local asset links, while canonical metadata points to
+the production `https://cddigital.top` URLs. Keeping the privacy policy as a
+directory index is what provides the clean extensionless route under
+`.nojekyll`; no server-side rewrite is required.
+
+The site is covered by `tests/endgame-trainer-integration.test.mjs`, which
+checks route structure, canonical URLs, relative links, required images and
+styles, and inclusion in the root Pages artifact.
+
+---
+
+## 24. Static lesson architecture
 
 The static lesson files are intentionally independent of the SPA framework because there is no framework.
 
@@ -1135,7 +1178,7 @@ Static pages are printable and can use paged-media styling without requiring the
 
 ---
 
-## 24. Optional local services
+## 25. Optional local services
 
 ### Cross-origin-isolated server
 
@@ -1162,7 +1205,7 @@ The scanner is optional and not used by the GitHub Pages deployment.
 
 ---
 
-## 25. Event bindings
+## 26. Event bindings
 
 `bindEvents()` registers delegated and board-specific handlers.
 
@@ -1197,11 +1240,11 @@ The scanner is optional and not used by the GitHub Pages deployment.
 
 ---
 
-## 26. Validation and testing
+## 27. Validation and testing
 
 The main Study Board has no compile step. Its validation combines syntax
-checks, targeted tests, and browser testing; the opening course adds its own
-compiled test suite.
+checks, targeted tests, and browser testing; the Endgame Trainer adds a static
+route-integrity test, and the opening course adds its own compiled test suite.
 
 ```powershell
 node --check app.js
@@ -1212,6 +1255,7 @@ node --check lessons/lesson-presentation.js
 node --check live-board-realtime.js
 node --check live-board-messages-v2.js
 node tools/test-puzzle-api.mjs
+node --test tests/endgame-trainer-integration.test.mjs
 npm --prefix apps/opening-book test
 git diff --check
 ```
@@ -1239,7 +1283,7 @@ Minimum manual matrix:
 
 ---
 
-## 27. Architectural constraints
+## 28. Architectural constraints
 
 The main Study Board deliberately favors zero-build deployability and direct
 debugging. Catalan Atelier remains an isolated build boundary rather than

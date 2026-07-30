@@ -1,6 +1,6 @@
 # Chess Lesson Study Board
 
-A browser-based chess teaching and study platform. It combines a framework-free position editor, lesson-tree authoring, Stockfish analysis, tablebase support, practice drills, Play vs Stockfish, separate Endgame Puzzle and Position Study modes, coach-controlled student workspaces and puzzle assignments, static course lessons with classroom presentation and Teacher Board tools, a synchronized teacher/student Live Board, a separately built Catalan opening course, and an optional AI chess-help panel.
+A browser-based chess teaching and study platform. It combines a framework-free position editor, lesson-tree authoring, Stockfish analysis, tablebase support, practice drills, Play vs Stockfish, separate Endgame Puzzle and Position Study modes, coach-controlled student workspaces and puzzle assignments, static course lessons with classroom presentation and Teacher Board tools, a synchronized teacher/student Live Board, a separately built Catalan opening course, a standalone Endgame Trainer site, and an optional AI chess-help panel.
 
 ## Live app
 
@@ -8,6 +8,8 @@ A browser-based chess teaching and study platform. It combines a framework-free 
 https://cddigital.top/
 https://cddigital.top/lessons/
 https://cddigital.top/openings/
+https://cddigital.top/endgame-trainer/
+https://cddigital.top/endgame-trainer/privacy-policy/
 ```
 
 For normal use, open the deployed site in a modern browser. No installation is required.
@@ -34,6 +36,7 @@ For local Windows setup, see [LOCAL_DEPLOYMENT.md](LOCAL_DEPLOYMENT.md).
 - Identify openings from the bundled ECO/opening database.
 - Use static Pawn, Advanced Pawn, Bishop, and numbered endgame lesson pages in `lessons/`.
 - Study the 16-chapter interactive Catalan Atelier opening course at `/openings/`.
+- Open the standalone Endgame Trainer landing page and Android privacy policy at `/endgame-trainer/`.
 - Present supported lessons scene by scene with Previous, Reveal, Reset, Next, Exit, keyboard shortcuts, fullscreen support, and a visible click pulse for classroom projection.
 - Open the floating Teacher Board from supported lesson pages to load Page, Start, Empty, or prepared CSV positions; set the side to move; place pieces; annotate; take back; flip; and reset.
 - Create a secure synchronized Live Board room for a teacher and student, including student-move locking, FEN and lesson-position loading, move history, and session messages.
@@ -302,6 +305,14 @@ committed to the repository.
 Cross-navigation connects the main Study Board, the lesson index, and the
 opening course without coupling their runtimes.
 
+## Endgame Trainer site
+
+`endgame-trainer/` is a self-contained static landing page for Coach Dinosaur
+Endgame Trainer. Its Android privacy policy uses the directory route
+`endgame-trainer/privacy-policy/index.html`, so GitHub Pages serves the clean
+public URL `/endgame-trainer/privacy-policy/` without a rewrite rule or build
+step.
+
 ## Live Board
 
 `live-board.html` is a separate synchronized teaching surface for one teacher and one student.
@@ -394,7 +405,8 @@ The floating Teacher Board also evaluates the embedded FEN after moves and posit
 | `assets/openings.tsv` | Opening identification database |
 | `lessons/` | Static published lesson pages and shared lesson helpers |
 | `apps/opening-book/` | React/Vite source, Markdown chapters, tests, and local Stockfish assets for Catalan Atelier |
-| `.github/workflows/pages.yml` | Tests and builds Catalan Atelier, mounts its output at `/openings/`, and deploys the combined Pages artifact |
+| `endgame-trainer/` | Standalone Endgame Trainer landing page, privacy policy, styles, favicon, and app previews |
+| `.github/workflows/pages.yml` | Tests the combined routes, builds Catalan Atelier, mounts its output at `/openings/`, and deploys the combined Pages artifact |
 
 A deeper implementation map is in [ARCHITECTURE.md](ARCHITECTURE.md).
 
@@ -484,6 +496,7 @@ node --check lessons/lesson-presentation.js
 node --check live-board-realtime.js
 node --check live-board-messages-v2.js
 node tools/test-puzzle-api.mjs
+node --test tests/endgame-trainer-integration.test.mjs
 npm --prefix apps/opening-book test
 git diff --check
 ```
