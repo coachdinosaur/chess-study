@@ -25,6 +25,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/opening-book/package-lock.json
+
+      - name: Test and build opening book
+        working-directory: apps/opening-book
+        run: |
+          npm ci
+          npm test
+
+      - name: Verify combined-site integration
+        run: node --test tests/opening-book-integration.test.mjs
+
+      - name: Publish opening book at /openings/
+        shell: bash
+        run: |
+          test ! -e openings
+          mv apps/opening-book/dist openings
+          rm -rf apps/opening-book
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
 

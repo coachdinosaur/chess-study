@@ -2,9 +2,13 @@
 
 ## 1. Overview
 
-Chess Lesson Study Board is a framework-free chess teaching platform served as static files. The repository combines an interactive single-page application, browser Stockfish, Lichess tablebase requests, separate legacy Endgame Puzzle and user-facing Position Study runtimes, coach-controlled student workspaces and puzzle assignments, static lesson sites with classroom presentation and a floating Teacher Board, a synchronized teacher/student Live Board, an optional AI-help panel, and optional local Python helpers.
+Chess Lesson Study Board is a chess teaching platform served as static files. The repository combines a framework-free interactive single-page application, browser Stockfish, Lichess tablebase requests, separate legacy Endgame Puzzle and user-facing Position Study runtimes, coach-controlled student workspaces and puzzle assignments, static lesson sites with classroom presentation and a floating Teacher Board, a synchronized teacher/student Live Board, a separately built Catalan opening course, an optional AI-help panel, and optional local Python helpers.
 
-There is no bundler and no application build step. Production assets are the committed HTML, CSS, JavaScript, WASM, fonts, images, and data files themselves.
+The main Study Board and lesson sites have no bundler or application build
+step. Their production assets are committed directly. Catalan Atelier is the
+one isolated build boundary: GitHub Pages compiles `apps/opening-book/` and
+mounts its generated output at `/openings/` before uploading the combined
+static artifact.
 
 The major subsystems are:
 
@@ -37,19 +41,25 @@ The major subsystems are:
    - Classroom presentation mode
    - Floating Teacher Board and embedded-board protocol
 
-5. **Live Board collaboration**
+5. **Catalan Atelier opening course**
+   - React/Vite source in `apps/opening-book/`
+   - 16 Markdown-authored Catalan chapters
+   - Browser-local Stockfish and interactive board
+   - GitHub Pages build mounted at `/openings/`
+
+6. **Live Board collaboration**
    - `live-board.html` and Live Board interaction modules
    - Supabase-backed teacher/student rooms
    - Secure student links, move locking, prepared positions, and session messages
 
-6. **Vendored browser dependencies and data**
+7. **Vendored browser dependencies and data**
    - `vendor/chess.js`
    - `vendor/stockfish/`
    - `vendor/xlsx.full.min.js`
    - `assets/openings.tsv`
    - MPChess SVG pieces
 
-7. **Optional local services**
+8. **Optional local services**
    - `local_server.py`
    - `scanner_server.py`
    - `scanner_predict.py`
@@ -142,6 +152,11 @@ chess-study/
 └── optimization-review/
 ```
 
+The buildable opening-course source is kept under `apps/opening-book/`. Its
+generated `dist/` directory is deliberately not committed or shown as a source
+subtree above; the Pages workflow mounts that output as `/openings/` only in
+the deployment artifact.
+
 The lesson inventory changes more frequently than the SPA architecture. The important boundary is that lesson pages are static documents, while the SPA is the interactive chess runtime.
 
 ---
@@ -222,6 +237,23 @@ live-board.html
     └── Supabase room state, realtime updates, and messages
 ```
 
+### Opening-course build graph
+
+```text
+apps/opening-book/
+├── app/                         React UI and chapter runtime
+├── app/content/chapters/        16 Markdown source chapters
+├── public/                      fonts, pieces, icon, Stockfish JS/WASM
+├── scripts/                     chapter checks and static-route generation
+└── tests/                       build, workflow, and Stockfish tests
+        │
+        └── npm test
+              └── dist/
+                    │
+                    └── .github/workflows/pages.yml
+                          └── deployed as /openings/
+```
+
 ### Responsibilities
 
 | Module | Responsibility |
@@ -263,6 +295,8 @@ live-board.html
 | `lessons/teacher-board-illegal-moves.mjs` | Illegal/out-of-turn demonstrations and Teacher Board take-back history in board-only mode |
 | `vendor/chess.js` | Legal moves, FEN, PGN, game termination, attack queries |
 | `vendor/stockfish/` | Browser Stockfish JavaScript and WASM variants |
+| `apps/opening-book/` | React/Vite Catalan Atelier source, Markdown chapters, local assets, and tests |
+| `.github/workflows/pages.yml` | Tests and builds Catalan Atelier, mounts `dist/` at `/openings/`, and uploads the combined static artifact |
 
 ---
 
@@ -1028,7 +1062,7 @@ Loaded lesson graphs are normalized and validated before becoming active state.
 
 ---
 
-## 21. Opening book
+## 21. Opening identification database
 
 `loadOpeningBook()` fetches `assets/openings.tsv` and creates:
 
@@ -1039,7 +1073,37 @@ Identification prefers the longest matching UCI move prefix, with EPD and PGN-he
 
 ---
 
-## 22. Static lesson architecture
+## 22. Catalan Atelier opening course
+
+Catalan Atelier is a self-contained React/Vite application whose source lives
+in `apps/opening-book/`. It owns 16 Markdown-authored Catalan chapters,
+clickable move variations, its own responsive chessboard, and a compatible
+single-threaded browser Stockfish bundle.
+
+Its deployment boundary is explicit:
+
+```text
+Pages checkout
+  → setup Node.js 22
+  → npm ci
+  → npm test (chapter checks, Vite build, static and Stockfish tests)
+  → move apps/opening-book/dist to openings/
+  → omit apps/opening-book source and node_modules from the artifact
+  → upload the combined GitHub Pages site
+```
+
+Vite's base is `/openings/`, so JavaScript, CSS, fonts, pieces, and engine
+workers resolve beneath that path. Chapter state uses URL fragments such as
+`/openings/#/chapters/1`; generated `chapters/<id>/index.html` files redirect
+direct chapter URLs to the corresponding fragment route.
+
+The opening course does not import the main Study Board runtime. The sections
+are combined through same-origin navigation links, preserving the existing
+framework-free SPA and static lesson architecture.
+
+---
+
+## 23. Static lesson architecture
 
 The static lesson files are intentionally independent of the SPA framework because there is no framework.
 
@@ -1071,7 +1135,7 @@ Static pages are printable and can use paged-media styling without requiring the
 
 ---
 
-## 23. Optional local services
+## 24. Optional local services
 
 ### Cross-origin-isolated server
 
@@ -1098,7 +1162,7 @@ The scanner is optional and not used by the GitHub Pages deployment.
 
 ---
 
-## 24. Event bindings
+## 25. Event bindings
 
 `bindEvents()` registers delegated and board-specific handlers.
 
@@ -1133,9 +1197,11 @@ The scanner is optional and not used by the GitHub Pages deployment.
 
 ---
 
-## 25. Validation and testing
+## 26. Validation and testing
 
-There is no compile step, so validation combines syntax checks, targeted tests, and browser testing.
+The main Study Board has no compile step. Its validation combines syntax
+checks, targeted tests, and browser testing; the opening course adds its own
+compiled test suite.
 
 ```powershell
 node --check app.js
@@ -1146,6 +1212,7 @@ node --check lessons/lesson-presentation.js
 node --check live-board-realtime.js
 node --check live-board-messages-v2.js
 node tools/test-puzzle-api.mjs
+npm --prefix apps/opening-book test
 git diff --check
 ```
 
@@ -1172,9 +1239,11 @@ Minimum manual matrix:
 
 ---
 
-## 26. Architectural constraints
+## 27. Architectural constraints
 
-The current design deliberately favors zero-build deployability and direct debugging. That also creates constraints:
+The main Study Board deliberately favors zero-build deployability and direct
+debugging. Catalan Atelier remains an isolated build boundary rather than
+changing that runtime architecture. These choices create constraints:
 
 - `app.js` is a large orchestration module.
 - State mutation is global and imperative.

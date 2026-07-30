@@ -1,0 +1,43 @@
+Stockfish 18 Lite single-thread WebAssembly runtime
+==================================================
+
+License
+-------
+GNU General Public License version 3. The unchanged license text is included as
+Copying.txt. Copyright and license notices in the JavaScript worker are retained
+unchanged.
+
+Official release provenance
+---------------------------
+Project: Stockfish.js
+Release: v18.0.0
+Release URL: https://github.com/nmrugg/stockfish.js/releases/tag/v18.0.0
+Corresponding source: https://github.com/nmrugg/stockfish.js/tree/v18.0.0
+Signed release commit: 31a9875
+Upstream Stockfish commit: cb3d4ee
+
+Local source provenance
+-----------------------
+Repository: https://github.com/coachdinosaur/chess-study.git
+Commit: 01c072cd4764f189a52c508ec3ec8219b518aad1
+
+Copied files
+------------
+stockfish-18-lite-single.js
+  Source path: vendor/stockfish/stockfish-18-lite-single.js
+  Bytes: 20670
+  SHA-256: 2278005057F381491F1C9BB3E44C9F5920B3A00BEF9759E33CC6582769A1F1FE
+
+stockfish-18-lite-single.wasm
+  Source path: vendor/stockfish/stockfish-18-lite-single.wasm
+  Bytes: 7295411
+  SHA-256: A8FBC05EC6920B56D7485826DCB02C5FFD2826BCBF751CF973046F237A9096F1
+
+Copying.txt
+  Source path: vendor/stockfish/Copying.txt
+  Bytes: 35821
+  SHA-256: 0B383D5A63DA644F628D99C33976EA6487ED89AAA59F0B3257992DEAC1171E6B
+
+The three files above were copied byte-for-byte without modification. Their
+filenames and adjacency are preserved because the JavaScript worker resolves
+the WebAssembly binary from its own URL.
