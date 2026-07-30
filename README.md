@@ -1,11 +1,13 @@
 # Chess Lesson Study Board
 
-A framework-free, browser-based chess teaching and study application. It combines a position editor, lesson-tree authoring, Stockfish analysis, tablebase support, practice drills, Play vs Stockfish, separate Endgame Puzzle and Position Study modes, coach-controlled student workspaces and puzzle assignments, static course lessons with classroom presentation and Teacher Board tools, a synchronized teacher/student Live Board, and an optional AI chess-help panel.
+A browser-based chess teaching and study platform. It combines a framework-free position editor, lesson-tree authoring, Stockfish analysis, tablebase support, practice drills, Play vs Stockfish, separate Endgame Puzzle and Position Study modes, coach-controlled student workspaces and puzzle assignments, static course lessons with classroom presentation and Teacher Board tools, a synchronized teacher/student Live Board, a separately built Catalan opening course, and an optional AI chess-help panel.
 
 ## Live app
 
 ```text
 https://cddigital.top/
+https://cddigital.top/lessons/
+https://cddigital.top/openings/
 ```
 
 For normal use, open the deployed site in a modern browser. No installation is required.
@@ -31,6 +33,7 @@ For local Windows setup, see [LOCAL_DEPLOYMENT.md](LOCAL_DEPLOYMENT.md).
 - Review CSV/XLSX position sets in the Position Set Builder and open or convert them into Study and Analysis lessons.
 - Identify openings from the bundled ECO/opening database.
 - Use static Pawn, Advanced Pawn, Bishop, and numbered endgame lesson pages in `lessons/`.
+- Study the 16-chapter interactive Catalan Atelier opening course at `/openings/`.
 - Present supported lessons scene by scene with Previous, Reveal, Reset, Next, Exit, keyboard shortcuts, fullscreen support, and a visible click pulse for classroom projection.
 - Open the floating Teacher Board from supported lesson pages to load Page, Start, Empty, or prepared CSV positions; set the side to move; place pieces; annotate; take back; flip; and reset.
 - Create a secure synchronized Live Board room for a teacher and student, including student-move locking, FEN and lesson-position loading, move history, and session messages.
@@ -285,6 +288,20 @@ The floating **Teacher Board** is separate from the full SPA Setup tab. Its setu
 
 `Page` and imported positions resynchronize the side-to-move selector from their FEN. The setup commands are delivered through the embedded-board `postMessage()` protocol, while `teacher-board-illegal-moves.mjs` keeps demonstration history without swallowing those commands.
 
+## Catalan opening course
+
+The Catalan Atelier source lives in `apps/opening-book/`. It is a React/Vite
+static application with 16 Markdown-authored chapters, clickable variations,
+an interactive board, and a browser-local Stockfish worker.
+
+The GitHub Pages workflow installs its locked dependencies, runs its full test
+suite, builds it with the `/openings/` base path, and places only the generated
+`dist/` output in the deployed site artifact. Generated bundles are not
+committed to the repository.
+
+Cross-navigation connects the main Study Board, the lesson index, and the
+opening course without coupling their runtimes.
+
 ## Live Board
 
 `live-board.html` is a separate synchronized teaching surface for one teacher and one student.
@@ -376,6 +393,8 @@ The floating Teacher Board also evaluates the embedded FEN after moves and posit
 | `vendor/stockfish/` | Browser-compatible Stockfish bundles |
 | `assets/openings.tsv` | Opening identification database |
 | `lessons/` | Static published lesson pages and shared lesson helpers |
+| `apps/opening-book/` | React/Vite source, Markdown chapters, tests, and local Stockfish assets for Catalan Atelier |
+| `.github/workflows/pages.yml` | Tests and builds Catalan Atelier, mounts its output at `/openings/`, and deploys the combined Pages artifact |
 
 A deeper implementation map is in [ARCHITECTURE.md](ARCHITECTURE.md).
 
@@ -406,6 +425,22 @@ The server must provide:
 ```text
 Cross-Origin-Opener-Policy: same-origin
 Cross-Origin-Embedder-Policy: require-corp
+```
+
+### Opening-course development
+
+```powershell
+cd apps/opening-book
+npm install
+npm run dev
+```
+
+Open `http://localhost:3000/openings/`. To validate the exact production
+artifact:
+
+```powershell
+npm test
+npm run preview
 ```
 
 ### Optional board scanner
@@ -449,10 +484,12 @@ node --check lessons/lesson-presentation.js
 node --check live-board-realtime.js
 node --check live-board-messages-v2.js
 node tools/test-puzzle-api.mjs
+npm --prefix apps/opening-book test
 git diff --check
 ```
 
-Because the app has no build step, browser testing remains important. Test at minimum:
+The main Study Board has no build step, while the opening course is compiled
+and tested independently. Browser testing remains important. Test at minimum:
 
 - desktop click and drag moves
 - mobile tap and pointer drag moves
