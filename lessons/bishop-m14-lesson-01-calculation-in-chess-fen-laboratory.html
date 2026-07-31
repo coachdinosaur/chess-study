@@ -8,7 +8,7 @@
   <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
   <link rel="apple-touch-icon" href="../assets/pieces/app_icon.png">
   <link rel="stylesheet" href="endgame-lesson.css?v=board-bg">
-  <link rel="stylesheet" href="pawn-teacher-board.css?v=20260725-teacher-board-setup1">
+  <link rel="stylesheet" href="pawn-teacher-board.css?v=20260731-teacher-board-game-status1">
   <style>
     .module-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,520px);gap:clamp(20px,4vw,46px);align-items:center}
     .hero-board-card{margin:0;padding:clamp(14px,2vw,22px);border:1px solid var(--panel-border);border-radius:20px;background:var(--panel-bg);box-shadow:0 22px 60px rgba(0,0,0,.22)}
@@ -74,7 +74,7 @@
   </main>
   <script>const root=document.documentElement;const themeToggle=document.getElementById('themeToggle');const storedTheme=localStorage.getItem('chess-lesson-theme');if(storedTheme==='light'||storedTheme==='dark')root.dataset.theme=storedTheme;themeToggle?.addEventListener('click',()=>{root.dataset.theme=root.dataset.theme==='dark'?'light':'dark';localStorage.setItem('chess-lesson-theme',root.dataset.theme)});</script>
   <script src="endgame-lesson.js?v=20260721-bishop-captured-half2" defer></script>
-  <script src="pawn-teacher-board.js?v=20260725-teacher-board-setup1" defer></script>
+  <script src="pawn-teacher-board.js?v=20260731-teacher-board-game-status1" defer></script>
   <script src="lesson-presentation.js?v=20260725-presentation-click-pulse-v5" defer></script>
 </body>
 </html>

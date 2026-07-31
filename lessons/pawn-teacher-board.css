@@ -154,6 +154,20 @@
   color: #ffe5aa;
 }
 
+[data-theme="light"] .teacher-board-game-status.is-checkmate {
+  border-color: #2f7964;
+  color: #123f34;
+  background: #e5f6ef;
+  box-shadow: 0 8px 22px rgba(17, 28, 35, .2);
+}
+
+[data-theme="light"] .teacher-board-game-status.is-stalemate {
+  border-color: #9a6700;
+  color: #654000;
+  background: #fff2d2;
+  box-shadow: 0 8px 22px rgba(17, 28, 35, .2);
+}
+
 .teacher-board-tools {
   position: relative;
   z-index: 4;

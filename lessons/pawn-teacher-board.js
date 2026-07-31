@@ -4,7 +4,8 @@
   var DEFAULT_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
   var STORAGE_PREFIX = "teacher-board-lesson-csv-v1:";
   var STORAGE_VERSION = 1;
-  var TEACHER_CACHE_VERSION = "20260725-teacher-board-setup1";
+  var GAME_STATUS_STORAGE_KEY = "teacher-board-game-status-enabled-v1";
+  var TEACHER_CACHE_VERSION = "20260731-teacher-board-game-status1";
   var PIECES = ["K", "Q", "R", "B", "N", "P"];
   var PIECE_LABELS = {
     K: "King",
@@ -27,6 +28,7 @@
   var teacherGameStatusObserver = null;
   var teacherGameStatusTimer = null;
   var teacherGameStatusKey = "";
+  var teacherGameStatusEnabled = true;
   var chessModulePromise = import("../vendor/chess.js").catch(function (error) {
     console.warn("Teacher board game-status detection is unavailable.", error);
     return null;
@@ -260,8 +262,27 @@
     status.textContent = "";
   }
 
-  function renderTeacherGameStatus(kind, message, fen) {
+  function syncTeacherGameStatusControl() {
     if (!panel) {
+      return;
+    }
+    var button = panel.querySelector('[data-teacher-action="toggle-game-status"]');
+    if (!button) {
+      return;
+    }
+    var actionLabel = teacherGameStatusEnabled
+      ? "Turn off checkmate and stalemate messages"
+      : "Turn on checkmate and stalemate messages";
+    button.textContent = "Result: " + (teacherGameStatusEnabled ? "On" : "Off");
+    button.classList.toggle("is-active", teacherGameStatusEnabled);
+    button.setAttribute("aria-pressed", teacherGameStatusEnabled ? "true" : "false");
+    button.setAttribute("aria-label", actionLabel);
+    button.setAttribute("title", actionLabel);
+  }
+
+  function renderTeacherGameStatus(kind, message, fen) {
+    if (!teacherGameStatusEnabled || !panel) {
+      clearTeacherGameStatus();
       return;
     }
     var nextKey = kind + "|" + fen;
@@ -279,7 +300,7 @@
   }
 
   async function evaluateTeacherGameStatus() {
-    if (!iframe || !iframe.contentDocument) {
+    if (!teacherGameStatusEnabled || !iframe || !iframe.contentDocument) {
       clearTeacherGameStatus();
       return;
     }
@@ -291,7 +312,7 @@
     }
 
     var chessModule = await chessModulePromise;
-    if (!chessModule || typeof chessModule.Chess !== "function") {
+    if (!teacherGameStatusEnabled || !chessModule || typeof chessModule.Chess !== "function") {
       clearTeacherGameStatus();
       return;
     }
@@ -328,6 +349,10 @@
   }
 
   function scheduleTeacherGameStatusCheck() {
+    if (!teacherGameStatusEnabled) {
+      clearTeacherGameStatus();
+      return;
+    }
     if (teacherGameStatusTimer) {
       window.clearTimeout(teacherGameStatusTimer);
     }
@@ -350,6 +375,10 @@
 
   function observeTeacherGameStatus() {
     disconnectTeacherGameStatusObserver();
+    if (!teacherGameStatusEnabled) {
+      clearTeacherGameStatus();
+      return;
+    }
     if (!iframe || !iframe.contentDocument || !iframe.contentDocument.documentElement) {
       return;
     }
@@ -539,6 +568,45 @@
       return window.localStorage;
     } catch (error) {
       return null;
+    }
+  }
+
+  function restoreTeacherGameStatusPreference() {
+    var storage = safeLocalStorage();
+    if (!storage) {
+      return;
+    }
+    try {
+      teacherGameStatusEnabled = storage.getItem(GAME_STATUS_STORAGE_KEY) !== "off";
+    } catch (error) {
+      teacherGameStatusEnabled = true;
+    }
+  }
+
+  function persistTeacherGameStatusPreference() {
+    var storage = safeLocalStorage();
+    if (!storage) {
+      return false;
+    }
+    try {
+      storage.setItem(GAME_STATUS_STORAGE_KEY, teacherGameStatusEnabled ? "on" : "off");
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function setTeacherGameStatusEnabled(enabled) {
+    teacherGameStatusEnabled = Boolean(enabled);
+    persistTeacherGameStatusPreference();
+    syncTeacherGameStatusControl();
+    if (!teacherGameStatusEnabled) {
+      disconnectTeacherGameStatusObserver();
+      clearTeacherGameStatus();
+      return;
+    }
+    if (iframeReady) {
+      observeTeacherGameStatus();
     }
   }
 
@@ -882,6 +950,7 @@
       '  <button type="button" class="teacher-board-tool" data-teacher-action="annotate" aria-pressed="false" title="Keep marks while left-clicking. Right-click marks squares. Alt+right-drag draws arrows.">Annotate</button>',
       '  <button type="button" class="teacher-board-tool" data-teacher-action="take-back">Take Back</button>',
       '  <button type="button" class="teacher-board-tool" data-teacher-action="clear-marks">Clear marks</button>',
+      '  <button type="button" class="teacher-board-tool teacher-board-result-toggle" data-teacher-action="toggle-game-status" aria-pressed="' + (teacherGameStatusEnabled ? "true" : "false") + '">Result: ' + (teacherGameStatusEnabled ? "On" : "Off") + '</button>',
       '  <button type="button" class="teacher-board-tool" data-teacher-action="flip">Flip</button>',
       '  <button type="button" class="teacher-board-tool" data-teacher-action="reset">Reset</button>',
       '</div>',
@@ -895,6 +964,7 @@
     panel.addEventListener("click", handlePanelClick);
     panel.addEventListener("contextmenu", handlePanelContextMenu, true);
     document.body.appendChild(panel);
+    syncTeacherGameStatusControl();
     syncLessonMenuUi();
   }
 
@@ -1411,6 +1481,10 @@
       setMaximized(!maximized);
       return;
     }
+    if (action === "toggle-game-status") {
+      setTeacherGameStatusEnabled(!teacherGameStatusEnabled);
+      return;
+    }
     if (action === "setup") {
       lessonMenuOpen = false;
       if (!setupOpen && annotateOpen) {
@@ -1544,6 +1618,7 @@
     actions.insertBefore(button, actions.firstElementChild ? actions.firstElementChild.nextSibling : null);
   }
 
+  restoreTeacherGameStatusPreference();
   restoreImportedLesson();
   window.addEventListener("message", handleTeacherBoardMessage);
   document.addEventListener("click", handleDocumentClick);

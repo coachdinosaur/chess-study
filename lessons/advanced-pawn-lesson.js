@@ -22,14 +22,14 @@
     if (!document.querySelector('link[data-advanced-pawn-teacher-board]')) {
       const stylesheet = document.createElement('link');
       stylesheet.rel = 'stylesheet';
-      stylesheet.href = 'pawn-teacher-board.css?v=20260725-teacher-board-setup1';
+      stylesheet.href = 'pawn-teacher-board.css?v=20260731-teacher-board-game-status1';
       stylesheet.setAttribute('data-advanced-pawn-teacher-board', '');
       document.head.appendChild(stylesheet);
     }
 
     if (!document.querySelector('script[data-advanced-pawn-teacher-board]')) {
       const script = document.createElement('script');
-      script.src = 'pawn-teacher-board.js?v=20260725-teacher-board-setup1';
+      script.src = 'pawn-teacher-board.js?v=20260731-teacher-board-game-status1';
       script.setAttribute('data-advanced-pawn-teacher-board', '');
       document.body.appendChild(script);
     }
