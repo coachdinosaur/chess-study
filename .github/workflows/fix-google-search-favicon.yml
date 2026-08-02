@@ -4,15 +4,23 @@ on:
   push:
     branches:
       - agent/fix-google-search-favicon
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
 
 permissions:
   contents: write
+
+concurrency:
+  group: fix-google-search-favicon
+  cancel-in-progress: false
 
 jobs:
   repair-favicon:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out branch
+      - name: Check out repair branch
         uses: actions/checkout@v4
         with:
           ref: agent/fix-google-search-favicon
@@ -70,21 +78,22 @@ jobs:
           <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png">
           <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">'''
 
-          if old not in html:
+          if old in html:
+              html = html.replace(old, new, 1)
+              index_path.write_text(html, encoding='utf-8')
+          elif new not in html:
               raise SystemExit('Expected favicon markup was not found in index.html')
 
-          index_path.write_text(html.replace(old, new, 1), encoding='utf-8')
-
-          for path in [
-              'favicon.ico',
-              'favicon-48x48.png',
-              'favicon-96x96.png',
-              'favicon-512x512.png',
-              'apple-touch-icon.png',
-          ]:
+          expected_sizes = {
+              'favicon-48x48.png': (48, 48),
+              'favicon-96x96.png': (96, 96),
+              'favicon-512x512.png': (512, 512),
+              'apple-touch-icon.png': (180, 180),
+          }
+          for path, expected in expected_sizes.items():
               image = Image.open(path)
-              if image.width != image.height:
-                  raise SystemExit(f'{path} is not square: {image.size}')
+              if image.size != expected:
+                  raise SystemExit(f'{path} has {image.size}, expected {expected}')
           PY
 
       - name: Commit completed favicon fix
@@ -93,7 +102,11 @@ jobs:
           rm -f .github/workflows/fix-google-search-favicon.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html favicon.ico favicon-48x48.png favicon-96x96.png favicon-512x512.png apple-touch-icon.png .github/workflows/fix-google-search-favicon.yml
+          git add -A
           git diff --cached --check
+          if git diff --cached --quiet; then
+            echo "No changes remain to commit."
+            exit 0
+          fi
           git commit -m "Fix Google Search favicon"
           git push origin HEAD:agent/fix-google-search-favicon
