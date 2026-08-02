@@ -1,0 +1,105 @@
+name: Apply personal app identity
+
+on:
+  push:
+    branches:
+      - agent/add-personal-app-identity
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-personal-app-identity
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out identity branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/add-personal-app-identity
+          fetch-depth: 0
+
+      - name: Update homepage identity
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          index_path = Path("index.html")
+          html = index_path.read_text(encoding="utf-8")
+
+          replacements = [
+              (
+                  '<meta name="description" content="Free interactive chess board with lessons, puzzles, analysis tools, clocks, and teaching features.">',
+                  '<meta name="description" content="CD Digital Chess is an independently developed personal web app for interactive chess study, lessons, puzzles, position analysis, and coaching tools.">',
+              ),
+              (
+                  '<meta property="og:description" content="Interactive chess lessons, puzzles, analysis, and teaching tools.">',
+                  '<meta property="og:description" content="An independently developed personal web app for chess study, lessons, puzzles, analysis, and coaching tools.">',
+              ),
+              (
+                  '<meta name="twitter:description" content="Interactive chess lessons, puzzles, analysis, and teaching tools.">',
+                  '<meta name="twitter:description" content="An independently developed personal web app for chess study, lessons, puzzles, analysis, and coaching tools.">',
+              ),
+              (
+                  '<p class="site-intro-description">Build positions, study lessons, solve puzzles, and analyze games with browser-based chess tools.</p>',
+                  '<p class="site-intro-description">CD Digital Chess is an independently developed personal web app for chess study and training. Build positions, study lessons, solve puzzles, analyze games, and use coaching tools in your browser.</p>',
+              ),
+          ]
+
+          for old, new in replacements:
+              if new in html:
+                  continue
+              if old not in html:
+                  raise SystemExit(f"Expected homepage text was not found: {old}")
+              html = html.replace(old, new, 1)
+
+          opening_link = '              <a class="site-intro-button" href="./openings/">Explore openings</a>\n'
+          about_link = '              <a class="site-intro-button" href="./about/">About the app</a>\n'
+          if about_link not in html:
+              if opening_link not in html:
+                  raise SystemExit("Expected openings navigation link was not found")
+              html = html.replace(opening_link, opening_link + about_link, 1)
+
+          required_fragments = [
+              "independently developed personal web app",
+              'href="./about/"',
+              "coaching tools in your browser",
+          ]
+          for fragment in required_fragments:
+              if fragment not in html:
+                  raise SystemExit(f"Homepage identity validation failed: {fragment}")
+
+          index_path.write_text(html, encoding="utf-8")
+          PY
+
+      - name: Validate About page
+        shell: bash
+        run: |
+          test -f about/index.html
+          grep -Fq "personal chess study web app" about/index.html
+          grep -Fq 'rel="canonical" href="https://cddigital.top/about/"' about/index.html
+          grep -Fq 'href="/"' about/index.html
+          git diff --check
+
+      - name: Commit completed identity update
+        shell: bash
+        run: |
+          rm -f .github/workflows/apply-personal-app-identity.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo "No changes remain to commit."
+            exit 0
+          fi
+          git commit -m "Clarify personal app identity and add About page"
+          git push origin HEAD:agent/add-personal-app-identity
