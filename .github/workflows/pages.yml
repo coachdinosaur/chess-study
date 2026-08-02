@@ -43,6 +43,9 @@ jobs:
           node --test tests/opening-book-integration.test.mjs
           node --test tests/endgame-trainer-integration.test.mjs
 
+      - name: Prepare Google Search favicon
+        run: python tools/prepare_search_favicon.py
+
       - name: Publish opening book at /openings/
         shell: bash
         run: |
