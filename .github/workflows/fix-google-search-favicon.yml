@@ -1,0 +1,99 @@
+name: Fix Google Search favicon
+
+on:
+  push:
+    branches:
+      - agent/fix-google-search-favicon
+
+permissions:
+  contents: write
+
+jobs:
+  repair-favicon:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/fix-google-search-favicon
+          fetch-depth: 0
+
+      - name: Install image tooling
+        run: python -m pip install --disable-pip-version-check pillow
+
+      - name: Generate square favicon files and update homepage
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+
+          source_path = Path('assets/pieces/app_icon.png')
+          source = Image.open(source_path).convert('RGBA')
+
+          canvas_size = 512
+          padding = 28
+          max_content = canvas_size - (padding * 2)
+          scale = min(max_content / source.width, max_content / source.height)
+          resized = source.resize(
+              (max(1, round(source.width * scale)), max(1, round(source.height * scale))),
+              Image.Resampling.LANCZOS,
+          )
+
+          canvas = Image.new('RGBA', (canvas_size, canvas_size), (0, 0, 0, 0))
+          offset = ((canvas_size - resized.width) // 2, (canvas_size - resized.height) // 2)
+          canvas.alpha_composite(resized, offset)
+
+          canvas.resize((48, 48), Image.Resampling.LANCZOS).save(
+              'favicon-48x48.png', optimize=True
+          )
+          canvas.resize((96, 96), Image.Resampling.LANCZOS).save(
+              'favicon-96x96.png', optimize=True
+          )
+          canvas.save('favicon-512x512.png', optimize=True)
+          canvas.resize((180, 180), Image.Resampling.LANCZOS).save(
+              'apple-touch-icon.png', optimize=True
+          )
+          canvas.save(
+              'favicon.ico',
+              format='ICO',
+              sizes=[(16, 16), (32, 32), (48, 48)],
+          )
+
+          index_path = Path('index.html')
+          html = index_path.read_text(encoding='utf-8')
+          old = '''  <link rel="icon" type="image/png" href="./assets/pieces/app_icon.png">
+          <link rel="apple-touch-icon" href="./assets/pieces/app_icon.png">'''
+          new = '''  <link rel="icon" href="/favicon.ico" sizes="any">
+          <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
+          <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+          <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png">
+          <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">'''
+
+          if old not in html:
+              raise SystemExit('Expected favicon markup was not found in index.html')
+
+          index_path.write_text(html.replace(old, new, 1), encoding='utf-8')
+
+          for path in [
+              'favicon.ico',
+              'favicon-48x48.png',
+              'favicon-96x96.png',
+              'favicon-512x512.png',
+              'apple-touch-icon.png',
+          ]:
+              image = Image.open(path)
+              if image.width != image.height:
+                  raise SystemExit(f'{path} is not square: {image.size}')
+          PY
+
+      - name: Commit completed favicon fix
+        shell: bash
+        run: |
+          rm -f .github/workflows/fix-google-search-favicon.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html favicon.ico favicon-48x48.png favicon-96x96.png favicon-512x512.png apple-touch-icon.png .github/workflows/fix-google-search-favicon.yml
+          git diff --cached --check
+          git commit -m "Fix Google Search favicon"
+          git push origin HEAD:agent/fix-google-search-favicon
