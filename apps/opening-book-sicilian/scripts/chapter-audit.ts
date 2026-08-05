@@ -11,6 +11,7 @@ export interface ChapterAuditOptions {
   chapter: number;
   filename?: string;
   expectedPages?: number;
+  expectedFirstPage?: number;
   expectedDiagrams?: number;
   strictMoves?: boolean;
 }
@@ -115,7 +116,9 @@ function structuralAudit(markdown: string, options: ChapterAuditOptions, errors:
   const pageMatches = [...markdown.matchAll(EXACT_PAGE_HEADING)];
   const pages = pageMatches.map((match) => Number(match[1]));
   if (!pages.length) errors.push("Expected at least one exact ## Page N boundary.");
-  if (pages[0] !== 1) errors.push(`The first page boundary must be ## Page 1, found ${pages[0] ?? "none"}.`);
+  if (options.expectedFirstPage !== undefined && pages[0] !== options.expectedFirstPage) {
+    errors.push(`Expected the first page boundary to be ## Page ${options.expectedFirstPage}, found ${pages[0] ?? "none"}.`);
+  }
   for (let index = 1; index < pages.length; index++) {
     if (pages[index] !== pages[index - 1] + 1) errors.push(`Page boundaries are not contiguous at ${pages[index - 1]} -> ${pages[index]}.`);
   }
@@ -123,7 +126,7 @@ function structuralAudit(markdown: string, options: ChapterAuditOptions, errors:
 
   if (pageMatches.length) {
     const prelude = markdown.slice(0, pageMatches[0].index).replace(/^# .+$/m, "").trim();
-    if (prelude) errors.push("Only the chapter title may appear before ## Page 1.");
+    if (prelude) errors.push("Only the chapter title may appear before the first ## Page N boundary.");
   }
 
   const visibleFens = [...markdown.matchAll(VISIBLE_FEN)].map((match) => match[1].trim());
@@ -281,6 +284,7 @@ function parseCli(argv: string[]): { markdownPath: string; options: ChapterAudit
       chapter: parseInteger(values.get("--chapter"), "--chapter"),
       filename: path.basename(markdownPath),
       expectedPages: values.has("--expected-pages") ? parseInteger(values.get("--expected-pages"), "--expected-pages") : undefined,
+      expectedFirstPage: values.has("--expected-first-page") ? parseInteger(values.get("--expected-first-page"), "--expected-first-page") : undefined,
       expectedDiagrams: values.has("--expected-diagrams") ? parseInteger(values.get("--expected-diagrams"), "--expected-diagrams") : undefined,
       strictMoves,
     },
