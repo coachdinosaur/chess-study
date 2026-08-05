@@ -5,7 +5,7 @@ export const CHAPTER_IDS = ["1"] as const;
 export type ChapterId = (typeof CHAPTER_IDS)[number];
 
 export const CHAPTER_SUMMARIES = [
-  {"id":"1","label":"Chapter 1","title":"Chapter 1: Rare Options","pageCount":14},
+  {"id":"1","label":"Chapter 1","title":"Chapter 1: Rare Options","pageCount":17},
 ] as const satisfies readonly ChapterSummary[];
 
 export function isChapterId(id: string): id is ChapterId {
