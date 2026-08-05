@@ -41,17 +41,17 @@ jobs:
           start = text.index('  setAnchor(')
           end = text.index('\n  private indexRoot', start)
           method = text[start:end]
-          old_reset = '    this.resetHistory(root);'
-          new_reset = '''    this.remember(root);
+          method = method.replace(
+              '    this.resetHistory(root);',
+              '''    this.remember(root);
               if (root.fen !== START_FEN) {
                 this.remember({ fen: START_FEN, steps: [{ fen: START_FEN, label: "Initial position" }] });
-              }'''
-          if old_reset not in method:
-              raise SystemExit('setAnchor reset call not found')
-          method = method.replace(old_reset, new_reset, 1)
+              }''',
+              1,
+          )
           text = text[:start] + method + text[end:]
 
-          method_marker = '  private resolveMoveText(text: string): MarkdownMoveToken[] {\n'
+          marker = '  private resolveMoveText(text: string): MarkdownMoveToken[] {\n'
           helper = '''  private continuationScore(
               moveText: string,
               sourceText: string,
@@ -69,7 +69,6 @@ jobs:
                 const tokenDepth = Math.max(0, baseDepth + parenDepthDeltaAt(moveText, at));
                 if (tokenDepth < depth) break;
                 if (tokenDepth > depth) continue;
-
                 const display = match[0].trim();
                 if (!display || isLikelyProseSquare(sourceText, at, display) || isCoordinateMoveReference(sourceText, at)) continue;
                 if (!moveNumberMatchesFen(display, currentFen)) break;
@@ -82,30 +81,17 @@ jobs:
             }
 
           '''
-          if method_marker not in text:
+          if marker not in text:
               raise SystemExit('resolveMoveText marker not found')
-          text = text.replace(method_marker, helper + method_marker, 1)
+          text = text.replace(marker, helper + marker, 1)
 
-          old_loop = '''    for (const match of moveText.matchAll(SOURCE_MOVE_TOKEN)) {
-              const at = match.index ?? 0;
-          '''
-          new_loop = '''    const matches = [...moveText.matchAll(SOURCE_MOVE_TOKEN)];
-              for (let matchIndex = 0; matchIndex < matches.length; matchIndex++) {
-                const match = matches[matchIndex];
-                const at = match.index ?? 0;
-          '''
-          if old_loop not in text:
+          loop = '    for (const match of moveText.matchAll(SOURCE_MOVE_TOKEN)) {'
+          if loop not in text:
               raise SystemExit('move loop not found')
-          text = text.replace(old_loop, new_loop, 1)
+          text = text.replace(loop, '    const matches = [...moveText.matchAll(SOURCE_MOVE_TOKEN)];\n    for (let matchIndex = 0; matchIndex < matches.length; matchIndex++) {\n      const match = matches[matchIndex];', 1)
 
-          old_selection = '''      const activeMatch = legalCandidates.find((candidate) => candidate.before.fen === active.fen);
-              if (activeMatch) {
-                ({ before, resolved } = activeMatch);
-              } else {
-                const distinct = legalCandidates.filter((candidate, index, all) => all.findIndex((other) => other.before.fen === candidate.before.fen) === index);
-                if (distinct.length === 1) ({ before, resolved } = distinct[0]);
-              }
-          '''
+          selection_start = text.index('      const activeMatch = legalCandidates.find(')
+          selection_end = text.index('\n\n      if (resolved && before)', selection_start)
           new_selection = '''      const distinct = legalCandidates.filter((candidate, index, all) => all.findIndex((other) => other.before.fen === candidate.before.fen) === index);
               const activeMatch = distinct.find((candidate) => candidate.before.fen === active.fen);
               if (distinct.length === 1) {
@@ -122,11 +108,8 @@ jobs:
                 } else if (activeMatch) {
                   ({ before, resolved } = activeMatch);
                 }
-              }
-          '''
-          if old_selection not in text:
-              raise SystemExit('candidate selection block not found')
-          text = text.replace(old_selection, new_selection, 1)
+              }'''
+          text = text[:selection_start] + new_selection + text[selection_end:]
           resolver.write_text(text, encoding='utf-8')
 
           chapter = Path('app/content/chapters/chapter-1-sicilian.md')
