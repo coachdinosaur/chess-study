@@ -1,0 +1,59 @@
+name: Sicilian navigation diagnostic
+
+on:
+  push:
+    branches:
+      - wip/sicilian-20260805-153931
+    paths:
+      - .github/workflows/sicilian-navigation-diagnostic.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/opening-book-sicilian/package-lock.json
+
+      - name: Install PDF tools
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+
+      - name: Extract authoritative PDF text
+        run: pdftotext -layout apps/01_Rare_Options.pdf sicilian-pdf.txt
+
+      - name: Install Sicilian dependencies
+        working-directory: apps/opening-book-sicilian
+        run: npm ci
+
+      - name: Build and test Sicilian
+        working-directory: apps/opening-book-sicilian
+        run: |
+          npm test
+          npm run build
+
+      - name: Generate navigation audit
+        working-directory: apps/opening-book-sicilian
+        shell: bash
+        run: |
+          set +e
+          npm run chapters:audit > ../../sicilian-navigation-audit.txt 2>&1
+          status=$?
+          echo "audit_exit_code=$status" >> ../../sicilian-navigation-audit.txt
+          exit 0
+
+      - name: Upload diagnostic report
+        uses: actions/upload-artifact@v4
+        with:
+          name: sicilian-navigation-diagnostic
+          path: |
+            sicilian-pdf.txt
+            sicilian-navigation-audit.txt
+          if-no-files-found: error
