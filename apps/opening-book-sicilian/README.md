@@ -82,5 +82,5 @@ Use the chapter workflow commands after editing:
 npm run chapters:status
 npm run chapters:sync
 npm run chapters:check
-npm run chapters:audit -- --chapter 1
+npm run chapters:audit -- --chapter 1 --markdown app/content/chapters/chapter-1-sicilian.md --expected-first-page 7 --expected-pages 17
 ```
