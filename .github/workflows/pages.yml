@@ -30,7 +30,9 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: apps/opening-book/package-lock.json
+          cache-dependency-path: |
+            apps/opening-book/package-lock.json
+            apps/opening-book-sicilian/package-lock.json
 
       - name: Test and build opening book
         working-directory: apps/opening-book
