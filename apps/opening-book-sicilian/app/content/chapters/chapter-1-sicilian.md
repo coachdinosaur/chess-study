@@ -567,6 +567,8 @@ It is a traditional idea to meet similar flank attacks by fianchettoing the king
 We will check the dubious F1) 4.c3?! before moving on to the main line with F2) 4.Nc3!.
 
 
+## Page 21
+
 <!-- FEN: rnbqk1nr/pp1pppbp/6p1/2p5/1P2P3/P7/2PP1PPP/RNBQKBNR w KQkq - 1 4 -->
 F1) 4.c3?!
 <!-- FEN: rnbqk1nr/pp1pppbp/6p1/2p5/1P2P3/P7/2PP1PPP/RNBQKBNR w KQkq - 1 4 -->
@@ -615,6 +617,8 @@ White has made too many pawn moves, which allows Black's better-developed army t
 17...Qe6 18.Qxe6 fxe6∓
 
 
+## Page 22
+
 <!-- FEN: rnbqk1nr/pp1pppbp/6p1/2p5/1P2P3/P7/2PP1PPP/RNBQKBNR w KQkq - 1 4 -->
 F2) 4.Nc3!
 <!-- FEN: rnbqk1nr/pp1pppbp/6p1/2p5/1P2P3/P7/2PP1PPP/RNBQKBNR w KQkq - 1 4 -->
@@ -643,6 +647,9 @@ Probably the best way to sacrifice the b4-pawn.
 
 <!-- FEN: r1bqk1nr/p2pppbp/1pn3p1/2p5/1P2P3/P1N3P1/2PP1P1P/R1BQKBNR w KQkq - 1 6 -->
 After 6.Bc4 e6! the bishop on c4 bites on granite! For example: 7.0-0 Nge7 8.d4?! (8.bxc5 bxc5 9.Rb1 is preferable) 8...cxd4 9.Nb5 0-0 10.Nbxd4 Nxd4 11.Nxd4 Bb7∓ Black had the better pawn structure, as well as the more harmonious development, in Dobrov - Aroshidze, Kavala 2004.
+
+
+## Page 23
 
 <!-- FEN: r1bqk1nr/p2pppbp/1pn3p1/2p5/1PB1P3/P1N3P1/2PP1P1P/R1BQK1NR b KQkq - 2 6 -->
 6...e5!
