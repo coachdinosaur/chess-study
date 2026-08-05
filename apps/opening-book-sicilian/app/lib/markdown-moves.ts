@@ -86,7 +86,10 @@ export class MarkdownMoveResolver {
     this.inlineReturnStates = [];
     this.inlineBranchStarts = [];
     this.inlineLastBefore = root;
-    this.resetHistory(root);
+    this.remember(root);
+    if (root.fen !== START_FEN) {
+      this.remember({ fen: START_FEN, steps: [{ fen: START_FEN, label: "Initial position" }] });
+    }
     return { steps: root.steps, index: 0 };
   }
 
@@ -190,6 +193,34 @@ export class MarkdownMoveResolver {
     return this.resolveMoveText(text);
   }
 
+  private continuationScore(
+    moveText: string,
+    sourceText: string,
+    matches: RegExpMatchArray[],
+    startIndex: number,
+    fen: string,
+    depth: number,
+    baseDepth: number,
+  ): number {
+    let currentFen = fen;
+    let score = 0;
+    for (let index = startIndex + 1; index < matches.length; index++) {
+      const match = matches[index];
+      const at = match.index ?? 0;
+      const tokenDepth = Math.max(0, baseDepth + parenDepthDeltaAt(moveText, at));
+      if (tokenDepth < depth) break;
+      if (tokenDepth > depth) continue;
+      const display = match[0].trim();
+      if (!display || isLikelyProseSquare(sourceText, at, display) || isCoordinateMoveReference(sourceText, at)) continue;
+      if (!moveNumberMatchesFen(display, currentFen)) break;
+      const move = this.resolveFrom(currentFen, display);
+      if (!move) break;
+      currentFen = move.fen;
+      score++;
+    }
+    return score;
+  }
+
   private resolveMoveText(text: string): MarkdownMoveToken[] {
     const tokens: MarkdownMoveToken[] = [];
     const forcePlain = /(?:SOURCE MOVE REFERENCE|NON-NAVIGATION)/.test(text);
@@ -204,7 +235,9 @@ export class MarkdownMoveResolver {
     const returnStates = this.inlineReturnStates;
     const branchStarts = this.inlineBranchStarts;
 
-    for (const match of moveText.matchAll(SOURCE_MOVE_TOKEN)) {
+    const matches = [...moveText.matchAll(SOURCE_MOVE_TOKEN)];
+    for (let matchIndex = 0; matchIndex < matches.length; matchIndex++) {
+      const match = matches[matchIndex];
       const at = match.index ?? 0;
       const nextDepth = Math.max(0, baseDepth + parenDepthDeltaAt(moveText, at));
       while (nextDepth > depth) {
@@ -263,13 +296,23 @@ export class MarkdownMoveResolver {
         }
       }
 
-      const activeMatch = legalCandidates.find((candidate) => candidate.before.fen === active.fen);
-      if (activeMatch) {
+      const distinct = legalCandidates.filter((candidate, index, all) => all.findIndex((other) => other.before.fen === candidate.before.fen) === index);
+    const activeMatch = distinct.find((candidate) => candidate.before.fen === active.fen);
+    if (distinct.length === 1) {
+      ({ before, resolved } = distinct[0]);
+    } else if (distinct.length > 1) {
+      const scored = distinct.map((candidate) => ({
+        candidate,
+        score: this.continuationScore(moveText, text, matches, matchIndex, candidate.resolved.fen, nextDepth, baseDepth),
+      }));
+      const bestScore = Math.max(...scored.map((entry) => entry.score));
+      const best = scored.filter((entry) => entry.score === bestScore);
+      if (bestScore > 0 && best.length === 1) {
+        ({ before, resolved } = best[0].candidate);
+      } else if (activeMatch) {
         ({ before, resolved } = activeMatch);
-      } else {
-        const distinct = legalCandidates.filter((candidate, index, all) => all.findIndex((other) => other.before.fen === candidate.before.fen) === index);
-        if (distinct.length === 1) ({ before, resolved } = distinct[0]);
       }
+    }
 
       if (resolved && before) {
         if (!isolatedUnnumberedMention) {
