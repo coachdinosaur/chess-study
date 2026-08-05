@@ -81,6 +81,14 @@ jobs:
           import assert from 'node:assert/strict';
           import { MarkdownMoveResolver } from './app/lib/markdown-moves.ts';
 
+          function expectNavigable(tokens, displays, context) {
+            for (const display of displays) {
+              const token = tokens.find((candidate) => candidate.display === display);
+              assert.ok(token, `Missing ${display} in ${context}.`);
+              assert.ok(token.navigation, `${display} is not navigable in ${context}.`);
+            }
+          }
+
           const alternatives = new MarkdownMoveResolver();
           alternatives.setAnchor(
             'rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPPNPPP/RNBQKB1R b KQkq - 1 2',
@@ -89,9 +97,10 @@ jobs:
           const dilemma = alternatives.resolveText(
             'White is trying to postpone d2-d4: (2...Nc6 runs into 3.d4), while (2...d6 3.Nbc3 Nf6 4.g3 could lead to a Closed Sicilian with 4...e6).',
           );
-          assert.ok(
-            dilemma.every((token) => token.navigation),
-            'Both second-move alternatives must be independently navigable.',
+          expectNavigable(
+            dilemma,
+            ['2...Nc6', '3.d4', '2...d6', '3.Nbc3', 'Nf6', '4.g3', '4...e6'],
+            'the Najdorf-dilemma passage',
           );
 
           const c4Line = new MarkdownMoveResolver();
@@ -105,9 +114,14 @@ jobs:
             ...c4Line.resolveText('17.Nd2 Rb8-+)'),
             ...c4Line.resolveText('14...Qxc6 15.0-0 a5 16.Rc1 Qd6+'),
           ];
-          assert.ok(
-            tokens.every((token) => token.navigation),
-            'The parenthetical sideline must return to the position after 14.c6.',
+          expectNavigable(
+            tokens,
+            [
+              '11.Nxf6+', 'Qxf6', '12.Ng3', 'Ne5!', '13.Bd3', 'b6!', '14.c6',
+              '14.0-0?', 'bxc5', '15.Re1', 'c4', '16.Bf1', 'd3', '17.Nd2', 'Rb8',
+              '14...Qxc6', '15.0-0', 'a5', '16.Rc1', 'Qd6+',
+            ],
+            'the 14.c6 variation and its parenthetical sideline',
           );
           NODE
 
