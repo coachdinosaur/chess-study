@@ -44,7 +44,13 @@ jobs:
         shell: bash
         run: |
           set +e
-          npm run chapters:audit > ../../sicilian-navigation-audit.txt 2>&1
+          npm run chapters:audit -- \
+            --markdown app/content/chapters/chapter-1-sicilian.md \
+            --chapter 1 \
+            --expected-pages 17 \
+            --expected-first-page 7 \
+            --strict-moves \
+            > ../../sicilian-navigation-audit.txt 2>&1
           status=$?
           echo "audit_exit_code=$status" >> ../../sicilian-navigation-audit.txt
           exit 0
