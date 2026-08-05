@@ -47,7 +47,7 @@ jobs:
           )
           corrected_branch = (
               'Weaker is 11.Nxf6+ Qxf6 12.Ng3 Ne5! 13.Bd3 b6! 14.c6 '
-              '(14.0-0? bxc5 15.Re1 c4 16.Bf1 d3 17.Nd2 Rb8-+ was simply lost for White '
+              '(14.0-0? bxc5 15.Re1 c4 16.Bf1 d3 17.Qd2 Rb8-+ was simply lost for White '
               'in Eisenbeiser - Fluvia Poyatos, Barcelona 2007) '
               '14...Qxc6 15.0-0 a5 16.Rc1 Qd6+ when Black still maintains a nagging initiative.'
           )
@@ -100,13 +100,13 @@ jobs:
             'After 10...0-0',
           );
           const branch = c4Line.resolveText(
-            'Weaker is 11.Nxf6+ Qxf6 12.Ng3 Ne5! 13.Bd3 b6! 14.c6 (14.0-0? bxc5 15.Re1 c4 16.Bf1 d3 17.Nd2 Rb8-+ was simply lost for White in Eisenbeiser - Fluvia Poyatos, Barcelona 2007) 14...Qxc6 15.0-0 a5 16.Rc1 Qd6+ when Black still maintains a nagging initiative.',
+            'Weaker is 11.Nxf6+ Qxf6 12.Ng3 Ne5! 13.Bd3 b6! 14.c6 (14.0-0? bxc5 15.Re1 c4 16.Bf1 d3 17.Qd2 Rb8-+ was simply lost for White in Eisenbeiser - Fluvia Poyatos, Barcelona 2007) 14...Qxc6 15.0-0 a5 16.Rc1 Qd6+ when Black still maintains a nagging initiative.',
           );
           expectNavigable(
             branch,
             [
               '11.Nxf6+', 'Qxf6', '12.Ng3', 'Ne5!', '13.Bd3', 'b6!', '14.c6',
-              '14.0-0?', 'bxc5', '15.Re1', 'c4', '16.Bf1', 'd3', '17.Nd2', 'Rb8',
+              '14.0-0?', 'bxc5', '15.Re1', 'c4', '16.Bf1', 'd3', '17.Qd2', 'Rb8',
               '14...Qxc6', '15.0-0', 'a5', '16.Rc1', 'Qd6+',
             ],
             'the continuous 14.c6 variation',
