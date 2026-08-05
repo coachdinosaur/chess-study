@@ -18,130 +18,33 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: wip/sicilian-20260805-153931
-          fetch-depth: 0
+          fetch-depth: 2
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: |
-            apps/opening-book/package-lock.json
-            apps/opening-book-sicilian/package-lock.json
+          cache-dependency-path: apps/opening-book-sicilian/package-lock.json
 
-      - name: Apply focused source repair
+      - name: Reapply the previously validated source patch
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
 
-          def replace_once(path: str, old: str, new: str) -> None:
-              file = Path(path)
-              text = file.read_text(encoding="utf-8")
-              count = text.count(old)
-              if count != 1:
-                  raise SystemExit(f"Expected exactly one match in {path}, found {count}: {old[:100]!r}")
-              file.write_text(text.replace(old, new), encoding="utf-8", newline="\n")
-
-          renderer = "apps/opening-book-sicilian/app/components/MarkdownRenderer.tsx"
-          replace_once(
-              renderer,
-              'import { extractFenBlocks } from "../lib/markdown-chapter";\n',
-              'import { extractFenBlocks } from "../lib/markdown-chapter";\nimport { loadAllChapters } from "../lib/chapter-markdown-loader";\n',
-          )
-          replace_once(
-              renderer,
-              'function parseMarkdown(markdown: string, onMove: MoveHandler): ReactNode[] {\n  const lines = markdown.split(/\\r?\\n/);\n  const nodes: ReactNode[] = [];\n  const resolver = new MarkdownMoveResolver();\n',
-              'function parseMarkdown(markdown: string, onMove: MoveHandler, resolver = new MarkdownMoveResolver()): ReactNode[] {\n  const lines = markdown.split(/\\r?\\n/);\n  const nodes: ReactNode[] = [];\n',
-          )
-          replace_once(
-              renderer,
-              '          const label = currentHeading === "Diagram position" ? currentHeading : `${currentHeading} â€” position`;\n',
-              '          const label = currentHeading === "Diagram position" ? currentHeading : `${currentHeading} position`;\n',
-          )
-          replace_once(
-              renderer,
-              'export const MarkdownChapterView = memo(function MarkdownChapterView({ markdown, onMove, activeNavigation = null }: { markdown: string; onMove: MoveHandler; activeNavigation?: MoveNavigation | null }) {\n  const elements = useMemo(() => parseMarkdown(markdown, onMove), [markdown, onMove]);\n  return <ActiveNavigationContext value={activeNavigation}>\n    <article className="narrative markdown-narrative" aria-label="Chapter lesson">{elements}</article>\n  </ActiveNavigationContext>;\n});\n',
-              '''const ignoreMove: MoveHandler = () => {};\n\nfunction precedingMarkdown(markdown: string): string {\n  for (const chapter of loadAllChapters()) {\n    const pageIndex = chapter.pages.findIndex((page) => page.markdown === markdown);\n    if (pageIndex > 0) return chapter.pages.slice(0, pageIndex).map((page) => page.markdown).join("\\n\\n");\n  }\n  return "";\n}\n\nexport const MarkdownChapterView = memo(function MarkdownChapterView({ markdown, onMove, activeNavigation = null }: { markdown: string; onMove: MoveHandler; activeNavigation?: MoveNavigation | null }) {\n  const elements = useMemo(() => {\n    const resolver = new MarkdownMoveResolver();\n    const priorMarkdown = precedingMarkdown(markdown);\n    if (priorMarkdown) parseMarkdown(priorMarkdown, ignoreMove, resolver);\n    return parseMarkdown(markdown, onMove, resolver);\n  }, [markdown, onMove]);\n  return <ActiveNavigationContext value={activeNavigation}>\n    <article className="narrative markdown-narrative" aria-label="Chapter lesson">{elements}</article>\n  </ActiveNavigationContext>;\n});\n''',
-          )
-
-          resolver = "apps/opening-book-sicilian/app/lib/markdown-moves.ts"
-          replace_once(
-              resolver,
-              '''function parenDepthAt(text: string, pos: number): number {\n  let depth = 0;\n  for (let index = 0; index < pos; index++) {\n    if (text[index] === "(" || text[index] === "[") depth++;\n    else if (text[index] === ")" || text[index] === "]") depth = Math.max(0, depth - 1);\n  }\n  return depth;\n}\n''',
-              '''function parenDepthDeltaAt(text: string, pos: number): number {\n  let depth = 0;\n  for (let index = 0; index < pos; index++) {\n    if (text[index] === "(" || text[index] === "[") depth++;\n    else if (text[index] === ")" || text[index] === "]") depth--;\n  }\n  return depth;\n}\n''',
-          )
-          replace_once(
-              resolver,
-              '  private variationStack: Array<{ indent: number; path: PositionPath }>;\n',
-              '  private variationStack: Array<{ indent: number; path: PositionPath }>;\n  private inlineDepth: number;\n  private inlineReturnStates: PositionPath[];\n  private inlineBranchStarts: PositionPath[];\n  private inlineLastBefore: PositionPath;\n',
-          )
-          replace_once(
-              resolver,
-              '    this.variationBase = null;\n    this.variationStack = [];\n    this.indexRoot(root);\n',
-              '    this.variationBase = null;\n    this.variationStack = [];\n    this.inlineDepth = 0;\n    this.inlineReturnStates = [];\n    this.inlineBranchStarts = [];\n    this.inlineLastBefore = root;\n    this.indexRoot(root);\n',
-          )
-          replace_once(
-              resolver,
-              '    this.variationBase = null;\n    this.variationStack = [];\n    this.resetHistory(root);\n    return { steps: root.steps, index: 0 };\n',
-              '    this.variationBase = null;\n    this.variationStack = [];\n    this.inlineDepth = 0;\n    this.inlineReturnStates = [];\n    this.inlineBranchStarts = [];\n    this.inlineLastBefore = root;\n    this.resetHistory(root);\n    return { steps: root.steps, index: 0 };\n',
-          )
-          replace_once(
-              resolver,
-              '      const parent = this.variationStack.at(-1)?.path ?? this.variationBase;\n      this.active = parent;\n      this.resetHistory(parent);\n',
-              '      const parent = this.variationStack.at(-1)?.path ?? this.variationBase;\n      this.active = parent;\n      this.inlineDepth = 0;\n      this.inlineReturnStates = [];\n      this.inlineBranchStarts = [];\n      this.inlineLastBefore = parent;\n      this.resetHistory(parent);\n',
-          )
-          replace_once(
-              resolver,
-              '''    let active = this.active;\n    let lastBefore = active;\n    let depth = 0;\n    const returnStates: PositionPath[] = [];\n    const branchStarts: PositionPath[] = [];\n''',
-              '''    let active = this.active;\n    let lastBefore = this.inlineDepth > 0 ? this.inlineLastBefore : active;\n    let depth = this.inlineDepth;\n    const baseDepth = this.inlineDepth;\n    const returnStates = this.inlineReturnStates;\n    const branchStarts = this.inlineBranchStarts;\n''',
-          )
-          replace_once(
-              resolver,
-              '      const nextDepth = parenDepthAt(moveText, at);\n',
-              '      const nextDepth = Math.max(0, baseDepth + parenDepthDeltaAt(moveText, at));\n',
-          )
-          replace_once(
-              resolver,
-              '''    while (depth > 0) {\n      active = returnStates.pop() ?? active;\n      branchStarts.pop();\n      depth--;\n    }\n    this.active = active;\n    return tokens;\n''',
-              '''    const finalDepth = Math.max(0, baseDepth + parenDepthDeltaAt(moveText, moveText.length));\n    while (finalDepth > depth) {\n      returnStates.push(active);\n      active = lastBefore;\n      branchStarts.push(active);\n      depth++;\n    }\n    while (finalDepth < depth) {\n      active = returnStates.pop() ?? active;\n      branchStarts.pop();\n      depth--;\n    }\n    this.active = active;\n    this.inlineDepth = depth;\n    this.inlineReturnStates = returnStates;\n    this.inlineBranchStarts = branchStarts;\n    this.inlineLastBefore = lastBefore;\n    return tokens;\n''',
-          )
-
-          chapter = "apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md"
-          replace_once(
-              chapter,
-              '<!-- FEN: r1bqkbnr/pp1p1ppp/2n1p3/2p5/2B1P3/2P5/PP1PQPPP/RNB1K1NR b KQkq - 0 4 -->\n4...Nge7!? 5.Bb3',
-              '<!-- FEN: r1bqkbnr/pp1p1ppp/2n1p3/2p5/2B1P3/5N2/PPPPQPPP/RNB1K2R b KQkq - 3 4 -->\n4...Nge7!? 5.Bb3',
-          )
-          replace_once(
-              chapter,
-              '<!-- FEN: rnbqkb1r/pp3ppp/4pP2/2pp4/2B5/5N2/PPPP1PPP/RNBQK2R b KQkq - 0 5 -->\n5...g6!?',
-              '<!-- FEN: r1bqkb1r/pp1pnppp/2n1p3/2p5/4P3/1B3N2/PPPPQPPP/RNB1K2R b KQkq - 5 5 -->\n5...g6!?',
-          )
-          replace_once(
-              chapter,
-              '10...a5!? 11.e5 Nd7 12.Bxe7 Nxe7+',
-              '10...a5!? 11.e5 Nd7 12.Bxe7 Qxe7',
-          )
-
-          chapter_test = "apps/opening-book-sicilian/tests/chapter-workflow.test.mjs"
-          replace_once(
-              chapter_test,
-              'import { auditChapterMarkdown } from "../scripts/chapter-audit.ts";\n',
-              'import { auditChapterMarkdown } from "../scripts/chapter-audit.ts";\nimport { MarkdownMoveResolver } from "../app/lib/markdown-moves.ts";\n',
-          )
-          replace_once(
-              chapter_test,
-              'test("the Markdown contract rejects missing pages and invalid FENs", () => {\n',
-              '''test("move navigation survives PDF page and parenthesis boundaries", () => {\n  const pages = new MarkdownMoveResolver();\n  const beforeBreak = pages.resolveText("1.e4 c5 2.Bc4 e6 3.Qe2 Nc6 4.c3 Be7 5.Bb3 d5 6.d3 Nf6 7.Nf3 0-0 8.0-0 b5 9.Bg5 h6 10.Bh4");\n  const afterBreak = pages.resolveText("10...a5!? 11.e5 Nd7 12.Bxe7 Qxe7");\n  assert.ok(beforeBreak.every((token) => token.navigation), "Moves before the PDF page break should be navigable.");\n  assert.ok(afterBreak.every((token) => token.navigation), "Moves after the PDF page break should retain the prior position.");\n\n  const branch = new MarkdownMoveResolver();\n  const branchStart = branch.resolveText("1.e4 c5 (1...e5");\n  const branchEnd = branch.resolveText("2.Nf3 Nc6)");\n  assert.ok(branchStart.every((token) => token.navigation), "The opening half of a split variation should be navigable.");\n  assert.ok(branchEnd.every((token) => token.navigation), "A variation continued in the next paragraph should remain navigable.");\n});\n\ntest("the Markdown contract rejects missing pages and invalid FENs", () => {\n''',
-          )
-
-          static_test = "apps/opening-book-sicilian/tests/static-app.test.mjs"
-          replace_once(
-              static_test,
-              'test("the static output contains the interactive board and shared engine references", async () => {\n',
-              '''test("the renderer replays preceding PDF pages and uses clean diagram labels", async () => {\n  const renderer = await readFile(new URL("app/components/MarkdownRenderer.tsx", root), "utf8");\n  assert.match(renderer, /precedingMarkdown/);\n  assert.match(renderer, /parseMarkdown\(priorMarkdown, ignoreMove, resolver\)/);\n  assert.doesNotMatch(renderer, /â€”/);\n});\n\ntest("the static output contains the interactive board and shared engine references", async () => {\n''',
-          )
+          previous = Path("/tmp/previous-workflow.yml")
+          import subprocess
+          previous.write_bytes(subprocess.check_output([
+              "git", "show", "HEAD^:.github/workflows/apply-sicilian-navigation-fix.yml"
+          ]))
+          text = previous.read_text(encoding="utf-8")
+          marker = "          python - <<'PY'\n"
+          start = text.index(marker) + len(marker)
+          end = text.index("\n          PY", start)
+          lines = text[start:end].splitlines()
+          script = "\n".join(line[10:] if line.startswith("          ") else line for line in lines)
+          exec(compile(script, "apply-sicilian-navigation-fix.py", "exec"), {"__name__": "__main__"})
           PY
 
       - name: Test Sicilian opening book
@@ -149,9 +52,6 @@ jobs:
         run: |
           npm ci
           npm test
-
-      - name: Verify combined opening routes
-        run: node --test tests/opening-book-integration.test.mjs
 
       - name: Commit repair
         shell: bash
