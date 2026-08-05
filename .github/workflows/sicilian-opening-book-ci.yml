@@ -1,0 +1,55 @@
+name: Sicilian Opening Book CI
+
+on:
+  push:
+    branches:
+      - wip/sicilian-20260805-153931
+    paths:
+      - "apps/opening-book-sicilian/**"
+      - "apps/opening-book/**"
+      - "tests/opening-book-integration.test.mjs"
+      - ".github/workflows/pages.yml"
+      - ".github/workflows/sicilian-opening-book-ci.yml"
+  pull_request:
+    paths:
+      - "apps/opening-book-sicilian/**"
+      - "apps/opening-book/**"
+      - "tests/opening-book-integration.test.mjs"
+      - ".github/workflows/pages.yml"
+      - ".github/workflows/sicilian-opening-book-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            apps/opening-book/package-lock.json
+            apps/opening-book-sicilian/package-lock.json
+
+      - name: Test and build Catalan opening book
+        working-directory: apps/opening-book
+        run: |
+          npm ci
+          npm test
+
+      - name: Test and build Sicilian opening book
+        working-directory: apps/opening-book-sicilian
+        run: |
+          npm ci
+          npm test
+          npm run chapters:audit -- --chapter 1 --markdown app/content/chapters/chapter-1-sicilian.md --expected-first-page 7 --expected-pages 17
+
+      - name: Verify combined opening routes
+        run: node --test tests/opening-book-integration.test.mjs
