@@ -1,4 +1,4 @@
-name: Apply Sicilian page 6 Qg2 navigation fix
+name: Apply Sicilian page 6 Qg2 fix
 
 on:
   push:
@@ -24,76 +24,61 @@ jobs:
           cache: npm
           cache-dependency-path: apps/opening-book-sicilian/package-lock.json
 
-      - name: Correct Qg2 and add regression coverage
+      - name: Correct the Page 6 queen move
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
-
-          chapter_path = Path('apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md')
-          chapter = chapter_path.read_text(encoding='utf-8')
+          path = Path('apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md')
+          text = path.read_text(encoding='utf-8')
           old = '13.Qxa6 (13.Bg2 g6 14.0-0 Bg7 15.Bxa6 0-0 16.Bd3 Qc8∞)'
           new = '13.Qxa6 (13.Qg2 g6 14.0-0 Bg7 15.Bxa6 0-0 16.Bd3 Qc8∞)'
-          count = chapter.count(old)
-          if count != 1:
-              raise SystemExit(f'Expected exactly one mistranscribed Page 6 variation, found {count}')
-          chapter_path.write_text(chapter.replace(old, new, 1), encoding='utf-8')
-
-          tests_path = Path('apps/opening-book-sicilian/tests/chapter-workflow.test.mjs')
-          tests = tests_path.read_text(encoding='utf-8')
-          marker = 'test("move navigation survives PDF page and parenthesis boundaries", () => {'
-          regression = '''test("the Page 6 Qg2 variation stays on one legal navigation path", () => {
-  const resolver = new MarkdownMoveResolver();
-  resolver.setAnchor(
-    "r2qkb1r/pp1bpppp/2n5/8/2Q5/2N3P1/PPP2P1P/R1B1KB1R b KQkq - 2 9",
-    "After 9.Qc4",
-  );
-
-  const tokens = resolver.resolveText(
-    "9...Be6! 10.Qb5 (10.Qa4 Qd4=) 10...a6! 11.Qxb7 Nd4 12.Bd3 Rb8 13.Qxa6 (13.Qg2 g6 14.0-0 Bg7 15.Bxa6 0-0 16.Bd3 Qc8∞) 13...Nf3+ 14.Kd1 Ne5∞",
-  );
-
-  assert.ok(tokens.every((token) => token.navigation), "Every move in the Page 6 variation should be navigable.");
-  const qg2 = tokens.find((token) => token.display === "13.Qg2");
-  const castlings = tokens.filter((token) => token.display === "0-0");
-  const bd3 = tokens.filter((token) => token.display === "16.Bd3").at(-1);
-  const qc8 = tokens.find((token) => token.display === "Qc8");
-
-  assert.ok(qg2?.navigation, "13.Qg2 should start the alternative from before 13.Qxa6.");
-  assert.equal(castlings.length, 2, "The variation should contain White and Black castling once each.");
-  assert.ok(castlings.every((token) => token.navigation), "Both castling moves should be navigable.");
-  assert.ok(bd3?.navigation, "16.Bd3 should continue after Black castles.");
-  assert.ok(qc8?.navigation, "Qc8 should continue after 16.Bd3.");
-  assert.deepEqual(
-    qc8.navigation.steps.slice(-8).map((step) => step.label),
-    ["13.Qg2", "g6", "14.0-0", "Bg7", "15.Bxa6", "0-0", "16.Bd3", "Qc8"],
-  );
-});
-
-'''
-          if regression.strip() not in tests:
-              if marker not in tests:
-                  raise SystemExit('Could not find regression-test insertion point')
-              tests = tests.replace(marker, regression + marker, 1)
-          tests_path.write_text(tests, encoding='utf-8')
+          if text.count(old) != 1:
+              raise SystemExit('Expected exactly one Page 6 Bg2 transcription')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
           PY
-
           git diff --check
 
-      - name: Install and test Sicilian app
+      - name: Install dependencies
         working-directory: apps/opening-book-sicilian
-        run: |
-          npm ci
-          npm test
+        run: npm ci
 
-      - name: Commit repair and remove temporary workflow
+      - name: Verify the complete Qg2 variation
+        working-directory: apps/opening-book-sicilian
+        shell: bash
+        run: |
+          node --import tsx <<'NODE'
+          import assert from 'node:assert/strict';
+          import { MarkdownMoveResolver } from './app/lib/markdown-moves.ts';
+
+          const resolver = new MarkdownMoveResolver();
+          resolver.setAnchor(
+            'r2qkb1r/pp1bpppp/2n5/8/2Q5/2N3P1/PPP2P1P/R1B1KB1R b KQkq - 2 9',
+            'After 9.Qc4',
+          );
+          const tokens = resolver.resolveText(
+            '9...Be6! 10.Qb5 (10.Qa4 Qd4=) 10...a6! 11.Qxb7 Nd4 12.Bd3 Rb8 13.Qxa6 (13.Qg2 g6 14.0-0 Bg7 15.Bxa6 0-0 16.Bd3 Qc8) 13...Nf3+ 14.Kd1 Ne5',
+          );
+          assert.ok(tokens.every((token) => token.navigation), 'The Page 6 variation contains an unresolved move.');
+          const qc8 = tokens.find((token) => token.display === 'Qc8');
+          assert.ok(qc8?.navigation, 'Qc8 is not navigable.');
+          assert.deepEqual(
+            qc8.navigation.steps.slice(-8).map((step) => step.label),
+            ['13.Qg2', 'g6', '14.0-0', 'Bg7', '15.Bxa6', '0-0', '16.Bd3', 'Qc8'],
+          );
+          NODE
+
+      - name: Run Sicilian tests
+        working-directory: apps/opening-book-sicilian
+        run: npm test
+
+      - name: Commit the correction and remove this workflow
         shell: bash
         run: |
           git config user.name "coachdinosaur"
           git config user.email "86093996+coachdinosaur@users.noreply.github.com"
           git rm .github/workflows/apply-sicilian-page6-qg2-fix.yml
-          git add apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md \
-                  apps/opening-book-sicilian/tests/chapter-workflow.test.mjs
+          git add apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md
           git diff --cached --check
           git commit -m "Fix Sicilian page 6 Qg2 variation navigation"
           git push origin HEAD:wip/sicilian-20260805-153931
