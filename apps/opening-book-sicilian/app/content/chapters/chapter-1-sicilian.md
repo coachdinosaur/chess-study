@@ -189,7 +189,7 @@ The only chance to develop an initiative.
 An accurate choice of Hou Yifan's, keeping the queen in the centre without allowing Black the luxury of harassing it.
 
 <!-- FEN: r2qkb1r/pp1bpppp/2n5/8/3Q4/2N3P1/PPP2P1P/R1B1KB1R w KQkq - 1 9 -->
-9.Qc4 allows 9...Be6! 10.Qb5 (10.Qa4 Qd4=) 10...a6! 11.Qxb7 Nd4 12.Bd3 Rb8 13.Qxa6 (13.Bg2 g6 14.0-0 Bg7 15.Bxa6 0-0 16.Bd3 Qc8∞) 13...Nf3+ 14.Kd1 Ne5∞ and Black is not worse, in spite of his two-pawn deficit. A likely conclusion is a repetition after: 15.Ke1 (15.Bf4 Nxd3 16.Qxd3 Qxd3+ 17.cxd3 Rxb2 18.Be3 g6 19.Bd4 f6= is okay for Black) 15...Nf3+ 16.Kd1 Ne5=
+9.Qc4 allows 9...Be6! 10.Qb5 (10.Qa4 Qd4=) 10...a6! 11.Qxb7 Nd4 12.Bd3 Rb8 13.Qxa6 (13.Qg2 g6 14.0-0 Bg7 15.Bxa6 0-0 16.Bd3 Qc8∞) 13...Nf3+ 14.Kd1 Ne5∞ and Black is not worse, in spite of his two-pawn deficit. A likely conclusion is a repetition after: 15.Ke1 (15.Bf4 Nxd3 16.Qxd3 Qxd3+ 17.cxd3 Rxb2 18.Be3 g6 19.Bd4 f6= is okay for Black) 15...Nf3+ 16.Kd1 Ne5=
 
 <!-- FEN: r2qkb1r/pp1bpppp/2n5/8/2Q5/2N3P1/PPP2P1P/R1B1KB1R b KQkq - 2 9 -->
 9...g6!N
