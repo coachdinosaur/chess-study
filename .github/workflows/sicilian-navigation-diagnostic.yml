@@ -34,13 +34,20 @@ jobs:
           python - <<'PY'
           from pathlib import Path
 
-          renderer = Path('app/components/MarkdownRenderer.tsx')
-          text = renderer.read_text(encoding='utf-8')
-          old = 'resolver.setAnchor(hiddenFen[1].trim(), "Variation start")'
-          new = 'resolver.addRoot(hiddenFen[1].trim(), "Variation start")'
-          if old not in text:
-              raise SystemExit('renderer hidden-FEN call not found')
-          renderer.write_text(text.replace(old, new), encoding='utf-8')
+          resolver = Path('app/lib/markdown-moves.ts')
+          text = resolver.read_text(encoding='utf-8')
+          start = text.index('  setAnchor(')
+          end = text.index('\n  private indexRoot', start)
+          method = text[start:end]
+          old = '    this.resetHistory(root);'
+          new = '''    this.remember(root);
+              if (root.fen !== START_FEN) {
+                this.remember({ fen: START_FEN, steps: [{ fen: START_FEN, label: "Initial position" }] });
+              }'''
+          if old not in method:
+              raise SystemExit('setAnchor reset call not found')
+          method = method.replace(old, new, 1)
+          resolver.write_text(text[:start] + method + text[end:], encoding='utf-8')
 
           chapter = Path('app/content/chapters/chapter-1-sicilian.md')
           text = chapter.read_text(encoding='utf-8')
@@ -84,7 +91,7 @@ jobs:
               if (!trimmed || trimmed.startsWith("```")) continue;
               const hidden = /^<!--\s*FEN:\s*([^>]+?)\s*-->$/.exec(trimmed);
               if (hidden) {
-                resolver.addRoot(hidden[1].trim(), `Page ${page.number} variation root`);
+                resolver.setAnchor(hidden[1].trim(), `Page ${page.number} variation start`);
                 continue;
               }
               if (trimmed.startsWith("**FEN:**")) {
@@ -132,6 +139,6 @@ jobs:
           name: sicilian-experimental-navigation
           path: |
             sicilian-experimental-audit.txt
-            apps/opening-book-sicilian/app/components/MarkdownRenderer.tsx
+            apps/opening-book-sicilian/app/lib/markdown-moves.ts
             apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md
           if-no-files-found: error
