@@ -24,73 +24,11 @@ jobs:
           cache: npm
           cache-dependency-path: apps/opening-book-sicilian/package-lock.json
 
-      - name: Apply page 5 source and anchor corrections
+      - name: Apply source corrections and regression test
         shell: bash
         run: |
-          python - <<'PY'
-          import re
-          from pathlib import Path
-
-          chapter = Path('apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md')
-          text = chapter.read_text(encoding='utf-8')
-
-          replacements = [
-            (
-              "White is trying to postpone d2-d4 and create an awkward dilemma for Najdorf players: 2...Nc6 runs into 3.d4, while 2...d6 3.Nbc3 Nf6 4.g3 could be luring them into a g3 Dragon or a Closed Sicilian with ...e6 (which is beyond the subject of this book). Therefore, I have decided to offer a more clear-cut solution, in an attempt to satisfy all tastes:",
-              "White is trying to postpone d2-d4 and create an awkward dilemma for Najdorf players: (2...Nc6 runs into 3.d4), while (2...d6 3.Nbc3 Nf6 4.g3 could be luring them into a g3 Dragon or a Closed Sicilian with 4...e6), which is beyond the subject of this book. Therefore, I have decided to offer a more clear-cut solution, in an attempt to satisfy all tastes:",
-            ),
-            (
-              "Weaker is 11.Nxf6+ Qxf6 12.Ng3 Qe5! 13.Bd3 b6! 14.c6",
-              "Weaker is 11.Nxf6+ Qxf6 12.Ng3 Ne5! 13.Bd3 b6! 14.c6",
-            ),
-            (
-              "14...Bxc6 15.0-0 a5 16.Rc1 Bd6+ when Black still maintains a nagging initiative. <!-- NON-NAVIGATION -->",
-              "14...Qxc6 15.0-0 a5 16.Rc1 Qd6+ when Black still maintains a nagging initiative.",
-            ),
-          ]
-          for old, new in replacements:
-            if text.count(old) != 1:
-              raise SystemExit(f'Expected exactly one source passage to replace, found {text.count(old)}: {old[:80]}')
-            text = text.replace(old, new, 1)
-
-          stale_fens = [
-            "r1b2rk1/p4ppp/1pn5/2P1q3/3pP3/3B2N1/PP3PPP/R2QK2R w KQ - 0 14",
-            "r1b2rk1/p4ppp/2n5/4q3/2p1P3/3p2N1/PP3PPP/R2QRBK1 w - - 0 17",
-          ]
-          for fen in stale_fens:
-            pattern = re.compile(rf"\n\s*<!--\s*FEN:\s*{re.escape(fen)}\s*-->\s*\n")
-            text, count = pattern.subn("\n", text, count=1)
-            if count != 1:
-              raise SystemExit(f'Expected exactly one stale branch FEN to remove, found {count}: {fen}')
-
-          chapter.write_text(text, encoding='utf-8')
-
-          tests = Path('apps/opening-book-sicilian/tests/chapter-workflow.test.mjs')
-          test_text = tests.read_text(encoding='utf-8')
-          marker = 'test("move navigation survives PDF page and parenthesis boundaries", () => {'
-          regression = r'''test("page 5 alternatives and the 14.c6 continuation stay on their correct branches", () => {
-  const rareKnight = new MarkdownMoveResolver();
-  rareKnight.setAnchor("rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPPNPPP/RNBQKB1R b KQkq - 1 2", "After 2.Ne2");
-  const dilemma = rareKnight.resolveText("White is trying to postpone d2-d4: (2...Nc6 runs into 3.d4), while (2...d6 3.Nbc3 Nf6 4.g3 could lead to a Closed Sicilian with 4...e6).");
-  assert.ok(dilemma.every((token) => token.navigation), "Both second-move alternatives should be independently navigable.");
-
-  const c4Line = new MarkdownMoveResolver();
-  c4Line.setAnchor("r1bq1rk1/pp3ppp/2n2b2/2PN4/3pP3/8/PP2NPPP/R2QKB1R w KQ - 2 11", "After 10...0-0");
-  const main = c4Line.resolveText("Weaker is 11.Nxf6+ Qxf6 12.Ng3 Ne5! 13.Bd3 b6! 14.c6");
-  const sideStart = c4Line.resolveText("(14.0-0? bxc5 15.Re1 c4 16.Bf1 d3");
-  const sideEnd = c4Line.resolveText("17.Nd2 Rb8-+)");
-  const continuation = c4Line.resolveText("14...Qxc6 15.0-0 a5 16.Rc1 Qd6+");
-  assert.ok([...main, ...sideStart, ...sideEnd, ...continuation].every((token) => token.navigation), "The parenthetical sideline should return to 14.c6 for Black's continuation.");
-});
-
-'''
-          if regression.strip() not in test_text:
-            if marker not in test_text:
-              raise SystemExit('Could not find the regression-test insertion point')
-            test_text = test_text.replace(marker, regression + marker, 1)
-          tests.write_text(test_text, encoding='utf-8')
-          PY
-
+          printf '%s' 'ZnJvbSBwYXRobGliIGltcG9ydCBQYXRoCmltcG9ydCByZQoKY2hhcHRlciA9IFBhdGgoImFwcHMvb3BlbmluZy1ib29rLXNpY2lsaWFuL2FwcC9jb250ZW50L2NoYXB0ZXJzL2NoYXB0ZXItMS1zaWNpbGlhbi5tZCIpCnRleHQgPSBjaGFwdGVyLnJlYWRfdGV4dChlbmNvZGluZz0idXRmLTgiKQoKcmVwbGFjZW1lbnRzID0gWwogICAgKAogICAgICAgICJXaGl0ZSBpcyB0cnlpbmcgdG8gcG9zdHBvbmUgZDItZDQgYW5kIGNyZWF0ZSBhbiBhd2t3YXJkIGRpbGVtbWEgZm9yIE5hamRvcmYgcGxheWVyczogMi4uLk5jNiBydW5zIGludG8gMy5kNCwgd2hpbGUgMi4uLmQ2IDMuTmJjMyBOZjYgNC5nMyBjb3VsZCBiZSBsdXJpbmcgdGhlbSBpbnRvIGEgZzMgRHJhZ29uIG9yIGEgQ2xvc2VkIFNpY2lsaWFuIHdpdGggLi4uZTYgKHdoaWNoIGlzIGJleW9uZCB0aGUgc3ViamVjdCBvZiB0aGlzIGJvb2spLiBUaGVyZWZvcmUsIEkgaGF2ZSBkZWNpZGVkIHRvIG9mZmVyIGEgbW9yZSBjbGVhci1jdXQgc29sdXRpb24sIGluIGFuIGF0dGVtcHQgdG8gc2F0aXNmeSBhbGwgdGFzdGVzOiIsCiAgICAgICAgIldoaXRlIGlzIHRyeWluZyB0byBwb3N0cG9uZSBkMi1kNCBhbmQgY3JlYXRlIGFuIGF3a3dhcmQgZGlsZW1tYSBmb3IgTmFqZG9yZiBwbGF5ZXJzOiAoMi4uLk5jNiBydW5zIGludG8gMy5kNCksIHdoaWxlICgyLi4uZDYgMy5OYmMzIE5mNiA0LmczIGNvdWxkIGJlIGx1cmluZyB0aGVtIGludG8gYSBnMyBEcmFnb24gb3IgYSBDbG9zZWQgU2ljaWxpYW4gd2l0aCA0Li4uZTYpLCB3aGljaCBpcyBiZXlvbmQgdGhlIHN1YmplY3Qgb2YgdGhpcyBib29rLiBUaGVyZWZvcmUsIEkgaGF2ZSBkZWNpZGVkIHRvIG9mZmVyIGEgbW9yZSBjbGVhci1jdXQgc29sdXRpb24sIGluIGFuIGF0dGVtcHQgdG8gc2F0aXNmeSBhbGwgdGFzdGVzOiIsCiAgICApLAogICAgKAogICAgICAgICJXZWFrZXIgaXMgMTEuTnhmNisgUXhmNiAxMi5OZzMgUWU1ISAxMy5CZDMgYjYhIDE0LmM2IiwKICAgICAgICAiV2Vha2VyIGlzIDExLk54ZjYrIFF4ZjYgMTIuTmczIE5lNSEgMTMuQmQzIGI2ISAxNC5jNiIsCiAgICApLAogICAgKAogICAgICAgICIxNC4uLkJ4YzYgMTUuMC0wIGE1IDE2LlJjMSBCZDYrIHdoZW4gQmxhY2sgc3RpbGwgbWFpbnRhaW5zIGEgbmFnZ2luZyBpbml0aWF0aXZlLiA8IS0tIE5PTi1OQVZJR0FUSU9OIC0tPiIsCiAgICAgICAgIjE0Li4uUXhjNiAxNS4wLTAgYTUgMTYuUmMxIFFkNisgd2hlbiBCbGFjayBzdGlsbCBtYWludGFpbnMgYSBuYWdnaW5nIGluaXRpYXRpdmUuIiwKICAgICksCl0KZm9yIG9sZCwgbmV3IGluIHJlcGxhY2VtZW50czoKICAgIGNvdW50ID0gdGV4dC5jb3VudChvbGQpCiAgICBpZiBjb3VudCAhPSAxOgogICAgICAgIHJhaXNlIFN5c3RlbUV4aXQoZiJFeHBlY3RlZCBleGFjdGx5IG9uZSBzb3VyY2UgcGFzc2FnZSwgZm91bmQge2NvdW50fToge29sZFs6ODBdfSIpCiAgICB0ZXh0ID0gdGV4dC5yZXBsYWNlKG9sZCwgbmV3LCAxKQoKc3RhbGVfZmVucyA9IFsKICAgICJyMWIycmsxL3A0cHBwLzFwbjUvMlAxcTMvM3BQMy8zQjJOMS9QUDNQUFAQUDNSMiNLMlIgd yBLUSAtIDAgMTQiLAogICAgInIxYjJyay  xL3A0cHBwLzJuNS80cTMvMnAxUDMvM3AyTk4xL1BQ  M1BQUFAvUjJRUkJLMSB3IC0gLSAwIDE3IiwKXQpmb3IgZmVuIGluIHN0YWxlX2ZlbnM6CiAgICBwYXR0ZXJuID0gcmUuY29tcGlsZShyZiJcblxzKjwhLS1ccypGRU46XHMqe3JlLmVzY2FwZShmZW4pfVxzKi0tPlxzKlxuIikKICAgIHRleHQsIGNvdW50ID0gcGF0dGVybi5zdWJuKCJcbiIsIHRleHQsIGNvdW50PTEpCiAgICBpZiBjb3VudCAhPSAxOgogICAgICAgIHJhaXNlIFN5c3RlbUV4aXQoZiJFeHBlY3RlZCBleGFjdGx5IG9uZSBzdGFsZSBGRU4sIGZvdW5kIHtjb3VudH06IHtmZW59IikKCmNoYXB0ZXIud3JpdGVfdGV4dCh0ZXh0LCBlbmNvZGluZz0idXRmLTgiKQoKdGVzdHMgPSBQYXRoKCJhcHBzL29wZW5pbmctYm9vay1zaWNpbGlhbi90ZXN0cy9jaGFwdGVyLXdvcmtmbG93LnRlc3QubWpzIikKdGVzdF90ZXh0ID0gdGVzdHMucmVhZF90ZXh0KGVuY29kaW5nPSJ1dGYtOCIpCm1hcmtlciA9ICd0ZXN0KCJtb3ZlIG5hdmlnYXRpb24gc3Vydml2ZXMgUERG IHBhZ2UgYW5kIHBhcmVudGhlc2lzIGJvdW5kYXJpZXMiLCAoKSA9PiB7JwpyZWdyZXNzaW9uID0gJycn dGVzdCgicGFnZSA1IGFsdGVybmF0aXZlcyBhbmQgdGhlIDE0LmM2IGNvbnRpbnVhdGlvbiBzdGF5IG9uIHRoZWlyIGNvcnJlY3QgYnJhbmNoZXMiLCAoKSA9PiB7CiAgY29uc3QgcmFyZUtuaWdodCA9IG5ldyBNYXJrZG93bk1vdmVSZXNvbHZlcigpOwogIHJhcmVLbmlnaHQuc2V0QW5jaG9yKCJybmJxa2Juci9wcDFwcHBwcC84LzJwNS80UDMvOC9QUFBQTlBQUC9STkJRS0IxUiBiIEtRa3EgLSAxIDIiLCAiQWZ0ZXIgMi5OZTIiKTsKICBjb25zdCBkaWxlbW1hID0gcmFyZUtuaWdodC5yZXNvbHZlVGV4dCgiV2hpdGUgaXMgdHJ5aW5nIHRvIHBvc3Rwb25lIGQyLWQ0OiAoMi4uLk5jNiBydW5zIGludG8gMy5kNCksIHdoaWxlICgyLi4uZDYgMy5OYmMzIE5mNiA0LmczIGNvdWxkIGxlYWQgdG8gYSBDbG9zZWQgU2ljaWxpYW4gd2l0aCA0Li4uZTYpLiIpOwogIGFzc2VydC5vayhkaWxlbW1hLmV2ZXJ5KCh0b2tlbikgPT4gdG9rZW4ubmF2aWdhdGlvbiksICJCb3RoIHNlY29uZC1tb3ZlIGFsdGVybmF0aXZlcyBzaG91bGQgYmUgaW5kZXBlbmRlbnRseSBuYXZpZ2FibGUuIik7CgogIGNvbnN0IGM0TGluZSA9IG5ldyBNYXJrZG93bk1vdmVSZXNvbHZlcigpOwogIGM0TGluZS5zZXRBbmNob3IoInIxYnExcmsxL3BwM3BwcC8ybjJiMi8yUE40LzNwUDMvOC9QUDJORlBQUC9SMlFLQjFSIHcgS1EgLSAyIDExIiwgIkFmdGVyIDEwLi4uMC0wIik7CiAgY29uc3QgbWFpbiA9IGM0TGluZS5yZXNvbHZlVGV4dCgiV2Vha2VyIGlzIDExLk54ZjYrIFF4ZjYgMTIuTmczIE5lNSEgMTMuQmQzIGI2ISAxNC5jNiIpOwogIGNvbnN0IHNpZGVTdGFydCA9IGM0TGluZS5yZXNvbHZlVGV4dCgiKDE0LjAtMD8gYnhjNSAxNS5SZTEgYzQgMTYuQmYxIGQzIik7CiAgY29uc3Qgc2lkZUVuZCA9IGM0TGluZS5yZXNvbHZlVGV4dCgiMTcuTmQyIFJiOC0rKSIpOwogIGNvbnN0IGNvbnRpbnVhdGlvbiA9IGM0TGluZS5yZXNvbHZlVGV4dCgiMTQuLi5ReGM2IDE1LjAtMCBhNSAxNi5SYzEgUWQ2KyIpOwogIGFzc2VydC5vayhbLi4ubWFpbiwgLi4uc2lkZVN0YXJ0LCAuLi5zaWRlRW5kLCAuLi5jb250aW51YXRpb25dLmV2ZXJ5KCh0b2tlbikgPT4gdG9rZW4ubmF2aWdhdGlvbiksICJUaGUgcGFyZW50aGV0aWNhbCBzaWRlbGluZSBzaG91bGQgcmV0dXJuIHRvIDE0LmM2IGZvciBCbGFjaydzIGNvbnRpbnVhdGlvbi4iKTsKfSk7CgonJycKaWYgcmVncmVzc2lvbi5zdHJpcCgpIG5vdCBpbiB0ZXN0X3RleHQ6CiAgICBpZiBtYXJrZXIgbm90IGluIHRlc3RfdGV4dDoKICAgICAgICByYWlzZSBTeXN0ZW1FeGl0KCJDb3VsZCBub3QgZmluZCByZWdyZXNzaW9uLXRlc3QgaW5zZXJ0aW9uIHBvaW50IikKICAgIHRlc3RfdGV4dCA9IHRlc3RfdGV4dC5yZXBsYWNlKG1hcmtlciwgcmVncmVzc2lvbiArIG1hcmtlciwgMSkKdGVzdHMud3JpdGVfdGV4dCh0ZXN0X3RleHQsIGVuY29kaW5nPSJ1dGYtOCIpCg==' | base64 -d > /tmp/apply_page5.py
+          python /tmp/apply_page5.py
           git diff --check
 
       - name: Install and test Sicilian app
