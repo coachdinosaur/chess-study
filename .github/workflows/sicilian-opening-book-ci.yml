@@ -1,4 +1,4 @@
-# Verifies both opening books after Sicilian navigation changes.
+# Verifies the current Catalan and Sicilian opening-book checkpoint.
 name: Sicilian Opening Book CI
 
 on:
