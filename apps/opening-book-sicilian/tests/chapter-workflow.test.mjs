@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { auditChapterMarkdown } from "../scripts/chapter-audit.ts";
 import { catalogSource, discoverChapters, parseChapterMarkdown } from "../scripts/chapter-system.mjs";
 
 test("discovers one contiguous Markdown catalog", async () => {
@@ -19,6 +20,8 @@ test("Chapter 1 preserves the PDF page range 7 through 23", async () => {
   assert.deepEqual(pageNumbers, Array.from({ length: 17 }, (_, index) => index + 7));
   const chapter = parseChapterMarkdown("chapter-1-sicilian.md", markdown);
   assert.equal(chapter.pageCount, 17);
+  const audit = auditChapterMarkdown(markdown, { chapter: 1, expectedPages: 17, expectedFirstPage: 7 });
+  assert.deepEqual(audit.errors, []);
 });
 
 test("the Markdown contract rejects missing pages and invalid FENs", () => {
