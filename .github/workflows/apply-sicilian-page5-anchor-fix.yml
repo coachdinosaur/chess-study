@@ -28,6 +28,7 @@ jobs:
         shell: bash
         run: |
           python - <<'PY'
+          import re
           from pathlib import Path
 
           path = Path('apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md')
@@ -39,11 +40,12 @@ jobs:
               raise SystemExit(f'Expected exactly one first page-5 passage, found {text.count(old_first)}')
           text = text.replace(old_first, new_first, 1)
 
-          wrong_anchor = "14.c6\n\n<!-- FEN: r1b2rk1/p4ppp/1pn5/2P1q3/3pP3/3B2N1/PP3PPP/R2QK2R w KQ - 0 14 -->\n\n(14.0-0?"
-          corrected_anchor = "14.c6\n\n(14.0-0?"
-          if text.count(wrong_anchor) != 1:
-              raise SystemExit(f'Expected exactly one misplaced 14.c6 anchor, found {text.count(wrong_anchor)}')
-          text = text.replace(wrong_anchor, corrected_anchor, 1)
+          anchor_pattern = re.compile(
+              r"14\.c6\s*\r?\n\s*<!--\s*FEN:\s*r1b2rk1/p4ppp/1pn5/2P1q3/3pP3/3B2N1/PP3PPP/R2QK2R w KQ - 0 14\s*-->\s*\r?\n\s*\(14\.0-0\?"
+          )
+          text, anchor_count = anchor_pattern.subn("14.c6\n\n(14.0-0?", text, count=1)
+          if anchor_count != 1:
+              raise SystemExit(f'Expected exactly one misplaced 14.c6 anchor, found {anchor_count}')
 
           old_tail = "14...Bxc6 15.0-0 a5 16.Rc1 Bd6+ when Black still maintains a nagging initiative. <!-- NON-NAVIGATION -->"
           new_tail = "14...Bxc6 15.0-0 a5 16.Rc1 Bd6+ when Black still maintains a nagging initiative."
