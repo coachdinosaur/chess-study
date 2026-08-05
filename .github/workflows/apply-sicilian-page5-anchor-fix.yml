@@ -28,6 +28,7 @@ jobs:
         shell: bash
         run: |
           python - <<'PY'
+          import re
           from pathlib import Path
 
           path = Path('apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md')
@@ -63,6 +64,13 @@ jobs:
               if count != 1:
                   raise SystemExit(f'Expected one stale FEN comment, found {count}: {comment}')
               text = text.replace(comment, '', 1)
+
+          branch_pattern = re.compile(
+              r'(Weaker is 11\.Nxf6\+ Qxf6 12\.Ng3 Ne5! 13\.Bd3 b6! 14\.c6)\s*\n\s*\(14\.0-0\?'
+          )
+          text, branch_count = branch_pattern.subn(r'\1 (14.0-0?', text, count=1)
+          if branch_count != 1:
+              raise SystemExit(f'Expected one split 14.c6 branch, found {branch_count}')
 
           path.write_text(text, encoding='utf-8')
           PY
@@ -109,8 +117,7 @@ jobs:
             'After 10...0-0',
           );
           const tokens = [
-            ...c4Line.resolveText('Weaker is 11.Nxf6+ Qxf6 12.Ng3 Ne5! 13.Bd3 b6! 14.c6'),
-            ...c4Line.resolveText('(14.0-0? bxc5 15.Re1 c4 16.Bf1 d3'),
+            ...c4Line.resolveText('Weaker is 11.Nxf6+ Qxf6 12.Ng3 Ne5! 13.Bd3 b6! 14.c6 (14.0-0? bxc5 15.Re1 c4 16.Bf1 d3'),
             ...c4Line.resolveText('17.Nd2 Rb8-+)'),
             ...c4Line.resolveText('14...Qxc6 15.0-0 a5 16.Rc1 Qd6+'),
           ];
