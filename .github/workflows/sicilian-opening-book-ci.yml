@@ -1,4 +1,4 @@
-# Verifies the current Catalan and Sicilian opening-book checkpoint, including source-anchor repairs.
+# Verifies the current Catalan and Sicilian opening-book checkpoint, including sibling-variation repairs.
 name: Sicilian Opening Book CI
 
 on:
