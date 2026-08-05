@@ -1,4 +1,4 @@
-name: Inspect Sicilian app page 3
+name: Export Sicilian repair workspace
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 jobs:
-  inspect:
+  export:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,56 +28,10 @@ jobs:
         working-directory: apps/opening-book-sicilian
         run: npm ci
 
-      - name: Report every plain move token on app page 3
-        working-directory: apps/opening-book-sicilian
-        shell: bash
-        run: |
-          cat > inspect-page3.mts <<'EOF'
-          import { readFileSync, writeFileSync } from "node:fs";
-          import { extractFenBlocks, extractPages } from "./app/lib/markdown-chapter.ts";
-          import { MarkdownMoveResolver } from "./app/lib/markdown-moves.ts";
-
-          const markdown = readFileSync("app/content/chapters/chapter-1-sicilian.md", "utf8");
-          const pages = extractPages(markdown);
-          const resolver = new MarkdownMoveResolver(undefined, undefined, false);
-          const output: string[] = [];
-
-          for (let appIndex = 0; appIndex <= 2; appIndex++) {
-            const page = pages[appIndex];
-            extractFenBlocks(page.markdown).forEach(({ fen }, index) => resolver.addRoot(fen, `Page ${page.number} position ${index + 1}`));
-            const lines = page.markdown.split(/\r?\n/);
-            for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-              const line = lines[lineIndex];
-              const trimmed = line.trim();
-              if (!trimmed || trimmed.startsWith("```")) continue;
-              const hidden = /^<!--\s*FEN:\s*([^>]+?)\s*-->$/.exec(trimmed);
-              if (hidden) {
-                resolver.setAnchor(hidden[1].trim(), `Page ${page.number} variation start`);
-                continue;
-              }
-              if (trimmed.startsWith("**FEN:**")) {
-                const visible = /^`([^`]+)`$/.exec(lines[lineIndex + 1]?.trim() ?? "");
-                if (visible) {
-                  resolver.setAnchor(visible[1].trim(), `Page ${page.number} diagram`);
-                  lineIndex++;
-                }
-                continue;
-              }
-              if (/^`[^`]+`$/.test(trimmed)) continue;
-              const tokens = resolver.resolveText(line);
-              if (appIndex === 2) {
-                const unresolved = tokens.filter((token) => !token.navigation);
-                if (unresolved.length) output.push(`line ${lineIndex + 1}: ${unresolved.map((token) => token.display).join(", ")} :: ${trimmed}`);
-              }
-            }
-          }
-          writeFileSync("../../sicilian-page3-plain-tokens.txt", `${output.join("\n")}\n`);
-          EOF
-          node --import tsx inspect-page3.mts
-          rm inspect-page3.mts
-
       - uses: actions/upload-artifact@v4
         with:
-          name: sicilian-page3-plain-tokens
-          path: sicilian-page3-plain-tokens.txt
+          name: sicilian-repair-workspace
+          path: |
+            apps/opening-book-sicilian
+            apps/01_Rare_Options.pdf
           if-no-files-found: error
