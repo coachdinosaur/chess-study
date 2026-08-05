@@ -1,0 +1,136 @@
+name: Apply Sicilian page 5 navigation fixes
+
+on:
+  push:
+    branches:
+      - wip/sicilian-20260805-153931
+    paths:
+      - .github/workflows/apply-sicilian-page5-anchor-fix.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: wip/sicilian-20260805-153931
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/opening-book-sicilian/package-lock.json
+
+      - name: Apply page 5 anchor corrections
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md')
+          text = path.read_text(encoding='utf-8')
+
+          old_first = "White is trying to postpone d2-d4 and create an awkward dilemma for Najdorf players: 2...Nc6 runs into 3.d4, while 2...d6 3.Nbc3 Nf6 4.g3 could be luring them into a g3 Dragon or a Closed Sicilian with ...e6 (which is beyond the subject of this book). Therefore, I have decided to offer a more clear-cut solution, in an attempt to satisfy all tastes:"
+          new_first = "White is trying to postpone d2-d4 and create an awkward dilemma for Najdorf players: (2...Nc6 runs into 3.d4), while (2...d6 3.Nbc3 Nf6 4.g3 could be luring them into a g3 Dragon or a Closed Sicilian with 4...e6), which is beyond the subject of this book. Therefore, I have decided to offer a more clear-cut solution, in an attempt to satisfy all tastes:"
+          if text.count(old_first) != 1:
+              raise SystemExit(f'Expected exactly one first page-5 passage, found {text.count(old_first)}')
+          text = text.replace(old_first, new_first, 1)
+
+          wrong_anchor = "14.c6\n\n<!-- FEN: r1b2rk1/p4ppp/1pn5/2P1q3/3pP3/3B2N1/PP3PPP/R2QK2R w KQ - 0 14 -->\n\n(14.0-0?"
+          corrected_anchor = "14.c6\n\n(14.0-0?"
+          if text.count(wrong_anchor) != 1:
+              raise SystemExit(f'Expected exactly one misplaced 14.c6 anchor, found {text.count(wrong_anchor)}')
+          text = text.replace(wrong_anchor, corrected_anchor, 1)
+
+          old_tail = "14...Bxc6 15.0-0 a5 16.Rc1 Bd6+ when Black still maintains a nagging initiative. <!-- NON-NAVIGATION -->"
+          new_tail = "14...Bxc6 15.0-0 a5 16.Rc1 Bd6+ when Black still maintains a nagging initiative."
+          if text.count(old_tail) != 1:
+              raise SystemExit(f'Expected exactly one non-navigation tail, found {text.count(old_tail)}')
+          text = text.replace(old_tail, new_tail, 1)
+
+          path.write_text(text, encoding='utf-8')
+          PY
+
+          git diff --check
+
+      - name: Install Sicilian dependencies
+        working-directory: apps/opening-book-sicilian
+        run: npm ci
+
+      - name: Verify the exact page 5 navigation sequences
+        working-directory: apps/opening-book-sicilian
+        shell: bash
+        run: |
+          node --import tsx <<'NODE'
+          import assert from 'node:assert/strict';
+          import { readFileSync } from 'node:fs';
+          import { extractFenBlocks } from './app/lib/markdown-chapter.ts';
+          import { MarkdownMoveResolver } from './app/lib/markdown-moves.ts';
+
+          const markdown = readFileSync('./app/content/chapters/chapter-1-sicilian.md', 'utf8');
+          const resolver = new MarkdownMoveResolver();
+          extractFenBlocks(markdown).forEach(({ fen }, index) => resolver.addRoot(fen, `Chapter position ${index + 1}`));
+
+          const wantedFirst = ['2...Nc6', '3.d4', '2...d6', '3.Nbc3', 'Nf6', '4.g3', '4...e6'];
+          const wantedSecond = ['14...Bxc6', '15.0-0', 'a5', '16.Rc1', 'Bd6+'];
+          let checkedFirst = false;
+          let checkedSecond = false;
+          const lines = markdown.split(/\r?\n/);
+
+          for (let index = 0; index < lines.length; index++) {
+            const line = lines[index];
+            const trimmed = line.trim();
+            const hidden = /^<!--\s*FEN:\s*([^>]+?)\s*-->$/.exec(trimmed);
+            if (hidden) {
+              resolver.setAnchor(hidden[1].trim(), 'Variation start');
+              continue;
+            }
+            if (trimmed === '**FEN:**') {
+              const visible = /^`([^`]+)`$/.exec(lines[index + 1]?.trim() ?? '');
+              if (visible) {
+                resolver.setAnchor(visible[1].trim(), 'Diagram position');
+                index++;
+              }
+              continue;
+            }
+
+            const tokens = resolver.resolveText(line);
+            if (line.includes('White is trying to postpone d2-d4')) {
+              for (const display of wantedFirst) {
+                const token = tokens.find((candidate) => candidate.display === display);
+                assert.ok(token, `Missing token ${display} in the Najdorf-dilemma passage.`);
+                assert.ok(token.navigation, `${display} should be navigable in the Najdorf-dilemma passage.`);
+              }
+              checkedFirst = true;
+            }
+            if (line.startsWith('14...Bxc6 15.0-0 a5 16.Rc1 Bd6+')) {
+              for (const display of wantedSecond) {
+                const token = tokens.find((candidate) => candidate.display === display);
+                assert.ok(token, `Missing token ${display} in the 14.c6 continuation.`);
+                assert.ok(token.navigation, `${display} should continue from the 14.c6 branch.`);
+              }
+              checkedSecond = true;
+            }
+          }
+
+          assert.ok(checkedFirst, 'The Najdorf-dilemma passage was not checked.');
+          assert.ok(checkedSecond, 'The 14.c6 continuation was not checked.');
+          NODE
+
+      - name: Run Sicilian tests
+        working-directory: apps/opening-book-sicilian
+        run: npm test
+
+      - name: Commit the source repair and remove this temporary workflow
+        shell: bash
+        run: |
+          git config user.name "coachdinosaur"
+          git config user.email "86093996+coachdinosaur@users.noreply.github.com"
+          git rm .github/workflows/apply-sicilian-page5-anchor-fix.yml
+          git add apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md
+          git diff --cached --check
+          git commit -m "Fix Sicilian page 5 navigation anchors"
+          git push origin HEAD:wip/sicilian-20260805-153931
