@@ -62,4 +62,7 @@ jobs:
           path: |
             sicilian-pdf.txt
             sicilian-navigation-audit.txt
+            apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md
+            apps/opening-book-sicilian/app/lib/markdown-moves.ts
+            apps/opening-book-sicilian/tests/chapter-workflow.test.mjs
           if-no-files-found: error
