@@ -1,0 +1,84 @@
+name: Retry full Sicilian PDF repair
+
+on:
+  push:
+    branches:
+      - wip/sicilian-20260805-153931
+    paths:
+      - .github/workflows/sicilian-navigation-retry.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: wip/sicilian-20260805-153931
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            apps/opening-book/package-lock.json
+            apps/opening-book-sicilian/package-lock.json
+
+      - name: Reuse and apply the guarded repair patch
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64
+          import gzip
+          import re
+          from pathlib import Path
+
+          workflow = Path('.github/workflows/sicilian-navigation-diagnostic.yml').read_text(encoding='utf-8')
+          match = re.search(r"echo '([^']+)' \| base64 -d \| gzip -d", workflow)
+          if not match:
+              raise SystemExit('Embedded repair patch was not found')
+          Path('/tmp/sicilian.patch').write_bytes(gzip.decompress(base64.b64decode(match.group(1))))
+          PY
+          git apply --check /tmp/sicilian.patch
+          git apply /tmp/sicilian.patch
+
+          python - <<'PY'
+          from pathlib import Path
+          test_file = Path('apps/opening-book-sicilian/tests/chapter-workflow.test.mjs')
+          text = test_file.read_text(encoding='utf-8')
+          old = r'assert.match(markdown, /13\.Bf3 Qd7! 14\.Qd3 Nc6! 15\.Bxe4/);'
+          new = r'assert.match(markdown, /13\.Bf3 Qd7! 14\.Qd3 Nc6!\s*<!--[\s\S]*?-->\s*15\.Bxe4/);'
+          if old not in text:
+              raise SystemExit('Regression assertion to correct was not found')
+          test_file.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+          git diff --check
+
+      - name: Test Catalan opening book
+        working-directory: apps/opening-book
+        run: |
+          npm ci
+          npm test
+
+      - name: Test repaired Sicilian opening book
+        working-directory: apps/opening-book-sicilian
+        run: |
+          npm ci
+          npm test
+
+      - name: Verify combined routes
+        run: node --test tests/opening-book-integration.test.mjs
+
+      - name: Commit repaired source
+        shell: bash
+        run: |
+          git config user.name "coachdinosaur"
+          git config user.email "86093996+coachdinosaur@users.noreply.github.com"
+          git add apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md \
+                  apps/opening-book-sicilian/app/lib/markdown-moves.ts \
+                  apps/opening-book-sicilian/tests/chapter-workflow.test.mjs
+          git diff --cached --check
+          git commit -m "Complete PDF-authoritative Sicilian navigation repair"
+          git push origin HEAD:wip/sicilian-20260805-153931
