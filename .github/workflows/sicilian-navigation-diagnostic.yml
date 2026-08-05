@@ -36,18 +36,10 @@ jobs:
 
           renderer = Path('app/components/MarkdownRenderer.tsx')
           text = renderer.read_text(encoding='utf-8')
-          old = '''    if (hiddenFen) {
-              try { resolver.setAnchor(hiddenFen[1].trim(), "Variation start"); } catch { /* surfaced by chapter checks */ }
-              index++;
-              continue;
-            }'''
-          new = '''    if (hiddenFen) {
-              try { resolver.addRoot(hiddenFen[1].trim(), "Variation start"); } catch { /* surfaced by chapter checks */ }
-              index++;
-              continue;
-            }'''
+          old = 'resolver.setAnchor(hiddenFen[1].trim(), "Variation start")'
+          new = 'resolver.addRoot(hiddenFen[1].trim(), "Variation start")'
           if old not in text:
-              raise SystemExit('renderer hidden-FEN block not found')
+              raise SystemExit('renderer hidden-FEN call not found')
           renderer.write_text(text.replace(old, new), encoding='utf-8')
 
           chapter = Path('app/content/chapters/chapter-1-sicilian.md')
