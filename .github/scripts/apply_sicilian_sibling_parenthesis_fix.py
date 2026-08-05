@@ -1,0 +1,119 @@
+from pathlib import Path
+
+resolver_path = Path("apps/opening-book-sicilian/app/lib/markdown-moves.ts")
+resolver = resolver_path.read_text(encoding="utf-8")
+
+old_loop = '''    const matches = [...moveText.matchAll(SOURCE_MOVE_TOKEN)];
+    for (let matchIndex = 0; matchIndex < matches.length; matchIndex++) {
+      const match = matches[matchIndex];
+      const at = match.index ?? 0;
+      const nextDepth = Math.max(0, baseDepth + parenDepthDeltaAt(moveText, at));
+      while (nextDepth > depth) {
+        returnStates.push(active);
+        active = previousMoveResolved ? lastBefore : active;
+        branchStarts.push(active);
+        depth++;
+      }
+      while (nextDepth < depth) {
+        active = returnStates.pop() ?? active;
+        branchStarts.pop();
+        depth--;
+      }
+
+      const display = match[0].trim();'''
+
+new_loop = '''    const matches = [...moveText.matchAll(SOURCE_MOVE_TOKEN)];
+    for (let matchIndex = 0; matchIndex < matches.length; matchIndex++) {
+      const match = matches[matchIndex];
+      const at = match.index ?? 0;
+      const previousMatch = matchIndex > 0 ? matches[matchIndex - 1] : null;
+      const betweenMoves = previousMatch
+        ? moveText.slice((previousMatch.index ?? 0) + previousMatch[0].length, at)
+        : moveText.slice(0, at);
+      const nextDepth = Math.max(0, baseDepth + parenDepthDeltaAt(moveText, at));
+      const siblingParenthetical = depth > 0
+        && nextDepth === depth
+        && /[)\\]][\\s\\S]*[(\\[]/.test(betweenMoves);
+
+      if (siblingParenthetical) {
+        // A close followed by a new open can have the same net depth, as in
+        // `(2...Nc6 3.d4), while (2...d6 ...)`. Return to the outer position
+        // before opening the sibling branch instead of continuing the first one.
+        active = returnStates.pop() ?? active;
+        branchStarts.pop();
+        depth--;
+        lastBefore = active;
+        previousMoveResolved = true;
+        returnStates.push(active);
+        branchStarts.push(active);
+        depth++;
+      } else {
+        while (nextDepth > depth) {
+          returnStates.push(active);
+          active = previousMoveResolved ? lastBefore : active;
+          branchStarts.push(active);
+          depth++;
+        }
+        while (nextDepth < depth) {
+          active = returnStates.pop() ?? active;
+          branchStarts.pop();
+          depth--;
+          lastBefore = active;
+        }
+      }
+
+      const display = match[0].trim();'''
+
+count = resolver.count(old_loop)
+if count != 1:
+    raise SystemExit(f"Expected one resolver loop to replace, found {count}")
+resolver = resolver.replace(old_loop, new_loop, 1)
+
+old_between = '''      const numberedKey = moveNumberKey(display);
+      const previousMatch = matchIndex > 0 ? matches[matchIndex - 1] : null;
+      const betweenMoves = previousMatch
+        ? moveText.slice((previousMatch.index ?? 0) + previousMatch[0].length, at)
+        : "";
+      if (depth > 0 && numberedKey && betweenMoves.includes(";")) {'''
+new_between = '''      const numberedKey = moveNumberKey(display);
+      if (depth > 0 && numberedKey && betweenMoves.includes(";")) {'''
+count = resolver.count(old_between)
+if count != 1:
+    raise SystemExit(f"Expected one duplicate between-moves block, found {count}")
+resolver = resolver.replace(old_between, new_between, 1)
+resolver_path.write_text(resolver, encoding="utf-8")
+
+tests_path = Path("apps/opening-book-sicilian/tests/chapter-workflow.test.mjs")
+tests = tests_path.read_text(encoding="utf-8")
+marker = 'test("move navigation survives PDF page and parenthesis boundaries", () => {'
+regression = '''test("comma-separated parenthetical alternatives return to the shared anchor", () => {
+  const resolver = new MarkdownMoveResolver();
+  const anchor = "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPPNPPP/RNBQKB1R b KQkq - 1 2";
+  resolver.setAnchor(anchor, "After 2.Ne2");
+
+  const tokens = resolver.resolveText(
+    "White can choose between (2...Nc6 3.d4), while (2...d6 3.Nbc3 Nf6 4.g3 with 4...e6).",
+  );
+  const byDisplay = (display) => tokens.find((token) => token.display === display);
+
+  for (const display of ["2...Nc6", "3.d4", "2...d6", "3.Nbc3", "Nf6", "4.g3", "4...e6"]) {
+    assert.ok(byDisplay(display)?.navigation, `${display} should be navigable.`);
+  }
+
+  assert.deepEqual(
+    byDisplay("3.d4").navigation.steps.slice(0, 3).map((step) => step.label),
+    ["After 2.Ne2", "2...Nc6", "3.d4"],
+  );
+  assert.deepEqual(
+    byDisplay("4...e6").navigation.steps.slice(0, 6).map((step) => step.label),
+    ["After 2.Ne2", "2...d6", "3.Nbc3", "Nf6", "4.g3", "4...e6"],
+  );
+  assert.equal(byDisplay("2...d6").navigation.steps[0].fen, anchor);
+});
+
+'''
+if regression.strip() not in tests:
+    if marker not in tests:
+        raise SystemExit("Could not find regression-test insertion point")
+    tests = tests.replace(marker, regression + marker, 1)
+tests_path.write_text(tests, encoding="utf-8")
