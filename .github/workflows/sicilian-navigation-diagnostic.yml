@@ -27,15 +27,119 @@ jobs:
         working-directory: apps/opening-book-sicilian
         run: npm ci
 
-      - name: Upload local chess tooling
+      - name: Apply experimental navigation repair
+        working-directory: apps/opening-book-sicilian
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          renderer = Path('app/components/MarkdownRenderer.tsx')
+          text = renderer.read_text(encoding='utf-8')
+          old = '''    if (hiddenFen) {
+              try { resolver.setAnchor(hiddenFen[1].trim(), "Variation start"); } catch { /* surfaced by chapter checks */ }
+              index++;
+              continue;
+            }'''
+          new = '''    if (hiddenFen) {
+              try { resolver.addRoot(hiddenFen[1].trim(), "Variation start"); } catch { /* surfaced by chapter checks */ }
+              index++;
+              continue;
+            }'''
+          if old not in text:
+              raise SystemExit('renderer hidden-FEN block not found')
+          renderer.write_text(text.replace(old, new), encoding='utf-8')
+
+          chapter = Path('app/content/chapters/chapter-1-sicilian.md')
+          text = chapter.read_text(encoding='utf-8')
+          text = text.replace('9.Bg5 f6 10.Nh3', '9.Ng5 f6 10.Nh3')
+          text = text.replace('16.Bxd4 cxd4+', '16.Nxd4 cxd4+')
+          chapter.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Test experimental repair
+        working-directory: apps/opening-book-sicilian
+        run: npm test
+
+      - name: Generate browser-sequential navigation audit
+        working-directory: apps/opening-book-sicilian
+        shell: bash
+        run: |
+          cat > sequential-audit.mts <<'EOF'
+          import { readFileSync, writeFileSync } from "node:fs";
+          import { extractFenBlocks, extractPages } from "./app/lib/markdown-chapter.ts";
+          import { MarkdownMoveResolver } from "./app/lib/markdown-moves.ts";
+          import { isCoordinateMoveReference } from "./app/lib/chess-notation.ts";
+
+          const markdown = readFileSync("app/content/chapters/chapter-1-sicilian.md", "utf8");
+          const pages = extractPages(markdown);
+          const resolver = new MarkdownMoveResolver(undefined, undefined, false);
+          const output: string[] = [];
+          let total = 0;
+          let resolved = 0;
+
+          for (let appIndex = 0; appIndex < pages.length; appIndex++) {
+            const page = pages[appIndex];
+            extractFenBlocks(page.markdown).forEach(({ fen }, index) => resolver.addRoot(fen, `Page ${page.number} position ${index + 1}`));
+            const lines = page.markdown.split(/\r?\n/);
+            const failures: string[] = [];
+            let pageTotal = 0;
+            let pageResolved = 0;
+
+            for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+              const line = lines[lineIndex];
+              const trimmed = line.trim();
+              if (!trimmed || trimmed.startsWith("```")) continue;
+              const hidden = /^<!--\s*FEN:\s*([^>]+?)\s*-->$/.exec(trimmed);
+              if (hidden) {
+                resolver.addRoot(hidden[1].trim(), `Page ${page.number} variation root`);
+                continue;
+              }
+              if (trimmed.startsWith("**FEN:**")) {
+                const visible = /^`([^`]+)`$/.exec(lines[lineIndex + 1]?.trim() ?? "");
+                if (visible) {
+                  resolver.setAnchor(visible[1].trim(), `Page ${page.number} diagram`);
+                  lineIndex++;
+                }
+                continue;
+              }
+              if (/^`[^`]+`$/.test(trimmed)) continue;
+
+              const tokens = resolver.resolveText(line);
+              if (!tokens.length) continue;
+              pageTotal += tokens.length;
+              pageResolved += tokens.filter((token) => token.navigation).length;
+
+              const unresolved = tokens.filter((token) => {
+                if (token.navigation) return false;
+                if (isCoordinateMoveReference(line, token.index)) return false;
+                if (/^[a-h][1-8](?:[!?]+|N)?$/.test(token.display)) return false;
+                if (/\b(?:Chapter\s+\d+|page\s+\d+)\b/i.test(line)) return false;
+                return true;
+              });
+              if (unresolved.length) {
+                failures.push(`  line ${lineIndex + 1}: ${unresolved.map((token) => token.display).join(", ")} :: ${trimmed}`);
+              }
+            }
+
+            total += pageTotal;
+            resolved += pageResolved;
+            output.push(`App page ${appIndex + 1} / PDF page ${page.number}: ${pageResolved}/${pageTotal} tokens navigable`);
+            output.push(...failures);
+          }
+
+          output.unshift(`Browser-sequential total: ${resolved}/${total} detected tokens navigable.`);
+          writeFileSync("../../sicilian-experimental-audit.txt", `${output.join("\n")}\n`);
+          EOF
+          node --import tsx sequential-audit.mts
+          rm sequential-audit.mts
+
+      - name: Upload experimental report
         uses: actions/upload-artifact@v4
         with:
-          name: sicilian-chess-tooling
+          name: sicilian-experimental-navigation
           path: |
-            apps/opening-book-sicilian/node_modules/chess.js/dist/esm/chess.js
-            apps/opening-book-sicilian/node_modules/chess.js/package.json
-            apps/opening-book-sicilian/app/lib/chess-notation.ts
-            apps/opening-book-sicilian/app/lib/markdown-chapter.ts
-            apps/opening-book-sicilian/app/lib/markdown-moves.ts
+            sicilian-experimental-audit.txt
+            apps/opening-book-sicilian/app/components/MarkdownRenderer.tsx
             apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md
           if-no-files-found: error
