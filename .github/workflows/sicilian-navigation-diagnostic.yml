@@ -23,120 +23,19 @@ jobs:
           cache: npm
           cache-dependency-path: apps/opening-book-sicilian/package-lock.json
 
-      - name: Install PDF tools
-        run: sudo apt-get update && sudo apt-get install -y poppler-utils
-
-      - name: Extract authoritative PDF text
-        run: pdftotext -layout apps/01_Rare_Options.pdf sicilian-pdf.txt
-
       - name: Install Sicilian dependencies
         working-directory: apps/opening-book-sicilian
         run: npm ci
 
-      - name: Build and test Sicilian
-        working-directory: apps/opening-book-sicilian
-        run: |
-          npm test
-          npm run build
-
-      - name: Generate page-local navigation audit
-        working-directory: apps/opening-book-sicilian
-        shell: bash
-        run: |
-          set +e
-          npm run chapters:audit -- \
-            --markdown app/content/chapters/chapter-1-sicilian.md \
-            --chapter 1 \
-            --expected-pages 17 \
-            --expected-first-page 7 \
-            --strict-moves \
-            > ../../sicilian-navigation-audit.txt 2>&1
-          status=$?
-          echo "audit_exit_code=$status" >> ../../sicilian-navigation-audit.txt
-          exit 0
-
-      - name: Generate browser-sequential navigation audit
-        working-directory: apps/opening-book-sicilian
-        shell: bash
-        run: |
-          cat > sequential-audit.mts <<'EOF'
-          import { readFileSync, writeFileSync } from "node:fs";
-          import { extractFenBlocks, extractPages } from "./app/lib/markdown-chapter.ts";
-          import { MarkdownMoveResolver } from "./app/lib/markdown-moves.ts";
-          import { isCoordinateMoveReference } from "./app/lib/chess-notation.ts";
-
-          const markdown = readFileSync("app/content/chapters/chapter-1-sicilian.md", "utf8");
-          const pages = extractPages(markdown);
-          const resolver = new MarkdownMoveResolver(undefined, undefined, false);
-          const output: string[] = [];
-          let total = 0;
-          let resolved = 0;
-
-          for (let appIndex = 0; appIndex < pages.length; appIndex++) {
-            const page = pages[appIndex];
-            extractFenBlocks(page.markdown).forEach(({ fen }, index) => resolver.addRoot(fen, `Page ${page.number} position ${index + 1}`));
-            const lines = page.markdown.split(/\r?\n/);
-            const failures: string[] = [];
-            let pageTotal = 0;
-            let pageResolved = 0;
-
-            for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-              const line = lines[lineIndex];
-              const trimmed = line.trim();
-              if (!trimmed || trimmed.startsWith("```")) continue;
-              const hidden = /^<!--\s*FEN:\s*([^>]+?)\s*-->$/.exec(trimmed);
-              if (hidden) {
-                resolver.setAnchor(hidden[1].trim(), `Page ${page.number} variation start`);
-                continue;
-              }
-              if (trimmed.startsWith("**FEN:**")) {
-                const visible = /^`([^`]+)`$/.exec(lines[lineIndex + 1]?.trim() ?? "");
-                if (visible) {
-                  resolver.setAnchor(visible[1].trim(), `Page ${page.number} diagram`);
-                  lineIndex++;
-                }
-                continue;
-              }
-              if (/^`[^`]+`$/.test(trimmed)) continue;
-
-              const tokens = resolver.resolveText(line);
-              if (!tokens.length) continue;
-              pageTotal += tokens.length;
-              pageResolved += tokens.filter((token) => token.navigation).length;
-
-              const unresolved = tokens.filter((token) => {
-                if (token.navigation) return false;
-                if (isCoordinateMoveReference(line, token.index)) return false;
-                if (/^[a-h][1-8](?:[!?]+|N)?$/.test(token.display)) return false;
-                if (/\b(?:Chapter\s+\d+|page\s+\d+)\b/i.test(line)) return false;
-                return true;
-              });
-              if (unresolved.length) {
-                failures.push(`  line ${lineIndex + 1}: ${unresolved.map((token) => token.display).join(", ")} :: ${trimmed}`);
-              }
-            }
-
-            total += pageTotal;
-            resolved += pageResolved;
-            output.push(`App page ${appIndex + 1} / PDF page ${page.number}: ${pageResolved}/${pageTotal} tokens navigable`);
-            output.push(...failures);
-          }
-
-          output.unshift(`Browser-sequential total: ${resolved}/${total} detected tokens navigable.`);
-          writeFileSync("../../sicilian-sequential-audit.txt", `${output.join("\n")}\n`);
-          EOF
-          node --import tsx sequential-audit.mts
-          rm sequential-audit.mts
-
-      - name: Upload diagnostic report
+      - name: Upload local chess tooling
         uses: actions/upload-artifact@v4
         with:
-          name: sicilian-navigation-diagnostic
+          name: sicilian-chess-tooling
           path: |
-            sicilian-pdf.txt
-            sicilian-navigation-audit.txt
-            sicilian-sequential-audit.txt
-            apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md
+            apps/opening-book-sicilian/node_modules/chess.js/dist/esm/chess.js
+            apps/opening-book-sicilian/node_modules/chess.js/package.json
+            apps/opening-book-sicilian/app/lib/chess-notation.ts
+            apps/opening-book-sicilian/app/lib/markdown-chapter.ts
             apps/opening-book-sicilian/app/lib/markdown-moves.ts
-            apps/opening-book-sicilian/tests/chapter-workflow.test.mjs
+            apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md
           if-no-files-found: error
