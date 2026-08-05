@@ -1,4 +1,4 @@
-name: Audit repaired Sicilian navigation
+name: Inspect Sicilian app page 3
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 jobs:
-  audit:
+  inspect:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,38 +24,28 @@ jobs:
           cache: npm
           cache-dependency-path: apps/opening-book-sicilian/package-lock.json
 
-      - name: Install and test
+      - name: Install
         working-directory: apps/opening-book-sicilian
-        run: |
-          npm ci
-          npm test
-          npm run build
+        run: npm ci
 
-      - name: Generate browser-sequential audit
+      - name: Report every plain move token on app page 3
         working-directory: apps/opening-book-sicilian
         shell: bash
         run: |
-          cat > sequential-audit.mts <<'EOF'
+          cat > inspect-page3.mts <<'EOF'
           import { readFileSync, writeFileSync } from "node:fs";
           import { extractFenBlocks, extractPages } from "./app/lib/markdown-chapter.ts";
           import { MarkdownMoveResolver } from "./app/lib/markdown-moves.ts";
-          import { isCoordinateMoveReference } from "./app/lib/chess-notation.ts";
 
           const markdown = readFileSync("app/content/chapters/chapter-1-sicilian.md", "utf8");
           const pages = extractPages(markdown);
           const resolver = new MarkdownMoveResolver(undefined, undefined, false);
           const output: string[] = [];
-          let total = 0;
-          let resolved = 0;
 
-          for (let appIndex = 0; appIndex < pages.length; appIndex++) {
+          for (let appIndex = 0; appIndex <= 2; appIndex++) {
             const page = pages[appIndex];
             extractFenBlocks(page.markdown).forEach(({ fen }, index) => resolver.addRoot(fen, `Page ${page.number} position ${index + 1}`));
             const lines = page.markdown.split(/\r?\n/);
-            const failures: string[] = [];
-            let pageTotal = 0;
-            let pageResolved = 0;
-
             for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
               const line = lines[lineIndex];
               const trimmed = line.trim();
@@ -74,36 +64,20 @@ jobs:
                 continue;
               }
               if (/^`[^`]+`$/.test(trimmed)) continue;
-
               const tokens = resolver.resolveText(line);
-              if (!tokens.length) continue;
-              pageTotal += tokens.length;
-              pageResolved += tokens.filter((token) => token.navigation).length;
-              const unresolved = tokens.filter((token) => {
-                if (token.navigation) return false;
-                if (isCoordinateMoveReference(line, token.index)) return false;
-                if (/^[a-h][1-8](?:[!?]+|N)?$/.test(token.display)) return false;
-                if (/\b(?:Chapter\s+\d+|page\s+\d+)\b/i.test(line)) return false;
-                return true;
-              });
-              if (unresolved.length) failures.push(`  line ${lineIndex + 1}: ${unresolved.map((token) => token.display).join(", ")} :: ${trimmed}`);
+              if (appIndex === 2) {
+                const unresolved = tokens.filter((token) => !token.navigation);
+                if (unresolved.length) output.push(`line ${lineIndex + 1}: ${unresolved.map((token) => token.display).join(", ")} :: ${trimmed}`);
+              }
             }
-
-            total += pageTotal;
-            resolved += pageResolved;
-            output.push(`App page ${appIndex + 1} / PDF page ${page.number}: ${pageResolved}/${pageTotal} tokens navigable`);
-            output.push(...failures);
           }
-
-          output.unshift(`Browser-sequential total: ${resolved}/${total} detected tokens navigable.`);
-          writeFileSync("../../sicilian-repaired-audit.txt", `${output.join("\n")}\n`);
+          writeFileSync("../../sicilian-page3-plain-tokens.txt", `${output.join("\n")}\n`);
           EOF
-          node --import tsx sequential-audit.mts
-          rm sequential-audit.mts
+          node --import tsx inspect-page3.mts
+          rm inspect-page3.mts
 
-      - name: Upload audit
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: sicilian-repaired-audit
-          path: sicilian-repaired-audit.txt
+          name: sicilian-page3-plain-tokens
+          path: sicilian-page3-plain-tokens.txt
           if-no-files-found: error
