@@ -1,22 +1,11 @@
 ## Page 7
 
 # Chapter 1: Rare Options
-1.e4 c5
-
-Various 2nd Moves
-
-This chapter will concentrate on the rare moves: A) 2.Bc4, B) 2.c4, C) 2.Ne2, D) 2.Na3, E) 2.f4 and F) 2.a3.
-
-<!-- FEN: rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2 -->
-2.d4 cxd4 3.c3 gives us a choice: the solid 3...Nf6 4.e5 d5 enters the c3 Sicilian (see Chapters 5 to 9), while accepting the gambit with 3...dxc3 4.Nxc3 Nc6 5.Nf3 g6 transposes to variation A of Chapter 19 on page 343.
-<!-- FEN: rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2 -->
-2.Ne2 is likely to transpose elsewhere, e.g. 2...Nc6 3.f4 d5 4.d3 is line B12 of Chapter 2.
-<!-- FEN: rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2 -->
-2.a4 is a strange-looking move, but it has some point to it, although I struggle to believe you will face it regularly in tournament play. 2...Nc6 3.Bb5 Nf6 4.Nc3 g6 5.Nf3 Bg7 6.0-0 0-0 7.d3 d6 8.h3 a6 9.Bxc6 bxc6 10.Rb1 Re8= was fine for Black in Quaddy - Neapus, engine game 2011, which was agreed drawn an emotionally-draining 115 moves later.
-
 
 Variation Index
+
 1.e4 c5
+
 A) 2.Bc4 (page 8)
 B) 2.c4 (page 9)
 C) 2.Ne2 (page 11)
@@ -33,9 +22,20 @@ F) 2.a3 g6! 3.b4 Bg7 (page 20)
     F2) 4.Nc3! (page 22)
 
 
-
-
 ## Page 8
+
+1.e4 c5
+
+Various 2nd Moves
+
+This chapter will concentrate on the rare moves: A) 2.Bc4, B) 2.c4, C) 2.Ne2, D) 2.Na3, E) 2.f4 and F) 2.a3.
+
+<!-- FEN: rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2 -->
+2.d4 cxd4 3.c3 gives us a choice: the solid 3...Nf6 4.e5 d5 enters the c3 Sicilian (see Chapters 5 to 9), while accepting the gambit with 3...dxc3 4.Nxc3 Nc6 5.Nf3 g6 transposes to variation A of Chapter 19 on page 343.
+<!-- FEN: rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2 -->
+2.Be2 is likely to transpose elsewhere, e.g. 2...Nc6 3.f4 d5 4.d3 is line B12 of Chapter 2.
+<!-- FEN: rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2 -->
+2.a4 is a strange-looking move, but it has some point to it, although I struggle to believe you will face it regularly in tournament play. 2...Nc6 3.Bb5 Nf6 4.Nc3 g6 5.Nf3 Bg7 6.0-0 0-0 7.d3 d6 8.h3 a6 9.Bxc6 bxc6 10.Rb1 Re8= was fine for Black in Quaddy - Neapus, engine game 2011, which was agreed drawn an emotionally-draining 115 moves later.
 
 A) 2.Bc4
 1.e4 c5 2.Bc4
@@ -51,19 +51,24 @@ This is rather harmless, as the bishop will be an object of attack on c4 and wil
 `rnbqkbnr/pp1p1ppp/4p3/2p5/2B1P3/8/PPPPQPPP/RNB1K1NR b KQkq - 1 3`
 
 <!-- FEN: rnbqkbnr/pp1p1ppp/4p3/2p5/2B1P3/8/PPPP1PPP/RNBQK1NR w KQkq - 0 3 -->
-3.Nf3 Nf6! 4.Nc3 (4.e5 d5! 5.exf6 dxc4 6.fxg7 Bxg7 7.Qe2 [7.Na3 e5!] 7...Nc6 8.Qxc4 b6! 9.0-0 Rg8!→ was better for Black in Osipov - Rimkus, corr. 2010) 4...Nc6 5.0-0 d5 6.exd5 exd5 7.Bb5 Bd6 8.d4 0-0 9.dxc5 Bxc5 10.Bg5 Be6 11.Rb1 Rc8 12.a3 Be7 13.Re1!N= (Instead, 13.Nd4?! should have led to a slight pull for Black after 13...Nxd4!N 14.Qxd4 a6 15.Be2 Re8 as the c3-knight is clumsy and White is blockading the d5-pawn with the wrong piece.)
+3.Nf3 Nf6! 4.Nc3 (4.e5 d5! 5.exf6 dxc4 6.fxg7 Bxg7 7.Qe2 [7.Na3 e5!] 7...Nc6 8.Qxc4 b6! 9.0-0 Rg8!→ was better for Black in Osipov - Rimkus, corr. 2010) 4...Nc6 5.0-0 d5 6.exd5 exd5 7.Bb5 Bd6 8.d4 0-0 9.dxc5 Bxc5 10.Bg5 Be6 11.Rb1 Rc8 12.a3 Be7 Bersamina - Kantans, Pune 2014, and now: 13.Re1!N= (Instead, 13.Nd4?! should have led to a slight pull for Black after 13...Nxd4!N 14.Qxd4 a6 15.Be2 Re8+ as the c3-knight is clumsy and White is blockading the d5-pawn with the wrong piece.)
 
 <!-- FEN: rnbqkbnr/pp1p1ppp/4p3/2p5/2B1P3/8/PPPPQPPP/RNB1K1NR b KQkq - 1 3 -->
 3...Nc6 4.Nf3
 
 <!-- FEN: r1bqkbnr/pp1p1ppp/2n1p3/2p5/2B1P3/8/PPPPQPPP/RNB1K1NR w KQkq - 2 4 -->
-4.c3 Be7 5.Bb3 d5 6.d3 Nf6 7.Nf3 0-0 8.0-0 b5 9.Bg5 (9.Bc2 b4) 9...h6!? (9...c4 10.dxc4 bxc4 11.Ba4 dxe4 12.Bxc6 exf3 13.Bxf3 Rb8 14.Bf4 Rb5 15.b4 Nd5 16.Bg3 Bf6 17.a4 Rxb4 18.cxb4 Bxa1 19.Qxc4 Bb7 20.Na3 Nc3 was a wild affair that eventually ended in Black's favour in Rasik - Smirin, Czech Republic 2003.) 10.Bh4 a5!? 11.e5 Nd7 12.Bxe7 Qxe7 In my opinion Black has an excellent position. He has a lot of space on the queenside, offering him promising chances in that sector of the board.
+4.c3 Be7 5.Bb3 d5 6.d3 Nf6 7.Nf3 0-0 8.0-0 b5 9.Bg5 (9.Bc2 b4+) 9...h6!? (9...c4 10.dxc4 bxc4 11.Ba4 dxe4 12.Bxc6 exf3 13.Bxf3 Rb8 14.Bf4 Rb5 15.b4 Nd5 16.Bg3 Bf6 17.a4 Rxb4 18.cxb4 Bxa1 19.Qxc4 Bb7 20.Na3 Nc3∞ was a wild affair that eventually ended in Black's favour in Rasik - Smirin, Czech Republic 2003.) 10.Bh4
+
+
+## Page 9
+
+10...a5!? 11.e5 Nd7 12.Bxe7 Nxe7+ In my opinion Black has an excellent position. He has a lot of space on the queenside, offering him promising chances in that sector of the board.
 
 <!-- FEN: r1bqkbnr/pp1p1ppp/2n1p3/2p5/2B1P3/2P5/PP1PQPPP/RNB1K1NR b KQkq - 0 4 -->
 4...Nge7!? 5.Bb3
 
 <!-- FEN: r1bqkb1r/pp1pnppp/2n1p3/2p5/2B1P3/2P5/PP1PQPPP/RNB1K1NR w KQkq - 1 5 -->
-5.d3 Ng6 6.h4!? (6.Nf3 Be7 7.O-O O-O 8.Bb3 d5 is great for Black) 6...Bd6! 7.Nf3 h6 8.h5 Nge5 9.Nxe5 Bxe5 10.Nbd2 Bb8!? 11.0-0 0-0 12.Bb3 d5 is fine for us.
+5.d3 Ng6 6.h4!? (6.0-0 Be7 7.c3 d5 8.Bb3 0-0+ is great for Black) 6...Bd6! 7.Nbd2 h6 8.h5 Nge5 9.Nxe5 Bxe5 10.Nf3 Bb8!? 11.c3 0-0 12.Bb3 d5∓ is fine for us.
 
 <!-- FEN: rnbqkb1r/pp3ppp/4pP2/2pp4/2B5/5N2/PPPP1PPP/RNBQK2R b KQkq - 0 5 -->
 5...g6!? 6.c3 Bg7 7.d3 b6 8.0-0 Ba6 9.Re1 0-0 10.Na3 d5 11.exd5 Nxd5 12.Bg5
@@ -71,17 +76,12 @@ This is rather harmless, as the bishop will be an object of attack on c4 and wil
 Black had the more harmonious development in Rasik - Jirovsky, Karlovy Vary 2004, and should have now chosen:
 
 <!-- FEN: rbbq1rk1/pp1p1pp1/2n1p2p/2p4P/4P3/1BPP4/PP1NQPP1/R1B2RK1 b - - 5 12 -->
-12...Qc7N
+12...Qc7N∓
 
 **FEN:**
 `r1q2rk1/p1p2pbp/bpn1p1p1/3n2B1/8/N1PP1N2/PP2QPPP/R3R1K1 w - - 1 13`
 
 Black enjoys a slight edge due to the weakness of the d3-pawn.
-
-
-
-
-## Page 9
 
 B) 2.c4
 1.e4 c5 2.c4
@@ -95,7 +95,12 @@ Toying with the possibility of d2-d4, transposing to a Maroczy Bind.
 <!-- FEN: r1bqkbnr/pp1ppppp/2n5/2p5/2P1P3/8/PP1P1PPP/RNBQKBNR w KQkq - 1 3 -->
 Instead, 3.Nc3 g6 leads to the English and is outside the scope of this book.
 <!-- FEN: r1bqkbnr/pp1ppppp/2n5/2p5/2P1P3/8/PP1P1PPP/RNBQKBNR w KQkq - 1 3 -->
-3.Nf3 e5 is obviously fine for Black, as the knight stands badly on f3. One recent example went: 4.Nc3 d6 5.d3 (5.g3 g6 6.Bg2 Bg7 7.0-0 Nge7 8.d3 0-0 9.Bg5 f6 10.Nh3 Be6 11.f4 Qd7 12.Nf2 Nd4 13.e3 Rab8 was excellent for Black in Plueg - Shaw, Coulsdon 1997.) 5...f5!? 6.exf5 Bxf5 7.h3?! Qd7 8.Be2 Nf6 9.Nh2?! White is fighting for the light squares, but Black has enough resources to combat this plan. 9...Nd4 10.Bg5 0-0-0! 11.0-0 h6 12.Bxf6 gxf6 13.Kh1?! (13.Nd5!?, preparing to counterattack by b2-b4, might have made a fight of it.) 13...h5! 14.Bxh5 Be6 15.Ne2 Kb8 16.Bxd4 cxd4+ Black's attack eventually proved too much for White in Karacsony - S. Petkov, corr. 2012.
+3.Nf3 e5 is obviously fine for Black, as the knight stands badly on f3. One recent example went: 4.Nc3 d6 5.d3 (5.g3 g6 6.Bg2 Bg7 7.0-0 Nge7 8.d3 0-0 9.Bg5 f6 10.Nh3 Be6 11.f4 Qd7 12.Nf2 Nd4 13.Be3 Rab8+ was excellent for Black in Plueg - Shaw, Coulsdon 1997.) 5...f5!? 6.exf5 Bxf5 7.h3?! Qd7 8.Be2 Nf6 9.Nh2?! White is fighting for the light squares, but Black has enough resources to combat this plan. 9...Nd4 10.Bg5 0-0-0! 11.0-0 h6 12.Bxf6 gxf6 13.Kh1?! (13.Nd5!?, preparing to counterattack by b2-b4, might have made a fight of it.)
+
+
+## Page 10
+
+13...h5! 14.Bxh5 Be6 15.Ne2 Kb8 16.Bxd4 cxd4+ Black's attack eventually proved too much for White in Karacsony - S. Petkov, corr. 2012.
 
 <!-- FEN: r1bqkbnr/pp1ppppp/2n5/2p5/2P1P3/5N2/PP1P1PPP/RNBQKB1R b KQkq - 2 3 -->
 3...Nf6!
@@ -111,7 +116,7 @@ So, there we have it. The only one who seems to believe in White's chances here 
 Eisenbeiser's trademark.
 
 <!-- FEN: r1bqkb1r/pp3ppp/2n2n2/2pp4/3PP3/2N2N2/PP3PPP/R1BQKB1R w KQkq - 0 7 -->
-7.e5?! led to a quick disaster for White after: 7...Ng4! 8.f4? (8.h3 cxd4 9.Nxd4 Ngxe5 10.f4 had to be preferred, although it is clear that White is struggling a pawn down.) 8...cxd4 9.Nxd4 Bc5! 10.Bb5 0-0! 11.Nxc6 bxc6 12.Bxc6 Qb6! 13.Bxa8 Bf2+ 14.Ke2 Nxe5 (14...Qh4!N-+ would have been cleaner.) 15.Kf1? (Better was 15.Qd2, although Black would still gain a sizeable advantage after: 15...Nc4! 16.Qxd5 Re8+ 17.Ne4 Nd6! 18.Qxd6 Qxd6 19.Kxf2 Qb6+ 20.Be3 Qxb2+ 21.Nd2 Rxe3 22.Kxe3 Qc3+ 23.Kf2 Qxd2+ 24.Kf3 Qc3+ 25.Kf2 g5!) 15...Ba6+ 16.Ne2 Bh4 17.g3 Ng4 18.Kg2 Bf2+ 19.Kh3 Bxe2 20.Qxd5 Bf6 21.Qg2 Re8 22.Qxf2 Nxf2+ 23.Kg2 Nxh1 24.Bc6 Re6 25.Ba4 Bd4 0-1 Tukhvatullin - Karpeshov, Sterlitamak 2011.
+7.e5?! led to a quick disaster for White after: 7...Ng4! 8.f4? (8.h3 cxd4 9.Nxd4 Ngxe5 10.f4+ had to be preferred, although it is clear that White is struggling a pawn down.) 8...cxd4 9.Nxd4 Bc5! 10.Bb5 0-0! 11.Nxc6 bxc6 12.Bxc6 Qb6! 13.Bxa8 Bf2+ 14.Ke2 Nxe5 (14...Qh4!N-+ would have been cleaner.) 15.Kf1? (Better was 15.Qd2, although Black would still gain a sizeable advantage after: 15...Nc4! 16.Qxd5 Re8+ 17.Ne4 Nd6! 18.Qxd6 Qxd6 19.Kxf2 Qb6+ 20.Be3 Qxb2+ 21.Nd2 Rxe3 22.Kxe3 Qc3+ 23.Kf2 Qxd2+ 24.Kf3 Qc3+ 25.Kf2 g5!+) 15...Ba6+ 16.Ne2 Bh4 17.g3 Ng4 18.Kg2 Bf2+ 19.Kh3 Bxe2 20.Qxd5 Bf6 21.Qg2 Re8 22.Qxf2 Nxf2+ 23.Kg2 Nxh1 24.Bc6 Re6 25.Ba4 Bd4 0-1 Tukhvatullin - Karpeshov, Sterlitamak 2011.
 
 <!-- FEN: r1bqkb1r/pp3ppp/2n2n2/2ppP3/3P4/2N2N2/PP3PPP/R1BQKB1R b KQkq - 0 7 -->
 7...Be7!
@@ -121,14 +126,15 @@ Eisenbeiser's trademark.
 
 After this simple reply, it is rather White who is playing for equality. I think he can achieve it by:
 
-
-
-## Page 10
-
 8.Bxf6!?
 
 <!-- FEN: r2qk2r/pp2bppp/2n2n2/2pp2B1/2P1P3/2N5/PP2NPPP/R2QKB1R w KQkq - 1 8 -->
-8.exd5 Nxd5 9.Bxe7 Nce7 10.dxc5 0-0 leaves the white king too exposed in the centre, and I don't like his chances at all. For example: 11.Qd2 (11.Qd4?! Be6 12.Nf4 Nxf4 13.Qxf4 Nd5! 14.Nxd5 Qxd5 15.Be2 Qxg2 16.Bf3 Qg6+ left White in dire straits in Eisenbeiser - Solak, Dresden 2007.) 11...Be6 12.Ne4 Qc7! 13.g3 Rad8 14.Bg2 f5 15.Qc1 Qa5+ 16.Bc3 Eminov - Yilmazyerli, Antalya 2013, and now: 16...Nxc3!N 17.Qxc3 Qa6 18.Bf1 Qc6 19.Bg2 Nd5 20.f3 Nd4!∓
+8.exd5 Nxd5 9.Bxe7 Nce7 10.dxc5 0-0
+
+
+## Page 11
+
+leaves the white king too exposed in the centre, and I don't like his chances at all. For example: 11.Qd2 (11.Qd4?! Be6 12.Nf4 Nxf4 13.Qxf4 Nd5! 14.Nxd5 Qxd5 15.Be2 Qxg2 16.Bf3 Qg6+ left White in dire straits in Eisenbeiser - Solak, Dresden 2007.) 11...Be6 12.Ne4 Qc7! 13.g3 Rad8 14.Bg2 f5 15.Qc1 Qa5+ 16.N2c3 Eminov - Yilmazyerli, Antalya 2013, and now: 16...Nxc3!N 17.Qxc3 Qa6 18.Bf1 Qc6 19.Bg2 Nd5 20.f3 Nd4!∓
 
 8...Bxf6 9.dxc5 d4 10.Nd5 0-0
 
@@ -138,17 +144,15 @@ After this simple reply, it is rather White who is playing for equality. I think
 11.g3!?N
 
 <!-- FEN: r2q1rk1/pp3ppp/2n2b2/2PN4/3pP3/8/PP2NPPP/R2QKB1R w KQ - 0 11 -->
-Weaker is 11.Nxf6+ Qxf6 12.Ng3 Qe5! 13.Bd3 b6! 14.c6 (14.0-0? bxc5 15.Re1 c4 16.Bf1 d3 17.Nd2 Rb8-+ was simply lost for White in Eisenbeiser - Fluvia Poyatos, Barcelona 2007) 14...Bxc6 15.0-0 a5 16.Rc1 Bd6 when Black still maintains a nagging initiative.
-11...Re8 11...d3 12.Nec3 Bxc3+ 13.bxc3 Re8 14.Qxd3 Ne5 15.Qe3 produces another interesting position, where Black has a choice between 15...f5!? and 15...Nf3+ 16.Qxf3 Qxd5 17.Bd3 Qxc5 18.0-0 Be6.
+Weaker is 11.Nxf6+ Qxf6 12.Ng3 Qe5! 13.Bd3 b6! 14.c6 (14.0-0? bxc5 15.Re1 c4 16.Bf1 d3 17.Nd2 Rb8-+ was simply lost for White in Eisenbeiser - Fluvia Poyatos, Barcelona 2007) 14...Bxc6 15.0-0 a5 16.Rc1 Bd6+ when Black still maintains a nagging initiative.
 
-11...Bg4 12.Bg2 d3 13.Qxd3 Bxb2 14.Rb1 Qa5+ 15.Qd2 Qa3 16.Qxa5 Nxa5 17.h3 Be6 18.0-0 Nxc5 19.Nef4=
+11...Bg4
+
+11...d3 12.Nec3 Bxc3+ 13.bxc3 Re8 14.Qxd3 Ne5 15.Qe3 produces another interesting position, where Black has a choice between 15...f5!?∞ and 15...Nf3+ 16.Qxf3 Qxd5 17.Bd3 Qxc5 18.0-0 Be6∞.
+
+12.Bg2 d3 13.Qxd3 Bxb2 14.Rb1 Qa5+ 15.Qd2 Ba3 16.Qxa5 Nxa5 17.h3 Be6 18.0-0 Bxc5 19.Nef4=
 
 In this ending there is still plenty of play left for both sides, but the objective evaluation is equality: opposite-coloured bishops will soon appear on the board.
-
-
-
-
-## Page 11
 
 C) 2.Ne2
 1.e4 c5 2.Ne2
@@ -156,10 +160,13 @@ C) 2.Ne2
 **FEN:**
 `rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPPNPPP/RNBQKB1R b KQkq - 1 2`
 
-White is trying to postpone d2-d4 and create an awkward dilemma for Najdorf players: 2...Nc6 runs into 3.d4, while 2...d6 3.Nbc3 Nf6 4.g3 could be luring them into a g3 Dragon or a Closed Sicilian with ...e6. Therefore, I have decided to offer a more clear-cut solution, in an attempt to satisfy all tastes:
+White is trying to postpone d2-d4 and create an awkward dilemma for Najdorf players: 2...Nc6 runs into 3.d4, while 2...d6 3.Nbc3 Nf6 4.g3 could be luring them into a g3 Dragon or a Closed Sicilian with ...e6 (which is beyond the subject of this book). Therefore, I have decided to offer a more clear-cut solution, in an attempt to satisfy all tastes:
 
 <!-- FEN: rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPPNPPP/RNBQKB1R b KQkq - 1 2 -->
 2...Nf6!? 3.Nbc3 d5!
+
+
+## Page 12
 
 That's it! Usually this pawn thrust would be premature, but the knight on e2 will prevent White from exploiting Black's opening of the centre.
 
@@ -168,11 +175,7 @@ That's it! Usually this pawn thrust would be premature, but the knight on e2 wil
 I think that White has to take.
 
 <!-- FEN: rnbqkb1r/pp2pppp/5n2/2pp4/4P3/2N5/PPPPNPPP/R1BQKB1R w KQkq - 0 4 -->
-The alternative 4.e5 Ng4 5.Nf4 (5.f4?! is better for Black after either 5...e6 or 5...h5) 5...Nxe5 6.Nxd5 e6 7.Ne3 Nbc6 8.g3 (8.f4 Ng6 9.g3? Nxf4!∓) 8...f5! 9.f4 Nf7 10.Bg2 Bd7 11.0-0 Be7 leads to a situation where Black's control over the d4-square easily guarantees him at least equal prospects.
-
-
-
-## Page 12
+The alternative 4.e5 Ng4 5.Nf4 (5.f4?! is better for Black after either 5...e6+ or 5...h5+) 5...Nxe5 6.Nfxd5 e6 7.Ne3 Nbc6 8.g3 (8.f4 Ng6 9.g3? Nxf4!+) 8...f5! 9.f4 Nf7 10.Bg2 Bd7 11.0-0 Be7∓ leads to a situation where Black's control over the d4-square easily guarantees him at least equal prospects.
 
 <!-- FEN: rnbqkb1r/pp2pppp/5n2/2pP4/8/2N5/PPPPNPPP/R1BQKB1R b KQkq - 0 4 -->
 4...Nxd5 5.g3 Nxc3 6.Nxc3 Bd7!
@@ -188,7 +191,7 @@ The only chance to develop an initiative.
 An accurate choice of Hou Yifan's, keeping the queen in the centre without allowing Black the luxury of harassing it.
 
 <!-- FEN: r2qkb1r/pp1bpppp/2n5/8/3Q4/2N3P1/PPP2P1P/R1B1KB1R w KQkq - 1 9 -->
-9.Qc4 allows 9...Be6! 10.Qb5 (10.Qa4 Qd4=) 10...a6! 11.Qxb7 Nd4 12.Bd3 Rb8 13.Qxa6 Ne5 (13.Bg2 g6 14.0-0 Bg7 15.Bxa6 0-0 16.Bd3 Qc8) 13...Nf3+ 14.Kd1 Ne5 and Black is not worse, in spite of his two-pawn deficit. A likely conclusion is a repetition after: 15.Re1 (15.Bf4 Nxd3 16.Qxd3 Qxd3+ 17.cxd3 Rxb2 18.Be3 g6 19.Bd4 f6= is okay for Black) 15...Nf3+ 16.Kd1 Ne5=
+9.Qc4 allows 9...Be6! 10.Qb5 (10.Qa4 Qd4=) 10...a6! 11.Qxb7 Nd4 12.Bd3 Rb8 13.Qxa6 (13.Bg2 g6 14.0-0 Bg7 15.Bxa6 0-0 16.Bd3 Qc8∞) 13...Nf3+ 14.Kd1 Ne5∞ and Black is not worse, in spite of his two-pawn deficit. A likely conclusion is a repetition after: 15.Ke1 (15.Bf4 Nxd3 16.Qxd3 Qxd3+ 17.cxd3 Rxb2 18.Be3 g6 19.Bd4 f6= is okay for Black) 15...Nf3+ 16.Kd1 Ne5=
 
 <!-- FEN: r2qkb1r/pp1bpppp/2n5/8/2Q5/2N3P1/PPP2P1P/R1B1KB1R b KQkq - 2 9 -->
 9...g6!N
@@ -199,7 +202,7 @@ An accurate choice of Hou Yifan's, keeping the queen in the centre without allow
 A strong idea: combining development with the creation of a good square on f5 for the bishop. Now Black has nothing to worry about.
 
 <!-- FEN: r2qkb1r/pp1bpppp/2n5/8/4Q3/2N3P1/PPP2P1P/R1B1KB1R b KQkq - 2 9 -->
-In Hou Yifan - Ju Wenjun, Lopota 2014, Black continued with the weakening 9...f5?! 10.Qc4 e5. After the further 11.Qd5! Be6 12.Qxe5 Nxe5, Black won White's queen and obtained a decisive advantage.
+In Hou Yifan - Ju Wenjun, Lopota 2014, Black continued with the weakening 9...f5?! 10.Qc4 Ne5. After the further 11.Qd5! Bc6 12.Qxe5 Bxh1, Hou Yifan could have wrapped up the game with 13.Nb5!N Rc8 14.Nxa7 Rxc2 15.Qxf5+-.
 
 <!-- FEN: r2qkb1r/pp1bpp1p/2n3p1/8/2Q5/2N3P1/PPP2P1P/R1B1KB1R w KQkq - 0 10 -->
 10.Bg2 Bg7 11.0-0 0-0 12.Rd1 Qc8 13.Be3 Bf5 14.Qa4
@@ -208,14 +211,18 @@ In Hou Yifan - Ju Wenjun, Lopota 2014, Black continued with the weakening 9...f5
 14.Qh4 Rd8 15.Rxd8 Qxd8 16.Rd1 Qe8=
 
 <!-- FEN: r1q2rk1/pp2ppbp/2n3p1/5b2/7Q/2N1B1P1/PPP2PBP/R2R2K1 b - - 9 14 -->
-14...Bh3! 15.Be4 (15.Bh1 Qg4=) (15...Bf5 16.Bh1 Rb8 17.Rd2 Bxc3 18.bxc3 Ne5 19.Qa7 Qxc3 20.Qd4 Qxd4 21.Rxd4 Nc6 22.Rd2±)
+14...Bh3! 15.Be4
+
+15.Bh1 Qg4=
 
 <!-- FEN: r1q2rk1/pp2ppbp/2n3p1/8/7Q/2N1B1Pb/PPP2P1P/R2R2KB b - - 11 15 -->
-15...Bg4 16.Rd5 (16.Rd2 Ne5=) 16...Be6=
+15...Bg4
+
+15...Bf5 16.Bh1 Rb8 17.Rd2 Bxc3 18.bxc3 Ne5 19.Qa7 Qxc3 20.Qd4 Qxd4 21.Rxd4 Nc6 22.Rd2±
+
+16.Rd5 (16.Rd2 Ne5=) 16...Be6=
 
 The chances look to be completely equal.
-
-
 
 
 ## Page 13
@@ -233,7 +240,6 @@ A rather weird move, designed to keep the c-pawn unblocked in order to use it in
 I consider this logical reply as the best possibility for Black, although plenty of other good ones exist.
 
 We will consider two moves for White: D1) 3.Bb5 and D2) 3.Nf3.
-
 
 <!-- FEN: r1bqkbnr/pp1ppppp/2n5/2p5/4P3/N7/PPPP1PPP/R1BQKBNR w KQkq - 2 3 -->
 D1) 3.Bb5
@@ -258,7 +264,7 @@ The only testing move.
 <!-- FEN: r1bqkbnr/pp1p1ppp/2n5/1Bp1p3/4P3/N7/PPPP1PPP/R1BQKBNR w KQkq - 0 4 -->
 Saule - Jemec, email 2006, continued with 4.Nf3, and here I would like to suggest a new idea: 4...Nge7!N 5.Nc4 (5.0-0 a6 6.Be2 d5 7.exd5 Nxd5 8.Re1 f6 9.Bf1 Be7 looks quite unimpressive for White) 5...d6 6.Ne3 a6 7.Be2 d5 8.d3 d4 9.Nc4 Ng6 10.a4 Be6 The position is simply excellent for Black.
 <!-- FEN: r1bqkbnr/pp1p1ppp/2n5/1Bp1p3/4P3/N7/PPPP1PPP/R1BQKBNR w KQkq - 0 4 -->
-4.Bxc6 dxc6 5.Nc4 (5.Nf3 b5!? 6.d3 Bd6 7.Nb1 h6 8.a4 Be6 is in no way better for White as Black will transfer his knight to d7, defending everything.) 5...f6 6.Qe2 Qc7 7.a4 Be7 8.Nf3 f6 gives Black the perfect Rossolimo set-up.
+4.Bxc6 dxc6 5.Nc4 (5.Nf3 b5!? 6.d3 Bd6 7.Nb1 h6 8.a4 Be6 is in no way better for White as Black will transfer his knight to d7, defending everything.) 5...f6 6.Qe2 Qc7 7.a4 Be7 8.Nf3 Bd6 gives Black the perfect Rossolimo set-up.
 
 <!-- FEN: r1bqkbnr/pp1p1ppp/2B5/2p1p3/4P3/N7/PPPP1PPP/R1BQKBNR b KQkq - 0 4 -->
 4...Nge7 5.Nc4 d6 6.Bd2!
@@ -294,8 +300,6 @@ So far, the moves have been rather obvious for both sides. A simple equalizing i
 Black has typically contested d5, getting rid of all his problems.
 
 
-
-
 ## Page 14
 
 <!-- FEN: r1bqkbnr/pp1ppppp/2n5/2p5/4P3/N7/PPPP1PPP/R1BQKBNR w KQkq - 2 3 -->
@@ -329,14 +333,17 @@ The only try; without this move White obviously has nothing.
 
 A drastic solution - and a good one it seems.
 
-<!-- FEN: r1bqkb1r/pp1ppppp/2n5/2p5/4P1n1/N2P1N2/PPP1QPPP/R1B1KB1R b KQkq - 2 5 -->
-Alternatively, 5...Qc7 6.Nc4 e6 7.h3 Nh6 8.d4 cxd4 9.Bxh6 gxh6 10.Qd2 b5 11.c3 b5 12.Nd6+ Bxd6 13.exd6 Qxd6 14.Bxb5 Qc5 15.Be2 dxc3 16.bxc3 Rg8 17.0-0 Rb8 was double-edged in Hynes - Isigkeit, corr. 2008.
 
-6.Bc4 Ngxe5 7.Ncxe5 fxe5 8.Nxe5 g6!? 9.Qe3?!
+## Page 15
+
+<!-- FEN: r1bqkb1r/pp1ppppp/2n5/2p5/4P1n1/N2P1N2/PPP1QPPP/R1B1KB1R b KQkq - 2 5 -->
+Alternatively, 5...Qc7 6.Nc4 e6 7.h3 Nh6 8.d4 cxd4 9.Bxh6 gxh6 10.Qd2 Bb4 11.c3 b5 12.Nd6+ Bxd6 13.exd6 Qxd6 14.Bxb5 Qc5 15.Be2 dxc3 16.bxc3 Rg8 17.0-0 Rb8∞ was double-edged in Hynes - Isigkeit, corr. 2008.
+
+6.Nc4 Ngxe5 7.Ncxe5 fxe5 8.Nxe5 g6!? 9.Qe3?!
 
 This looks dubious.
 
-9.Nxc6! dxc6! 10.Qe5! (10.h4 Qd5 is fine for Black) 10...Nd4 11.Qxd4 cxd4 12.Bc4 b5 13.Be2 Be6= may look a shade better for White, but in fact the position is just balanced: Black has a lot of space and will keep his e-pawn on e7, where it is safely defended.
+9.Nxc6! dxc6! 10.Qe5! (10.h4 Qd5 is fine for Black) 10...Qd4 11.Qxd4 cxd4 12.Bc4 b5 13.Be2 (13.Bb3 d3) 13...Be6= may look a shade better for White, but in fact the position is just balanced: Black has a lot of space and will keep his e-pawn on e7, where it is safely defended.
 
 9...Nd4! 10.Qf4 Qb6! 11.Qf7+ Kd8 12.Bd3 d6 13.Nf3 Be6 14.Qf4 Bg7 15.Nxd4 Bxd4 16.c3 g5!
 
@@ -345,18 +352,13 @@ This looks dubious.
 
 White's attack lacks the ingredients of success and has obviously backfired. I will present the remaining moves of the game, as Black plays instructively.
 
-17.Bf3 e5 18.0-0 g4 19.Be2 h5 20.b4 cxb4 21.Rb1 a5 22.cxb4 axb4 23.Rb2 Ra5! 24.Nc3 Bxc3 25.dxc3 Re5 26.Qd2 h4! 27.Rxb4 Nc6 28.Re1
+17.Qf3 Be5 18.0-0 g4 19.Qe2 h5 20.b4 cxb4 21.Rb1 a5 22.cxb4 axb4 23.Rb2 Ra5! 24.Nc3 Bxc3 25.dxc3 Re5 26.Qd2 h4! 27.Rxb4 Nc6 28.Re1
 
 28.Rfb1!? must be an improvement.
 
 28...h3! 29.Bf1 Rhs5! 30.Reb1 Bf5 31.Rb6 Qd7 32.R3b3 Qf5-+
 
 Black was doing all the attacking and went on to win a nice game in Hynes - Benlloch Guirau, corr. 2008.
-
-
-
-
-## Page 15
 
 E) 2.f4
 1.e4 c5 2.f4
@@ -372,6 +374,9 @@ In this way, White avoids placing his knight on c3 for the moment; after 2...Nc6
 <!-- FEN: rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2 -->
 Black declares his intention of transposing into lines analysed under 2.Nc3.
 
+
+## Page 16
+
 <!-- FEN: rnbqkbnr/pp1ppp1p/6p1/2p5/4PP2/8/PPPP2PP/RNBQKBNR w KQkq - 0 3 -->
 3.d4!?
 
@@ -385,18 +390,13 @@ Leading the game to relatively untrodden paths.
 
 White can retreat his queen with either E1) 6.Qd1 or E2) 6.Qd3.
 
-
-
-
-## Page 16
-
 <!-- FEN: r1bqkb1r/pp1ppp1p/2n2np1/4P3/3Q1P2/8/PPP3PP/RNB1KBNR w KQkq - 1 6 -->
 E1) 6.Qd1
 <!-- FEN: r1bqkb1r/pp1ppp1p/2n2np1/4P3/3Q1P2/8/PPP3PP/RNB1KBNR w KQkq - 1 6 -->
 6.Qd1
 
 **FEN:**
-`r1bqkb1r/pp1ppp1p/2n2np1/4P3/3N1P2/8/PPP3PP/RNBQKBNR w KQkq - 1 6`
+`r1bqkb1r/pp1ppp1p/2n2np1/4P3/5P2/8/PPP3PP/RNBQKBNR b KQkq - 2 6`
 
 This has been sporadically played; White wishes to avoid being harassed by a subsequent ...Bf5. Now, however, Black can exploit the fact that e4 is no longer covered:
 
@@ -408,12 +408,9 @@ This has been sporadically played; White wishes to avoid being harassed by a sub
 
 Black places his knight on a wonderful central outpost. White may try to exchange the knight on e4, or ignore it, at least for the time being, and concentrate on development: E11) 7.Nd2 or E12) 7.Be3.
 
-
-
-## Page 17
-
 <!-- FEN: r1bqkb1r/pp1ppp1p/2n3p1/4P3/4nP2/8/PPP3PP/RNBQKBNR w KQkq - 1 7 -->
-7.Nf3N may well be best. A possible line of play is: 7...d6 (7...Qb6 8.Qe2 d5 9.Qe3!∞) 8.Qe2 (8.Be3 transposes to the note on 8.Nf3?! in variation E12) 8...Nc5 9.Be3 Be6 (9...Bg4!?; 9...Qb6 10.Bb5±) 10.Nc3 dxe5 11.fxe5 Bg7 12.Rd1 Qa5 13.Rd5 Qc7∞
+7.Nf3N may well be best. A possible line of play is: 7...d6 (7...Qb6 8.Qe2 d5 9.Qe3!∞) 8.Qe2 (8.Be3 transposes to the note on 8.Nf3?! in variation E12) 8...Nc5 9.Be3 Be6 (9...Bg4!?; 9...Qb6 10.Qb5!±) 10.Nc3 dxe5 11.fxe5 Bg7 12.Rd1 Qa5 13.Rd5 Qc7∞
+
 <!-- FEN: r1bqkb1r/pp1ppp1p/2n3p1/4P3/4nP2/8/PPP3PP/RNBQKBNR w KQkq - 1 7 -->
 E11) 7.Nd2
 <!-- FEN: r1bqkb1r/pp1ppp1p/2n3p1/4P3/4nP2/8/PPP3PP/RNBQKBNR w KQkq - 1 7 -->
@@ -426,7 +423,14 @@ The attempt to exchange the knight leaves the queenside a bit bare, for example:
 The natural move, but Black can now play ...d6 without worrying about weakening his pawn structure.
 
 <!-- FEN: r1bqkb1r/pp1ppp1p/2n3p1/4P3/5P2/8/PPPn2PP/R1BQKBNR w KQkq - 0 8 -->
-8.Qxd2!N is relatively best. 8...d6! 9.exd6 Bg7 10.Nf3! (10.dxe7?! Qxe7 11.Be2 [11.Qe3 Be6! leaves White terribly exposed, as he is seriously lagging in development.] 11...0-0 12.Nf3 Bf5!↑ Black has a tremendous initiative for the pawn.) 10...0-0 11.Bc4 Qb6! 12.c3!? (White might hold after 12.d7 Bxd7 13.Qxd7 Rad8 14.Qg4 Qb4+ 15.Bd2 Qxb2 16.Rb1 Qxc1 17.Rxb4 Rxd2+ 18.Kf2 Nxb4 19.Rd1 Bc5 20.Kf1 Nd4∓, but obviously Black has some chances to exploit the coordination of his pieces and the opponent's queenside weaknesses.) 12...exd6 13.Qe3! Qa5 14.0-0 d5 15.Bb3 Be6 16.Bf2! (16.Bd2?! Qb5) 16...Qb5 17.Be3 a5! Black has excellent counterplay in the IQP position that has arisen, but White has an accurate reply: 18.Rfb1! White should have enough to maintain approximate equality.
+8.Qxd2!N is relatively best. 8...d6! 9.exd6 Bg7 10.Nf3! (10.dxe7?! Qxe7+ 11.Be2 [11.Qe3 Be6! leaves White terribly exposed, as he is seriously lagging in development.] 11...0-0 12.Nf3 Bf5!↑ Black has a tremendous initiative for the pawn.) 10...0-0 11.Bc4 Qb6! 12.c3!?
+
+
+## Page 17
+
+White might hold after 12.d7 Bxd7 13.Qxd7 Rad8 14.Qg4 Qb4+ 15.Nd2 Bxb2 16.Rb1 Bxc1 17.Rxb4 Bxd2+ 18.Kf2 Bxb4 19.Rd1 Bc5+ 20.Kf1 Nd4∓, but obviously Black has some chances to exploit the coordination of his pieces and the opponent's queenside weaknesses.
+
+12...exd6 13.Qe3! Qa5 14.0-0 d5 15.Bb3 Be6 16.Bf2! (16.Bd2?! Qb5) 16...Qb5 17.Be3 a5! Black has excellent counterplay in the IQP position that has arisen, but White has an accurate reply: 18.Rfb1! White should have enough to maintain approximate equality.
 
 <!-- FEN: r1bqkb1r/pp1ppp1p/2n3p1/4P3/5P2/8/PPPQ2PP/R1B1KBNR b KQkq - 0 8 -->
 8...Bg7 9.c3 d6 10.Nf3 0-0
@@ -460,7 +464,7 @@ A good reply to 15.Qe3 is:
 
 15...Bxf3 16.Qxf3 Rad8 17.Qe2 Qb6 18.0-0-0 dxe5! 19.dxe5 (19.fxe5? Bxe5 20.Qxe5 Bxe2 21.Kxe2 Rac8 22.c3 c5-+) 19...Rfd8+ 20.Be3 f5 21.B3 Rxd3 22.cxd3 Nd5 23.Be4 Rad8 20.Rhd1 Bg7 Black has good chances to press in the ending in view of his superior minor piece.
 
-
+The ending was slightly better for Black due to his central mass, Salmensuu - Hillarp Persson, Reykjavik 2000.
 
 
 ## Page 18
@@ -475,7 +479,9 @@ E12) 7.Be3
 <!-- FEN: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 -->
 Trying to exploit the active e4-knight by opening up the position. White now faces a struggle to keep the balance.
 
-7...d5 leads to more static play, although Black should basically be okay; the move ...f6 can perhaps be employed at some point to liquidate the annoying e5-pawn. 8.Bd3 (8.Nf3!? Bg4 9.Be2 Bg7 10.0-0 0-0 11.Nbd2 Nxd2 12.Qxd2 Qa5!? 13.c3!? [13.Qxa5 Nxa5=] 13...e6∞) 8...Qa5+ 8...f5 9.Nf3 Bg7 10.0-0 0-0 11.Nbd2 Qc7= 9.c3 Bg7 10.Nf3 10...f6!? 11.exf6?! (11.0-0!? 0-0 12.b4! Qc7 13.Qb3!± e.g. 13...e6 14.Nxe4! dxe4 15.exf6 Bxf6 16.Bfd2) 11...Bxf6 12.Nbd2 Qc7 13.b3 0-0 14.Bb5 Kh8 15.Qe2 Bg4! 16.Bd2 e5 17.h3 Bf6 18.Bxc6 bxc6 19.fxe5 Re4 20.Qe3 Ba6 Black was better in Damljanovic - Z. Arsovic, Belgrade 1995.
+7...d5 leads to more static play, although Black should basically be okay; the move ...f6 can perhaps be employed at some point to liquidate the annoying e5-pawn. 8.Bd3 (8.Nf3!? Bg4 9.Be2 Bg7 10.0-0 0-0 11.Nbd2 Nxd2 12.Qxd2 Qa5!? 13.c3!? [13.Qxa5 Nxa5=] 13...e6∞) 8...Qa5+ (8...Bf5 9.Nf3 Bg7 10.0-0 0-0 11.Nbd2 Qc7=) 9.c3 Bg7 10.Nf3 10...f6!? 11.exf6?! (11.0-0!? 0-0 12.b4! Qc7 13.Qb3!± e.g. 13...e6 14.Bxe4! dxe4 15.exf6 Bxf6 16.Nfd2) 11...Nxf6 12.Nbd2 Qc7 13.Nb3 0-0 14.Bb5 Kh8 15.Qe2 Ng4! 16.Bd2 e5 17.h3 Nf6 18.Bxc6 bxc6 19.fxe5 Ne4 20.Qe3 Ba6+ Black was better in Damljanovic - Z. Arsovic, Belgrade 1995. However, as was obvious from the comments, White could have improved earlier on.
+
+The following lines illustrate Black's potential:
 
 <!-- FEN: r1bqkb1r/pp2pp1p/2np2p1/4P3/4nP2/4B3/PPP3PP/RN1QKBNR w KQkq - 0 8 -->
 8.Bd3!?
@@ -483,9 +489,9 @@ Trying to exploit the active e4-knight by opening up the position. White now fac
 Intriguing, but Black still comes out on top.
 
 <!-- FEN: r1bqkb1r/pp2pp1p/2np2p1/4P3/4nP2/4B3/PPP3PP/RN1QKBNR w KQkq - 0 8 -->
-Weaker is 8.Qd5?! f5 9.Bb5 Rc8 when White will be pushed back.
+Weaker is 8.Qd5?! Bf5 9.Bb5 Rc8+ when White will be pushed back.
 <!-- FEN: r1bqkb1r/pp2pp1p/2np2p1/4P3/4nP2/4B3/PPP3PP/RN1QKBNR w KQkq - 0 8 -->
-After 8.Nf3?! Qa5+! 9.c3 dxe5 10.fxe5 Bg7 the e5-pawn looks fatally exposed. 11.b4?! (White is also worse after 11.Bd3 Nc5 12.Bc4 e6) 11...Qc7 12.Bd3 Bf5! White is in big trouble. For example: 13.Qc2 (or 13.g4 0-0-0!! 14.gxf5 Nxe5-+ and White is about to be massacred along the open lines) 13...Nxc3!! 14.Nxc3 (14.Bxc3 Nxe5 15.Bxf5 Nxf3+ 16.gxf3 Bxc3+ 17.Kf2 gxf5-+) 14...Bxd3 15.Qxd3 Nxe5 16.Bb5+ Kd7 17.Nd4 Nxd4 18.Bxd4 Qc1 19.Ke2 Qxh1 20.Bxh8 Qxg2+-+
+After 8.Nf3?! Qa5+! 9.c3 dxe5 10.fxe5 Bg7 the e5-pawn looks fatally exposed. 11.b4?! (White is also worse after 11.Bd3 Nc5 12.Bc4 Be6) 11...Qc7 12.Bd3 Bf5! White is in big trouble. For example: 13.Qc2 (or 13.g4 0-0-0!! 14.gxf5 Nxe5-+ and White is about to be massacred along the open lines) 13...Nxc3!! 14.Nxc3 (14.Bxc3 Nxe5 15.Bxf5 Nxf3+ 16.gxf3 Bxc3+ 17.Kf2 gxf5-+) 14...Bxd3 15.Qxd3 Nxe5 16.Bb5+ Kd7 17.Nd4 Nxd4 18.Bxd4 Qc1+ 19.Ke2 Qxh1 20.Bxh8 Qxg2+-+
 Finally, Black also ends up slightly better after: 8.f3 f5! 9.exf6 Nxf6 10.Nc3 Bg7 11.h3 (11.Ng4! 12.g3 d5 13.Bc2 Bf5↑ is harmonious for Black) 11...0-0
 
 <!-- FEN: r1bqkb1r/pp2pp1p/2np2p1/4P3/4nP2/4BN2/PPP3PP/RN1QKB1R b KQkq - 1 8 -->
@@ -494,17 +500,15 @@ Finally, Black also ends up slightly better after: 8.f3 f5! 9.exf6 Nxf6 10.Nc3 B
 10...Nc5! (10...Bf5?! 11.Bc2!±) 11.Bxc5 (11.Bf1!? might be a better chance) 11...Qxc5 12.Nb5 Rb8! Black is for preference.
 
 
-
-
 ## Page 19
 
-<!-- FEN: r1bqkb1r/pp1ppp1p/2n2np1/4P3/3N1P2/8/PPP3PP/RNBQKBNR w KQkq - 1 6 -->
+<!-- FEN: r1bqkb1r/pp1ppp1p/2n2np1/4P3/3Q1P2/8/PPP3PP/RNB1KBNR w KQkq - 1 6 -->
 E2) 6.Qd3
-<!-- FEN: r1bqkb1r/pp1ppp1p/2n2np1/4P3/3N1P2/8/PPP3PP/RNBQKBNR w KQkq - 1 6 -->
+<!-- FEN: r1bqkb1r/pp1ppp1p/2n2np1/4P3/3Q1P2/8/PPP3PP/RNB1KBNR w KQkq - 1 6 -->
 6.Qd3
 
 **FEN:**
-`r1bqkb1r/pp1ppp1p/2n2np1/4P3/3N1P2/3Q4/PPP3PP/RNB1KB1R b KQkq - 1 6`
+`r1bqkb1r/pp1ppp1p/2n2np1/4P3/5P2/3Q4/PPP3PP/RNB1KBNR b KQkq - 2 6`
 
 White is trying to justify the queen sortie.
 
@@ -544,8 +548,6 @@ It seems more to the point to concentrate on development rather than lose time d
 11...Rc8
 
 Black has excellent compensation in return for the pawn.
-
-
 
 
 ## Page 20
@@ -602,9 +604,9 @@ Black is threatening ...c4, so White's response is practically forced.
 
 White has made too many pawn moves, which allows Black's better-developed army to take the leading role in the proceedings.
 
-13.f3 Nd7! 14.Bd3 Nc6! 15.Nxe4
+13.Bf3 Qd7! 14.Qd3 Nc6! 15.Bxe4
 
-15.Nxe4 Bxd4 16.Bxb7 Nxf3+ 17.Qxf3 Bxb2 18.Rb1 Bd4+∓
+15.Qxe4 Nxd4 16.Qxb7 Nxf3+ 17.Qxf3 Bxb2 18.Ra2 Be5+
 
 15...Nxd4 16.Nc3
 
@@ -636,7 +638,7 @@ The most solid move available to Black, maintaining the central equilibrium.
 
 5.Nf3
 
-On 6.Rb1, holding on to the pawn, the best reply is: 6...Nf6! 7.bxc5 (7.b5 Nd4 8.e5 Nh5!∞ is fine for Black) 7...bxc5 8.Bb5!? (8.Bc4?! 0-0 9.0-0 d6+) 8...Nd4!? (8...0-0 9.Bxc6 dxc6 10.0-0 Bg4 11.Re1 Nd7 12.h3 Bxf3 13.Qxf3±) 9.e5 Ng4 10.Nxd4 cxd4 11.Qxg4 dxc3∞
+On 5.Rb1, holding on to the pawn, the best reply is: 5...Nf6! 6.bxc5 (6.b5 Nd4 7.e5 Nh5!∞ is fine for Black) 6...bxc5 7.Bb5!? (7.Bc4?! 0-0 8.0-0 d6+) 7...Nd4!? (7...0-0 8.Bxc6 dxc6 9.0-0 Bg4 10.Re1 Nd7 11.h3 Bxf3 12.Qxf3±) 8.e5 Ng4 9.Nxd4 cxd4 10.Qxg4 dxc3∞
 <!-- FEN: rnbqk1nr/p2pppbp/1p4p1/2p5/1P2P3/P1N5/2PP1PPP/R1BQKBNR w KQkq - 0 5 -->
 After 5.g3 Nc6 6.Rb1 e6! (6...d6 7.Bg2 e5 8.Nge2 Nge7 9.0-0 0-0 10.d3 Nd4 11.bxc5 bxc5 12.f4 Be6 13.f5! gxf5 14.exf5 exf5 15.Nxd4 cxd4 16.Bxa8 Qxa8 17.Ne4 is what White is hoping for) 7.Bg2 Nge7 8.Nge2 0-0 9.0-0 d5 Black may well be slightly better already.
 
@@ -677,6 +679,6 @@ The computers are happy to be White here, which is difficult to understand as th
 
 The computer finally agrees that Black stands well, and obviously his position is more pleasant from the human perspective in view of the protected passed pawn on b4.
 
-
 Conclusion
+
 The 2nd move options examined in this chapter are not in any way theoretically dangerous for Black, but some may require careful memorization of details. Throughout the chapter I tried to give sound recommendations without jeopardizing our winning chances, and I am particularly satisfied with the results. Overall, an engrossing chapter with many interesting ideas for Black, which I hope will enhance the readers' winning ways.
