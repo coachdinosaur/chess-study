@@ -34,43 +34,26 @@ jobs:
           path = Path('apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md')
           text = path.read_text(encoding='utf-8')
 
-          replacements = [
-              (
-                  'White is trying to postpone d2-d4 and create an awkward dilemma for Najdorf players: 2...Nc6 runs into 3.d4, while 2...d6 3.Nbc3 Nf6 4.g3 could be luring them into a g3 Dragon or a Closed Sicilian with ...e6 (which is beyond the subject of this book). Therefore, I have decided to offer a more clear-cut solution, in an attempt to satisfy all tastes:',
-                  'White is trying to postpone d2-d4 and create an awkward dilemma for Najdorf players: (2...Nc6 runs into 3.d4), while (2...d6 3.Nbc3 Nf6 4.g3 could be luring them into a g3 Dragon or a Closed Sicilian with 4...e6), which is beyond the subject of this book. Therefore, I have decided to offer a more clear-cut solution, in an attempt to satisfy all tastes:',
-              ),
-              (
-                  'Weaker is 11.Nxf6+ Qxf6 12.Ng3 Qe5! 13.Bd3 b6! 14.c6',
-                  'Weaker is 11.Nxf6+ Qxf6 12.Ng3 Ne5! 13.Bd3 b6! 14.c6',
-              ),
-              (
-                  '14...Bxc6 15.0-0 a5 16.Rc1 Bd6+ when Black still maintains a nagging initiative. <!-- NON-NAVIGATION -->',
-                  '14...Qxc6 15.0-0 a5 16.Rc1 Qd6+ when Black still maintains a nagging initiative.',
-              ),
-          ]
-
-          for old, new in replacements:
-              count = text.count(old)
-              if count != 1:
-                  raise SystemExit(f'Expected one passage, found {count}: {old[:70]}')
-              text = text.replace(old, new, 1)
-
-          stale_comments = [
-              '<!-- FEN: r1b2rk1/p4ppp/1pn5/2P1q3/3pP3/3B2N1/PP3PPP/R2QK2R w KQ - 0 14 -->',
-              '<!-- FEN: r1b2rk1/p4ppp/2n5/4q3/2p1P3/3p2N1/PP3PPP/R2QRBK1 w - - 0 17 -->',
-          ]
-          for comment in stale_comments:
-              count = text.count(comment)
-              if count != 1:
-                  raise SystemExit(f'Expected one stale FEN comment, found {count}: {comment}')
-              text = text.replace(comment, '', 1)
+          old_dilemma = 'White is trying to postpone d2-d4 and create an awkward dilemma for Najdorf players: 2...Nc6 runs into 3.d4, while 2...d6 3.Nbc3 Nf6 4.g3 could be luring them into a g3 Dragon or a Closed Sicilian with ...e6 (which is beyond the subject of this book). Therefore, I have decided to offer a more clear-cut solution, in an attempt to satisfy all tastes:'
+          new_dilemma = 'White is trying to postpone d2-d4 and create an awkward dilemma for Najdorf players: (2...Nc6 runs into 3.d4), while (2...d6 3.Nbc3 Nf6 4.g3 could be luring them into a g3 Dragon or a Closed Sicilian with 4...e6), which is beyond the subject of this book. Therefore, I have decided to offer a more clear-cut solution, in an attempt to satisfy all tastes:'
+          if text.count(old_dilemma) != 1:
+              raise SystemExit(f'Expected one Najdorf-dilemma passage, found {text.count(old_dilemma)}')
+          text = text.replace(old_dilemma, new_dilemma, 1)
 
           branch_pattern = re.compile(
-              r'(Weaker is 11\.Nxf6\+ Qxf6 12\.Ng3 Ne5! 13\.Bd3 b6! 14\.c6)\s*\n\s*\(14\.0-0\?'
+              r'Weaker is 11\.Nxf6\+ Qxf6 12\.Ng3 Qe5! 13\.Bd3 b6! 14\.c6'
+              r'[\s\S]*?'
+              r'14\.\.\.Bxc6 15\.0-0 a5 16\.Rc1 Bd6\+ when Black still maintains a nagging initiative\.\s*<!-- NON-NAVIGATION -->'
           )
-          text, branch_count = branch_pattern.subn(r'\1 (14.0-0?', text, count=1)
+          corrected_branch = (
+              'Weaker is 11.Nxf6+ Qxf6 12.Ng3 Ne5! 13.Bd3 b6! 14.c6 '
+              '(14.0-0? bxc5 15.Re1 c4 16.Bf1 d3 17.Nd2 Rb8-+ was simply lost for White '
+              'in Eisenbeiser - Fluvia Poyatos, Barcelona 2007) '
+              '14...Qxc6 15.0-0 a5 16.Rc1 Qd6+ when Black still maintains a nagging initiative.'
+          )
+          text, branch_count = branch_pattern.subn(corrected_branch, text, count=1)
           if branch_count != 1:
-              raise SystemExit(f'Expected one split 14.c6 branch, found {branch_count}')
+              raise SystemExit(f'Expected one 14.c6 passage to replace, found {branch_count}')
 
           path.write_text(text, encoding='utf-8')
           PY
@@ -116,19 +99,17 @@ jobs:
             'r1bq1rk1/pp3ppp/2n2b2/2PN4/3pP3/8/PP2NPPP/R2QKB1R w KQ - 2 11',
             'After 10...0-0',
           );
-          const tokens = [
-            ...c4Line.resolveText('Weaker is 11.Nxf6+ Qxf6 12.Ng3 Ne5! 13.Bd3 b6! 14.c6 (14.0-0? bxc5 15.Re1 c4 16.Bf1 d3'),
-            ...c4Line.resolveText('17.Nd2 Rb8-+)'),
-            ...c4Line.resolveText('14...Qxc6 15.0-0 a5 16.Rc1 Qd6+'),
-          ];
+          const branch = c4Line.resolveText(
+            'Weaker is 11.Nxf6+ Qxf6 12.Ng3 Ne5! 13.Bd3 b6! 14.c6 (14.0-0? bxc5 15.Re1 c4 16.Bf1 d3 17.Nd2 Rb8-+ was simply lost for White in Eisenbeiser - Fluvia Poyatos, Barcelona 2007) 14...Qxc6 15.0-0 a5 16.Rc1 Qd6+ when Black still maintains a nagging initiative.',
+          );
           expectNavigable(
-            tokens,
+            branch,
             [
               '11.Nxf6+', 'Qxf6', '12.Ng3', 'Ne5!', '13.Bd3', 'b6!', '14.c6',
               '14.0-0?', 'bxc5', '15.Re1', 'c4', '16.Bf1', 'd3', '17.Nd2', 'Rb8',
               '14...Qxc6', '15.0-0', 'a5', '16.Rc1', 'Qd6+',
             ],
-            'the 14.c6 variation and its parenthetical sideline',
+            'the continuous 14.c6 variation',
           );
           NODE
 
