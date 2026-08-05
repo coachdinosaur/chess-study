@@ -9,7 +9,7 @@ export default defineConfig({
     port: 3001,
     strictPort: true,
     proxy: {
-      "/openings": {
+      "/openings/": {
         target: "http://localhost:3000",
         changeOrigin: true,
       },
@@ -20,7 +20,7 @@ export default defineConfig({
     port: 4174,
     strictPort: true,
     proxy: {
-      "/openings": {
+      "/openings/": {
         target: "http://localhost:4173",
         changeOrigin: true,
       },
