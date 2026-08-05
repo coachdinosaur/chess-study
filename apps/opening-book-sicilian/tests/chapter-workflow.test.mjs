@@ -13,6 +13,14 @@ test("discovers one contiguous Markdown catalog", async () => {
   assert.doesNotMatch(catalog, /chapter-packages|manifest|pdfjs|sourcePdf/);
 });
 
+test("Chapter 1 preserves the PDF page range 7 through 23", async () => {
+  const markdown = await readFile(new URL("../app/content/chapters/chapter-1-sicilian.md", import.meta.url), "utf8");
+  const pageNumbers = [...markdown.matchAll(/^## Page (\d+)\s*$/gm)].map((match) => Number(match[1]));
+  assert.deepEqual(pageNumbers, Array.from({ length: 17 }, (_, index) => index + 7));
+  const chapter = parseChapterMarkdown("chapter-1-sicilian.md", markdown);
+  assert.equal(chapter.pageCount, 17);
+});
+
 test("the Markdown contract rejects missing pages and invalid FENs", () => {
   assert.throws(() => parseChapterMarkdown("chapter-1-sicilian.md", "# Chapter 1\n\n**FEN:**\n`bad`\n"), /Page/);
   assert.throws(() => parseChapterMarkdown("chapter-1-sicilian.md", "# Chapter 1\n\n## Page 1\n\n**FEN:**\n`bad`\n"), /invalid FEN/);
