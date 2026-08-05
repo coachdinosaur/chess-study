@@ -240,17 +240,40 @@ export class MarkdownMoveResolver {
     for (let matchIndex = 0; matchIndex < matches.length; matchIndex++) {
       const match = matches[matchIndex];
       const at = match.index ?? 0;
+      const previousMatch = matchIndex > 0 ? matches[matchIndex - 1] : null;
+      const betweenMoves = previousMatch
+        ? moveText.slice((previousMatch.index ?? 0) + previousMatch[0].length, at)
+        : moveText.slice(0, at);
       const nextDepth = Math.max(0, baseDepth + parenDepthDeltaAt(moveText, at));
-      while (nextDepth > depth) {
-        returnStates.push(active);
-        active = previousMoveResolved ? lastBefore : active;
-        branchStarts.push(active);
-        depth++;
-      }
-      while (nextDepth < depth) {
+      const siblingParenthetical = depth > 0
+        && nextDepth === depth
+        && /[)\]][\s\S]*[(\[]/.test(betweenMoves);
+
+      if (siblingParenthetical) {
+        // A close followed by a new open can have the same net depth, as in
+        // `(2...Nc6 3.d4), while (2...d6 ...)`. Return to the outer position
+        // before opening the sibling branch instead of continuing the first one.
         active = returnStates.pop() ?? active;
         branchStarts.pop();
         depth--;
+        lastBefore = active;
+        previousMoveResolved = true;
+        returnStates.push(active);
+        branchStarts.push(active);
+        depth++;
+      } else {
+        while (nextDepth > depth) {
+          returnStates.push(active);
+          active = previousMoveResolved ? lastBefore : active;
+          branchStarts.push(active);
+          depth++;
+        }
+        while (nextDepth < depth) {
+          active = returnStates.pop() ?? active;
+          branchStarts.pop();
+          depth--;
+          lastBefore = active;
+        }
       }
 
       const display = match[0].trim();
@@ -265,10 +288,6 @@ export class MarkdownMoveResolver {
       }
 
       const numberedKey = moveNumberKey(display);
-      const previousMatch = matchIndex > 0 ? matches[matchIndex - 1] : null;
-      const betweenMoves = previousMatch
-        ? moveText.slice((previousMatch.index ?? 0) + previousMatch[0].length, at)
-        : "";
       if (depth > 0 && numberedKey && betweenMoves.includes(";")) {
         active = branchStarts[depth - 1] ?? active;
         lastBefore = active;

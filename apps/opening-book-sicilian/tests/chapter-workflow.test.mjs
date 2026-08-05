@@ -81,6 +81,31 @@ test("move recovery handles bad anchors, look-ahead, and semicolon siblings", ()
   assert.ok(siblingTokens.every((token) => token.navigation), "A semicolon should start a sibling variation from the same branch point.");
 });
 
+test("comma-separated parenthetical alternatives return to the shared anchor", () => {
+  const resolver = new MarkdownMoveResolver();
+  const anchor = "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPPNPPP/RNBQKB1R b KQkq - 1 2";
+  resolver.setAnchor(anchor, "After 2.Ne2");
+
+  const tokens = resolver.resolveText(
+    "White can choose between (2...Nc6 3.d4), while (2...d6 3.Nbc3 Nf6 4.g3 with 4...e6).",
+  );
+  const byDisplay = (display) => tokens.find((token) => token.display === display);
+
+  for (const display of ["2...Nc6", "3.d4", "2...d6", "3.Nbc3", "Nf6", "4.g3", "4...e6"]) {
+    assert.ok(byDisplay(display)?.navigation, `${display} should be navigable.`);
+  }
+
+  assert.deepEqual(
+    byDisplay("3.d4").navigation.steps.slice(0, 3).map((step) => step.label),
+    ["After 2.Ne2", "2...Nc6", "3.d4"],
+  );
+  assert.deepEqual(
+    byDisplay("4...e6").navigation.steps.slice(0, 6).map((step) => step.label),
+    ["After 2.Ne2", "2...d6", "3.Nbc3", "Nf6", "4.g3", "4...e6"],
+  );
+  assert.equal(byDisplay("2...d6").navigation.steps[0].fen, anchor);
+});
+
 test("move navigation survives PDF page and parenthesis boundaries", () => {
   const pages = new MarkdownMoveResolver();
   const beforeBreak = pages.resolveText("1.e4 c5 2.Bc4 e6 3.Qe2 Nc6 4.c3 Be7 5.Bb3 d5 6.d3 Nf6 7.Nf3 0-0 8.0-0 b5 9.Bg5 h6 10.Bh4");
