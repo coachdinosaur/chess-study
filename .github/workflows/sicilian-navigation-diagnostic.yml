@@ -1,4 +1,4 @@
-name: Apply Sicilian navigation repair
+name: Audit repaired Sicilian navigation
 
 on:
   push:
@@ -8,10 +8,10 @@ on:
       - .github/workflows/sicilian-navigation-diagnostic.yml
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  repair:
+  audit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,119 +24,86 @@ jobs:
           cache: npm
           cache-dependency-path: apps/opening-book-sicilian/package-lock.json
 
-      - name: Install Sicilian dependencies
-        working-directory: apps/opening-book-sicilian
-        run: npm ci
-
-      - name: Apply guarded source repair
-        working-directory: apps/opening-book-sicilian
-        shell: bash
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          resolver = Path('app/lib/markdown-moves.ts')
-          text = resolver.read_text(encoding='utf-8')
-
-          start = text.index('  setAnchor(')
-          end = text.index('\n  private indexRoot', start)
-          method = text[start:end]
-          method = method.replace(
-              '    this.resetHistory(root);',
-              '''    this.remember(root);
-              if (root.fen !== START_FEN) {
-                this.remember({ fen: START_FEN, steps: [{ fen: START_FEN, label: "Initial position" }] });
-              }''',
-              1,
-          )
-          text = text[:start] + method + text[end:]
-
-          marker = '  private resolveMoveText(text: string): MarkdownMoveToken[] {\n'
-          helper = '''  private continuationScore(
-              moveText: string,
-              sourceText: string,
-              matches: RegExpMatchArray[],
-              startIndex: number,
-              fen: string,
-              depth: number,
-              baseDepth: number,
-            ): number {
-              let currentFen = fen;
-              let score = 0;
-              for (let index = startIndex + 1; index < matches.length; index++) {
-                const match = matches[index];
-                const at = match.index ?? 0;
-                const tokenDepth = Math.max(0, baseDepth + parenDepthDeltaAt(moveText, at));
-                if (tokenDepth < depth) break;
-                if (tokenDepth > depth) continue;
-                const display = match[0].trim();
-                if (!display || isLikelyProseSquare(sourceText, at, display) || isCoordinateMoveReference(sourceText, at)) continue;
-                if (!moveNumberMatchesFen(display, currentFen)) break;
-                const move = this.resolveFrom(currentFen, display);
-                if (!move) break;
-                currentFen = move.fen;
-                score++;
-              }
-              return score;
-            }
-
-          '''
-          if marker not in text:
-              raise SystemExit('resolveMoveText marker not found')
-          text = text.replace(marker, helper + marker, 1)
-
-          loop = '    for (const match of moveText.matchAll(SOURCE_MOVE_TOKEN)) {'
-          if loop not in text:
-              raise SystemExit('move loop not found')
-          text = text.replace(loop, '    const matches = [...moveText.matchAll(SOURCE_MOVE_TOKEN)];\n    for (let matchIndex = 0; matchIndex < matches.length; matchIndex++) {\n      const match = matches[matchIndex];', 1)
-
-          selection_start = text.index('      const activeMatch = legalCandidates.find(')
-          selection_end = text.index('\n\n      if (resolved && before)', selection_start)
-          new_selection = '''      const distinct = legalCandidates.filter((candidate, index, all) => all.findIndex((other) => other.before.fen === candidate.before.fen) === index);
-              const activeMatch = distinct.find((candidate) => candidate.before.fen === active.fen);
-              if (distinct.length === 1) {
-                ({ before, resolved } = distinct[0]);
-              } else if (distinct.length > 1) {
-                const scored = distinct.map((candidate) => ({
-                  candidate,
-                  score: this.continuationScore(moveText, text, matches, matchIndex, candidate.resolved.fen, nextDepth, baseDepth),
-                }));
-                const bestScore = Math.max(...scored.map((entry) => entry.score));
-                const best = scored.filter((entry) => entry.score === bestScore);
-                if (bestScore > 0 && best.length === 1) {
-                  ({ before, resolved } = best[0].candidate);
-                } else if (activeMatch) {
-                  ({ before, resolved } = activeMatch);
-                }
-              }'''
-          text = text[:selection_start] + new_selection + text[selection_end:]
-          resolver.write_text(text, encoding='utf-8')
-
-          chapter = Path('app/content/chapters/chapter-1-sicilian.md')
-          text = chapter.read_text(encoding='utf-8')
-          old_fen = 'r1bqkb1r/pp1pnppp/2n1p3/2p5/2B1P3/2P5/PP1PQPPP/RNB1K1NR w KQkq - 1 5'
-          new_fen = 'r1bqkb1r/pp1pnppp/2n1p3/2p5/2B1P3/5N2/PPPPQPPP/RNB1K2R w KQkq - 4 5'
-          if old_fen not in text:
-              raise SystemExit('Page 9 variation FEN not found')
-          text = text.replace(old_fen, new_fen, 1)
-          text = text.replace('9.Bg5 f6 10.Nh3', '9.Ng5 f6 10.Nh3')
-          text = text.replace('16.Bxd4 cxd4+', '16.Nxd4 cxd4+')
-          chapter.write_text(text, encoding='utf-8')
-          PY
-
-      - name: Test repaired application
+      - name: Install and test
         working-directory: apps/opening-book-sicilian
         run: |
+          npm ci
           npm test
           npm run build
 
-      - name: Commit repaired source
+      - name: Generate browser-sequential audit
+        working-directory: apps/opening-book-sicilian
         shell: bash
         run: |
-          git config user.name "coachdinosaur"
-          git config user.email "86093996+coachdinosaur@users.noreply.github.com"
-          git add apps/opening-book-sicilian/app/lib/markdown-moves.ts \
-                  apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md
-          git diff --cached --check
-          git commit -m "Repair Sicilian move recovery from page 3"
-          git push origin HEAD:wip/sicilian-20260805-153931
+          cat > sequential-audit.mts <<'EOF'
+          import { readFileSync, writeFileSync } from "node:fs";
+          import { extractFenBlocks, extractPages } from "./app/lib/markdown-chapter.ts";
+          import { MarkdownMoveResolver } from "./app/lib/markdown-moves.ts";
+          import { isCoordinateMoveReference } from "./app/lib/chess-notation.ts";
+
+          const markdown = readFileSync("app/content/chapters/chapter-1-sicilian.md", "utf8");
+          const pages = extractPages(markdown);
+          const resolver = new MarkdownMoveResolver(undefined, undefined, false);
+          const output: string[] = [];
+          let total = 0;
+          let resolved = 0;
+
+          for (let appIndex = 0; appIndex < pages.length; appIndex++) {
+            const page = pages[appIndex];
+            extractFenBlocks(page.markdown).forEach(({ fen }, index) => resolver.addRoot(fen, `Page ${page.number} position ${index + 1}`));
+            const lines = page.markdown.split(/\r?\n/);
+            const failures: string[] = [];
+            let pageTotal = 0;
+            let pageResolved = 0;
+
+            for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+              const line = lines[lineIndex];
+              const trimmed = line.trim();
+              if (!trimmed || trimmed.startsWith("```")) continue;
+              const hidden = /^<!--\s*FEN:\s*([^>]+?)\s*-->$/.exec(trimmed);
+              if (hidden) {
+                resolver.setAnchor(hidden[1].trim(), `Page ${page.number} variation start`);
+                continue;
+              }
+              if (trimmed.startsWith("**FEN:**")) {
+                const visible = /^`([^`]+)`$/.exec(lines[lineIndex + 1]?.trim() ?? "");
+                if (visible) {
+                  resolver.setAnchor(visible[1].trim(), `Page ${page.number} diagram`);
+                  lineIndex++;
+                }
+                continue;
+              }
+              if (/^`[^`]+`$/.test(trimmed)) continue;
+
+              const tokens = resolver.resolveText(line);
+              if (!tokens.length) continue;
+              pageTotal += tokens.length;
+              pageResolved += tokens.filter((token) => token.navigation).length;
+              const unresolved = tokens.filter((token) => {
+                if (token.navigation) return false;
+                if (isCoordinateMoveReference(line, token.index)) return false;
+                if (/^[a-h][1-8](?:[!?]+|N)?$/.test(token.display)) return false;
+                if (/\b(?:Chapter\s+\d+|page\s+\d+)\b/i.test(line)) return false;
+                return true;
+              });
+              if (unresolved.length) failures.push(`  line ${lineIndex + 1}: ${unresolved.map((token) => token.display).join(", ")} :: ${trimmed}`);
+            }
+
+            total += pageTotal;
+            resolved += pageResolved;
+            output.push(`App page ${appIndex + 1} / PDF page ${page.number}: ${pageResolved}/${pageTotal} tokens navigable`);
+            output.push(...failures);
+          }
+
+          output.unshift(`Browser-sequential total: ${resolved}/${total} detected tokens navigable.`);
+          writeFileSync("../../sicilian-repaired-audit.txt", `${output.join("\n")}\n`);
+          EOF
+          node --import tsx sequential-audit.mts
+          rm sequential-audit.mts
+
+      - name: Upload audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: sicilian-repaired-audit
+          path: sicilian-repaired-audit.txt
+          if-no-files-found: error
