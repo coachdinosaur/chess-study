@@ -140,15 +140,7 @@ leaves the white king too exposed in the centre, and I don't like his chances at
 11.g3!?N
 
 <!-- FEN: r1bq1rk1/pp3ppp/2n2b2/2PN4/3pP3/8/PP2NPPP/R2QKB1R w KQ - 2 11 -->
-Weaker is 11.Nxf6+ Qxf6 12.Ng3 Qe5! 13.Bd3 b6! 14.c6
-
-<!-- FEN: r1b2rk1/p4ppp/1pn5/2P1q3/3pP3/3B2N1/PP3PPP/R2QK2R w KQ - 0 14 -->
-(14.0-0? bxc5 15.Re1 c4 16.Bf1 d3
-
-<!-- FEN: r1b2rk1/p4ppp/2n5/4q3/2p1P3/3p2N1/PP3PPP/R2QRBK1 w - - 0 17 -->
-17.Nd2 Rb8-+ was simply lost for White in Eisenbeiser - Fluvia Poyatos, Barcelona 2007)
-
-14...Bxc6 15.0-0 a5 16.Rc1 Bd6+ when Black still maintains a nagging initiative. <!-- NON-NAVIGATION -->
+Weaker is 11.Nxf6+ Qxf6 12.Ng3 Ne5! 13.Bd3 b6! 14.c6 (14.0-0? bxc5 15.Re1 c4 16.Bf1 d3 17.Qd2 Rb8-+ was simply lost for White in Eisenbeiser - Fluvia Poyatos, Barcelona 2007) 14...Qxc6 15.0-0 a5 16.Rc1 Qd6+ when Black still maintains a nagging initiative.
 
 <!-- FEN: r1bq1rk1/pp3ppp/2n2b2/2PN4/3pP3/6P1/PP2NP1P/R2QKB1R b KQ - 0 11 -->
 11...Bg4
@@ -167,7 +159,7 @@ C) 2.Ne2
 **FEN:**
 `rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPPNPPP/RNBQKB1R b KQkq - 1 2`
 
-White is trying to postpone d2-d4 and create an awkward dilemma for Najdorf players: 2...Nc6 runs into 3.d4, while 2...d6 3.Nbc3 Nf6 4.g3 could be luring them into a g3 Dragon or a Closed Sicilian with ...e6 (which is beyond the subject of this book). Therefore, I have decided to offer a more clear-cut solution, in an attempt to satisfy all tastes:
+White is trying to postpone d2-d4 and create an awkward dilemma for Najdorf players: (2...Nc6 runs into 3.d4), while (2...d6 3.Nbc3 Nf6 4.g3 could be luring them into a g3 Dragon or a Closed Sicilian with 4...e6), which is beyond the subject of this book. Therefore, I have decided to offer a more clear-cut solution, in an attempt to satisfy all tastes:
 
 <!-- FEN: rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPPNPPP/RNBQKB1R b KQkq - 1 2 -->
 2...Nf6!? 3.Nbc3 d5!
