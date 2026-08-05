@@ -24,11 +24,11 @@ function pathExtends(steps: NavigationStep[], prefix: NavigationStep[]): boolean
   return prefix.every((step, index) => step.fen === steps[index]?.fen && step.label === steps[index]?.label);
 }
 
-function parenDepthAt(text: string, pos: number): number {
+function parenDepthDeltaAt(text: string, pos: number): number {
   let depth = 0;
   for (let index = 0; index < pos; index++) {
     if (text[index] === "(" || text[index] === "[") depth++;
-    else if (text[index] === ")" || text[index] === "]") depth = Math.max(0, depth - 1);
+    else if (text[index] === ")" || text[index] === "]") depth--;
   }
   return depth;
 }
@@ -44,6 +44,10 @@ export class MarkdownMoveResolver {
   private trackNavigationExtensions: boolean;
   private variationBase: PositionPath | null;
   private variationStack: Array<{ indent: number; path: PositionPath }>;
+  private inlineDepth: number;
+  private inlineReturnStates: PositionPath[];
+  private inlineBranchStarts: PositionPath[];
+  private inlineLastBefore: PositionPath;
 
   constructor(fen = START_FEN, label = "Initial position", trackNavigationExtensions = true) {
     const root = { fen, steps: [{ fen, label }] };
@@ -57,6 +61,10 @@ export class MarkdownMoveResolver {
     this.trackNavigationExtensions = trackNavigationExtensions;
     this.variationBase = null;
     this.variationStack = [];
+    this.inlineDepth = 0;
+    this.inlineReturnStates = [];
+    this.inlineBranchStarts = [];
+    this.inlineLastBefore = root;
     this.indexRoot(root);
     this.resetHistory(root);
   }
@@ -74,6 +82,10 @@ export class MarkdownMoveResolver {
     this.active = root;
     this.variationBase = null;
     this.variationStack = [];
+    this.inlineDepth = 0;
+    this.inlineReturnStates = [];
+    this.inlineBranchStarts = [];
+    this.inlineLastBefore = root;
     this.resetHistory(root);
     return { steps: root.steps, index: 0 };
   }
@@ -163,6 +175,10 @@ export class MarkdownMoveResolver {
       }
       const parent = this.variationStack.at(-1)?.path ?? this.variationBase;
       this.active = parent;
+      this.inlineDepth = 0;
+      this.inlineReturnStates = [];
+      this.inlineBranchStarts = [];
+      this.inlineLastBefore = parent;
       this.resetHistory(parent);
       const tokens = this.resolveMoveText(text);
       this.variationStack.push({ indent, path: this.active });
@@ -182,14 +198,15 @@ export class MarkdownMoveResolver {
       .filter((match) => [...match[1].matchAll(SOURCE_MOVE_TOKEN)].length === 1)
       .map((match) => ({ start: (match.index ?? 0) + 2, end: (match.index ?? 0) + 2 + match[1].length }));
     let active = this.active;
-    let lastBefore = active;
-    let depth = 0;
-    const returnStates: PositionPath[] = [];
-    const branchStarts: PositionPath[] = [];
+    let lastBefore = this.inlineDepth > 0 ? this.inlineLastBefore : active;
+    let depth = this.inlineDepth;
+    const baseDepth = this.inlineDepth;
+    const returnStates = this.inlineReturnStates;
+    const branchStarts = this.inlineBranchStarts;
 
     for (const match of moveText.matchAll(SOURCE_MOVE_TOKEN)) {
       const at = match.index ?? 0;
-      const nextDepth = parenDepthAt(moveText, at);
+      const nextDepth = Math.max(0, baseDepth + parenDepthDeltaAt(moveText, at));
       while (nextDepth > depth) {
         returnStates.push(active);
         active = lastBefore;
@@ -266,12 +283,23 @@ export class MarkdownMoveResolver {
       }
     }
 
-    while (depth > 0) {
+    const finalDepth = Math.max(0, baseDepth + parenDepthDeltaAt(moveText, moveText.length));
+    while (finalDepth > depth) {
+      returnStates.push(active);
+      active = lastBefore;
+      branchStarts.push(active);
+      depth++;
+    }
+    while (finalDepth < depth) {
       active = returnStates.pop() ?? active;
       branchStarts.pop();
       depth--;
     }
     this.active = active;
+    this.inlineDepth = depth;
+    this.inlineReturnStates = returnStates;
+    this.inlineBranchStarts = branchStarts;
+    this.inlineLastBefore = lastBefore;
     return tokens;
   }
 }

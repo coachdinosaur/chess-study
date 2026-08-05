@@ -31,6 +31,13 @@ test("all Markdown chapters are bundled as static source content", async () => {
   assert.match(chapterRedirect, /\.\.\/\.\.\/#\/chapters\/1/);
 });
 
+test("the renderer replays preceding PDF pages and uses clean diagram labels", async () => {
+  const renderer = await readFile(new URL("app/components/MarkdownRenderer.tsx", root), "utf8");
+  assert.match(renderer, /precedingMarkdown/);
+  assert.match(renderer, /parseMarkdown\(priorMarkdown, ignoreMove, resolver\)/);
+  assert.doesNotMatch(renderer, /â€”/);
+});
+
 test("the static output contains the interactive board and shared engine references", async () => {
   const assetNames = await readdir(new URL("dist/assets/", root));
   const scripts = assetNames.filter((name) => name.endsWith(".js"));

@@ -62,15 +62,15 @@ This is rather harmless, as the bishop will be an object of attack on c4 and wil
 
 ## Page 9
 
-10...a5!? 11.e5 Nd7 12.Bxe7 Nxe7+ In my opinion Black has an excellent position. He has a lot of space on the queenside, offering him promising chances in that sector of the board.
+10...a5!? 11.e5 Nd7 12.Bxe7 Qxe7 In my opinion Black has an excellent position. He has a lot of space on the queenside, offering him promising chances in that sector of the board.
 
-<!-- FEN: r1bqkbnr/pp1p1ppp/2n1p3/2p5/2B1P3/2P5/PP1PQPPP/RNB1K1NR b KQkq - 0 4 -->
+<!-- FEN: r1bqkbnr/pp1p1ppp/2n1p3/2p5/2B1P3/5N2/PPPPQPPP/RNB1K2R b KQkq - 3 4 -->
 4...Nge7!? 5.Bb3
 
 <!-- FEN: r1bqkb1r/pp1pnppp/2n1p3/2p5/2B1P3/2P5/PP1PQPPP/RNB1K1NR w KQkq - 1 5 -->
 5.d3 Ng6 6.h4!? (6.0-0 Be7 7.c3 d5 8.Bb3 0-0+ is great for Black) 6...Bd6! 7.Nbd2 h6 8.h5 Nge5 9.Nxe5 Bxe5 10.Nf3 Bb8!? 11.c3 0-0 12.Bb3 d5∓ is fine for us.
 
-<!-- FEN: rnbqkb1r/pp3ppp/4pP2/2pp4/2B5/5N2/PPPP1PPP/RNBQK2R b KQkq - 0 5 -->
+<!-- FEN: r1bqkb1r/pp1pnppp/2n1p3/2p5/4P3/1B3N2/PPPPQPPP/RNB1K2R b KQkq - 5 5 -->
 5...g6!? 6.c3 Bg7 7.d3 b6 8.0-0 Ba6 9.Re1 0-0 10.Na3 d5 11.exd5 Nxd5 12.Bg5
 
 Black had the more harmonious development in Rasik - Jirovsky, Karlovy Vary 2004, and should have now chosen:

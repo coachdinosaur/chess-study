@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { auditChapterMarkdown } from "../scripts/chapter-audit.ts";
+import { MarkdownMoveResolver } from "../app/lib/markdown-moves.ts";
 import { catalogSource, discoverChapters, parseChapterMarkdown } from "../scripts/chapter-system.mjs";
 
 const chapterUrl = new URL("../app/content/chapters/chapter-1-sicilian.md", import.meta.url);
@@ -41,6 +42,20 @@ test("Chapter 1 retains PDF-corrected moves and source references", async () => 
   assert.doesNotMatch(markdown, /2\.Ne2 is likely to transpose elsewhere/);
   assert.doesNotMatch(markdown, /11\.\.\.Re8 11\.\.\.d3/);
   assert.doesNotMatch(markdown, /6\.Bc4 Ngxe5/);
+});
+
+test("move navigation survives PDF page and parenthesis boundaries", () => {
+  const pages = new MarkdownMoveResolver();
+  const beforeBreak = pages.resolveText("1.e4 c5 2.Bc4 e6 3.Qe2 Nc6 4.c3 Be7 5.Bb3 d5 6.d3 Nf6 7.Nf3 0-0 8.0-0 b5 9.Bg5 h6 10.Bh4");
+  const afterBreak = pages.resolveText("10...a5!? 11.e5 Nd7 12.Bxe7 Qxe7");
+  assert.ok(beforeBreak.every((token) => token.navigation), "Moves before the PDF page break should be navigable.");
+  assert.ok(afterBreak.every((token) => token.navigation), "Moves after the PDF page break should retain the prior position.");
+
+  const branch = new MarkdownMoveResolver();
+  const branchStart = branch.resolveText("1.e4 c5 (1...e5");
+  const branchEnd = branch.resolveText("2.Nf3 Nc6)");
+  assert.ok(branchStart.every((token) => token.navigation), "The opening half of a split variation should be navigable.");
+  assert.ok(branchEnd.every((token) => token.navigation), "A variation continued in the next paragraph should remain navigable.");
 });
 
 test("the Markdown contract rejects missing pages and invalid FENs", () => {

@@ -7,6 +7,7 @@ import { createContext, memo, ReactNode, useContext, useMemo } from "react";
 import { Chess, type Square } from "chess.js";
 import { MarkdownMoveResolver, type MarkdownMoveToken, type MoveNavigation } from "../lib/markdown-moves";
 import { extractFenBlocks } from "../lib/markdown-chapter";
+import { loadAllChapters } from "../lib/chapter-markdown-loader";
 import { sharedOpeningAssetUrl } from "../lib/asset-url";
 type MoveHandler = (navigation: MoveNavigation) => void;
 
@@ -139,10 +140,9 @@ function renderInline(text: string, resolver: MarkdownMoveResolver, onMove: Move
   return renderFormatted(template, tokens, onMove, key);
 }
 
-function parseMarkdown(markdown: string, onMove: MoveHandler): ReactNode[] {
+function parseMarkdown(markdown: string, onMove: MoveHandler, resolver = new MarkdownMoveResolver()): ReactNode[] {
   const lines = markdown.split(/\r?\n/);
   const nodes: ReactNode[] = [];
-  const resolver = new MarkdownMoveResolver();
   extractFenBlocks(markdown).forEach(({ fen }, fenIndex) => resolver.addRoot(fen, `Chapter position ${fenIndex + 1}`));
   let index = 0;
   let currentHeading = "Diagram position";
@@ -165,7 +165,7 @@ function parseMarkdown(markdown: string, onMove: MoveHandler): ReactNode[] {
       if (fenMatch) {
         const fen = fenMatch[1].trim();
         try {
-          const label = currentHeading === "Diagram position" ? currentHeading : `${currentHeading} â€” position`;
+          const label = currentHeading === "Diagram position" ? currentHeading : `${currentHeading} position`;
           const navigation = resolver.setAnchor(fen, label);
           nodes.push(<FenBoard fen={fen} label={label} navigation={navigation} onMove={onMove} key={`fen-${index}`} />);
         } catch {
@@ -223,8 +223,23 @@ function parseMarkdown(markdown: string, onMove: MoveHandler): ReactNode[] {
   return nodes;
 }
 
+const ignoreMove: MoveHandler = () => {};
+
+function precedingMarkdown(markdown: string): string {
+  for (const chapter of loadAllChapters()) {
+    const pageIndex = chapter.pages.findIndex((page) => page.markdown === markdown);
+    if (pageIndex > 0) return chapter.pages.slice(0, pageIndex).map((page) => page.markdown).join("\n\n");
+  }
+  return "";
+}
+
 export const MarkdownChapterView = memo(function MarkdownChapterView({ markdown, onMove, activeNavigation = null }: { markdown: string; onMove: MoveHandler; activeNavigation?: MoveNavigation | null }) {
-  const elements = useMemo(() => parseMarkdown(markdown, onMove), [markdown, onMove]);
+  const elements = useMemo(() => {
+    const resolver = new MarkdownMoveResolver();
+    const priorMarkdown = precedingMarkdown(markdown);
+    if (priorMarkdown) parseMarkdown(priorMarkdown, ignoreMove, resolver);
+    return parseMarkdown(markdown, onMove, resolver);
+  }, [markdown, onMove]);
   return <ActiveNavigationContext value={activeNavigation}>
     <article className="narrative markdown-narrative" aria-label="Chapter lesson">{elements}</article>
   </ActiveNavigationContext>;
