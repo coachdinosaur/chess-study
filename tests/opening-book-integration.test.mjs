@@ -21,20 +21,21 @@ test('the main app, lesson index, and opening course cross-link', async () => {
   assert.match(openingSource, /href="\/lessons\/"/);
 });
 
-test('the Pages workflow builds and mounts only the opening artifact', async () => {
-  const [workflow, viteConfig] = await Promise.all([
+test('the Pages workflow builds and mounts both opening artifacts', async () => {
+  const [workflow, viteConfigCatalan, viteConfigSicilian] = await Promise.all([
     readFile(file('.github/workflows/pages.yml'), 'utf8'),
     readFile(file('apps/opening-book/vite.config.ts'), 'utf8'),
+    readFile(file('apps/opening-book-sicilian/vite.config.ts'), 'utf8'),
   ]);
 
-  assert.match(viteConfig, /base:\s*["']\/openings\/["']/);
-  assert.match(workflow, /working-directory:\s*apps\/opening-book/);
-  assert.match(workflow, /npm ci[\s\S]*npm test/);
-  assert.match(workflow, /mv apps\/opening-book\/dist openings/);
-  assert.match(workflow, /rm -rf apps\/opening-book/);
+  assert.match(viteConfigCatalan, /base:\s*["']\/openings\/["']/);
+  assert.match(viteConfigSicilian, /base:\s*["']\/openings-sicilian\/["']/);
+  assert.match(workflow, /working-directory:\s*apps\/opening-book-sicilian/);
+  assert.match(workflow, /mv apps\/opening-book-sicilian\/dist openings-sicilian/);
+  assert.match(workflow, /rm -rf apps\/opening-book-sicilian/);
 });
 
-test('the built output is complete and rooted at /openings/', async () => {
+test('the built Catalan output is complete and rooted at /openings/', async () => {
   const [indexHtml, firstChapter] = await Promise.all([
     readFile(file('apps/opening-book/dist/index.html'), 'utf8'),
     readFile(file('apps/opening-book/dist/chapters/1/index.html'), 'utf8'),
@@ -50,4 +51,19 @@ test('the built output is complete and rooted at /openings/', async () => {
     access(file('apps/opening-book/dist/stockfish/stockfish-18-lite-single.js')),
     access(file('apps/opening-book/dist/stockfish/stockfish-18-lite-single.wasm')),
   ]);
+});
+
+test('the built Sicilian output is complete, rooted at /openings-sicilian/, and uses shared resources', async () => {
+  const [indexHtml, firstChapter] = await Promise.all([
+    readFile(file('apps/opening-book-sicilian/dist/index.html'), 'utf8'),
+    readFile(file('apps/opening-book-sicilian/dist/chapters/1/index.html'), 'utf8'),
+  ]);
+
+  assert.match(indexHtml, /(?:href|src)="\/openings-sicilian\//);
+  assert.match(indexHtml, /href="https:\/\/cddigital\.top\/openings-sicilian\/"/);
+  assert.match(firstChapter, /\.\.\/\.\.\/#\/chapters\/1/);
+
+  // Sicilian should NOT duplicate stockfish or pieces assets in its dist directory
+  await assert.rejects(access(file('apps/opening-book-sicilian/dist/assets/pieces/mpchess/wK.svg')));
+  await assert.rejects(access(file('apps/opening-book-sicilian/dist/stockfish/stockfish-18-lite-single.js')));
 });

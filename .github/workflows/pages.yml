@@ -38,6 +38,12 @@ jobs:
           npm ci
           npm test
 
+      - name: Test and build sicilian opening book
+        working-directory: apps/opening-book-sicilian
+        run: |
+          npm ci
+          npm test
+
       - name: Verify combined-site integration
         run: |
           node --test tests/opening-book-integration.test.mjs
@@ -46,12 +52,16 @@ jobs:
       - name: Prepare Google Search favicon
         run: python tools/prepare_search_favicon.py
 
-      - name: Publish opening book at /openings/
+      - name: Publish opening books
         shell: bash
         run: |
           test ! -e openings
           mv apps/opening-book/dist openings
           rm -rf apps/opening-book
+
+          test ! -e openings-sicilian
+          mv apps/opening-book-sicilian/dist openings-sicilian
+          rm -rf apps/opening-book-sicilian
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
