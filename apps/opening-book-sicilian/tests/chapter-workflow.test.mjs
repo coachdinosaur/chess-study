@@ -31,6 +31,22 @@ test("Chapter 1 preserves the PDF page range 7 through 23", async () => {
   assert.deepEqual(audit.errors, []);
 });
 
+test("Chapter 1 keeps printed PDF pages intact instead of splitting columns", async () => {
+  const markdown = await readChapterOne();
+  const page = (number) => {
+    const start = markdown.indexOf(`## Page ${number}`);
+    const end = markdown.indexOf(`## Page ${number + 1}`, start);
+    return markdown.slice(start, end < 0 ? markdown.length : end);
+  };
+
+  assert.doesNotMatch(page(12), /16\.Rd5/);
+  assert.match(page(13), /16\.Rd5[\s\S]*16\.\.\.Qe6=/);
+  assert.match(page(13), /D1\) 3\.Bb5/);
+  assert.doesNotMatch(page(13), /4\.Bxc6 dxc6/);
+  assert.match(page(14), /4\.Bxc6 dxc6/);
+  assert.match(page(14), /D2\) 3\.Nf3/);
+});
+
 test("Chapter 1 retains PDF-corrected moves and source references", async () => {
   const markdown = await readChapterOne();
   assert.match(markdown, /2\.Be2 is likely to transpose elsewhere/);
@@ -38,10 +54,31 @@ test("Chapter 1 retains PDF-corrected moves and source references", async () => 
   assert.match(markdown, /16\.N2c3 Eminov - Yilmazyerli/);
   assert.match(markdown, /9\.\.\.f5\?! 10\.Qc4 Ne5[\s\S]*13\.Nb5!N Rc8 14\.Nxa7 Rxc2 15\.Qxf5\+\-/);
   assert.match(markdown, /6\.Nc4 Ngxe5 7\.Ncxe5 fxe5 8\.Nxe5 g6!\?/);
-  assert.match(markdown, /13\.Bf3 Qd7! 14\.Qd3 Nc6! 15\.Bxe4/);
+  assert.match(markdown, /13\.Bf3 Qd7! 14\.Qd3 Nc6!\s*<!--[\s\S]*?-->\s*15\.Bxe4/);
   assert.doesNotMatch(markdown, /2\.Ne2 is likely to transpose elsewhere/);
   assert.doesNotMatch(markdown, /11\.\.\.Re8 11\.\.\.d3/);
   assert.doesNotMatch(markdown, /6\.Bc4 Ngxe5/);
+});
+
+test("move recovery handles bad anchors, look-ahead, and semicolon siblings", () => {
+  const anchored = new MarkdownMoveResolver();
+  anchored.resolveText("1.e4 c5 2.Bc4 e6 3.Qe2");
+  anchored.setAnchor("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "Imported anchor");
+  const recovered = anchored.resolveText("3...Nc6 4.Nf3 Nge7 5.Bb3");
+  assert.ok(recovered.every((token) => token.navigation), "A later numbered continuation should recover from preserved history.");
+
+  const pageThree = new MarkdownMoveResolver();
+  pageThree.setAnchor("r1bqkb1r/pp1pnppp/2n1p3/2p5/2B1P3/5N2/PPPPQPPP/RNB1K2R w KQkq - 4 5", "Printed page 9 variation");
+  const firstLine = pageThree.resolveText("5.d3 Ng6 6.h4!? (6.0-0 Be7 7.c3 d5 8.Bb3 0-0+) 6...Bd6! 7.Nbd2 h6 8.h5 Nge5 9.Nxe5 Bxe5 10.Nf3 Bb8!? 11.c3 0-0 12.Bb3 d5");
+  assert.ok(firstLine.every((token) => token.navigation), "The printed-page-9 side line should remain navigable through its parenthesis.");
+
+  const correctedPdfLine = new MarkdownMoveResolver();
+  const secondLine = correctedPdfLine.resolveText("1.e4 c5 2.c4 Nc6 3.Nf3 e5 4.Nc3 d6 5.d3 (5.g3 g6 6.Bg2 Bg7 7.0-0 Nge7 8.d3 0-0 9.Ng5 f6 10.Nh3 Be6 11.f4 Qd7 12.Nf2 Nd4 13.Be3 Rab8+) 5...f5!? 6.exf5 Bxf5 7.h3?! Qd7 8.Be2 Nf6 9.Nh2?! 9...Nd4 10.Bg5 0-0-0! 11.0-0 h6 12.Bxf6 gxf6 13.Kh1?!");
+  assert.ok(secondLine.every((token) => token.navigation), "The PDF-corrected 9.Ng5 line should be fully navigable.");
+
+  const siblings = new MarkdownMoveResolver();
+  const siblingTokens = siblings.resolveText("1.e4 (1.d4 d5; 1.c4 e5)");
+  assert.ok(siblingTokens.every((token) => token.navigation), "A semicolon should start a sibling variation from the same branch point.");
 });
 
 test("move navigation survives PDF page and parenthesis boundaries", () => {

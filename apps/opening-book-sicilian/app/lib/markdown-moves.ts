@@ -231,6 +231,7 @@ export class MarkdownMoveResolver {
     let active = this.active;
     let lastBefore = this.inlineDepth > 0 ? this.inlineLastBefore : active;
     let depth = this.inlineDepth;
+    let previousMoveResolved = true;
     const baseDepth = this.inlineDepth;
     const returnStates = this.inlineReturnStates;
     const branchStarts = this.inlineBranchStarts;
@@ -242,7 +243,7 @@ export class MarkdownMoveResolver {
       const nextDepth = Math.max(0, baseDepth + parenDepthDeltaAt(moveText, at));
       while (nextDepth > depth) {
         returnStates.push(active);
-        active = lastBefore;
+        active = previousMoveResolved ? lastBefore : active;
         branchStarts.push(active);
         depth++;
       }
@@ -264,6 +265,15 @@ export class MarkdownMoveResolver {
       }
 
       const numberedKey = moveNumberKey(display);
+      const previousMatch = matchIndex > 0 ? matches[matchIndex - 1] : null;
+      const betweenMoves = previousMatch
+        ? moveText.slice((previousMatch.index ?? 0) + previousMatch[0].length, at)
+        : "";
+      if (depth > 0 && numberedKey && betweenMoves.includes(";")) {
+        active = branchStarts[depth - 1] ?? active;
+        lastBefore = active;
+        previousMoveResolved = true;
+      }
       const isolatedUnnumberedMention = !numberedKey && isolatedEmphasisRanges.some((range) => at >= range.start && at < range.end);
       // A parenthetical variation has one explicit branch point. Reuse that
       // local root for sibling alternatives instead of arbitrary old history;
@@ -296,23 +306,33 @@ export class MarkdownMoveResolver {
         }
       }
 
-      const distinct = legalCandidates.filter((candidate, index, all) => all.findIndex((other) => other.before.fen === candidate.before.fen) === index);
-    const activeMatch = distinct.find((candidate) => candidate.before.fen === active.fen);
-    if (distinct.length === 1) {
-      ({ before, resolved } = distinct[0]);
-    } else if (distinct.length > 1) {
-      const scored = distinct.map((candidate) => ({
-        candidate,
-        score: this.continuationScore(moveText, text, matches, matchIndex, candidate.resolved.fen, nextDepth, baseDepth),
-      }));
-      const bestScore = Math.max(...scored.map((entry) => entry.score));
-      const best = scored.filter((entry) => entry.score === bestScore);
-      if (bestScore > 0 && best.length === 1) {
-        ({ before, resolved } = best[0].candidate);
-      } else if (activeMatch) {
-        ({ before, resolved } = activeMatch);
+      const distinct = legalCandidates.filter(
+        (candidate, index, all) => all.findIndex((other) => other.before.fen === candidate.before.fen) === index,
+      );
+      const activeMatch = distinct.find((candidate) => candidate.before.fen === active.fen);
+      if (distinct.length === 1) {
+        ({ before, resolved } = distinct[0]);
+      } else if (distinct.length > 1) {
+        const scored = distinct.map((candidate) => ({
+          candidate,
+          score: this.continuationScore(
+            moveText,
+            text,
+            matches,
+            matchIndex,
+            candidate.resolved.fen,
+            nextDepth,
+            baseDepth,
+          ),
+        }));
+        const bestScore = Math.max(...scored.map((entry) => entry.score));
+        const best = scored.filter((entry) => entry.score === bestScore);
+        if (bestScore > 0 && best.length === 1) {
+          ({ before, resolved } = best[0].candidate);
+        } else if (activeMatch) {
+          ({ before, resolved } = activeMatch);
+        }
       }
-    }
 
       if (resolved && before) {
         if (!isolatedUnnumberedMention) {
@@ -321,8 +341,10 @@ export class MarkdownMoveResolver {
           this.remember(resolved);
         }
         tokens.push({ display, index: at, navigation: this.createNavigation(resolved) });
+        previousMoveResolved = true;
       } else {
         tokens.push({ display, index: at, navigation: null });
+        previousMoveResolved = false;
       }
     }
 
