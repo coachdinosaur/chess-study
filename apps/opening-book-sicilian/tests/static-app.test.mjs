@@ -48,6 +48,10 @@ test("narrative square references remain plain text", () => {
   const attackedAt = attacked.indexOf("e4");
   assert.equal(isLikelyProseSquare(attacked, attackedAt, "e4"), true);
 
+  const controlled = "White is having difficulty maintaining control over e5, as the following variations show:";
+  const controlledAt = controlled.indexOf("e5");
+  assert.equal(isLikelyProseSquare(controlled, controlledAt, "e5"), true);
+
   const numberedMove = "4.e4 is now under attack.";
   assert.equal(isLikelyProseSquare(numberedMove, 0, "4.e4"), false);
 });
