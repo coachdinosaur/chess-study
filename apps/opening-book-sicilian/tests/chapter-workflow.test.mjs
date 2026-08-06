@@ -72,13 +72,32 @@ test("Chapter 1 retains PDF-corrected moves and source references", async () => 
   assert.doesNotMatch(markdown, /6\.Bc4 Ngxe5/);
 });
 
-test("Black-edge evaluation glyphs remain attached to move buttons", () => {
-  const source = "5...e6∓ or 5...h5∓ and later Nxf4!∓, while Be7∓ remains slightly better for Black.";
+test("printed PDF Page 8 keeps its exact move content and boundary", async () => {
+  const markdown = await readChapterOne();
+  const start = markdown.indexOf("## Page 8");
+  const end = markdown.indexOf("## Page 9", start);
+  const page = markdown.slice(start, end);
+
+  assert.match(page, /3\.\.\.Nf6 4\.e5 Nd5 enters the c3 Sicilian/);
+  assert.match(page, /7\.Qe2 \[7\.Na3 e5!\]/);
+  assert.match(page, /9\.0-0 Rg8!→/);
+  assert.match(page, /15\.Be2 Re8∓/);
+  assert.match(page, /9\.Bc2 b4∓/);
+  assert.match(page, /20\.Na3 Bc3⇆/);
+  assert.match(page, /10\.Bh4\s*$/);
+  assert.doesNotMatch(page, /1\.e4 c5 2\.Bc4/);
+  assert.doesNotMatch(page, /20\.Na3 Nc3∞/);
+  assert.doesNotMatch(page, /10\.\.\.a5/);
+});
+
+test("evaluation and positional glyphs remain attached to move buttons", () => {
+  const source = "5...e6∓, Rg8!→, Bc3⇆, and Rc8≡.";
   const displays = [...source.matchAll(SOURCE_MOVE_TOKEN)].map((match) => match[0]);
-  assert.deepEqual(displays, ["5...e6∓", "5...h5∓", "Nxf4!∓", "Be7∓"]);
+  assert.deepEqual(displays, ["5...e6∓", "Rg8!→", "Bc3⇆", "Rc8≡"]);
   assert.equal(normalizeSan("5...e6∓"), "e6");
-  assert.equal(normalizeSan("5...h5∓"), "h5");
-  assert.equal(normalizeSan("Nxf4!∓"), "Nxf4");
+  assert.equal(normalizeSan("Rg8!→"), "Rg8");
+  assert.equal(normalizeSan("Bc3⇆"), "Bc3");
+  assert.equal(normalizeSan("Rc8≡"), "Rc8");
 });
 
 test("move recovery handles bad anchors, look-ahead, and semicolon siblings", () => {

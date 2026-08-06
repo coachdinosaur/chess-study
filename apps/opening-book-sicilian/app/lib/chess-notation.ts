@@ -1,13 +1,13 @@
 import { Chess, type Move } from "chess.js";
 
-export const SOURCE_MOVE_TOKEN = /(?:\d+\.(?:\.\.)?\s*)?(?:O-O-O|O-O|0-0-0|0-0|[KQRBN]?[a-h]?[1-8]?x?[a-h][1-8](?:=[QRBN])?|[a-h]x[a-h][1-8]|[a-h][1-8])[+#]?[!?N=∞±∓]*/g;
+export const SOURCE_MOVE_TOKEN = /(?:\d+\.(?:\.\.)?\s*)?(?:O-O-O|O-O|0-0-0|0-0|[KQRBN]?[a-h]?[1-8]?x?[a-h][1-8](?:=[QRBN])?|[a-h]x[a-h][1-8]|[a-h][1-8])[+#]?[!?N=∞±∓→←⇆≡]*/g;
 
 const MOVE_NUMBER = /^(\d+)\.(\.\.)?/;
 const SQUARE_ONLY = /^[a-h][1-8]$/;
 const COORDINATE_MOVE = /\b(?:[KQRBN])?[a-h][1-8](?:-[a-h][1-8])+\b/g;
 
 export function normalizeSan(raw: string): string {
-  let san = raw.replace(/^\d+\.(?:\.\.)?\s*/, "").replace(/[!?=*∞±∓→←]+/g, "").trim();
+  let san = raw.replace(/^\d+\.(?:\.\.)?\s*/, "").replace(/[!?=*∞±∓→←⇆≡]+/g, "").trim();
   san = san.replace(/0/g, "O");
   // A final N is a printed novelty marker. A leading N remains the knight
   // designator, including in disambiguated moves such as Nfd2 and Nfxd2.
