@@ -284,7 +284,7 @@ Preventing Black from playing ...a6 and gaining the bishop pair. Without this mo
 <!-- FEN: r1bqkb1r/pp3ppp/2np2n1/1Bp1p3/2N1P3/3P4/PPPB1PPP/R2QK1NR w KQkq - 2 7 -->
 7.Ne3 Be7 8.Nf3
 
-<!-- FEN: r1bqk2r/pp2npbp/2np2p1/1Bp1p3/4P3/3PN3/PPPB1PPP/R2QK1NR w KQkq - 2 8 -->
+<!-- FEN: r1bqk2r/pp2bppp/2np2n1/1Bp1p3/4P3/3PN3/PPPB1PPP/R2QK1NR w KQkq - 4 8 -->
 Both 8.a4 Bg5 9.Nf3 Bxe3 10.Bxe3 0-0 and 8.Nd5 0-0 9.Ne2 Bg5 are level.
 
 <!-- FEN: r1bqk2r/pp2bppp/2np2n1/1Bp1p3/4P3/3PNN2/PPPB1PPP/R2QK2R b KQkq - 5 8 -->
