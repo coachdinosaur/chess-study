@@ -1,3 +1,4 @@
+const PAGE_13_START = "## Page 13";
 const PAGE_14_START = "## Page 14";
 const PAGE_15_START = "## Page 15";
 
@@ -20,13 +21,26 @@ function replaceExactlyOnce(
 export function applyChapterContentCorrections(filename: string, content: string): string {
   if (filename !== "chapter-1-sicilian.md") return content;
 
-  const page14Start = content.indexOf(PAGE_14_START);
+  const page13Start = content.indexOf(PAGE_13_START);
+  const page14Start = content.indexOf(PAGE_14_START, page13Start);
   const page15Start = content.indexOf(PAGE_15_START, page14Start);
-  if (page14Start < 0 || page15Start < 0) {
-    throw new Error("Chapter 1 must contain Page 14 and Page 15 boundaries.");
+  if (page13Start < 0 || page14Start < 0 || page15Start < 0) {
+    throw new Error("Chapter 1 must contain Page 13 through Page 15 boundaries.");
   }
 
+  let page13 = content.slice(page13Start, page14Start);
   let page14 = content.slice(page14Start, page15Start);
+
+  page13 = replaceExactlyOnce(
+    page13,
+    "\n\n3...e5!?\n\nThis logical approach has been tried",
+    "\n\n<!-- FEN: r1bqkbnr/pp1ppppp/2n5/1Bp5/4P3/N7/PPPP1PPP/R1BQK1NR b KQkq - 3 3 -->\n3...e5!?\n\nThis logical approach has been tried",
+    "Page 13 3...e5 navigation anchor",
+  );
+
+  if (!page13.includes("<!-- FEN: r1bqkbnr/pp1ppppp/2n5/1Bp5/4P3/N7/PPPP1PPP/R1BQK1NR b KQkq - 3 3 -->\n3...e5!?")) {
+    throw new Error("Page 13 correction failed to anchor 3...e5!?.");
+  }
 
   page14 = replaceExactlyOnce(
     page14,
@@ -110,5 +124,5 @@ export function applyChapterContentCorrections(filename: string, content: string
     }
   }
 
-  return `${content.slice(0, page14Start)}${page14}${content.slice(page15Start)}`;
+  return `${content.slice(0, page13Start)}${page13}${page14}${content.slice(page15Start)}`;
 }
