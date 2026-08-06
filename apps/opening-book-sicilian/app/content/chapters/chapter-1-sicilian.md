@@ -493,6 +493,7 @@ The ending was slightly better for Black due to his central mass, Salmensuu – 
 
 <!-- FEN: r1bqkb1r/pp1ppp1p/2n3p1/4P3/4nP2/8/PPP3PP/RNBQKBNR w KQkq - 1 7 -->
 E12) 7.Be3 d6!?N
+<!-- FEN: r1bqkb1r/pp1ppp1p/2n3p1/4P3/4nP2/8/PPP3PP/RNBQKBNR w KQkq - 1 7 -->
 
 **FEN:**
 `r1bqkb1r/pp2pp1p/2np2p1/4P3/4nP2/4B3/PPP3PP/RN1QKBNR w KQkq - 0 8`
@@ -535,6 +536,7 @@ Weaker is 8.Qd5?! Bf5 9.Bb5 Rc8∓ when White will be pushed back.
 <!-- FEN: r1bqkb1r/pp2pp1p/2np2p1/4P3/4nP2/4B3/PPP3PP/RN1QKBNR w KQkq - 0 8 -->
 After 8.Nf3?! Qa5+! 9.c3 dxe5 10.fxe5 Bg7 the e5-pawn looks fatally exposed. 11.b4?! (White is also worse after 11.Bd3 Nc5 12.Bc4 Be6) 11...Qc7 12.Bd3 Bf5! White is in big trouble. For example: 13.Qc2 (or 13.g4 0-0-0!! 14.gxf5 Nxe5-+ and White is about to be massacred along the open lines)
 
+<!-- FEN: r3k2r/ppq1ppbp/6p1/1Q2n3/1P6/4BN2/P5PP/RN2K2R b KQkq - 1 16 -->
 13...Nxc3!! 14.Qxc3 (14.Nxc3 Nxe5 15.Bxf5 Nxf3+ 16.gxf3 Qxc3+ 17.Kf2 gxf5-+) 14...Bxd3 15.Qxd3 Nxe5 16.Qb5+ Nd7 17.Nd4 Bxd4 18.Bxd4 Rc1+ 19.Ke2 Qxh1 20.Bxh8 Qxg2+-+
 
 ## Page 19
@@ -568,7 +570,7 @@ The knight is safely placed on the rim here: it is important not to lose time by
 
 An attempt to exploit the knight's placement.
 
-<!-- FEN: r1bqkb1r/pp1ppp1p/2n3p1/4P2n/5P2/3Q4/PPP1B1PP/RNB1K1NR b KQkq - 4 7 -->
+<!-- FEN: r1bqkb1r/pp1ppp1p/2n3p1/4P2n/5P2/3Q4/PPP3PP/RNB1KBNR w KQkq - 3 7 -->
 7.Nf3 d6! White has problems containing Black's activity.
 
 8.Nc3
