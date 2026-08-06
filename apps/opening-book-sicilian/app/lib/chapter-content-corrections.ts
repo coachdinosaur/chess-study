@@ -86,6 +86,13 @@ export function applyChapterContentCorrections(filename: string, content: string
 
   page14 = replaceExactlyOnce(
     page14,
+    "<!-- FEN: r1bqkb1r/pp1ppppp/2n2n2/2p5/4P3/N2P1N2/PPP2PPP/R1BQKB1R b KQkq - 0 4 -->\n4...Ng4 5.Qe2 f6!?",
+    "<!-- FEN: r1bqkb1r/pp1ppppp/2n2n2/2p1P3/8/N4N2/PPPP1PPP/R1BQKB1R b KQkq - 0 4 -->\n4...Ng4 5.Qe2 f6!?",
+    "Page 14 4...Ng4 continuation anchor",
+  );
+
+  page14 = replaceExactlyOnce(
+    page14,
     "4...Ng4 5.Qe2 f6!?\n\n**FEN:**\n`r1bqkb1r/pp1pp1pp/2n2p2/2p1P3/6n1/N4N2/PPPPQPPP/R1B1KB1R w KQkq - 0 6`\n\nA drastic solution - and a good one it seems.",
     "4...Ng4 5.Qe2\n\nThe correspondence player Hynes has been the chief exponent of this position as White, but he barely managed to scrape half a point out of his last two encounters with it.\n\n5...f6!?\n\n**FEN:**\n`r1bqkb1r/pp1pp1pp/2n2p2/2p1P3/6n1/N4N2/PPPPQPPP/R1B1KB1R w KQkq - 0 6`\n\nA drastic solution – and a good one it seems.",
     "Page 14 Hynes paragraph and 5...f6 hierarchy",
@@ -97,6 +104,7 @@ export function applyChapterContentCorrections(filename: string, content: string
     "12.a4 Bd8=, planning ...Nce7",
     "\n10.Bc4\n",
     "Gallinnis – Kabatianski",
+    "<!-- FEN: r1bqkb1r/pp1ppppp/2n2n2/2p1P3/8/N4N2/PPPP1PPP/R1BQKB1R b KQkq - 0 4 -->\n4...Ng4 5.Qe2",
     "The correspondence player Hynes has been the chief exponent",
     "\n5...f6!?\n",
     "A drastic solution – and a good one it seems.",
@@ -115,6 +123,7 @@ export function applyChapterContentCorrections(filename: string, content: string
     "\n10.Nc4\n",
     "\n3.Nf3\n\n**FEN:**",
     "Gallinnis - Kabatianski",
+    "<!-- FEN: r1bqkb1r/pp1ppppp/2n2n2/2p5/4P3/N2P1N2/PPP2PPP/R1BQKB1R b KQkq - 0 4 -->\n4...Ng4",
     "4...Ng4 5.Qe2 f6!?",
     "A drastic solution - and a good one it seems.",
   ];
