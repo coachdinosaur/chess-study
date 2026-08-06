@@ -2,6 +2,7 @@ import type { MarkdownChapter } from "./markdown-chapter";
 import { applyChapterContentCorrections } from "./chapter-content-corrections";
 import { applyChapterPage15Corrections } from "./chapter-page15-corrections";
 import { applyChapterPage16Corrections } from "./chapter-page16-corrections";
+import { applyChapterPage17Corrections } from "./chapter-page17-corrections";
 import { parseChapter } from "./markdown-chapter";
 
 const chapterModules = import.meta.glob("../content/chapters/**/*.md", { eager: true, query: "?raw", import: "default" }) as Record<string, string>;
@@ -15,7 +16,8 @@ export function loadAllChapters(): MarkdownChapter[] {
     const filename = filepath.split("/").pop() ?? "unknown.md";
     const page14Corrected = applyChapterContentCorrections(filename, content as string);
     const page15Corrected = applyChapterPage15Corrections(filename, page14Corrected);
-    const correctedContent = applyChapterPage16Corrections(filename, page15Corrected);
+    const page16Corrected = applyChapterPage16Corrections(filename, page15Corrected);
+    const correctedContent = applyChapterPage17Corrections(filename, page16Corrected);
     return parseChapter(filename, correctedContent);
   });
 
