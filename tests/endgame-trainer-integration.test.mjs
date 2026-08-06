@@ -70,6 +70,9 @@ test('the complete standalone asset set is present in the Pages artifact tree', 
   ]);
 
   const workflow = await readFile(file('.github/workflows/pages.yml'), 'utf8');
-  assert.match(workflow, /uses:\s*actions\/upload-pages-artifact@v3/);
+  assert.match(workflow, /uses:\s*actions\/upload-pages-artifact@v4/);
   assert.match(workflow, /path:\s*\./);
+  assert.match(workflow, /cancel-in-progress:\s*false/);
+  assert.match(workflow, /build:\s*\n\s*runs-on:/);
+  assert.match(workflow, /deploy:\s*\n\s*needs:\s*build/);
 });
