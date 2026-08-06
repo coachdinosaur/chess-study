@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { access, readFile, readdir, stat } from "node:fs/promises";
 import test from "node:test";
+import { isLikelyProseSquare } from "../app/lib/chess-notation.ts";
 
 const root = new URL("../", import.meta.url);
 
@@ -36,6 +37,12 @@ test("the renderer replays preceding PDF pages and uses clean diagram labels", a
   assert.match(renderer, /precedingMarkdown/);
   assert.match(renderer, /parseMarkdown\(priorMarkdown, ignoreMove, resolver\)/);
   assert.doesNotMatch(renderer, /â€”/);
+});
+
+test("narrative square references remain plain text", () => {
+  const text = "Black has typically contested d5, getting rid of all his problems.";
+  const at = text.indexOf("d5");
+  assert.equal(isLikelyProseSquare(text, at, "d5"), true);
 });
 
 test("the static output contains the interactive board and shared engine references", async () => {
