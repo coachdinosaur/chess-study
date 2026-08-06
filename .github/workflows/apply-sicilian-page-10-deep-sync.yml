@@ -1,0 +1,82 @@
+name: Apply Sicilian Page 10 deep sync
+
+on:
+  push:
+    branches:
+      - wip/sicilian-20260805-153931
+    paths:
+      - .github/workflows/apply-sicilian-page-10-deep-sync.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: wip/sicilian-20260805-153931
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/opening-book-sicilian/package-lock.json
+
+      - name: Deep-sync printed PDF Page 10
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          chapter = Path('apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md')
+          text = chapter.read_text(encoding='utf-8')
+
+          replacements = [
+              ('Karacsony - S. Petkov', 'Karacsony – S. Petkov', 'Karacsony source dash'),
+              ('8.h3 cxd4 9.Nxd4 Ngxe5 10.f4+ had to be preferred',
+               '8.h3 cxd4 9.Nxd4 Ngxe5 10.Bf4∓ had to be preferred',
+               'Bf4 move and Black-edge glyph'),
+              ('25.Kf2 g5!+)', '25.Kf2 g5!∓)', 'g5 Black-edge glyph'),
+              ('Tukhvatullin - Karpeshov', 'Tukhvatullin – Karpeshov', 'Tukhvatullin source dash'),
+          ]
+
+          for old, new, label in replacements:
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{label}: expected exactly one match, found {count}')
+              text = text.replace(old, new, 1)
+
+          chapter.write_text(text, encoding='utf-8')
+
+          tests = Path('apps/opening-book-sicilian/tests/chapter-workflow.test.mjs')
+          test_text = tests.read_text(encoding='utf-8')
+          marker = 'test("evaluation and positional glyphs remain attached to move buttons", () => {'
+          regression = '''test("printed PDF Page 10 keeps its exact move content and boundary", async () => {\n  const markdown = await readChapterOne();\n  const start = markdown.indexOf("## Page 10");\n  const end = markdown.indexOf("## Page 11", start);\n  const page = markdown.slice(start, end);\n\n  assert.match(page, /much for White in Karacsony – S\. Petkov, corr\. 2012\./);\n  assert.match(page, /10\.Bf4∓ had to be preferred/);\n  assert.match(page, /14\.\.\.Bh4!N-\+/);\n  assert.match(page, /25\.Kf2 g5!∓/);\n  assert.match(page, /Tukhvatullin – Karpeshov, Sterlitamak 2011/);\n  assert.match(page, /8\.exd5 Nxd5 9\.Bxe7 Ncxe7 10\.dxc5 0-0\s*$/);\n  assert.doesNotMatch(page, /10\.f4\+/);\n  assert.doesNotMatch(page, /25\.Kf2 g5!\+/);\n  assert.doesNotMatch(page, /Tukhvatullin - Karpeshov/);\n  assert.doesNotMatch(page, /leaves the white king too exposed/);\n});\n\n'''
+          if regression.strip() not in test_text:
+              if marker not in test_text:
+                  raise SystemExit('Could not find Page 10 regression-test insertion point')
+              test_text = test_text.replace(marker, regression + marker, 1)
+          tests.write_text(test_text, encoding='utf-8')
+          PY
+
+          git diff --check
+
+      - name: Install and test Sicilian app
+        working-directory: apps/opening-book-sicilian
+        run: |
+          npm ci
+          npm test
+
+      - name: Commit correction and remove temporary workflow
+        shell: bash
+        run: |
+          git config user.name "coachdinosaur"
+          git config user.email "86093996+coachdinosaur@users.noreply.github.com"
+          git rm .github/workflows/apply-sicilian-page-10-deep-sync.yml
+          git add apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md \
+                  apps/opening-book-sicilian/tests/chapter-workflow.test.mjs
+          git diff --cached --check
+          git commit -m "Deep-sync Sicilian Page 10 with PDF"
+          git push origin HEAD:wip/sicilian-20260805-153931
