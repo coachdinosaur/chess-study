@@ -1,5 +1,6 @@
 import type { MarkdownChapter } from "./markdown-chapter";
 import { applyChapterContentCorrections } from "./chapter-content-corrections";
+import { applyChapterPage10Corrections } from "./chapter-page10-corrections";
 import { applyChapterPage15Corrections } from "./chapter-page15-corrections";
 import { applyChapterPage16Corrections } from "./chapter-page16-corrections";
 import { applyChapterPage17Corrections } from "./chapter-page17-corrections";
@@ -14,7 +15,8 @@ export function loadAllChapters(): MarkdownChapter[] {
 
   const entries = Object.entries(chapterModules).map(([filepath, content]) => {
     const filename = filepath.split("/").pop() ?? "unknown.md";
-    const page14Corrected = applyChapterContentCorrections(filename, content as string);
+    const page10Corrected = applyChapterPage10Corrections(filename, content as string);
+    const page14Corrected = applyChapterContentCorrections(filename, page10Corrected);
     const page15Corrected = applyChapterPage15Corrections(filename, page14Corrected);
     const page16Corrected = applyChapterPage16Corrections(filename, page15Corrected);
     const correctedContent = applyChapterPage17Corrections(filename, page16Corrected);
