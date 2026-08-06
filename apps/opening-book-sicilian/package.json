@@ -1,0 +1,34 @@
+{
+  "name": "opening-book-sicilian",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build && node scripts/create-static-routes.mjs",
+    "preview": "vite preview --host 0.0.0.0",
+    "chapters:status": "node scripts/chapter-system.mjs status",
+    "chapters:sync": "node scripts/chapter-system.mjs sync",
+    "chapters:check": "node scripts/chapter-system.mjs check",
+    "chapters:audit": "node --max-old-space-size=4096 --import tsx scripts/chapter-audit.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run chapters:check && npm run build && node --import tsx --test tests/static-app.test.mjs tests/stockfish-client.test.mjs tests/chapter-workflow.test.mjs"
+  },
+  "dependencies": {
+    "chess.js": "^1.4.0",
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.19",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.2",
+    "tsx": "^4.23.1",
+    "typescript": "5.9.3",
+    "vite": "8.0.13"
+  }
+}

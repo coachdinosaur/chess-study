@@ -30,10 +30,18 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: apps/opening-book/package-lock.json
+          cache-dependency-path: |
+            apps/opening-book/package-lock.json
+            apps/opening-book-sicilian/package-lock.json
 
       - name: Test and build opening book
         working-directory: apps/opening-book
+        run: |
+          npm ci
+          npm test
+
+      - name: Test and build sicilian opening book
+        working-directory: apps/opening-book-sicilian
         run: |
           npm ci
           npm test
@@ -46,12 +54,16 @@ jobs:
       - name: Prepare Google Search favicon
         run: python tools/prepare_search_favicon.py
 
-      - name: Publish opening book at /openings/
+      - name: Publish opening books
         shell: bash
         run: |
           test ! -e openings
           mv apps/opening-book/dist openings
           rm -rf apps/opening-book
+
+          test ! -e openings-sicilian
+          mv apps/opening-book-sicilian/dist openings-sicilian
+          rm -rf apps/opening-book-sicilian
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
