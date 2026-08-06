@@ -172,7 +172,7 @@ That's it! Usually this pawn thrust would be premature, but the knight on e2 wil
 I think that White has to take.
 
 <!-- FEN: rnbqkb1r/pp2pppp/5n2/2pp4/4P3/2N5/PPPPNPPP/R1BQKB1R w KQkq - 0 4 -->
-The alternative 4.e5 Ng4 5.Nf4 (5.f4?! is better for Black after either 5...e6∓ or 5...h5∓) 5...Nxe5 6.Nfxd5 e6 7.Ne3 Nbc6 8.g3 (8.f4 Ng6 9.g3? Nxf4!∓) 8...f5! 9.f4 Nf7 10.Bg2 Bd7 11.0-0 Be7∓ leads to a situation where Black's control over the d4-square easily guarantees him at least equal prospects.
+The alternative 4.e5 Ng4 5.Nf4 (5.f4?! is better for Black after either 5...e6∓ or 5...h5∓) 5...Nxe5 6.Nfxd5 e6 7.Ne3 Nbc6 8.g3 (8.f4 Ng6 9.g3? Nxf4!∓) 8...f5! 9.f4 Nf7 10.Bg2 Bd7 11.0-0 Be7⇆ leads to a situation where Black's control over the d4-square easily guarantees him at least equal prospects.
 
 <!-- FEN: rnbqkb1r/pp2pppp/5n2/2pP4/8/2N5/PPPPNPPP/R1BQKB1R b KQkq - 0 4 -->
 4...Nxd5 5.g3 Nxc3 6.Nxc3 Bd7!
@@ -199,13 +199,13 @@ An accurate choice of Hou Yifan's, keeping the queen in the centre without allow
 A strong idea: combining development with the creation of a good square on f5 for the bishop. Now Black has nothing to worry about.
 
 <!-- FEN: r2qkb1r/pp1bpppp/2n5/8/4Q3/2N3P1/PPP2P1P/R1B1KB1R b KQkq - 2 9 -->
-In Hou Yifan - Ju Wenjun, Lopota 2014, Black continued with the weakening 9...f5?! 10.Qc4 Ne5. After the further 11.Qd5! Bc6 12.Qxe5 Bxh1, Hou Yifan could have wrapped up the game with 13.Nb5!N Rc8 14.Nxa7 Rxc2 15.Qxf5+-.
+In Hou Yifan – Ju Wenjun, Lopota 2014, Black continued with the weakening 9...f5?! 10.Qc4 Ne5. After the further 11.Qd5! Bc6 12.Qxe5 Bxh1, Hou Yifan could have wrapped up the game with 13.Nb5!N Rc8 14.Nxa7 Rxc2 15.Qxf5+-.
 
 <!-- FEN: r2qkb1r/pp1bpp1p/2n3p1/8/2Q5/2N3P1/PPP2P1P/R1B1KB1R w KQkq - 0 10 -->
 10.Bg2 Bg7 11.0-0 0-0 12.Rd1 Qc8 13.Be3 Bf5 14.Qa4
 
 <!-- FEN: r1q2rk1/pp2ppbp/2n3p1/5b2/2Q5/2N1B1P1/PPP2PBP/R2R2K1 w - - 8 14 -->
-14.Qh4 Rd8 15.Rxd8 Qxd8 16.Rd1 Qe8=
+14.Qh4 Rd8 15.Rxd8+ Qxd8 16.Rd1 Qe8=
 
 <!-- FEN: r1q2rk1/pp2ppbp/2n3p1/5b2/7Q/2N1B1P1/PPP2PBP/R2R2K1 b - - 9 14 -->
 14...Bh3! 15.Be4

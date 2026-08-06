@@ -166,6 +166,31 @@ test("printed PDF Page 11 keeps its exact move content and boundary", async () =
   assert.match(pageTwelve, /^## Page 12\s+That.s it! Usually this pawn thrust/);
 });
 
+test("printed PDF Page 12 keeps its exact move content and boundary", async () => {
+  const markdown = await readChapterOne();
+  const start = markdown.indexOf("## Page 12");
+  const end = markdown.indexOf("## Page 13", start);
+  const page = markdown.slice(start, end);
+  const pageThirteen = markdown.slice(end, markdown.indexOf("## Page 14", end));
+
+  assert.match(page, /5\.\.\.e6∓/);
+  assert.match(page, /5\.\.\.h5∓/);
+  assert.match(page, /Nxf4!∓/);
+  assert.match(page, /11\.0-0 Be7⇆/);
+  assert.match(page, /13\.Qxa6 \(13\.Qg2 g6 14\.0-0 Bg7 15\.Bxa6 0-0 16\.Bd3 Qc8∞\) 13\.\.\.Nf3\+/);
+  assert.match(page, /15\.Ke1 \(15\.Bf4 Nxd3 16\.Qxd3 Qxd3\+ 17\.cxd3 Rxb2 18\.Be3 g6 19\.Bd4 f6=/);
+  assert.match(page, /Hou Yifan – Ju Wenjun/);
+  assert.match(page, /12\.Rd1 Qc8/);
+  assert.match(page, /15\.Rxd8\+ Qxd8/);
+  assert.match(page, /22\.Rd2±\s*$/);
+  assert.doesNotMatch(page, /11\.0-0 Be7∓/);
+  assert.doesNotMatch(page, /Hou Yifan - Ju Wenjun/);
+  assert.doesNotMatch(page, /12\.Rd1 Qe8/);
+  assert.doesNotMatch(page, /22\.Rd2=/);
+  assert.doesNotMatch(page, /16\.Rd5/);
+  assert.match(pageThirteen, /^## Page 13\s+<!--[\s\S]*?-->\s*16\.Rd5/);
+});
+
 test("evaluation and positional glyphs remain attached to move buttons", () => {
   const source = "5...e6∓, Rg8!→, Bc3⇆, and Rc8≡.";
   const displays = [...source.matchAll(SOURCE_MOVE_TOKEN)].map((match) => match[0]);
