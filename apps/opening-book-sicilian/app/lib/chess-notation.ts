@@ -20,9 +20,14 @@ export function normalizeSan(raw: string): string {
 export function isLikelyProseSquare(text: string, at: number, source: string): boolean {
   const bare = source.replace(/^\d+\.(?:\.\.)?\s*/, "");
   if (!SQUARE_ONLY.test(bare)) return false;
+
   const prefix = text.slice(Math.max(0, at - 12), at).toLowerCase();
   if (/(?:^|\s)(?:on|to|the|a|toward|from|square|contested) $/.test(prefix)) return true;
-  return text.slice(at + source.length, at + source.length + 7).toLowerCase().startsWith("-square");
+
+  const suffix = text.slice(at + source.length, at + source.length + 40).toLowerCase();
+  if (!/^\d+\./.test(source.trim()) && /^\s+is(?:\s+now)?\s+under\s+attack\b/.test(suffix)) return true;
+
+  return suffix.startsWith("-square");
 }
 
 export function isCoordinateMoveReference(text: string, at: number): boolean {
