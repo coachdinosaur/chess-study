@@ -276,35 +276,35 @@ Saule - Jemec, email 2006, continued with 4.Nf3, and here I would like to sugges
 Preventing Black from playing ...a6 and gaining the bishop pair. Without this move White would be worse.
 
 <!-- FEN: r1bqkb1r/pp2nppp/2np4/1Bp1p3/2N1P3/3P4/PPPB1PPP/R2QK1NR b KQkq - 1 6 -->
-6...g6!
+6...Ng6!
 
 <!-- FEN: r1bqkb1r/pp2nppp/2np4/1Bp1p3/2N1P3/3P4/PPPB1PPP/R2QK1NR b KQkq - 1 6 -->
-6...a6?! 7.Na5 Qd7 8.Nb6 Qc7 9.a4! is not the kind of bind we'd like to fall into.
+6...a6?! 7.Ba5 Qd7 8.Nb6 Qc7 9.Ba4! is not the kind of bind we'd like to fall into.
 
-<!-- FEN: r1bqkb1r/pp2np1p/2np2p1/1Bp1p3/2N1P3/3P4/PPPB1PPP/R2QK1NR w KQkq - 0 7 -->
-7.Ne3 Bg7 8.Nf3
+<!-- FEN: r1bqkb1r/pp3ppp/2np2n1/1Bp1p3/2N1P3/3P4/PPPB1PPP/R2QK1NR w KQkq - 2 7 -->
+7.Ne3 Be7 8.Nf3
 
 <!-- FEN: r1bqk2r/pp2npbp/2np2p1/1Bp1p3/4P3/3PN3/PPPB1PPP/R2QK1NR w KQkq - 2 8 -->
 Both 8.a4 Bg5 9.Nf3 Bxe3 10.Bxe3 0-0 and 8.Nd5 0-0 9.Ne2 Bg5 are level.
 
-<!-- FEN: r1bqk2r/pp2npbp/2np2p1/1Bp1p3/4P3/3PNN2/PPPB1PPP/R2QK2R b KQkq - 3 8 -->
+<!-- FEN: r1bqk2r/pp2bppp/2np2n1/1Bp1p3/4P3/3PNN2/PPPB1PPP/R2QK2R b KQkq - 5 8 -->
 8...0-0 9.0-0
 
 So far, the moves have been rather obvious for both sides. A simple equalizing idea is:
 
-<!-- FEN: r1bq1rk1/pp2npbp/2np2p1/1Bp1p3/4P3/3PNN2/PPPB1PPP/R2Q1RK1 b - - 5 9 -->
+<!-- FEN: r1bq1rk1/pp2bppp/2np2n1/1Bp1p3/4P3/3PNN2/PPPB1PPP/R2Q1RK1 b - - 7 9 -->
 9...Nd4!?
 
-<!-- FEN: r1bq1rk1/pp2npbp/2np2p1/1Bp1p3/4P3/3PNN2/PPPB1PPP/R2Q1RK1 b - - 5 9 -->
+<!-- FEN: r1bq1rk1/pp2bppp/2np2n1/1Bp1p3/4P3/3PNN2/PPPB1PPP/R2Q1RK1 b - - 7 9 -->
 9...Be6 10.Bc4 h6 11.Nd5 Qd7 12.a4 Nd8=, planning ...Ne7, is also quite good.
 
-<!-- FEN: r1bq1rk1/pp2npbp/3p2p1/1Bp1p3/3nP3/3PNN2/PPPB1PPP/R2Q1RK1 w - - 6 10 -->
+<!-- FEN: r1bq1rk1/pp2bppp/3p2n1/1Bp1p3/3nP3/3PNN2/PPPB1PPP/R2Q1RK1 w - - 8 10 -->
 10.Nc4
 
-<!-- FEN: r1bq1rk1/pp2npbp/3p2p1/1Bp1p3/3nP3/3PNN2/PPPB1PPP/R2Q1RK1 w - - 6 10 -->
+<!-- FEN: r1bq1rk1/pp2bppp/3p2n1/1Bp1p3/3nP3/3PNN2/PPPB1PPP/R2Q1RK1 w - - 8 10 -->
 10.Nxd4 cxd4 11.Nd5 Be6 12.Bc4 Bg5 13.g3 Bxd2 14.Qxd2 Ne7=
 
-<!-- FEN: r1bq1rk1/pp2npbp/3p2p1/1Bp1p3/2NnP3/3P1N2/PPPB1PPP/R2Q1RK1 b - - 7 10 -->
+<!-- FEN: r1bq1rk1/pp2bppp/3p2n1/1Bp1p3/2NnP3/3P1N2/PPPB1PPP/R2Q1RK1 b - - 9 10 -->
 10...Nxf3+ 11.Qxf3 Bg5! 12.a4 Be6=
 
 <!-- FEN: r1bqkb1r/pp1pnppp/2n5/1Bp1p3/2N1P3/5N2/PPPP1PPP/R1BQKB1R b KQkq - 3 5 -->
