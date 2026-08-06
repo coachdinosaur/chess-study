@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { auditChapterMarkdown } from "../scripts/chapter-audit.ts";
+import { SOURCE_MOVE_TOKEN, normalizeSan } from "../app/lib/chess-notation.ts";
 import { MarkdownMoveResolver } from "../app/lib/markdown-moves.ts";
 import { catalogSource, discoverChapters, parseChapterMarkdown } from "../scripts/chapter-system.mjs";
 
@@ -58,6 +59,15 @@ test("Chapter 1 retains PDF-corrected moves and source references", async () => 
   assert.doesNotMatch(markdown, /2\.Ne2 is likely to transpose elsewhere/);
   assert.doesNotMatch(markdown, /11\.\.\.Re8 11\.\.\.d3/);
   assert.doesNotMatch(markdown, /6\.Bc4 Ngxe5/);
+});
+
+test("Black-edge evaluation glyphs remain attached to move buttons", () => {
+  const source = "5...e6∓ or 5...h5∓ and later Nxf4!∓, while Be7∓ remains slightly better for Black.";
+  const displays = [...source.matchAll(SOURCE_MOVE_TOKEN)].map((match) => match[0]);
+  assert.deepEqual(displays, ["5...e6∓", "5...h5∓", "Nxf4!∓", "Be7∓"]);
+  assert.equal(normalizeSan("5...e6∓"), "e6");
+  assert.equal(normalizeSan("5...h5∓"), "h5");
+  assert.equal(normalizeSan("Nxf4!∓"), "Nxf4");
 });
 
 test("move recovery handles bad anchors, look-ahead, and semicolon siblings", () => {

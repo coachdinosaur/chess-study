@@ -173,7 +173,7 @@ That's it! Usually this pawn thrust would be premature, but the knight on e2 wil
 I think that White has to take.
 
 <!-- FEN: rnbqkb1r/pp2pppp/5n2/2pp4/4P3/2N5/PPPPNPPP/R1BQKB1R w KQkq - 0 4 -->
-The alternative 4.e5 Ng4 5.Nf4 (5.f4?! is better for Black after either 5...e6+ or 5...h5+) 5...Nxe5 6.Nfxd5 e6 7.Ne3 Nbc6 8.g3 (8.f4 Ng6 9.g3? Nxf4!+) 8...f5! 9.f4 Nf7 10.Bg2 Bd7 11.0-0 Be7∓ leads to a situation where Black's control over the d4-square easily guarantees him at least equal prospects.
+The alternative 4.e5 Ng4 5.Nf4 (5.f4?! is better for Black after either 5...e6∓ or 5...h5∓) 5...Nxe5 6.Nfxd5 e6 7.Ne3 Nbc6 8.g3 (8.f4 Ng6 9.g3? Nxf4!∓) 8...f5! 9.f4 Nf7 10.Bg2 Bd7 11.0-0 Be7∓ leads to a situation where Black's control over the d4-square easily guarantees him at least equal prospects.
 
 <!-- FEN: rnbqkb1r/pp2pppp/5n2/2pP4/8/2N5/PPPPNPPP/R1BQKB1R b KQkq - 0 4 -->
 4...Nxd5 5.g3 Nxc3 6.Nxc3 Bd7!
