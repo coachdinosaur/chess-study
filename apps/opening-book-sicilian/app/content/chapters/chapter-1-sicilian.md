@@ -113,7 +113,7 @@ So, there we have it. The only one who seems to believe in White's chances here 
 Eisenbeiser's trademark.
 
 <!-- FEN: r1bqkb1r/pp3ppp/2n2n2/2pp4/3PP3/2N5/PP2NPPP/R1BQKB1R w KQkq - 0 7 -->
-7.e5?! led to a quick disaster for White after: 7...Ng4! 8.f4? (8.h3 cxd4 9.Nxd4 Ngxe5 10.f4+ had to be preferred, although it is clear that White is struggling a pawn down.) 8...cxd4 9.Nxd4 Bc5! 10.Bb5 0-0! 11.Nxc6 bxc6 12.Bxc6 Qb6! 13.Bxa8 Bf2+ 14.Ke2 Nxe5 (14...Bh4!N-+ would have been cleaner.) 15.Kf1? (Better was 15.Qd2, although Black would still gain a sizeable advantage after: 15...Nc4! 16.Qxd5 Re8+ 17.Ne4 Nd6! 18.Qxd6 Qxd6 19.Kxf2 Qb6+ 20.Be3 Qxb2+ 21.Nd2 Rxe3 22.Kxe3 Qc3+ 23.Kf2 Qxd2+ 24.Kf3 Qc3+ 25.Kf2 g5!+) 15...Ba6+ 16.Ne2 Bh4 17.g3 Ng4 18.Kg2 Qf2+ 19.Kh3 Bxe2 20.Qxd5 Bf6 21.Qg2 Re8 22.Qxf2 Nxf2+ 23.Kg2 Nxh1 24.Bc6 Re6 25.Ba4 Bd4 0-1 Tukhvatullin - Karpeshov, Sterlitamak 2011.
+7.e5?! led to a quick disaster for White after: 7...Ng4! 8.f4? (8.h3 cxd4 9.Nxd4 Ngxe5 10.Bf4∓ had to be preferred, although it is clear that White is struggling a pawn down.) 8...cxd4 9.Nxd4 Bc5! 10.Bb5 0-0! 11.Nxc6 bxc6 12.Bxc6 Qb6! 13.Bxa8 Bf2+ 14.Ke2 Nxe5 (14...Bh4!N-+ would have been cleaner.) 15.Kf1? (Better was 15.Qd2, although Black would still gain a sizeable advantage after: 15...Nc4! 16.Qxd5 Re8+ 17.Ne4 Nd6! 18.Qxd6 Qxd6 19.Kxf2 Qb6+ 20.Be3 Qxb2+ 21.Nd2 Rxe3 22.Kxe3 Qc3+ 23.Kf2 Qxd2+ 24.Kf3 Qc3+ 25.Kf2 g5!∓) 15...Ba6+ 16.Ne2 Bh4 17.g3 Ng4 18.Kg2 Qf2+ 19.Kh3 Bxe2 20.Qxd5 Bf6 21.Qg2 Re8 22.Qxf2 Nxf2+ 23.Kg2 Nxh1 24.Bc6 Re6 25.Ba4 Bd4 0-1 Tukhvatullin – Karpeshov, Sterlitamak 2011.
 
 <!-- FEN: r1bqkb1r/pp3ppp/2n2n2/2ppP3/3P4/2N2N2/PP3PPP/R1BQKB1R b KQkq - 0 7 -->
 7...Be7!

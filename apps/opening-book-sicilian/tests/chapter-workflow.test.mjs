@@ -119,6 +119,24 @@ test("printed PDF Page 9 keeps its exact move content and boundary", async () =>
   assert.match(pageTen, /^## Page 10\s+much for White in Karacsony – S\. Petkov, corr\. 2012\./);
 });
 
+test("printed PDF Page 10 keeps its exact move content and boundary", async () => {
+  const markdown = await readChapterOne();
+  const start = markdown.indexOf("## Page 10");
+  const end = markdown.indexOf("## Page 11", start);
+  const page = markdown.slice(start, end);
+
+  assert.match(page, /much for White in Karacsony – S\. Petkov, corr\. 2012\./);
+  assert.match(page, /10\.Bf4∓ had to be preferred/);
+  assert.match(page, /14\.\.\.Bh4!N-\+/);
+  assert.match(page, /25\.Kf2 g5!∓/);
+  assert.match(page, /Tukhvatullin – Karpeshov, Sterlitamak 2011/);
+  assert.match(page, /8\.exd5 Nxd5 9\.Bxe7 Ncxe7 10\.dxc5 0-0\s*$/);
+  assert.doesNotMatch(page, /10\.f4\+/);
+  assert.doesNotMatch(page, /25\.Kf2 g5!\+/);
+  assert.doesNotMatch(page, /Tukhvatullin - Karpeshov/);
+  assert.doesNotMatch(page, /leaves the white king too exposed/);
+});
+
 test("evaluation and positional glyphs remain attached to move buttons", () => {
   const source = "5...e6∓, Rg8!→, Bc3⇆, and Rc8≡.";
   const displays = [...source.matchAll(SOURCE_MOVE_TOKEN)].map((match) => match[0]);
