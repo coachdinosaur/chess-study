@@ -38,6 +38,9 @@ This chapter will concentrate on the rare moves: **A) 2.Bc4**, **B) 2.c4**, **C)
 
 ### **A) 2.Bc4**
 
+**FEN:**
+`rnbqkbnr/pp1ppppp/8/2p5/2B1P3/8/PPPP1PPP/RNBQK1NR b KQkq - 1 2`
+
 This is rather harmless, as the bishop will be an object of attack on c4 and will have to move again. Black will be allowed to obtain good development.
 
 **2...e6! 3.Qe2**
