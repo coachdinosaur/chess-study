@@ -1,0 +1,69 @@
+name: Fix Sicilian Page 13 exact PDF annotation
+
+on:
+  push:
+    branches:
+      - wip/sicilian-20260805-153931
+    paths:
+      - .github/workflows/fix-sicilian-page13-exact.yml
+
+permissions:
+  contents: write
+
+jobs:
+  correct-page-13:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: wip/sicilian-20260805-153931
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/opening-book-sicilian/package-lock.json
+
+      - name: Correct PDF-exact Page 13 annotation and test
+        shell: python
+        run: |
+          from pathlib import Path
+
+          chapter_path = Path("apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md")
+          chapter = chapter_path.read_text(encoding="utf-8")
+          old = "4...Nge7!?N"
+          new = "4...Nge7!N"
+          if chapter.count(old) != 1:
+              raise SystemExit(f"Expected one {old!r}, found {chapter.count(old)}")
+          chapter = chapter.replace(old, new, 1)
+          chapter_path.write_text(chapter, encoding="utf-8")
+
+          test_path = Path("apps/opening-book-sicilian/tests/chapter-workflow.test.mjs")
+          tests = test_path.read_text(encoding="utf-8")
+          old_positive = r"assert.match(page, /4\.\.\.Nge7!\?N/);"
+          new_positive = r"assert.match(page, /4\.\.\.Nge7!N/);"
+          old_negative = r"assert.doesNotMatch(page, /4\.\.\.Nge7!N/);"
+          new_negative = r"assert.doesNotMatch(page, /4\.\.\.Nge7!\?N/);"
+          for old_text, new_text in [(old_positive, new_positive), (old_negative, new_negative)]:
+              if tests.count(old_text) != 1:
+                  raise SystemExit(f"Expected one test line {old_text!r}, found {tests.count(old_text)}")
+              tests = tests.replace(old_text, new_text, 1)
+          test_path.write_text(tests, encoding="utf-8")
+
+      - name: Install and test Sicilian app
+        working-directory: apps/opening-book-sicilian
+        run: |
+          npm ci
+          npm test
+          npm run build
+
+      - name: Commit correction and remove one-shot workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md apps/opening-book-sicilian/tests/chapter-workflow.test.mjs
+          git commit -m "Correct Sicilian Page 13 Nge7 annotation"
+          git rm .github/workflows/fix-sicilian-page13-exact.yml
+          git commit -m "Remove Page 13 correction workflow"
+          git push origin HEAD:wip/sicilian-20260805-153931
