@@ -62,7 +62,7 @@ test("Chapter 1 Page 7 matches the PDF variation hierarchy", async () => {
 test("Chapter 1 retains PDF-corrected moves and source references", async () => {
   const markdown = await readChapterOne();
   assert.match(markdown, /2\.Be2 is likely to transpose elsewhere/);
-  assert.match(markdown, /Bersamina - Kantans, Pune 2014, and now: 13\.Re1!N=/);
+  assert.match(markdown, /Bersamina – Kantans, Pune 2014, and now: 13\.Re1!N=/);
   assert.match(markdown, /16\.N2c3 Eminov - Yilmazyerli/);
   assert.match(markdown, /9\.\.\.f5\?! 10\.Qc4 Ne5[\s\S]*13\.Nb5!N Rc8 14\.Nxa7 Rxc2 15\.Qxf5\+\-/);
   assert.match(markdown, /6\.Nc4 Ngxe5 7\.Ncxe5 fxe5 8\.Nxe5 g6!\?/);
@@ -84,6 +84,10 @@ test("printed PDF Page 8 keeps its exact move content and boundary", async () =>
   assert.match(page, /15\.Be2 Re8∓/);
   assert.match(page, /9\.Bc2 b4∓/);
   assert.match(page, /20\.Na3 Bc3⇆/);
+  assert.match(page, /Quaddy – Neapus/);
+  assert.match(page, /Osipov – Rimkus/);
+  assert.match(page, /Bersamina – Kantans/);
+  assert.match(page, /Rasik – Smirin/);
   assert.match(page, /10\.Bh4\s*$/);
   assert.doesNotMatch(page, /1\.e4 c5 2\.Bc4/);
   assert.doesNotMatch(page, /20\.Na3 Nc3∞/);

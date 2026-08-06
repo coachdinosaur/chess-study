@@ -34,7 +34,7 @@ This chapter will concentrate on the rare moves: A) 2.Bc4, B) 2.c4, C) 2.Ne2, D)
 <!-- FEN: rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2 -->
 2.Be2 is likely to transpose elsewhere, e.g. 2...Nc6 3.f4 d5 4.d3 is line B12 of Chapter 2.
 <!-- FEN: rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2 -->
-2.a4 is a strange-looking move, but it has some point to it, although I struggle to believe you will face it regularly in tournament play. 2...Nc6 3.Bb5 Nf6 4.Nc3 g6 5.Nf3 Bg7 6.0-0 0-0 7.d3 d6 8.h3 a6 9.Bxc6 bxc6 10.Rb1 Re8= was fine for Black in Quaddy - Neapus, engine game 2011, which was agreed drawn an emotionally-draining 115 moves later.
+2.a4 is a strange-looking move, but it has some point to it, although I struggle to believe you will face it regularly in tournament play. 2...Nc6 3.Bb5 Nf6 4.Nc3 g6 5.Nf3 Bg7 6.0-0 0-0 7.d3 d6 8.h3 a6 9.Bxc6 bxc6 10.Rb1 Re8= was fine for Black in Quaddy – Neapus, engine game 2011, which was agreed drawn an emotionally-draining 115 moves later.
 
 A) 2.Bc4
 
@@ -49,13 +49,13 @@ This is rather harmless, as the bishop will be an object of attack on c4 and wil
 `rnbqkbnr/pp1p1ppp/4p3/2p5/2B1P3/8/PPPPQPPP/RNB1K1NR b KQkq - 1 3`
 
 <!-- FEN: rnbqkbnr/pp1p1ppp/4p3/2p5/2B1P3/8/PPPP1PPP/RNBQK1NR w KQkq - 0 3 -->
-3.Nf3 Nf6! 4.Nc3 (4.e5 d5! 5.exf6 dxc4 6.fxg7 Bxg7 7.Qe2 [7.Na3 e5!] 7...Nc6 8.Qxc4 b6! 9.0-0 Rg8!→ was better for Black in Osipov - Rimkus, corr. 2010) 4...Nc6 5.0-0 d5 6.exd5 exd5 7.Bb5 Bd6 8.d4 0-0 9.dxc5 Bxc5 10.Bg5 Be6 11.Rb1 Rc8 12.a3 Be7 Bersamina - Kantans, Pune 2014, and now: 13.Re1!N= (Instead, 13.Nd4?! should have led to a slight pull for Black after 13...Nxd4!N 14.Qxd4 a6 15.Be2 Re8∓ as the c3-knight is clumsy and White is blockading the d5-pawn with the wrong piece.)
+3.Nf3 Nf6! 4.Nc3 (4.e5 d5! 5.exf6 dxc4 6.fxg7 Bxg7 7.Qe2 [7.Na3 e5!] 7...Nc6 8.Qxc4 b6! 9.0-0 Rg8!→ was better for Black in Osipov – Rimkus, corr. 2010) 4...Nc6 5.0-0 d5 6.exd5 exd5 7.Bb5 Bd6 8.d4 0-0 9.dxc5 Bxc5 10.Bg5 Be6 11.Rb1 Rc8 12.a3 Be7 Bersamina – Kantans, Pune 2014, and now: 13.Re1!N= (Instead, 13.Nd4?! should have led to a slight pull for Black after 13...Nxd4!N 14.Qxd4 a6 15.Be2 Re8∓ as the c3-knight is clumsy and White is blockading the d5-pawn with the wrong piece.)
 
 <!-- FEN: rnbqkbnr/pp1p1ppp/4p3/2p5/2B1P3/8/PPPPQPPP/RNB1K1NR b KQkq - 1 3 -->
 3...Nc6 4.Nf3
 
 <!-- FEN: r1bqkbnr/pp1p1ppp/2n1p3/2p5/2B1P3/8/PPPPQPPP/RNB1K1NR w KQkq - 2 4 -->
-4.c3 Be7 5.Bb3 d5 6.d3 Nf6 7.Nf3 0-0 8.0-0 b5 9.Bg5 (9.Bc2 b4∓) 9...h6!? (9...c4 10.dxc4 bxc4 11.Ba4 dxe4 12.Bxc6 exf3 13.Bxf3 Rb8 14.Bf4 Rb5 15.b4 Nd5 16.Bg3 Bf6 17.a4 Rxb4 18.cxb4 Bxa1 19.Qxc4 Bb7 20.Na3 Bc3⇆ was a wild affair that eventually ended in Black's favour in Rasik - Smirin, Czech Republic 2003.) 10.Bh4
+4.c3 Be7 5.Bb3 d5 6.d3 Nf6 7.Nf3 0-0 8.0-0 b5 9.Bg5 (9.Bc2 b4∓) 9...h6!? (9...c4 10.dxc4 bxc4 11.Ba4 dxe4 12.Bxc6 exf3 13.Bxf3 Rb8 14.Bf4 Rb5 15.b4 Nd5 16.Bg3 Bf6 17.a4 Rxb4 18.cxb4 Bxa1 19.Qxc4 Bb7 20.Na3 Bc3⇆ was a wild affair that eventually ended in Black's favour in Rasik – Smirin, Czech Republic 2003.) 10.Bh4
 
 ## Page 9
 
