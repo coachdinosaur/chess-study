@@ -487,7 +487,7 @@ A good reply to 15.Qe3 is: <!-- NON-NAVIGATION -->
 <!-- FEN: 3r1rk1/p3ppbp/1qp3p1/3pP3/5P2/2B5/PPP1Q1PP/2KR3R w - - 0 19 -->
 19.Qd2 Rb8 20.Rd4 e6 21.Qxb6 axb6+ Black has good chances to press in the ending in view of his superior minor piece.
 
-The ending was slightly better for Black due to his central mass, Salmensuu – Hillarp Persson, Reykjavik 2000.
+The ending was slightly better for Black due to his central mass, Salmensuu - Hillarp Persson, Reykjavik 2000.
 
 ## Page 18
 
