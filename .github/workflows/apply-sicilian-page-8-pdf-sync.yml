@@ -1,0 +1,113 @@
+name: Apply Sicilian Page 8 PDF sync
+
+on:
+  push:
+    branches:
+      - wip/sicilian-20260805-153931
+    paths:
+      - .github/workflows/apply-sicilian-page-8-pdf-sync.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: wip/sicilian-20260805-153931
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/opening-book-sicilian/package-lock.json
+
+      - name: Synchronize printed Page 8 with PDF
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          chapter = Path('apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md')
+          text = chapter.read_text(encoding='utf-8')
+
+          replacements = [
+              ('3...Nf6 4.e5 d5 enters the c3 Sicilian',
+               '3...Nf6 4.e5 Nd5 enters the c3 Sicilian',
+               'Nd5 c3-Sicilian move'),
+              ('A) 2.Bc4\n1.e4 c5 2.Bc4\n\n**FEN:**',
+               'A) 2.Bc4\n\n**FEN:**',
+               'duplicate A-section opening sequence'),
+              ('15.Be2 Re8+ as the c3-knight',
+               '15.Be2 Re8∓ as the c3-knight',
+               'Re8 slight-Black evaluation'),
+              ('9.Bc2 b4+',
+               '9.Bc2 b4∓',
+               'b4 slight-Black evaluation'),
+              ('20.Na3 Nc3∞',
+               '20.Na3 Bc3⇆',
+               'Bc3 counterplay continuation'),
+          ]
+
+          for old, new, label in replacements:
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{label}: expected one match, found {count}')
+              text = text.replace(old, new, 1)
+
+          chapter.write_text(text, encoding='utf-8')
+
+          notation = Path('apps/opening-book-sicilian/app/lib/chess-notation.ts')
+          notation_text = notation.read_text(encoding='utf-8')
+          old_token = '[!?N=∞±∓]*'
+          new_token = '[!?N=∞±∓→←⇆≡]*'
+          if notation_text.count(old_token) != 1:
+              raise SystemExit(f'move-token suffix set: expected one match, found {notation_text.count(old_token)}')
+          notation_text = notation_text.replace(old_token, new_token, 1)
+
+          old_strip = '[!?=*∞±∓→←]+'
+          new_strip = '[!?=*∞±∓→←⇆≡]+'
+          if notation_text.count(old_strip) != 1:
+              raise SystemExit(f'normalization suffix set: expected one match, found {notation_text.count(old_strip)}')
+          notation_text = notation_text.replace(old_strip, new_strip, 1)
+          notation.write_text(notation_text, encoding='utf-8')
+
+          tests = Path('apps/opening-book-sicilian/tests/chapter-workflow.test.mjs')
+          test_text = tests.read_text(encoding='utf-8')
+          marker = 'test("Black-edge evaluation glyphs remain attached to move buttons", () => {'
+          page8_test = '''test("printed PDF Page 8 keeps its exact move content and boundary", async () => {\n  const markdown = await readChapterOne();\n  const start = markdown.indexOf("## Page 8");\n  const end = markdown.indexOf("## Page 9", start);\n  const page = markdown.slice(start, end);\n\n  assert.match(page, /3\\.\\.\\.Nf6 4\\.e5 Nd5 enters the c3 Sicilian/);\n  assert.match(page, /7\\.Qe2 \\[7\\.Na3 e5!\\]/);\n  assert.match(page, /9\\.0-0 Rg8!→/);\n  assert.match(page, /15\\.Be2 Re8∓/);\n  assert.match(page, /9\\.Bc2 b4∓/);\n  assert.match(page, /20\\.Na3 Bc3⇆/);\n  assert.match(page, /10\\.Bh4\\s*$/);\n  assert.doesNotMatch(page, /1\\.e4 c5 2\\.Bc4/);\n  assert.doesNotMatch(page, /20\\.Na3 Nc3∞/);\n  assert.doesNotMatch(page, /10\\.\\.\\.a5/);\n});\n\n'''
+          if page8_test.strip() not in test_text:
+              if marker not in test_text:
+                  raise SystemExit('Could not find Page 8 test insertion point')
+              test_text = test_text.replace(marker, page8_test + marker, 1)
+
+          old_glyph_test = '''test("Black-edge evaluation glyphs remain attached to move buttons", () => {\n  const source = "5...e6∓ or 5...h5∓ and later Nxf4!∓, while Be7∓ remains slightly better for Black.";\n  const displays = [...source.matchAll(SOURCE_MOVE_TOKEN)].map((match) => match[0]);\n  assert.deepEqual(displays, ["5...e6∓", "5...h5∓", "Nxf4!∓", "Be7∓"]);\n  assert.equal(normalizeSan("5...e6∓"), "e6");\n  assert.equal(normalizeSan("5...h5∓"), "h5");\n  assert.equal(normalizeSan("Nxf4!∓"), "Nxf4");\n});'''
+          new_glyph_test = '''test("evaluation and positional glyphs remain attached to move buttons", () => {\n  const source = "5...e6∓, Rg8!→, Bc3⇆, and Rc8≡.";\n  const displays = [...source.matchAll(SOURCE_MOVE_TOKEN)].map((match) => match[0]);\n  assert.deepEqual(displays, ["5...e6∓", "Rg8!→", "Bc3⇆", "Rc8≡"]);\n  assert.equal(normalizeSan("5...e6∓"), "e6");\n  assert.equal(normalizeSan("Rg8!→"), "Rg8");\n  assert.equal(normalizeSan("Bc3⇆"), "Bc3");\n  assert.equal(normalizeSan("Rc8≡"), "Rc8");\n});'''
+          if test_text.count(old_glyph_test) != 1:
+              raise SystemExit(f'Expected one old glyph test, found {test_text.count(old_glyph_test)}')
+          test_text = test_text.replace(old_glyph_test, new_glyph_test, 1)
+          tests.write_text(test_text, encoding='utf-8')
+          PY
+
+          git diff --check
+
+      - name: Install and test Sicilian app
+        working-directory: apps/opening-book-sicilian
+        run: |
+          npm ci
+          npm test
+
+      - name: Commit correction and remove temporary workflow
+        shell: bash
+        run: |
+          git config user.name "coachdinosaur"
+          git config user.email "86093996+coachdinosaur@users.noreply.github.com"
+          git rm .github/workflows/apply-sicilian-page-8-pdf-sync.yml
+          git add apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md \
+                  apps/opening-book-sicilian/app/lib/chess-notation.ts \
+                  apps/opening-book-sicilian/tests/chapter-workflow.test.mjs
+          git diff --cached --check
+          git commit -m "Sync Sicilian Page 8 with PDF"
+          git push origin HEAD:wip/sicilian-20260805-153931
