@@ -198,7 +198,10 @@ test("printed PDF Page 13 keeps its exact move content and boundary", async () =
   const page = markdown.slice(start, end);
   const pageFourteen = markdown.slice(end, markdown.indexOf("## Page 15", end));
 
-  assert.match(page, /16\.Rd5 \(16\.Rd2 Ne5=\) 16\.\.\.Qe6=/);
+  assert.match(page, /16\.Rd5/);
+  assert.match(page, /16\.Rd2 Ne5=/);
+  assert.match(page, /16\.\.\.Qe6=/);
+  assert.doesNotMatch(page, /16\.Rd5 \(16\.Rd2/);
   assert.match(page, /D\) 2\.Na3/);
   assert.match(page, /D1\) 3\.Bb5[\s\S]*D2\) 3\.Nf3/);
   assert.match(page, /3\.\.\.e5!\?/);

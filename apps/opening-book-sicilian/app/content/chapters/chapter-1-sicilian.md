@@ -223,7 +223,13 @@ In Hou Yifan – Ju Wenjun, Lopota 2014, Black continued with the weakening 9...
 ## Page 13
 
 <!-- FEN: r1q2rk1/pp2ppbp/2n3p1/8/Q3B1b1/2N1B1P1/PPP2P1P/R2R2K1 w - - 12 16 -->
-16.Rd5 (16.Rd2 Ne5=) 16...Qe6=
+16.Rd5
+
+<!-- FEN: r1q2rk1/pp2ppbp/2n3p1/8/Q3B1b1/2N1B1P1/PPP2P1P/R2R2K1 w - - 12 16 -->
+16.Rd2 Ne5=
+
+<!-- FEN: r1q2rk1/pp2ppbp/2n3p1/3R4/Q3B1b1/2N1B1P1/PPP2P1P/R5K1 b - - 13 16 -->
+16...Qe6=
 
 The chances look to be completely equal.
 
