@@ -40,9 +40,16 @@ test("the renderer replays preceding PDF pages and uses clean diagram labels", a
 });
 
 test("narrative square references remain plain text", () => {
-  const text = "Black has typically contested d5, getting rid of all his problems.";
-  const at = text.indexOf("d5");
-  assert.equal(isLikelyProseSquare(text, at, "d5"), true);
+  const contested = "Black has typically contested d5, getting rid of all his problems.";
+  const contestedAt = contested.indexOf("d5");
+  assert.equal(isLikelyProseSquare(contested, contestedAt, "d5"), true);
+
+  const attacked = "With the knight on a3 this looks excellent, as e4 is now under attack.";
+  const attackedAt = attacked.indexOf("e4");
+  assert.equal(isLikelyProseSquare(attacked, attackedAt, "e4"), true);
+
+  const numberedMove = "4.e4 is now under attack.";
+  assert.equal(isLikelyProseSquare(numberedMove, 0, "4.e4"), false);
 });
 
 test("the static output contains the interactive board and shared engine references", async () => {
