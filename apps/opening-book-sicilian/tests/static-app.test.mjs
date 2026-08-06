@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { access, readFile, readdir, stat } from "node:fs/promises";
 import test from "node:test";
 import { applyChapterContentCorrections } from "../app/lib/chapter-content-corrections.ts";
+import { applyChapterPage15Corrections } from "../app/lib/chapter-page15-corrections.ts";
 import { isLikelyProseSquare } from "../app/lib/chess-notation.ts";
 
 const root = new URL("../", import.meta.url);
@@ -93,6 +94,45 @@ test("printed PDF Page 14 corrections reach the rendered chapter", async () => {
   }
 
   assert.ok(corrected.slice(end).startsWith("## Page 15\n\n<!--"));
+});
+
+test("printed PDF Page 15 corrections reach the rendered chapter", async () => {
+  const raw = await readFile(new URL("app/content/chapters/chapter-1-sicilian.md", root), "utf8");
+  const page14Corrected = applyChapterContentCorrections("chapter-1-sicilian.md", raw);
+  const corrected = applyChapterPage15Corrections("chapter-1-sicilian.md", page14Corrected);
+  const start = corrected.indexOf("## Page 15");
+  const end = corrected.indexOf("## Page 16", start);
+  const page = corrected.slice(start, end);
+
+  for (const required of [
+    "17.0-0 Rb8⇆",
+    "Hynes – Isigkeit",
+    "23.Bb2 Ra5!",
+    "28.Rfb1!? must be an improvement.",
+    "29.Bf1 Rhh5!",
+    "33.g3 Qf5→",
+    "Hynes – Benlloch Guirau",
+    "\nE) 2.f4\n",
+    "after 2...Nc6?! 3.Nf3 g6 4.Bb5",
+    "Black declares his intention of transposing into lines analysed under 2.Nc3.",
+  ]) {
+    assert.ok(page.includes(required), `Missing PDF Page 15 content: ${required}`);
+  }
+
+  for (const forbidden of [
+    "Rb8∞",
+    "23.Kh2",
+    "29.Rf1",
+    "Qf5-+",
+    "Hynes - Isigkeit",
+    "Hynes - Benlloch Guirau",
+    "\n1.e4 c5 2.f4\n",
+    "\n3.d4!?\n",
+  ]) {
+    assert.ok(!page.includes(forbidden), `Found incorrect PDF Page 15 content: ${forbidden}`);
+  }
+
+  assert.ok(corrected.slice(end).startsWith("## Page 16\n\n<!--"));
 });
 
 test("the static output contains the interactive board and shared engine references", async () => {
