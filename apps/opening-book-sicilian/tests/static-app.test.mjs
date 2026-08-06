@@ -62,6 +62,8 @@ test("narrative square references remain plain text", () => {
 
 test("the canonical Markdown contains the synchronized Pages 14 through 17", async () => {
   const chapter = await readFile(chapterUrl, "utf8");
+  assert.match(chapter, /\*\*FEN:\*\*\n`[^`]+`/);
+
   const page14 = chapter.slice(chapter.indexOf("## Page 14"), chapter.indexOf("## Page 15"));
   const page15 = chapter.slice(chapter.indexOf("## Page 15"), chapter.indexOf("## Page 16"));
   const page16 = chapter.slice(chapter.indexOf("## Page 16"), chapter.indexOf("## Page 17"));
