@@ -1,4 +1,4 @@
-# Verifies the current Catalan and Sicilian opening-book checkpoint, including evaluation glyph support.
+# Verifies the current Catalan and Sicilian opening-book checkpoint, including the PDF-correct Page 7 variation index.
 name: Sicilian Opening Book CI
 
 on:
