@@ -4,6 +4,7 @@ name: Sicilian Opening Book CI
 on:
   push:
     branches:
+      - main
       - wip/sicilian-20260805-153931
     paths:
       - "apps/opening-book-sicilian/**"
