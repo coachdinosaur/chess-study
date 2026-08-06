@@ -83,36 +83,39 @@ jobs:
           test_text = test_text.replace(old_global, new_global, 1)
 
           marker = 'test("evaluation and positional glyphs remain attached to move buttons", () => {'
-          regression = r'''test("printed PDF Page 11 keeps its exact move content and boundary", async () => {
-  const markdown = await readChapterOne();
-  const start = markdown.indexOf("## Page 11");
-  const end = markdown.indexOf("## Page 12", start);
-  const page = markdown.slice(start, end);
-  const pageTwelve = markdown.slice(end, markdown.indexOf("## Page 13", end));
-
-  assert.match(page, /16\.Bf3 Qg6∓/);
-  assert.match(page, /16\.N2c3 Eminov – Yilmazyerli/);
-  assert.match(page, /20\.f3 Nd4!∓/);
-  assert.match(page, /14\.\.\.Qxc6 15\.0-0 a5 16\.Rc1 Qd6∓/);
-  assert.match(page, /11\.\.\.Bg4/);
-  assert.match(page, /15\.\.\.f5!\?∞/);
-  assert.match(page, /15\.\.\.Nf3\+ 16\.Qxf3 Qxd5 17\.Bd3 Qxc5 18\.0-0 Be6∞/);
-  assert.match(page, /14\.Rad1 Qa5\+/);
-  assert.match(page, /19\.Nef4=/);
-  assert.match(page, /C\) 2\.Ne2/);
-  assert.match(page, /a g3 Dragon or a Closed Sicilian with \.\.\.e6/);
-  assert.match(page, /2\.\.\.Nf6!\? 3\.Nbc3 d5!\s*$/);
-  assert.doesNotMatch(page, /16\.Bf3 Qg6\+/);
-  assert.doesNotMatch(page, /16\.Rc1 Qd6\+/);
-  assert.doesNotMatch(page, /14\.Rb1 Qa5\+/);
-  assert.doesNotMatch(page, /1\.e4 c5 2\.Ne2/);
-  assert.doesNotMatch(page, /\(2\.\.\.Nc6 runs into 3\.d4\)/);
-  assert.doesNotMatch(page, /with 4\.\.\.e6/);
-  assert.doesNotMatch(page, /That's it! Usually this pawn thrust/);
-  assert.match(pageTwelve, /^## Page 12\s+That's it! Usually this pawn thrust/);
-});
-
-'''
+          regression_lines = [
+              'test("printed PDF Page 11 keeps its exact move content and boundary", async () => {',
+              '  const markdown = await readChapterOne();',
+              '  const start = markdown.indexOf("## Page 11");',
+              '  const end = markdown.indexOf("## Page 12", start);',
+              '  const page = markdown.slice(start, end);',
+              '  const pageTwelve = markdown.slice(end, markdown.indexOf("## Page 13", end));',
+              '',
+              '  assert.match(page, /16\\.Bf3 Qg6∓/);',
+              '  assert.match(page, /16\\.N2c3 Eminov – Yilmazyerli/);',
+              '  assert.match(page, /20\\.f3 Nd4!∓/);',
+              '  assert.match(page, /14\\.\\.\\.Qxc6 15\\.0-0 a5 16\\.Rc1 Qd6∓/);',
+              '  assert.match(page, /11\\.\\.\\.Bg4/);',
+              '  assert.match(page, /15\\.\\.\\.f5!\\?∞/);',
+              '  assert.match(page, /15\\.\\.\\.Nf3\\+ 16\\.Qxf3 Qxd5 17\\.Bd3 Qxc5 18\\.0-0 Be6∞/);',
+              '  assert.match(page, /14\\.Rad1 Qa5\\+/);',
+              '  assert.match(page, /19\\.Nef4=/);',
+              '  assert.match(page, /C\\) 2\\.Ne2/);',
+              '  assert.match(page, /a g3 Dragon or a Closed Sicilian with \\.\\.\\.e6/);',
+              '  assert.match(page, /2\\.\\.\\.Nf6!\\? 3\\.Nbc3 d5!\\s*$/);',
+              '  assert.doesNotMatch(page, /16\\.Bf3 Qg6\\+/);',
+              '  assert.doesNotMatch(page, /16\\.Rc1 Qd6\\+/);',
+              '  assert.doesNotMatch(page, /14\\.Rb1 Qa5\\+/);',
+              '  assert.doesNotMatch(page, /1\\.e4 c5 2\\.Ne2/);',
+              '  assert.doesNotMatch(page, /\\(2\\.\\.\\.Nc6 runs into 3\\.d4\\)/);',
+              '  assert.doesNotMatch(page, /with 4\\.\\.\\.e6/);',
+              '  assert.doesNotMatch(page, /That\\'s it! Usually this pawn thrust/);',
+              '  assert.match(pageTwelve, /^## Page 12\\s+That\\'s it! Usually this pawn thrust/);',
+              '});',
+              '',
+              '',
+          ]
+          regression = '\n'.join(regression_lines)
           if regression.strip() not in test_text:
               if marker not in test_text:
                   raise SystemExit('Could not find Page 11 test insertion point')
