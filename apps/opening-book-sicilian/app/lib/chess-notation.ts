@@ -22,7 +22,7 @@ export function isLikelyProseSquare(text: string, at: number, source: string): b
   if (!SQUARE_ONLY.test(bare)) return false;
 
   const prefix = text.slice(Math.max(0, at - 12), at).toLowerCase();
-  if (/(?:^|\s)(?:on|to|the|a|toward|from|square|contested) $/.test(prefix)) return true;
+  if (/(?:^|\s)(?:on|to|the|a|toward|from|over|square|contested) $/.test(prefix)) return true;
 
   const suffix = text.slice(at + source.length, at + source.length + 40).toLowerCase();
   if (!/^\d+\./.test(source.trim()) && /^\s+is(?:\s+now)?\s+under\s+attack\b/.test(suffix)) return true;
