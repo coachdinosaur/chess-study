@@ -48,6 +48,17 @@ test("Chapter 1 keeps printed PDF pages intact instead of splitting columns", as
   assert.match(page(14), /D2\) 3\.Nf3/);
 });
 
+test("Chapter 1 Page 7 matches the PDF variation hierarchy", async () => {
+  const markdown = await readChapterOne();
+  const start = markdown.indexOf("## Page 7");
+  const end = markdown.indexOf("## Page 8", start);
+  const pageSeven = markdown.slice(start, end);
+
+  assert.match(pageSeven, /D\) 2\.Na3 Nc6 \(page 13\)[\s\S]*D1\) 3\.Bb5 \(page 13\)[\s\S]*D2\) 3\.Nf3 \(page 14\)/);
+  assert.doesNotMatch(pageSeven, /D\) 2\.Na3 \(page 13\)[\s\S]*D1\) 2\.\.\.Nc6 3\.Bb5/);
+  assert.doesNotMatch(pageSeven, /Version:/);
+});
+
 test("Chapter 1 retains PDF-corrected moves and source references", async () => {
   const markdown = await readChapterOne();
   assert.match(markdown, /2\.Be2 is likely to transpose elsewhere/);
