@@ -228,7 +228,6 @@ In Hou Yifan – Ju Wenjun, Lopota 2014, Black continued with the weakening 9...
 The chances look to be completely equal.
 
 D) 2.Na3
-1.e4 c5 2.Na3
 
 **FEN:**
 `rnbqkbnr/pp1ppppp/8/2p5/4P3/N7/PPPP1PPP/R1BQKBNR b KQkq - 1 2`
@@ -244,7 +243,6 @@ We will consider two moves for White: D1) 3.Bb5 and D2) 3.Nf3.
 <!-- FEN: r1bqkbnr/pp1ppppp/2n5/2p5/4P3/N7/PPPP1PPP/R1BQKBNR w KQkq - 2 3 -->
 D1) 3.Bb5
 <!-- FEN: r1bqkbnr/pp1ppppp/2n5/2p5/4P3/N7/PPPP1PPP/R1BQKBNR w KQkq - 2 3 -->
-3.Bb5
 
 A move which has some purpose, especially as jumping to d4 with the c6-knight is less appealing without a knight standing on c3.
 
@@ -262,7 +260,7 @@ This logical approach has been tried in only a handful of games so far, but I be
 The only testing move.
 
 <!-- FEN: r1bqkbnr/pp1p1ppp/2n5/1Bp1p3/4P3/N7/PPPP1PPP/R1BQK1NR w KQkq - 0 4 -->
-Saule - Jemec, email 2006, continued with 4.Nf3, and here I would like to suggest a new idea: 4...Nge7!N 5.Nc4 (5.0-0 a6 6.Be2 d5 7.exd5 Nxd5 8.Re1 f6 9.Bf1 Be7 looks quite unimpressive for White) 5...d6 6.Ne3 a6 7.Be2 d5 8.d3 d4 9.Nc4 Ng6 10.a4 Be6 The position is simply excellent for Black.
+Saule – Jemec, email 2006, continued with 4.Nf3, and here I would like to suggest a new idea: 4...Nge7!?N 5.Nc4 (5.0-0 a6 6.Be2 d5 7.exd5 Nxd5 8.Re1 f6 9.Bf1 Be7∓ looks quite unimpressive for White) 5...d6 6.Ne3 a6 7.Be2 d5 8.d3 d4 9.Nc4 Ng6 10.a4 Be6∓ The position is simply excellent for Black.
 
 ## Page 14
 

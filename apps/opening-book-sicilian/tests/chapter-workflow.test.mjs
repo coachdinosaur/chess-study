@@ -191,6 +191,32 @@ test("printed PDF Page 12 keeps its exact move content and boundary", async () =
   assert.match(pageThirteen, /^## Page 13\s+<!--[\s\S]*?-->\s*16\.Rd5/);
 });
 
+test("printed PDF Page 13 keeps its exact move content and boundary", async () => {
+  const markdown = await readChapterOne();
+  const start = markdown.indexOf("## Page 13");
+  const end = markdown.indexOf("## Page 14", start);
+  const page = markdown.slice(start, end);
+  const pageFourteen = markdown.slice(end, markdown.indexOf("## Page 15", end));
+
+  assert.match(page, /16\.Rd5 \(16\.Rd2 Ne5=\) 16\.\.\.Qe6=/);
+  assert.match(page, /D\) 2\.Na3/);
+  assert.match(page, /D1\) 3\.Bb5[\s\S]*D2\) 3\.Nf3/);
+  assert.match(page, /3\.\.\.e5!\?/);
+  assert.match(page, /4\.d3!N/);
+  assert.match(page, /Saule – Jemec, email 2006/);
+  assert.match(page, /4\.\.\.Nge7!\?N/);
+  assert.match(page, /9\.Bf1 Be7∓/);
+  assert.match(page, /10\.a4 Be6∓ The position is simply excellent for Black\.\s*$/);
+  assert.doesNotMatch(page, /1\.e4 c5 2\.Na3/);
+  assert.doesNotMatch(page, /D1\) 3\.Bb5[\s\S]*<!--[\s\S]*?-->\s*3\.Bb5/);
+  assert.doesNotMatch(page, /Saule - Jemec/);
+  assert.doesNotMatch(page, /4\.\.\.Nge7!N/);
+  assert.doesNotMatch(page, /9\.Bf1 Be7 looks/);
+  assert.doesNotMatch(page, /10\.a4 Be6 The/);
+  assert.doesNotMatch(page, /4\.Bxc6 dxc6/);
+  assert.match(pageFourteen, /^## Page 14\s+<!--[\s\S]*?-->\s*4\.Bxc6 dxc6/);
+});
+
 test("evaluation and positional glyphs remain attached to move buttons", () => {
   const source = "5...e6∓, Rg8!→, Bc3⇆, and Rc8≡.";
   const displays = [...source.matchAll(SOURCE_MOVE_TOKEN)].map((match) => match[0]);
