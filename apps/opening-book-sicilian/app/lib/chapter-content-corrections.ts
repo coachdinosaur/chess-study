@@ -1,3 +1,4 @@
+const PAGE_13_START = "## Page 13";
 const PAGE_14_START = "## Page 14";
 const PAGE_15_START = "## Page 15";
 
@@ -20,13 +21,26 @@ function replaceExactlyOnce(
 export function applyChapterContentCorrections(filename: string, content: string): string {
   if (filename !== "chapter-1-sicilian.md") return content;
 
-  const page14Start = content.indexOf(PAGE_14_START);
+  const page13Start = content.indexOf(PAGE_13_START);
+  const page14Start = content.indexOf(PAGE_14_START, page13Start);
   const page15Start = content.indexOf(PAGE_15_START, page14Start);
-  if (page14Start < 0 || page15Start < 0) {
-    throw new Error("Chapter 1 must contain Page 14 and Page 15 boundaries.");
+  if (page13Start < 0 || page14Start < 0 || page15Start < 0) {
+    throw new Error("Chapter 1 must contain Page 13 through Page 15 boundaries.");
   }
 
+  let page13 = content.slice(page13Start, page14Start);
   let page14 = content.slice(page14Start, page15Start);
+
+  page13 = replaceExactlyOnce(
+    page13,
+    "\n\n3...e5!?\n\nThis logical approach has been tried",
+    "\n\n<!-- FEN: r1bqkbnr/pp1ppppp/2n5/1Bp5/4P3/N7/PPPP1PPP/R1BQK1NR b KQkq - 3 3 -->\n3...e5!?\n\nThis logical approach has been tried",
+    "Page 13 3...e5 navigation anchor",
+  );
+
+  if (!page13.includes("<!-- FEN: r1bqkbnr/pp1ppppp/2n5/1Bp5/4P3/N7/PPPP1PPP/R1BQK1NR b KQkq - 3 3 -->\n3...e5!?")) {
+    throw new Error("Page 13 correction failed to anchor 3...e5!?.");
+  }
 
   page14 = replaceExactlyOnce(
     page14,
@@ -72,6 +86,13 @@ export function applyChapterContentCorrections(filename: string, content: string
 
   page14 = replaceExactlyOnce(
     page14,
+    "<!-- FEN: r1bqkb1r/pp1ppppp/2n2n2/2p5/4P3/N2P1N2/PPP2PPP/R1BQKB1R b KQkq - 0 4 -->\n4...Ng4 5.Qe2 f6!?",
+    "<!-- FEN: r1bqkb1r/pp1ppppp/2n2n2/2p1P3/8/N4N2/PPPP1PPP/R1BQKB1R b KQkq - 0 4 -->\n4...Ng4 5.Qe2 f6!?",
+    "Page 14 4...Ng4 continuation anchor",
+  );
+
+  page14 = replaceExactlyOnce(
+    page14,
     "4...Ng4 5.Qe2 f6!?\n\n**FEN:**\n`r1bqkb1r/pp1pp1pp/2n2p2/2p1P3/6n1/N4N2/PPPPQPPP/R1B1KB1R w KQkq - 0 6`\n\nA drastic solution - and a good one it seems.",
     "4...Ng4 5.Qe2\n\nThe correspondence player Hynes has been the chief exponent of this position as White, but he barely managed to scrape half a point out of his last two encounters with it.\n\n5...f6!?\n\n**FEN:**\n`r1bqkb1r/pp1pp1pp/2n2p2/2p1P3/6n1/N4N2/PPPPQPPP/R1B1KB1R w KQkq - 0 6`\n\nA drastic solution – and a good one it seems.",
     "Page 14 Hynes paragraph and 5...f6 hierarchy",
@@ -83,6 +104,7 @@ export function applyChapterContentCorrections(filename: string, content: string
     "12.a4 Bd8=, planning ...Nce7",
     "\n10.Bc4\n",
     "Gallinnis – Kabatianski",
+    "<!-- FEN: r1bqkb1r/pp1ppppp/2n2n2/2p1P3/8/N4N2/PPPP1PPP/R1BQKB1R b KQkq - 0 4 -->\n4...Ng4 5.Qe2",
     "The correspondence player Hynes has been the chief exponent",
     "\n5...f6!?\n",
     "A drastic solution – and a good one it seems.",
@@ -101,6 +123,7 @@ export function applyChapterContentCorrections(filename: string, content: string
     "\n10.Nc4\n",
     "\n3.Nf3\n\n**FEN:**",
     "Gallinnis - Kabatianski",
+    "<!-- FEN: r1bqkb1r/pp1ppppp/2n2n2/2p5/4P3/N2P1N2/PPP2PPP/R1BQKB1R b KQkq - 0 4 -->\n4...Ng4",
     "4...Ng4 5.Qe2 f6!?",
     "A drastic solution - and a good one it seems.",
   ];
@@ -110,5 +133,5 @@ export function applyChapterContentCorrections(filename: string, content: string
     }
   }
 
-  return `${content.slice(0, page14Start)}${page14}${content.slice(page15Start)}`;
+  return `${content.slice(0, page13Start)}${page13}${page14}${content.slice(page15Start)}`;
 }
