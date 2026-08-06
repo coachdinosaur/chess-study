@@ -1,0 +1,80 @@
+name: Temporary Sicilian Page 13 Exact Layout
+
+on:
+  push:
+    branches:
+      - wip/sicilian-20260805-153931
+    paths:
+      - .github/workflows/tmp-sicilian-page13-layout.yml
+
+permissions:
+  contents: write
+
+jobs:
+  correct-page-13:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: wip/sicilian-20260805-153931
+          fetch-depth: 0
+
+      - name: Apply exact rendered-PDF layout corrections
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          chapter = Path('apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md')
+          text = chapter.read_text(encoding='utf-8')
+
+          def replace_once(old, new, label):
+              global text
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{label}: expected one match, found {count}')
+              text = text.replace(old, new, 1)
+
+          replace_once(
+              '<!-- FEN: r1q2rk1/pp2ppbp/2n3p1/8/Q3B1b1/2N1B1P1/PPP2P1P/R2R2K1 w - - 12 16 -->\n16.Rd2 Ne5=',
+              '<!-- FEN: r1q2rk1/pp2ppbp/2n3p1/8/Q3B1b1/2N1B1P1/PPP2P1P/R2R2K1 w - - 12 16 -->\n\u200316.Rd2 Ne5=',
+              'indent 16.Rd2 alternative',
+          )
+          replace_once(
+              'A move which has some purpose, especially as jumping to d4 with the c6-knight is less appealing without a knight standing on c3.\n\nMy preference for Black is an almost untried move:',
+              'A move which has some purpose, especially as jumping to d4 with the c6-knight is less appealing without a knight standing on c3. My preference for Black is an almost untried move:',
+              'merge D1 paragraph',
+          )
+          chapter.write_text(text, encoding='utf-8')
+
+          tests = Path('apps/opening-book-sicilian/tests/chapter-workflow.test.mjs')
+          test_text = tests.read_text(encoding='utf-8')
+          old = '''  assert.match(page, /16\\.Rd2 Ne5=/);
+  assert.match(page, /16\\.\\.\\.Qe6=/);'''
+          new = '''  assert.match(page, /\u200316\\.Rd2 Ne5=/);
+  assert.doesNotMatch(page, /\\n16\\.Rd2 Ne5=/);
+  assert.match(page, /16\\.\\.\\.Qe6=/);
+  assert.match(page, /A move which has some purpose, especially as jumping to d4 with the c6-knight is less appealing without a knight standing on c3\\. My preference for Black is an almost untried move:/);'''
+          if test_text.count(old) != 1:
+              raise SystemExit(f'Page 13 test block: expected one match, found {test_text.count(old)}')
+          test_text = test_text.replace(old, new, 1)
+          tests.write_text(test_text, encoding='utf-8')
+          PY
+
+      - name: Test and build Sicilian app
+        working-directory: apps/opening-book-sicilian
+        run: |
+          npm ci
+          npm test
+          npm run build
+
+      - name: Commit corrections and remove temporary workflow
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/tmp-sicilian-page13-layout.yml
+          git add apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md
+          git add apps/opening-book-sicilian/tests/chapter-workflow.test.mjs
+          git commit -m "Match Sicilian Page 13 rendered layout"
+          git push origin HEAD:wip/sicilian-20260805-153931
