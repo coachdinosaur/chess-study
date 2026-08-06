@@ -36,6 +36,7 @@ jobs:
           replacements = [
               ("11.0-0 Be7∓ leads to a situation where Black's control over the d4-square", "11.0-0 Be7⇆ leads to a situation where Black's control over the d4-square", 'Page 12 counterplay glyph'),
               ('In Hou Yifan - Ju Wenjun, Lopota 2014,', 'In Hou Yifan – Ju Wenjun, Lopota 2014,', 'Hou Yifan source punctuation'),
+              ('14.Qh4 Rd8 15.Rxd8 Qxd8 16.Rd1 Qe8=', '14.Qh4 Rd8 15.Rxd8+ Qxd8 16.Rd1 Qe8=', 'Page 12 Rxd8 check'),
           ]
           for old, new, label in replacements:
               count = text.count(old)
