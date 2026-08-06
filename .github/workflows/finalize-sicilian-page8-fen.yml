@@ -1,0 +1,81 @@
+name: Finalize Sicilian page 8 variation anchor
+
+on:
+  push:
+    branches:
+      - wip/sicilian-20260805-153931
+    paths:
+      - .github/workflows/finalize-sicilian-page8-fen.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: wip/sicilian-20260805-153931
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/opening-book-sicilian/package-lock.json
+
+      - name: Correct the alternatives anchor
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md')
+          text = path.read_text(encoding='utf-8')
+          old = 'r1bqk2r/pp2npbp/2np2p1/1Bp1p3/4P3/3PN3/PPPB1PPP/R2QK1NR w KQkq - 2 8'
+          new = 'r1bqk2r/pp2bppp/2np2n1/1Bp1p3/4P3/3PN3/PPPB1PPP/R2QK1NR w KQkq - 4 8'
+          if text.count(old) != 1:
+            raise SystemExit(f'Expected one stale alternatives FEN, found {text.count(old)}')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+          git diff --check
+
+      - name: Install and verify both Page 8 alternatives
+        working-directory: apps/opening-book-sicilian
+        shell: bash
+        run: |
+          npm ci
+          node --import tsx <<'NODE'
+          import assert from 'node:assert/strict';
+          import { MarkdownMoveResolver } from './app/lib/markdown-moves.ts';
+
+          const resolver = new MarkdownMoveResolver();
+          resolver.setAnchor(
+            'r1bqk2r/pp2bppp/2np2n1/1Bp1p3/4P3/3PN3/PPPB1PPP/R2QK1NR w KQkq - 4 8',
+            'After 7...Be7',
+          );
+          const tokens = resolver.resolveText(
+            'Both 8.a4 Bg5 9.Nf3 Bxe3 10.Bxe3 0-0 and 8.Nd5 0-0 9.Ne2 Bg5 are level.',
+          );
+          const moves = tokens.filter((token) => token.navigation);
+          assert.equal(moves.length, 10, 'All moves in both alternatives must navigate.');
+
+          const pathTo = (token) => token.navigation.steps
+            .slice(0, token.navigation.index + 1)
+            .map((step) => step.label);
+          const bg5 = tokens.filter((token) => token.display === 'Bg5');
+          assert.deepEqual(pathTo(bg5[0]).slice(-2), ['8.a4', 'Bg5']);
+          assert.deepEqual(pathTo(bg5[1]).slice(-4), ['8.Nd5', '0-0', '9.Ne2', 'Bg5']);
+          NODE
+          npm test
+
+      - name: Commit repair and remove temporary workflow
+        shell: bash
+        run: |
+          git config user.name "coachdinosaur"
+          git config user.email "86093996+coachdinosaur@users.noreply.github.com"
+          git rm .github/workflows/finalize-sicilian-page8-fen.yml
+          git add apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md
+          git diff --cached --check
+          git commit -m "Fix Sicilian page 8 alternative anchor"
+          git push origin HEAD:wip/sicilian-20260805-153931
