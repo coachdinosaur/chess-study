@@ -1,4 +1,4 @@
-# Verifies the current Catalan and Sicilian opening-book checkpoint, including deep PDF-synchronized Pages 8-12 content, glyphs, and page boundaries.
+# Verifies the current Catalan and Sicilian opening-book checkpoint, including deep PDF-synchronized Pages 8-13 content, glyphs, and page boundaries.
 name: Sicilian Opening Book CI
 
 on:
