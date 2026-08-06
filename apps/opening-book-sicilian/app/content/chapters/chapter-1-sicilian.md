@@ -226,7 +226,7 @@ In Hou Yifan – Ju Wenjun, Lopota 2014, Black continued with the weakening 9...
 16.Rd5
 
 <!-- FEN: r1q2rk1/pp2ppbp/2n3p1/8/Q3B1b1/2N1B1P1/PPP2P1P/R2R2K1 w - - 12 16 -->
-16.Rd2 Ne5=
+ 16.Rd2 Ne5=
 
 <!-- FEN: r1q2rk1/pp2ppbp/2n3p1/3R4/Q3B1b1/2N1B1P1/PPP2P1P/R5K1 b - - 13 16 -->
 16...Qe6=
@@ -250,9 +250,7 @@ We will consider two moves for White: D1) 3.Bb5 and D2) 3.Nf3.
 D1) 3.Bb5
 <!-- FEN: r1bqkbnr/pp1ppppp/2n5/2p5/4P3/N7/PPPP1PPP/R1BQKBNR w KQkq - 2 3 -->
 
-A move which has some purpose, especially as jumping to d4 with the c6-knight is less appealing without a knight standing on c3.
-
-My preference for Black is an almost untried move:
+A move which has some purpose, especially as jumping to d4 with the c6-knight is less appealing without a knight standing on c3. My preference for Black is an almost untried move:
 
 3...e5!?
 
