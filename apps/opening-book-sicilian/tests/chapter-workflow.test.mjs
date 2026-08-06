@@ -63,7 +63,7 @@ test("Chapter 1 retains PDF-corrected moves and source references", async () => 
   const markdown = await readChapterOne();
   assert.match(markdown, /2\.Be2 is likely to transpose elsewhere/);
   assert.match(markdown, /Bersamina – Kantans, Pune 2014, and now: 13\.Re1!N=/);
-  assert.match(markdown, /16\.N2c3 Eminov - Yilmazyerli/);
+  assert.match(markdown, /16\.N2c3 Eminov – Yilmazyerli/);
   assert.match(markdown, /9\.\.\.f5\?! 10\.Qc4 Ne5[\s\S]*13\.Nb5!N Rc8 14\.Nxa7 Rxc2 15\.Qxf5\+\-/);
   assert.match(markdown, /6\.Nc4 Ngxe5 7\.Ncxe5 fxe5 8\.Nxe5 g6!\?/);
   assert.match(markdown, /13\.Bf3 Qd7! 14\.Qd3 Nc6!\s*<!--[\s\S]*?-->\s*15\.Bxe4/);
@@ -135,6 +135,35 @@ test("printed PDF Page 10 keeps its exact move content and boundary", async () =
   assert.doesNotMatch(page, /25\.Kf2 g5!\+/);
   assert.doesNotMatch(page, /Tukhvatullin - Karpeshov/);
   assert.doesNotMatch(page, /leaves the white king too exposed/);
+});
+
+test("printed PDF Page 11 keeps its exact move content and boundary", async () => {
+  const markdown = await readChapterOne();
+  const start = markdown.indexOf("## Page 11");
+  const end = markdown.indexOf("## Page 12", start);
+  const page = markdown.slice(start, end);
+  const pageTwelve = markdown.slice(end, markdown.indexOf("## Page 13", end));
+
+  assert.match(page, /16\.Bf3 Qg6∓/);
+  assert.match(page, /16\.N2c3 Eminov – Yilmazyerli/);
+  assert.match(page, /20\.f3 Nd4!∓/);
+  assert.match(page, /14\.\.\.Qxc6 15\.0-0 a5 16\.Rc1 Qd6∓/);
+  assert.match(page, /11\.\.\.Bg4/);
+  assert.match(page, /15\.\.\.f5!\?∞/);
+  assert.match(page, /15\.\.\.Nf3\+ 16\.Qxf3 Qxd5 17\.Bd3 Qxc5 18\.0-0 Be6∞/);
+  assert.match(page, /14\.Rad1 Qa5\+/);
+  assert.match(page, /19\.Nef4=/);
+  assert.match(page, /C\) 2\.Ne2/);
+  assert.match(page, /a g3 Dragon or a Closed Sicilian with \.\.\.e6/);
+  assert.match(page, /2\.\.\.Nf6!\? 3\.Nbc3 d5!\s*$/);
+  assert.doesNotMatch(page, /16\.Bf3 Qg6\+/);
+  assert.doesNotMatch(page, /16\.Rc1 Qd6\+/);
+  assert.doesNotMatch(page, /14\.Rb1 Qa5\+/);
+  assert.doesNotMatch(page, /1\.e4 c5 2\.Ne2/);
+  assert.doesNotMatch(page, /\(2\.\.\.Nc6 runs into 3\.d4\)/);
+  assert.doesNotMatch(page, /with 4\.\.\.e6/);
+  assert.doesNotMatch(page, /That.s it! Usually this pawn thrust/);
+  assert.match(pageTwelve, /^## Page 12\s+That.s it! Usually this pawn thrust/);
 });
 
 test("evaluation and positional glyphs remain attached to move buttons", () => {

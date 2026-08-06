@@ -130,7 +130,7 @@ After this simple reply, it is rather White who is playing for equality. I think
 
 ## Page 11
 
-leaves the white king too exposed in the centre, and I don't like his chances at all. For example: 11.Qd2 (11.Qd4?! Be6 12.Nf4 Nxf4 13.Qxf4 Nd5! 14.Nxd5 Qxd5 15.Be2 Qxg2 16.Bf3 Qg6+ left White in dire straits in Eisenbeiser - Solak, Dresden 2007.) 11...Be6 12.Ne4 Qc7! 13.g3 Rad8 14.Bg2 Nf5 15.Qc1 Qa5+ 16.N2c3 Eminov - Yilmazyerli, Antalya 2013, and now: 16...Nxc3!N 17.Qxc3 Qa6 18.Bf1 Qc6 19.Bg2 Bd5 20.f3 Nd4!∓
+leaves the white king too exposed in the centre, and I don't like his chances at all. For example: 11.Qd2 (11.Qd4?! Be6 12.Nf4 Nxf4 13.Qxf4 Nd5! 14.Nxd5 Qxd5 15.Be2 Qxg2 16.Bf3 Qg6∓ left White in dire straits in Eisenbeiser – Solak, Dresden 2007.) 11...Be6 12.Ne4 Qc7! 13.g3 Rad8 14.Bg2 Nf5 15.Qc1 Qa5+ 16.N2c3 Eminov – Yilmazyerli, Antalya 2013, and now: 16...Nxc3!N 17.Qxc3 Qa6 18.Bf1 Qc6 19.Bg2 Bd5 20.f3 Nd4!∓
 
 8...Bxf6 9.dxc5 d4 10.Nd5 0-0
 
@@ -140,7 +140,7 @@ leaves the white king too exposed in the centre, and I don't like his chances at
 11.g3!?N
 
 <!-- FEN: r1bq1rk1/pp3ppp/2n2b2/2PN4/3pP3/8/PP2NPPP/R2QKB1R w KQ - 2 11 -->
-Weaker is 11.Nxf6+ Qxf6 12.Ng3 Ne5! 13.Bd3 b6! 14.c6 (14.0-0? bxc5 15.Re1 c4 16.Bf1 d3 17.Qd2 Rb8-+ was simply lost for White in Eisenbeiser - Fluvia Poyatos, Barcelona 2007) 14...Qxc6 15.0-0 a5 16.Rc1 Qd6+ when Black still maintains a nagging initiative.
+Weaker is 11.Nxf6+ Qxf6 12.Ng3 Ne5! 13.Bd3 b6! 14.c6 (14.0-0? bxc5 15.Re1 c4 16.Bf1 d3 17.Qd2 Rb8-+ was simply lost for White in Eisenbeiser – Fluvia Poyatos, Barcelona 2007) 14...Qxc6 15.0-0 a5 16.Rc1 Qd6∓ when Black still maintains a nagging initiative.
 
 <!-- FEN: r1bq1rk1/pp3ppp/2n2b2/2PN4/3pP3/6P1/PP2NP1P/R2QKB1R b KQ - 0 11 -->
 11...Bg4
@@ -149,17 +149,16 @@ Weaker is 11.Nxf6+ Qxf6 12.Ng3 Ne5! 13.Bd3 b6! 14.c6 (14.0-0? bxc5 15.Re1 c4 16.
 11...d3 12.Nec3 Bxc3+ 13.bxc3 Re8 14.Qxd3 Ne5 15.Qe3 produces another interesting position, where Black has a choice between 15...f5!?∞ and 15...Nf3+ 16.Qxf3 Qxd5 17.Bd3 Qxc5 18.0-0 Be6∞.
 
 <!-- FEN: r2q1rk1/pp3ppp/2n2b2/2PN4/3pP1b1/6P1/PP2NP1P/R2QKB1R w KQ - 1 12 -->
-12.Bg2 d3 13.Qxd3 Bxb2 14.Rb1 Qa5+ 15.Qd2 Ba3 16.Qxa5 Nxa5 17.h3 Be6 18.0-0 Bxc5 19.Nef4=
+12.Bg2 d3 13.Qxd3 Bxb2 14.Rad1 Qa5+ 15.Qd2 Ba3 16.Qxa5 Nxa5 17.h3 Be6 18.0-0 Bxc5 19.Nef4=
 
 In this ending there is still plenty of play left for both sides, but the objective evaluation is equality: opposite-coloured bishops will soon appear on the board.
 
 C) 2.Ne2
-1.e4 c5 2.Ne2
 
 **FEN:**
 `rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPPNPPP/RNBQKB1R b KQkq - 1 2`
 
-White is trying to postpone d2-d4 and create an awkward dilemma for Najdorf players: (2...Nc6 runs into 3.d4), while (2...d6 3.Nbc3 Nf6 4.g3 could be luring them into a g3 Dragon or a Closed Sicilian with 4...e6), which is beyond the subject of this book. Therefore, I have decided to offer a more clear-cut solution, in an attempt to satisfy all tastes:
+White is trying to postpone d2-d4 and create an awkward dilemma for Najdorf players: 2...Nc6 runs into 3.d4, while 2...d6 3.Nbc3 Nf6 4.g3 could be luring them into a g3 Dragon or a Closed Sicilian with ...e6 (which is beyond the subject of this book). Therefore, I have decided to offer a more clear-cut solution, in an attempt to satisfy all tastes:
 
 <!-- FEN: rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPPNPPP/RNBQKB1R b KQkq - 1 2 -->
 2...Nf6!? 3.Nbc3 d5!
