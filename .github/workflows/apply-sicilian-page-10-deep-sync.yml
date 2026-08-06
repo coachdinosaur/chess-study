@@ -34,7 +34,6 @@ jobs:
           text = chapter.read_text(encoding='utf-8')
 
           replacements = [
-              ('Karacsony - S. Petkov', 'Karacsony – S. Petkov', 'Karacsony source dash'),
               ('8.h3 cxd4 9.Nxd4 Ngxe5 10.f4+ had to be preferred',
                '8.h3 cxd4 9.Nxd4 Ngxe5 10.Bf4∓ had to be preferred',
                'Bf4 move and Black-edge glyph'),
@@ -53,7 +52,7 @@ jobs:
           tests = Path('apps/opening-book-sicilian/tests/chapter-workflow.test.mjs')
           test_text = tests.read_text(encoding='utf-8')
           marker = 'test("evaluation and positional glyphs remain attached to move buttons", () => {'
-          regression = '''test("printed PDF Page 10 keeps its exact move content and boundary", async () => {\n  const markdown = await readChapterOne();\n  const start = markdown.indexOf("## Page 10");\n  const end = markdown.indexOf("## Page 11", start);\n  const page = markdown.slice(start, end);\n\n  assert.match(page, /much for White in Karacsony – S\. Petkov, corr\. 2012\./);\n  assert.match(page, /10\.Bf4∓ had to be preferred/);\n  assert.match(page, /14\.\.\.Bh4!N-\+/);\n  assert.match(page, /25\.Kf2 g5!∓/);\n  assert.match(page, /Tukhvatullin – Karpeshov, Sterlitamak 2011/);\n  assert.match(page, /8\.exd5 Nxd5 9\.Bxe7 Ncxe7 10\.dxc5 0-0\s*$/);\n  assert.doesNotMatch(page, /10\.f4\+/);\n  assert.doesNotMatch(page, /25\.Kf2 g5!\+/);\n  assert.doesNotMatch(page, /Tukhvatullin - Karpeshov/);\n  assert.doesNotMatch(page, /leaves the white king too exposed/);\n});\n\n'''
+          regression = '''test("printed PDF Page 10 keeps its exact move content and boundary", async () => {\n  const markdown = await readChapterOne();\n  const start = markdown.indexOf("## Page 10");\n  const end = markdown.indexOf("## Page 11", start);\n  const page = markdown.slice(start, end);\n\n  assert.match(page, /much for White in Karacsony – S\\. Petkov, corr\\. 2012\\./);\n  assert.match(page, /10\\.Bf4∓ had to be preferred/);\n  assert.match(page, /14\\.\\.\\.Bh4!N-\\+/);\n  assert.match(page, /25\\.Kf2 g5!∓/);\n  assert.match(page, /Tukhvatullin – Karpeshov, Sterlitamak 2011/);\n  assert.match(page, /8\\.exd5 Nxd5 9\\.Bxe7 Ncxe7 10\\.dxc5 0-0\\s*$/);\n  assert.doesNotMatch(page, /10\\.f4\\+/);\n  assert.doesNotMatch(page, /25\\.Kf2 g5!\\+/);\n  assert.doesNotMatch(page, /Tukhvatullin - Karpeshov/);\n  assert.doesNotMatch(page, /leaves the white king too exposed/);\n});\n\n'''
           if regression.strip() not in test_text:
               if marker not in test_text:
                   raise SystemExit('Could not find Page 10 regression-test insertion point')
