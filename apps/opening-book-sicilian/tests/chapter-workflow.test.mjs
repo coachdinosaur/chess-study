@@ -204,13 +204,13 @@ test("printed PDF Page 13 keeps its exact move content and boundary", async () =
   assert.match(page, /3\.\.\.e5!\?/);
   assert.match(page, /4\.d3!N/);
   assert.match(page, /Saule – Jemec, email 2006/);
-  assert.match(page, /4\.\.\.Nge7!\?N/);
+  assert.match(page, /4\.\.\.Nge7!N/);
   assert.match(page, /9\.Bf1 Be7∓/);
   assert.match(page, /10\.a4 Be6∓ The position is simply excellent for Black\.\s*$/);
   assert.doesNotMatch(page, /1\.e4 c5 2\.Na3/);
   assert.doesNotMatch(page, /D1\) 3\.Bb5[\s\S]*<!--[\s\S]*?-->\s*3\.Bb5/);
   assert.doesNotMatch(page, /Saule - Jemec/);
-  assert.doesNotMatch(page, /4\.\.\.Nge7!N/);
+  assert.doesNotMatch(page, /4\.\.\.Nge7!\?N/);
   assert.doesNotMatch(page, /9\.Bf1 Be7 looks/);
   assert.doesNotMatch(page, /10\.a4 Be6 The/);
   assert.doesNotMatch(page, /4\.Bxc6 dxc6/);

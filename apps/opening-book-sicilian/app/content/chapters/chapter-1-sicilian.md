@@ -260,7 +260,7 @@ This logical approach has been tried in only a handful of games so far, but I be
 The only testing move.
 
 <!-- FEN: r1bqkbnr/pp1p1ppp/2n5/1Bp1p3/4P3/N7/PPPP1PPP/R1BQK1NR w KQkq - 0 4 -->
-Saule – Jemec, email 2006, continued with 4.Nf3, and here I would like to suggest a new idea: 4...Nge7!?N 5.Nc4 (5.0-0 a6 6.Be2 d5 7.exd5 Nxd5 8.Re1 f6 9.Bf1 Be7∓ looks quite unimpressive for White) 5...d6 6.Ne3 a6 7.Be2 d5 8.d3 d4 9.Nc4 Ng6 10.a4 Be6∓ The position is simply excellent for Black.
+Saule – Jemec, email 2006, continued with 4.Nf3, and here I would like to suggest a new idea: 4...Nge7!N 5.Nc4 (5.0-0 a6 6.Be2 d5 7.exd5 Nxd5 8.Re1 f6 9.Bf1 Be7∓ looks quite unimpressive for White) 5...d6 6.Ne3 a6 7.Be2 d5 8.d3 d4 9.Nc4 Ng6 10.a4 Be6∓ The position is simply excellent for Black.
 
 ## Page 14
 
