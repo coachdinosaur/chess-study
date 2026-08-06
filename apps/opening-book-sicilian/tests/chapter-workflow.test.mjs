@@ -94,6 +94,31 @@ test("printed PDF Page 8 keeps its exact move content and boundary", async () =>
   assert.doesNotMatch(page, /10\.\.\.a5/);
 });
 
+test("printed PDF Page 9 keeps its exact move content and boundary", async () => {
+  const markdown = await readChapterOne();
+  const pageStart = markdown.indexOf("## Page 9");
+  const pageEnd = markdown.indexOf("## Page 10", pageStart);
+  const page = markdown.slice(pageStart, pageEnd);
+  const pageTen = markdown.slice(pageEnd, markdown.indexOf("## Page 11", pageEnd));
+
+  assert.match(page, /12\.Bxe7 Nxe7∓/);
+  assert.match(page, /8\.Bb3 0-0∓/);
+  assert.match(page, /12\.Bb3 d5⇆/);
+  assert.match(page, /12\.\.\.Qc7N∓/);
+  assert.match(page, /13\.Be3 Rab8∓/);
+  assert.match(page, /16\.Nxd4 cxd4∓/);
+  assert.match(page, /Black's attack eventually proved too\s*$/);
+  assert.doesNotMatch(page, /12\.Bxe7 Qxe7/);
+  assert.doesNotMatch(page, /8\.Bb3 0-0\+/);
+  assert.doesNotMatch(page, /12\.Bb3 d5∓/);
+  assert.doesNotMatch(page, /13\.Be3 Rab8\+/);
+  assert.doesNotMatch(page, /16\.Nxd4 cxd4\+/);
+  assert.doesNotMatch(page, /1\.e4 c5 2\.c4/);
+  assert.doesNotMatch(page, /much for White/);
+  assert.doesNotMatch(page, /3\.\.\.Nf6!/);
+  assert.match(pageTen, /^## Page 10\s+much for White in Karacsony – S\. Petkov, corr\. 2012\./);
+});
+
 test("evaluation and positional glyphs remain attached to move buttons", () => {
   const source = "5...e6∓, Rg8!→, Bc3⇆, and Rc8≡.";
   const displays = [...source.matchAll(SOURCE_MOVE_TOKEN)].map((match) => match[0]);

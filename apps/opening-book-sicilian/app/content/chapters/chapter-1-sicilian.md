@@ -59,18 +59,18 @@ This is rather harmless, as the bishop will be an object of attack on c4 and wil
 
 ## Page 9
 
-10...a5!? 11.e5 Nd7 12.Bxe7 Qxe7 In my opinion Black has an excellent position. He has a lot of space on the queenside, offering him promising chances in that sector of the board.
+10...a5!? 11.e5 Nd7 12.Bxe7 Nxe7∓ In my opinion Black has an excellent position. He has a lot of space on the queenside, offering him promising chances in that sector of the board.
 
 <!-- FEN: r1bqkbnr/pp1p1ppp/2n1p3/2p5/2B1P3/5N2/PPPPQPPP/RNB1K2R b KQkq - 3 4 -->
 4...Nge7!? 5.Bb3
 
 <!-- FEN: r1bqkb1r/pp1pnppp/2n1p3/2p5/2B1P3/5N2/PPPPQPPP/RNB1K2R w KQkq - 4 5 -->
-5.d3 Ng6 6.h4!? (6.0-0 Be7 7.c3 d5 8.Bb3 0-0+ is great for Black) 6...Bd6! 7.Nbd2 h6 8.h5 Nge5 9.Nxe5 Bxe5 10.Nf3 Bb8!? 11.c3 0-0 12.Bb3 d5∓ is fine for us.
+5.d3 Ng6 6.h4!? (6.0-0 Be7 7.c3 d5 8.Bb3 0-0∓ is great for Black) 6...Bd6! 7.Nbd2 h6 8.h5 Nge5 9.Nxe5 Bxe5 10.Nf3 Bb8!? 11.c3 0-0 12.Bb3 d5⇆ is fine for us.
 
 <!-- FEN: r1bqkb1r/pp1pnppp/2n1p3/2p5/4P3/1B3N2/PPPPQPPP/RNB1K2R b KQkq - 5 5 -->
 5...g6!? 6.c3 Bg7 7.d3 b6 8.0-0 Ba6 9.Re1 0-0 10.Na3 d5 11.exd5 Nxd5 12.Bg5
 
-Black had the more harmonious development in Rasik - Jirovsky, Karlovy Vary 2004, and should have now chosen:
+Black had the more harmonious development in Rasik – Jirovsky, Karlovy Vary 2004, and should have now chosen:
 
 <!-- FEN: rbbq1rk1/pp1p1pp1/2n1p2p/2p4P/4P3/1BPP4/PP1NQPP1/R1B2RK1 b - - 5 12 -->
 12...Qc7N∓
@@ -81,7 +81,6 @@ Black had the more harmonious development in Rasik - Jirovsky, Karlovy Vary 2004
 Black enjoys a slight edge due to the weakness of the d3-pawn.
 
 B) 2.c4
-1.e4 c5 2.c4
 
 This will most likely transpose to an English Opening. Here we will look at possible deviations from White's perspective.
 
@@ -92,11 +91,13 @@ Toying with the possibility of d2-d4, transposing to a Maroczy Bind.
 <!-- FEN: r1bqkbnr/pp1ppppp/2n5/2p5/2P1P3/8/PP1P1PPP/RNBQKBNR w KQkq - 1 3 -->
 Instead, 3.Nc3 g6 leads to the English and is outside the scope of this book.
 <!-- FEN: r1bqkbnr/pp1ppppp/2n5/2p5/2P1P3/8/PP1P1PPP/RNBQKBNR w KQkq - 1 3 -->
-3.Nf3 e5 is obviously fine for Black, as the knight stands badly on f3. One recent example went: 4.Nc3 d6 5.d3 (5.g3 g6 6.Bg2 Bg7 7.0-0 Nge7 8.d3 0-0 9.Ng5 f6 10.Nh3 Be6 11.f4 Qd7 12.Nf2 Nd4 13.Be3 Rab8+ was excellent for Black in Plueg - Shaw, Coulsdon 1997.) 5...f5!? 6.exf5 Bxf5 7.h3?! Qd7 8.Be2 Nf6 9.Nh2?! White is fighting for the light squares, but Black has enough resources to combat this plan. 9...Nd4 10.Bg5 0-0-0! 11.0-0 h6 12.Bxf6 gxf6 13.Kh1?! (13.Nd5!?, preparing to counterattack by b2-b4, might have made a fight of it.)
+3.Nf3 e5 is obviously fine for Black, as the knight stands badly on f3. One recent example went: 4.Nc3 d6 5.d3 (5.g3 g6 6.Bg2 Bg7 7.0-0 Nge7 8.d3 0-0 9.Ng5 f6 10.Nh3 Be6 11.f4 Qd7 12.Nf2 Nd4 13.Be3 Rab8∓ was excellent for Black in Plueg – Shaw, Coulsdon 1997.) 5...f5!? 6.exf5 Bxf5 7.h3?! Qd7 8.Be2 Nf6 9.Nh2?! White is fighting for the light squares, but Black has enough resources to combat this plan. 9...Nd4 10.Bg5 0-0-0! 11.0-0 h6 12.Bxf6 gxf6 13.Kh1?! (13.Nd5!?, preparing to counterattack by b2-b4, might have made a fight of it.)
+
+13...h5! 14.Bxh5 Be6 15.Ne2 Kb8 16.Nxd4 cxd4∓ Black's attack eventually proved too
 
 ## Page 10
 
-13...h5! 14.Bxh5 Be6 15.Ne2 Kb8 16.Nxd4 cxd4+ Black's attack eventually proved too much for White in Karacsony - S. Petkov, corr. 2012.
+much for White in Karacsony – S. Petkov, corr. 2012.
 
 <!-- FEN: r1bqkbnr/pp1ppppp/2n5/2p5/2P1P3/5N2/PP1P1PPP/RNBQKB1R b KQkq - 2 3 -->
 3...Nf6!
