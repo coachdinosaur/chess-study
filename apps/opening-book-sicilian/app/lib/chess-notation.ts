@@ -21,7 +21,7 @@ export function isLikelyProseSquare(text: string, at: number, source: string): b
   const bare = source.replace(/^\d+\.(?:\.\.)?\s*/, "");
   if (!SQUARE_ONLY.test(bare)) return false;
   const prefix = text.slice(Math.max(0, at - 12), at).toLowerCase();
-  if (/(?:^|\s)(?:on|to|the|a|toward|from|square) $/.test(prefix)) return true;
+  if (/(?:^|\s)(?:on|to|the|a|toward|from|square|contested) $/.test(prefix)) return true;
   return text.slice(at + source.length, at + source.length + 7).toLowerCase().startsWith("-square");
 }
 
