@@ -74,13 +74,16 @@ jobs:
           import { MarkdownMoveResolver } from './app/lib/markdown-moves.ts';
 
           const start = 'r1bqkb1r/pp2nppp/2np4/1Bp1p3/2N1P3/3P4/PPPB1PPP/R2QK1NR b KQkq - 1 6';
+          const pathTo = (token) => token.navigation.steps
+            .slice(0, token.navigation.index + 1)
+            .map((step) => step.label);
 
           const a6 = new MarkdownMoveResolver();
           a6.setAnchor(start, 'After 6.Bd2');
           const a6Tokens = a6.resolveText('6...a6?! 7.Ba5 Qd7 8.Nb6 Qc7 9.Ba4!');
           assert.ok(a6Tokens.every((token) => token.navigation), 'The 6...a6 branch must stay continuous through 9.Ba4.');
           assert.deepEqual(
-            a6Tokens.at(-1).navigation.steps.map((step) => step.label),
+            pathTo(a6Tokens.at(-1)),
             ['After 6.Bd2', '6...a6?!', '7.Ba5', 'Qd7', '8.Nb6', 'Qc7', '9.Ba4!'],
           );
 
@@ -94,14 +97,8 @@ jobs:
 
           const bg5 = alternatives.filter((token) => token.display === 'Bg5');
           assert.equal(bg5.length, 2, 'Both Bg5 moves must be detected.');
-          assert.deepEqual(
-            bg5[0].navigation.steps.slice(-2).map((step) => step.label),
-            ['8.a4', 'Bg5'],
-          );
-          assert.deepEqual(
-            bg5[1].navigation.steps.slice(-3).map((step) => step.label),
-            ['0-0', '9.Ne2', 'Bg5'],
-          );
+          assert.deepEqual(pathTo(bg5[0]).slice(-2), ['8.a4', 'Bg5']);
+          assert.deepEqual(pathTo(bg5[1]).slice(-3), ['0-0', '9.Ne2', 'Bg5']);
           NODE
 
       - name: Run Sicilian tests
