@@ -288,6 +288,16 @@ export class MarkdownMoveResolver {
       }
 
       const numberedKey = moveNumberKey(display);
+      const labeledSibling = depth === 0
+        && numberedKey
+        && previousMatch
+        && moveNumberKey(previousMatch[0].trim()) === numberedKey
+        && /\b[A-Z]\d+\)\s*$/.test(betweenMoves);
+      if (labeledSibling) {
+        // Labels such as `D1) 3.Bb5 and D2) 3.Nf3` are sibling choices.
+        active = lastBefore;
+        previousMoveResolved = true;
+      }
       if (depth > 0 && numberedKey && betweenMoves.includes(";")) {
         active = branchStarts[depth - 1] ?? active;
         lastBefore = active;
