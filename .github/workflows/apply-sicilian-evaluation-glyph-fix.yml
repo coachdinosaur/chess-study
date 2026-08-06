@@ -1,0 +1,85 @@
+name: Apply Sicilian evaluation glyph corrections
+
+on:
+  push:
+    branches:
+      - wip/sicilian-20260805-153931
+    paths:
+      - .github/workflows/apply-sicilian-evaluation-glyph-fix.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: wip/sicilian-20260805-153931
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/opening-book-sicilian/package-lock.json
+
+      - name: Correct PDF evaluation glyphs and token support
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          chapter = Path('apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md')
+          text = chapter.read_text(encoding='utf-8')
+          old_line = "The alternative 4.e5 Ng4 5.Nf4 (5.f4?! is better for Black after either 5...e6+ or 5...h5+) 5...Nxe5 6.Nfxd5 e6 7.Ne3 Nbc6 8.g3 (8.f4 Ng6 9.g3? Nxf4!+) 8...f5! 9.f4 Nf7 10.Bg2 Bd7 11.0-0 Be7∓ leads to a situation where Black's control over the d4-square easily guarantees him at least equal prospects."
+          new_line = "The alternative 4.e5 Ng4 5.Nf4 (5.f4?! is better for Black after either 5...e6∓ or 5...h5∓) 5...Nxe5 6.Nfxd5 e6 7.Ne3 Nbc6 8.g3 (8.f4 Ng6 9.g3? Nxf4!∓) 8...f5! 9.f4 Nf7 10.Bg2 Bd7 11.0-0 Be7∓ leads to a situation where Black's control over the d4-square easily guarantees him at least equal prospects."
+          if text.count(old_line) != 1:
+              raise SystemExit(f'Expected exactly one PDF line to correct, found {text.count(old_line)}')
+          chapter.write_text(text.replace(old_line, new_line, 1), encoding='utf-8')
+
+          notation = Path('apps/opening-book-sicilian/app/lib/chess-notation.ts')
+          notation_text = notation.read_text(encoding='utf-8')
+          old_regex = 'export const SOURCE_MOVE_TOKEN = /(?:\\d+\\.(?:\\.\\.)?\\s*)?(?:O-O-O|O-O|0-0-0|0-0|[KQRBN]?[a-h]?[1-8]?x?[a-h][1-8](?:=[QRBN])?|[a-h]x[a-h][1-8]|[a-h][1-8])[+#]?[!?N=]*/g;'
+          new_regex = 'export const SOURCE_MOVE_TOKEN = /(?:\\d+\\.(?:\\.\\.)?\\s*)?(?:O-O-O|O-O|0-0-0|0-0|[KQRBN]?[a-h]?[1-8]?x?[a-h][1-8](?:=[QRBN])?|[a-h]x[a-h][1-8]|[a-h][1-8])[+#]?[!?N=∞±∓]*/g;'
+          if notation_text.count(old_regex) != 1:
+              raise SystemExit(f'Expected one move-token regex, found {notation_text.count(old_regex)}')
+          notation.write_text(notation_text.replace(old_regex, new_regex, 1), encoding='utf-8')
+
+          tests = Path('apps/opening-book-sicilian/tests/chapter-workflow.test.mjs')
+          test_text = tests.read_text(encoding='utf-8')
+          old_import = 'import { MarkdownMoveResolver } from "../app/lib/markdown-moves.ts";'
+          new_import = 'import { SOURCE_MOVE_TOKEN, normalizeSan } from "../app/lib/chess-notation.ts";\nimport { MarkdownMoveResolver } from "../app/lib/markdown-moves.ts";'
+          if old_import not in test_text:
+              raise SystemExit('Could not find the move-resolver import')
+          test_text = test_text.replace(old_import, new_import, 1)
+
+          marker = 'test("move recovery handles bad anchors, look-ahead, and semicolon siblings", () => {'
+          regression = '''test("Black-edge evaluation glyphs remain attached to move buttons", () => {\n  const source = "5...e6∓ or 5...h5∓ and later Nxf4!∓, while Be7∓ remains slightly better for Black.";\n  const displays = [...source.matchAll(SOURCE_MOVE_TOKEN)].map((match) => match[0]);\n  assert.deepEqual(displays, ["5...e6∓", "5...h5∓", "Nxf4!∓", "Be7∓"]);\n  assert.equal(normalizeSan("5...e6∓"), "e6");\n  assert.equal(normalizeSan("5...h5∓"), "h5");\n  assert.equal(normalizeSan("Nxf4!∓"), "Nxf4");\n});\n\n'''
+          if regression.strip() not in test_text:
+              if marker not in test_text:
+                  raise SystemExit('Could not find the regression-test insertion point')
+              test_text = test_text.replace(marker, regression + marker, 1)
+          tests.write_text(test_text, encoding='utf-8')
+          PY
+
+          git diff --check
+
+      - name: Install and test Sicilian app
+        working-directory: apps/opening-book-sicilian
+        run: |
+          npm ci
+          npm test
+
+      - name: Commit repair and remove temporary workflow
+        shell: bash
+        run: |
+          git config user.name "coachdinosaur"
+          git config user.email "86093996+coachdinosaur@users.noreply.github.com"
+          git rm .github/workflows/apply-sicilian-evaluation-glyph-fix.yml
+          git add apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md \
+                  apps/opening-book-sicilian/app/lib/chess-notation.ts \
+                  apps/opening-book-sicilian/tests/chapter-workflow.test.mjs
+          git diff --cached --check
+          git commit -m "Fix Sicilian evaluation glyph notation"
+          git push origin HEAD:wip/sicilian-20260805-153931
