@@ -487,16 +487,12 @@ A good reply to 15.Qe3 is: <!-- NON-NAVIGATION -->
 <!-- FEN: 3r1rk1/p3ppbp/1qp3p1/3pP3/5P2/2B5/PPP1Q1PP/2KR3R w - - 0 19 -->
 19.Qd2 Rb8 20.Rd4 e6 21.Qxb6 axb6+ Black has good chances to press in the ending in view of his superior minor piece.
 
-The ending was slightly better for Black due to his central mass, Salmensuu - Hillarp Persson, Reykjavik 2000.
+The ending was slightly better for Black due to his central mass, Salmensuu – Hillarp Persson, Reykjavik 2000.
 
 ## Page 18
 
 <!-- FEN: r1bqkb1r/pp1ppp1p/2n3p1/4P3/4nP2/8/PPP3PP/RNBQKBNR w KQkq - 1 7 -->
-E12) 7.Be3
-<!-- FEN: r1bqkb1r/pp1ppp1p/2n3p1/4P3/4nP2/8/PPP3PP/RNBQKBNR w KQkq - 1 7 -->
-7.Be3
-
-7...d6!?N
+E12) 7.Be3 d6!?N
 
 **FEN:**
 `r1bqkb1r/pp2pp1p/2np2p1/4P3/4nP2/4B3/PPP3PP/RN1QKBNR w KQkq - 0 8`
@@ -504,7 +500,27 @@ E12) 7.Be3
 Trying to exploit the active e4-knight by opening up the position. White now faces a struggle to keep the balance.
 
 <!-- FEN: r1bqkb1r/pp1ppp1p/2n3p1/4P3/4nP2/4B3/PPP3PP/RN1QKBNR b KQkq - 4 7 -->
-7...d5 leads to more static play, although Black should basically be okay; the move ...f6 can perhaps be employed at some point to liquidate the annoying e5-pawn. 8.Bd3 (8.Nf3!? Bg4 9.Be2 Bg7 10.0-0 0-0 11.Nbd2 Nxd2 12.Qxd2 Qa5!? 13.c3!? [13.Qxa5 Nxa5=] 13...e6∞) 8...Qa5+ (8...Bf5 9.Nf3 Bg7 10.0-0 0-0 11.Nbd2 Qc7=) 9.c3 Bg7 10.Nf3 f6!? 11.exf6?! (11.0-0!? 0-0 12.b4! Qc7 13.Qb3!± e.g. 13...e6 14.Bxe4! dxe4 15.exf6 Bxf6 16.Nfd2) 11...Nxf6 12.Nbd2 Qc7 13.Nb3 0-0 14.Bb5 Kh8 15.Qe2 Ng4! 16.Bd2 e5 17.h3 Nf6 18.Bxc6 bxc6 19.fxe5 Ne4 20.Qe3 Ba6+ Black was better in Damljanovic - Z. Arsovic, Belgrade 1995. However, as was obvious from the comments, White could have improved earlier on.
+7...d5
+
+This leads to more static play, although Black should basically be okay; the move ...f6 can perhaps be employed at some point to liquidate the annoying e5-pawn.
+
+8.Bd3
+
+8.Nf3!? Bg4 9.Be2 Bg7 10.0-0 0-0 11.Nbd2 Nxd2 12.Qxd2 Qa5!? 13.c3!? (13.Qxa5 Nxa5=) 13...e6∞
+
+8...Qa5+
+
+8...Bf5 9.Nf3 Bg7 10.0-0 0-0 11.Nbd2 Qc7=
+
+9.c3 Bg7 10.Nf3
+
+10...f6!? 11.exf6?!
+
+11.0-0!? 0-0 12.b4! Qc7 13.Qb3!± e.g. 13...e6 14.Bxe4! dxe4 15.exf6 Bxf6 16.Nfd2
+
+11...Nxf6 12.Nbd2 Qc7 13.Nb3 0-0 14.Bb5 Kh8 15.Qe2 Ng4! 16.Bd2 e5 17.h3 Nf6 18.Bxc6 bxc6 19.fxe5 Ne4 20.Qe3 Ba6∓
+
+Black was better in Damljanovic – Z. Arsovic, Belgrade 1995. However, as was obvious from the comments, White could have improved earlier on.
 
 The following lines illustrate Black's potential:
 
@@ -514,13 +530,12 @@ The following lines illustrate Black's potential:
 Intriguing, but Black still comes out on top.
 
 <!-- FEN: r1bqkb1r/pp2pp1p/2np2p1/4P3/4nP2/4B3/PPP3PP/RN1QKBNR w KQkq - 0 8 -->
-Weaker is 8.Qd5?! Bf5 9.Bb5 Rc8+ when White will be pushed back.
+Weaker is 8.Qd5?! Bf5 9.Bb5 Rc8∓ when White will be pushed back.
 
 <!-- FEN: r1bqkb1r/pp2pp1p/2np2p1/4P3/4nP2/4B3/PPP3PP/RN1QKBNR w KQkq - 0 8 -->
-After 8.Nf3?! Qa5+! 9.c3 dxe5 10.fxe5 Bg7 the e5-pawn looks fatally exposed. 11.b4?! (White is also worse after 11.Bd3 Nc5 12.Bc4 Be6) 11...Qc7 12.Bd3 Bf5! White is in big trouble. For example: 13.Qc2 (or 13.g4 0-0-0!! 14.gxf5 Nxe5-+ and White is about to be massacred along the open lines) 13...Nxc3!! 14.Qxc3 (14.Nxc3 Nxe5 15.Bxf5 Nxf3+ 16.gxf3 Qxc3+ 17.Kf2 gxf5-+) 14...Bxd3 15.Qxd3 Nxe5 16.Qb5+
+After 8.Nf3?! Qa5+! 9.c3 dxe5 10.fxe5 Bg7 the e5-pawn looks fatally exposed. 11.b4?! (White is also worse after 11.Bd3 Nc5 12.Bc4 Be6) 11...Qc7 12.Bd3 Bf5! White is in big trouble. For example: 13.Qc2 (or 13.g4 0-0-0!! 14.gxf5 Nxe5-+ and White is about to be massacred along the open lines)
 
-<!-- FEN: r3k2r/ppq1ppbp/6p1/1Q2n3/1P6/4BN2/P5PP/RN2K2R b KQkq - 1 16 -->
-16...Kd7 17.Nd4 Bxd4 18.Bxd4 Qc1+ 19.Ke2 Qxh1 20.Bxh8 Qxg2+-+
+13...Nxc3!! 14.Qxc3 (14.Nxc3 Nxe5 15.Bxf5 Nxf3+ 16.gxf3 Qxc3+ 17.Kf2 gxf5-+) 14...Bxd3 15.Qxd3 Nxe5 16.Qb5+ Nd7 17.Nd4 Bxd4 18.Bxd4 Rc1+ 19.Ke2 Qxh1 20.Bxh8 Qxg2+-+
 
 ## Page 19
 
@@ -553,7 +568,7 @@ The knight is safely placed on the rim here: it is important not to lose time by
 
 An attempt to exploit the knight's placement.
 
-<!-- FEN: r1bqkb1r/pp1ppp1p/2n3p1/4P2n/5P2/3Q4/PPP3PP/RNB1KBNR w KQkq - 3 7 -->
+<!-- FEN: r1bqkb1r/pp1ppp1p/2n3p1/4P2n/5P2/3Q4/PPP1B1PP/RNB1K1NR b KQkq - 4 7 -->
 7.Nf3 d6! White has problems containing Black's activity.
 
 8.Nc3
