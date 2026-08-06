@@ -1,0 +1,104 @@
+name: Apply Sicilian labeled-alternative navigation fix
+
+on:
+  push:
+    branches:
+      - wip/sicilian-20260805-153931
+    paths:
+      - .github/workflows/apply-sicilian-labeled-alternative-fix.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: wip/sicilian-20260805-153931
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/opening-book-sicilian/package-lock.json
+
+      - name: Patch labeled sibling alternatives
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          resolver_path = Path('apps/opening-book-sicilian/app/lib/markdown-moves.ts')
+          resolver = resolver_path.read_text(encoding='utf-8')
+          old = '''      const numberedKey = moveNumberKey(display);
+      if (depth > 0 && numberedKey && betweenMoves.includes(";")) {
+'''
+          new = '''      const numberedKey = moveNumberKey(display);
+      const labeledSibling = depth === 0
+        && numberedKey
+        && previousMatch
+        && moveNumberKey(previousMatch[0].trim()) === numberedKey
+        && /\\b[A-Z]\\d+\\)\\s*$/.test(betweenMoves);
+      if (labeledSibling) {
+        // Introductory labels such as `D1) 3.Bb5 and D2) 3.Nf3` describe
+        // sibling choices from the same position, not two consecutive moves.
+        active = lastBefore;
+        previousMoveResolved = true;
+      }
+      if (depth > 0 && numberedKey && betweenMoves.includes(";")) {
+'''
+          if resolver.count(old) != 1:
+              raise SystemExit(f'Expected one resolver insertion point, found {resolver.count(old)}')
+          resolver_path.write_text(resolver.replace(old, new, 1), encoding='utf-8')
+
+          tests_path = Path('apps/opening-book-sicilian/tests/chapter-workflow.test.mjs')
+          tests = tests_path.read_text(encoding='utf-8')
+          marker = 'test("move navigation survives PDF page and parenthesis boundaries", () => {'
+          regression = '''test("D1 and D2 labels resolve as sibling choices after 2...Nc6", () => {
+  const resolver = new MarkdownMoveResolver();
+  const anchor = "r1bqkbnr/pp1ppppp/2n5/2p5/4P3/N7/PPPP1PPP/R1BQKBNR w KQkq - 2 3";
+  resolver.setAnchor(anchor, "After 2...Nc6");
+
+  const tokens = resolver.resolveText(
+    "We will consider two moves for White: D1) 3.Bb5 and D2) 3.Nf3.",
+  );
+  const bb5 = tokens.find((token) => token.display === "3.Bb5");
+  const nf3 = tokens.find((token) => token.display === "3.Nf3");
+
+  assert.ok(bb5?.navigation, "D1) 3.Bb5 should be navigable.");
+  assert.ok(nf3?.navigation, "D2) 3.Nf3 should be navigable.");
+  assert.equal(bb5.navigation.steps[0].fen, anchor);
+  assert.equal(nf3.navigation.steps[0].fen, anchor);
+  assert.deepEqual(bb5.navigation.steps.map((step) => step.label), ["After 2...Nc6", "3.Bb5"]);
+  assert.deepEqual(nf3.navigation.steps.map((step) => step.label), ["After 2...Nc6", "3.Nf3"]);
+});
+
+'''
+          if regression.strip() not in tests:
+              if marker not in tests:
+                  raise SystemExit('Could not find regression-test insertion point')
+              tests = tests.replace(marker, regression + marker, 1)
+          tests_path.write_text(tests, encoding='utf-8')
+          PY
+
+          git diff --check
+
+      - name: Install and test Sicilian app
+        working-directory: apps/opening-book-sicilian
+        run: |
+          npm ci
+          npm test
+
+      - name: Commit repair and remove temporary workflow
+        shell: bash
+        run: |
+          git config user.name "coachdinosaur"
+          git config user.email "86093996+coachdinosaur@users.noreply.github.com"
+          git rm .github/workflows/apply-sicilian-labeled-alternative-fix.yml
+          git add apps/opening-book-sicilian/app/lib/markdown-moves.ts \
+                  apps/opening-book-sicilian/tests/chapter-workflow.test.mjs
+          git diff --cached --check
+          git commit -m "Fix labeled Sicilian alternative navigation"
+          git push origin HEAD:wip/sicilian-20260805-153931
