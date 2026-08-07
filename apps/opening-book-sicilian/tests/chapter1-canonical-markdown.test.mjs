@@ -62,7 +62,7 @@ test("Chapter 1 Markdown directly contains the PDF-derived app corrections", asy
     "13...Qxd2+ 14.Kxd2",
     "14...Bxe5!",
     "20.Qd4 e6 21.Qxb6 axb6∓",
-    "7...d6!?N",
+    "E12) 7.Be3 d6!?N",
     "6...e5!",
   ];
   for (const text of requiredText) {
