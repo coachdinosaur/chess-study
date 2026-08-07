@@ -1,8 +1,6 @@
 import assert from "node:assert/strict";
-import { access, readFile, readdir, stat } from "node:fs/promises";
+import { access, readFile, readdir } from "node:fs/promises";
 import test from "node:test";
-import { applyChapterContentCorrections } from "../app/lib/chapter-content-corrections.ts";
-import { applyChapterPage15Corrections } from "../app/lib/chapter-page15-corrections.ts";
 import { isLikelyProseSquare } from "../app/lib/chess-notation.ts";
 
 const root = new URL("../", import.meta.url);
@@ -58,12 +56,11 @@ test("narrative square references remain plain text", () => {
   assert.equal(isLikelyProseSquare(numberedMove, 0, "4.e4"), false);
 });
 
-test("printed PDF Page 14 corrections reach the rendered chapter", async () => {
-  const raw = await readFile(new URL("app/content/chapters/chapter-1-sicilian.md", root), "utf8");
-  const corrected = applyChapterContentCorrections("chapter-1-sicilian.md", raw);
-  const start = corrected.indexOf("## Page 14");
-  const end = corrected.indexOf("## Page 15", start);
-  const page = corrected.slice(start, end);
+test("printed PDF Page 14 corrections are stored in the canonical chapter", async () => {
+  const markdown = await readFile(new URL("app/content/chapters/chapter-1-sicilian.md", root), "utf8");
+  const start = markdown.indexOf("## Page 14");
+  const end = markdown.indexOf("## Page 15", start);
+  const page = markdown.slice(start, end);
 
   for (const required of [
     "5...Be6 6.Qe2 Qc7 7.a4 Ne7 8.Nf3 f6=",
@@ -93,16 +90,14 @@ test("printed PDF Page 14 corrections reach the rendered chapter", async () => {
     assert.ok(!page.includes(forbidden), `Found incorrect PDF Page 14 content: ${forbidden}`);
   }
 
-  assert.ok(corrected.slice(end).startsWith("## Page 15\n\n<!--"));
+  assert.ok(markdown.slice(end).startsWith("## Page 15\n\n<!--"));
 });
 
-test("printed PDF Page 15 corrections reach the rendered chapter", async () => {
-  const raw = await readFile(new URL("app/content/chapters/chapter-1-sicilian.md", root), "utf8");
-  const page14Corrected = applyChapterContentCorrections("chapter-1-sicilian.md", raw);
-  const corrected = applyChapterPage15Corrections("chapter-1-sicilian.md", page14Corrected);
-  const start = corrected.indexOf("## Page 15");
-  const end = corrected.indexOf("## Page 16", start);
-  const page = corrected.slice(start, end);
+test("printed PDF Page 15 corrections are stored in the canonical chapter", async () => {
+  const markdown = await readFile(new URL("app/content/chapters/chapter-1-sicilian.md", root), "utf8");
+  const start = markdown.indexOf("## Page 15");
+  const end = markdown.indexOf("## Page 16", start);
+  const page = markdown.slice(start, end);
 
   for (const required of [
     "17.0-0 Rb8⇆",
@@ -132,7 +127,7 @@ test("printed PDF Page 15 corrections reach the rendered chapter", async () => {
     assert.ok(!page.includes(forbidden), `Found incorrect PDF Page 15 content: ${forbidden}`);
   }
 
-  assert.ok(corrected.slice(end).startsWith("## Page 16\n\n<!--"));
+  assert.ok(markdown.slice(end).startsWith("## Page 16\n\n<!--"));
 });
 
 test("the static output contains the interactive board and shared engine references", async () => {
@@ -149,7 +144,6 @@ test("the static output contains the interactive board and shared engine referen
   assert.match(source, /Show on main board/);
   assert.match(source, /Stockfish/);
 
-  // Verify pieces and stockfish load from /openings/ path at runtime
   assert.match(source, /\/openings\//);
   assert.match(source, /assets\/pieces\/mpchess\//);
   assert.match(source, /\/openings\/stockfish\/stockfish-18-lite-single\.js/);
