@@ -82,3 +82,13 @@ test("app pages 1-8 retain the PDF main-line anchor hierarchy", async () => {
     assert.ok(!corrected.includes(stale), `Stale anchor remains: ${stale}`);
   }
 });
+
+test("the visible header and browser title use the full Sicilian course name", async () => {
+  const [app, html] = await Promise.all([
+    readFile(new URL("app/SicilianApp.tsx", root), "utf8"),
+    readFile(new URL("index.html", root), "utf8"),
+  ]);
+  const title = "Sicilian Defense: Beating the Anti-Sicilian";
+  assert.ok(app.includes(`<strong>${title}</strong>`));
+  assert.ok(html.includes(`<title>${title}</title>`));
+});
