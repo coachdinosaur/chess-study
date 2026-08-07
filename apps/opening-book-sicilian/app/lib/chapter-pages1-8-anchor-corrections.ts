@@ -43,18 +43,18 @@ export function applyChapterPages1To8AnchorCorrections(filename: string, content
 
   corrected = replaceExactCount(
     corrected,
-    "<!-- FEN: r1q2rk1/pp2ppbp/2n3p1/5b2/7Q/2N1B1P1/PPP2PBP/R2R2K1 b - - 9 14 -->\n15.Bh1 Qg4=",
-    "<!-- FEN: r1q2rk1/pp2ppbp/2n3p1/8/Q7/2N1B1Pb/PPP2PBP/R2R2K1 w - - 10 15 -->\n15.Bh1 Qg4=",
-    1,
-    "Page 12 15.Bh1 alternative anchor",
-  );
-
-  corrected = replaceExactCount(
-    corrected,
     "<!-- FEN: r1q2rk1/pp2ppbp/2n3p1/8/7Q/2N1B1Pb/PPP2P1P/R2R2KB b - - 11 15 -->\n<!-- FEN: r1q2rk1/pp2ppbp/2n3p1/8/Q3B3/2N1B1Pb/PPP2P1P/R2R2K1 b - - 11 15 -->\n15...Bg4",
     "<!-- FEN: r1q2rk1/pp2ppbp/2n3p1/8/Q3B3/2N3Pb/PPP2PBP/R2R2K1 b - - 11 15 -->\n15...Bg4",
     1,
     "Page 12 return to 15.Be4 main line",
+  );
+
+  corrected = replaceExactCount(
+    corrected,
+    "<!-- FEN: r1q2rk1/pp2ppbp/2n3p1/8/Q3B3/2N1B1Pb/PPP2P1P/R2R2K1 b - - 11 15 -->\n15...Bf5",
+    "<!-- FEN: r1q2rk1/pp2ppbp/2n3p1/8/Q3B3/2N3Pb/PPP2PBP/R2R2K1 b - - 11 15 -->\n15...Bf5",
+    1,
+    "Page 12 15...Bf5 sibling anchor",
   );
 
   corrected = replaceExactCount(

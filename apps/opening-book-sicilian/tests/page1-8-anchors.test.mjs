@@ -45,6 +45,7 @@ test("app pages 1-8 retain the PDF main-line anchor hierarchy", async () => {
   const beforeBg4 = "r1q2rk1/pp2ppbp/2n3p1/8/Q3B3/2N3Pb/PPP2PBP/R2R2K1 b - - 11 15";
   assert.equal(playLine(beforeBh3, ["Bh3", "Be4"]), beforeBg4);
   assert.ok(corrected.includes(`<!-- FEN: ${beforeBg4} -->\n15...Bg4`));
+  assert.ok(corrected.includes(`<!-- FEN: ${beforeBg4} -->\n15...Bf5`));
 
   const afterBg4 = "r1q2rk1/pp2ppbp/2n3p1/8/Q3B1b1/2N3P1/PPP2PBP/R2R2K1 w - - 12 16";
   assert.equal(playLine(beforeBg4, ["Bg4"]), afterBg4);
