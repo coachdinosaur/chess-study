@@ -15,6 +15,21 @@ function replaceExactCount(
 export function applyChapterPages12To17AnchorCorrections(filename: string, content: string): string {
   if (filename !== "chapter-1-sicilian.md") return content;
 
+
+  // The canonical Markdown may already contain these verified PDF-derived
+  // corrections. Keep this correction function available for older source
+  // content, but do not apply the same replacements twice.
+  if (
+    content.includes(
+      "<!-- FEN: r2q1rk1/p4pbp/bpn1p1p1/2pn2B1/8/NBPP1N2/PP2QPPP/R3R1K1 b - - 1 12 -->\n12...Qc7N∓",
+    ) &&
+    content.includes(
+      "<!-- FEN: r1bqkb1r/pp2pp1p/2n3p1/3pP3/4nP2/4B3/PPP3PP/RN1QKBNR w KQkq d6 0 8 -->\n8.Bd3",
+    )
+  ) {
+    return content;
+  }
+
   let corrected = content;
 
   // App Page 12 / printed Page 18: keep the 7...d5 branch and its siblings

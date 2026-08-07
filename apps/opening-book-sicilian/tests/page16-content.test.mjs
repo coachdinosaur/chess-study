@@ -46,7 +46,7 @@ test("printed PDF Page 16 corrections reach the rendered chapter", async () => {
 
   assert.ok(
     corrected.slice(end).startsWith(
-      "## Page 17\n\n18.Rfb1! White should have enough to maintain approximate equality.",
+      "## Page 17\n\n<!-- FEN: r4rk1/1p3pbp/2n1b1p1/pq1p4/5P2/1BP1BN2/PP3QPP/R4RK1 w - - 0 18 -->\n18.Rfb1!\n\nWhite should have enough to maintain approximate equality.",
     ),
   );
 });
