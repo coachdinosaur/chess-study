@@ -240,7 +240,7 @@ function ChapterReader({ chapter, chapters, onNavigate }: {
     <header className="topbar">
       <button className="sidebar-toggle desktop-sidebar-toggle" onClick={() => setSidebarCollapsed((current) => !current)} aria-label={sidebarCollapsed ? "Show navigation" : "Hide navigation"}>☰</button>
       <button className="sidebar-toggle menu-button" onClick={() => setMenuOpen((current) => !current)} aria-label="Toggle navigation">☰</button>
-      <a className="brand" href={`#/chapters/${chapter.id}`}><img className="brand-mark" src={assetUrl("app_icon_chess_study.png")} alt="" width={38} height={38} /><span><strong>Sicilian Defense</strong><small>Chapter {chapter.chapterNumber}</small></span></a>
+      <a className="brand" href={`#/chapters/${chapter.id}`}><img className="brand-mark" src={assetUrl("app_icon_chess_study.png")} alt="" width={38} height={38} /><span><strong>Sicilian Defense: Beating the Anti-Sicilian</strong><small>Chapter {chapter.chapterNumber}</small></span></a>
     </header>
     <aside id="course-sidebar" className={`sidebar ${menuOpen ? "open" : ""}`}>
       <nav>
