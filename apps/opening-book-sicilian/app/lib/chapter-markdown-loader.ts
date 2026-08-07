@@ -13,28 +13,12 @@ const chapterModules = import.meta.glob("../content/chapters/**/*.md", { eager: 
 
 let _chapters: MarkdownChapter[] | null = null;
 
-function alreadyContainsChapter1Corrections(filename: string, content: string): boolean {
-  if (filename !== "chapter-1-sicilian.md") return false;
-
-  return content.includes(
-    "<!-- FEN: r2q1rk1/p4pbp/bpn1p1p1/2pn2B1/8/NBPP1N2/PP2QPPP/R3R1K1 b - - 1 12 -->\n12...Qc7N∓",
-  ) && content.includes(
-    "<!-- FEN: r1bqkb1r/pp2pp1p/2n3p1/3pP3/4nP2/4B3/PPP3PP/RN1QKBNR w KQkq d6 0 8 -->\n8.Bd3",
-  );
-}
-
 export function loadAllChapters(): MarkdownChapter[] {
   if (_chapters) return _chapters;
 
   const entries = Object.entries(chapterModules).map(([filepath, content]) => {
     const filename = filepath.split("/").pop() ?? "unknown.md";
-    const rawContent = content as string;
-
-    if (alreadyContainsChapter1Corrections(filename, rawContent)) {
-      return parseChapter(filename, rawContent);
-    }
-
-    const page10Corrected = applyChapterPage10Corrections(filename, rawContent);
+    const page10Corrected = applyChapterPage10Corrections(filename, content as string);
     const page14Corrected = applyChapterContentCorrections(filename, page10Corrected);
     const earlyAnchorsCorrected = applyChapterPages1To8AnchorCorrections(filename, page14Corrected);
     const page15Corrected = applyChapterPage15Corrections(filename, earlyAnchorsCorrected);
