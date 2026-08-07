@@ -6,6 +6,7 @@ on:
       - fix/sicilian-page18-qc1
     paths:
       - ".github/workflows/fix-sicilian-page18-qc1.yml"
+      - "scripts/fix-sicilian-page18-qc1.py"
 
 permissions:
   contents: write
