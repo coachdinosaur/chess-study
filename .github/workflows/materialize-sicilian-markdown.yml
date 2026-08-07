@@ -1,0 +1,50 @@
+name: Materialize Sicilian Markdown
+
+on:
+  push:
+    branches:
+      - fix/materialize-sicilian-pdf-corrections
+    paths:
+      - "apps/opening-book-sicilian/scripts/materialize-chapter-corrections.ts"
+      - ".github/workflows/materialize-sicilian-markdown.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/materialize-sicilian-pdf-corrections
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/opening-book-sicilian/package-lock.json
+
+      - name: Install dependencies
+        working-directory: apps/opening-book-sicilian
+        run: npm ci
+
+      - name: Materialize PDF-derived corrections
+        working-directory: apps/opening-book-sicilian
+        run: node --import tsx scripts/materialize-chapter-corrections.ts
+
+      - name: Commit corrected Markdown
+        run: |
+          git diff --check
+          git add apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md
+          if git diff --cached --quiet; then
+            echo "Markdown already contains all corrections."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Materialize PDF-derived Chapter 1 corrections in Markdown"
+          git push origin HEAD:fix/materialize-sicilian-pdf-corrections
