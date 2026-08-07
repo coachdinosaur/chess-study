@@ -1,4 +1,4 @@
-name: Audit Sicilian inline FEN splits
+name: Apply Sicilian PDF line layout fixes
 
 on:
   push:
@@ -6,12 +6,30 @@ on:
       - fix/sicilian-pdf-line-layout
     paths:
       - '.github/workflows/audit-sicilian-inline-fen-splits.yml'
-      - 'scripts/audit-sicilian-inline-fen-splits.py'
+      - 'scripts/apply-sicilian-pdf-line-layout-fixes.py'
+
+permissions:
+  contents: write
 
 jobs:
-  audit:
+  apply-and-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Report candidate PDF line splits
-        run: python scripts/audit-sicilian-inline-fen-splits.py
+        with:
+          ref: fix/sicilian-pdf-line-layout
+      - name: Apply verified PDF layout corrections
+        run: python scripts/apply-sicilian-pdf-line-layout-fixes.py
+      - name: Test Sicilian opening book
+        working-directory: apps/opening-book-sicilian
+        run: |
+          npm ci
+          npm test
+      - name: Commit verified corrections
+        run: |
+          git diff --check
+          git add apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md apps/opening-book-sicilian/tests/page12-17-anchors.test.mjs apps/opening-book-sicilian/tests/page17-content.test.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Match Sicilian Chapter 1 move-line layout to PDF"
+          git push origin HEAD:fix/sicilian-pdf-line-layout
