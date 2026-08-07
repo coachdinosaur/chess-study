@@ -97,6 +97,9 @@ test("app pages 15-17 return from alternatives to the bold PDF main lines", asyn
   assert.ok(corrected.includes(`<!-- FEN: ${beforeB6} -->\n9...b6!`));
   assert.ok(!corrected.includes("\n4.c3?!\n\n**FEN:**"));
   assert.ok(!corrected.includes("\n4.Nc3!\n\n**FEN:**"));
+  assert.ok(corrected.includes("13.Bf3 Qd7! 14.Qd3 Nc6! 15.Bxe4"));
+  assert.ok(corrected.includes("15.Qxe4 Nxd4 16.Qxb7 Nxf3+ 17.Qxf3 Bxb2 18.Ra2 Be5∓"));
+  assert.ok(!corrected.includes("18.Ra2 Be5+"));
 
   const beforeWhiteSixth = "r1bqk1nr/p2pppbp/1pn3p1/2p5/1P2P3/P1N2N2/2PP1PPP/R1BQKB1R w KQkq - 2 6";
   const page22Start = corrected.indexOf("## Page 22");
@@ -111,6 +114,8 @@ test("app pages 15-17 return from alternatives to the bold PDF main lines", asyn
   assert.equal(playLine(beforeWhiteSixth, ["Bb2"]), afterBb2);
   assert.ok(corrected.includes(`<!-- FEN: ${afterBb2} -->\n6...e5!`));
   assert.ok(corrected.includes(`<!-- FEN: ${afterBb2} -->\n6...cxb4`));
+  assert.ok(corrected.includes("6...cxb4 7.axb4 Nxb4 8.Bc4∞ is unclear."));
+  assert.doesNotThrow(() => playLine(afterBb2, ["cxb4", "axb4", "Nxb4", "Bc4"]));
 
   const afterD6 = "r1bq1rk1/p3npbp/1pnp2p1/2pNp3/1PB1P3/P4N2/1BPP1PPP/R2Q1RK1 w - - 0 10";
   assert.equal(playLine(afterBb2, ["e5", "Bc4", "Nge7", "O-O", "O-O", "Nd5", "d6"]), afterD6);

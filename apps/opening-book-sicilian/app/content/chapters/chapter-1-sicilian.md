@@ -509,10 +509,7 @@ Weaker is instead 11.exd6?! Bxc3+ 12.bxc3 Qa5!∓.
 Black has good chances to press in the ending in view of his superior minor piece.
 
 <!-- FEN: r1bq1rk1/pp2ppbp/2np2p1/1B2P3/5P2/2B2N2/PPP3PP/R2QK2R b KQ - 3 11 -->
-11...Qb6 12.Qe2 Bg4
-
-<!-- FEN: r4rk1/pp2ppbp/1qnp2p1/1B2P3/5Pb1/2P2N2/PP1BQ1PP/R3K2R w KQ - 6 13 -->
-13.Bxc6!
+11...Qb6 12.Qe2 Bg4 13.Bxc6!
 
 This exchange is necessary.
 
@@ -533,10 +530,7 @@ Black insists on preventing White from castling.
 A good reply to 15.Qe3 is: <!-- NON-NAVIGATION -->
 
 <!-- FEN: r4rk1/p3ppbp/q1pp2p1/4P3/5Pb1/2B1QN2/PPP3PP/R3K2R b KQ - 3 15 -->
-15...Bxf3 16.Qxf3 Rad8 17.Qe2 Qb6 18.0-0-0 d5!
-
-<!-- FEN: 3r1rk1/p3ppbp/1qp3p1/3pP3/5P2/2B5/PPP1Q1PP/2KR3R w - - 0 19 -->
-19.Qd2 Rb8 20.Qd4 e6 21.Qxb6 axb6∓
+15...Bxf3 16.Qxf3 Rad8 17.Qe2 Qb6 18.0-0-0 d5! 19.Qd2 Rb8 20.Qd4 e6 21.Qxb6 axb6∓
 
 
 ## Page 18
@@ -759,13 +753,10 @@ Black is threatening ...c4, so White's response is practically forced.
 
 White has made too many pawn moves, which allows Black's better-developed army to take the leading role in the proceedings.
 
-13.Bf3 Qd7! 14.Qd3 Nc6!
+13.Bf3 Qd7! 14.Qd3 Nc6! 15.Bxe4
 
 <!-- FEN: r4rk1/pb1qppbp/1pn3p1/8/1PPNn3/P2Q1B2/1B3PPP/RN3RK1 w - - 5 15 -->
-15.Bxe4
-
-<!-- FEN: r4rk1/pb1qppbp/1pn3p1/8/1PPNn3/P2Q1B2/1B3PPP/RN3RK1 w - - 5 15 -->
-15.Qxe4 Nxd4 16.Qxb7 Nxf3+ 17.Qxf3 Bxb2 18.Ra2 Be5+
+15.Qxe4 Nxd4 16.Qxb7 Nxf3+ 17.Qxf3 Bxb2 18.Ra2 Be5∓
 
 <!-- FEN: r4rk1/pb1qppbp/1pn3p1/8/1PPNB3/P2Q4/1B3PPP/RN3RK1 b - - 0 15 -->
 15...Nxd4 16.Nc3
@@ -822,10 +813,7 @@ After 6.Bc4 e6! the bishop on c4 bites on granite! For example: 7.0-0 Nge7 8.d4?
 With the bishop on b2 this looks like the strategically correct move.
 
 <!-- FEN: r1bqk1nr/p2pppbp/1pn3p1/2p5/1P2P3/P1N2N2/1BPP1PPP/R2QKB1R b KQkq - 3 6 -->
-6...cxb4 7.axb4 Nxb4
-
-<!-- FEN: r1bqk1nr/p2pppbp/1p4p1/8/1n2P3/2N2N2/1BPP1PPP/R2QKB1R w KQkq - 0 8 -->
-8.Bc4 is unclear.
+6...cxb4 7.axb4 Nxb4 8.Bc4∞ is unclear.
 
 <!-- FEN: r1bqk1nr/p2p1pbp/1pn3p1/2p1p3/1P2P3/P1N2N2/1BPP1PPP/R2QKB1R w KQkq - 0 7 -->
 7.Bc4 Nge7 8.0-0 0-0 9.Nd5 d6=
