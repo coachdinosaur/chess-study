@@ -16,7 +16,7 @@ addition = needle + '''  const afterBxd4 = playLine(beforeNxc3, [
   ]);
   assert.equal(
     playLine(afterBxd4, ["Qc1+", "Ke2", "Qxh1", "Bxh8", "Qxg2"]),
-    "4k2B/pp2pp1p/6p1/4P3/1P6/8/P5qP/R3K2R w KQ - 0 21",
+    "r3k2B/pp1npp1p/6p1/1Q6/1P6/8/P3K1qP/RN6 w q - 0 21",
   );
   assert.ok(corrected.includes("18.Bxd4 Qc1+ 19.Ke2 Qxh1 20.Bxh8 Qxg2+-+"));
   assert.ok(!corrected.includes("18.Bxd4 Rc1+"));
