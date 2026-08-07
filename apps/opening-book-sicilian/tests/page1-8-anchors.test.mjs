@@ -42,16 +42,16 @@ test("app pages 1-8 retain the PDF main-line anchor hierarchy", async () => {
   assert.equal(playLine(beforeBh3, ["Bh3"]), beforeBh1);
   assert.ok(corrected.includes(`<!-- FEN: ${beforeBh1} -->\n15.Bh1 Qg4=`));
 
-  const beforeBg4 = "r1q2rk1/pp2ppbp/2n3p1/8/Q3B3/2N3Pb/PPP2PBP/R2R2K1 b - - 11 15";
+  const beforeBg4 = "r1q2rk1/pp2ppbp/2n3p1/8/Q3B3/2N1B1Pb/PPP2P1P/R2R2K1 b - - 11 15";
   assert.equal(playLine(beforeBh3, ["Bh3", "Be4"]), beforeBg4);
   assert.ok(corrected.includes(`<!-- FEN: ${beforeBg4} -->\n15...Bg4`));
   assert.ok(corrected.includes(`<!-- FEN: ${beforeBg4} -->\n15...Bf5`));
 
-  const afterBg4 = "r1q2rk1/pp2ppbp/2n3p1/8/Q3B1b1/2N3P1/PPP2PBP/R2R2K1 w - - 12 16";
+  const afterBg4 = "r1q2rk1/pp2ppbp/2n3p1/8/Q3B1b1/2N1B1P1/PPP2P1P/R2R2K1 w - - 12 16";
   assert.equal(playLine(beforeBg4, ["Bg4"]), afterBg4);
   assert.equal(corrected.split(`<!-- FEN: ${afterBg4} -->`).length - 1, 2);
 
-  const beforeQe6 = "r1q2rk1/pp2ppbp/2n3p1/3R4/Q3B1b1/2N3P1/PPP2PBP/R5K1 b - - 13 16";
+  const beforeQe6 = "r1q2rk1/pp2ppbp/2n3p1/3R4/Q3B1b1/2N1B1P1/PPP2P1P/R5K1 b - - 13 16";
   assert.equal(playLine(afterBg4, ["Rd5"]), beforeQe6);
   assert.ok(corrected.includes(`<!-- FEN: ${beforeQe6} -->\n16...Qe6=`));
 
@@ -76,6 +76,7 @@ test("app pages 1-8 retain the PDF main-line anchor hierarchy", async () => {
     "rbbq1rk1/pp1p1pp1/2n1p2p/2p4P/4P3/1BPP4/PP1NQPP1/R1B2RK1 b - - 5 12",
     "r2qkb1r/pp1bpp1p/2n3p1/8/2Q5/2N3P1/PPP2P1P/R1B1KB1R w KQkq - 0 10",
     "r1q2rk1/pp2ppbp/2n3p1/5b2/7Q/2N1B1P1/PPP2PBP/R2R2K1 b - - 9 14",
+    "r1q2rk1/pp2ppbp/2n3p1/8/7Q/2N1B1Pb/PPP2P1P/R2R2KB b - - 11 15",
     "r1bq1rk1/pp2bppp/3p2n1/1Bp1p3/2NnP3/3P1N2/PPPB1PPP/R2Q1RK1 b - - 9 10",
   ]) {
     assert.ok(!corrected.includes(stale), `Stale anchor remains: ${stale}`);
