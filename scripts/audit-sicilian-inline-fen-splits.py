@@ -23,14 +23,19 @@ def moves(text):
         out.append(token)
     return out
 
-def paragraphs(text):
-    return [p.strip() for p in re.split(r'\n\s*\n', text) if p.strip()]
-
-source_paragraph_moves=[(p, moves(p)) for p in paragraphs(source)]
-
 def contains_sequence(haystack, needle):
     if not needle or len(haystack) < len(needle): return False
     return any(haystack[i:i+len(needle)] == needle for i in range(len(haystack)-len(needle)+1))
+
+# Bold move spans in the PDF-derived source are the best proxy for a continuous
+# move run. This avoids treating separate alternatives in one prose paragraph as
+# one visual line.
+source_spans=[]
+for match in re.finditer(r'\*\*(.+?)\*\*', source, flags=re.S):
+    text=match.group(1).replace('\n',' ')
+    seq=moves(text)
+    if seq:
+        source_spans.append((text,seq))
 
 def nonblank_before(i):
     j=i-1
@@ -59,14 +64,14 @@ for i,line in enumerate(lines):
     if not pm or not nm:
         continue
     needle=pm[-min(2,len(pm)):] + nm[:min(2,len(nm))]
-    matches=[p for p, seq in source_paragraph_moves if contains_sequence(seq, needle)]
+    matches=[text for text,seq in source_spans if contains_sequence(seq,needle)]
     if matches:
         confirmed.append((page,a+1,b+1,prev,nxt,line.strip(),needle,matches[0]))
 
-print(f'CONFIRMED_INLINE_SPLITS={len(confirmed)}')
-for page,a,b,prev,nxt,fen,needle,source_para in confirmed:
+print(f'CONTINUOUS_MOVE_SPLITS={len(confirmed)}')
+for page,a,b,prev,nxt,fen,needle,source_span in confirmed:
     print(f'PAGE {page} | md lines {a}->{b} | sequence={needle}')
     print('  PREV:', prev)
     print('  NEXT:', nxt)
     print('  FEN :', fen)
-    print('  SOURCE_PARAGRAPH:', source_para.replace('\n',' '))
+    print('  SOURCE_SPAN:', source_span)
