@@ -44,33 +44,9 @@ export function applyChapterPages1To8AnchorCorrections(filename: string, content
   corrected = replaceExactCount(
     corrected,
     "<!-- FEN: r1q2rk1/pp2ppbp/2n3p1/8/7Q/2N1B1Pb/PPP2P1P/R2R2KB b - - 11 15 -->\n<!-- FEN: r1q2rk1/pp2ppbp/2n3p1/8/Q3B3/2N1B1Pb/PPP2P1P/R2R2K1 b - - 11 15 -->\n15...Bg4",
-    "<!-- FEN: r1q2rk1/pp2ppbp/2n3p1/8/Q3B3/2N3Pb/PPP2PBP/R2R2K1 b - - 11 15 -->\n15...Bg4",
+    "<!-- FEN: r1q2rk1/pp2ppbp/2n3p1/8/Q3B3/2N1B1Pb/PPP2P1P/R2R2K1 b - - 11 15 -->\n15...Bg4",
     1,
     "Page 12 return to 15.Be4 main line",
-  );
-
-  corrected = replaceExactCount(
-    corrected,
-    "<!-- FEN: r1q2rk1/pp2ppbp/2n3p1/8/Q3B3/2N1B1Pb/PPP2P1P/R2R2K1 b - - 11 15 -->\n15...Bf5",
-    "<!-- FEN: r1q2rk1/pp2ppbp/2n3p1/8/Q3B3/2N3Pb/PPP2PBP/R2R2K1 b - - 11 15 -->\n15...Bf5",
-    1,
-    "Page 12 15...Bf5 sibling anchor",
-  );
-
-  corrected = replaceExactCount(
-    corrected,
-    "<!-- FEN: r1q2rk1/pp2ppbp/2n3p1/8/Q3B1b1/2N1B1P1/PPP2P1P/R2R2K1 w - - 12 16 -->",
-    "<!-- FEN: r1q2rk1/pp2ppbp/2n3p1/8/Q3B1b1/2N3P1/PPP2PBP/R2R2K1 w - - 12 16 -->",
-    2,
-    "Page 13 16th-move return anchor",
-  );
-
-  corrected = replaceExactCount(
-    corrected,
-    "<!-- FEN: r1q2rk1/pp2ppbp/2n3p1/3R4/Q3B1b1/2N1B1P1/PPP2P1P/R5K1 b - - 13 16 -->\n16...Qe6=",
-    "<!-- FEN: r1q2rk1/pp2ppbp/2n3p1/3R4/Q3B1b1/2N3P1/PPP2PBP/R5K1 b - - 13 16 -->\n16...Qe6=",
-    1,
-    "Page 13 16...Qe6 continuation anchor",
   );
 
   corrected = replaceExactCount(
@@ -102,10 +78,10 @@ export function applyChapterPages1To8AnchorCorrections(filename: string, content
     "r4rk1/p1q2pbp/bpn1p1p1/2pn2B1/8/NBPP1N2/PP2QPPP/R3R1K1 w - - 2 13",
     "r2qkb1r/pp1bpp1p/2n3p1/8/4Q3/2N3P1/PPP2P1P/R1B1KB1R w KQkq - 0 10",
     "r1q2rk1/pp2ppbp/2n3p1/5b2/Q7/2N1B1P1/PPP2PBP/R2R2K1 b - - 9 14",
-    "r1q2rk1/pp2ppbp/2n3p1/8/Q3B3/2N3Pb/PPP2PBP/R2R2K1 b - - 11 15",
-    "r1q2rk1/pp2ppbp/2n3p1/8/Q3B1b1/2N3P1/PPP2PBP/R2R2K1 w - - 12 16",
+    "r1q2rk1/pp2ppbp/2n3p1/8/Q3B3/2N1B1Pb/PPP2P1P/R2R2K1 b - - 11 15",
     "r1bq1rk1/pp2bppp/3p2n1/2p1p3/2BnP3/3PNN2/PPPB1PPP/R2Q1RK1 b - - 9 10",
     "r2q1rk1/pp3ppp/3pb1n1/2p1p1b1/P1B1P3/3PNQ2/1PPB1PPP/R4RK1 w - - 1 13",
+    "r1bqkb1r/pp1ppppp/2n2n2/2p5/4P3/N4N2/PPPP1PPP/R1BQKB1R w KQkq - 2 4",
   ];
   for (const expected of required) {
     if (!corrected.includes(expected)) {
@@ -117,7 +93,7 @@ export function applyChapterPages1To8AnchorCorrections(filename: string, content
     "rbbq1rk1/pp1p1pp1/2n1p2p/2p4P/4P3/1BPP4/PP1NQPP1/R1B2RK1 b - - 5 12",
     "r2qkb1r/pp1bpp1p/2n3p1/8/2Q5/2N3P1/PPP2P1P/R1B1KB1R w KQkq - 0 10",
     "r1q2rk1/pp2ppbp/2n3p1/5b2/7Q/2N1B1P1/PPP2PBP/R2R2K1 b - - 9 14",
-    "r1q2rk1/pp2ppbp/2n3p1/8/Q3B3/2N1B1Pb/PPP2P1P/R2R2K1 b - - 11 15",
+    "r1q2rk1/pp2ppbp/2n3p1/8/7Q/2N1B1Pb/PPP2P1P/R2R2KB b - - 11 15",
     "r1bq1rk1/pp2bppp/3p2n1/1Bp1p3/2NnP3/3P1N2/PPPB1PPP/R2Q1RK1 b - - 9 10",
     "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
   ];
