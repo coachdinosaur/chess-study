@@ -6,6 +6,7 @@ import { applyChapterPage16Corrections } from "./chapter-page16-corrections";
 import { applyChapterPage17Corrections } from "./chapter-page17-corrections";
 import { applyChapterPages1To8AnchorCorrections } from "./chapter-pages1-8-anchor-corrections";
 import { applyChapterPages9To11AnchorCorrections } from "./chapter-pages9-11-anchor-corrections";
+import { applyChapterPages12To17AnchorCorrections } from "./chapter-pages12-17-anchor-corrections";
 import { parseChapter } from "./markdown-chapter";
 
 const chapterModules = import.meta.glob("../content/chapters/**/*.md", { eager: true, query: "?raw", import: "default" }) as Record<string, string>;
@@ -23,7 +24,8 @@ export function loadAllChapters(): MarkdownChapter[] {
     const page15Corrected = applyChapterPage15Corrections(filename, earlyAnchorsCorrected);
     const page16Corrected = applyChapterPage16Corrections(filename, page15Corrected);
     const page17Corrected = applyChapterPage17Corrections(filename, page16Corrected);
-    const correctedContent = applyChapterPages9To11AnchorCorrections(filename, page17Corrected);
+    const middleAnchorsCorrected = applyChapterPages9To11AnchorCorrections(filename, page17Corrected);
+    const correctedContent = applyChapterPages12To17AnchorCorrections(filename, middleAnchorsCorrected);
     return parseChapter(filename, correctedContent);
   });
 
