@@ -61,6 +61,15 @@ test("app page 12 preserves the PDF 7...d5 branch and 7...d6 main line", async (
     beforeNxc3,
   );
   assert.ok(corrected.includes(`<!-- FEN: ${beforeNxc3} -->\n13...Nxc3!!`));
+  const afterBxd4 = playLine(beforeNxc3, [
+    "Nxc3", "Qxc3", "Bxd3", "Qxd3", "Nxe5", "Qb5+", "Nd7", "Nd4", "Bxd4", "Bxd4",
+  ]);
+  assert.equal(
+    playLine(afterBxd4, ["Qc1+", "Ke2", "Qxh1", "Bxh8", "Qxg2"]),
+    "r3k2B/pp1npp1p/6p1/1Q6/1P6/8/P3K1qP/RN6 w q - 0 21",
+  );
+  assert.ok(corrected.includes("18.Bxd4 Qc1+ 19.Ke2 Qxh1 20.Bxh8 Qxg2+-+"));
+  assert.ok(!corrected.includes("18.Bxd4 Rc1+"));
 });
 
 test("app pages 13-14 restore sibling moves to their PDF parents", async () => {
