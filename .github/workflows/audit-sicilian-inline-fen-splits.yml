@@ -1,0 +1,17 @@
+name: Audit Sicilian inline FEN splits
+
+on:
+  push:
+    branches:
+      - fix/sicilian-pdf-line-layout
+    paths:
+      - '.github/workflows/audit-sicilian-inline-fen-splits.yml'
+      - 'scripts/audit-sicilian-inline-fen-splits.py'
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Report candidate PDF line splits
+        run: python scripts/audit-sicilian-inline-fen-splits.py
