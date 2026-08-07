@@ -28,7 +28,7 @@ jobs:
       - name: Commit verified corrections
         run: |
           git diff --check
-          git add apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md apps/opening-book-sicilian/tests/page12-17-anchors.test.mjs apps/opening-book-sicilian/tests/page17-content.test.mjs
+          git add apps/opening-book-sicilian/app/content/chapters/chapter-1-sicilian.md apps/opening-book-sicilian/tests/chapter-workflow.test.mjs apps/opening-book-sicilian/tests/page12-17-anchors.test.mjs apps/opening-book-sicilian/tests/page17-content.test.mjs
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "Match Sicilian Chapter 1 move-line layout to PDF"
