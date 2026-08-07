@@ -1,12 +1,4 @@
 import type { MarkdownChapter } from "./markdown-chapter";
-import { applyChapterContentCorrections } from "./chapter-content-corrections";
-import { applyChapterPage10Corrections } from "./chapter-page10-corrections";
-import { applyChapterPage15Corrections } from "./chapter-page15-corrections";
-import { applyChapterPage16Corrections } from "./chapter-page16-corrections";
-import { applyChapterPage17Corrections } from "./chapter-page17-corrections";
-import { applyChapterPages1To8AnchorCorrections } from "./chapter-pages1-8-anchor-corrections";
-import { applyChapterPages9To11AnchorCorrections } from "./chapter-pages9-11-anchor-corrections";
-import { applyChapterPages12To17AnchorCorrections } from "./chapter-pages12-17-anchor-corrections";
 import { parseChapter } from "./markdown-chapter";
 
 const chapterModules = import.meta.glob("../content/chapters/**/*.md", { eager: true, query: "?raw", import: "default" }) as Record<string, string>;
@@ -18,15 +10,7 @@ export function loadAllChapters(): MarkdownChapter[] {
 
   const entries = Object.entries(chapterModules).map(([filepath, content]) => {
     const filename = filepath.split("/").pop() ?? "unknown.md";
-    const page10Corrected = applyChapterPage10Corrections(filename, content as string);
-    const page14Corrected = applyChapterContentCorrections(filename, page10Corrected);
-    const earlyAnchorsCorrected = applyChapterPages1To8AnchorCorrections(filename, page14Corrected);
-    const page15Corrected = applyChapterPage15Corrections(filename, earlyAnchorsCorrected);
-    const page16Corrected = applyChapterPage16Corrections(filename, page15Corrected);
-    const page17Corrected = applyChapterPage17Corrections(filename, page16Corrected);
-    const middleAnchorsCorrected = applyChapterPages9To11AnchorCorrections(filename, page17Corrected);
-    const correctedContent = applyChapterPages12To17AnchorCorrections(filename, middleAnchorsCorrected);
-    return parseChapter(filename, correctedContent);
+    return parseChapter(filename, content as string);
   });
 
   entries.sort((a, b) => a.chapterNumber - b.chapterNumber);
