@@ -34,6 +34,14 @@ for before, after in replacements:
 
 chapter_path.write_text(chapter, encoding="utf-8")
 
+workflow_test_path = Path("apps/opening-book-sicilian/tests/chapter-workflow.test.mjs")
+workflow_test = workflow_test_path.read_text(encoding="utf-8")
+old_assertion = r'  assert.match(markdown, /13\.Bf3 Qd7! 14\.Qd3 Nc6!\s*<!--[\s\S]*?-->\s*15\.Bxe4/);'
+new_assertion = r'  assert.match(markdown, /13\.Bf3 Qd7! 14\.Qd3 Nc6! 15\.Bxe4/);'
+if workflow_test.count(old_assertion) != 1:
+    raise SystemExit("Could not locate stale Chapter 1 FEN-break assertion")
+workflow_test_path.write_text(workflow_test.replace(old_assertion, new_assertion, 1), encoding="utf-8")
+
 page17_test_path = Path("apps/opening-book-sicilian/tests/page17-content.test.mjs")
 page17_test = page17_test_path.read_text(encoding="utf-8")
 needle = '    "15...Qa4!?∓",\n    "20.Qd4 e6 21.Qxb6 axb6∓",\n'
