@@ -20,6 +20,21 @@ function replaceExactlyOnce(
 export function applyChapterPage16Corrections(filename: string, content: string): string {
   if (filename !== "chapter-1-sicilian.md") return content;
 
+
+  // The canonical Markdown may already contain these verified PDF-derived
+  // corrections. Keep this correction function available for older source
+  // content, but do not apply the same replacements twice.
+  if (
+    content.includes(
+      "<!-- FEN: r2q1rk1/p4pbp/bpn1p1p1/2pn2B1/8/NBPP1N2/PP2QPPP/R3R1K1 b - - 1 12 -->\n12...Qc7N∓",
+    ) &&
+    content.includes(
+      "<!-- FEN: r1bqkb1r/pp2pp1p/2n3p1/3pP3/4nP2/4B3/PPP3PP/RN1QKBNR w KQkq d6 0 8 -->\n8.Bd3",
+    )
+  ) {
+    return content;
+  }
+
   const page16Start = content.indexOf(PAGE_16_START);
   const page18Start = content.indexOf(PAGE_18_START, page16Start);
   if (page16Start < 0 || page18Start < 0) {
