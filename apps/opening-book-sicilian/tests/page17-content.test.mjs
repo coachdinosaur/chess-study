@@ -30,6 +30,8 @@ test("printed PDF Page 17 corrections reach the rendered chapter", async () => {
     "Black has good chances to press in the ending in view of his superior minor piece.",
     "13.0-0-0 Bh6!",
     "15...Qa4!?∓",
+    "11...Qb6 12.Qe2 Bg4 13.Bxc6!",
+    "15...Bxf3 16.Qxf3 Rad8 17.Qe2 Qb6 18.0-0-0 d5! 19.Qd2 Rb8 20.Qd4 e6 21.Qxb6 axb6∓",
     "20.Qd4 e6 21.Qxb6 axb6∓",
   ]) {
     assert.ok(page.includes(required), `Missing PDF Page 17 content: ${required}`);
@@ -46,6 +48,8 @@ test("printed PDF Page 17 corrections reach the rendered chapter", async () => {
     "13.0-0-0 h6!",
     "15...Qa4!? Black",
     "20.Rd4 e6",
+    "11...Qb6 12.Qe2 Bg4\n\n<!-- FEN:",
+    "18.0-0-0 d5!\n\n<!-- FEN:",
     "axb6+ Black",
     "Salmensuu - Hillarp Persson",
     "Salmensuu – Hillarp Persson",

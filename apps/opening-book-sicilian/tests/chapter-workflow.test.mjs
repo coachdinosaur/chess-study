@@ -66,7 +66,7 @@ test("Chapter 1 retains PDF-corrected moves and source references", async () => 
   assert.match(markdown, /16\.N2c3 Eminov – Yilmazyerli/);
   assert.match(markdown, /9\.\.\.f5\?! 10\.Qc4 Ne5[\s\S]*13\.Nb5!N Rc8 14\.Nxa7 Rxc2 15\.Qxf5\+\-/);
   assert.match(markdown, /6\.Nc4 Ngxe5 7\.Ncxe5 fxe5 8\.Nxe5 g6!\?/);
-  assert.match(markdown, /13\.Bf3 Qd7! 14\.Qd3 Nc6!\s*<!--[\s\S]*?-->\s*15\.Bxe4/);
+  assert.match(markdown, /13\.Bf3 Qd7! 14\.Qd3 Nc6! 15\.Bxe4/);
   assert.doesNotMatch(markdown, /2\.Ne2 is likely to transpose elsewhere/);
   assert.doesNotMatch(markdown, /11\.\.\.Re8 11\.\.\.d3/);
   assert.doesNotMatch(markdown, /6\.Bc4 Ngxe5/);
