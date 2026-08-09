@@ -42,7 +42,19 @@ test("the renderer replays preceding PDF pages and uses clean diagram labels", a
   assert.match(renderer, /precedingMarkdown/);
   assert.match(renderer, /parseMarkdown\(priorMarkdown, ignoreMove, resolver\)/);
   assert.match(renderer, /<h6/);
+  assert.match(renderer, /parseMarkdownList/);
+  assert.match(renderer, /variation-index-list/);
+  assert.match(renderer, /source-indented/);
   assert.doesNotMatch(renderer, /â€”/);
+});
+
+test("Chapter 2 receives the PDF hierarchy layout without changing Chapter 1", async () => {
+  const app = await readFile(new URL("app/SicilianApp.tsx", root), "utf8");
+  const css = await readFile(new URL("app/globals.css", root), "utf8");
+  assert.match(app, /chapterNumber=\{chapter\.chapterNumber\}/);
+  assert.match(css, /\.chapter-2-narrative p\.source-indented/);
+  assert.match(css, /\.chapter-2-narrative \.variation-index-list \.variation-index-list/);
+  assert.doesNotMatch(css, /\.chapter-1-narrative p\.source-indented/);
 });
 
 test("narrative square references remain plain text", () => {

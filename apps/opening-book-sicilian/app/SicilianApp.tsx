@@ -212,7 +212,7 @@ function LessonReader({ chapter }: { chapter: MarkdownChapter }) {
       </aside>
       <section className="lesson-page-column" ref={pageColumnRef} aria-label={`Chapter ${chapter.chapterNumber}, page ${currentPage?.number ?? pageIndex + 1}`}>
         <PageControls page={pageIndex} pageNumber={currentPage?.number ?? pageIndex + 1} pageCount={chapter.pages.length} onChange={selectPage} />
-        <MarkdownChapterView markdown={currentPage?.markdown ?? chapter.markdown} onMove={selectNavigation} activeNavigation={navigation} />
+        <MarkdownChapterView markdown={currentPage?.markdown ?? chapter.markdown} onMove={selectNavigation} activeNavigation={navigation} chapterNumber={chapter.chapterNumber} />
         <PageControls page={pageIndex} pageNumber={currentPage?.number ?? pageIndex + 1} pageCount={chapter.pages.length} onChange={selectPage} />
       </section>
     </section>

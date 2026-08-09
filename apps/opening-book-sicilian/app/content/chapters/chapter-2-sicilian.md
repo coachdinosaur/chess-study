@@ -1,8 +1,8 @@
 ## Page 24
 
-# Chapter 2: 2.g3 and 2.d3
-
 Various 2nd Moves
+
+# Chapter 2: 2.g3 and 2.d3
 
 **FEN:**
 `rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2`

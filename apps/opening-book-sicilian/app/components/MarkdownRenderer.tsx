@@ -140,6 +140,84 @@ function renderInline(text: string, resolver: MarkdownMoveResolver, onMove: Move
   return renderFormatted(template, tokens, onMove, key);
 }
 
+type MarkdownListItem = {
+  children: MarkdownListItem[];
+  indent: number;
+  lineIndex: number;
+  text: string;
+};
+
+function indentationWidth(whitespace: string): number {
+  return [...whitespace].reduce((width, character) => width + (character === "\t" ? 2 : 1), 0);
+}
+
+function parseMarkdownList(lines: string[], startIndex: number): { endIndex: number; items: MarkdownListItem[] } {
+  const roots: MarkdownListItem[] = [];
+  const stack: MarkdownListItem[] = [];
+  let index = startIndex;
+
+  while (index < lines.length) {
+    const match = /^(\s*)[-*]\s+(.+)$/.exec(lines[index]);
+    if (!match) break;
+    const item: MarkdownListItem = {
+      children: [],
+      indent: indentationWidth(match[1]),
+      lineIndex: index,
+      text: match[2],
+    };
+
+    while (stack.length > 0 && item.indent <= stack[stack.length - 1].indent) stack.pop();
+    if (stack.length > 0) stack[stack.length - 1].children.push(item);
+    else roots.push(item);
+    stack.push(item);
+    index++;
+  }
+
+  return { endIndex: index, items: roots };
+}
+
+function renderMarkdownList(
+  items: MarkdownListItem[],
+  resolver: MarkdownMoveResolver,
+  onMove: MoveHandler,
+  depth = 0,
+  variationIndex = items.every((item) => /^[A-Z]\d*\)\s+/.test(item.text)),
+): ReactNode {
+  return <ul className={variationIndex ? "variation-index-list" : "markdown-list"}>
+    {items.map((item) => {
+      const pageReference = variationIndex ? /^(.*\S)\s+(\d+)$/.exec(item.text) : null;
+      const visibleText = pageReference?.[1] ?? item.text;
+      const resolverText = `${"  ".repeat(depth)}${visibleText}`;
+      return <li key={`item-${item.lineIndex}`}>
+        {variationIndex
+          ? <span className="variation-index-entry">
+              <span>{renderInline(resolverText, resolver, onMove, `item-${item.lineIndex}`)}</span>
+              {pageReference && <span className="variation-index-page" aria-label={`Page ${pageReference[2]}`}>{pageReference[2]}</span>}
+            </span>
+          : renderInline(resolverText, resolver, onMove, `item-${item.lineIndex}`)}
+        {item.children.length > 0 && renderMarkdownList(item.children, resolver, onMove, depth + 1, variationIndex)}
+      </li>;
+    })}
+  </ul>;
+}
+
+function paragraphClassName(paragraph: string[]): string | undefined {
+  const firstVisibleLine = paragraph.find((line) => line.trim() && !/^<!--/.test(line.trim())) ?? paragraph[0] ?? "";
+  const trimmed = firstVisibleLine.trim();
+  const classes: string[] = [];
+  const leadingWhitespace = /^(\s*)/.exec(firstVisibleLine)?.[1] ?? "";
+
+  if (paragraph.some((line) => /^[A-Z]\d*\)/.test(line.trim()))) classes.push("variation-index-p");
+  if (indentationWidth(leadingWhitespace) > 0) classes.push("source-indented");
+  if (/^(?:\(?\d+\.(?:\.\.)?)/.test(trimmed)) classes.push("move-paragraph");
+  else if (/^[a-z]\)\s+/i.test(trimmed)) classes.push("option-paragraph");
+  else classes.push("prose-paragraph");
+  if (trimmed === "Various 2nd Moves") classes.push("source-chapter-title");
+  if (trimmed === "1.e4" || trimmed === "1...c5") classes.push("variation-index-shared");
+
+  return classes.length > 0 ? classes.join(" ") : undefined;
+}
+
 function parseMarkdown(markdown: string, onMove: MoveHandler, resolver = new MarkdownMoveResolver()): ReactNode[] {
   const lines = markdown.split(/\r?\n/);
   const nodes: ReactNode[] = [];
@@ -198,13 +276,9 @@ function parseMarkdown(markdown: string, onMove: MoveHandler, resolver = new Mar
     }
 
     if (/^\s*[-*]\s+/.test(line)) {
-      const items: ReactNode[] = [];
-      while (index < lines.length && /^\s*[-*]\s+/.test(lines[index])) {
-        const item = lines[index].replace(/^\s*[-*]\s+/, "");
-        items.push(<li key={`item-${index}`}>{renderInline(item, resolver, onMove, `item-${index}`)}</li>);
-        index++;
-      }
-      nodes.push(<ul key={`list-${index}`}>{items}</ul>);
+      const list = parseMarkdownList(lines, index);
+      nodes.push(<div className="markdown-list-block" key={`list-${index}`}>{renderMarkdownList(list.items, resolver, onMove)}</div>);
+      index = list.endIndex;
       continue;
     }
 
@@ -218,8 +292,7 @@ function parseMarkdown(markdown: string, onMove: MoveHandler, resolver = new Mar
       index++;
     }
     const text = paragraph.join("\n");
-    const isVi = paragraph.some((l) => /^[A-Z]\d*\)/.test(l.trim()));
-    nodes.push(<p key={`paragraph-${index}`} className={isVi ? "variation-index-p" : undefined}>{renderInline(text, resolver, onMove, `paragraph-${index}`)}</p>);
+    nodes.push(<p key={`paragraph-${index}`} className={paragraphClassName(paragraph)}>{renderInline(text, resolver, onMove, `paragraph-${index}`)}</p>);
   }
   return nodes;
 }
@@ -234,14 +307,15 @@ function precedingMarkdown(markdown: string): string {
   return "";
 }
 
-export const MarkdownChapterView = memo(function MarkdownChapterView({ markdown, onMove, activeNavigation = null }: { markdown: string; onMove: MoveHandler; activeNavigation?: MoveNavigation | null }) {
+export const MarkdownChapterView = memo(function MarkdownChapterView({ markdown, onMove, activeNavigation = null, chapterNumber }: { markdown: string; onMove: MoveHandler; activeNavigation?: MoveNavigation | null; chapterNumber?: number }) {
   const elements = useMemo(() => {
     const resolver = new MarkdownMoveResolver();
     const priorMarkdown = precedingMarkdown(markdown);
     if (priorMarkdown) parseMarkdown(priorMarkdown, ignoreMove, resolver);
     return parseMarkdown(markdown, onMove, resolver);
   }, [markdown, onMove]);
+  const chapterClassName = chapterNumber ? ` chapter-${chapterNumber}-narrative` : "";
   return <ActiveNavigationContext value={activeNavigation}>
-    <article className="narrative markdown-narrative" aria-label="Chapter lesson">{elements}</article>
+    <article className={`narrative markdown-narrative${chapterClassName}`} aria-label="Chapter lesson">{elements}</article>
   </ActiveNavigationContext>;
 });
