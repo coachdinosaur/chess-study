@@ -182,7 +182,7 @@ function parseMarkdown(markdown: string, onMove: MoveHandler, resolver = new Mar
       continue;
     }
 
-    const heading = /^(#{1,5})\s+(.+)$/.exec(line);
+    const heading = /^(#{1,6})\s+(.+)$/.exec(line);
     if (heading) {
       const level = heading[1].length;
       currentHeading = heading[2].replace(/[*_`]/g, "").trim();
@@ -191,7 +191,8 @@ function parseMarkdown(markdown: string, onMove: MoveHandler, resolver = new Mar
       else if (level === 2) nodes.push(<h2 className="page-heading-markdown" key={`h2-${index}`}>{content}</h2>);
       else if (level === 3) nodes.push(<h3 key={`h3-${index}`}>{content}</h3>);
       else if (level === 4) nodes.push(<h4 key={`h4-${index}`}>{content}</h4>);
-      else nodes.push(<h5 key={`h5-${index}`}>{content}</h5>);
+      else if (level === 5) nodes.push(<h5 key={`h5-${index}`}>{content}</h5>);
+      else nodes.push(<h6 key={`h6-${index}`}>{content}</h6>);
       index++;
       continue;
     }
@@ -212,7 +213,7 @@ function parseMarkdown(markdown: string, onMove: MoveHandler, resolver = new Mar
     while (index < lines.length) {
       const next = lines[index];
       const nextTrimmed = next.trim();
-      if (!nextTrimmed || /^#{1,5}\s/.test(next) || /^---+\s*$/.test(nextTrimmed) || /^\s*[-*]\s+/.test(next) || nextTrimmed.startsWith("**FEN:**") || /^<!--\s*FEN:/.test(nextTrimmed)) break;
+      if (!nextTrimmed || /^#{1,6}\s/.test(next) || /^---+\s*$/.test(nextTrimmed) || /^\s*[-*]\s+/.test(next) || nextTrimmed.startsWith("**FEN:**") || /^<!--\s*FEN:/.test(nextTrimmed)) break;
       paragraph.push(next);
       index++;
     }

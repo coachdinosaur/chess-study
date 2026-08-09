@@ -1,16 +1,20 @@
 # Sicilian Defense Opening Book
 
 Sicilian Defense Opening Book is a fully static React/Vite opening course. It
-currently contains Chapter 1, **Rare Options**, with PDF-authored page
-boundaries, clickable variations, page navigation, an interactive chessboard,
-board flipping, keyboard move navigation, and browser-local Stockfish
-analysis.
+currently contains Chapter 1, **Rare Options**, and Chapter 2, **2.g3 and
+2.d3**, with PDF-authored page boundaries, clickable variations, page
+navigation, an interactive chessboard, board flipping, keyboard move
+navigation, and browser-local Stockfish analysis.
 
-The authoritative chapter source is the committed PDF:
+Chapter 1's authoritative source is the committed PDF:
 
 ```text
 apps/01_Rare_Options.pdf
 ```
+
+Chapter 2's authoritative PDF, `02_2g3_and_2d3.pdf`, is intentionally kept
+outside the repository. It is an authoring source only and must not be copied
+into the app, committed to Git, or included in a deployment.
 
 The app manuscript is maintained in:
 
@@ -83,4 +87,5 @@ npm run chapters:status
 npm run chapters:sync
 npm run chapters:check
 npm run chapters:audit -- --chapter 1 --markdown app/content/chapters/chapter-1-sicilian.md --expected-first-page 7 --expected-pages 17
+npm run chapters:audit -- --chapter 2 --markdown app/content/chapters/chapter-2-sicilian.md --expected-first-page 24 --expected-pages 15 --expected-diagrams 47
 ```

@@ -12,13 +12,13 @@ async function readChapterOne() {
   return readFile(chapterUrl, "utf8");
 }
 
-test("discovers one contiguous Markdown catalog", async () => {
+test("discovers the contiguous Markdown chapter catalog", async () => {
   const chapters = await discoverChapters();
-  assert.deepEqual(chapters.map((chapter) => chapter.id), [1]);
+  assert.deepEqual(chapters.map((chapter) => chapter.id), [1, 2]);
   assert.ok(chapters.every((chapter) => chapter.pageCount > 0));
   assert.ok(chapters.every((chapter) => chapter.visibleFenCount > 0));
   const catalog = catalogSource(chapters);
-  assert.match(catalog, /CHAPTER_IDS = \["1"\]/);
+  assert.match(catalog, /CHAPTER_IDS = \["1", "2"\]/);
   assert.doesNotMatch(catalog, /chapter-packages|manifest|pdfjs|sourcePdf/);
 });
 

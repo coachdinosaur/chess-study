@@ -2922,6 +2922,13 @@ html[data-active-tab="puzzle"] .lesson-title-input {
   backdrop-filter: blur(8px);
 }
 
+.game-result-modal {
+  background: rgba(12, 20, 22, 0.08);
+  background: color-mix(in srgb, var(--modal-scrim) 12%, transparent);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
 .promotion-dialog {
   width: min(28rem, 100%);
   padding: 1rem;

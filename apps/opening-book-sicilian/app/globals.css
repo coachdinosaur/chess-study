@@ -24,7 +24,7 @@ html { background: var(--paper); }
 body { margin: 0; color: var(--ink); background: var(--paper); font: 15px Inter, Arial, sans-serif; }
 button { font: inherit; cursor: pointer; }
 button:focus-visible, a:focus-visible { outline: 3px solid rgba(36, 101, 84, .3); outline-offset: 2px; }
-h1, h2, h3, h4, h5 { font-family: Manrope, Inter, sans-serif; }
+h1, h2, h3, h4, h5, h6 { font-family: Manrope, Inter, sans-serif; }
 
 .page-loader { min-height: 100svh; display: grid; place-content: center; justify-items: center; gap: 14px; padding: 24px; color: var(--forest); }
 .page-loader-mark { width: 52px; height: 52px; display: grid; place-items: center; border: 3px solid var(--mint); border-top-color: var(--forest-2); border-radius: 50%; animation: page-loader-spin .8s linear infinite; }
@@ -141,7 +141,7 @@ h1, h2, h3, h4, h5 { font-family: Manrope, Inter, sans-serif; }
 .narrative h1 { margin: 0 0 24px; color: var(--ink); font-size: clamp(29px, 4vw, 44px); line-height: 1.08; letter-spacing: -.035em; }
 .narrative h2 { margin: 40px 0 18px; padding-bottom: 8px; border-bottom: 1px solid var(--line); color: var(--forest); font-size: 21px; }
 .narrative h3 { margin: 30px 0 12px; color: var(--ink); font-size: 17px; }
-.narrative h4, .narrative h5 { margin: 24px 0 10px; color: var(--ink); font-size: 15px; }
+.narrative h4, .narrative h5, .narrative h6 { margin: 24px 0 10px; color: var(--ink); font-size: 15px; }
 .narrative p { margin: 0 0 22px; white-space: pre-line; }
 .narrative p.variation-index-p { white-space: pre-wrap; font-size: 15px; margin: 16px 0 22px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: rgba(255, 253, 248, .5); line-height: 1.65; }
 .narrative ul { margin: 0 0 22px; padding-left: 22px; }

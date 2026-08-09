@@ -50,6 +50,8 @@ const LAST_MOVE_ARROW_HEAD_LENGTH = 24;
 const LAST_MOVE_ARROW_HEAD_WIDTH = 34;
 const ENGINE_MULTI_PV_COUNT = 3;
 const ENGINE_READY_TIMEOUT_MS = 15000;
+const ENGINE_RECHECK_TIMEOUT_MS = 4000;
+const GAME_RESULT_REVEAL_DELAY_MS = 650;
 const TABLEBASE_ENDPOINT = 'https://tablebase.lichess.org/standard';
 const TABLEBASE_FETCH_TIMEOUT_MS = 30000;
 const TABLEBASE_MAX_TOTAL_PIECES = 7;
@@ -731,6 +733,7 @@ const state = {
   engine: {
     worker: null,
     workerGeneration: 0,
+    readyHandshakeId: 0,
     ready: false,
     loading: false,
     analyzing: false,
@@ -808,6 +811,7 @@ const state = {
     activeEngineSessionId: null,
     playEngineWatchdog: null,
     playEngineRetryCount: 0,
+    gameResultTimer: null,
     thinkingSpeed: 'normal',
     autoHiddenPgnComments: false,
     autoHiddenPvLines: false,
@@ -5521,19 +5525,32 @@ async function resolveStockfishBundleCandidate() {
   throw new Error('No supported Stockfish browser bundle was found in vendor/stockfish/. Add a stockfish-18-*.js/.wasm pair there.');
 }
 
-function terminateEngineWorker() {
-  if (!state.engine.worker) {
+function disposeStockfishWorker(worker) {
+  if (!worker) {
     return;
   }
-  state.engine.worker.removeEventListener('message', state.engine.worker._boundOnMessage || handleWorkerMessage);
-  state.engine.worker.removeEventListener('error', state.engine.worker._boundOnError || handleWorkerError);
-  state.engine.worker.terminate();
+  worker.removeEventListener('message', worker._boundOnMessage || handleWorkerMessage);
+  worker.removeEventListener('error', worker._boundOnError || handleWorkerError);
+  worker.terminate();
+}
+
+function terminateEngineWorker() {
+  const worker = state.engine.worker;
   state.engine.worker = null;
+  state.engine.workerGeneration += 1;
+  disposeStockfishWorker(worker);
 }
 
 async function createStockfishWorker(options = {}) {
   const { summaryPrefix = '' } = options;
+  state.engine.workerGeneration += 1;
+  const generation = state.engine.workerGeneration;
   const candidate = await resolveStockfishBundleCandidate();
+  if (state.engine.workerGeneration !== generation) {
+    const supersededError = new Error('Stockfish load was superseded.');
+    supersededError.isSuperseded = true;
+    throw supersededError;
+  }
   state.engine.bundleId = candidate.id;
   state.engine.bundleLabel = candidate.label;
   state.engine.bundlePath = candidate.workerPath;
@@ -5541,8 +5558,6 @@ async function createStockfishWorker(options = {}) {
   state.engine.summary = summaryPrefix ? `${summaryPrefix} ${loadingSummary}` : loadingSummary;
   renderAnalysisPanel();
   renderHeaderMeta();
-  state.engine.workerGeneration += 1;
-  const generation = state.engine.workerGeneration;
   const worker = new Worker(new URL(candidate.workerPath, import.meta.url));
   const boundOnMessage = (event) => {
     if (state.engine.workerGeneration !== generation) {
@@ -5565,6 +5580,7 @@ async function createStockfishWorker(options = {}) {
 }
 
 function clearEngineReadyHandshake() {
+  state.engine.readyHandshakeId += 1;
   if (state.engine.readyTimer) {
     window.clearTimeout(state.engine.readyTimer);
     state.engine.readyTimer = null;
@@ -5575,6 +5591,9 @@ function clearEngineReadyHandshake() {
 }
 
 function handleWorkerError(event) {
+  const playRecoverySessionId = state.play.active && state.play.gameReady
+    ? state.play.playSessionId
+    : null;
   cancelPlayEngineRequest('worker error');
   const message = event?.message || (state.engine.bundleLabel
     ? `Stockfish (${state.engine.bundleLabel}) worker failed to start.`
@@ -5596,6 +5615,9 @@ function handleWorkerError(event) {
   }
   resetAnalysisOutput({ keepReady: false, summary: message });
   renderAll();
+  if (playRecoverySessionId !== null) {
+    recoverPlayEngineOrEnd(playRecoverySessionId, 'worker error');
+  }
 }
 
 function handleWorkerMessage(event) {
@@ -5812,13 +5834,27 @@ function handleWorkerMessage(event) {
 }
 
 async function ensureStockfishReady(options = {}) {
-  const { summary = 'Loading Stockfish engine...', summaryPrefix = '' } = options;
-  if (state.engine.ready && state.engine.worker) {
+  const {
+    summary = 'Loading Stockfish engine...',
+    summaryPrefix = '',
+    verifyExisting = false,
+  } = options;
+  const verifyingExistingWorker = Boolean(
+    verifyExisting
+    && state.engine.ready
+    && state.engine.worker,
+  );
+  if (state.engine.ready && state.engine.worker && !verifyExisting) {
     return state.engine.worker;
   }
   if (state.engine.loadingPromise) {
     return state.engine.loadingPromise;
   }
+  if (verifyingExistingWorker) {
+    state.engine.ready = false;
+  }
+  state.engine.readyHandshakeId += 1;
+  const handshakeId = state.engine.readyHandshakeId;
   state.engine.loading = true;
   state.engine.summary = summary;
   renderNotationPanel();
@@ -5828,20 +5864,37 @@ async function ensureStockfishReady(options = {}) {
     state.engine.resolveReady = resolve;
     state.engine.rejectReady = reject;
     state.engine.readyTimer = window.setTimeout(() => {
-      if (state.engine.worker && !state.engine.ready) {
-        terminateEngineWorker();
+      if (state.engine.readyHandshakeId !== handshakeId) {
+        return;
       }
+      state.engine.ready = false;
+      terminateEngineWorker();
       reject(new Error('Stockfish readiness timed out.'));
       clearEngineReadyHandshake();
-    }, ENGINE_READY_TIMEOUT_MS);
+    }, verifyingExistingWorker ? ENGINE_RECHECK_TIMEOUT_MS : ENGINE_READY_TIMEOUT_MS);
     void (async () => {
       try {
+        let worker = state.engine.worker;
         if (!state.engine.worker) {
-          state.engine.worker = await createStockfishWorker({ summaryPrefix });
+          const createdWorker = await createStockfishWorker({ summaryPrefix });
+          if (state.engine.readyHandshakeId !== handshakeId) {
+            disposeStockfishWorker(createdWorker);
+            return;
+          }
+          state.engine.worker = createdWorker;
+          worker = createdWorker;
         }
-        state.engine.worker.postMessage('uci');
-        state.engine.worker.postMessage('isready');
+        if (state.engine.readyHandshakeId !== handshakeId || worker !== state.engine.worker) {
+          return;
+        }
+        worker.postMessage('uci');
+        worker.postMessage('isready');
       } catch (error) {
+        if (state.engine.readyHandshakeId !== handshakeId) {
+          return;
+        }
+        state.engine.ready = false;
+        terminateEngineWorker();
         reject(error);
         clearEngineReadyHandshake();
       }
@@ -5852,6 +5905,40 @@ async function ensureStockfishReady(options = {}) {
     renderHeaderMeta();
   });
   return state.engine.loadingPromise;
+}
+
+function resetStockfishWorkerForRetry(summary = '') {
+  clearEngineReadyHandshake();
+  terminateEngineWorker();
+  state.engine.ready = false;
+  state.engine.loading = false;
+  state.engine.analyzing = false;
+  state.engine.stopping = false;
+  state.engine.searchFen = '';
+  state.engine.pendingFen = '';
+  state.engine.pendingSearchMode = '';
+  if (summary) {
+    state.engine.summary = summary;
+  }
+}
+
+async function ensurePlayStockfishReady() {
+  try {
+    return await ensureStockfishReady({
+      summary: 'Loading Stockfish for game play...',
+      verifyExisting: true,
+    });
+  } catch (error) {
+    if (error?.isIntentionalStop || !state.play.active) {
+      throw error;
+    }
+    console.warn('Stockfish did not respond; restarting with a fresh worker.', error);
+    resetStockfishWorkerForRetry('Stockfish did not respond. Restarting engine...');
+    renderAll();
+    return ensureStockfishReady({
+      summary: 'Restarting Stockfish for game play...',
+    });
+  }
 }
 
 function stopAnalysisSearch({ clearSummary = false, hideEvalRail = clearSummary } = {}) {
@@ -9895,9 +9982,7 @@ async function startPlayGame(options = {}) {
 
   let worker;
   try {
-    worker = await ensureStockfishReady({
-      summary: 'Loading Stockfish for game play...',
-    });
+    worker = await ensurePlayStockfishReady();
   } catch (error) {
     // Stopping the game while the engine is still loading rejects the ready
     // promise on purpose; that is not a load failure worth reporting.
@@ -9949,7 +10034,27 @@ function showGameResultModal(reason) {
   }
 }
 
+function clearGameResultTimer() {
+  if (state.play.gameResultTimer) {
+    window.clearTimeout(state.play.gameResultTimer);
+    state.play.gameResultTimer = null;
+  }
+}
+
+function scheduleGameResultModal(reason, delay = 0) {
+  clearGameResultTimer();
+  if (delay <= 0) {
+    showGameResultModal(reason);
+    return;
+  }
+  state.play.gameResultTimer = window.setTimeout(() => {
+    state.play.gameResultTimer = null;
+    showGameResultModal(reason);
+  }, delay);
+}
+
 function dismissGameResultModal() {
+  clearGameResultTimer();
   const modal = dom.gameResultModal;
   if (modal) {
     modal.hidden = true;
@@ -9958,7 +10063,7 @@ function dismissGameResultModal() {
 }
 
 function stopPlayGame(options = {}) {
-  const { reason = 'Resigned' } = options;
+  const { reason = 'Resigned', revealFinalPosition = false } = options;
   if (!state.play.active) {
     return;
   }
@@ -10006,9 +10111,9 @@ function stopPlayGame(options = {}) {
     } catch (error) {
       // Ignore worker messaging errors during shutdown.
     }
-    terminateEngineWorker();
-    state.engine.ready = false;
   }
+  terminateEngineWorker();
+  state.engine.ready = false;
 
   state.engine.analyzing = false;
   state.engine.stopping = false;
@@ -10028,8 +10133,7 @@ function stopPlayGame(options = {}) {
 
   renderAll();
 
-  // Show premium popup modal for game result
-  showGameResultModal(reason);
+  scheduleGameResultModal(reason, revealFinalPosition ? GAME_RESULT_REVEAL_DELAY_MS : 0);
 }
 
 function offerDraw() {
@@ -10138,29 +10242,84 @@ function startPlayEngineWatchdog(sessionId) {
     state.play.engineThinking = false;
     state.play.activeEngineSessionId = null;
 
-    if (state.play.playEngineRetryCount === 0) {
-      // First retry: try to reinitialize and retry once
-      state.play.playEngineRetryCount += 1;
-      debugPlayEngine('watchdog: attempting one retry');
+    recoverPlayEngineOrEnd(sessionId, 'watchdog stall');
+  }, 8000);
+}
 
-      // Send stop to the worker in case it's stuck, then retry
-      if (state.engine.worker) {
-        try {
-          state.engine.worker.postMessage('stop');
-        } catch (_e) { /* ignore */ }
-      }
+function recoverPlayEngineOrEnd(sessionId, source) {
+  if (!state.play.active || state.play.playSessionId !== sessionId) {
+    return;
+  }
+  if (state.play.playEngineRetryCount === 0) {
+    state.play.playEngineRetryCount += 1;
+    debugPlayEngine('restarting worker for one retry', { source });
+    void restartPlayEngineAfterFailure(sessionId);
+    return;
+  }
+  debugPlayEngine('engine recovery exhausted', { source });
+  stopPlayGame({ reason: 'Stockfish could not recover. Start a new game to try again.' });
+}
 
-      // Retry if it's still Stockfish's turn
-      if (shouldEngineMoveInPlay()) {
-        void triggerEngineMove();
-      }
+async function restartPlayEngineAfterFailure(sessionId) {
+  if (
+    !state.play.active
+    || state.play.playSessionId !== sessionId
+    || !state.play.gameReady
+    || !state.analysis.game
+  ) {
+    return;
+  }
+
+  const resumeClock = state.play.timeControl !== 'none' && state.play.clockRunning;
+  if (resumeClock) {
+    const settled = updateClockElapsed();
+    if (settled && settled.remaining <= 0) {
+      stopPlayGame({ reason: playClockFlagReason(settled.color), revealFinalPosition: true });
+      return;
+    }
+    state.play.clockRunning = false;
+    state.play.activeClock = null;
+    state.play.lastClockTick = 0;
+    stopPlayClock();
+  }
+
+  resetStockfishWorkerForRetry('Stockfish stopped responding. Restarting engine...');
+  state.analysis.boardMessage = 'Stockfish stopped responding. Restarting engine...';
+  renderAll();
+
+  try {
+    const worker = await ensureStockfishReady({
+      summary: 'Restarting Stockfish for game play...',
+    });
+    if (
+      !state.play.active
+      || state.play.playSessionId !== sessionId
+      || !state.play.gameReady
+      || !state.analysis.game
+    ) {
+      return;
+    }
+
+    applyEngineSkillLevel(state.play.skill);
+    worker.postMessage('ucinewgame');
+    if (resumeClock) {
+      state.play.clockRunning = true;
+      state.play.activeClock = state.analysis.game.turn();
+      startPlayClock();
+    }
+    if (shouldEngineMoveInPlay()) {
+      void triggerEngineMove();
     } else {
-      // Already retried once — give up to prevent infinite loops
-      debugPlayEngine('watchdog: hard engine stall, giving up retry');
-      state.analysis.boardMessage = 'Stockfish engine stalled. Try making another move or restart the game.';
+      state.analysis.boardMessage = 'Stockfish restarted. Your turn!';
       renderAll();
     }
-  }, 8000);
+  } catch (error) {
+    if (error?.isIntentionalStop || !state.play.active || state.play.playSessionId !== sessionId) {
+      return;
+    }
+    console.error('Failed to restart Stockfish after a stall.', error);
+    stopPlayGame({ reason: 'Stockfish could not restart. Start a new game to try again.' });
+  }
 }
 
 function shouldEngineMoveInPlay() {
@@ -10195,13 +10354,14 @@ async function triggerEngineMove() {
     return;
   }
 
+  const sessionId = state.play.playSessionId;
   const worker = state.engine.worker;
   if (!worker) {
     debugPlayEngine('triggerEngineMove: no worker available');
+    recoverPlayEngineOrEnd(sessionId, 'missing worker');
     return;
   }
 
-  const sessionId = state.play.playSessionId;
   state.play.engineThinking = true;
   state.play.activeEngineSessionId = sessionId;
   state.analysis.boardMessage = "Stockfish is thinking...";
@@ -10560,7 +10720,7 @@ function checkPlayGameOver() {
         reason = 'Draw by 50-move rule.';
       }
     }
-    stopPlayGame({ reason });
+    stopPlayGame({ reason, revealFinalPosition: true });
     return true;
   }
   return false;
@@ -10651,7 +10811,7 @@ function settlePlayMoverClock(color) {
 
   const settled = updateClockElapsed();
   if (settled && settled.remaining <= 0) {
-    stopPlayGame({ reason: playClockFlagReason(color) });
+    stopPlayGame({ reason: playClockFlagReason(color), revealFinalPosition: true });
     return false;
   }
 
@@ -10677,7 +10837,7 @@ function tickPlayClock() {
 
   const settled = updateClockElapsed();
   if (settled && settled.remaining <= 0) {
-    stopPlayGame({ reason: playClockFlagReason(settled.color) });
+    stopPlayGame({ reason: playClockFlagReason(settled.color), revealFinalPosition: true });
     return;
   }
 

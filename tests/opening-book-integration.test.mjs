@@ -54,14 +54,16 @@ test('the built Catalan output is complete and rooted at /openings/', async () =
 });
 
 test('the built Sicilian output is complete, rooted at /openings-sicilian/, and uses shared resources', async () => {
-  const [indexHtml, firstChapter] = await Promise.all([
+  const [indexHtml, firstChapter, secondChapter] = await Promise.all([
     readFile(file('apps/opening-book-sicilian/dist/index.html'), 'utf8'),
     readFile(file('apps/opening-book-sicilian/dist/chapters/1/index.html'), 'utf8'),
+    readFile(file('apps/opening-book-sicilian/dist/chapters/2/index.html'), 'utf8'),
   ]);
 
   assert.match(indexHtml, /(?:href|src)="\/openings-sicilian\//);
   assert.match(indexHtml, /href="https:\/\/cddigital\.top\/openings-sicilian\/"/);
   assert.match(firstChapter, /\.\.\/\.\.\/#\/chapters\/1/);
+  assert.match(secondChapter, /\.\.\/\.\.\/#\/chapters\/2/);
 
   // Sicilian should NOT duplicate stockfish or pieces assets in its dist directory
   await assert.rejects(access(file('apps/opening-book-sicilian/dist/assets/pieces/mpchess/wK.svg')));

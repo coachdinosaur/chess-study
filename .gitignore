@@ -16,3 +16,6 @@ lesson_source2/
 lesson_source3/
 
 worker/.wrangler/
+
+# Chapter 2's PDF is an external source of truth, not an app/repository asset.
+apps/02_2g3_and_2d3.pdf

@@ -192,7 +192,7 @@ function auditPage(page: ReturnType<typeof extractPages>[number]): { audit: Page
   return {
     audit: {
       page: page.number,
-      headings: (page.markdown.match(/^#{3,5}\s+/gm) ?? []).length,
+      headings: (page.markdown.match(/^#{3,6}\s+/gm) ?? []).length,
       visibleFens: (page.markdown.match(/^\*\*FEN:\*\*/gm) ?? []).length,
       hiddenFens: (page.markdown.match(/^<!--\s*FEN:/gm) ?? []).length,
       detectedMoves,

@@ -21,6 +21,9 @@ function replaceExactlyOnce(
 export function applyChapterContentCorrections(filename: string, content: string): string {
   if (filename !== "chapter-1-sicilian.md") return content;
 
+  // Raw Markdown imports can retain CRLF on Windows. Normalize before matching
+  // the canonical PDF-derived correction markers, which are stored with LF.
+  content = content.replace(/\r\n?/g, "\n");
 
   // The canonical Markdown may already contain these verified PDF-derived
   // corrections. Keep this correction function available for older source
