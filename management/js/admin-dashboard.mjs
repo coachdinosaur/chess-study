@@ -9,10 +9,20 @@ const elements = {
   auditList: document.querySelector('#auditList'),
   refresh: document.querySelector('#refreshAdminButton'),
   signOut: document.querySelector('#signOutButton'),
+  deleteDialog: document.querySelector('#teacherDeleteDialog'),
+  deleteForm: document.querySelector('#teacherDeleteForm'),
+  deleteName: document.querySelector('#teacherDeleteName'),
+  deleteEmail: document.querySelector('#teacherDeleteEmail'),
+  deleteConfirmation: document.querySelector('#teacherDeleteConfirmation'),
+  deleteError: document.querySelector('#teacherDeleteError'),
+  cancelDelete: document.querySelector('#cancelTeacherDeleteButton'),
+  confirmDelete: document.querySelector('#confirmTeacherDeleteButton'),
 };
 
 let teachers = [];
 let auditRows = [];
+let selectedTeacher = null;
+let deletionPending = false;
 
 function formatDate(value) {
   if (!value) return 'Not reviewed';
@@ -37,6 +47,9 @@ function renderTeachers() {
     const adminAction = isProtectedAdmin
       ? '<button class="button-secondary" type="button" data-action="remove-admin">Remove administrator</button>'
       : `<button class="button-secondary" type="button" data-action="grant-admin" ${status !== 'approved' ? 'disabled' : ''}>Grant administrator</button>`;
+    const deleteAction = isProtectedAdmin
+      ? '<button class="button-danger" type="button" disabled title="Remove administrator access before deleting this account.">Delete account</button>'
+      : '<button class="button-danger" type="button" data-action="delete-teacher">Delete account</button>';
     return `
       <article class="list-card teacher-admin-card" data-teacher-id="${escapeHtml(teacher.teacher_id)}">
         <div class="list-card-head">
@@ -65,6 +78,7 @@ function renderTeachers() {
           <button class="button-secondary" type="button" data-action="pending" ${isProtectedAdmin ? 'disabled' : ''}>Return to pending</button>
           <button class="button-danger" type="button" data-action="suspend" ${isProtectedAdmin ? 'disabled' : ''}>Suspend</button>
           ${adminAction}
+          ${deleteAction}
         </div>
       </article>`;
   }).join('');
@@ -166,6 +180,100 @@ async function updatePlatformAdmin(card, isAdmin) {
   }
 }
 
+function setDeletionError(message = '') {
+  elements.deleteError.textContent = message;
+  elements.deleteError.hidden = !message;
+}
+
+function syncDeleteConfirmation() {
+  elements.confirmDelete.disabled = deletionPending || elements.deleteConfirmation.value !== 'DELETE';
+}
+
+function openTeacherDeletion(card) {
+  const teacher = teachers.find((item) => item.teacher_id === card.dataset.teacherId);
+  if (!teacher || teacher.is_admin || deletionPending) return;
+
+  selectedTeacher = teacher;
+  elements.deleteName.textContent = teacher.display_name || 'Unnamed teacher';
+  elements.deleteEmail.textContent = teacher.email || 'No email';
+  elements.deleteConfirmation.value = '';
+  setDeletionError('');
+  setStatus(elements.status, '');
+  syncDeleteConfirmation();
+
+  if (typeof elements.deleteDialog.showModal === 'function') {
+    elements.deleteDialog.showModal();
+  } else {
+    elements.deleteDialog.setAttribute('open', '');
+  }
+  elements.deleteConfirmation.focus();
+}
+
+function cancelTeacherDeletion() {
+  if (deletionPending) return;
+  if (elements.deleteDialog.open && typeof elements.deleteDialog.close === 'function') {
+    elements.deleteDialog.close('cancel');
+  } else {
+    elements.deleteDialog.removeAttribute('open');
+  }
+  selectedTeacher = null;
+  elements.deleteConfirmation.value = '';
+  setDeletionError('');
+  syncDeleteConfirmation();
+}
+
+async function deleteTeacherAccount(event) {
+  event.preventDefault();
+  if (!selectedTeacher || deletionPending) return;
+  if (elements.deleteConfirmation.value !== 'DELETE') {
+    setDeletionError('Type DELETE exactly to confirm account deletion.');
+    syncDeleteConfirmation();
+    return;
+  }
+
+  const teacher = selectedTeacher;
+  deletionPending = true;
+  elements.cancelDelete.disabled = true;
+  setBusy(elements.confirmDelete, true, 'Deleting...');
+  setDeletionError('');
+
+  try {
+    const supabase = getSupabase();
+    const { data, error } = await supabase.rpc('admin_delete_teacher_account', {
+      p_teacher_id: teacher.teacher_id,
+      p_confirmation: elements.deleteConfirmation.value,
+    });
+    if (error) throw error;
+
+    deletionPending = false;
+    elements.cancelDelete.disabled = false;
+    if (elements.deleteDialog.open && typeof elements.deleteDialog.close === 'function') {
+      elements.deleteDialog.close('deleted');
+    } else {
+      elements.deleteDialog.removeAttribute('open');
+    }
+    selectedTeacher = null;
+    elements.deleteConfirmation.value = '';
+    setBusy(elements.confirmDelete, false);
+    syncDeleteConfirmation();
+
+    await loadAdminData();
+    const retainedStudents = Number(data?.active_students || 0) + Number(data?.archived_students || 0);
+    const recipient = data?.transferred_to_name || 'your administrator account';
+    setStatus(
+      elements.status,
+      `${teacher.display_name || 'Teacher'} was deleted. ${retainedStudents} student record${retainedStudents === 1 ? '' : 's'} and associated teaching data were retained and transferred to ${recipient}.`,
+      'success',
+    );
+  } catch (error) {
+    deletionPending = false;
+    elements.cancelDelete.disabled = false;
+    setBusy(elements.confirmDelete, false);
+    setDeletionError(readableError(error));
+    syncDeleteConfirmation();
+  }
+}
+
 async function initialize() {
   try {
     const profile = await requireProfile('teacher', { requireAdmin: true });
@@ -189,6 +297,23 @@ elements.teacherList?.addEventListener('click', (event) => {
   if (button.dataset.action === 'suspend') updateTeacherStatus(card, 'suspended');
   if (button.dataset.action === 'grant-admin') updatePlatformAdmin(card, true);
   if (button.dataset.action === 'remove-admin') updatePlatformAdmin(card, false);
+  if (button.dataset.action === 'delete-teacher') openTeacherDeletion(card);
+});
+elements.deleteConfirmation?.addEventListener('input', () => {
+  setDeletionError('');
+  syncDeleteConfirmation();
+});
+elements.cancelDelete?.addEventListener('click', cancelTeacherDeletion);
+elements.deleteForm?.addEventListener('submit', deleteTeacherAccount);
+elements.deleteDialog?.addEventListener('cancel', (event) => {
+  if (deletionPending) {
+    event.preventDefault();
+    return;
+  }
+  selectedTeacher = null;
+  elements.deleteConfirmation.value = '';
+  setDeletionError('');
+  syncDeleteConfirmation();
 });
 
 initialize();

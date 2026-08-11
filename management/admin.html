@@ -7,7 +7,7 @@
   <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
   <link rel="stylesheet" href="./management.css?v=20260723-hardening1">
   <link rel="stylesheet" href="./teacher-search.css?v=20260723-hardening1">
-  <link rel="stylesheet" href="./hardening.css?v=20260723-hardening1">
+  <link rel="stylesheet" href="./hardening.css?v=20260811-admin-delete1">
 </head>
 <body>
   <div class="portal-shell">
@@ -52,7 +52,35 @@
     </main>
   </div>
 
+  <dialog id="teacherDeleteDialog" class="admin-delete-dialog" aria-labelledby="teacherDeleteTitle" aria-describedby="teacherDeleteDescription">
+    <form id="teacherDeleteForm" class="admin-delete-form">
+      <div>
+        <p class="danger-eyebrow">Permanent action</p>
+        <h2 id="teacherDeleteTitle">Delete teacher account?</h2>
+        <p id="teacherDeleteDescription" class="panel-copy">
+          This removes the teacher's sign-in account and ends any active Live Board rooms. Student records and associated teaching data are retained and transferred to your administrator account.
+        </p>
+      </div>
+      <dl class="admin-delete-identity">
+        <div><dt>Teacher</dt><dd id="teacherDeleteName"></dd></div>
+        <div><dt>Email</dt><dd id="teacherDeleteEmail"></dd></div>
+      </dl>
+      <div class="status" data-tone="warning">
+        This cannot be undone. The deleted teacher will lose access to all teacher-only management features.
+      </div>
+      <div class="form-row">
+        <label for="teacherDeleteConfirmation">Type <strong>DELETE</strong> to confirm</label>
+        <input id="teacherDeleteConfirmation" name="confirmation" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false">
+      </div>
+      <div id="teacherDeleteError" class="status" data-tone="error" aria-live="polite" hidden></div>
+      <div class="inline-actions admin-delete-actions">
+        <button id="cancelTeacherDeleteButton" class="button-secondary" type="button">Cancel</button>
+        <button id="confirmTeacherDeleteButton" class="button-danger" type="submit" disabled>Delete teacher account</button>
+      </div>
+    </form>
+  </dialog>
+
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  <script type="module" src="./js/admin-dashboard.mjs?v=20260723-hardening1"></script>
+  <script type="module" src="./js/admin-dashboard.mjs?v=20260811-admin-delete1"></script>
 </body>
 </html>

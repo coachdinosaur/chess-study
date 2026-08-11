@@ -141,6 +141,19 @@
     if (element) element.textContent = text;
   }
 
+  function broadcastRevision(message) {
+    var rawValue = message && message.payload && message.payload.revision;
+    if (rawValue === null || rawValue === undefined || rawValue === '') return null;
+    var value = Number(rawValue);
+    return Number.isSafeInteger(value) && value >= 0 ? value : null;
+  }
+
+  function canRefresh(adapter) {
+    if (!adapter || adapter.closed || !adapter.credentials.accessToken) return false;
+    if (adapter.credentials.role === 'student' || adapter.created) return true;
+    return adapter.credentials.role === 'teacher' && adapter.openedFromSecureLink;
+  }
+
   async function fetchState(adapter) {
     if (!adapter.credentials.accessToken) return null;
     var response = await client.rpc('get_live_board_room', {
@@ -149,6 +162,7 @@
     });
     if (response.error) throw response.error;
     adapter.serverRevision = Number(response.data.revision) || 0;
+    adapter.hasFetchedState = true;
     var state = stateFromRow(response.data);
     dispatchMessage(adapter, state);
     status('Connected through Supabase');
@@ -172,6 +186,7 @@
     }
     adapter.created = true;
     adapter.serverRevision = Number(response.data.revision) || 0;
+    adapter.hasFetchedState = true;
     writeTeacherHash(adapter.roomCode, adapter.credentials);
     status('Supabase room created');
     return stateFromRow(response.data);
@@ -191,6 +206,7 @@
     });
     if (response.error) throw response.error;
     adapter.serverRevision = Number(response.data.revision) || 0;
+    adapter.hasFetchedState = true;
     return stateFromRow(response.data);
   }
 
@@ -205,7 +221,62 @@
     });
     if (response.error) throw response.error;
     adapter.serverRevision = Number(response.data.revision) || 0;
+    adapter.hasFetchedState = true;
     return stateFromRow(response.data);
+  }
+
+  async function flushPendingBroadcast(adapter) {
+    if (!adapter.realtimeReady || adapter.pendingBroadcastRevision === null) return false;
+    var revision = Math.max(adapter.pendingBroadcastRevision, adapter.serverRevision);
+    adapter.pendingBroadcastRevision = revision;
+    var result = await adapter.realtime.send({
+      type: 'broadcast',
+      event: 'changed',
+      payload: { revision: revision }
+    });
+    if (result !== 'ok') throw new Error('Realtime change notification was not acknowledged.');
+    if (adapter.pendingBroadcastRevision !== null && adapter.pendingBroadcastRevision <= revision) {
+      adapter.pendingBroadcastRevision = null;
+    }
+    return true;
+  }
+
+  async function announceAuthoritativeChange(adapter) {
+    if (adapter.pendingBroadcastRevision === null || adapter.serverRevision > adapter.pendingBroadcastRevision) {
+      adapter.pendingBroadcastRevision = adapter.serverRevision;
+    }
+    if (!adapter.realtimeReady) {
+      status('Board saved; waiting for the live connection');
+      return false;
+    }
+    try {
+      await flushPendingBroadcast(adapter);
+      status('Synced through Supabase');
+      return true;
+    } catch (error) {
+      console.warn('Live Board change notification will retry after reconnecting.', error);
+      status('Board saved; reconnecting live updates...');
+      return false;
+    }
+  }
+
+  function enqueueRefresh(adapter, options) {
+    if (!canRefresh(adapter)) return;
+    var settings = options || {};
+    adapter.queue = adapter.queue.then(async function () {
+      var alreadyCurrent = Boolean(settings.skipIfFetched && adapter.hasFetchedState) || (
+        settings.advertisedRevision !== null
+        && settings.advertisedRevision !== undefined
+        && adapter.hasFetchedState
+        && settings.advertisedRevision <= adapter.serverRevision
+      );
+      var refreshed = alreadyCurrent ? null : await fetchState(adapter);
+      if (settings.flushPending) await flushPendingBroadcast(adapter);
+      return refreshed;
+    }).catch(function (error) {
+      console.warn(settings.warning || 'Live Board refresh failed.', error);
+      status(settings.failureStatus || 'Reconnecting...');
+    });
   }
 
   function SupabaseBroadcastChannel(name) {
@@ -214,8 +285,13 @@
     this.credentials = credentialsFor(this.roomCode);
     this.listeners = new Set();
     this.serverRevision = 0;
+    this.hasFetchedState = false;
     this.created = false;
     this.closed = false;
+    this.realtimeReady = false;
+    this.pendingBroadcastRevision = null;
+    this.subscriptionCount = 0;
+    this.openedFromSecureLink = Boolean(hashParams().get('access'));
     this.queue = Promise.resolve();
 
     if (!this.roomCode || !this.credentials.accessToken) {
@@ -224,25 +300,36 @@
     }
 
     var self = this;
-    this.realtime = client.channel('live-board:' + this.roomCode + ':' + this.credentials.studentToken, {
-      config: { broadcast: { self: false, ack: false } }
+    this.realtime = client.channel('live-board:' + this.roomCode, {
+      config: { broadcast: { self: false, ack: true } }
     });
     this.realtime
-      .on('broadcast', { event: 'changed' }, function () {
-        self.queue = self.queue.then(function () { return fetchState(self); }).catch(function (error) {
-          console.warn('Live Board refresh failed.', error);
-          status('Reconnecting…');
+      .on('broadcast', { event: 'changed' }, function (message) {
+        enqueueRefresh(self, {
+          advertisedRevision: broadcastRevision(message),
+          warning: 'Live Board refresh failed.',
+          failureStatus: 'Reconnecting...'
         });
       })
-      .subscribe(function (subscriptionStatus) {
+      .subscribe(function (subscriptionStatus, subscriptionError) {
+        if (self.closed) return;
         if (subscriptionStatus === 'SUBSCRIBED') {
+          var isResubscribe = self.subscriptionCount > 0;
+          self.subscriptionCount += 1;
+          self.realtimeReady = true;
           status('Connected through Supabase');
-          if (self.credentials.role === 'student') {
-            self.queue = self.queue.then(function () { return fetchState(self); }).catch(function (error) {
-              console.warn('Could not join Live Board room.', error);
-              status('Room link is invalid or expired');
-            });
-          }
+          self.queue = self.queue.then(async function () {
+            if (canRefresh(self) && (isResubscribe || !self.hasFetchedState)) await fetchState(self);
+            await flushPendingBroadcast(self);
+          }).catch(function (error) {
+            console.warn('Could not restore the Live Board session.', subscriptionError || error);
+            status(self.credentials.role === 'student' ? 'Room link is invalid or expired' : 'Reconnecting...');
+          });
+          return;
+        }
+        if (subscriptionStatus === 'CHANNEL_ERROR' || subscriptionStatus === 'TIMED_OUT' || subscriptionStatus === 'CLOSED') {
+          self.realtimeReady = false;
+          status('Reconnecting...');
         }
       });
     adapters.add(this);
@@ -260,7 +347,7 @@
     var self = this;
     if (this.closed || !message || !this.credentials.accessToken) return;
     if (message.type === 'request-state') {
-      this.queue = this.queue.then(function () { return fetchState(self); }).catch(function () {});
+      enqueueRefresh(this, { failureStatus: 'Live Board connection failed', skipIfFetched: true });
       return;
     }
     if (!message.state) return;
@@ -276,8 +363,7 @@
         authoritative = await updateStudent(self, message.state);
       }
       dispatchMessage(self, authoritative);
-      await self.realtime.send({ type: 'broadcast', event: 'changed', payload: { revision: self.serverRevision } });
-      status('Synced through Supabase');
+      await announceAuthoritativeChange(self);
     }).catch(async function (error) {
       console.warn('Live Board update was rejected.', error);
       status('Refreshing authoritative board…');
@@ -287,6 +373,8 @@
 
   SupabaseBroadcastChannel.prototype.close = function () {
     this.closed = true;
+    this.realtimeReady = false;
+    this.pendingBroadcastRevision = null;
     this.listeners.clear();
     adapters.delete(this);
     if (this.realtime) client.removeChannel(this.realtime);
@@ -332,9 +420,15 @@
     }
   }, true);
 
-  window.addEventListener('online', function () {
+  function refreshActiveAdapters() {
     adapters.forEach(function (adapter) {
-      adapter.queue = adapter.queue.then(function () { return fetchState(adapter); }).catch(function () {});
+      enqueueRefresh(adapter, { failureStatus: 'Reconnecting...', flushPending: true });
     });
+  }
+
+  window.addEventListener('online', refreshActiveAdapters);
+  window.addEventListener('focus', refreshActiveAdapters);
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible') refreshActiveAdapters();
   });
 })();
