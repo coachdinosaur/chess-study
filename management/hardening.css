@@ -59,6 +59,76 @@
   margin-top: 4px;
 }
 
+.admin-delete-dialog {
+  width: min(100% - 32px, 620px);
+  max-height: min(88vh, 760px);
+  overflow: auto;
+  border: 1px solid color-mix(in srgb, var(--danger) 55%, var(--line));
+  border-radius: var(--radius);
+  padding: 0;
+  color: var(--text);
+  background: var(--panel);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, .58);
+}
+
+.admin-delete-dialog::backdrop {
+  background: rgba(1, 8, 10, .78);
+  backdrop-filter: blur(3px);
+}
+
+.admin-delete-form {
+  display: grid;
+  gap: 18px;
+  padding: 24px;
+}
+
+.admin-delete-form h2 {
+  margin: 3px 0 8px;
+  color: var(--danger);
+}
+
+.danger-eyebrow {
+  margin: 0;
+  color: var(--danger);
+  font-size: .78rem;
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.admin-delete-identity {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #09171a;
+}
+
+.admin-delete-identity div {
+  display: grid;
+  grid-template-columns: 82px minmax(0, 1fr);
+  gap: 12px;
+}
+
+.admin-delete-identity dt {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.admin-delete-identity dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-weight: 800;
+}
+
+.admin-delete-actions {
+  justify-content: flex-end;
+  margin-top: 0;
+}
+
 .account-status-approved {
   color: var(--accent-strong);
   border-color: color-mix(in srgb, var(--accent) 65%, var(--line));
@@ -128,5 +198,19 @@
   .account-summary-row {
     display: grid;
     gap: 4px;
+  }
+
+  .admin-delete-form {
+    padding: 18px;
+  }
+
+  .admin-delete-identity div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
+  .admin-delete-actions .button-secondary,
+  .admin-delete-actions .button-danger {
+    width: 100%;
   }
 }
