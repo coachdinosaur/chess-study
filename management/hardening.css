@@ -55,6 +55,21 @@
   gap: 10px;
 }
 
+.audit-card .list-card-head {
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.audit-card .list-card-head > div {
+  min-width: 0;
+}
+
+.audit-card h3,
+.audit-card .chip {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 .admin-reason-row {
   margin-top: 4px;
 }
@@ -158,6 +173,18 @@
   white-space: pre-wrap;
 }
 
+.audit-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.audit-pagination .panel-copy {
+  margin: 0;
+}
+
 .approval-card {
   max-width: 760px;
   margin: 7vh auto 0;
@@ -212,5 +239,10 @@
   .admin-delete-actions .button-secondary,
   .admin-delete-actions .button-danger {
     width: 100%;
+  }
+
+  .audit-pagination {
+    align-items: stretch;
+    flex-direction: column;
   }
 }

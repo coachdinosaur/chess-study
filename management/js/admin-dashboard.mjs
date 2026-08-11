@@ -1,5 +1,10 @@
 import { getSupabase, readableError, requireProfile, signOut } from './supabase-client.mjs';
 import { escapeHtml, setBusy, setStatus } from './ui.mjs';
+import {
+  AUDIT_PAGE_SIZE,
+  buildAuditPageParams,
+  mergeAuditPage,
+} from './admin-audit-pagination.mjs';
 
 const elements = {
   profileName: document.querySelector('#profileName'),
@@ -7,6 +12,8 @@ const elements = {
   search: document.querySelector('#teacherSearch'),
   teacherList: document.querySelector('#teacherAccountList'),
   auditList: document.querySelector('#auditList'),
+  auditPaginationStatus: document.querySelector('#auditPaginationStatus'),
+  loadMoreAudit: document.querySelector('#loadMoreAuditButton'),
   refresh: document.querySelector('#refreshAdminButton'),
   signOut: document.querySelector('#signOutButton'),
   deleteDialog: document.querySelector('#teacherDeleteDialog'),
@@ -21,6 +28,9 @@ const elements = {
 
 let teachers = [];
 let auditRows = [];
+let auditCursor = null;
+let auditHasMore = false;
+let auditLoading = false;
 let selectedTeacher = null;
 let deletionPending = false;
 
@@ -84,9 +94,23 @@ function renderTeachers() {
   }).join('');
 }
 
+function renderAuditPagination() {
+  if (!auditRows.length) {
+    elements.auditPaginationStatus.textContent = '';
+  } else if (auditHasMore) {
+    elements.auditPaginationStatus.textContent = `Showing ${auditRows.length} events, newest first.`;
+  } else {
+    elements.auditPaginationStatus.textContent = `Showing all ${auditRows.length} recorded event${auditRows.length === 1 ? '' : 's'}, newest first.`;
+  }
+
+  elements.loadMoreAudit.hidden = !auditHasMore;
+  elements.loadMoreAudit.disabled = auditLoading;
+}
+
 function renderAudit() {
   if (!auditRows.length) {
     elements.auditList.innerHTML = '<div class="empty">No management events have been recorded yet.</div>';
+    renderAuditPagination();
     return;
   }
 
@@ -105,6 +129,7 @@ function renderAudit() {
         ? `<pre class="audit-metadata">${escapeHtml(JSON.stringify(row.metadata, null, 2))}</pre>`
         : ''}
     </article>`).join('');
+  renderAuditPagination();
 }
 
 async function loadAdminData() {
@@ -114,18 +139,51 @@ async function loadAdminData() {
     const supabase = getSupabase();
     const [teachersResult, auditResult] = await Promise.all([
       supabase.rpc('admin_list_teachers'),
-      supabase.rpc('admin_list_audit_log', { p_limit: 100 }),
+      supabase.rpc('admin_list_audit_log', buildAuditPageParams()),
     ]);
     if (teachersResult.error) throw teachersResult.error;
     if (auditResult.error) throw auditResult.error;
     teachers = teachersResult.data || [];
-    auditRows = auditResult.data || [];
+    const auditPage = mergeAuditPage([], auditResult.data, AUDIT_PAGE_SIZE);
+    auditRows = auditPage.rows;
+    auditCursor = auditPage.cursor;
+    auditHasMore = auditPage.hasMore;
     renderTeachers();
     renderAudit();
   } catch (error) {
     setStatus(elements.status, readableError(error), 'error');
   } finally {
     setBusy(elements.refresh, false);
+  }
+}
+
+async function loadMoreAuditEvents() {
+  if (auditLoading || !auditHasMore || !auditCursor) return;
+
+  auditLoading = true;
+  setBusy(elements.loadMoreAudit, true, 'Loading…');
+  setStatus(elements.status, '');
+  renderAuditPagination();
+
+  try {
+    const supabase = getSupabase();
+    const { data, error } = await supabase.rpc(
+      'admin_list_audit_log',
+      buildAuditPageParams(auditCursor),
+    );
+    if (error) throw error;
+
+    const auditPage = mergeAuditPage(auditRows, data, AUDIT_PAGE_SIZE);
+    auditRows = auditPage.rows;
+    auditCursor = auditPage.cursor;
+    auditHasMore = auditPage.hasMore;
+    renderAudit();
+  } catch (error) {
+    setStatus(elements.status, readableError(error), 'error');
+  } finally {
+    auditLoading = false;
+    setBusy(elements.loadMoreAudit, false);
+    renderAuditPagination();
   }
 }
 
@@ -287,6 +345,7 @@ async function initialize() {
 
 elements.search?.addEventListener('input', renderTeachers);
 elements.refresh?.addEventListener('click', loadAdminData);
+elements.loadMoreAudit?.addEventListener('click', loadMoreAuditEvents);
 elements.signOut?.addEventListener('click', () => signOut().catch((error) => setStatus(elements.status, readableError(error), 'error')));
 elements.teacherList?.addEventListener('click', (event) => {
   const button = event.target.closest('[data-action]');
