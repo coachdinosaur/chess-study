@@ -42,10 +42,12 @@ class MemoryStorage {
 class FakeRoomDatabase {
   constructor() {
     this.rooms = new Map();
+    this.createErrors = new Map();
     this.calls = [];
   }
 
   addRoom(roomCode, overrides = {}) {
+    if (overrides.createError) this.createErrors.set(roomCode, overrides.createError);
     this.rooms.set(roomCode, {
       room_code: roomCode,
       teacherToken: overrides.teacherToken || 'teacher-secret',
@@ -80,8 +82,18 @@ class FakeRoomDatabase {
     }
 
     if (name === 'create_live_board_room') {
+      const createError = this.createErrors.get(args.p_room_code);
+      if (createError) return { data: null, error: { message: createError } };
       if (room) return { data: null, error: { message: 'Room code already exists.' } };
-      return { data: null, error: { message: 'Unexpected create in this test.' } };
+      this.addRoom(args.p_room_code, {
+        teacherToken: args.p_teacher_token,
+        studentTokens: [args.p_student_token],
+        fen: args.p_fen,
+      });
+      const createdRoom = this.rooms.get(args.p_room_code);
+      createdRoom.pgn = args.p_pgn || '';
+      createdRoom.orientation = args.p_orientation || 'white';
+      return { data: this.publicRow(createdRoom), error: null };
     }
 
     if (!room || args.p_expected_revision !== room.revision) {
@@ -273,6 +285,10 @@ function secureUrl(roomCode, role) {
   return `https://example.test/live-board.html?room=${roomCode}&role=${role}#room=${roomCode}&role=${role}&${access}`;
 }
 
+function mainPageTeacherUrl(roomCode) {
+  return `https://example.test/live-board.html?room=${roomCode}&role=teacher`;
+}
+
 function boardState(fen) {
   return {
     fen,
@@ -291,10 +307,41 @@ async function drain(...transports) {
   }
 }
 
-test('teacher and student exchange authoritative revisions on one shared room topic', async () => {
+test('main-page teacher flow still creates a new room before publishing updates', async () => {
   const database = new FakeRoomDatabase();
   const hub = new FakeRealtimeHub();
-  database.addRoom('ABC234');
+  const teacherPage = createPage({
+    id: 'main-teacher',
+    url: mainPageTeacherUrl('NEW234'),
+    database,
+    hub,
+  });
+
+  teacherPage.document.dispatchEvent({
+    type: 'click',
+    target: { closest: () => ({ id: 'createRoomButton' }) },
+  });
+
+  const teacher = new teacherPage.window.BroadcastChannel('cd-live-board:NEW234');
+  teacher.postMessage({ type: 'state', state: boardState('8/8/8/8/8/8/4K3/7k w - - 0 1') });
+  teacherPage.channels[0].emitStatus('SUBSCRIBED');
+  await drain(teacher);
+
+  assert.equal(database.rooms.has('NEW234'), true);
+  assert.equal(
+    database.calls.filter((call) => call.name === 'create_live_board_room').length,
+    1,
+  );
+
+  teacher.postMessage({ type: 'state', state: boardState('8/8/8/8/8/4K3/8/7k b - - 1 1') });
+  await drain(teacher);
+  assert.equal(database.rooms.get('NEW234').revision, 1);
+});
+
+test('pre-created workspace room exchanges student then teacher revisions bidirectionally', async () => {
+  const database = new FakeRoomDatabase();
+  const hub = new FakeRealtimeHub();
+  database.addRoom('ABC234', { createError: 'Invalid short student token' });
   database.addRoom('OTHER9', { studentTokens: ['student-short'] });
 
   const teacherPage = createPage({ id: 'teacher', url: secureUrl('ABC234', 'teacher'), database, hub });
@@ -317,7 +364,8 @@ test('teacher and student exchange authoritative revisions on one shared room to
   assert.equal(teacherPage.channels[0].topic.includes('teacher-secret'), false);
   assert.equal(teacherPage.channels[0].options.config.broadcast.ack, true);
 
-  // Match the application bootstrap: the teacher publishes once to claim an existing room.
+  // Match the workspace bootstrap: the secure teacher link resumes a room that
+  // was already created by start_student_workspace_live_board.
   teacher.postMessage({ type: 'state', state: boardState('8/8/8/8/8/8/4K3/7k w - - 0 1') });
   teacherPage.channels[0].emitStatus('SUBSCRIBED');
   studentPage.channels[0].emitStatus('SUBSCRIBED');
@@ -338,6 +386,11 @@ test('teacher and student exchange authoritative revisions on one shared room to
   await drain(teacher, student, otherStudent);
   assert.equal(database.rooms.get('ABC234').revision, 2);
   assert.equal(studentStates.at(-1).revision, 2, 'teacher move reaches student');
+  assert.equal(
+    database.calls.some((call) => call.name === 'create_live_board_room'),
+    false,
+    'a secure workspace teacher link opens its existing room without recreating it',
+  );
 
   for (let index = 0; index < 6; index += 1) {
     const mover = index % 2 === 0 ? student : teacher;
