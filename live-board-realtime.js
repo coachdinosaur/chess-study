@@ -154,7 +154,7 @@
     return adapter.credentials.role === 'teacher' && adapter.openedFromSecureLink;
   }
 
-  async function fetchState(adapter) {
+  async function readState(adapter) {
     if (!adapter.credentials.accessToken) return null;
     var response = await client.rpc('get_live_board_room', {
       p_room_code: adapter.roomCode,
@@ -163,13 +163,26 @@
     if (response.error) throw response.error;
     adapter.serverRevision = Number(response.data.revision) || 0;
     adapter.hasFetchedState = true;
-    var state = stateFromRow(response.data);
+    return stateFromRow(response.data);
+  }
+
+  async function fetchState(adapter) {
+    var state = await readState(adapter);
     dispatchMessage(adapter, state);
     status('Connected through Supabase');
     return state;
   }
 
   async function createRoom(adapter, state) {
+    // A secure teacher link resumes a room that was already created by the
+    // workspace lifecycle (or by an earlier teacher tab). Fetching first keeps
+    // that path out of the room-creation compatibility shims.
+    if (adapter.openedFromSecureLink) {
+      var existingState = await readState(adapter);
+      status('Connected through Supabase');
+      return existingState;
+    }
+
     var response = await client.rpc('create_live_board_room', {
       p_room_code: adapter.roomCode,
       p_teacher_token: adapter.credentials.accessToken,
@@ -180,7 +193,7 @@
     });
     if (response.error) {
       if (/already exists/i.test(response.error.message || '')) {
-        return fetchState(adapter);
+        return readState(adapter);
       }
       throw response.error;
     }
