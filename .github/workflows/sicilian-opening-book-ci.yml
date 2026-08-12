@@ -1,4 +1,4 @@
-# Verifies the current Catalan and Sicilian opening-book checkpoint, including deep PDF-synchronized Pages 8-13 content, exact Page 13 variation hierarchy, 4...Nge7!N annotation, glyphs, and page boundaries.
+# Verifies both opening books, all committed Sicilian chapters, strict chapter audits, static builds, and combined production routes.
 name: Sicilian Opening Book CI
 
 on:
@@ -53,6 +53,7 @@ jobs:
           npm test
           npm run chapters:audit -- --chapter 1 --markdown app/content/chapters/chapter-1-sicilian.md --expected-first-page 7 --expected-pages 17
           npm run chapters:audit -- --chapter 2 --markdown app/content/chapters/chapter-2-sicilian.md --expected-first-page 24 --expected-pages 15 --expected-diagrams 47
+          npm run chapters:audit -- --chapter 3 --markdown app/content/chapters/chapter-3-sicilian.md --expected-first-page 39 --expected-pages 17 --expected-diagrams 50 --strict-moves
 
       - name: Verify combined opening routes
         run: node --test tests/opening-book-integration.test.mjs

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { auditChapterMarkdown } from "../scripts/chapter-audit.ts";
-import { SOURCE_MOVE_TOKEN, normalizeSan } from "../app/lib/chess-notation.ts";
+import { SOURCE_MOVE_TOKEN, normalizeSan, resolveChessMove } from "../app/lib/chess-notation.ts";
 import { MarkdownMoveResolver } from "../app/lib/markdown-moves.ts";
 import { catalogSource, discoverChapters, parseChapterMarkdown } from "../scripts/chapter-system.mjs";
 
@@ -14,11 +14,11 @@ async function readChapterOne() {
 
 test("discovers the contiguous Markdown chapter catalog", async () => {
   const chapters = await discoverChapters();
-  assert.deepEqual(chapters.map((chapter) => chapter.id), [1, 2]);
+  assert.deepEqual(chapters.map((chapter) => chapter.id), [1, 2, 3]);
   assert.ok(chapters.every((chapter) => chapter.pageCount > 0));
   assert.ok(chapters.every((chapter) => chapter.visibleFenCount > 0));
   const catalog = catalogSource(chapters);
-  assert.match(catalog, /CHAPTER_IDS = \["1", "2"\]/);
+  assert.match(catalog, /CHAPTER_IDS = \["1", "2", "3"\]/);
   assert.doesNotMatch(catalog, /chapter-packages|manifest|pdfjs|sourcePdf/);
 });
 
@@ -290,6 +290,56 @@ test("move navigation survives PDF page and parenthesis boundaries", () => {
   const branchEnd = branch.resolveText("2.Nf3 Nc6)");
   assert.ok(branchStart.every((token) => token.navigation), "The opening half of a split variation should be navigable.");
   assert.ok(branchEnd.every((token) => token.navigation), "A variation continued in the next paragraph should remain navigable.");
+});
+
+test("numbered pawn moves after prose prepositions remain navigable", () => {
+  const resolver = new MarkdownMoveResolver();
+  resolver.setAnchor("1rbq1rk1/1p1pbppp/p4n2/2p1p3/P1BnP3/1PNP4/1BP1NPPP/R2QK2R w KQ - 0 10");
+
+  const tokens = resolver.resolveText("10.0-0 offers nothing due to 10...b5 11.axb5 axb5");
+  for (const move of ["10.0-0", "10...b5", "11.axb5", "axb5"]) {
+    assert.ok(tokens.find((token) => token.display === move)?.navigation, `${move} should remain navigable`);
+  }
+});
+
+test("prose-separated sibling variations return to their shared move number", () => {
+  const resolver = new MarkdownMoveResolver();
+  resolver.setAnchor("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1");
+
+  const tokens = resolver.resolveText("1...c5 2.Nf3 Nc6, while 1...e5 2.Nf3 Nc6");
+  assert.ok(tokens.every((token) => token.navigation), "Both prose-separated branches should be navigable.");
+  assert.notEqual(tokens[0].navigation.steps.at(-1).fen, tokens[3].navigation.steps.at(-1).fen);
+});
+
+test("the active PDF anchor wins over historical lookalike positions", () => {
+  const resolver = new MarkdownMoveResolver();
+  resolver.addRoot("r1bqkb1r/pp3ppp/2n5/2p1P3/4p3/1P6/PBPPQ1PP/R3KBNR b KQkq - 1 8");
+  const activeFen = "r2qkb1r/pp4pp/2np1n2/2p5/2B1Ppb1/1PN2N2/PBPPQ1PP/R3K2R b Kk - 3 8";
+  resolver.setAnchor(activeFen, "Current PDF position");
+
+  const tokens = resolver.resolveText("8...Be7! 9.0-0-0 0-0");
+  const first = tokens.find((token) => token.display === "8...Be7!");
+  const expected = resolveChessMove(activeFen, "8...Be7!");
+  assert.ok(first?.navigation && expected);
+  assert.equal(first.navigation.steps[first.navigation.index].fen, expected.fen);
+});
+
+test("or-introduced sibling continuations return to their local branch", () => {
+  const resolver = new MarkdownMoveResolver();
+  resolver.setAnchor("r1bqkb1r/pp4pp/2n2p2/2pnp3/2B5/1P1P1N2/PBP2PPP/RN1QK2R w KQkq - 0 8");
+
+  const tokens = resolver.resolveText("8.Nc3 Nb6!? 9.Bb5 (9.0-0 Nxc4 10.bxc4 Be6= or 10...Be7=) 9...Bd7 10.0-0");
+  assert.ok(tokens.every((token) => token.navigation), "Both alternatives after 10.bxc4 should be navigable.");
+});
+
+test("document move references stay plain without blocking a later concrete line", () => {
+  const resolver = new MarkdownMoveResolver();
+  resolver.setAnchor("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+
+  const tokens = resolver.resolveText("The variation 2.b3 is dangerous after 1.e4 c5 2.b3 Nc6 3.Bb2 e5 4.f4!?");
+  assert.equal(tokens[0].display, "2.b3");
+  assert.equal(tokens[0].navigation, null);
+  assert.ok(tokens.slice(1).every((token) => token.navigation), "The concrete conclusion line should remain navigable.");
 });
 
 test("the Markdown contract rejects missing pages and invalid FENs", () => {

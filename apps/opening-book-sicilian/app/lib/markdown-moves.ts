@@ -1,7 +1,7 @@
 import { Chess } from "chess.js";
 import { fenMoveNumberKey, indexChessMoves, isCoordinateMoveReference, isLikelyProseSquare, moveNumberKey, moveNumberMatchesFen, normalizeSan, resolveChessMove, SOURCE_MOVE_TOKEN, type ResolvedChessMove } from "./chess-notation";
 
-export type NavigationStep = { fen: string; label: string };
+export type NavigationStep = { fen: string; label: string; sourceIssue?: string };
 export type MoveNavigation = { steps: NavigationStep[]; index: number };
 export type MarkdownMoveToken = { display: string; index: number; navigation: MoveNavigation | null };
 
@@ -9,6 +9,7 @@ type PositionPath = { fen: string; steps: NavigationStep[] };
 type RootMoveCandidate = { before: PositionPath; move: ResolvedChessMove };
 
 const START_FEN = new Chess().fen();
+const SOURCE_ERRATUM_DIRECTIVE = /<!--\s*SOURCE ERRATUM FROM\s+([^:>]+?)\s*:\s*([\s\S]*?)\s*-->/i;
 
 function uniqueCandidates(candidates: PositionPath[]): PositionPath[] {
   const seen = new Set<string>();
@@ -31,6 +32,12 @@ function parenDepthDeltaAt(text: string, pos: number): number {
     else if (text[index] === ")" || text[index] === "]") depth--;
   }
   return depth;
+}
+
+function isLikelyDocumentMoveReference(text: string, at: number, display: string): boolean {
+  if (!moveNumberKey(display)) return false;
+  const prefix = text.slice(Math.max(0, at - 40), at);
+  return /\b(?:variation|note on)\s*$/i.test(prefix);
 }
 
 export class MarkdownMoveResolver {
@@ -224,6 +231,10 @@ export class MarkdownMoveResolver {
   private resolveMoveText(text: string): MarkdownMoveToken[] {
     const tokens: MarkdownMoveToken[] = [];
     const forcePlain = /(?:SOURCE MOVE REFERENCE|NON-NAVIGATION)/.test(text);
+    const sourceErratumMatch = SOURCE_ERRATUM_DIRECTIVE.exec(text);
+    const sourceErratum = sourceErratumMatch
+      ? { from: sourceErratumMatch[1].trim(), message: sourceErratumMatch[2].trim() }
+      : null;
     const moveText = text.replace(/<!--[\s\S]*?-->/g, (comment) => " ".repeat(comment.length));
     const isolatedEmphasisRanges = [...moveText.matchAll(/\*\*(.+?)\*\*/g)]
       .filter((match) => [...match[1].matchAll(SOURCE_MOVE_TOKEN)].length === 1)
@@ -235,6 +246,8 @@ export class MarkdownMoveResolver {
     const baseDepth = this.inlineDepth;
     const returnStates = this.inlineReturnStates;
     const branchStarts = this.inlineBranchStarts;
+    let sourceErratumBase: PositionPath | null = null;
+    let sourceErratumPath: PositionPath | null = null;
 
     const matches = [...moveText.matchAll(SOURCE_MOVE_TOKEN)];
     for (let matchIndex = 0; matchIndex < matches.length; matchIndex++) {
@@ -278,6 +291,22 @@ export class MarkdownMoveResolver {
 
       const display = match[0].trim();
       if (!display || isLikelyProseSquare(text, at, display)) continue;
+      if (sourceErratum && (sourceErratumPath || display === sourceErratum.from)) {
+        const base: PositionPath = sourceErratumBase ?? active;
+        const path: PositionPath = sourceErratumPath ?? base;
+        sourceErratumBase = base;
+        sourceErratumPath = {
+          fen: base.fen,
+          steps: [...path.steps, { fen: base.fen, label: display, sourceIssue: sourceErratum.message }],
+        };
+        tokens.push({ display, index: at, navigation: this.createNavigation(sourceErratumPath) });
+        previousMoveResolved = false;
+        continue;
+      }
+      if (isLikelyDocumentMoveReference(text, at, display)) {
+        tokens.push({ display, index: at, navigation: null });
+        continue;
+      }
       if (isCoordinateMoveReference(text, at)) {
         tokens.push({ display, index: at, navigation: null });
         continue;
@@ -292,11 +321,26 @@ export class MarkdownMoveResolver {
         && numberedKey
         && previousMatch
         && moveNumberKey(previousMatch[0].trim()) === numberedKey
-        && /\b[A-Z]\d+\)\s*$/.test(betweenMoves);
+        && /\b[A-Z]\d*\)\s*$/.test(betweenMoves);
+      const proseSibling = numberedKey
+        && /\b(?:or|while|whereas|instead|alternatively)\s*$/i.test(betweenMoves);
       if (labeledSibling) {
-        // Labels such as `D1) 3.Bb5 and D2) 3.Nf3` are sibling choices.
+        // Labels such as `A) 4.Nc3, B) 4.Bc4` or `D1) 3.Bb5 and D2) 3.Nf3` are sibling choices.
         active = lastBefore;
         previousMoveResolved = true;
+      }
+      if (proseSibling && numberedKey) {
+        // Prose can introduce a sibling continuation without parentheses, as
+        // in `15...Bd7 16.Qe2, while 15...Ke7 16.Bd3`. Return to the most
+        // recent legal position for the repeated move number.
+        const siblingRoot = [...(this.historyByMove.get(numberedKey) ?? [])]
+          .reverse()
+          .find((candidate) => this.resolveFrom(candidate.fen, display));
+        if (siblingRoot) {
+          active = siblingRoot;
+          lastBefore = siblingRoot;
+          previousMoveResolved = true;
+        }
       }
       if (depth > 0 && numberedKey && betweenMoves.includes(";")) {
         active = branchStarts[depth - 1] ?? active;
@@ -339,7 +383,13 @@ export class MarkdownMoveResolver {
         (candidate, index, all) => all.findIndex((other) => other.before.fen === candidate.before.fen) === index,
       );
       const activeMatch = distinct.find((candidate) => candidate.before.fen === active.fen);
-      if (distinct.length === 1) {
+      if (activeMatch) {
+        // The current PDF position is authoritative. Historical roots are a
+        // recovery mechanism for explicit branch/page continuations; they must
+        // never replace a legal move from the active anchor merely because a
+        // lookalike position happens to score a longer continuation.
+        ({ before, resolved } = activeMatch);
+      } else if (distinct.length === 1) {
         ({ before, resolved } = distinct[0]);
       } else if (distinct.length > 1) {
         const scored = distinct.map((candidate) => ({
@@ -358,8 +408,6 @@ export class MarkdownMoveResolver {
         const best = scored.filter((entry) => entry.score === bestScore);
         if (bestScore > 0 && best.length === 1) {
           ({ before, resolved } = best[0].candidate);
-        } else if (activeMatch) {
-          ({ before, resolved } = activeMatch);
         }
       }
 

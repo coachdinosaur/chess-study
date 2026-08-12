@@ -77,8 +77,10 @@ I have faced this ending twice in my practice, and despite my minus score I can 
 
   7.c3 g6! 8.f3 Bd7 9.Nd2 0-0-0 10.Kc2 f5 11.Rd1 Kc7 12.Nh3 h6 13.Nb3?!
 
+<!-- FEN: 3r1bnr/ppkb4/2n3pp/2p1pp2/4P3/2P1BPPN/PPKN3P/3R1B1R w - - 0 13 -->
   (13.exf5 gxf5 14.Nf2 Nge7 15.Nc4 b6=)
 
+<!-- FEN: 3r1bnr/ppkb4/2n3pp/2p1pp2/4P3/1NP1BPPN/PPK4P/3R1B1R b - - 1 13 -->
   13...b6 14.Nf2 Nf6+ was slightly better for Black in Totsky – Kotronias, Pardubice 2007, although I managed to lose in the end.
 
 **FEN:**

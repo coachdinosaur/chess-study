@@ -26,11 +26,13 @@ function isActiveNavigationStep(candidate: MoveNavigation, active: MoveNavigatio
 const InteractiveMove = memo(function InteractiveMove({ display, navigation, onMove }: { display: string; navigation: MoveNavigation; onMove: MoveHandler }) {
   const activeNavigation = useContext(ActiveNavigationContext);
   const active = isActiveNavigationStep(navigation, activeNavigation);
+  const sourceIssue = navigation.steps[navigation.index]?.sourceIssue;
   return <button
     type="button"
-    className={`inline-move interactive-move${active ? " active" : ""}`}
-    aria-label={`Show position after ${display}`}
+    className={`inline-move interactive-move${sourceIssue ? " source-erratum-move" : ""}${active ? " active" : ""}`}
+    aria-label={sourceIssue ? `Show last legal position for ${display}. ${sourceIssue}` : `Show position after ${display}`}
     aria-current={active ? "step" : undefined}
+    title={sourceIssue}
     onClick={(event) => {
       event.preventDefault();
       event.stopPropagation();

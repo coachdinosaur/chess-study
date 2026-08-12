@@ -208,7 +208,7 @@ function LessonReader({ chapter }: { chapter: MarkdownChapter }) {
           </div>
           {engineError && <p className="analysis-error" role="alert">{engineError}</p>}
         </div>
-        <div className="active-line"><span>{analysisMoves.length ? "Analysis from" : "Markdown line"}</span><strong>{currentStep.label}</strong><small>{navigation.steps.length - 1} navigable {navigation.steps.length === 2 ? "move" : "moves"} in this line</small></div>
+        <div className="active-line"><span>{analysisMoves.length ? "Analysis from" : "Markdown line"}</span><strong>{currentStep.label}</strong><small className={currentStep.sourceIssue ? "source-issue" : undefined}>{currentStep.sourceIssue ?? `${navigation.steps.length - 1} navigable ${navigation.steps.length === 2 ? "move" : "moves"} in this line`}</small></div>
       </aside>
       <section className="lesson-page-column" ref={pageColumnRef} aria-label={`Chapter ${chapter.chapterNumber}, page ${currentPage?.number ?? pageIndex + 1}`}>
         <PageControls page={pageIndex} pageNumber={currentPage?.number ?? pageIndex + 1} pageCount={chapter.pages.length} onChange={selectPage} />

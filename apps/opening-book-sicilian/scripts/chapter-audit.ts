@@ -3,7 +3,7 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { Chess } from "chess.js";
-import { isCoordinateMoveReference } from "../app/lib/chess-notation";
+import { isCoordinateMoveReference, isLikelyProseSquare } from "../app/lib/chess-notation";
 import { extractFenBlocks, extractPages } from "../app/lib/markdown-chapter";
 import { MarkdownMoveResolver } from "../app/lib/markdown-moves";
 
@@ -62,19 +62,29 @@ function lineNumberAt(markdown: string, index: number): number {
 
 function analysisTokenIndexes(line: string, tokens: Array<{ display: string; index: number }>): Set<number> {
   const analysis = new Set<number>();
-  if (line.includes("SOURCE MOVE REFERENCE")) return analysis;
+  if (/(?:SOURCE MOVE REFERENCE|SOURCE ERRATUM)/.test(line)) return analysis;
   if (/\b(?:Chapter\s+\d+|next chapter|previous chapter|page\s+\d+)\b/i.test(line)) return analysis;
   if (/\b(?:relative sidelines|The main line is|The final part of the chapter covered)\b/i.test(line)) return analysis;
   if (/^#{3,5}\s+\d+\.\.\..*\bMain Line\b/i.test(line.trim())) return analysis;
   if (/^\s+[A-Z]\d*\)\s+/.test(line)) return analysis;
-  const isCoordinateNotation = (token: { index: number }) => isCoordinateMoveReference(line, token.index);
+  const isDocumentReference = (token: { display: string; index: number }) => {
+    const prefix = line.slice(Math.max(0, token.index - 32), token.index);
+    const fullPrefix = line.slice(0, token.index);
+    return isCoordinateMoveReference(line, token.index)
+      || isLikelyProseSquare(line, token.index, token.display)
+      || /(?:note on|see|transposes to)\s+$/i.test(prefix)
+      || /\bfollow up with\b[^()]*$/i.test(fullPrefix);
+  };
+  const addAnalysisTokens = () => tokens.forEach((token, index) => {
+    if (!isDocumentReference(token)) analysis.add(index);
+  });
   const trimmed = line.trim();
   const headingContent = trimmed.replace(/^#{3,5}\s+/, "");
   if (/^#{3,5}\s+/.test(trimmed) && /^(?:[A-Z]\d*\)\s*)?\d+\.(?:\.\.)?\s*[KQRBNO0a-h]/.test(headingContent)) {
-    tokens.forEach((_, index) => analysis.add(index));
+    addAnalysisTokens();
   }
   if (/^(?:[A-Z]\d*\)\s*)?\d+\.(?:\.\.)?\s*[KQRBNO0a-h]/.test(trimmed) && tokens.length >= 2) {
-    tokens.forEach((_, index) => analysis.add(index));
+    addAnalysisTokens();
   }
   for (const match of line.matchAll(/\*\*(.+?)\*\*/g)) {
     const start = (match.index ?? 0) + 2;
@@ -83,14 +93,14 @@ function analysisTokenIndexes(line: string, tokens: Array<{ display: string; ind
       .filter(({ token }) => token.index >= start && token.index < end)
       .map(({ index }) => index);
     if (indexes.length >= 2) indexes.forEach((index) => {
-      if (!isCoordinateNotation(tokens[index])) analysis.add(index);
+      if (!isDocumentReference(tokens[index])) analysis.add(index);
     });
   }
   return analysis;
 }
 
 function nonAnalysisKind(line: string, token: { display: string; index: number }): Exclude<UnresolvedMoveAudit["kind"], "analysis"> {
-  if (/\b(?:Chapter\s+\d+|next chapter|previous chapter|page\s+\d+)\b/i.test(line)) return "cross-reference";
+  if (/\b(?:Chapter\s+\d+|next chapter|previous chapter|page\s+\d+|transposes to|note on)\b/i.test(line)) return "cross-reference";
   if (isCoordinateMoveReference(line, token.index)) return "prose-square";
   if (/^[a-h][1-8](?:[!?]+|N)?$/.test(token.display)) return "prose-square";
   return "move-mention";

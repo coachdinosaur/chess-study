@@ -22,19 +22,22 @@ test("the opening book has no application server dependency", async () => {
 test("all Markdown chapters are bundled as static source content", async () => {
   const filenames = (await readdir(new URL("app/content/chapters/", root)))
     .filter((name) => /^chapter-\d+-sicilian\.md$/.test(name));
-  assert.equal(filenames.length, 2);
+  assert.equal(filenames.length, 3);
   await Promise.all([
     access(new URL("dist/index.html", root)),
     access(new URL("dist/404.html", root)),
     access(new URL("dist/chapters/1/index.html", root)),
     access(new URL("dist/chapters/2/index.html", root)),
+    access(new URL("dist/chapters/3/index.html", root)),
   ]);
   const indexHtml = await readFile(new URL("dist/index.html", root), "utf8");
   const chapterOneRedirect = await readFile(new URL("dist/chapters/1/index.html", root), "utf8");
   const chapterTwoRedirect = await readFile(new URL("dist/chapters/2/index.html", root), "utf8");
+  const chapterThreeRedirect = await readFile(new URL("dist/chapters/3/index.html", root), "utf8");
   assert.match(indexHtml, /(?:href|src)="\/openings-sicilian\//);
   assert.match(chapterOneRedirect, /\.\.\/\.\.\/#\/chapters\/1/);
   assert.match(chapterTwoRedirect, /\.\.\/\.\.\/#\/chapters\/2/);
+  assert.match(chapterThreeRedirect, /\.\.\/\.\.\/#\/chapters\/3/);
 });
 
 test("the renderer replays preceding PDF pages and uses clean diagram labels", async () => {

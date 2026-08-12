@@ -44,3 +44,16 @@ test("Chapter 2 contains representative PDF-authored lines throughout pages 24-3
     assert.ok(markdown.includes(required), `Missing Chapter 2 PDF content: ${required}`);
   }
 });
+
+test("Chapter 2 13.exf5 alternative branch resolves all moves from 12...h6", async () => {
+  const { MarkdownMoveResolver } = await import("../app/lib/markdown-moves.ts");
+  const resolver = new MarkdownMoveResolver();
+  resolver.setAnchor("3r1bnr/ppkb4/2n3pp/2p1pp2/4P3/2P1BPPN/PPKN3P/3R1B1R w - - 0 13", "After 12...h6");
+  const tokens = resolver.resolveText("(13.exf5 gxf5 14.Nf2 Nge7 15.Nc4 b6=)");
+
+  for (const move of ["13.exf5", "gxf5", "14.Nf2", "Nge7", "15.Nc4", "b6="]) {
+    const found = tokens.find((t) => t.display === move);
+    assert.ok(found, `Move token ${move} should be detected`);
+    assert.ok(found.navigation !== null, `Move token ${move} should be navigable`);
+  }
+});

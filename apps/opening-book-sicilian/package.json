@@ -15,7 +15,7 @@
     "chapters:check": "node scripts/chapter-system.mjs check",
     "chapters:audit": "node --max-old-space-size=4096 --import tsx scripts/chapter-audit.ts",
     "typecheck": "tsc --noEmit",
-    "test": "npm run chapters:check && npm run build && node --import tsx --test tests/static-app.test.mjs tests/stockfish-client.test.mjs tests/chapter-workflow.test.mjs tests/page1-8-anchors.test.mjs tests/page9-11-anchors.test.mjs tests/page12-17-anchors.test.mjs tests/page16-content.test.mjs tests/page17-content.test.mjs tests/chapter2-content.test.mjs"
+    "test": "npm run chapters:check && npm run build && node --import tsx --test tests/static-app.test.mjs tests/stockfish-client.test.mjs tests/chapter-workflow.test.mjs tests/page1-8-anchors.test.mjs tests/page9-11-anchors.test.mjs tests/page12-17-anchors.test.mjs tests/page16-content.test.mjs tests/page17-content.test.mjs tests/chapter2-content.test.mjs tests/chapter3-content.test.mjs"
   },
   "dependencies": {
     "chess.js": "^1.4.0",
