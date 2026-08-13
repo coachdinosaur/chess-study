@@ -1,9 +1,13 @@
-const STYLE_URL = './lichess-position-training-post-answer-fix.css?v=20260726-post-answer-layout1';
+const STYLE_URL = './lichess-position-training-premium-layout.css?v=20260813-premium-layout1';
 
 function installLatestTrainerStyles() {
   for (const link of document.querySelectorAll('link[rel="stylesheet"]')) {
     const href = link.getAttribute('href') || '';
-    if (href.includes('lichess-position-training-desktop-fit.css') || href.includes('lichess-position-training-post-answer-fix.css')) {
+    if (
+      href.includes('lichess-position-training-desktop-fit.css')
+      || href.includes('lichess-position-training-post-answer-fix.css')
+      || href.includes('lichess-position-training-premium-layout.css')
+    ) {
       link.remove();
     }
   }
