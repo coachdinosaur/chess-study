@@ -1,3 +1,14 @@
+/* Keep the Live Board chessboard palette identical to the main app. */
+:root {
+  --light-square: #eee3cb;
+  --dark-square: #71925a;
+}
+
+html[data-theme="dark"] {
+  --light-square: #f1e3c6;
+  --dark-square: #6f8f72;
+}
+
 html,
 body,
 button,
