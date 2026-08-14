@@ -942,17 +942,24 @@ function updateHighlights(
 
   // 4. Legal destination highlights
   if (legalDestinations && legalDestinations.length > 0) {
-    const dotMat = new THREE.MeshBasicMaterial({
-      color: 0x245f4b,
+    const darkSquareDotMat = new THREE.MeshBasicMaterial({
+      color: 0x58ea9c, // bright luminous mint/jade that pops brilliantly against dark green #244c3a
       transparent: true,
-      opacity: 0.46,
+      opacity: 0.88,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+    });
+    const lightSquareDotMat = new THREE.MeshBasicMaterial({
+      color: 0x186b45, // rich contrast emerald that pops crisply against cream #eadcbd
+      transparent: true,
+      opacity: 0.72,
       depthWrite: false,
       side: THREE.DoubleSide,
     });
     const captureRingMat = new THREE.MeshBasicMaterial({
-      color: 0xc99a48,
+      color: 0xf59e0b,
       transparent: true,
-      opacity: 0.82,
+      opacity: 0.9,
       depthWrite: false,
       side: THREE.DoubleSide,
     });
@@ -960,10 +967,13 @@ function updateHighlights(
     for (const dest of legalDestinations) {
       const isCapture = Boolean(state.latestPosition[dest]);
       const loc = squarePosition(dest);
+      const file = dest.charCodeAt(0) - 97;
+      const rank = Number(dest[1]);
+      const isDark = (file + rank) % 2 === 1;
 
       if (isCapture) {
         const ring = new THREE.Mesh(
-          new THREE.TorusGeometry(0.38, 0.03, 8, 36),
+          new THREE.TorusGeometry(0.38, 0.038, 10, 48),
           captureRingMat,
         );
         ring.position.set(loc.x, TILE_TOP + 0.02, loc.z);
@@ -971,7 +981,10 @@ function updateHighlights(
         ring.renderOrder = 7;
         state.highlights.add(ring);
       } else {
-        const dot = new THREE.Mesh(new THREE.CircleGeometry(0.14, 32), dotMat);
+        const dot = new THREE.Mesh(
+          new THREE.CircleGeometry(0.16, 36),
+          isDark ? darkSquareDotMat : lightSquareDotMat,
+        );
         dot.position.set(loc.x, TILE_TOP + 0.004, loc.z);
         dot.rotation.x = -Math.PI / 2;
         dot.renderOrder = 7;
