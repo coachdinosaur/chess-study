@@ -1,4 +1,5 @@
 import { Chess, DEFAULT_POSITION } from './vendor/chess.js';
+import { LiveBoard3D } from './live-board-3d.js';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 const PIECE_ASSETS = Object.freeze({
@@ -47,6 +48,14 @@ const elements = {
   lessonPanel: document.getElementById('lessonPanel'),
   lessonPositionSelect: document.getElementById('lessonPositionSelect'),
   lessonNote: document.getElementById('lessonNote'),
+  board3d: document.getElementById('liveBoard3D'),
+  toggle3dButton: document.getElementById('toggle3dButton'),
+  camera3dControls: document.getElementById('camera3dControls'),
+  camAngleBtn: document.getElementById('camAngleBtn'),
+  camTopBtn: document.getElementById('camTopBtn'),
+  camWhiteBtn: document.getElementById('camWhiteBtn'),
+  camBlackBtn: document.getElementById('camBlackBtn'),
+  camResetBtn: document.getElementById('camResetBtn'),
 };
 
 let game = new Chess();
@@ -61,6 +70,12 @@ let revision = 0;
 let channel = null;
 let preparedLessons = [];
 let activeLessonId = '';
+let is3dMode = false;
+let liveBoard3DInstance = null;
+
+try {
+  is3dMode = localStorage.getItem('live-board:3d-mode') === 'true';
+} catch {}
 
 function normalizeRoomCode(value) {
   return String(value || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
@@ -300,6 +315,17 @@ function render() {
   elements.undoButton.disabled = game.history().length === 0;
   elements.studentLockMessage.hidden = role !== 'student' || studentMovesAllowed;
   elements.lockStudentButton.textContent = studentMovesAllowed ? 'Lock student moves' : 'Allow student moves';
+
+  if (is3dMode && liveBoard3DInstance) {
+    liveBoard3DInstance.syncState({
+      fen: game.fen(),
+      orientation,
+      lastMove,
+      selectedSquare,
+      legalMoves,
+      canMove: canMovePieces(),
+    });
+  }
 }
 
 function tryMove(from, to) {
@@ -335,6 +361,16 @@ function handleSquareClick(square) {
     legalMoves = getLegalMoves(square);
   }
   renderBoard();
+  if (is3dMode && liveBoard3DInstance) {
+    liveBoard3DInstance.syncState({
+      fen: game.fen(),
+      orientation,
+      lastMove,
+      selectedSquare,
+      legalMoves,
+      canMove: canMovePieces(),
+    });
+  }
 }
 
 function replacePosition(fen, nextOrientation = orientation, lessonId = '') {
@@ -496,7 +532,7 @@ elements.resetButton.addEventListener('click', () => replacePosition(DEFAULT_POS
 elements.flipButton.addEventListener('click', () => {
   orientation = orientation === 'white' ? 'black' : 'white';
   revision += 1;
-  renderBoard();
+  render();
   publish('state');
 });
 elements.themeButton.addEventListener('click', () => {
@@ -533,6 +569,75 @@ elements.lessonPositionSelect.addEventListener('change', () => {
   replacePosition(lesson.fen, lesson.orientation, lesson.id);
 });
 
+function setActiveCamPreset(activeBtn) {
+  const buttons = [
+    elements.camAngleBtn,
+    elements.camTopBtn,
+    elements.camWhiteBtn,
+    elements.camBlackBtn,
+    elements.camResetBtn,
+  ];
+  buttons.forEach((btn) => btn?.classList.remove('active'));
+  activeBtn?.classList.add('active');
+}
+
+function set3dMode(active) {
+  is3dMode = Boolean(active);
+  try { localStorage.setItem('live-board:3d-mode', String(is3dMode)); } catch {}
+
+  elements.board.hidden = is3dMode;
+  if (elements.board3d) elements.board3d.hidden = !is3dMode;
+  if (elements.camera3dControls) elements.camera3dControls.hidden = !is3dMode;
+  if (elements.toggle3dButton) {
+    elements.toggle3dButton.setAttribute('aria-pressed', String(is3dMode));
+    elements.toggle3dButton.textContent = is3dMode ? '2D View' : '3D View';
+    elements.toggle3dButton.classList.toggle('is-3d', is3dMode);
+  }
+
+  if (is3dMode && !liveBoard3DInstance && elements.board3d) {
+    liveBoard3DInstance = new LiveBoard3D(elements.board3d, (square) => {
+      handleSquareClick(square);
+    });
+  }
+
+  if (is3dMode && liveBoard3DInstance) {
+    liveBoard3DInstance.syncState({
+      fen: game.fen(),
+      orientation,
+      lastMove,
+      selectedSquare,
+      legalMoves,
+      canMove: canMovePieces(),
+    });
+  }
+}
+
+elements.toggle3dButton?.addEventListener('click', () => {
+  set3dMode(!is3dMode);
+});
+
+elements.camAngleBtn?.addEventListener('click', () => {
+  liveBoard3DInstance?.setCameraView('angle');
+  setActiveCamPreset(elements.camAngleBtn);
+});
+elements.camTopBtn?.addEventListener('click', () => {
+  liveBoard3DInstance?.setCameraView('top');
+  setActiveCamPreset(elements.camTopBtn);
+});
+elements.camWhiteBtn?.addEventListener('click', () => {
+  liveBoard3DInstance?.setCameraView('white');
+  setActiveCamPreset(elements.camWhiteBtn);
+});
+elements.camBlackBtn?.addEventListener('click', () => {
+  liveBoard3DInstance?.setCameraView('black');
+  setActiveCamPreset(elements.camBlackBtn);
+});
+elements.camResetBtn?.addEventListener('click', () => {
+  liveBoard3DInstance?.resetCamera();
+  setActiveCamPreset(elements.camAngleBtn);
+});
+
+set3dMode(is3dMode);
 restoreLessons();
 const params = new URLSearchParams(location.search);
 const initialRole = params.get('role');

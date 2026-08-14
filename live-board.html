@@ -68,13 +68,23 @@
 
         <div class="board-frame">
           <div id="liveBoard" class="chess-board" role="grid" aria-label="Chess board"></div>
+          <div id="liveBoard3D" class="chess-board-3d" hidden aria-label="3D Chess board"></div>
+        </div>
+
+        <div id="camera3dControls" class="camera-3d-controls" hidden aria-label="3D Camera presets">
+          <button id="camAngleBtn" type="button" class="cam-preset-btn active">Angle</button>
+          <button id="camTopBtn" type="button" class="cam-preset-btn">Top</button>
+          <button id="camWhiteBtn" type="button" class="cam-preset-btn">White</button>
+          <button id="camBlackBtn" type="button" class="cam-preset-btn">Black</button>
+          <button id="camResetBtn" type="button" class="cam-preset-btn">Reset</button>
         </div>
 
         <p id="studentLockMessage" class="student-lock-message" hidden>Teacher is demonstrating. Your board is view-only.</p>
 
-        <div class="board-toolbar teacher-only" aria-label="Teacher board controls">
-          <button id="undoButton" type="button" aria-label="Move the last piece back" title="Move the last piece back">↶ Undo</button>
-          <button id="resetButton" type="button">Reset</button>
+        <div class="board-toolbar" aria-label="Board controls">
+          <button id="toggle3dButton" type="button" class="toggle-3d-button" aria-pressed="false">3D View</button>
+          <button id="undoButton" class="teacher-only" type="button" aria-label="Move the last piece back" title="Move the last piece back">↶ Undo</button>
+          <button id="resetButton" class="teacher-only" type="button">Reset</button>
           <button id="flipButton" type="button">Flip board</button>
           <button id="themeButton" type="button">Theme</button>
         </div>
