@@ -27,7 +27,7 @@ test('live-board contains 3D board container and toggle elements', async () => {
   assert.match(css, /\.cam-preset-btn/);
 
   // Live board JS integration
-  assert.match(js, /import \{ LiveBoard3D \} from '\.\/live-board-3d\.js'/);
+  assert.match(js, /import\('\.\/live-board-3d\.js'\)/);
   assert.match(js, /live-board:3d-mode/);
   assert.match(js, /liveBoard3DInstance\.syncState/);
   assert.match(js, /setCameraView/);

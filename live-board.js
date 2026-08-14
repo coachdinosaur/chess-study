@@ -1,5 +1,4 @@
 import { Chess, DEFAULT_POSITION } from './vendor/chess.js';
-import { LiveBoard3D } from './live-board-3d.js';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 const PIECE_ASSETS = Object.freeze({
@@ -581,7 +580,21 @@ function setActiveCamPreset(activeBtn) {
   activeBtn?.classList.add('active');
 }
 
-function set3dMode(active) {
+let LiveBoard3DClass = null;
+
+async function getLiveBoard3DClass() {
+  if (!LiveBoard3DClass) {
+    try {
+      const module = await import('./live-board-3d.js');
+      LiveBoard3DClass = module.LiveBoard3D;
+    } catch (err) {
+      console.warn('3D live board module could not be loaded.', err);
+    }
+  }
+  return LiveBoard3DClass;
+}
+
+async function set3dMode(active) {
   is3dMode = Boolean(active);
   try { localStorage.setItem('live-board:3d-mode', String(is3dMode)); } catch {}
 
@@ -595,9 +608,12 @@ function set3dMode(active) {
   }
 
   if (is3dMode && !liveBoard3DInstance && elements.board3d) {
-    liveBoard3DInstance = new LiveBoard3D(elements.board3d, (square) => {
-      handleSquareClick(square);
-    });
+    const Cls = await getLiveBoard3DClass();
+    if (Cls && !liveBoard3DInstance) {
+      liveBoard3DInstance = new Cls(elements.board3d, (square) => {
+        handleSquareClick(square);
+      });
+    }
   }
 
   if (is3dMode && liveBoard3DInstance) {
