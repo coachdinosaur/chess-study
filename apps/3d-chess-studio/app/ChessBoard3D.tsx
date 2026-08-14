@@ -31,6 +31,7 @@ export type SquareAnnotation = {
 export type ChessBoardHandle = {
   setView: (view: CameraView) => void;
   resetCamera: () => void;
+  flipCamera: () => void;
   downloadPng: (filename?: string) => void;
   clearAnnotations?: () => void;
 };
@@ -1524,6 +1525,16 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
         target: new THREE.Vector3(...preset.target),
       };
     },
+    flipCamera() {
+      const state = stateRef.current;
+      if (!state) return;
+      const currentPos = state.camera.position;
+      const currentTarget = state.controls.target;
+      state.cameraGoal = {
+        position: new THREE.Vector3(-currentPos.x, currentPos.y, -currentPos.z),
+        target: new THREE.Vector3(-currentTarget.x, currentTarget.y, -currentTarget.z),
+      };
+    },
     downloadPng(filename = "chess-position.png") {
       const state = stateRef.current;
       if (!state) return;
@@ -1817,8 +1828,6 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
           state.cameraGoal = null;
         }
       }
-      const targetRotation = flippedRef.current ? Math.PI : 0;
-      board.rotation.y = THREE.MathUtils.lerp(board.rotation.y, targetRotation, 0.12);
       controls.update();
       renderer.render(scene, camera);
     };
@@ -1855,6 +1864,27 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       stateRef.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    const state = stateRef.current;
+    if (!state) return;
+    const isLookingFromWhite = state.camera.position.z > 0;
+    if (flipped && isLookingFromWhite) {
+      const currentPos = state.camera.position;
+      const currentTarget = state.controls.target;
+      state.cameraGoal = {
+        position: new THREE.Vector3(-currentPos.x, currentPos.y, -currentPos.z),
+        target: new THREE.Vector3(-currentTarget.x, currentTarget.y, -currentTarget.z),
+      };
+    } else if (!flipped && !isLookingFromWhite) {
+      const currentPos = state.camera.position;
+      const currentTarget = state.controls.target;
+      state.cameraGoal = {
+        position: new THREE.Vector3(-currentPos.x, currentPos.y, -currentPos.z),
+        target: new THREE.Vector3(-currentTarget.x, currentTarget.y, -currentTarget.z),
+      };
+    }
+  }, [flipped]);
 
   useEffect(() => {
     const state = stateRef.current;

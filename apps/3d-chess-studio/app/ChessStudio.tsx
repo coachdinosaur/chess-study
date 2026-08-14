@@ -737,6 +737,12 @@ export default function ChessStudio() {
     announce("Setup mode ready");
   };
 
+  const handleFlipBoard = useCallback(() => {
+    setFlipped((value) => !value);
+    boardRef.current?.flipCamera?.();
+    announce("Flipped board perspective");
+  }, [announce]);
+
   const startNewGame = () => {
     const startDoc = startingDocument();
     const startFen = toFen(startDoc);
@@ -749,10 +755,11 @@ export default function ChessStudio() {
     setPendingPromotion(null);
     if (playOpponent === "bot" && botSide === "white") {
       setFlipped(true);
+      boardRef.current?.setView("black");
     } else {
       setFlipped(false);
+      boardRef.current?.setView("angle");
     }
-    boardRef.current?.setView("angle");
   };
 
   useEffect(() => {
@@ -773,7 +780,7 @@ export default function ChessStudio() {
       if (!playMode && event.key === "1") setTool("place");
       if (!playMode && event.key === "2") setTool("move");
       if (!playMode && event.key === "3") setTool("erase");
-      if (event.key.toLowerCase() === "f") setFlipped((value) => !value);
+      if (event.key.toLowerCase() === "f") handleFlipBoard();
       if (event.key.toLowerCase() === "c") clearAnnotations();
       if (event.key === "0") boardRef.current?.resetCamera();
       if (playMode && event.key === "ArrowLeft") {
@@ -791,7 +798,7 @@ export default function ChessStudio() {
     };
     window.addEventListener("keydown", keyHandler);
     return () => window.removeEventListener("keydown", keyHandler);
-  }, [clearAnnotations, goToMoveIndex, historyIndex, playMode, redo, undo]);
+  }, [clearAnnotations, goToMoveIndex, handleFlipBoard, historyIndex, playMode, redo, undo]);
 
   const hasAnnotations = arrows.length > 0 || squareHighlights.length > 0;
 
@@ -907,7 +914,7 @@ export default function ChessStudio() {
               <button type="button" onClick={copyShareLink} title="Copy shareable direct link to position">
                 Share link
               </button>
-              <button type="button" onClick={() => setFlipped((value) => !value)} aria-pressed={flipped}>
+              <button type="button" onClick={handleFlipBoard} aria-pressed={flipped}>
                 Flip board
               </button>
               <button type="button" onClick={() => boardRef.current?.resetCamera()}>Reset camera</button>
@@ -1010,14 +1017,22 @@ export default function ChessStudio() {
                       <button
                         type="button"
                         className={botSide === "black" ? "is-active" : ""}
-                        onClick={() => { setBotSide("black"); setFlipped(false); }}
+                        onClick={() => {
+                          setBotSide("black");
+                          setFlipped(false);
+                          boardRef.current?.setView("angle");
+                        }}
                       >
                         White
                       </button>
                       <button
                         type="button"
                         className={botSide === "white" ? "is-active" : ""}
-                        onClick={() => { setBotSide("white"); setFlipped(true); }}
+                        onClick={() => {
+                          setBotSide("white");
+                          setFlipped(true);
+                          boardRef.current?.setView("black");
+                        }}
                       >
                         Black
                       </button>
