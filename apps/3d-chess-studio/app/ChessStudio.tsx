@@ -2,10 +2,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Chess, type Square as RulesSquare } from "chess.js";
 import {
   ChessBoard3D,
+  PIECE_PALETTES,
   type ArrowAnnotation,
   type CameraView,
   type ChessBoardHandle,
   type LastMove,
+  type PiecePaletteId,
   type SquareAnnotation,
 } from "./ChessBoard3D";
 import {
@@ -180,6 +182,17 @@ export default function ChessStudio() {
     return "classic-walnut";
   });
 
+  // Piece Palette State
+  const [piecePaletteId, setPiecePaletteId] = useState<PiecePaletteId>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("3d-chess-piece-palette") as PiecePaletteId | null;
+      if (saved && Object.keys(PIECE_PALETTES).includes(saved)) {
+        return saved;
+      }
+    }
+    return "theme-default";
+  });
+
   // Annotations (3D Arrows & Highlights)
   const [arrows, setArrows] = useState<ArrowAnnotation[]>([]);
   const [squareHighlights, setSquareHighlights] = useState<SquareAnnotation[]>([]);
@@ -216,6 +229,16 @@ export default function ChessStudio() {
     }
     const label = THEME_OPTIONS.find((t) => t.id === newTheme)?.label || newTheme;
     announce(`${label} theme loaded`);
+  };
+
+  // Piece Palette switcher handler
+  const handlePiecePaletteChange = (newPalette: PiecePaletteId) => {
+    setPiecePaletteId(newPalette);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("3d-chess-piece-palette", newPalette);
+    }
+    const label = PIECE_PALETTES[newPalette]?.label || newPalette;
+    announce(`${label} piece colors active`);
   };
 
   // URL Deep-Link Bridge on mount
@@ -818,7 +841,7 @@ export default function ChessStudio() {
             <button type="button" className={playMode ? "is-active" : ""} aria-pressed={playMode} onClick={enterPlayMode}>Play</button>
           </div>
 
-          <div className="theme-select-wrapper" title="Board & piece theme">
+          <div className="theme-select-wrapper" title="Board theme">
             <select
               className="theme-select"
               value={themeId}
@@ -828,6 +851,21 @@ export default function ChessStudio() {
               {THEME_OPTIONS.map(({ id, label }) => (
                 <option key={id} value={id}>
                   {label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="theme-select-wrapper" title="Piece colors">
+            <select
+              className="theme-select"
+              value={piecePaletteId}
+              onChange={(e) => handlePiecePaletteChange(e.target.value as PiecePaletteId)}
+              aria-label="Select piece colors"
+            >
+              {Object.entries(PIECE_PALETTES).map(([id, info]) => (
+                <option key={id} value={id}>
+                  {info.label}
                 </option>
               ))}
             </select>
@@ -939,6 +977,7 @@ export default function ChessStudio() {
               lastMove={lastMove}
               checkSquare={checkSquare}
               themeId={themeId}
+              piecePaletteId={piecePaletteId}
               arrows={arrows}
               squareHighlights={squareHighlights}
               onSquarePress={actOnSquare}

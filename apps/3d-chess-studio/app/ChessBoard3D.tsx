@@ -36,6 +36,48 @@ export type ChessBoardHandle = {
   clearAnnotations?: () => void;
 };
 
+export type PiecePaletteId =
+  | "theme-default"
+  | "boxwood-ebony"
+  | "ivory-walnut"
+  | "amber-rosewood"
+  | "alabaster-graphite";
+
+export const PIECE_PALETTES: Record<
+  PiecePaletteId,
+  { label: string; white: string; black: string; roughness?: number; clearcoat?: number }
+> = {
+  "theme-default": { label: "Board Default", white: "", black: "" },
+  "boxwood-ebony": {
+    label: "Natural Boxwood & Ebony",
+    white: "#f5e4c6",
+    black: "#2e241f",
+    roughness: 0.24,
+    clearcoat: 0.42,
+  },
+  "ivory-walnut": {
+    label: "Warm Ivory & Dark Walnut",
+    white: "#faf2e2",
+    black: "#35241b",
+    roughness: 0.22,
+    clearcoat: 0.45,
+  },
+  "amber-rosewood": {
+    label: "Golden Honey & Rosewood",
+    white: "#f5ddb0",
+    black: "#321b16",
+    roughness: 0.26,
+    clearcoat: 0.40,
+  },
+  "alabaster-graphite": {
+    label: "Alabaster & Graphite",
+    white: "#f8f2e6",
+    black: "#24272e",
+    roughness: 0.18,
+    clearcoat: 0.55,
+  },
+};
+
 type Props = {
   position: BoardPosition;
   flipped: boolean;
@@ -44,6 +86,7 @@ type Props = {
   lastMove?: LastMove | null;
   checkSquare?: Square | null;
   themeId?: ThemeId;
+  piecePaletteId?: PiecePaletteId;
   arrows?: ArrowAnnotation[];
   squareHighlights?: SquareAnnotation[];
   onSquarePress: (square: Square) => void;
@@ -146,8 +189,10 @@ type SceneState = {
   hemiLight: THREE.HemisphereLight;
   keyLight: THREE.DirectionalLight;
   fillLight: THREE.DirectionalLight;
+  rimLight?: THREE.DirectionalLight;
   floorMesh: THREE.Mesh;
   currentThemeId: ThemeId;
+  currentPaletteId?: PiecePaletteId;
 };
 
 type ViewPreset = {
@@ -208,11 +253,11 @@ export const THEMES: Record<ThemeId, ThemeConfig> = {
       tileClearcoat: 0.08,
     },
     pieces: {
-      white: "#ddccaa",
-      black: "#211713",
+      white: "#f5e4c6",
+      black: "#32251f",
       gold: "#b88e48",
-      roughness: 0.27,
-      clearcoat: 0.36,
+      roughness: 0.25,
+      clearcoat: 0.42,
     },
     lighting: {
       exposure: 1.02,
@@ -248,11 +293,11 @@ export const THEMES: Record<ThemeId, ThemeConfig> = {
       tileClearcoat: 0.04,
     },
     pieces: {
-      white: "#f5e8d0",
-      black: "#1e1e1e",
+      white: "#f5e6cc",
+      black: "#2c2d30",
       gold: "#c5a059",
-      roughness: 0.32,
-      clearcoat: 0.25,
+      roughness: 0.28,
+      clearcoat: 0.38,
     },
     lighting: {
       exposure: 1.05,
@@ -288,8 +333,8 @@ export const THEMES: Record<ThemeId, ThemeConfig> = {
       tileClearcoat: 0.65,
     },
     pieces: {
-      white: "#ffffff",
-      black: "#1f2429",
+      white: "#f6ede0",
+      black: "#2a303a",
       gold: "#8b99a8",
       roughness: 0.16,
       clearcoat: 0.58,
@@ -328,8 +373,8 @@ export const THEMES: Record<ThemeId, ThemeConfig> = {
       tileClearcoat: 0.25,
     },
     pieces: {
-      white: "#f5eee2",
-      black: "#24272c",
+      white: "#f5e7cf",
+      black: "#272a31",
       gold: "#d4af37",
       roughness: 0.18,
       clearcoat: 0.65,
@@ -478,23 +523,45 @@ function createWoodGrainTexture(base: string, grain: string, anisotropy: number)
   return texture;
 }
 
-function createPieceMaterials(config: ThemeConfig = THEME_CONFIG): Materials {
+function createPieceMaterials(
+  config: ThemeConfig = THEME_CONFIG,
+  paletteId: PiecePaletteId = "theme-default",
+): Materials {
   const piecesConfig = config.pieces;
-  const material = (color: string, roughness = piecesConfig.roughness) => new THREE.MeshPhysicalMaterial({
-    color,
-    roughness,
+  const palette = paletteId !== "theme-default" ? PIECE_PALETTES[paletteId] : null;
+
+  const whiteColor = palette && palette.white ? palette.white : piecesConfig.white;
+  const blackColor = palette && palette.black ? palette.black : piecesConfig.black;
+  const roughness = palette?.roughness ?? piecesConfig.roughness;
+  const clearcoat = palette?.clearcoat ?? piecesConfig.clearcoat;
+
+  const whiteMat = new THREE.MeshPhysicalMaterial({
+    color: whiteColor,
+    roughness: Math.max(0.18, roughness - 0.04),
     metalness: 0,
-    clearcoat: piecesConfig.clearcoat,
-    clearcoatRoughness: Math.min(0.5, roughness + 0.08),
-    sheen: 0.12,
-    sheenColor: new THREE.Color(color).lerp(new THREE.Color("#fff0d2"), 0.12),
-    sheenRoughness: 0.55,
+    clearcoat: Math.max(0.35, clearcoat),
+    clearcoatRoughness: 0.26,
+    sheen: 0.35,
+    sheenColor: new THREE.Color("#fff2d6"),
+    sheenRoughness: 0.45,
+    side: THREE.DoubleSide,
+  });
+
+  const blackMat = new THREE.MeshPhysicalMaterial({
+    color: blackColor,
+    roughness: Math.max(0.16, roughness - 0.06),
+    metalness: 0.04,
+    clearcoat: Math.max(0.55, clearcoat + 0.15),
+    clearcoatRoughness: 0.18,
+    sheen: 0.70,
+    sheenColor: new THREE.Color("#b8cbdf"),
+    sheenRoughness: 0.28,
     side: THREE.DoubleSide,
   });
 
   return {
-    white: material(piecesConfig.white),
-    black: material(piecesConfig.black, Math.max(0.2, piecesConfig.roughness - 0.03)),
+    white: whiteMat,
+    black: blackMat,
     gold: new THREE.MeshPhysicalMaterial({
       color: piecesConfig.gold,
       roughness: 0.26,
@@ -537,7 +604,12 @@ function addThemeLighting(scene: THREE.Scene, config: ThemeConfig, shadowMapSize
   fill.castShadow = false;
   scene.add(fill);
 
-  return { ambient, hemi, key, fill };
+  const rim = new THREE.DirectionalLight("#eef4fc", 2.2);
+  rim.position.set(0, 12, -12);
+  rim.castShadow = false;
+  scene.add(rim);
+
+  return { ambient, hemi, key, fill, rim };
 }
 
 function createThemeFloor(config: ThemeConfig) {
@@ -1202,16 +1274,16 @@ function updateHighlights(
 
 function createLabel(text: string, color: string) {
   const canvas = document.createElement("canvas");
-  canvas.width = 96;
-  canvas.height = 96;
+  canvas.width = 128;
+  canvas.height = 128;
   const context = canvas.getContext("2d");
   if (!context) throw new Error("Canvas labels are not available.");
-  context.clearRect(0, 0, 96, 96);
+  context.clearRect(0, 0, 128, 128);
   context.fillStyle = color;
-  context.font = "700 58px Georgia, serif";
+  context.font = "bold 72px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
   context.textAlign = "center";
   context.textBaseline = "middle";
-  context.fillText(text, 48, 49);
+  context.fillText(text, 64, 64);
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.anisotropy = 4;
@@ -1219,10 +1291,12 @@ function createLabel(text: string, color: string) {
     map: texture,
     transparent: true,
     depthWrite: false,
-    alphaTest: 0.04,
-    toneMapped: false,
+    polygonOffset: true,
+    polygonOffsetFactor: -1,
+    polygonOffsetUnits: -1,
+    toneMapped: true,
   });
-  const plane = new THREE.Mesh(new THREE.PlaneGeometry(0.235, 0.235), material);
+  const plane = new THREE.Mesh(new THREE.PlaneGeometry(0.24, 0.24), material);
   plane.rotation.x = -Math.PI / 2;
   plane.renderOrder = 4;
   plane.castShadow = false;
@@ -1315,49 +1389,59 @@ function updateAnnotations(
   }
 }
 
-function applyThemeToScene(state: SceneState, themeId: ThemeId) {
+function applyThemeToScene(
+  state: SceneState,
+  themeId: ThemeId,
+  paletteId: PiecePaletteId = "theme-default",
+) {
+  const themeChanged = state.currentThemeId !== themeId;
+  const paletteChanged = state.currentPaletteId !== paletteId;
   state.currentThemeId = themeId;
+  state.currentPaletteId = paletteId;
   const config = THEMES[themeId] || THEMES["classic-walnut"];
 
-  if (state.scene.background instanceof THREE.CanvasTexture) {
-    state.scene.background.dispose();
+  if (themeChanged) {
+    if (state.scene.background instanceof THREE.CanvasTexture) {
+      state.scene.background.dispose();
+    }
+    state.scene.background = createBackgroundTexture(config.background);
+
+    if (state.floorMesh.material instanceof THREE.MeshStandardMaterial) {
+      state.floorMesh.material.color.set(config.floor);
+    }
+
+    state.ambientLight.intensity = config.lighting.ambient;
+    state.hemiLight.color.set(config.lighting.hemisphereSky);
+    state.hemiLight.groundColor.set(config.lighting.hemisphereGround);
+    state.hemiLight.intensity = config.lighting.hemisphereIntensity;
+    state.keyLight.color.set(config.lighting.keyColor);
+    state.keyLight.intensity = config.lighting.keyIntensity;
+    state.keyLight.position.set(...config.lighting.keyPosition);
+    state.fillLight.color.set(config.lighting.fillColor);
+    state.fillLight.intensity = config.lighting.fillIntensity;
+    state.fillLight.position.set(...config.lighting.fillPosition);
+    state.renderer.toneMappingExposure = config.lighting.exposure;
+
+    if (state.hover.material instanceof THREE.MeshBasicMaterial) {
+      state.hover.material.color.set(config.hover);
+    }
+
+    const anisotropy = state.renderer.capabilities.getMaxAnisotropy();
+    const oldBoard = state.board;
+    const newBoard = createBoard(anisotropy, config);
+
+    newBoard.add(state.pieces, state.selection, state.highlights, state.annotations, state.hover);
+    state.scene.remove(oldBoard);
+    disposeObject(oldBoard, { materials: true });
+    state.board = newBoard;
+    state.scene.add(newBoard);
   }
-  state.scene.background = createBackgroundTexture(config.background);
 
-  if (state.floorMesh.material instanceof THREE.MeshStandardMaterial) {
-    state.floorMesh.material.color.set(config.floor);
+  if (themeChanged || paletteChanged) {
+    disposeMaterialSet(state.materials);
+    state.materials = createPieceMaterials(config, paletteId);
+    rebuildPieces(state);
   }
-
-  state.ambientLight.intensity = config.lighting.ambient;
-  state.hemiLight.color.set(config.lighting.hemisphereSky);
-  state.hemiLight.groundColor.set(config.lighting.hemisphereGround);
-  state.hemiLight.intensity = config.lighting.hemisphereIntensity;
-  state.keyLight.color.set(config.lighting.keyColor);
-  state.keyLight.intensity = config.lighting.keyIntensity;
-  state.keyLight.position.set(...config.lighting.keyPosition);
-  state.fillLight.color.set(config.lighting.fillColor);
-  state.fillLight.intensity = config.lighting.fillIntensity;
-  state.fillLight.position.set(...config.lighting.fillPosition);
-  state.renderer.toneMappingExposure = config.lighting.exposure;
-
-  if (state.hover.material instanceof THREE.MeshBasicMaterial) {
-    state.hover.material.color.set(config.hover);
-  }
-
-  disposeMaterialSet(state.materials);
-  state.materials = createPieceMaterials(config);
-
-  const anisotropy = state.renderer.capabilities.getMaxAnisotropy();
-  const oldBoard = state.board;
-  const newBoard = createBoard(anisotropy, config);
-
-  newBoard.add(state.pieces, state.selection, state.highlights, state.annotations, state.hover);
-  state.scene.remove(oldBoard);
-  disposeObject(oldBoard, { materials: true });
-  state.board = newBoard;
-  state.scene.add(newBoard);
-
-  rebuildPieces(state);
 }
 
 function createBoard(anisotropy: number, theme: ThemeConfig = THEME_CONFIG) {
@@ -1411,7 +1495,7 @@ function createBoard(anisotropy: number, theme: ThemeConfig = THEME_CONFIG) {
   base.castShadow = true;
   board.add(base);
 
-  const upperFrame = new THREE.Mesh(new RoundedBoxGeometry(8.62, 0.2, 8.62, 6, 0.1), frameTop);
+  const upperFrame = new THREE.Mesh(new RoundedBoxGeometry(8.62, 0.32, 8.62, 6, 0.08), frameTop);
   upperFrame.position.y = 0.21;
   upperFrame.receiveShadow = true;
   upperFrame.castShadow = true;
@@ -1440,15 +1524,15 @@ function createBoard(anisotropy: number, theme: ThemeConfig = THEME_CONFIG) {
     }
   }
 
-  const trimGeometryLong = new RoundedBoxGeometry(8.06, 0.028, 0.024, 2, 0.008);
-  const trimGeometryShort = new RoundedBoxGeometry(0.024, 0.028, 8.06, 2, 0.008);
+  const trimGeometryLong = new RoundedBoxGeometry(8.06, 0.016, 0.024, 2, 0.006);
+  const trimGeometryShort = new RoundedBoxGeometry(0.024, 0.016, 8.06, 2, 0.006);
   for (const z of [-4.025, 4.025]) {
-    const rail = addMesh(board, trimGeometryLong.clone(), trim, [0, TILE_TOP + 0.008, z]);
+    const rail = addMesh(board, trimGeometryLong.clone(), trim, [0, TILE_TOP + 0.003, z]);
     rail.castShadow = false;
     rail.receiveShadow = true;
   }
   for (const x of [-4.025, 4.025]) {
-    const rail = addMesh(board, trimGeometryShort.clone(), trim, [x, TILE_TOP + 0.008, 0]);
+    const rail = addMesh(board, trimGeometryShort.clone(), trim, [x, TILE_TOP + 0.003, 0]);
     rail.castShadow = false;
     rail.receiveShadow = true;
   }
@@ -1457,20 +1541,20 @@ function createBoard(anisotropy: number, theme: ThemeConfig = THEME_CONFIG) {
   for (let index = 0; index < 8; index += 1) {
     const x = index - 3.5;
     const near = createLabel(files[index], config.label);
-    near.position.set(x, TILE_TOP + 0.01, 4.22);
+    near.position.set(x, TILE_TOP + 0.001, 4.20);
     board.add(near);
     const far = createLabel(files[index], config.label);
-    far.position.set(x, TILE_TOP + 0.01, -4.22);
+    far.position.set(x, TILE_TOP + 0.001, -4.20);
     far.rotation.z = Math.PI;
     board.add(far);
 
     const z = 3.5 - index;
     const left = createLabel(String(index + 1), config.label);
-    left.position.set(-4.22, TILE_TOP + 0.01, z);
+    left.position.set(-4.20, TILE_TOP + 0.001, z);
     left.rotation.z = -Math.PI / 2;
     board.add(left);
     const right = createLabel(String(index + 1), config.label);
-    right.position.set(4.22, TILE_TOP + 0.01, z);
+    right.position.set(4.20, TILE_TOP + 0.001, z);
     right.rotation.z = Math.PI / 2;
     board.add(right);
   }
@@ -1535,6 +1619,7 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     lastMove,
     checkSquare,
     themeId = "classic-walnut",
+    piecePaletteId = "theme-default",
     arrows = [],
     squareHighlights = [],
     onSquarePress,
@@ -1674,7 +1759,7 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     board.add(hover);
     scene.add(board);
 
-    const materials = createPieceMaterials(config);
+    const materials = createPieceMaterials(config, piecePaletteId);
 
     const state: SceneState = {
       scene,
@@ -1698,8 +1783,10 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       hemiLight: lights.hemi,
       keyLight: lights.key,
       fillLight: lights.fill,
+      rimLight: lights.rim,
       floorMesh,
       currentThemeId: themeId,
+      currentPaletteId: piecePaletteId,
     };
     stateRef.current = state;
     rebuildPieces(state);
@@ -1940,10 +2027,10 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
   useEffect(() => {
     const state = stateRef.current;
     if (!state) return;
-    if (state.currentThemeId !== themeId) {
-      applyThemeToScene(state, themeId);
+    if (state.currentThemeId !== themeId || state.currentPaletteId !== piecePaletteId) {
+      applyThemeToScene(state, themeId, piecePaletteId);
     }
-  }, [themeId]);
+  }, [themeId, piecePaletteId]);
 
   useEffect(() => {
     const state = stateRef.current;
