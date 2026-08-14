@@ -369,15 +369,22 @@ const STAUNTON_MODEL_NAMES: Record<PieceCode, string> = {
 };
 
 const STAUNTON_TARGET_HEIGHT: Record<PieceKind, number> = {
-  P: 0.88,
-  R: 1.04,
-  N: 1.2,
-  B: 1.24,
-  Q: 1.36,
-  K: 1.48,
+  P: 0.80,
+  R: 0.94,
+  N: 1.10,
+  B: 1.16,
+  Q: 1.28,
+  K: 1.42,
 };
 
-const STAUNTON_WIDTH_BOOST = 1.18;
+const STAUNTON_WIDTH_BOOST: Record<PieceKind, number> = {
+  P: 1.45,
+  R: 1.50,
+  N: 1.38,
+  B: 1.40,
+  Q: 1.42,
+  K: 1.42,
+};
 
 let sharedPieceTemplates: PieceTemplates | null = null;
 let sharedPieceTemplatesPromise: Promise<PieceTemplates> | null = null;
@@ -898,11 +905,13 @@ function createStauntonTemplates(root: THREE.Object3D): PieceTemplates {
 
     const normalizedBounds = new THREE.Box3().setFromObject(template);
     const height = Math.max(0.001, normalizedBounds.max.y - normalizedBounds.min.y);
-    const heightScale = STAUNTON_TARGET_HEIGHT[code[1] as PieceKind] / height;
+    const pieceKind = code[1] as PieceKind;
+    const heightScale = STAUNTON_TARGET_HEIGHT[pieceKind] / height;
+    const widthScale = heightScale * STAUNTON_WIDTH_BOOST[pieceKind];
     template.scale.set(
-      heightScale * STAUNTON_WIDTH_BOOST,
+      widthScale,
       heightScale,
-      heightScale * STAUNTON_WIDTH_BOOST,
+      widthScale,
     );
     template.updateMatrixWorld(true);
     configureShadows(template, false, false);
