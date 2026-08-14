@@ -397,34 +397,46 @@ export default function ChessStudio() {
     [announce, commit, fen, historyIndex, moveHistory],
   );
 
+  const finishPlayMoveRef = useRef(finishPlayMove);
+  finishPlayMoveRef.current = finishPlayMove;
+
   // Trigger Local Bot Opponent Move
   useEffect(() => {
-    if (!playMode || playOpponent !== "bot" || isReviewingHistory) return;
-    if (botThinking) return;
+    if (!playMode || playOpponent !== "bot" || isReviewingHistory) {
+      setBotThinking(false);
+      return;
+    }
 
     let game: Chess;
     try {
       game = new Chess(fen);
     } catch {
+      setBotThinking(false);
       return;
     }
 
-    if (game.isGameOver()) return;
+    if (game.isGameOver()) {
+      setBotThinking(false);
+      return;
+    }
 
     const currentTurn = game.turn();
     const isBotTurn =
       (botSide === "white" && currentTurn === "w") ||
       (botSide === "black" && currentTurn === "b");
 
-    if (!isBotTurn) return;
+    if (!isBotTurn) {
+      setBotThinking(false);
+      return;
+    }
 
     setBotThinking(true);
-    const delay = 450 + Math.random() * 250;
+    const delay = 420 + Math.random() * 200;
     const timer = setTimeout(() => {
       try {
         const best = findBestBotMove(game, botDifficulty);
         if (best) {
-          finishPlayMove(best.from, best.to, best.promotion || "q");
+          finishPlayMoveRef.current(best.from, best.to, best.promotion || "q");
         }
       } catch (err) {
         console.error("Bot move failed", err);
@@ -433,8 +445,10 @@ export default function ChessStudio() {
       }
     }, delay);
 
-    return () => clearTimeout(timer);
-  }, [botDifficulty, botSide, botThinking, fen, finishPlayMove, isReviewingHistory, playMode, playOpponent]);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [botDifficulty, botSide, fen, isReviewingHistory, playMode, playOpponent]);
 
   const actOnPlaySquare = useCallback(
     (square: Square) => {
