@@ -8,7 +8,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import type { BoardPosition, PieceCode, Square } from "./chess";
+import type { BoardPosition, PieceCode, Square, ThemeId } from "./chess";
 
 export type CameraView = "angle" | "top" | "white" | "black" | "left" | "right" | "low";
 
@@ -17,10 +17,22 @@ export type LastMove = {
   to: Square;
 };
 
+export type ArrowAnnotation = {
+  from: Square;
+  to: Square;
+  color: string;
+};
+
+export type SquareAnnotation = {
+  square: Square;
+  color: string;
+};
+
 export type ChessBoardHandle = {
   setView: (view: CameraView) => void;
   resetCamera: () => void;
   downloadPng: (filename?: string) => void;
+  clearAnnotations?: () => void;
 };
 
 type Props = {
@@ -30,8 +42,13 @@ type Props = {
   legalDestinations?: Square[];
   lastMove?: LastMove | null;
   checkSquare?: Square | null;
+  themeId?: ThemeId;
+  arrows?: ArrowAnnotation[];
+  squareHighlights?: SquareAnnotation[];
   onSquarePress: (square: Square) => void;
   onSquareErase: (square: Square) => void;
+  onAddArrow?: (arrow: ArrowAnnotation) => void;
+  onToggleSquareHighlight?: (highlight: SquareAnnotation) => void;
 };
 
 type CameraGoal = {
@@ -47,7 +64,7 @@ type Materials = {
 
 type PieceKind = "K" | "Q" | "R" | "B" | "N" | "P";
 
-type ThemeConfig = {
+export type ThemeConfig = {
   background: [string, string, string];
   floor: string;
   board: {
@@ -115,6 +132,7 @@ type SceneState = {
   pieces: THREE.Group;
   selection: THREE.Group;
   highlights: THREE.Group;
+  annotations: THREE.Group;
   hover: THREE.Mesh;
   materials: Materials;
   pieceTemplates: PieceTemplates | null;
@@ -123,6 +141,12 @@ type SceneState = {
   cameraGoal: CameraGoal | null;
   activeAnimations: ActivePieceAnimation[];
   activeFades: ActiveFadeAnimation[];
+  ambientLight: THREE.AmbientLight;
+  hemiLight: THREE.HemisphereLight;
+  keyLight: THREE.DirectionalLight;
+  fillLight: THREE.DirectionalLight;
+  floorMesh: THREE.Mesh;
+  currentThemeId: ThemeId;
 };
 
 type ViewPreset = {
@@ -163,46 +187,170 @@ const CAMERA_VIEWS: Record<CameraView, ViewPreset> = {
 
 const TILE_TOP = 0.371;
 
-const THEME_CONFIG: ThemeConfig = {
-  background: ["#f6f0e5", "#ded0bb", "#b8a38a"],
-  floor: "#c2b094",
-  board: {
-    frameBase: "#4a291c",
-    frameTop: "#985a32",
-    bed: "#241b17",
-    light: "#eadcbd",
-    dark: "#244c3a",
-    trim: "#b78b45",
-    label: "#4d2f20",
-    grain: "#4f2416",
-    woodGrain: true,
-    frameRoughness: 0.32,
-    frameClearcoat: 0.34,
-    tileRoughness: 0.5,
-    tileClearcoat: 0.08,
+export const THEMES: Record<ThemeId, ThemeConfig> = {
+  "classic-walnut": {
+    background: ["#f6f0e5", "#ded0bb", "#b8a38a"],
+    floor: "#c2b094",
+    board: {
+      frameBase: "#4a291c",
+      frameTop: "#985a32",
+      bed: "#241b17",
+      light: "#eadcbd",
+      dark: "#244c3a",
+      trim: "#b78b45",
+      label: "#4d2f20",
+      grain: "#4f2416",
+      woodGrain: true,
+      frameRoughness: 0.32,
+      frameClearcoat: 0.34,
+      tileRoughness: 0.5,
+      tileClearcoat: 0.08,
+    },
+    pieces: {
+      white: "#ddccaa",
+      black: "#211713",
+      gold: "#b88e48",
+      roughness: 0.27,
+      clearcoat: 0.36,
+    },
+    lighting: {
+      exposure: 1.02,
+      ambient: 0.58,
+      hemisphereSky: "#fff5df",
+      hemisphereGround: "#71665b",
+      hemisphereIntensity: 1.05,
+      keyColor: "#ffe1b8",
+      keyIntensity: 3.25,
+      keyPosition: [-7, 12, 8],
+      fillColor: "#c9dce5",
+      fillIntensity: 1.15,
+      fillPosition: [8, 7, -6],
+    },
+    hover: "#e8b552",
   },
-  pieces: {
-    white: "#ddccaa",
-    black: "#211713",
-    gold: "#b88e48",
-    roughness: 0.27,
-    clearcoat: 0.36,
+  "tournament-vinyl": {
+    background: ["#eef2ec", "#d5dfd3", "#a8b9a5"],
+    floor: "#a8b9a5",
+    board: {
+      frameBase: "#2b2f2c",
+      frameTop: "#5c4033",
+      bed: "#181d19",
+      light: "#f0dfbc",
+      dark: "#2e5d3c",
+      trim: "#c5a059",
+      label: "#2f4033",
+      grain: "#3c2a20",
+      woodGrain: true,
+      frameRoughness: 0.42,
+      frameClearcoat: 0.22,
+      tileRoughness: 0.65,
+      tileClearcoat: 0.04,
+    },
+    pieces: {
+      white: "#f5e8d0",
+      black: "#1e1e1e",
+      gold: "#c5a059",
+      roughness: 0.32,
+      clearcoat: 0.25,
+    },
+    lighting: {
+      exposure: 1.05,
+      ambient: 0.62,
+      hemisphereSky: "#f4f8f4",
+      hemisphereGround: "#636d64",
+      hemisphereIntensity: 1.1,
+      keyColor: "#fff8ee",
+      keyIntensity: 3.1,
+      keyPosition: [-7, 13, 8],
+      fillColor: "#d2e4df",
+      fillIntensity: 1.2,
+      fillPosition: [8, 7, -6],
+    },
+    hover: "#58ea9c",
   },
-  lighting: {
-    exposure: 1.02,
-    ambient: 0.58,
-    hemisphereSky: "#fff5df",
-    hemisphereGround: "#71665b",
-    hemisphereIntensity: 1.05,
-    keyColor: "#ffe1b8",
-    keyIntensity: 3.25,
-    keyPosition: [-7, 12, 8],
-    fillColor: "#c9dce5",
-    fillIntensity: 1.15,
-    fillPosition: [8, 7, -6],
+  "modern-marble": {
+    background: ["#f0f3f6", "#d9e2ec", "#bcccdc"],
+    floor: "#bcccdc",
+    board: {
+      frameBase: "#24292e",
+      frameTop: "#3e4751",
+      bed: "#1b1f23",
+      light: "#f8f9fa",
+      dark: "#333d47",
+      trim: "#9aa5b1",
+      label: "#3e4751",
+      grain: "#2e3740",
+      woodGrain: false,
+      frameRoughness: 0.22,
+      frameClearcoat: 0.55,
+      tileRoughness: 0.18,
+      tileClearcoat: 0.65,
+    },
+    pieces: {
+      white: "#ffffff",
+      black: "#1f2429",
+      gold: "#8b99a8",
+      roughness: 0.16,
+      clearcoat: 0.58,
+    },
+    lighting: {
+      exposure: 1.08,
+      ambient: 0.65,
+      hemisphereSky: "#f0f6ff",
+      hemisphereGround: "#5a6878",
+      hemisphereIntensity: 1.15,
+      keyColor: "#ffffff",
+      keyIntensity: 3.4,
+      keyPosition: [-6, 14, 8],
+      fillColor: "#d0e2ff",
+      fillIntensity: 1.3,
+      fillPosition: [8, 8, -6],
+    },
+    hover: "#60a5fa",
   },
-  hover: "#e8b552",
+  "midnight-obsidian": {
+    background: ["#1e2029", "#13141a", "#090a0d"],
+    floor: "#16171e",
+    board: {
+      frameBase: "#0c0d10",
+      frameTop: "#1c1e24",
+      bed: "#07080a",
+      light: "#2a2d37",
+      dark: "#121419",
+      trim: "#d4af37",
+      label: "#c5a059",
+      grain: "#14161b",
+      woodGrain: false,
+      frameRoughness: 0.18,
+      frameClearcoat: 0.7,
+      tileRoughness: 0.24,
+      tileClearcoat: 0.62,
+    },
+    pieces: {
+      white: "#e2d9c8",
+      black: "#101116",
+      gold: "#d4af37",
+      roughness: 0.18,
+      clearcoat: 0.65,
+    },
+    lighting: {
+      exposure: 1.12,
+      ambient: 0.45,
+      hemisphereSky: "#8a9bb8",
+      hemisphereGround: "#181a20",
+      hemisphereIntensity: 0.95,
+      keyColor: "#ffe6b0",
+      keyIntensity: 3.8,
+      keyPosition: [-6, 12, 7],
+      fillColor: "#4f6585",
+      fillIntensity: 1.6,
+      fillPosition: [7, 7, -6],
+    },
+    hover: "#f59e0b",
+  },
 };
+
+const THEME_CONFIG: ThemeConfig = THEMES["classic-walnut"];
 
 const STAUNTON_MODEL_NAMES: Record<PieceCode, string> = {
   wK: "WhiteKing",
@@ -247,6 +395,7 @@ function configureShadows(object: THREE.Object3D, cast = true, receive = true) {
     }
   });
 }
+
 
 function createBackgroundTexture(colors: ThemeConfig["background"]) {
   const canvas = document.createElement("canvas");
@@ -321,13 +470,13 @@ function createWoodGrainTexture(base: string, grain: string, anisotropy: number)
   return texture;
 }
 
-function createPieceMaterials(): Materials {
-  const config = THEME_CONFIG.pieces;
-  const material = (color: string, roughness = config.roughness) => new THREE.MeshPhysicalMaterial({
+function createPieceMaterials(config: ThemeConfig = THEME_CONFIG): Materials {
+  const piecesConfig = config.pieces;
+  const material = (color: string, roughness = piecesConfig.roughness) => new THREE.MeshPhysicalMaterial({
     color,
     roughness,
     metalness: 0,
-    clearcoat: config.clearcoat,
+    clearcoat: piecesConfig.clearcoat,
     clearcoatRoughness: Math.min(0.5, roughness + 0.08),
     sheen: 0.12,
     sheenColor: new THREE.Color(color).lerp(new THREE.Color("#fff0d2"), 0.12),
@@ -336,10 +485,10 @@ function createPieceMaterials(): Materials {
   });
 
   return {
-    white: material(config.white),
-    black: material(config.black, Math.max(0.2, config.roughness - 0.03)),
+    white: material(piecesConfig.white),
+    black: material(piecesConfig.black, Math.max(0.2, piecesConfig.roughness - 0.03)),
     gold: new THREE.MeshPhysicalMaterial({
-      color: config.gold,
+      color: piecesConfig.gold,
       roughness: 0.26,
       metalness: 0.58,
       clearcoat: 0.22,
@@ -350,12 +499,15 @@ function createPieceMaterials(): Materials {
 }
 
 function addThemeLighting(scene: THREE.Scene, config: ThemeConfig, shadowMapSize: number) {
-  scene.add(new THREE.AmbientLight("#ffffff", config.lighting.ambient));
-  scene.add(new THREE.HemisphereLight(
+  const ambient = new THREE.AmbientLight("#ffffff", config.lighting.ambient);
+  scene.add(ambient);
+
+  const hemi = new THREE.HemisphereLight(
     config.lighting.hemisphereSky,
     config.lighting.hemisphereGround,
     config.lighting.hemisphereIntensity,
-  ));
+  );
+  scene.add(hemi);
 
   const key = new THREE.DirectionalLight(config.lighting.keyColor, config.lighting.keyIntensity);
   key.position.set(...config.lighting.keyPosition);
@@ -376,6 +528,8 @@ function addThemeLighting(scene: THREE.Scene, config: ThemeConfig, shadowMapSize
   fill.position.set(...config.lighting.fillPosition);
   fill.castShadow = false;
   scene.add(fill);
+
+  return { ambient, hemi, key, fill };
 }
 
 function createThemeFloor(config: ThemeConfig) {
@@ -1024,10 +1178,140 @@ function createLabel(text: string, color: string) {
   return plane;
 }
 
-function createBoard(anisotropy: number) {
+function create3DArrow(from: Square, to: Square, colorHex: string | number): THREE.Group {
+  const group = new THREE.Group();
+  const fromPos = squarePosition(from);
+  const toPos = squarePosition(to);
+
+  const start = new THREE.Vector3(fromPos.x, TILE_TOP + 0.045, fromPos.z);
+  const end = new THREE.Vector3(toPos.x, TILE_TOP + 0.045, toPos.z);
+  const dir = new THREE.Vector3().subVectors(end, start);
+  const totalLength = dir.length();
+  if (totalLength < 0.1) return group;
+  dir.normalize();
+
+  const shortenStart = 0.22;
+  const headLength = 0.35;
+  const headRadius = 0.14;
+  const shaftRadius = 0.045;
+  const shaftLength = Math.max(0.08, totalLength - shortenStart - headLength);
+
+  const shaftStart = start.clone().add(dir.clone().multiplyScalar(shortenStart));
+  const shaftEnd = shaftStart.clone().add(dir.clone().multiplyScalar(shaftLength));
+  const shaftCenter = new THREE.Vector3().addVectors(shaftStart, shaftEnd).multiplyScalar(0.5);
+
+  const material = new THREE.MeshBasicMaterial({
+    color: colorHex,
+    transparent: true,
+    opacity: 0.85,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+  });
+
+  const shaftGeom = new THREE.CylinderGeometry(shaftRadius, shaftRadius, shaftLength, 16);
+  const shaftMesh = new THREE.Mesh(shaftGeom, material);
+  shaftMesh.position.copy(shaftCenter);
+  shaftMesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+  shaftMesh.renderOrder = 9;
+  group.add(shaftMesh);
+
+  const headGeom = new THREE.ConeGeometry(headRadius, headLength, 16);
+  const headMesh = new THREE.Mesh(headGeom, material);
+  const headPos = shaftEnd.clone().add(dir.clone().multiplyScalar(headLength * 0.5));
+  headMesh.position.copy(headPos);
+  headMesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+  headMesh.renderOrder = 9;
+  group.add(headMesh);
+
+  return group;
+}
+
+function createSquareHighlight(square: Square, colorHex: string | number): THREE.Mesh {
+  const material = new THREE.MeshBasicMaterial({
+    color: colorHex,
+    transparent: true,
+    opacity: 0.38,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+  });
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.96, 0.96), material);
+  const loc = squarePosition(square);
+  mesh.position.set(loc.x, TILE_TOP + 0.0035, loc.z);
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.renderOrder = 6;
+  return mesh;
+}
+
+function updateAnnotations(
+  state: SceneState,
+  arrows?: ArrowAnnotation[],
+  squareHighlights?: SquareAnnotation[],
+) {
+  disposeObject(state.annotations, { materials: true });
+  state.annotations.clear();
+
+  if (squareHighlights && squareHighlights.length > 0) {
+    for (const item of squareHighlights) {
+      state.annotations.add(createSquareHighlight(item.square, item.color));
+    }
+  }
+
+  if (arrows && arrows.length > 0) {
+    for (const arrow of arrows) {
+      state.annotations.add(create3DArrow(arrow.from, arrow.to, arrow.color));
+    }
+  }
+}
+
+function applyThemeToScene(state: SceneState, themeId: ThemeId) {
+  state.currentThemeId = themeId;
+  const config = THEMES[themeId] || THEMES["classic-walnut"];
+
+  if (state.scene.background instanceof THREE.CanvasTexture) {
+    state.scene.background.dispose();
+  }
+  state.scene.background = createBackgroundTexture(config.background);
+
+  if (state.floorMesh.material instanceof THREE.MeshStandardMaterial) {
+    state.floorMesh.material.color.set(config.floor);
+  }
+
+  state.ambientLight.intensity = config.lighting.ambient;
+  state.hemiLight.color.set(config.lighting.hemisphereSky);
+  state.hemiLight.groundColor.set(config.lighting.hemisphereGround);
+  state.hemiLight.intensity = config.lighting.hemisphereIntensity;
+  state.keyLight.color.set(config.lighting.keyColor);
+  state.keyLight.intensity = config.lighting.keyIntensity;
+  state.keyLight.position.set(...config.lighting.keyPosition);
+  state.fillLight.color.set(config.lighting.fillColor);
+  state.fillLight.intensity = config.lighting.fillIntensity;
+  state.fillLight.position.set(...config.lighting.fillPosition);
+  state.renderer.toneMappingExposure = config.lighting.exposure;
+
+  if (state.hover.material instanceof THREE.MeshBasicMaterial) {
+    state.hover.material.color.set(config.hover);
+  }
+
+  disposeMaterialSet(state.materials);
+  state.materials = createPieceMaterials(config);
+
+  const anisotropy = state.renderer.capabilities.getMaxAnisotropy();
+  const oldBoard = state.board;
+  const newBoard = createBoard(anisotropy, config);
+
+  newBoard.add(state.pieces, state.selection, state.highlights, state.annotations, state.hover);
+  state.scene.remove(oldBoard);
+  disposeObject(oldBoard, { materials: true });
+  state.board = newBoard;
+  state.scene.add(newBoard);
+
+  rebuildPieces(state);
+}
+
+function createBoard(anisotropy: number, theme: ThemeConfig = THEME_CONFIG) {
   const board = new THREE.Group();
   board.name = "board";
-  const config = THEME_CONFIG.board;
+  const config = theme.board;
   const grainTexture = config.woodGrain
     ? createWoodGrainTexture(config.frameTop, config.grain, anisotropy)
     : null;
@@ -1198,8 +1482,13 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     legalDestinations,
     lastMove,
     checkSquare,
+    themeId = "classic-walnut",
+    arrows = [],
+    squareHighlights = [],
     onSquarePress,
     onSquareErase,
+    onAddArrow,
+    onToggleSquareHighlight,
   },
   ref,
 ) {
@@ -1211,10 +1500,10 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     position: new THREE.Vector3(...CAMERA_VIEWS.angle.position),
     target: new THREE.Vector3(...CAMERA_VIEWS.angle.target),
   });
-  const callbacksRef = useRef({ onSquarePress, onSquareErase });
+  const callbacksRef = useRef({ onSquarePress, onSquareErase, onAddArrow, onToggleSquareHighlight });
   positionRef.current = position;
   flippedRef.current = flipped;
-  callbacksRef.current = { onSquarePress, onSquareErase };
+  callbacksRef.current = { onSquarePress, onSquareErase, onAddArrow, onToggleSquareHighlight };
 
   useImperativeHandle(ref, () => ({
     setView(view) {
@@ -1244,13 +1533,18 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       link.href = state.renderer.domElement.toDataURL("image/png");
       link.click();
     },
+    clearAnnotations() {
+      const state = stateRef.current;
+      if (!state) return;
+      state.annotations.clear();
+    },
   }));
 
   useEffect(() => {
     const host = hostRef.current;
     if (!host) return;
 
-    const config = THEME_CONFIG;
+    const config = THEMES[themeId] || THEMES["classic-walnut"];
     const scene = new THREE.Scene();
     const backgroundTexture = createBackgroundTexture(config.background);
     scene.background = backgroundTexture;
@@ -1286,17 +1580,20 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     controls.touches.ONE = THREE.TOUCH.ROTATE;
     controls.touches.TWO = THREE.TOUCH.DOLLY_PAN;
 
-    addThemeLighting(scene, config, window.innerWidth < 820 ? 1024 : 2048);
-    scene.add(createThemeFloor(config));
+    const lights = addThemeLighting(scene, config, window.innerWidth < 820 ? 1024 : 2048);
+    const floorMesh = createThemeFloor(config);
+    scene.add(floorMesh);
 
-    const board = createBoard(renderer.capabilities.getMaxAnisotropy());
+    const board = createBoard(renderer.capabilities.getMaxAnisotropy(), config);
     const pieces = new THREE.Group();
     pieces.name = "pieces";
     const selection = new THREE.Group();
     selection.name = "selection";
     const highlights = new THREE.Group();
     highlights.name = "highlights";
-    board.add(pieces, selection, highlights);
+    const annotations = new THREE.Group();
+    annotations.name = "annotations";
+    board.add(pieces, selection, highlights, annotations);
 
     const hoverMaterial = new THREE.MeshBasicMaterial({
       color: config.hover,
@@ -1315,7 +1612,7 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     board.add(hover);
     scene.add(board);
 
-    const materials = createPieceMaterials();
+    const materials = createPieceMaterials(config);
 
     const state: SceneState = {
       scene,
@@ -1326,6 +1623,7 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       pieces,
       selection,
       highlights,
+      annotations,
       hover,
       materials,
       pieceTemplates: sharedPieceTemplates,
@@ -1334,6 +1632,12 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       cameraGoal: null,
       activeAnimations: [],
       activeFades: [],
+      ambientLight: lights.ambient,
+      hemiLight: lights.hemi,
+      keyLight: lights.key,
+      fillLight: lights.fill,
+      floorMesh,
+      currentThemeId: themeId,
     };
     stateRef.current = state;
     rebuildPieces(state);
@@ -1382,6 +1686,10 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     const pointerStart = new THREE.Vector2();
     let pointerDown = false;
 
+    const rightPointerStart = new THREE.Vector2();
+    let rightPointerDown = false;
+    let rightStartSquare: Square | null = null;
+
     const pick = (clientX: number, clientY: number) => {
       const bounds = renderer.domElement.getBoundingClientRect();
       pointer.x = ((clientX - bounds.left) / bounds.width) * 2 - 1;
@@ -1396,7 +1704,7 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     };
 
     const updateHover = (event: PointerEvent) => {
-      if (pointerDown) return;
+      if (pointerDown || rightPointerDown) return;
       const interactive = pick(event.clientX, event.clientY);
       const square = interactive?.userData.square as Square | undefined;
       if (!square) {
@@ -1411,24 +1719,50 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     };
 
     const pointerDownHandler = (event: PointerEvent) => {
-      pointerDown = true;
-      pointerStart.set(event.clientX, event.clientY);
-      hover.visible = false;
+      if (event.button === 0) {
+        pointerDown = true;
+        pointerStart.set(event.clientX, event.clientY);
+        hover.visible = false;
+      } else if (event.button === 2) {
+        rightPointerDown = true;
+        rightPointerStart.set(event.clientX, event.clientY);
+        const interactive = pick(event.clientX, event.clientY);
+        rightStartSquare = (interactive?.userData.square as Square) || null;
+      }
     };
+
     const pointerUpHandler = (event: PointerEvent) => {
-      const distance = pointerStart.distanceTo(new THREE.Vector2(event.clientX, event.clientY));
-      pointerDown = false;
-      if (distance > 6 || event.button !== 0) return;
-      const interactive = pick(event.clientX, event.clientY);
-      const square = interactive?.userData.square as Square | undefined;
-      if (square) callbacksRef.current.onSquarePress(square);
+      if (event.button === 0) {
+        const distance = pointerStart.distanceTo(new THREE.Vector2(event.clientX, event.clientY));
+        pointerDown = false;
+        if (distance > 6) return;
+        const interactive = pick(event.clientX, event.clientY);
+        const square = interactive?.userData.square as Square | undefined;
+        if (square) callbacksRef.current.onSquarePress(square);
+      } else if (event.button === 2) {
+        const distance = rightPointerStart.distanceTo(new THREE.Vector2(event.clientX, event.clientY));
+        rightPointerDown = false;
+        const interactive = pick(event.clientX, event.clientY);
+        const endSquare = (interactive?.userData.square as Square) || null;
+
+        const color = event.shiftKey ? "#38bdf8" : (event.ctrlKey || event.altKey) ? "#ef4444" : "#22c55e";
+
+        if (rightStartSquare && endSquare && rightStartSquare !== endSquare && distance > 12) {
+          callbacksRef.current.onAddArrow?.({ from: rightStartSquare, to: endSquare, color });
+        } else if (rightStartSquare && (!endSquare || rightStartSquare === endSquare) && distance <= 12) {
+          if (callbacksRef.current.onToggleSquareHighlight) {
+            callbacksRef.current.onToggleSquareHighlight({ square: rightStartSquare, color });
+          }
+        }
+        rightStartSquare = null;
+      }
     };
+
     const contextHandler = (event: MouseEvent) => {
       event.preventDefault();
-      const interactive = pick(event.clientX, event.clientY);
-      const square = interactive?.userData.square as Square | undefined;
-      if (square) callbacksRef.current.onSquareErase(square);
+      // Right click context menu prevented so right-drag / right-click annotations work smoothly
     };
+
     const leaveHandler = () => {
       hover.visible = false;
       renderer.domElement.style.cursor = "grab";
@@ -1511,6 +1845,8 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       pieces.clear();
       disposeObject(state.highlights, { materials: false });
       state.highlights.clear();
+      disposeObject(state.annotations, { materials: true });
+      state.annotations.clear();
       disposeObject(scene);
       disposeMaterialSet(materials);
       backgroundTexture.dispose();
@@ -1519,6 +1855,14 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       stateRef.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    const state = stateRef.current;
+    if (!state) return;
+    if (state.currentThemeId !== themeId) {
+      applyThemeToScene(state, themeId);
+    }
+  }, [themeId]);
 
   useEffect(() => {
     const state = stateRef.current;
@@ -1532,5 +1876,12 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     updateHighlights(state, activeSquare, legalDestinations, lastMove, checkSquare);
   }, [activeSquare, legalDestinations, lastMove, checkSquare]);
 
+  useEffect(() => {
+    const state = stateRef.current;
+    if (!state) return;
+    updateAnnotations(state, arrows, squareHighlights);
+  }, [arrows, squareHighlights]);
+
   return <div className="board-host" ref={hostRef} />;
 });
+

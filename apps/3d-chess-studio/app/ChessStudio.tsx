@@ -2,25 +2,34 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Chess, type Square as RulesSquare } from "chess.js";
 import {
   ChessBoard3D,
+  type ArrowAnnotation,
   type CameraView,
   type ChessBoardHandle,
   type LastMove,
+  type SquareAnnotation,
 } from "./ChessBoard3D";
 import {
   PIECE_TYPES,
   cloneDocument,
+  create2DStudyUrl,
+  createShareableUrl,
   emptyDocument,
+  findBestBotMove,
   kingsOnlyDocument,
   parseFen,
+  parseUrlPosition,
   pieceCode,
   pieceLabel,
   positionWarnings,
   startingDocument,
   toFen,
+  type BotDifficulty,
+  type BotSide,
   type PieceCode,
   type PieceColor,
   type PositionDocument,
   type Square,
+  type ThemeId,
 } from "./chess";
 import {
   isAudioMuted,
@@ -58,6 +67,13 @@ const CAMERA_BUTTONS: { view: CameraView; label: string }[] = [
   { view: "left", label: "Left" },
   { view: "right", label: "Right" },
   { view: "low", label: "Low" },
+];
+
+const THEME_OPTIONS: { id: ThemeId; label: string }[] = [
+  { id: "classic-walnut", label: "Classic Walnut" },
+  { id: "tournament-vinyl", label: "Tournament Vinyl" },
+  { id: "modern-marble", label: "Modern Marble" },
+  { id: "midnight-obsidian", label: "Midnight Obsidian" },
 ];
 
 const EN_PASSANT_OPTIONS = [
@@ -153,6 +169,27 @@ export default function ChessStudio() {
   const [playMode, setPlayMode] = useState(false);
   const [pendingPromotion, setPendingPromotion] = useState<PendingPromotion | null>(null);
 
+  // Theme State
+  const [themeId, setThemeId] = useState<ThemeId>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("3d-chess-theme") as ThemeId | null;
+      if (saved && ["classic-walnut", "tournament-vinyl", "modern-marble", "midnight-obsidian"].includes(saved)) {
+        return saved;
+      }
+    }
+    return "classic-walnut";
+  });
+
+  // Annotations (3D Arrows & Highlights)
+  const [arrows, setArrows] = useState<ArrowAnnotation[]>([]);
+  const [squareHighlights, setSquareHighlights] = useState<SquareAnnotation[]>([]);
+
+  // Play Mode Opponent & AI Engine
+  const [playOpponent, setPlayOpponent] = useState<"human" | "bot">("human");
+  const [botSide, setBotSide] = useState<BotSide>("black");
+  const [botDifficulty, setBotDifficulty] = useState<BotDifficulty>("club");
+  const [botThinking, setBotThinking] = useState(false);
+
   // Play Mode History & Acoustic State
   const [moveHistory, setMoveHistory] = useState<MoveRecord[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
@@ -164,6 +201,38 @@ export default function ChessStudio() {
   const warnings = useMemo(() => positionWarnings(document), [document]);
   const pieceCount = Object.keys(document.board).length;
   const isReviewingHistory = playMode && historyIndex < moveHistory.length - 1;
+
+  const announce = useCallback((message: string) => {
+    setAnnouncement(message);
+    if (announcementTimer.current) clearTimeout(announcementTimer.current);
+    announcementTimer.current = setTimeout(() => setAnnouncement("Ready"), 2400);
+  }, []);
+
+  // Theme switcher handler
+  const handleThemeChange = (newTheme: ThemeId) => {
+    setThemeId(newTheme);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("3d-chess-theme", newTheme);
+    }
+    const label = THEME_OPTIONS.find((t) => t.id === newTheme)?.label || newTheme;
+    announce(`${label} theme loaded`);
+  };
+
+  // URL Deep-Link Bridge on mount
+  useEffect(() => {
+    const urlFen = parseUrlPosition();
+    if (urlFen) {
+      try {
+        const parsed = parseFen(urlFen);
+        setDocument(cloneDocument(parsed));
+        setFenDraft(toFen(parsed));
+        setInitialPlayFen(toFen(parsed));
+        announce("Position loaded from link");
+      } catch {
+        // Ignore malformed URL FEN silently
+      }
+    }
+  }, [announce]);
 
   const legalDestinations = useMemo(() => {
     if (!playMode || !moveFrom) return [];
@@ -201,21 +270,18 @@ export default function ChessStudio() {
       if (game.isStalemate()) return { label: "Stalemate", detail: "Draw", tone: "game-over" };
       if (game.isInsufficientMaterial()) return { label: "Insufficient material", detail: "Draw", tone: "game-over" };
       if (game.isDrawByFiftyMoves()) return { label: "Fifty-move rule", detail: "Draw", tone: "game-over" };
+      if (botThinking) {
+        return { label: "Computer is thinking...", detail: `${botDifficulty.toUpperCase()} bot`, tone: "playing" };
+      }
       return {
         label: `${turn} to move`,
-        detail: game.isCheck() ? "Check" : isReviewingHistory ? `Reviewing move ${historyIndex + 1}` : "Local two-player game",
+        detail: game.isCheck() ? "Check" : isReviewingHistory ? `Reviewing move ${historyIndex + 1}` : playOpponent === "bot" ? `vs Computer (${botDifficulty})` : "Local two-player game",
         tone: game.isCheck() ? "check" : "playing",
       };
     } catch {
       return { label: "Position cannot be played", detail: "Return to Setup", tone: "game-over" };
     }
-  }, [fen, historyIndex, isReviewingHistory, playMode]);
-
-  const announce = useCallback((message: string) => {
-    setAnnouncement(message);
-    if (announcementTimer.current) clearTimeout(announcementTimer.current);
-    announcementTimer.current = setTimeout(() => setAnnouncement("Ready"), 2400);
-  }, []);
+  }, [botDifficulty, botThinking, fen, historyIndex, isReviewingHistory, playMode, playOpponent]);
 
   useEffect(() => () => {
     if (announcementTimer.current) clearTimeout(announcementTimer.current);
@@ -233,6 +299,21 @@ export default function ChessStudio() {
   );
 
   const undo = useCallback(() => {
+    if (playMode && moveHistory.length > 0) {
+      // If playing vs bot, undo 2 half-moves so the human player gets their turn back
+      const undoCount = playOpponent === "bot" && moveHistory.length >= 2 ? 2 : 1;
+      const nextHistory = moveHistory.slice(0, -undoCount);
+      setMoveHistory(nextHistory);
+      setHistoryIndex(nextHistory.length - 1);
+      const targetFen = nextHistory.length > 0 ? nextHistory[nextHistory.length - 1].fen : initialPlayFen;
+      const targetDoc = parseFen(targetFen);
+      setDocument(cloneDocument(targetDoc));
+      setFenDraft(toFen(targetDoc));
+      setMoveFrom(null);
+      setLastMove(nextHistory.length > 0 ? { from: nextHistory[nextHistory.length - 1].from, to: nextHistory[nextHistory.length - 1].to } : null);
+      announce(undoCount === 2 ? "Undid last turn" : "Undid last move");
+      return;
+    }
     if (!past.length) return;
     const previous = past[past.length - 1];
     setPast((items) => items.slice(0, -1));
@@ -240,14 +321,8 @@ export default function ChessStudio() {
     setDocument(cloneDocument(previous));
     setFenDraft(toFen(previous));
     setMoveFrom(null);
-    if (playMode && moveHistory.length > 0) {
-      const nextHistory = moveHistory.slice(0, -1);
-      setMoveHistory(nextHistory);
-      setHistoryIndex(nextHistory.length - 1);
-      setLastMove(nextHistory.length > 0 ? { from: nextHistory[nextHistory.length - 1].from, to: nextHistory[nextHistory.length - 1].to } : null);
-    }
     announce("Undid last change");
-  }, [announce, document, moveHistory, past, playMode]);
+  }, [announce, document, initialPlayFen, moveHistory, past, playMode, playOpponent]);
 
   const redo = useCallback(() => {
     if (!future.length) return;
@@ -322,8 +397,51 @@ export default function ChessStudio() {
     [announce, commit, fen, historyIndex, moveHistory],
   );
 
+  // Trigger Local Bot Opponent Move
+  useEffect(() => {
+    if (!playMode || playOpponent !== "bot" || isReviewingHistory) return;
+    if (botThinking) return;
+
+    let game: Chess;
+    try {
+      game = new Chess(fen);
+    } catch {
+      return;
+    }
+
+    if (game.isGameOver()) return;
+
+    const currentTurn = game.turn();
+    const isBotTurn =
+      (botSide === "white" && currentTurn === "w") ||
+      (botSide === "black" && currentTurn === "b");
+
+    if (!isBotTurn) return;
+
+    setBotThinking(true);
+    const delay = 450 + Math.random() * 250;
+    const timer = setTimeout(() => {
+      try {
+        const best = findBestBotMove(game, botDifficulty);
+        if (best) {
+          finishPlayMove(best.from, best.to, best.promotion || "q");
+        }
+      } catch (err) {
+        console.error("Bot move failed", err);
+      } finally {
+        setBotThinking(false);
+      }
+    }, delay);
+
+    return () => clearTimeout(timer);
+  }, [botDifficulty, botSide, botThinking, fen, finishPlayMove, isReviewingHistory, playMode, playOpponent]);
+
   const actOnPlaySquare = useCallback(
     (square: Square) => {
+      if (botThinking) {
+        announce("Computer is thinking...");
+        return;
+      }
       if (pendingPromotion) {
         announce("Choose a promotion piece first");
         return;
@@ -343,6 +461,16 @@ export default function ChessStudio() {
 
       const selected = document.board[square];
       const turn = game.turn();
+
+      // Check if user is clicking their own piece vs bot's piece
+      if (playOpponent === "bot") {
+        const isUserTurn = (botSide === "white" && turn === "b") || (botSide === "black" && turn === "w");
+        if (!isUserTurn) {
+          announce("Wait for computer move");
+          return;
+        }
+      }
+
       if (!moveFrom) {
         if (!selected || selected[0] !== turn) {
           announce(`${turn === "w" ? "White" : "Black"} must choose a piece`);
@@ -379,7 +507,7 @@ export default function ChessStudio() {
       }
       finishPlayMove(moveFrom, square);
     },
-    [announce, document.board, fen, finishPlayMove, moveFrom, pendingPromotion],
+    [announce, botSide, botThinking, document.board, fen, finishPlayMove, moveFrom, pendingPromotion, playOpponent],
   );
 
   const actOnSquare = useCallback(
@@ -484,6 +612,49 @@ export default function ChessStudio() {
     }
   };
 
+  const copyShareLink = async () => {
+    const url = createShareableUrl(fen);
+    try {
+      await navigator.clipboard.writeText(url);
+      announce("Share link copied to clipboard");
+    } catch {
+      const input = window.document.createElement("textarea");
+      input.value = url;
+      window.document.body.appendChild(input);
+      input.select();
+      window.document.execCommand("copy");
+      input.remove();
+      announce("Share link copied to clipboard");
+    }
+  };
+
+  const handleAddArrow = useCallback((arrow: ArrowAnnotation) => {
+    setArrows((prev) => {
+      const exists = prev.find((a) => a.from === arrow.from && a.to === arrow.to && a.color === arrow.color);
+      if (exists) {
+        return prev.filter((a) => !(a.from === arrow.from && a.to === arrow.to));
+      }
+      return [...prev.filter((a) => !(a.from === arrow.from && a.to === arrow.to)), arrow];
+    });
+  }, []);
+
+  const handleToggleSquareHighlight = useCallback((highlight: SquareAnnotation) => {
+    setSquareHighlights((prev) => {
+      const exists = prev.find((h) => h.square === highlight.square);
+      if (exists) {
+        return prev.filter((h) => h.square !== highlight.square);
+      }
+      return [...prev, highlight];
+    });
+  }, []);
+
+  const clearAnnotations = useCallback(() => {
+    setArrows([]);
+    setSquareHighlights([]);
+    boardRef.current?.clearAnnotations?.();
+    announce("Cleared annotations");
+  }, [announce]);
+
   const goToMoveIndex = useCallback(
     (index: number) => {
       if (index < -1 || index >= moveHistory.length) return;
@@ -562,7 +733,11 @@ export default function ChessStudio() {
     commit(startDoc, "New game started");
     setMoveFrom(null);
     setPendingPromotion(null);
-    setFlipped(false);
+    if (playOpponent === "bot" && botSide === "white") {
+      setFlipped(true);
+    } else {
+      setFlipped(false);
+    }
     boardRef.current?.setView("angle");
   };
 
@@ -585,6 +760,7 @@ export default function ChessStudio() {
       if (!playMode && event.key === "2") setTool("move");
       if (!playMode && event.key === "3") setTool("erase");
       if (event.key.toLowerCase() === "f") setFlipped((value) => !value);
+      if (event.key.toLowerCase() === "c") clearAnnotations();
       if (event.key === "0") boardRef.current?.resetCamera();
       if (playMode && event.key === "ArrowLeft") {
         event.preventDefault();
@@ -601,7 +777,9 @@ export default function ChessStudio() {
     };
     window.addEventListener("keydown", keyHandler);
     return () => window.removeEventListener("keydown", keyHandler);
-  }, [goToMoveIndex, historyIndex, playMode, redo, undo]);
+  }, [clearAnnotations, goToMoveIndex, historyIndex, playMode, redo, undo]);
+
+  const hasAnnotations = arrows.length > 0 || squareHighlights.length > 0;
 
   return (
     <main className={`studio-shell ${playMode ? "is-play-mode" : ""}`}>
@@ -609,7 +787,7 @@ export default function ChessStudio() {
         <div className="brand-lockup">
           <span className="brand-cube" aria-hidden="true"><i /><i /><i /></span>
           <div>
-            <p className="eyebrow">Interactive editor</p>
+            <p className="eyebrow">Interactive 3D Chess Studio</p>
             <h1>3D Chess Position Studio</h1>
           </div>
         </div>
@@ -618,10 +796,26 @@ export default function ChessStudio() {
             <button type="button" className={!playMode ? "is-active" : ""} aria-pressed={!playMode} onClick={enterSetupMode}>Setup</button>
             <button type="button" className={playMode ? "is-active" : ""} aria-pressed={playMode} onClick={enterPlayMode}>Play</button>
           </div>
+
+          <div className="theme-select-wrapper" title="Board & piece theme">
+            <select
+              className="theme-select"
+              value={themeId}
+              onChange={(e) => handleThemeChange(e.target.value as ThemeId)}
+              aria-label="Select board theme"
+            >
+              {THEME_OPTIONS.map(({ id, label }) => (
+                <option key={id} value={id}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {!playMode && <span className="position-count">{pieceCount} pieces</span>}
           {playMode ? (
             <>
-              <button className="quiet-button" type="button" onClick={undo} disabled={!past.length}>Undo move</button>
+              <button className="quiet-button" type="button" onClick={undo} disabled={!moveHistory.length}>Undo move</button>
               <button className="quiet-button" type="button" onClick={startNewGame}>New game</button>
             </>
           ) : (
@@ -673,7 +867,13 @@ export default function ChessStudio() {
               <button type="button" onClick={() => applyPreset(kingsOnlyDocument(), "Kings only")}>Kings only</button>
               <button type="button" className="danger-quiet" onClick={() => applyPreset(emptyDocument(), "Empty board")}>Clear board</button>
             </div>
-            <p className="right-click-note">Tip: right-click any square to remove its piece.</p>
+            <div className="annotation-help-box">
+              <p className="annotation-help-title">💡 3D Tactical Markings</p>
+              <p className="right-click-note">
+                <b>Right-drag</b> to draw 3D tactical arrows (Shift=Blue, Ctrl=Red).<br />
+                <b>Right-click</b> to highlight square. Press <b>C</b> to clear.
+              </p>
+            </div>
           </aside>
         )}
 
@@ -685,6 +885,14 @@ export default function ChessStudio() {
               ))}
             </div>
             <div className="board-toolbar-end">
+              {hasAnnotations && (
+                <button type="button" className="clear-marks-btn" onClick={clearAnnotations} title="Clear 3D arrows and highlights">
+                  Clear marks ({arrows.length + squareHighlights.length})
+                </button>
+              )}
+              <button type="button" onClick={copyShareLink} title="Copy shareable direct link to position">
+                Share link
+              </button>
               <button type="button" onClick={() => setFlipped((value) => !value)} aria-pressed={flipped}>
                 Flip board
               </button>
@@ -709,8 +917,13 @@ export default function ChessStudio() {
               legalDestinations={legalDestinations}
               lastMove={lastMove}
               checkSquare={checkSquare}
+              themeId={themeId}
+              arrows={arrows}
+              squareHighlights={squareHighlights}
               onSquarePress={actOnSquare}
               onSquareErase={playMode ? () => announce("Right-click erase is disabled in Play mode") : eraseSquare}
+              onAddArrow={handleAddArrow}
+              onToggleSquareHighlight={handleToggleSquareHighlight}
             />
             <div className="viewport-status" aria-live="polite">
               <span className={`status-dot ${announcement === "Ready" ? "ready" : "active"}`} />
@@ -742,7 +955,7 @@ export default function ChessStudio() {
             <div className="camera-help" aria-label="Camera control instructions">
               <span><b>Drag</b> rotate</span>
               <span><b>Wheel / pinch</b> zoom</span>
-              <span><b>Right-drag / two fingers</b> pan</span>
+              <span><b>Right-drag</b> draw 3D arrow</span>
             </div>
           )}
         </section>
@@ -751,11 +964,82 @@ export default function ChessStudio() {
           <aside className="panel play-history-panel" aria-label="Game moves and history">
             <div className="panel-heading">
               <div>
-                <p className="eyebrow">Notation & Review</p>
-                <h2>Move history</h2>
+                <p className="eyebrow">Notation & Opponent</p>
+                <h2>Game mode</h2>
               </div>
               <span className="step-chip">{moveHistory.length}</span>
             </div>
+
+            <div className="opponent-box">
+              <div className="opponent-selector" role="group" aria-label="Game opponent">
+                <button
+                  type="button"
+                  className={playOpponent === "human" ? "is-active" : ""}
+                  onClick={() => setPlayOpponent("human")}
+                >
+                  2 Players (Local)
+                </button>
+                <button
+                  type="button"
+                  className={playOpponent === "bot" ? "is-active" : ""}
+                  onClick={() => setPlayOpponent("bot")}
+                >
+                  vs Computer (Bot)
+                </button>
+              </div>
+
+              {playOpponent === "bot" && (
+                <div className="bot-controls">
+                  <div className="bot-option-row">
+                    <span className="bot-label">You play:</span>
+                    <div className="segmented-small">
+                      <button
+                        type="button"
+                        className={botSide === "black" ? "is-active" : ""}
+                        onClick={() => { setBotSide("black"); setFlipped(false); }}
+                      >
+                        White
+                      </button>
+                      <button
+                        type="button"
+                        className={botSide === "white" ? "is-active" : ""}
+                        onClick={() => { setBotSide("white"); setFlipped(true); }}
+                      >
+                        Black
+                      </button>
+                    </div>
+                  </div>
+                  <div className="bot-option-row">
+                    <span className="bot-label">Level:</span>
+                    <div className="segmented-small">
+                      <button
+                        type="button"
+                        className={botDifficulty === "casual" ? "is-active" : ""}
+                        onClick={() => setBotDifficulty("casual")}
+                      >
+                        Casual
+                      </button>
+                      <button
+                        type="button"
+                        className={botDifficulty === "club" ? "is-active" : ""}
+                        onClick={() => setBotDifficulty("club")}
+                      >
+                        Club
+                      </button>
+                      <button
+                        type="button"
+                        className={botDifficulty === "master" ? "is-active" : ""}
+                        onClick={() => setBotDifficulty("master")}
+                      >
+                        Master
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="section-rule" />
 
             <div className="history-step-bar" role="group" aria-label="Move navigation">
               <button
@@ -855,6 +1139,15 @@ export default function ChessStudio() {
               <button className="quiet-button" type="button" onClick={copyFen}>
                 Copy FEN
               </button>
+              <a
+                className="quiet-button bridge-link"
+                href={create2DStudyUrl(fen)}
+                target="_blank"
+                rel="noreferrer"
+                title="Open this position in the 2D Study Board"
+              >
+                2D Board ↗
+              </a>
             </div>
           </aside>
         )}
@@ -909,19 +1202,33 @@ export default function ChessStudio() {
             <div className="section-rule" />
             <div className="fen-heading">
               <label htmlFor="fen-input">FEN</label>
-              <button type="button" onClick={copyFen}>Copy current</button>
+              <div className="fen-actions-mini">
+                <button type="button" onClick={copyFen}>Copy FEN</button>
+                <button type="button" onClick={copyShareLink}>Share URL</button>
+              </div>
             </div>
             <textarea
               id="fen-input"
               className={fenError ? "has-error" : ""}
               value={fenDraft}
               onChange={(event) => { setFenDraft(event.target.value); setFenError(""); }}
-              rows={4}
+              rows={3}
               spellCheck={false}
               aria-describedby={fenError ? "fen-error" : "fen-help"}
             />
             {fenError ? <p className="field-error" id="fen-error">{fenError}</p> : <p className="field-help" id="fen-help">Paste a FEN to load any position, or copy the live position above.</p>}
-            <button className="load-button" type="button" onClick={loadFen}>Load FEN</button>
+            <div className="fen-load-row">
+              <button className="load-button" type="button" onClick={loadFen}>Load FEN</button>
+              <a
+                className="quiet-button bridge-link-subtle"
+                href={create2DStudyUrl(fen)}
+                target="_blank"
+                rel="noreferrer"
+                title="Open this position in the 2D Study Board"
+              >
+                Open in 2D Board ↗
+              </a>
+            </div>
 
             {warnings.length > 0 && (
               <div className="warning-card">
@@ -936,7 +1243,7 @@ export default function ChessStudio() {
       {!playMode && (
         <footer className="studio-footer">
           <span>All position editing stays in your browser.</span>
-          <span>Keyboard: 1 Place · 2 Move · 3 Erase · F Flip · 0 Reset camera · Ctrl/⌘ Z Undo</span>
+          <span>Keyboard: 1 Place · 2 Move · 3 Erase · F Flip · C Clear marks · 0 Reset camera · Ctrl/⌘ Z Undo</span>
         </footer>
       )}
     </main>

@@ -826,17 +826,198 @@ kbd {
   font-size: 0.7rem;
 }
 
+.theme-select-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.theme-select {
+  min-height: 41px;
+  padding: 0 12px 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--ink);
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 140ms ease, background 140ms ease;
+}
+
+.theme-select:hover {
+  background: #ffffff;
+  border-color: rgba(36, 95, 75, 0.35);
+}
+
+.annotation-help-box {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border: 1px solid rgba(36, 95, 75, 0.15);
+  border-radius: 10px;
+  background: rgba(220, 233, 223, 0.4);
+}
+
+.annotation-help-title {
+  margin: 0 0 4px;
+  font-size: 0.68rem;
+  font-weight: 780;
+  color: var(--emerald-dark);
+}
+
+.clear-marks-btn {
+  background: rgba(220, 233, 223, 0.8) !important;
+  color: var(--emerald-dark) !important;
+  font-weight: 750 !important;
+  border-color: rgba(36, 95, 75, 0.3) !important;
+}
+
+.clear-marks-btn:hover {
+  background: #ffffff !important;
+}
+
+.opponent-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.opponent-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: rgba(47, 71, 60, 0.05);
+}
+
+.opponent-selector button {
+  min-height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 740;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.opponent-selector button.is-active {
+  background: #ffffff;
+  color: var(--emerald-dark);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.bot-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid rgba(36, 95, 75, 0.15);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.bot-option-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.bot-label {
+  font-size: 0.68rem;
+  font-weight: 750;
+  color: var(--muted);
+}
+
+.segmented-small {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(47, 71, 60, 0.05);
+}
+
+.segmented-small button {
+  min-height: 26px;
+  padding: 0 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.64rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.segmented-small button.is-active {
+  background: #ffffff;
+  color: var(--emerald-dark);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
 .fen-heading {
   justify-content: space-between;
   margin-bottom: 7px;
 }
 
-.fen-heading button {
-  min-height: 29px;
-  padding: 0 9px;
-  background: transparent;
+.fen-actions-mini {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fen-actions-mini button {
+  min-height: 26px;
+  padding: 0 7px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.6);
   font-size: 0.62rem;
-  font-weight: 740;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.fen-load-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.fen-load-row .load-button {
+  margin-top: 0;
+  flex: 1;
+}
+
+.bridge-link,
+.bridge-link-subtle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-size: 0.68rem;
+  font-weight: 750;
+  color: var(--emerald-dark);
+  border: 1px solid rgba(36, 95, 75, 0.25);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 0 10px;
+  min-height: 38px;
+  transition: background 140ms ease, border-color 140ms ease;
+}
+
+.bridge-link:hover,
+.bridge-link-subtle:hover {
+  background: #ffffff;
+  border-color: var(--emerald);
 }
 
 .position-panel textarea {
