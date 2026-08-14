@@ -12,6 +12,11 @@ import type { BoardPosition, PieceCode, Square } from "./chess";
 
 export type CameraView = "angle" | "top" | "white" | "black" | "left" | "right" | "low";
 
+export type LastMove = {
+  from: Square;
+  to: Square;
+};
+
 export type ChessBoardHandle = {
   setView: (view: CameraView) => void;
   resetCamera: () => void;
@@ -22,6 +27,9 @@ type Props = {
   position: BoardPosition;
   flipped: boolean;
   activeSquare: Square | null;
+  legalDestinations?: Square[];
+  lastMove?: LastMove | null;
+  checkSquare?: Square | null;
   onSquarePress: (square: Square) => void;
   onSquareErase: (square: Square) => void;
 };
@@ -83,6 +91,21 @@ type ThemeConfig = {
 type PieceTemplates = Record<PieceCode, THREE.Group>;
 type PieceLibraryStatus = "loading" | "ready" | "failed";
 
+type ActivePieceAnimation = {
+  mesh: THREE.Group;
+  fromPos: THREE.Vector3;
+  toPos: THREE.Vector3;
+  startTime: number;
+  duration: number;
+  lift: number;
+};
+
+type ActiveFadeAnimation = {
+  mesh: THREE.Group;
+  startTime: number;
+  duration: number;
+};
+
 type SceneState = {
   scene: THREE.Scene;
   camera: THREE.PerspectiveCamera;
@@ -91,12 +114,15 @@ type SceneState = {
   board: THREE.Group;
   pieces: THREE.Group;
   selection: THREE.Group;
+  highlights: THREE.Group;
   hover: THREE.Mesh;
   materials: Materials;
   pieceTemplates: PieceTemplates | null;
   pieceLibraryStatus: PieceLibraryStatus;
   latestPosition: BoardPosition;
   cameraGoal: CameraGoal | null;
+  activeAnimations: ActivePieceAnimation[];
+  activeFades: ActiveFadeAnimation[];
 };
 
 const CAMERA_VIEWS: Record<CameraView, [number, number, number]> = {
@@ -705,6 +731,230 @@ function rebuildPieces(state: SceneState) {
   });
 }
 
+function applyPositionUpdate(
+  state: SceneState,
+  newPosition: BoardPosition,
+  lastMove?: LastMove | null,
+) {
+  const prevPosition = state.latestPosition;
+  state.latestPosition = newPosition;
+
+  if (state.pieceLibraryStatus !== "ready") {
+    rebuildPieces(state);
+    return;
+  }
+
+  const prefersReducedMotion =
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const canAnimate =
+    !prefersReducedMotion &&
+    lastMove &&
+    prevPosition[lastMove.from] &&
+    newPosition[lastMove.to];
+
+  if (!canAnimate) {
+    state.activeAnimations = [];
+    state.activeFades = [];
+    rebuildPieces(state);
+    return;
+  }
+
+  const from = lastMove.from;
+  const to = lastMove.to;
+  const movedCode = newPosition[to]!;
+
+  let movedMesh: THREE.Group | undefined;
+
+  state.pieces.children.forEach((child) => {
+    if (child.userData.square === from) {
+      movedMesh = child as THREE.Group;
+    } else if (child.userData.square === to) {
+      const capturedGroup = child as THREE.Group;
+      capturedGroup.userData.square = undefined;
+      state.activeFades.push({
+        mesh: capturedGroup,
+        startTime: performance.now(),
+        duration: 200,
+      });
+    }
+  });
+
+  if (movedMesh) {
+    movedMesh.userData.square = to;
+    movedMesh.userData.code = movedCode;
+    const fromPos = squarePosition(from);
+    const toPos = squarePosition(to);
+    movedMesh.position.set(fromPos.x, TILE_TOP, fromPos.z);
+
+    const isKnight = movedCode[1] === "N";
+    const lift = isKnight ? 0.95 : 0.62;
+
+    state.activeAnimations.push({
+      mesh: movedMesh,
+      fromPos: fromPos.clone(),
+      toPos: toPos.clone(),
+      startTime: performance.now(),
+      duration: 220,
+      lift,
+    });
+
+    // Handle en-passant capture
+    if (movedCode[1] === "P" && from[0] !== to[0] && !prevPosition[to]) {
+      const epCapturedSquare = `${to[0]}${from[1]}` as Square;
+      const epChild = state.pieces.children.find(
+        (c) => c.userData.square === epCapturedSquare,
+      ) as THREE.Group | undefined;
+      if (epChild) {
+        epChild.userData.square = undefined;
+        state.activeFades.push({
+          mesh: epChild,
+          startTime: performance.now(),
+          duration: 200,
+        });
+      }
+    }
+
+    // Handle castling rook movement
+    if (
+      movedCode[1] === "K" &&
+      Math.abs(from.charCodeAt(0) - to.charCodeAt(0)) === 2
+    ) {
+      const rank = from[1];
+      const isKingside = to[0] === "g";
+      const rookFrom = (isKingside ? `h${rank}` : `a${rank}`) as Square;
+      const rookTo = (isKingside ? `f${rank}` : `d${rank}`) as Square;
+      const rookCode = `${movedCode[0]}R` as PieceCode;
+      const rookMesh = state.pieces.children.find(
+        (c) => c.userData.square === rookFrom,
+      ) as THREE.Group | undefined;
+      if (rookMesh) {
+        rookMesh.userData.square = rookTo;
+        rookMesh.userData.code = rookCode;
+        const rookFromPos = squarePosition(rookFrom);
+        const rookToPos = squarePosition(rookTo);
+        rookMesh.position.set(rookFromPos.x, TILE_TOP, rookFromPos.z);
+        state.activeAnimations.push({
+          mesh: rookMesh,
+          fromPos: rookFromPos.clone(),
+          toPos: rookToPos.clone(),
+          startTime: performance.now() + 25,
+          duration: 200,
+          lift: 0.45,
+        });
+      }
+    }
+  } else {
+    rebuildPieces(state);
+  }
+}
+
+function updateHighlights(
+  state: SceneState,
+  activeSquare: Square | null,
+  legalDestinations?: Square[],
+  lastMove?: LastMove | null,
+  checkSquare?: Square | null,
+) {
+  disposeObject(state.selection, { materials: false });
+  state.selection.clear();
+  disposeObject(state.highlights, { materials: false });
+  state.highlights.clear();
+
+  // 1. Last move highlights (from and to squares)
+  if (lastMove) {
+    const lastMoveMat = new THREE.MeshBasicMaterial({
+      color: 0xdca83a,
+      transparent: true,
+      opacity: 0.32,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+    });
+    for (const sq of [lastMove.from, lastMove.to]) {
+      if (!sq) continue;
+      const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.96, 0.96), lastMoveMat);
+      const loc = squarePosition(sq);
+      mesh.position.set(loc.x, TILE_TOP + 0.002, loc.z);
+      mesh.rotation.x = -Math.PI / 2;
+      mesh.renderOrder = 5;
+      state.highlights.add(mesh);
+    }
+  }
+
+  // 2. Check highlight on king square
+  if (checkSquare) {
+    const checkMat = new THREE.MeshBasicMaterial({
+      color: 0xd9383a,
+      transparent: true,
+      opacity: 0.45,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+    });
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.96, 0.96), checkMat);
+    const loc = squarePosition(checkSquare);
+    mesh.position.set(loc.x, TILE_TOP + 0.003, loc.z);
+    mesh.rotation.x = -Math.PI / 2;
+    mesh.renderOrder = 6;
+    state.highlights.add(mesh);
+  }
+
+  // 3. Active square ring
+  if (activeSquare) {
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(0.39, 0.035, 10, 48),
+      state.materials.gold,
+    );
+    const location = squarePosition(activeSquare);
+    ring.position.set(location.x, TILE_TOP + 0.036, location.z);
+    ring.rotation.x = Math.PI / 2;
+    ring.renderOrder = 8;
+    ring.castShadow = false;
+    ring.receiveShadow = false;
+    state.selection.add(ring);
+  }
+
+  // 4. Legal destination highlights
+  if (legalDestinations && legalDestinations.length > 0) {
+    const dotMat = new THREE.MeshBasicMaterial({
+      color: 0x245f4b,
+      transparent: true,
+      opacity: 0.46,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+    });
+    const captureRingMat = new THREE.MeshBasicMaterial({
+      color: 0xc99a48,
+      transparent: true,
+      opacity: 0.82,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+    });
+
+    for (const dest of legalDestinations) {
+      const isCapture = Boolean(state.latestPosition[dest]);
+      const loc = squarePosition(dest);
+
+      if (isCapture) {
+        const ring = new THREE.Mesh(
+          new THREE.TorusGeometry(0.38, 0.03, 8, 36),
+          captureRingMat,
+        );
+        ring.position.set(loc.x, TILE_TOP + 0.02, loc.z);
+        ring.rotation.x = Math.PI / 2;
+        ring.renderOrder = 7;
+        state.highlights.add(ring);
+      } else {
+        const dot = new THREE.Mesh(new THREE.CircleGeometry(0.14, 32), dotMat);
+        dot.position.set(loc.x, TILE_TOP + 0.004, loc.z);
+        dot.rotation.x = -Math.PI / 2;
+        dot.renderOrder = 7;
+        state.highlights.add(dot);
+      }
+    }
+  }
+}
+
 function createLabel(text: string, color: string) {
   const canvas = document.createElement("canvas");
   canvas.width = 96;
@@ -902,7 +1152,16 @@ function findInteractive(object: THREE.Object3D | null): THREE.Object3D | null {
 }
 
 export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBoard3D(
-  { position, flipped, activeSquare, onSquarePress, onSquareErase },
+  {
+    position,
+    flipped,
+    activeSquare,
+    legalDestinations,
+    lastMove,
+    checkSquare,
+    onSquarePress,
+    onSquareErase,
+  },
   ref,
 ) {
   const hostRef = useRef<HTMLDivElement>(null);
@@ -994,7 +1253,9 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     pieces.name = "pieces";
     const selection = new THREE.Group();
     selection.name = "selection";
-    board.add(pieces, selection);
+    const highlights = new THREE.Group();
+    highlights.name = "highlights";
+    board.add(pieces, selection, highlights);
 
     const hoverMaterial = new THREE.MeshBasicMaterial({
       color: config.hover,
@@ -1023,12 +1284,15 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       board,
       pieces,
       selection,
+      highlights,
       hover,
       materials,
       pieceTemplates: sharedPieceTemplates,
       pieceLibraryStatus: sharedPieceTemplates ? "ready" : "loading",
       latestPosition: positionRef.current,
       cameraGoal: null,
+      activeAnimations: [],
+      activeFades: [],
     };
     stateRef.current = state;
     rebuildPieces(state);
@@ -1138,6 +1402,34 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     let animationFrame = 0;
     const animate = () => {
       animationFrame = requestAnimationFrame(animate);
+      const now = performance.now();
+
+      if (state.activeAnimations.length > 0) {
+        state.activeAnimations = state.activeAnimations.filter((anim) => {
+          const elapsed = now - anim.startTime;
+          const progress = Math.min(1, Math.max(0, elapsed / anim.duration));
+          const ease = 1 - Math.pow(1 - progress, 3);
+          anim.mesh.position.x = THREE.MathUtils.lerp(anim.fromPos.x, anim.toPos.x, ease);
+          anim.mesh.position.z = THREE.MathUtils.lerp(anim.fromPos.z, anim.toPos.z, ease);
+          anim.mesh.position.y = TILE_TOP + Math.sin(progress * Math.PI) * anim.lift;
+          return progress < 1;
+        });
+      }
+
+      if (state.activeFades.length > 0) {
+        state.activeFades = state.activeFades.filter((fade) => {
+          const elapsed = now - fade.startTime;
+          const progress = Math.min(1, Math.max(0, elapsed / fade.duration));
+          const scale = Math.max(0.001, 1 - progress);
+          fade.mesh.scale.set(scale, scale, scale);
+          if (progress >= 1) {
+            state.pieces.remove(fade.mesh);
+            return false;
+          }
+          return true;
+        });
+      }
+
       if (state.cameraGoal) {
         camera.position.lerp(state.cameraGoal.position, 0.11);
         controls.target.lerp(state.cameraGoal.target, 0.11);
@@ -1176,6 +1468,8 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
         disposeObject(pieces, { materials: false });
       }
       pieces.clear();
+      disposeObject(state.highlights, { materials: false });
+      state.highlights.clear();
       disposeObject(scene);
       disposeMaterialSet(materials);
       backgroundTexture.dispose();
@@ -1188,28 +1482,14 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
   useEffect(() => {
     const state = stateRef.current;
     if (!state) return;
-    state.latestPosition = position;
-    rebuildPieces(state);
-  }, [position]);
+    applyPositionUpdate(state, position, lastMove);
+  }, [position, lastMove]);
 
   useEffect(() => {
     const state = stateRef.current;
     if (!state) return;
-    disposeObject(state.selection, { materials: false });
-    state.selection.clear();
-    if (!activeSquare) return;
-    const ring = new THREE.Mesh(
-      new THREE.TorusGeometry(0.39, 0.035, 10, 48),
-      state.materials.gold,
-    );
-    const location = squarePosition(activeSquare);
-    ring.position.set(location.x, TILE_TOP + 0.036, location.z);
-    ring.rotation.x = Math.PI / 2;
-    ring.renderOrder = 8;
-    ring.castShadow = false;
-    ring.receiveShadow = false;
-    state.selection.add(ring);
-  }, [activeSquare]);
+    updateHighlights(state, activeSquare, legalDestinations, lastMove, checkSquare);
+  }, [activeSquare, legalDestinations, lastMove, checkSquare]);
 
   return <div className="board-host" ref={hostRef} />;
 });

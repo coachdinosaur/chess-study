@@ -55,3 +55,21 @@ test("keeps deterministic board geometry and the classic presentation", async ()
   assert.equal(packageJson.dependencies.vinext, undefined);
   assert.equal(packageJson.dependencies["drizzle-orm"], undefined);
 });
+
+test("includes move history, 3D highlights, and synthesized audio engine", async () => {
+  const board = await readFile(resolve(root, "app/ChessBoard3D.tsx"), "utf8");
+  const studio = await readFile(resolve(root, "app/ChessStudio.tsx"), "utf8");
+  const audio = await readFile(resolve(root, "app/audio.ts"), "utf8");
+
+  assert.match(board, /legalDestinations/);
+  assert.match(board, /applyPositionUpdate/);
+  assert.match(board, /updateHighlights/);
+  assert.match(studio, /moveHistory/);
+  assert.match(studio, /copyPgn/);
+  assert.match(studio, /sound-toggle/);
+  assert.match(audio, /playMoveSound/);
+  assert.match(audio, /playCaptureSound/);
+  assert.match(audio, /playCastleSound/);
+  assert.match(audio, /playCheckSound/);
+  assert.match(audio, /playGameOverSound/);
+});

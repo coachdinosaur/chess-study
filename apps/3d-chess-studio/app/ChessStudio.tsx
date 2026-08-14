@@ -4,6 +4,7 @@ import {
   ChessBoard3D,
   type CameraView,
   type ChessBoardHandle,
+  type LastMove,
 } from "./ChessBoard3D";
 import {
   PIECE_TYPES,
@@ -21,6 +22,15 @@ import {
   type PositionDocument,
   type Square,
 } from "./chess";
+import {
+  isAudioMuted,
+  playCaptureSound,
+  playCastleSound,
+  playCheckSound,
+  playGameOverSound,
+  playMoveSound,
+  toggleAudioMuted,
+} from "./audio";
 
 type Tool = "place" | "move" | "erase";
 type PromotionPiece = "q" | "r" | "b" | "n";
@@ -28,6 +38,16 @@ type PendingPromotion = {
   from: Square;
   to: Square;
   color: "w" | "b";
+};
+
+type MoveRecord = {
+  san: string;
+  from: Square;
+  to: Square;
+  fen: string;
+  captured: boolean;
+  isCheck: boolean;
+  isCastle: boolean;
 };
 
 const CAMERA_BUTTONS: { view: CameraView; label: string }[] = [
@@ -133,9 +153,43 @@ export default function ChessStudio() {
   const [playMode, setPlayMode] = useState(false);
   const [pendingPromotion, setPendingPromotion] = useState<PendingPromotion | null>(null);
 
+  // Play Mode History & Acoustic State
+  const [moveHistory, setMoveHistory] = useState<MoveRecord[]>([]);
+  const [historyIndex, setHistoryIndex] = useState<number>(-1);
+  const [initialPlayFen, setInitialPlayFen] = useState<string>(() => toFen(startingDocument()));
+  const [lastMove, setLastMove] = useState<LastMove | null>(null);
+  const [soundMuted, setSoundMuted] = useState<boolean>(() => isAudioMuted());
+
   const fen = useMemo(() => toFen(document), [document]);
   const warnings = useMemo(() => positionWarnings(document), [document]);
   const pieceCount = Object.keys(document.board).length;
+  const isReviewingHistory = playMode && historyIndex < moveHistory.length - 1;
+
+  const legalDestinations = useMemo(() => {
+    if (!playMode || !moveFrom) return [];
+    try {
+      const game = new Chess(fen);
+      const moves = game.moves({ square: moveFrom as RulesSquare, verbose: true });
+      return moves.map((m) => m.to as Square);
+    } catch {
+      return [];
+    }
+  }, [fen, moveFrom, playMode]);
+
+  const checkSquare = useMemo(() => {
+    if (!playMode) return null;
+    try {
+      const game = new Chess(fen);
+      if (!game.isCheck()) return null;
+      const turn = game.turn();
+      const kingCode = turn === "w" ? "wK" : "bK";
+      const found = Object.entries(document.board).find(([, code]) => code === kingCode);
+      return found ? (found[0] as Square) : null;
+    } catch {
+      return null;
+    }
+  }, [document.board, fen, playMode]);
+
   const playStatus = useMemo(() => {
     if (!playMode) return null;
     try {
@@ -149,13 +203,13 @@ export default function ChessStudio() {
       if (game.isDrawByFiftyMoves()) return { label: "Fifty-move rule", detail: "Draw", tone: "game-over" };
       return {
         label: `${turn} to move`,
-        detail: game.isCheck() ? "Check" : "Local two-player game",
+        detail: game.isCheck() ? "Check" : isReviewingHistory ? `Reviewing move ${historyIndex + 1}` : "Local two-player game",
         tone: game.isCheck() ? "check" : "playing",
       };
     } catch {
       return { label: "Position cannot be played", detail: "Return to Setup", tone: "game-over" };
     }
-  }, [fen, playMode]);
+  }, [fen, historyIndex, isReviewingHistory, playMode]);
 
   const announce = useCallback((message: string) => {
     setAnnouncement(message);
@@ -186,8 +240,14 @@ export default function ChessStudio() {
     setDocument(cloneDocument(previous));
     setFenDraft(toFen(previous));
     setMoveFrom(null);
+    if (playMode && moveHistory.length > 0) {
+      const nextHistory = moveHistory.slice(0, -1);
+      setMoveHistory(nextHistory);
+      setHistoryIndex(nextHistory.length - 1);
+      setLastMove(nextHistory.length > 0 ? { from: nextHistory[nextHistory.length - 1].from, to: nextHistory[nextHistory.length - 1].to } : null);
+    }
     announce("Undid last change");
-  }, [announce, document, past]);
+  }, [announce, document, moveHistory, past, playMode]);
 
   const redo = useCallback(() => {
     if (!future.length) return;
@@ -216,8 +276,42 @@ export default function ChessStudio() {
       try {
         const game = new Chess(fen);
         const move = game.move({ from, to, promotion });
-        const next = parseFen(game.fen());
-        const suffix = game.isCheckmate() ? " — checkmate" : game.isCheck() ? " — check" : "";
+        const nextFen = game.fen();
+        const next = parseFen(nextFen);
+        const isCheck = game.isCheck();
+        const isCheckmate = game.isCheckmate();
+        const isGameOver = game.isGameOver();
+        const isCastle = move.flags.includes("k") || move.flags.includes("q");
+        const captured = Boolean(move.captured);
+
+        if (isGameOver) {
+          playGameOverSound();
+        } else if (isCheck) {
+          playCheckSound();
+        } else if (isCastle) {
+          playCastleSound();
+        } else if (captured) {
+          playCaptureSound();
+        } else {
+          playMoveSound();
+        }
+
+        const record: MoveRecord = {
+          san: move.san,
+          from,
+          to,
+          fen: nextFen,
+          captured,
+          isCheck,
+          isCastle,
+        };
+
+        const newHistory = [...moveHistory.slice(0, historyIndex + 1), record];
+        setMoveHistory(newHistory);
+        setHistoryIndex(newHistory.length - 1);
+        setLastMove({ from, to });
+
+        const suffix = isCheckmate ? " — checkmate" : isCheck ? " — check" : "";
         commit(next, `${move.san}${suffix}`);
         setMoveFrom(null);
         setPendingPromotion(null);
@@ -225,7 +319,7 @@ export default function ChessStudio() {
         announce("That move is not legal");
       }
     },
-    [announce, commit, fen],
+    [announce, commit, fen, historyIndex, moveHistory],
   );
 
   const actOnPlaySquare = useCallback(
@@ -350,6 +444,7 @@ export default function ChessStudio() {
       commit(parsed, "FEN loaded");
       setFenError("");
       setMoveFrom(null);
+      setLastMove(null);
     } catch (error) {
       const message = error instanceof Error ? error.message : "That FEN could not be loaded.";
       setFenError(message);
@@ -372,6 +467,47 @@ export default function ChessStudio() {
     }
   };
 
+  const copyPgn = async () => {
+    try {
+      const pairs: string[] = [];
+      for (let i = 0; i < moveHistory.length; i += 2) {
+        const moveNum = Math.floor(i / 2) + 1;
+        const white = moveHistory[i]?.san ?? "";
+        const black = moveHistory[i + 1]?.san ?? "";
+        pairs.push(black ? `${moveNum}. ${white} ${black}` : `${moveNum}. ${white}`);
+      }
+      const pgn = pairs.join(" ");
+      await navigator.clipboard.writeText(pgn || "1. ");
+      announce("PGN copied to clipboard");
+    } catch {
+      announce("Could not copy PGN");
+    }
+  };
+
+  const goToMoveIndex = useCallback(
+    (index: number) => {
+      if (index < -1 || index >= moveHistory.length) return;
+      setHistoryIndex(index);
+      setMoveFrom(null);
+      setPendingPromotion(null);
+      if (index === -1) {
+        const doc = parseFen(initialPlayFen);
+        setDocument(cloneDocument(doc));
+        setFenDraft(toFen(doc));
+        setLastMove(null);
+        announce("Initial position");
+      } else {
+        const record = moveHistory[index];
+        const doc = parseFen(record.fen);
+        setDocument(cloneDocument(doc));
+        setFenDraft(toFen(doc));
+        setLastMove({ from: record.from, to: record.to });
+        announce(`Move ${index + 1}: ${record.san}`);
+      }
+    },
+    [announce, initialPlayFen, moveHistory],
+  );
+
   const updateDocument = (patch: Partial<PositionDocument>, message?: string) => {
     commit({ ...cloneDocument(document), ...patch }, message);
   };
@@ -388,12 +524,17 @@ export default function ChessStudio() {
   const applyPreset = (next: PositionDocument, label: string) => {
     commit(next, `${label} loaded`);
     setMoveFrom(null);
+    setLastMove(null);
   };
 
   const enterPlayMode = () => {
     try {
       new Chess(fen);
       setPlayMode(true);
+      setInitialPlayFen(fen);
+      setMoveHistory([]);
+      setHistoryIndex(-1);
+      setLastMove(null);
       setTool("move");
       setMoveFrom(null);
       setPendingPromotion(null);
@@ -412,7 +553,13 @@ export default function ChessStudio() {
   };
 
   const startNewGame = () => {
-    commit(startingDocument(), "New game started");
+    const startDoc = startingDocument();
+    const startFen = toFen(startDoc);
+    setInitialPlayFen(startFen);
+    setMoveHistory([]);
+    setHistoryIndex(-1);
+    setLastMove(null);
+    commit(startDoc, "New game started");
     setMoveFrom(null);
     setPendingPromotion(null);
     setFlipped(false);
@@ -439,6 +586,14 @@ export default function ChessStudio() {
       if (!playMode && event.key === "3") setTool("erase");
       if (event.key.toLowerCase() === "f") setFlipped((value) => !value);
       if (event.key === "0") boardRef.current?.resetCamera();
+      if (playMode && event.key === "ArrowLeft") {
+        event.preventDefault();
+        goToMoveIndex(historyIndex - 1);
+      }
+      if (playMode && event.key === "ArrowRight") {
+        event.preventDefault();
+        goToMoveIndex(historyIndex + 1);
+      }
       if (event.key === "Escape") {
         setMoveFrom(null);
         setPendingPromotion(null);
@@ -446,7 +601,7 @@ export default function ChessStudio() {
     };
     window.addEventListener("keydown", keyHandler);
     return () => window.removeEventListener("keydown", keyHandler);
-  }, [playMode, redo, undo]);
+  }, [goToMoveIndex, historyIndex, playMode, redo, undo]);
 
   return (
     <main className={`studio-shell ${playMode ? "is-play-mode" : ""}`}>
@@ -475,6 +630,15 @@ export default function ChessStudio() {
               <button className="quiet-button" type="button" onClick={redo} disabled={!future.length}>Redo</button>
             </>
           )}
+          <button
+            className={`quiet-button sound-toggle ${soundMuted ? "is-muted" : ""}`}
+            type="button"
+            onClick={() => setSoundMuted(toggleAudioMuted())}
+            aria-label={soundMuted ? "Unmute audio" : "Mute audio"}
+            title={soundMuted ? "Audio muted" : "Audio enabled"}
+          >
+            {soundMuted ? "🔇 Muted" : "🔊 Sound"}
+          </button>
           <button className="primary-button" type="button" onClick={() => boardRef.current?.downloadPng()}>
             Download PNG
           </button>
@@ -482,34 +646,36 @@ export default function ChessStudio() {
       </header>
 
       <section className={`studio-grid ${playMode ? "is-play-mode" : ""}`}>
-        {!playMode && <aside className="panel tool-panel" aria-label="Piece and editing tools">
-          <div className="panel-heading">
-            <div>
-              <p className="eyebrow">Build position</p>
-              <h2>Pieces & tools</h2>
+        {!playMode && (
+          <aside className="panel tool-panel" aria-label="Piece and editing tools">
+            <div className="panel-heading">
+              <div>
+                <p className="eyebrow">Build position</p>
+                <h2>Pieces & tools</h2>
+              </div>
+              <span className="step-chip">01</span>
             </div>
-            <span className="step-chip">01</span>
-          </div>
 
-          <div className="tool-stack">
-            <ToolButton active={tool === "place"} title="Place" description="Choose a piece, then a square" shortcut="1" onClick={() => { setTool("place"); setMoveFrom(null); }} />
-            <ToolButton active={tool === "move"} title="Move" description="Choose a piece, then its destination" shortcut="2" onClick={() => { setTool("move"); setMoveFrom(null); }} />
-            <ToolButton active={tool === "erase"} title="Erase" description="Remove a piece from any square" shortcut="3" onClick={() => { setTool("erase"); setMoveFrom(null); }} />
-          </div>
+            <div className="tool-stack">
+              <ToolButton active={tool === "place"} title="Place" description="Choose a piece, then a square" shortcut="1" onClick={() => { setTool("place"); setMoveFrom(null); }} />
+              <ToolButton active={tool === "move"} title="Move" description="Choose a piece, then its destination" shortcut="2" onClick={() => { setTool("move"); setMoveFrom(null); }} />
+              <ToolButton active={tool === "erase"} title="Erase" description="Remove a piece from any square" shortcut="3" onClick={() => { setTool("erase"); setMoveFrom(null); }} />
+            </div>
 
-          <div className="section-rule" />
-          <PiecePalette color="white" selected={selectedPiece} onSelect={selectPiece} />
-          <PiecePalette color="black" selected={selectedPiece} onSelect={selectPiece} />
+            <div className="section-rule" />
+            <PiecePalette color="white" selected={selectedPiece} onSelect={selectPiece} />
+            <PiecePalette color="black" selected={selectedPiece} onSelect={selectPiece} />
 
-          <div className="section-rule" />
-          <div className="preset-heading">Quick setups</div>
-          <div className="preset-grid">
-            <button type="button" onClick={() => applyPreset(startingDocument(), "Starting position")}>Start position</button>
-            <button type="button" onClick={() => applyPreset(kingsOnlyDocument(), "Kings only")}>Kings only</button>
-            <button type="button" className="danger-quiet" onClick={() => applyPreset(emptyDocument(), "Empty board")}>Clear board</button>
-          </div>
-          <p className="right-click-note">Tip: right-click any square to remove its piece.</p>
-        </aside>}
+            <div className="section-rule" />
+            <div className="preset-heading">Quick setups</div>
+            <div className="preset-grid">
+              <button type="button" onClick={() => applyPreset(startingDocument(), "Starting position")}>Start position</button>
+              <button type="button" onClick={() => applyPreset(kingsOnlyDocument(), "Kings only")}>Kings only</button>
+              <button type="button" className="danger-quiet" onClick={() => applyPreset(emptyDocument(), "Empty board")}>Clear board</button>
+            </div>
+            <p className="right-click-note">Tip: right-click any square to remove its piece.</p>
+          </aside>
+        )}
 
         <section className="board-stage" aria-label="3D chessboard workspace">
           <div className="board-toolbar">
@@ -540,6 +706,9 @@ export default function ChessStudio() {
               position={document.board}
               flipped={flipped}
               activeSquare={moveFrom}
+              legalDestinations={legalDestinations}
+              lastMove={lastMove}
+              checkSquare={checkSquare}
               onSquarePress={actOnSquare}
               onSquareErase={playMode ? () => announce("Right-click erase is disabled in Play mode") : eraseSquare}
             />
@@ -569,89 +738,207 @@ export default function ChessStudio() {
               </div>
             )}
           </div>
-          {!playMode && <div className="camera-help" aria-label="Camera control instructions">
-            <span><b>Drag</b> rotate</span>
-            <span><b>Wheel / pinch</b> zoom</span>
-            <span><b>Right-drag / two fingers</b> pan</span>
-          </div>}
-        </section>
-
-        {!playMode && <aside className="panel position-panel" aria-label="Position details and FEN">
-          <div className="panel-heading">
-            <div>
-              <p className="eyebrow">Position data</p>
-              <h2>Setup details</h2>
-            </div>
-            <span className="step-chip">02</span>
-          </div>
-
-          <div className="field-group">
-            <span className="field-label" id="side-to-move-label">Side to move</span>
-            <div className="segmented" role="group" aria-labelledby="side-to-move-label">
-              <button type="button" className={document.sideToMove === "w" ? "is-active" : ""} onClick={() => updateDocument({ sideToMove: "w" }, "White to move")}>White</button>
-              <button type="button" className={document.sideToMove === "b" ? "is-active" : ""} onClick={() => updateDocument({ sideToMove: "b" }, "Black to move")}>Black</button>
-            </div>
-          </div>
-
-          <fieldset className="field-group castling-field">
-            <legend>Castling rights</legend>
-            <div className="check-grid">
-              {(["K", "Q", "k", "q"] as const).map((flag) => (
-                <label key={flag}>
-                  <input type="checkbox" checked={document.castling.includes(flag)} onChange={() => toggleCastling(flag)} />
-                  <span>{flag === "K" ? "White O-O" : flag === "Q" ? "White O-O-O" : flag === "k" ? "Black O-O" : "Black O-O-O"}</span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
-
-          <div className="compact-fields">
-            <label>
-              En passant
-              <select value={document.enPassant} onChange={(event) => updateDocument({ enPassant: event.target.value }, "En-passant square updated")}>
-                {EN_PASSANT_OPTIONS.map((square) => <option key={square} value={square}>{square}</option>)}
-              </select>
-            </label>
-            <label>
-              Halfmove
-              <input type="number" min={0} value={document.halfmove} onChange={(event) => updateDocument({ halfmove: Math.max(0, Number(event.target.value) || 0) })} />
-            </label>
-            <label>
-              Fullmove
-              <input type="number" min={1} value={document.fullmove} onChange={(event) => updateDocument({ fullmove: Math.max(1, Number(event.target.value) || 1) })} />
-            </label>
-          </div>
-
-          <div className="section-rule" />
-          <div className="fen-heading">
-            <label htmlFor="fen-input">FEN</label>
-            <button type="button" onClick={copyFen}>Copy current</button>
-          </div>
-          <textarea
-            id="fen-input"
-            className={fenError ? "has-error" : ""}
-            value={fenDraft}
-            onChange={(event) => { setFenDraft(event.target.value); setFenError(""); }}
-            rows={4}
-            spellCheck={false}
-            aria-describedby={fenError ? "fen-error" : "fen-help"}
-          />
-          {fenError ? <p className="field-error" id="fen-error">{fenError}</p> : <p className="field-help" id="fen-help">Paste a FEN to load any position, or copy the live position above.</p>}
-          <button className="load-button" type="button" onClick={loadFen}>Load FEN</button>
-
-          {warnings.length > 0 && (
-            <div className="warning-card">
-              <strong>Position check</strong>
-              {warnings.map((warning) => <p key={warning}>{warning}</p>)}
+          {!playMode && (
+            <div className="camera-help" aria-label="Camera control instructions">
+              <span><b>Drag</b> rotate</span>
+              <span><b>Wheel / pinch</b> zoom</span>
+              <span><b>Right-drag / two fingers</b> pan</span>
             </div>
           )}
-        </aside>}
+        </section>
+
+        {playMode && (
+          <aside className="panel play-history-panel" aria-label="Game moves and history">
+            <div className="panel-heading">
+              <div>
+                <p className="eyebrow">Notation & Review</p>
+                <h2>Move history</h2>
+              </div>
+              <span className="step-chip">{moveHistory.length}</span>
+            </div>
+
+            <div className="history-step-bar" role="group" aria-label="Move navigation">
+              <button
+                type="button"
+                className="quiet-button nav-button"
+                disabled={historyIndex <= -1}
+                onClick={() => goToMoveIndex(-1)}
+                title="Start of game"
+                aria-label="Start of game"
+              >
+                ⏮
+              </button>
+              <button
+                type="button"
+                className="quiet-button nav-button"
+                disabled={historyIndex <= -1}
+                onClick={() => goToMoveIndex(historyIndex - 1)}
+                title="Previous move"
+                aria-label="Previous move"
+              >
+                ◀
+              </button>
+              <button
+                type="button"
+                className="quiet-button nav-button"
+                disabled={historyIndex >= moveHistory.length - 1}
+                onClick={() => goToMoveIndex(historyIndex + 1)}
+                title="Next move"
+                aria-label="Next move"
+              >
+                ▶
+              </button>
+              <button
+                type="button"
+                className="quiet-button nav-button"
+                disabled={historyIndex >= moveHistory.length - 1}
+                onClick={() => goToMoveIndex(moveHistory.length - 1)}
+                title="Latest live move"
+                aria-label="Latest live move"
+              >
+                ⏭
+              </button>
+            </div>
+
+            {isReviewingHistory && (
+              <div className="review-notice" role="status">
+                <span>Reviewing move {historyIndex + 1} of {moveHistory.length}</span>
+                <button type="button" onClick={() => goToMoveIndex(moveHistory.length - 1)}>
+                  Resume live
+                </button>
+              </div>
+            )}
+
+            <div className="move-history-table" role="table" aria-label="Moves log">
+              {moveHistory.length === 0 ? (
+                <p className="empty-history-text">Make a move on the board to begin notation recording.</p>
+              ) : (
+                <div className="moves-rows">
+                  {Array.from({ length: Math.ceil(moveHistory.length / 2) }).map((_, rowIndex) => {
+                    const whiteIdx = rowIndex * 2;
+                    const blackIdx = whiteIdx + 1;
+                    const whiteMove = moveHistory[whiteIdx];
+                    const blackMove = moveHistory[blackIdx];
+                    return (
+                      <div key={rowIndex} className="move-row" role="row">
+                        <span className="move-num">{rowIndex + 1}.</span>
+                        <button
+                          type="button"
+                          className={`move-btn ${historyIndex === whiteIdx ? "is-current" : ""}`}
+                          onClick={() => goToMoveIndex(whiteIdx)}
+                        >
+                          {whiteMove.san}
+                        </button>
+                        {blackMove ? (
+                          <button
+                            type="button"
+                            className={`move-btn ${historyIndex === blackIdx ? "is-current" : ""}`}
+                            onClick={() => goToMoveIndex(blackIdx)}
+                          >
+                            {blackMove.san}
+                          </button>
+                        ) : (
+                          <span className="move-placeholder" />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            <div className="section-rule" />
+            <div className="history-actions">
+              <button className="quiet-button" type="button" onClick={copyPgn} disabled={moveHistory.length === 0}>
+                Copy PGN
+              </button>
+              <button className="quiet-button" type="button" onClick={copyFen}>
+                Copy FEN
+              </button>
+            </div>
+          </aside>
+        )}
+
+        {!playMode && (
+          <aside className="panel position-panel" aria-label="Position details and FEN">
+            <div className="panel-heading">
+              <div>
+                <p className="eyebrow">Position data</p>
+                <h2>Setup details</h2>
+              </div>
+              <span className="step-chip">02</span>
+            </div>
+
+            <div className="field-group">
+              <span className="field-label" id="side-to-move-label">Side to move</span>
+              <div className="segmented" role="group" aria-labelledby="side-to-move-label">
+                <button type="button" className={document.sideToMove === "w" ? "is-active" : ""} onClick={() => updateDocument({ sideToMove: "w" }, "White to move")}>White</button>
+                <button type="button" className={document.sideToMove === "b" ? "is-active" : ""} onClick={() => updateDocument({ sideToMove: "b" }, "Black to move")}>Black</button>
+              </div>
+            </div>
+
+            <fieldset className="field-group castling-field">
+              <legend>Castling rights</legend>
+              <div className="check-grid">
+                {(["K", "Q", "k", "q"] as const).map((flag) => (
+                  <label key={flag}>
+                    <input type="checkbox" checked={document.castling.includes(flag)} onChange={() => toggleCastling(flag)} />
+                    <span>{flag === "K" ? "White O-O" : flag === "Q" ? "White O-O-O" : flag === "k" ? "Black O-O" : "Black O-O-O"}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+
+            <div className="compact-fields">
+              <label>
+                En passant
+                <select value={document.enPassant} onChange={(event) => updateDocument({ enPassant: event.target.value }, "En-passant square updated")}>
+                  {EN_PASSANT_OPTIONS.map((square) => <option key={square} value={square}>{square}</option>)}
+                </select>
+              </label>
+              <label>
+                Halfmove
+                <input type="number" min={0} value={document.halfmove} onChange={(event) => updateDocument({ halfmove: Math.max(0, Number(event.target.value) || 0) })} />
+              </label>
+              <label>
+                Fullmove
+                <input type="number" min={1} value={document.fullmove} onChange={(event) => updateDocument({ fullmove: Math.max(1, Number(event.target.value) || 1) })} />
+              </label>
+            </div>
+
+            <div className="section-rule" />
+            <div className="fen-heading">
+              <label htmlFor="fen-input">FEN</label>
+              <button type="button" onClick={copyFen}>Copy current</button>
+            </div>
+            <textarea
+              id="fen-input"
+              className={fenError ? "has-error" : ""}
+              value={fenDraft}
+              onChange={(event) => { setFenDraft(event.target.value); setFenError(""); }}
+              rows={4}
+              spellCheck={false}
+              aria-describedby={fenError ? "fen-error" : "fen-help"}
+            />
+            {fenError ? <p className="field-error" id="fen-error">{fenError}</p> : <p className="field-help" id="fen-help">Paste a FEN to load any position, or copy the live position above.</p>}
+            <button className="load-button" type="button" onClick={loadFen}>Load FEN</button>
+
+            {warnings.length > 0 && (
+              <div className="warning-card">
+                <strong>Position check</strong>
+                {warnings.map((warning) => <p key={warning}>{warning}</p>)}
+              </div>
+            )}
+          </aside>
+        )}
       </section>
 
-      {!playMode && <footer className="studio-footer">
-        <span>All position editing stays in your browser.</span>
-        <span>Keyboard: 1 Place · 2 Move · 3 Erase · F Flip · 0 Reset camera · Ctrl/⌘ Z Undo</span>
-      </footer>}
+      {!playMode && (
+        <footer className="studio-footer">
+          <span>All position editing stays in your browser.</span>
+          <span>Keyboard: 1 Place · 2 Move · 3 Erase · F Flip · 0 Reset camera · Ctrl/⌘ Z Undo</span>
+        </footer>
+      )}
     </main>
   );
 }
