@@ -574,6 +574,39 @@ function pieceMaterial(code: PieceCode, materials: Materials) {
   return code[0] === "w" ? materials.white : materials.black;
 }
 
+function addNeoClassicBase(
+  parent: THREE.Group,
+  body: THREE.Material,
+  accent: THREE.Material,
+  radius: number,
+  topRadius: number,
+) {
+  const profile: [number, number][] = [
+    [0, 0],
+    [radius * 0.88, 0],
+    [radius * 0.98, 0.02],
+    [radius, 0.048],
+    [radius * 0.98, 0.078],
+    [radius * 0.92, 0.11],
+    [radius * 0.82, 0.148],
+    [radius * 0.74, 0.19],
+    [radius * 0.67, 0.23],
+    [topRadius, 0.28],
+    [topRadius, 0.3],
+  ];
+  parent.add(lathe(profile, body, 64));
+
+  // Brushed metallic accent collar ring on base fillet
+  addMesh(
+    parent,
+    new THREE.TorusGeometry(radius * 0.81, 0.016, 16, 64),
+    accent,
+    [0, 0.108, 0],
+    undefined,
+    [Math.PI / 2, 0, 0],
+  );
+}
+
 function addStauntonBase(
   parent: THREE.Group,
   material: THREE.Material,
@@ -638,43 +671,47 @@ function createMitredHeadGeometry() {
   return geometry;
 }
 
-function createFallbackPiece(code: PieceCode, square: Square, materials: Materials): THREE.Group {
+function createNeoClassicPiece(code: PieceCode, square: Square, materials: Materials): THREE.Group {
   const group = new THREE.Group();
   const body = pieceMaterial(code, materials);
+  const accent = materials.gold;
   const type = code[1];
+  const isWhite = code[0] === "w";
 
   if (type === "P") {
-    addStauntonBase(group, body, 0.28, 0.16);
+    addNeoClassicBase(group, body, accent, 0.28, 0.16);
     group.add(lathe([
       [0.16, 0.28],
       [0.17, 0.36],
-      [0.145, 0.45],
-      [0.112, 0.57],
-      [0.12, 0.63],
-      [0.17, 0.67],
-      [0.178, 0.7],
+      [0.142, 0.46],
+      [0.11, 0.58],
+      [0.118, 0.64],
+      [0.168, 0.68],
+      [0.176, 0.71],
     ], body, 64));
-    addMesh(group, new THREE.SphereGeometry(0.145, 48, 32), body, [0, 0.82, 0]);
+    addMesh(group, new THREE.TorusGeometry(0.168, 0.012, 12, 64), accent, [0, 0.68, 0], undefined, [Math.PI / 2, 0, 0]);
+    addMesh(group, new THREE.SphereGeometry(0.145, 48, 36), body, [0, 0.825, 0]);
   }
 
   if (type === "R") {
-    addStauntonBase(group, body, 0.33, 0.21);
+    addNeoClassicBase(group, body, accent, 0.33, 0.21);
     group.add(lathe([
       [0.21, 0.28],
       [0.225, 0.37],
       [0.2, 0.63],
-      [0.21, 0.72],
-      [0.27, 0.76],
-      [0.29, 0.79],
+      [0.212, 0.72],
+      [0.275, 0.76],
+      [0.295, 0.79],
     ], body, 64));
-    addMesh(group, new THREE.CylinderGeometry(0.29, 0.28, 0.17, 64), body, [0, 0.86, 0]);
-    for (let index = 0; index < 6; index += 1) {
-      const angle = (index / 6) * Math.PI * 2;
+    addMesh(group, new THREE.TorusGeometry(0.275, 0.014, 12, 64), accent, [0, 0.76, 0], undefined, [Math.PI / 2, 0, 0]);
+    addMesh(group, new THREE.CylinderGeometry(0.295, 0.285, 0.16, 64), body, [0, 0.86, 0]);
+    for (let index = 0; index < 4; index += 1) {
+      const angle = (index / 4) * Math.PI * 2;
       addMesh(
         group,
-        new RoundedBoxGeometry(0.135, 0.17, 0.18, 4, 0.018),
+        new RoundedBoxGeometry(0.155, 0.18, 0.22, 4, 0.02),
         body,
-        [Math.cos(angle) * 0.225, 1.02, Math.sin(angle) * 0.225],
+        [Math.cos(angle) * 0.21, 1.01, Math.sin(angle) * 0.21],
         undefined,
         [0, -angle, 0],
       );
@@ -682,34 +719,35 @@ function createFallbackPiece(code: PieceCode, square: Square, materials: Materia
   }
 
   if (type === "N") {
-    addStauntonBase(group, body, 0.32, 0.2);
+    addNeoClassicBase(group, body, accent, 0.32, 0.2);
     group.add(lathe([
       [0.2, 0.28],
       [0.225, 0.36],
-      [0.215, 0.46],
-      [0.18, 0.53],
+      [0.212, 0.46],
+      [0.178, 0.53],
     ], body, 64));
+    addMesh(group, new THREE.TorusGeometry(0.19, 0.014, 12, 64), accent, [0, 0.46, 0], undefined, [Math.PI / 2, 0, 0]);
 
     const horse = new THREE.Shape();
     horse.moveTo(-0.28, 0.01);
-    horse.bezierCurveTo(-0.25, 0.26, -0.23, 0.52, -0.1, 0.7);
-    horse.bezierCurveTo(-0.04, 0.78, 0.04, 0.82, 0.12, 0.83);
-    horse.lineTo(0.1, 0.98);
-    horse.lineTo(0.22, 0.9);
-    horse.lineTo(0.24, 0.76);
-    horse.bezierCurveTo(0.36, 0.7, 0.43, 0.6, 0.4, 0.5);
-    horse.bezierCurveTo(0.37, 0.42, 0.3, 0.38, 0.24, 0.34);
-    horse.lineTo(0.4, 0.3);
-    horse.bezierCurveTo(0.35, 0.2, 0.24, 0.13, 0.13, 0.1);
+    horse.bezierCurveTo(-0.26, 0.28, -0.23, 0.54, -0.09, 0.72);
+    horse.bezierCurveTo(-0.03, 0.8, 0.05, 0.84, 0.13, 0.85);
+    horse.lineTo(0.11, 1.0);
+    horse.lineTo(0.23, 0.91);
+    horse.lineTo(0.25, 0.77);
+    horse.bezierCurveTo(0.37, 0.71, 0.44, 0.61, 0.41, 0.51);
+    horse.bezierCurveTo(0.38, 0.43, 0.31, 0.39, 0.25, 0.35);
+    horse.lineTo(0.41, 0.31);
+    horse.bezierCurveTo(0.36, 0.21, 0.25, 0.13, 0.14, 0.1);
     horse.lineTo(0.01, 0.02);
     horse.closePath();
     const horseGeometry = new THREE.ExtrudeGeometry(horse, {
-      depth: 0.25,
+      depth: 0.24,
       bevelEnabled: true,
-      bevelThickness: 0.035,
-      bevelSize: 0.03,
-      bevelSegments: 6,
-      curveSegments: 24,
+      bevelThickness: 0.036,
+      bevelSize: 0.032,
+      bevelSegments: 8,
+      curveSegments: 32,
     });
     horseGeometry.center();
     addMesh(
@@ -717,70 +755,101 @@ function createFallbackPiece(code: PieceCode, square: Square, materials: Materia
       horseGeometry,
       body,
       [0, 0.95, 0],
-      [0.82, 0.82, 0.82],
-      [0, code[0] === "w" ? Math.PI / 2 : -Math.PI / 2, 0],
+      [0.84, 0.84, 0.84],
+      [0, isWhite ? Math.PI / 2 : -Math.PI / 2, 0],
     );
   }
 
   if (type === "B") {
-    addStauntonBase(group, body, 0.32, 0.19);
+    addNeoClassicBase(group, body, accent, 0.32, 0.19);
     group.add(lathe([
       [0.19, 0.28],
       [0.215, 0.37],
       [0.18, 0.49],
-      [0.135, 0.72],
+      [0.132, 0.72],
       [0.145, 0.8],
       [0.225, 0.86],
       [0.23, 0.9],
     ], body, 64));
+    addMesh(group, new THREE.TorusGeometry(0.145, 0.014, 12, 64), accent, [0, 0.8, 0], undefined, [Math.PI / 2, 0, 0]);
     addMesh(group, createMitredHeadGeometry(), body, [0, 1.055, 0]);
-    addMesh(group, new THREE.SphereGeometry(0.055, 36, 24), body, [0, 1.305, 0]);
+    addMesh(group, new THREE.SphereGeometry(0.058, 40, 28), accent, [0, 1.305, 0]);
   }
 
   if (type === "Q") {
-    addStauntonBase(group, body, 0.35, 0.2);
+    addNeoClassicBase(group, body, accent, 0.35, 0.2);
     group.add(lathe([
       [0.2, 0.28],
       [0.23, 0.38],
       [0.185, 0.52],
-      [0.14, 0.77],
+      [0.138, 0.77],
       [0.15, 0.86],
       [0.24, 0.94],
       [0.265, 1.01],
       [0.25, 1.06],
     ], body, 64));
-    addMesh(group, new THREE.TorusGeometry(0.25, 0.035, 12, 64), body, [0, 1.045, 0], undefined, [Math.PI / 2, 0, 0]);
+    addMesh(group, new THREE.TorusGeometry(0.25, 0.028, 16, 64), accent, [0, 1.045, 0], undefined, [Math.PI / 2, 0, 0]);
     for (let index = 0; index < 8; index += 1) {
       const angle = (index / 8) * Math.PI * 2;
       addMesh(
         group,
-        new THREE.ConeGeometry(0.055, 0.19, 24),
+        new THREE.ConeGeometry(0.052, 0.18, 24),
         body,
         [Math.cos(angle) * 0.22, 1.19, Math.sin(angle) * 0.22],
       );
+      addMesh(
+        group,
+        new THREE.SphereGeometry(0.024, 16, 12),
+        accent,
+        [Math.cos(angle) * 0.22, 1.28, Math.sin(angle) * 0.22],
+      );
     }
-    addMesh(group, new THREE.SphereGeometry(0.078, 36, 24), body, [0, 1.35, 0]);
+    addMesh(group, new THREE.SphereGeometry(0.082, 40, 28), accent, [0, 1.35, 0]);
   }
 
   if (type === "K") {
-    addStauntonBase(group, body, 0.36, 0.21);
+    addNeoClassicBase(group, body, accent, 0.36, 0.21);
     group.add(lathe([
       [0.21, 0.28],
       [0.235, 0.39],
       [0.19, 0.56],
-      [0.145, 0.86],
-      [0.16, 0.95],
+      [0.142, 0.86],
+      [0.158, 0.95],
       [0.255, 1.03],
       [0.26, 1.09],
       [0.21, 1.13],
     ], body, 64));
-    addMesh(group, new THREE.TorusGeometry(0.235, 0.035, 12, 64), body, [0, 1.07, 0], undefined, [Math.PI / 2, 0, 0]);
+    addMesh(group, new THREE.TorusGeometry(0.235, 0.03, 16, 64), accent, [0, 1.07, 0], undefined, [Math.PI / 2, 0, 0]);
     addMesh(group, new THREE.SphereGeometry(0.11, 40, 28), body, [0, 1.21, 0]);
-    addMesh(group, new RoundedBoxGeometry(0.105, 0.34, 0.09, 5, 0.022), body, [0, 1.43, 0]);
-    addMesh(group, new RoundedBoxGeometry(0.32, 0.105, 0.09, 5, 0.022), body, [0, 1.48, 0]);
+    addMesh(group, new RoundedBoxGeometry(0.095, 0.32, 0.08, 5, 0.018), accent, [0, 1.43, 0]);
+    addMesh(group, new RoundedBoxGeometry(0.30, 0.095, 0.08, 5, 0.018), accent, [0, 1.48, 0]);
   }
 
   configureShadows(group);
+  group.position.copy(squarePosition(square));
+  group.position.y = TILE_TOP;
+  group.userData = { kind: "piece", square, code };
+  return group;
+}
+
+function createPiece(code: PieceCode, square: Square, state: SceneState): THREE.Group {
+  const template = state.pieceTemplates?.[code];
+  const type = code[1] as PieceKind;
+  if (!template && type !== "B") return createNeoClassicPiece(code, square, state.materials);
+
+  const group = new THREE.Group();
+  const model = type === "B"
+    ? createMitredBishopModel(code, state.materials)
+    : template!.clone(true);
+  const body = pieceMaterial(code, state.materials);
+  model.traverse((child) => {
+    if (!(child instanceof THREE.Mesh)) return;
+    if (!child.userData.preserveMaterial) child.material = body;
+    child.castShadow = true;
+    child.receiveShadow = true;
+  });
+  group.add(model);
+
   group.position.copy(squarePosition(square));
   group.position.y = TILE_TOP;
   group.userData = { kind: "piece", square, code };
@@ -874,30 +943,6 @@ function loadPieceTemplates() {
   });
 
   return sharedPieceTemplatesPromise;
-}
-
-function createPiece(code: PieceCode, square: Square, state: SceneState): THREE.Group {
-  const template = state.pieceTemplates?.[code];
-  const type = code[1] as PieceKind;
-  if (!template && type !== "B") return createFallbackPiece(code, square, state.materials);
-
-  const group = new THREE.Group();
-  const model = type === "B"
-    ? createMitredBishopModel(code, state.materials)
-    : template!.clone(true);
-  const body = pieceMaterial(code, state.materials);
-  model.traverse((child) => {
-    if (!(child instanceof THREE.Mesh)) return;
-    if (!child.userData.preserveMaterial) child.material = body;
-    child.castShadow = true;
-    child.receiveShadow = true;
-  });
-  group.add(model);
-
-  group.position.copy(squarePosition(square));
-  group.position.y = TILE_TOP;
-  group.userData = { kind: "piece", square, code };
-  return group;
 }
 
 function rebuildPieces(state: SceneState) {
