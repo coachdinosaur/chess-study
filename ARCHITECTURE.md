@@ -6,9 +6,9 @@ Chess Lesson Study Board is a chess teaching platform served as static files. Th
 
 The main Study Board, lesson sites, and Endgame Trainer site have no bundler or
 application build step. Their production assets are committed directly.
-Catalan Atelier is the one isolated build boundary: GitHub Pages compiles
-`apps/opening-book/` and mounts its generated output at `/openings/` before
-uploading the combined static artifact.
+Catalan Atelier and the 3D Chess Position Studio are isolated build boundaries:
+GitHub Pages compiles their React/Vite sources under `apps/`, mounts the outputs
+at `/openings/` and `/3d/`, and then uploads the combined static artifact.
 
 The major subsystems are:
 
@@ -47,25 +47,31 @@ The major subsystems are:
    - Browser-local Stockfish and interactive board
    - GitHub Pages build mounted at `/openings/`
 
-6. **Standalone Endgame Trainer site**
+6. **3D Chess Position Studio**
+   - React/Vite source in `apps/3d-chess-studio/`
+   - Three.js board with rotate, zoom, pan, top, side, and perspective views
+   - FEN-based position setup with three visual themes
+   - GitHub Pages build mounted at `/3d/`
+
+7. **Standalone Endgame Trainer site**
    - Static landing page in `endgame-trainer/index.html`
    - Android privacy policy in `endgame-trainer/privacy-policy/index.html`
    - Local styles, favicon, and app preview images
    - Direct GitHub Pages routes under `/endgame-trainer/`
 
-7. **Live Board collaboration**
+8. **Live Board collaboration**
    - `live-board.html` and Live Board interaction modules
    - Supabase-backed teacher/student rooms
    - Secure student links, move locking, prepared positions, and session messages
 
-8. **Vendored browser dependencies and data**
+9. **Vendored browser dependencies and data**
    - `vendor/chess.js`
    - `vendor/stockfish/`
    - `vendor/xlsx.full.min.js`
    - `assets/openings.tsv`
    - MPChess SVG pieces
 
-9. **Optional local services**
+10. **Optional local services**
    - `local_server.py`
    - `scanner_server.py`
    - `scanner_predict.py`
@@ -169,10 +175,11 @@ chess-study/
 └── optimization-review/
 ```
 
-The buildable opening-course source is kept under `apps/opening-book/`. Its
-generated `dist/` directory is deliberately not committed or shown as a source
-subtree above; the Pages workflow mounts that output as `/openings/` only in
-the deployment artifact.
+The buildable opening-course and 3D-studio sources are kept under
+`apps/opening-book/` and `apps/3d-chess-studio/`. Their generated `dist/`
+directories are deliberately not committed or shown as source subtrees above;
+the Pages workflow mounts those outputs as `/openings/` and `/3d/` only in the
+deployment artifact.
 
 The lesson inventory changes more frequently than the SPA architecture. The important boundary is that lesson pages are static documents, while the SPA is the interactive chess runtime.
 
@@ -271,6 +278,21 @@ apps/opening-book/
                           └── deployed as /openings/
 ```
 
+### 3D-studio build graph
+
+```text
+apps/3d-chess-studio/
+├── app/                         React UI, chess state, and Three.js scene
+├── public/models/               Local CC0 Staunton GLB asset
+└── tests/                       static-output and geometry checks
+        │
+        └── VITE_BASE_PATH=/3d/ npm test
+              └── dist/
+                    │
+                    └── .github/workflows/pages.yml
+                          └── deployed as /3d/
+```
+
 ### Responsibilities
 
 | Module | Responsibility |
@@ -313,8 +335,9 @@ apps/opening-book/
 | `vendor/chess.js` | Legal moves, FEN, PGN, game termination, attack queries |
 | `vendor/stockfish/` | Browser Stockfish JavaScript and WASM variants |
 | `apps/opening-book/` | React/Vite Catalan Atelier source, Markdown chapters, local assets, and tests |
+| `apps/3d-chess-studio/` | React/Vite/Three.js position editor, local Staunton model, themes, and static-build tests |
 | `endgame-trainer/` | Self-contained Endgame Trainer landing page, clean-route privacy policy, styles, favicon, and app previews |
-| `.github/workflows/pages.yml` | Tests combined-site routes, builds Catalan Atelier, mounts `dist/` at `/openings/`, and uploads the combined static artifact |
+| `.github/workflows/pages.yml` | Tests combined-site routes, builds the React/Vite apps, mounts their outputs at `/openings/`, `/openings-sicilian/`, and `/3d/`, and uploads the combined static artifact |
 
 ---
 
@@ -1121,7 +1144,35 @@ framework-free SPA and static lesson architecture.
 
 ---
 
-## 23. Standalone Endgame Trainer site
+## 23. 3D Chess Position Studio
+
+The 3D Chess Position Studio is a self-contained React/Vite/Three.js application
+whose source lives in `apps/3d-chess-studio/`. It provides a deterministic 8x8
+board, FEN import and export, click-based position setup, full orbit controls,
+camera presets, and classic, anime, and samurai visual themes. The local CC0 GLB
+supplies the Staunton meshes; the bishop uses a procedural mitred form so its
+diagonal slot remains recognizable from all camera angles.
+
+The application has no runtime server, database, API route, or remote asset
+dependency. `VITE_BASE_PATH=/3d/` makes every generated script, stylesheet,
+favicon, and model URL resolve beneath the production mount:
+
+```text
+Pages checkout
+  → setup Node.js 22
+  → VITE_BASE_PATH=/3d/ npm test (type check, Vite build, static tests)
+  → move apps/3d-chess-studio/dist to 3d/
+  → omit apps/3d-chess-studio source and node_modules from the artifact
+  → upload the combined GitHub Pages site
+```
+
+The root Study Board links to `/3d/`, while the studio remains isolated from
+the framework-free Study Board runtime and stores any working state in the
+browser only.
+
+---
+
+## 24. Standalone Endgame Trainer site
 
 `endgame-trainer/` is a self-contained static site with no build step and no
 dependency on the Study Board runtime. GitHub Pages publishes the committed
@@ -1146,7 +1197,7 @@ styles, and inclusion in the root Pages artifact.
 
 ---
 
-## 24. Static lesson architecture
+## 25. Static lesson architecture
 
 The static lesson files are intentionally independent of the SPA framework because there is no framework.
 
@@ -1178,7 +1229,7 @@ Static pages are printable and can use paged-media styling without requiring the
 
 ---
 
-## 25. Optional local services
+## 26. Optional local services
 
 ### Cross-origin-isolated server
 
@@ -1205,7 +1256,7 @@ The scanner is optional and not used by the GitHub Pages deployment.
 
 ---
 
-## 26. Event bindings
+## 27. Event bindings
 
 `bindEvents()` registers delegated and board-specific handlers.
 
@@ -1240,11 +1291,11 @@ The scanner is optional and not used by the GitHub Pages deployment.
 
 ---
 
-## 27. Validation and testing
+## 28. Validation and testing
 
 The main Study Board has no compile step. Its validation combines syntax
 checks, targeted tests, and browser testing; the Endgame Trainer adds a static
-route-integrity test, and the opening course adds its own compiled test suite.
+route-integrity test, and each React/Vite app adds its own compiled test suite.
 
 ```powershell
 node --check app.js
@@ -1256,7 +1307,9 @@ node --check live-board-realtime.js
 node --check live-board-messages-v2.js
 node tools/test-puzzle-api.mjs
 node --test tests/endgame-trainer-integration.test.mjs
+node --test tests/3d-chess-studio-integration.test.mjs
 npm --prefix apps/opening-book test
+$env:VITE_BASE_PATH='/3d/'; npm --prefix apps/3d-chess-studio test
 git diff --check
 ```
 
@@ -1283,11 +1336,11 @@ Minimum manual matrix:
 
 ---
 
-## 28. Architectural constraints
+## 29. Architectural constraints
 
 The main Study Board deliberately favors zero-build deployability and direct
-debugging. Catalan Atelier remains an isolated build boundary rather than
-changing that runtime architecture. These choices create constraints:
+debugging. Catalan Atelier and the 3D studio remain isolated build boundaries
+rather than changing that runtime architecture. These choices create constraints:
 
 - `app.js` is a large orchestration module.
 - State mutation is global and imperative.

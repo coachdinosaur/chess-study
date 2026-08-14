@@ -30,6 +30,7 @@ jobs:
           cache-dependency-path: |
             apps/opening-book/package-lock.json
             apps/opening-book-sicilian/package-lock.json
+            apps/3d-chess-studio/package-lock.json
 
       - name: Test and build opening book
         working-directory: apps/opening-book
@@ -43,15 +44,24 @@ jobs:
           npm ci
           npm test
 
+      - name: Test and build 3D chess studio
+        working-directory: apps/3d-chess-studio
+        env:
+          VITE_BASE_PATH: /3d/
+        run: |
+          npm ci
+          npm test
+
       - name: Verify combined-site integration
         run: |
           node --test tests/opening-book-integration.test.mjs
           node --test tests/endgame-trainer-integration.test.mjs
+          node --test tests/3d-chess-studio-integration.test.mjs
 
       - name: Prepare Google Search favicon
         run: python tools/prepare_search_favicon.py
 
-      - name: Publish opening books
+      - name: Publish buildable apps
         shell: bash
         run: |
           test ! -e openings
@@ -61,6 +71,10 @@ jobs:
           test ! -e openings-sicilian
           mv apps/opening-book-sicilian/dist openings-sicilian
           rm -rf apps/opening-book-sicilian
+
+          test ! -e 3d
+          mv apps/3d-chess-studio/dist 3d
+          rm -rf apps/3d-chess-studio
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
