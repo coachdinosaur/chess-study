@@ -834,13 +834,10 @@ function createNeoClassicPiece(code: PieceCode, square: Square, materials: Mater
 
 function createPiece(code: PieceCode, square: Square, state: SceneState): THREE.Group {
   const template = state.pieceTemplates?.[code];
-  const type = code[1] as PieceKind;
-  if (!template && type !== "B") return createNeoClassicPiece(code, square, state.materials);
+  if (!template) return createNeoClassicPiece(code, square, state.materials);
 
   const group = new THREE.Group();
-  const model = type === "B"
-    ? createMitredBishopModel(code, state.materials)
-    : template!.clone(true);
+  const model = template.clone(true);
   const body = pieceMaterial(code, state.materials);
   model.traverse((child) => {
     if (!(child instanceof THREE.Mesh)) return;
