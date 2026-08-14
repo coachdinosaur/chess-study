@@ -97,12 +97,20 @@ select { min-height: 44px; }
 .coordinate.rank { left: 4px; top: 2px; }
 .square.dark .coordinate { color: var(--light-square); }
 .square:not(.dark) .coordinate { color: var(--dark-square); }
+.board-frame:has(.chess-board-3d:not([hidden])),
+.board-frame.is-3d-active {
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: 0 10px 30px rgba(18, 34, 23, 0.16);
+  overflow: hidden;
+}
 .chess-board-3d {
   width: 100%;
   aspect-ratio: 1 / 1;
   min-height: 380px;
   max-height: 720px;
-  border-radius: 12px;
+  border-radius: 0;
   overflow: hidden;
   position: relative;
   background: #d9cdbc;

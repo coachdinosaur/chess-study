@@ -600,6 +600,9 @@ async function set3dMode(active) {
 
   elements.board.hidden = is3dMode;
   if (elements.board3d) elements.board3d.hidden = !is3dMode;
+  if (elements.board?.parentElement) {
+    elements.board.parentElement.classList.toggle('is-3d-active', is3dMode);
+  }
   if (elements.camera3dControls) elements.camera3dControls.hidden = !is3dMode;
   if (elements.toggle3dButton) {
     elements.toggle3dButton.setAttribute('aria-pressed', String(is3dMode));
