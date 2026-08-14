@@ -125,14 +125,16 @@ type SceneState = {
   activeFades: ActiveFadeAnimation[];
 };
 
+const CAMERA_TARGET_Y = 0.75;
+
 const CAMERA_VIEWS: Record<CameraView, [number, number, number]> = {
-  angle: [8.8, 9.4, 10.6],
-  top: [0.01, 19.5, 0.01],
-  white: [0, 7.2, 12.8],
-  black: [0, 7.2, -12.8],
-  left: [-12.8, 6.5, 0],
-  right: [12.8, 6.5, 0],
-  low: [9.8, 3.4, 11.4],
+  angle: [8.4, 9.2, 10.2],
+  top: [0.01, 17.2, 0.01],
+  white: [0, 7.4, 12.0],
+  black: [0, 7.4, -12.0],
+  left: [-12.0, 7.0, 0],
+  right: [12.0, 7.0, 0],
+  low: [9.4, 3.8, 11.0],
 };
 
 const TILE_TOP = 0.371;
@@ -1170,7 +1172,7 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
   const flippedRef = useRef(flipped);
   const cameraSnapshotRef = useRef<CameraGoal>({
     position: new THREE.Vector3(...CAMERA_VIEWS.angle),
-    target: new THREE.Vector3(0, 0.15, 0),
+    target: new THREE.Vector3(0, CAMERA_TARGET_Y, 0),
   });
   const callbacksRef = useRef({ onSquarePress, onSquareErase });
   positionRef.current = position;
@@ -1183,7 +1185,7 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       if (!state) return;
       state.cameraGoal = {
         position: new THREE.Vector3(...CAMERA_VIEWS[view]),
-        target: new THREE.Vector3(0, 0.15, 0),
+        target: new THREE.Vector3(0, CAMERA_TARGET_Y, 0),
       };
     },
     resetCamera() {
@@ -1191,7 +1193,7 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       if (!state) return;
       state.cameraGoal = {
         position: new THREE.Vector3(...CAMERA_VIEWS.angle),
-        target: new THREE.Vector3(0, 0.15, 0),
+        target: new THREE.Vector3(0, CAMERA_TARGET_Y, 0),
       };
     },
     downloadPng(filename = "chess-position.png") {
