@@ -132,32 +132,32 @@ type ViewPreset = {
 
 const CAMERA_VIEWS: Record<CameraView, ViewPreset> = {
   angle: {
-    position: [8.6, 11.2, 10.8],
-    target: [0, 1.95, 0],
+    position: [9.48, 5.89, 9.48],
+    target: [-0.21, -0.80, -0.21],
   },
   top: {
-    position: [0.01, 18.0, 0.01],
-    target: [0, 0.37, 0],
+    position: [0.01, 17.5, 0.01],
+    target: [0.00, 0.37, 0.00],
   },
   white: {
-    position: [0, 8.6, 12.8],
-    target: [0, 1.85, 0],
+    position: [0.00, 7.57, 11.86],
+    target: [0.00, 0.35, 0.75],
   },
   black: {
-    position: [0, 8.6, -12.8],
-    target: [0, 1.85, 0],
+    position: [0.00, 7.57, -11.86],
+    target: [0.00, 0.35, -0.75],
   },
   left: {
-    position: [-12.8, 8.2, 0],
-    target: [0, 1.85, 0],
+    position: [-11.86, 7.57, 0.00],
+    target: [-0.75, 0.35, 0.00],
   },
   right: {
-    position: [12.8, 8.2, 0],
-    target: [0, 1.85, 0],
+    position: [11.86, 7.57, 0.00],
+    target: [0.75, 0.35, 0.00],
   },
   low: {
-    position: [9.6, 5.4, 11.4],
-    target: [0, 1.7, 0],
+    position: [11.29, 4.48, 11.29],
+    target: [0.25, 0.00, 0.25],
   },
 };
 
