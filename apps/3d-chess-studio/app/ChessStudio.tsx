@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Chess, type Square as RulesSquare } from "chess.js";
 import {
   ChessBoard3D,
-  type BoardTheme,
   type CameraView,
   type ChessBoardHandle,
 } from "./ChessBoard3D";
@@ -128,7 +127,6 @@ export default function ChessStudio() {
   const [selectedPiece, setSelectedPiece] = useState<PieceCode>("wP");
   const [moveFrom, setMoveFrom] = useState<Square | null>(null);
   const [flipped, setFlipped] = useState(false);
-  const [boardTheme, setBoardTheme] = useState<BoardTheme>("classic");
   const [fenDraft, setFenDraft] = useState(() => toFen(startingDocument()));
   const [fenError, setFenError] = useState("");
   const [announcement, setAnnouncement] = useState("Ready");
@@ -513,7 +511,7 @@ export default function ChessStudio() {
           <p className="right-click-note">Tip: right-click any square to remove its piece.</p>
         </aside>}
 
-        <section className="board-stage" data-theme={boardTheme} aria-label="3D chessboard workspace">
+        <section className="board-stage" aria-label="3D chessboard workspace">
           <div className="board-toolbar">
             <div className="view-buttons" aria-label="Camera views">
               {CAMERA_BUTTONS.map(({ view, label }) => (
@@ -521,25 +519,6 @@ export default function ChessStudio() {
               ))}
             </div>
             <div className="board-toolbar-end">
-              <div className="theme-switch" role="group" aria-label="Board style">
-                {([
-                  ["classic", "Classic"],
-                  ["anime", "Anime"],
-                  ["samurai", "Samurai"],
-                ] as const).map(([theme, label]) => (
-                  <button
-                    key={theme}
-                    type="button"
-                    data-theme-option={theme}
-                    className={boardTheme === theme ? "is-active" : ""}
-                    aria-pressed={boardTheme === theme}
-                    aria-label={`${label} board theme`}
-                    onClick={() => setBoardTheme(theme)}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
               <button type="button" onClick={() => setFlipped((value) => !value)} aria-pressed={flipped}>
                 Flip board
               </button>
@@ -560,7 +539,6 @@ export default function ChessStudio() {
               ref={boardRef}
               position={document.board}
               flipped={flipped}
-              theme={boardTheme}
               activeSquare={moveFrom}
               onSquarePress={actOnSquare}
               onSquareErase={playMode ? () => announce("Right-click erase is disabled in Play mode") : eraseSquare}

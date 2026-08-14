@@ -30,12 +30,12 @@ test("emits a server-free static site", async () => {
   assert.ok(bishopIcon.size > 500, "the shared MPChess artwork should be copied to the static output");
 });
 
-test("keeps deterministic board geometry and all three themes", async () => {
+test("keeps deterministic board geometry and the classic presentation", async () => {
   const board = await readFile(resolve(root, "app/ChessBoard3D.tsx"), "utf8");
   const studio = await readFile(resolve(root, "app/ChessStudio.tsx"), "utf8");
   const packageJson = JSON.parse(await readFile(resolve(root, "package.json"), "utf8"));
 
-  assert.match(board, /BoardTheme = "classic" \| "anime" \| "samurai"/);
+  assert.doesNotMatch(board, /anime|samurai/i);
   assert.match(board, /new THREE\.PlaneGeometry\(0\.994, 0\.994\)/);
   assert.match(board, /file - 3\.5/);
   assert.match(board, /4\.5 - rank/);
@@ -46,7 +46,7 @@ test("keeps deterministic board geometry and all three themes", async () => {
   assert.doesNotMatch(board, /new RoundedBoxGeometry\(0\.06, 0\.34, 0\.075/);
   assert.doesNotMatch(board, /\[0\.015, 1\.075, 0\.153\]/);
   assert.match(board, /side: THREE\.DoubleSide/);
-  assert.match(studio, /data-theme-option=\{theme\}/);
+  assert.doesNotMatch(studio, /data-theme-option|Anime|Samurai/);
   assert.match(studio, /className="mode-switch"/);
   assert.match(studio, /new Chess\(fen\)/);
   assert.match(studio, /pieces\/mpchess\/\$\{code\}\.svg/);

@@ -11,7 +11,6 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import type { BoardPosition, PieceCode, Square } from "./chess";
 
 export type CameraView = "angle" | "top" | "white" | "black" | "left" | "right" | "low";
-export type BoardTheme = "classic" | "anime" | "samurai";
 
 export type ChessBoardHandle = {
   setView: (view: CameraView) => void;
@@ -22,7 +21,6 @@ export type ChessBoardHandle = {
 type Props = {
   position: BoardPosition;
   flipped: boolean;
-  theme: BoardTheme;
   activeSquare: Square | null;
   onSquarePress: (square: Square) => void;
   onSquareErase: (square: Square) => void;
@@ -36,11 +34,7 @@ type CameraGoal = {
 type Materials = {
   white: THREE.Material;
   black: THREE.Material;
-  whiteAccent: THREE.Material;
-  blackAccent: THREE.Material;
   gold: THREE.Material;
-  whiteOutline?: THREE.MeshBasicMaterial;
-  blackOutline?: THREE.MeshBasicMaterial;
 };
 
 type PieceKind = "K" | "Q" | "R" | "B" | "N" | "P";
@@ -66,14 +60,9 @@ type ThemeConfig = {
   pieces: {
     white: string;
     black: string;
-    whiteAccent: string;
-    blackAccent: string;
     gold: string;
-    style: "physical" | "toon";
     roughness: number;
     clearcoat: number;
-    whiteOutline?: string;
-    blackOutline?: string;
   };
   lighting: {
     exposure: number;
@@ -104,7 +93,6 @@ type SceneState = {
   selection: THREE.Group;
   hover: THREE.Mesh;
   materials: Materials;
-  theme: BoardTheme;
   pieceTemplates: PieceTemplates | null;
   pieceLibraryStatus: PieceLibraryStatus;
   latestPosition: BoardPosition;
@@ -123,138 +111,45 @@ const CAMERA_VIEWS: Record<CameraView, [number, number, number]> = {
 
 const TILE_TOP = 0.371;
 
-const THEME_CONFIGS: Record<BoardTheme, ThemeConfig> = {
-  classic: {
-    background: ["#f6f0e5", "#ded0bb", "#b8a38a"],
-    floor: "#c2b094",
-    board: {
-      frameBase: "#4a291c",
-      frameTop: "#985a32",
-      bed: "#241b17",
-      light: "#eadcbd",
-      dark: "#244c3a",
-      trim: "#b78b45",
-      label: "#4d2f20",
-      grain: "#4f2416",
-      woodGrain: true,
-      frameRoughness: 0.32,
-      frameClearcoat: 0.34,
-      tileRoughness: 0.5,
-      tileClearcoat: 0.08,
-    },
-    pieces: {
-      white: "#ddccaa",
-      black: "#211713",
-      whiteAccent: "#b79b68",
-      blackAccent: "#080605",
-      gold: "#b88e48",
-      style: "physical",
-      roughness: 0.27,
-      clearcoat: 0.36,
-    },
-    lighting: {
-      exposure: 1.02,
-      ambient: 0.58,
-      hemisphereSky: "#fff5df",
-      hemisphereGround: "#71665b",
-      hemisphereIntensity: 1.05,
-      keyColor: "#ffe1b8",
-      keyIntensity: 3.25,
-      keyPosition: [-7, 12, 8],
-      fillColor: "#c9dce5",
-      fillIntensity: 1.15,
-      fillPosition: [8, 7, -6],
-    },
-    hover: "#e8b552",
+const THEME_CONFIG: ThemeConfig = {
+  background: ["#f6f0e5", "#ded0bb", "#b8a38a"],
+  floor: "#c2b094",
+  board: {
+    frameBase: "#4a291c",
+    frameTop: "#985a32",
+    bed: "#241b17",
+    light: "#eadcbd",
+    dark: "#244c3a",
+    trim: "#b78b45",
+    label: "#4d2f20",
+    grain: "#4f2416",
+    woodGrain: true,
+    frameRoughness: 0.32,
+    frameClearcoat: 0.34,
+    tileRoughness: 0.5,
+    tileClearcoat: 0.08,
   },
-  anime: {
-    background: ["#e9faf6", "#c9e9ea", "#aebed8"],
-    floor: "#bddad8",
-    board: {
-      frameBase: "#674d68",
-      frameTop: "#d98572",
-      bed: "#5e405d",
-      light: "#fff0d3",
-      dark: "#35a895",
-      trim: "#f1c263",
-      label: "#65475f",
-      grain: "#7d4a59",
-      woodGrain: false,
-      frameRoughness: 0.48,
-      frameClearcoat: 0.12,
-      tileRoughness: 0.58,
-      tileClearcoat: 0,
-    },
-    pieces: {
-      white: "#ffecd8",
-      black: "#1c2d50",
-      whiteAccent: "#e9a882",
-      blackAccent: "#62beba",
-      gold: "#f0bf58",
-      style: "toon",
-      roughness: 0.5,
-      clearcoat: 0,
-      whiteOutline: "#9d6e74",
-      blackOutline: "#09152b",
-    },
-    lighting: {
-      exposure: 1.1,
-      ambient: 0.78,
-      hemisphereSky: "#fff9e8",
-      hemisphereGround: "#6d91a2",
-      hemisphereIntensity: 1.38,
-      keyColor: "#fff0cd",
-      keyIntensity: 3.45,
-      keyPosition: [-6, 12, 8],
-      fillColor: "#9fdcff",
-      fillIntensity: 1.7,
-      fillPosition: [8, 8, -6],
-    },
-    hover: "#ff766f",
+  pieces: {
+    white: "#ddccaa",
+    black: "#211713",
+    gold: "#b88e48",
+    roughness: 0.27,
+    clearcoat: 0.36,
   },
-  samurai: {
-    background: ["#c9bda9", "#9c8d7c", "#6f625c"],
-    floor: "#756e62",
-    board: {
-      frameBase: "#25151a",
-      frameTop: "#651f2d",
-      bed: "#171310",
-      light: "#e3d4ae",
-      dark: "#304f3d",
-      trim: "#c69b43",
-      label: "#d6b669",
-      grain: "#2b1118",
-      woodGrain: false,
-      frameRoughness: 0.25,
-      frameClearcoat: 0.58,
-      tileRoughness: 0.46,
-      tileClearcoat: 0.14,
-    },
-    pieces: {
-      white: "#e0cda6",
-      black: "#4b1520",
-      whiteAccent: "#aa8247",
-      blackAccent: "#1b0d12",
-      gold: "#c69b43",
-      style: "physical",
-      roughness: 0.23,
-      clearcoat: 0.62,
-    },
-    lighting: {
-      exposure: 0.98,
-      ambient: 0.5,
-      hemisphereSky: "#ffe6bc",
-      hemisphereGround: "#403b38",
-      hemisphereIntensity: 0.9,
-      keyColor: "#ffd39a",
-      keyIntensity: 3.05,
-      keyPosition: [-6, 11, 7],
-      fillColor: "#9ebdc2",
-      fillIntensity: 0.95,
-      fillPosition: [8, 6, -7],
-    },
-    hover: "#df4d52",
+  lighting: {
+    exposure: 1.02,
+    ambient: 0.58,
+    hemisphereSky: "#fff5df",
+    hemisphereGround: "#71665b",
+    hemisphereIntensity: 1.05,
+    keyColor: "#ffe1b8",
+    keyIntensity: 3.25,
+    keyPosition: [-7, 12, 8],
+    fillColor: "#c9dce5",
+    fillIntensity: 1.15,
+    fillPosition: [8, 7, -6],
   },
+  hover: "#e8b552",
 };
 
 const STAUNTON_MODEL_NAMES: Record<PieceCode, string> = {
@@ -283,18 +178,8 @@ const STAUNTON_TARGET_HEIGHT: Record<PieceKind, number> = {
 
 const STAUNTON_WIDTH_BOOST = 1.18;
 
-const PIECE_BASE_RADIUS: Record<PieceKind, number> = {
-  P: 0.25,
-  R: 0.29,
-  N: 0.29,
-  B: 0.29,
-  Q: 0.31,
-  K: 0.32,
-};
-
 let sharedPieceTemplates: PieceTemplates | null = null;
 let sharedPieceTemplatesPromise: Promise<PieceTemplates> | null = null;
-let sharedAccentRingGeometry: THREE.TorusGeometry | null = null;
 
 function squarePosition(square: Square): THREE.Vector3 {
   const file = square.charCodeAt(0) - 97;
@@ -384,51 +269,15 @@ function createWoodGrainTexture(base: string, grain: string, anisotropy: number)
   return texture;
 }
 
-function createToonGradient() {
-  const steps = new Uint8Array([64, 132, 204, 255]);
-  const texture = new THREE.DataTexture(steps, 4, 1, THREE.RedFormat);
-  texture.minFilter = THREE.NearestFilter;
-  texture.magFilter = THREE.NearestFilter;
-  texture.generateMipmaps = false;
-  texture.needsUpdate = true;
-  return texture;
-}
-
-function createPieceMaterials(theme: BoardTheme): Materials {
-  const config = THEME_CONFIGS[theme].pieces;
-  if (config.style === "toon") {
-    const gradient = createToonGradient();
-    const toonMaterial = (color: string) => new THREE.MeshToonMaterial({
-      color,
-      gradientMap: gradient,
-      side: THREE.DoubleSide,
-    });
-    return {
-      white: toonMaterial(config.white),
-      black: toonMaterial(config.black),
-      whiteAccent: toonMaterial(config.whiteAccent),
-      blackAccent: toonMaterial(config.blackAccent),
-      gold: toonMaterial(config.gold),
-      whiteOutline: new THREE.MeshBasicMaterial({
-        color: config.whiteOutline,
-        side: THREE.BackSide,
-        toneMapped: false,
-      }),
-      blackOutline: new THREE.MeshBasicMaterial({
-        color: config.blackOutline,
-        side: THREE.BackSide,
-        toneMapped: false,
-      }),
-    };
-  }
-
+function createPieceMaterials(): Materials {
+  const config = THEME_CONFIG.pieces;
   const material = (color: string, roughness = config.roughness) => new THREE.MeshPhysicalMaterial({
     color,
     roughness,
     metalness: 0,
     clearcoat: config.clearcoat,
     clearcoatRoughness: Math.min(0.5, roughness + 0.08),
-    sheen: theme === "classic" ? 0.12 : 0.2,
+    sheen: 0.12,
     sheenColor: new THREE.Color(color).lerp(new THREE.Color("#fff0d2"), 0.12),
     sheenRoughness: 0.55,
     side: THREE.DoubleSide,
@@ -437,8 +286,6 @@ function createPieceMaterials(theme: BoardTheme): Materials {
   return {
     white: material(config.white),
     black: material(config.black, Math.max(0.2, config.roughness - 0.03)),
-    whiteAccent: material(config.whiteAccent, config.roughness + 0.08),
-    blackAccent: material(config.blackAccent, config.roughness + 0.08),
     gold: new THREE.MeshPhysicalMaterial({
       color: config.gold,
       roughness: 0.26,
@@ -491,11 +338,6 @@ function createThemeFloor(config: ThemeConfig) {
   return floor;
 }
 
-function getAccentRingGeometry() {
-  sharedAccentRingGeometry ??= new THREE.TorusGeometry(1, 0.055, 10, 40);
-  return sharedAccentRingGeometry;
-}
-
 function lathe(
   profile: [number, number][],
   material: THREE.Material,
@@ -521,10 +363,8 @@ function addMesh(
   return mesh;
 }
 
-function pieceMaterials(code: PieceCode, materials: Materials) {
-  return code[0] === "w"
-    ? { body: materials.white, accent: materials.whiteAccent }
-    : { body: materials.black, accent: materials.blackAccent };
+function pieceMaterial(code: PieceCode, materials: Materials) {
+  return code[0] === "w" ? materials.white : materials.black;
 }
 
 function addStauntonBase(
@@ -593,7 +433,7 @@ function createMitredHeadGeometry() {
 
 function createFallbackPiece(code: PieceCode, square: Square, materials: Materials): THREE.Group {
   const group = new THREE.Group();
-  const { body } = pieceMaterials(code, materials);
+  const body = pieceMaterial(code, materials);
   const type = code[1];
 
   if (type === "P") {
@@ -742,7 +582,7 @@ function createFallbackPiece(code: PieceCode, square: Square, materials: Materia
 
 function createMitredBishopModel(code: PieceCode, materials: Materials) {
   const model = new THREE.Group();
-  const { body } = pieceMaterials(code, materials);
+  const body = pieceMaterial(code, materials);
 
   addStauntonBase(model, body, 0.32, 0.19);
   model.add(lathe([
@@ -838,52 +678,14 @@ function createPiece(code: PieceCode, square: Square, state: SceneState): THREE.
   const model = type === "B"
     ? createMitredBishopModel(code, state.materials)
     : template!.clone(true);
-  const { body, accent } = pieceMaterials(code, state.materials);
-  const pieceMeshes: THREE.Mesh[] = [];
+  const body = pieceMaterial(code, state.materials);
   model.traverse((child) => {
     if (!(child instanceof THREE.Mesh)) return;
     if (!child.userData.preserveMaterial) child.material = body;
     child.castShadow = true;
     child.receiveShadow = true;
-    pieceMeshes.push(child);
   });
-
-  const outlineMaterial = code[0] === "w" ? state.materials.whiteOutline : state.materials.blackOutline;
-  if (outlineMaterial) {
-    pieceMeshes.forEach((mesh) => {
-      const outline = new THREE.Mesh(mesh.geometry, outlineMaterial);
-      outline.scale.setScalar(1.032);
-      outline.castShadow = false;
-      outline.receiveShadow = false;
-      outline.renderOrder = -1;
-      mesh.add(outline);
-    });
-  }
   group.add(model);
-
-  const radius = PIECE_BASE_RADIUS[type];
-  if (state.theme === "anime" || state.theme === "samurai") {
-    const baseRing = new THREE.Mesh(
-      getAccentRingGeometry(),
-      state.theme === "samurai" ? state.materials.gold : accent,
-    );
-    baseRing.rotation.x = Math.PI / 2;
-    baseRing.scale.setScalar(radius * (state.theme === "samurai" ? 1 : 0.92));
-    baseRing.position.y = state.theme === "samurai" ? 0.085 : 0.07;
-    baseRing.castShadow = true;
-    baseRing.receiveShadow = true;
-    group.add(baseRing);
-  }
-
-  if (state.theme === "samurai" && type !== "P") {
-    const armorBand = new THREE.Mesh(getAccentRingGeometry(), accent);
-    armorBand.rotation.x = Math.PI / 2;
-    armorBand.scale.setScalar(radius * 0.5);
-    armorBand.position.y = STAUNTON_TARGET_HEIGHT[type] * 0.4;
-    armorBand.castShadow = true;
-    armorBand.receiveShadow = true;
-    group.add(armorBand);
-  }
 
   group.position.copy(squarePosition(square));
   group.position.y = TILE_TOP;
@@ -903,7 +705,7 @@ function rebuildPieces(state: SceneState) {
   });
 }
 
-function createLabel(text: string, color: string, theme: BoardTheme) {
+function createLabel(text: string, color: string) {
   const canvas = document.createElement("canvas");
   canvas.width = 96;
   canvas.height = 96;
@@ -911,9 +713,7 @@ function createLabel(text: string, color: string, theme: BoardTheme) {
   if (!context) throw new Error("Canvas labels are not available.");
   context.clearRect(0, 0, 96, 96);
   context.fillStyle = color;
-  context.font = theme === "anime"
-    ? "800 58px Inter, Arial, sans-serif"
-    : "700 58px Georgia, serif";
+  context.font = "700 58px Georgia, serif";
   context.textAlign = "center";
   context.textBaseline = "middle";
   context.fillText(text, 48, 49);
@@ -935,10 +735,10 @@ function createLabel(text: string, color: string, theme: BoardTheme) {
   return plane;
 }
 
-function createBoard(theme: BoardTheme, anisotropy: number) {
+function createBoard(anisotropy: number) {
   const board = new THREE.Group();
   board.name = "board";
-  const config = THEME_CONFIGS[theme].board;
+  const config = THEME_CONFIG.board;
   const grainTexture = config.woodGrain
     ? createWoodGrainTexture(config.frameTop, config.grain, anisotropy)
     : null;
@@ -955,7 +755,7 @@ function createBoard(theme: BoardTheme, anisotropy: number) {
     roughness: config.frameRoughness,
     metalness: 0,
     clearcoat: config.frameClearcoat,
-    clearcoatRoughness: theme === "samurai" ? 0.18 : 0.3,
+    clearcoatRoughness: 0.3,
   });
   const bed = new THREE.MeshStandardMaterial({
     color: config.bed,
@@ -964,22 +764,19 @@ function createBoard(theme: BoardTheme, anisotropy: number) {
   });
   const trim = new THREE.MeshPhysicalMaterial({
     color: config.trim,
-    roughness: theme === "anime" ? 0.4 : 0.27,
-    metalness: theme === "anime" ? 0.28 : 0.62,
+    roughness: 0.27,
+    metalness: 0.62,
     clearcoat: 0.18,
     clearcoatRoughness: 0.24,
   });
 
-  const toonGradient = theme === "anime" ? createToonGradient() : null;
-  const createTileMaterial = (color: string) => theme === "anime"
-    ? new THREE.MeshToonMaterial({ color, gradientMap: toonGradient })
-    : new THREE.MeshPhysicalMaterial({
-        color,
-        roughness: config.tileRoughness,
-        metalness: 0,
-        clearcoat: config.tileClearcoat,
-        clearcoatRoughness: 0.42,
-      });
+  const createTileMaterial = (color: string) => new THREE.MeshPhysicalMaterial({
+    color,
+    roughness: config.tileRoughness,
+    metalness: 0,
+    clearcoat: config.tileClearcoat,
+    clearcoatRoughness: 0.42,
+  });
   const light = createTileMaterial(config.light);
   const dark = createTileMaterial(config.dark);
 
@@ -1034,111 +831,26 @@ function createBoard(theme: BoardTheme, anisotropy: number) {
   const files = "abcdefgh";
   for (let index = 0; index < 8; index += 1) {
     const x = index - 3.5;
-    const near = createLabel(files[index], config.label, theme);
+    const near = createLabel(files[index], config.label);
     near.position.set(x, TILE_TOP + 0.01, 4.22);
     board.add(near);
-    const far = createLabel(files[index], config.label, theme);
+    const far = createLabel(files[index], config.label);
     far.position.set(x, TILE_TOP + 0.01, -4.22);
     far.rotation.z = Math.PI;
     board.add(far);
 
     const z = 3.5 - index;
-    const left = createLabel(String(index + 1), config.label, theme);
+    const left = createLabel(String(index + 1), config.label);
     left.position.set(-4.22, TILE_TOP + 0.01, z);
     left.rotation.z = -Math.PI / 2;
     board.add(left);
-    const right = createLabel(String(index + 1), config.label, theme);
+    const right = createLabel(String(index + 1), config.label);
     right.position.set(4.22, TILE_TOP + 0.01, z);
     right.rotation.z = Math.PI / 2;
     board.add(right);
   }
 
   return board;
-}
-
-function createJapaneseHouseBackdrop() {
-  const house = new THREE.Group();
-  house.name = "japanese-house-background";
-
-  const timber = new THREE.MeshStandardMaterial({
-    color: "#463a35",
-    roughness: 0.76,
-    transparent: true,
-    opacity: 0.74,
-  });
-  const lacquer = new THREE.MeshStandardMaterial({
-    color: "#5b2a34",
-    roughness: 0.5,
-    transparent: true,
-    opacity: 0.72,
-  });
-  const paper = new THREE.MeshStandardMaterial({
-    color: "#d2c6ae",
-    roughness: 0.94,
-    transparent: true,
-    opacity: 0.68,
-  });
-  const roof = new THREE.MeshStandardMaterial({
-    color: "#414746",
-    roughness: 0.82,
-    transparent: true,
-    opacity: 0.7,
-  });
-  const tatami = new THREE.MeshStandardMaterial({ color: "#817b63", roughness: 0.96 });
-  const lanternPaper = new THREE.MeshStandardMaterial({
-    color: "#c9a979",
-    roughness: 0.84,
-    transparent: true,
-    opacity: 0.7,
-  });
-
-  addMesh(house, new RoundedBoxGeometry(15, 0.24, 4.1, 4, 0.08), tatami, [0, -0.08, -7.25]);
-  addMesh(house, new THREE.BoxGeometry(14.2, 4.35, 0.24), paper, [0, 2.05, -9.08]);
-  addMesh(house, new RoundedBoxGeometry(15.2, 0.34, 3.25, 5, 0.12), roof, [0, 4.62, -8.72], undefined, [-0.08, 0, 0]);
-  addMesh(house, new THREE.CylinderGeometry(0.16, 0.16, 15.2, 24), lacquer, [0, 4.84, -8.98], undefined, [0, 0, Math.PI / 2]);
-
-  for (const y of [0.22, 4.25]) {
-    addMesh(house, new THREE.BoxGeometry(14.4, 0.2, 0.3), timber, [0, y, -8.91]);
-  }
-
-  const panelWidth = 2.18;
-  for (let panel = 0; panel < 6; panel += 1) {
-    const centerX = (panel - 2.5) * panelWidth;
-    addMesh(house, new THREE.BoxGeometry(2.02, 3.72, 0.055), paper, [centerX, 2.2, -8.86]);
-
-    for (const offsetX of [-1.09, -0.36, 0.36, 1.09]) {
-      addMesh(
-        house,
-        new THREE.BoxGeometry(0.065, 3.82, 0.075),
-        timber,
-        [centerX + offsetX, 2.2, -8.8],
-      );
-    }
-    for (const y of [0.7, 1.45, 2.2, 2.95, 3.7]) {
-      addMesh(house, new THREE.BoxGeometry(2.14, 0.055, 0.075), timber, [centerX, y, -8.8]);
-    }
-  }
-
-  addMesh(house, new THREE.BoxGeometry(1.18, 2.45, 0.045), lacquer, [0, 2.32, -8.7]);
-  addMesh(house, new THREE.BoxGeometry(0.92, 2.18, 0.055), paper, [0, 2.32, -8.66]);
-  addMesh(
-    house,
-    new THREE.CircleGeometry(0.27, 40),
-    new THREE.MeshBasicMaterial({ color: "#843842", transparent: true, opacity: 0.7 }),
-    [0, 2.66, -8.62],
-  );
-  addMesh(house, new THREE.BoxGeometry(1.22, 0.1, 0.08), timber, [0, 1.05, -8.62]);
-
-  for (const x of [-5.65, 5.65]) {
-    addMesh(house, new THREE.CylinderGeometry(0.24, 0.19, 0.9, 32), lanternPaper, [x, 2.65, -8.36]);
-    addMesh(house, new THREE.CylinderGeometry(0.08, 0.08, 0.24, 24), timber, [x, 3.22, -8.36]);
-    addMesh(house, new THREE.CylinderGeometry(0.08, 0.08, 0.24, 24), timber, [x, 2.08, -8.36]);
-  }
-
-  house.scale.setScalar(0.72);
-  house.position.set(0, -0.02, -2.25);
-  configureShadows(house, false, true);
-  return house;
 }
 
 function disposeMaterial(material: THREE.Material) {
@@ -1190,7 +902,7 @@ function findInteractive(object: THREE.Object3D | null): THREE.Object3D | null {
 }
 
 export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBoard3D(
-  { position, flipped, theme, activeSquare, onSquarePress, onSquareErase },
+  { position, flipped, activeSquare, onSquarePress, onSquareErase },
   ref,
 ) {
   const hostRef = useRef<HTMLDivElement>(null);
@@ -1238,12 +950,10 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     const host = hostRef.current;
     if (!host) return;
 
-    const config = THEME_CONFIGS[theme];
-    const samurai = theme === "samurai";
+    const config = THEME_CONFIG;
     const scene = new THREE.Scene();
     const backgroundTexture = createBackgroundTexture(config.background);
     scene.background = backgroundTexture;
-    if (samurai) scene.fog = new THREE.Fog(config.background[2], 18, 29);
 
     const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
     camera.position.copy(cameraSnapshotRef.current.position);
@@ -1278,9 +988,8 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
 
     addThemeLighting(scene, config, window.innerWidth < 820 ? 1024 : 2048);
     scene.add(createThemeFloor(config));
-    if (samurai) scene.add(createJapaneseHouseBackdrop());
 
-    const board = createBoard(theme, renderer.capabilities.getMaxAnisotropy());
+    const board = createBoard(renderer.capabilities.getMaxAnisotropy());
     const pieces = new THREE.Group();
     pieces.name = "pieces";
     const selection = new THREE.Group();
@@ -1304,7 +1013,7 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     board.add(hover);
     scene.add(board);
 
-    const materials = createPieceMaterials(theme);
+    const materials = createPieceMaterials();
 
     const state: SceneState = {
       scene,
@@ -1316,7 +1025,6 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       selection,
       hover,
       materials,
-      theme,
       pieceTemplates: sharedPieceTemplates,
       pieceLibraryStatus: sharedPieceTemplates ? "ready" : "loading",
       latestPosition: positionRef.current,
@@ -1475,7 +1183,7 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       renderer.domElement.remove();
       stateRef.current = null;
     };
-  }, [theme]);
+  }, []);
 
   useEffect(() => {
     const state = stateRef.current;
@@ -1501,7 +1209,7 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     ring.castShadow = false;
     ring.receiveShadow = false;
     state.selection.add(ring);
-  }, [activeSquare, theme]);
+  }, [activeSquare]);
 
   return <div className="board-host" ref={hostRef} />;
 });
