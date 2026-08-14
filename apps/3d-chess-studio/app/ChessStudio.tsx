@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Chess, type Square as RulesSquare } from "chess.js";
 import {
   ChessBoard3D,
   type BoardTheme,
@@ -6,7 +7,6 @@ import {
   type ChessBoardHandle,
 } from "./ChessBoard3D";
 import {
-  PIECE_SYMBOLS,
   PIECE_TYPES,
   cloneDocument,
   emptyDocument,
@@ -24,6 +24,12 @@ import {
 } from "./chess";
 
 type Tool = "place" | "move" | "erase";
+type PromotionPiece = "q" | "r" | "b" | "n";
+type PendingPromotion = {
+  from: Square;
+  to: Square;
+  color: "w" | "b";
+};
 
 const CAMERA_BUTTONS: { view: CameraView; label: string }[] = [
   { view: "angle", label: "Angle" },
@@ -98,7 +104,11 @@ function PiecePalette({
               aria-label={`Place ${pieceLabel(code)}`}
               title={pieceLabel(code)}
             >
-              <span aria-hidden="true">{PIECE_SYMBOLS[code]}</span>
+              <img
+                src={`${import.meta.env.BASE_URL}pieces/mpchess/${code}.svg`}
+                alt=""
+                aria-hidden="true"
+              />
               <small>{type[0].toUpperCase()}</small>
             </button>
           );
@@ -122,10 +132,32 @@ export default function ChessStudio() {
   const [fenDraft, setFenDraft] = useState(() => toFen(startingDocument()));
   const [fenError, setFenError] = useState("");
   const [announcement, setAnnouncement] = useState("Ready");
+  const [playMode, setPlayMode] = useState(false);
+  const [pendingPromotion, setPendingPromotion] = useState<PendingPromotion | null>(null);
 
   const fen = useMemo(() => toFen(document), [document]);
   const warnings = useMemo(() => positionWarnings(document), [document]);
   const pieceCount = Object.keys(document.board).length;
+  const playStatus = useMemo(() => {
+    if (!playMode) return null;
+    try {
+      const game = new Chess(fen);
+      const turn = game.turn() === "w" ? "White" : "Black";
+      if (game.isCheckmate()) {
+        return { label: `${turn} is checkmated`, detail: `${turn === "White" ? "Black" : "White"} wins`, tone: "game-over" };
+      }
+      if (game.isStalemate()) return { label: "Stalemate", detail: "Draw", tone: "game-over" };
+      if (game.isInsufficientMaterial()) return { label: "Insufficient material", detail: "Draw", tone: "game-over" };
+      if (game.isDrawByFiftyMoves()) return { label: "Fifty-move rule", detail: "Draw", tone: "game-over" };
+      return {
+        label: `${turn} to move`,
+        detail: game.isCheck() ? "Check" : "Local two-player game",
+        tone: game.isCheck() ? "check" : "playing",
+      };
+    } catch {
+      return { label: "Position cannot be played", detail: "Return to Setup", tone: "game-over" };
+    }
+  }, [fen, playMode]);
 
   const announce = useCallback((message: string) => {
     setAnnouncement(message);
@@ -181,8 +213,89 @@ export default function ChessStudio() {
     [commit, document, moveFrom],
   );
 
+  const finishPlayMove = useCallback(
+    (from: Square, to: Square, promotion: PromotionPiece = "q") => {
+      try {
+        const game = new Chess(fen);
+        const move = game.move({ from, to, promotion });
+        const next = parseFen(game.fen());
+        const suffix = game.isCheckmate() ? " — checkmate" : game.isCheck() ? " — check" : "";
+        commit(next, `${move.san}${suffix}`);
+        setMoveFrom(null);
+        setPendingPromotion(null);
+      } catch {
+        announce("That move is not legal");
+      }
+    },
+    [announce, commit, fen],
+  );
+
+  const actOnPlaySquare = useCallback(
+    (square: Square) => {
+      if (pendingPromotion) {
+        announce("Choose a promotion piece first");
+        return;
+      }
+
+      let game: Chess;
+      try {
+        game = new Chess(fen);
+      } catch {
+        announce("Return to Setup and correct this position");
+        return;
+      }
+      if (game.isGameOver()) {
+        announce("This game is over");
+        return;
+      }
+
+      const selected = document.board[square];
+      const turn = game.turn();
+      if (!moveFrom) {
+        if (!selected || selected[0] !== turn) {
+          announce(`${turn === "w" ? "White" : "Black"} must choose a piece`);
+          return;
+        }
+        setMoveFrom(square);
+        announce(`${square} selected`);
+        return;
+      }
+
+      if (moveFrom === square) {
+        setMoveFrom(null);
+        announce("Move cancelled");
+        return;
+      }
+
+      if (selected?.[0] === turn) {
+        setMoveFrom(square);
+        announce(`${square} selected`);
+        return;
+      }
+
+      const candidates = game
+        .moves({ square: moveFrom as RulesSquare, verbose: true })
+        .filter((move) => move.to === square);
+      if (!candidates.length) {
+        announce("That move is not legal");
+        return;
+      }
+      if (candidates.some((move) => move.isPromotion())) {
+        setPendingPromotion({ from: moveFrom, to: square, color: turn });
+        announce("Choose a promotion piece");
+        return;
+      }
+      finishPlayMove(moveFrom, square);
+    },
+    [announce, document.board, fen, finishPlayMove, moveFrom, pendingPromotion],
+  );
+
   const actOnSquare = useCallback(
     (square: Square) => {
+      if (playMode) {
+        actOnPlaySquare(square);
+        return;
+      }
       if (tool === "erase") {
         eraseSquare(square);
         return;
@@ -223,7 +336,7 @@ export default function ChessStudio() {
       commit(next, `Moved ${pieceLabel(movingPiece)} from ${moveFrom} to ${square}`);
       setMoveFrom(null);
     },
-    [announce, commit, document, eraseSquare, moveFrom, selectedPiece, tool],
+    [actOnPlaySquare, announce, commit, document, eraseSquare, moveFrom, playMode, selectedPiece, tool],
   );
 
   const selectPiece = (piece: PieceCode) => {
@@ -279,6 +392,35 @@ export default function ChessStudio() {
     setMoveFrom(null);
   };
 
+  const enterPlayMode = () => {
+    try {
+      new Chess(fen);
+      setPlayMode(true);
+      setTool("move");
+      setMoveFrom(null);
+      setPendingPromotion(null);
+      announce("Play mode ready");
+    } catch {
+      setFenError("This position is not legal enough to start a game.");
+      announce("Correct the position before playing");
+    }
+  };
+
+  const enterSetupMode = () => {
+    setPlayMode(false);
+    setMoveFrom(null);
+    setPendingPromotion(null);
+    announce("Setup mode ready");
+  };
+
+  const startNewGame = () => {
+    commit(startingDocument(), "New game started");
+    setMoveFrom(null);
+    setPendingPromotion(null);
+    setFlipped(false);
+    boardRef.current?.setView("angle");
+  };
+
   useEffect(() => {
     const keyHandler = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
@@ -294,19 +436,22 @@ export default function ChessStudio() {
         redo();
         return;
       }
-      if (event.key === "1") setTool("place");
-      if (event.key === "2") setTool("move");
-      if (event.key === "3") setTool("erase");
+      if (!playMode && event.key === "1") setTool("place");
+      if (!playMode && event.key === "2") setTool("move");
+      if (!playMode && event.key === "3") setTool("erase");
       if (event.key.toLowerCase() === "f") setFlipped((value) => !value);
       if (event.key === "0") boardRef.current?.resetCamera();
-      if (event.key === "Escape") setMoveFrom(null);
+      if (event.key === "Escape") {
+        setMoveFrom(null);
+        setPendingPromotion(null);
+      }
     };
     window.addEventListener("keydown", keyHandler);
     return () => window.removeEventListener("keydown", keyHandler);
-  }, [redo, undo]);
+  }, [playMode, redo, undo]);
 
   return (
-    <main className="studio-shell">
+    <main className={`studio-shell ${playMode ? "is-play-mode" : ""}`}>
       <header className="studio-header">
         <div className="brand-lockup">
           <span className="brand-cube" aria-hidden="true"><i /><i /><i /></span>
@@ -316,17 +461,30 @@ export default function ChessStudio() {
           </div>
         </div>
         <div className="header-actions">
-          <span className="position-count">{pieceCount} pieces</span>
-          <button className="quiet-button" type="button" onClick={undo} disabled={!past.length}>Undo</button>
-          <button className="quiet-button" type="button" onClick={redo} disabled={!future.length}>Redo</button>
+          <div className="mode-switch" role="group" aria-label="Studio mode">
+            <button type="button" className={!playMode ? "is-active" : ""} aria-pressed={!playMode} onClick={enterSetupMode}>Setup</button>
+            <button type="button" className={playMode ? "is-active" : ""} aria-pressed={playMode} onClick={enterPlayMode}>Play</button>
+          </div>
+          {!playMode && <span className="position-count">{pieceCount} pieces</span>}
+          {playMode ? (
+            <>
+              <button className="quiet-button" type="button" onClick={undo} disabled={!past.length}>Undo move</button>
+              <button className="quiet-button" type="button" onClick={startNewGame}>New game</button>
+            </>
+          ) : (
+            <>
+              <button className="quiet-button" type="button" onClick={undo} disabled={!past.length}>Undo</button>
+              <button className="quiet-button" type="button" onClick={redo} disabled={!future.length}>Redo</button>
+            </>
+          )}
           <button className="primary-button" type="button" onClick={() => boardRef.current?.downloadPng()}>
             Download PNG
           </button>
         </div>
       </header>
 
-      <section className="studio-grid">
-        <aside className="panel tool-panel" aria-label="Piece and editing tools">
+      <section className={`studio-grid ${playMode ? "is-play-mode" : ""}`}>
+        {!playMode && <aside className="panel tool-panel" aria-label="Piece and editing tools">
           <div className="panel-heading">
             <div>
               <p className="eyebrow">Build position</p>
@@ -353,7 +511,7 @@ export default function ChessStudio() {
             <button type="button" className="danger-quiet" onClick={() => applyPreset(emptyDocument(), "Empty board")}>Clear board</button>
           </div>
           <p className="right-click-note">Tip: right-click any square to remove its piece.</p>
-        </aside>
+        </aside>}
 
         <section className="board-stage" data-theme={boardTheme} aria-label="3D chessboard workspace">
           <div className="board-toolbar">
@@ -389,6 +547,14 @@ export default function ChessStudio() {
             </div>
           </div>
 
+          {playMode && playStatus && (
+            <div className={`play-status-bar ${playStatus.tone}`} aria-live="polite">
+              <span className="play-turn-dot" aria-hidden="true" />
+              <strong>{playStatus.label}</strong>
+              <span>{playStatus.detail}</span>
+            </div>
+          )}
+
           <div className="board-viewport">
             <ChessBoard3D
               ref={boardRef}
@@ -397,21 +563,42 @@ export default function ChessStudio() {
               theme={boardTheme}
               activeSquare={moveFrom}
               onSquarePress={actOnSquare}
-              onSquareErase={eraseSquare}
+              onSquareErase={playMode ? () => announce("Right-click erase is disabled in Play mode") : eraseSquare}
             />
             <div className="viewport-status" aria-live="polite">
               <span className={`status-dot ${announcement === "Ready" ? "ready" : "active"}`} />
               {moveFrom ? `${moveFrom} selected — choose destination` : announcement}
             </div>
+            {pendingPromotion && (
+              <div className="promotion-picker" role="dialog" aria-modal="true" aria-labelledby="promotion-title">
+                <strong id="promotion-title">Promote pawn</strong>
+                <span>Choose the new piece</span>
+                <div>
+                  {(["q", "r", "b", "n"] as PromotionPiece[]).map((promotion) => {
+                    const code = `${pendingPromotion.color}${promotion.toUpperCase()}` as PieceCode;
+                    return (
+                      <button
+                        key={promotion}
+                        type="button"
+                        onClick={() => finishPlayMove(pendingPromotion.from, pendingPromotion.to, promotion)}
+                        aria-label={`Promote to ${promotion === "q" ? "queen" : promotion === "r" ? "rook" : promotion === "b" ? "bishop" : "knight"}`}
+                      >
+                        <img src={`${import.meta.env.BASE_URL}pieces/mpchess/${code}.svg`} alt="" aria-hidden="true" />
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
-          <div className="camera-help" aria-label="Camera control instructions">
+          {!playMode && <div className="camera-help" aria-label="Camera control instructions">
             <span><b>Drag</b> rotate</span>
             <span><b>Wheel / pinch</b> zoom</span>
             <span><b>Right-drag / two fingers</b> pan</span>
-          </div>
+          </div>}
         </section>
 
-        <aside className="panel position-panel" aria-label="Position details and FEN">
+        {!playMode && <aside className="panel position-panel" aria-label="Position details and FEN">
           <div className="panel-heading">
             <div>
               <p className="eyebrow">Position data</p>
@@ -480,13 +667,13 @@ export default function ChessStudio() {
               {warnings.map((warning) => <p key={warning}>{warning}</p>)}
             </div>
           )}
-        </aside>
+        </aside>}
       </section>
 
-      <footer className="studio-footer">
+      {!playMode && <footer className="studio-footer">
         <span>All position editing stays in your browser.</span>
         <span>Keyboard: 1 Place · 2 Move · 3 Erase · F Flip · 0 Reset camera · Ctrl/⌘ Z Undo</span>
-      </footer>
+      </footer>}
     </main>
   );
 }
