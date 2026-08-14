@@ -50,7 +50,8 @@ The major subsystems are:
 6. **3D Chess Position Studio**
    - React/Vite source in `apps/3d-chess-studio/`
    - Three.js board with rotate, zoom, pan, top, side, and perspective views
-   - FEN-based position setup with three visual themes
+   - FEN-based position setup plus local two-player legal Play mode
+   - Three visual themes and the main app's MPChess piece designs
    - GitHub Pages build mounted at `/3d/`
 
 7. **Standalone Endgame Trainer site**
@@ -283,7 +284,7 @@ apps/opening-book/
 ```text
 apps/3d-chess-studio/
 ├── app/                         React UI, chess state, and Three.js scene
-├── public/models/               Local CC0 Staunton GLB asset
+├── public/pieces/mpchess/       Main-app MPChess palette artwork and license
 └── tests/                       static-output and geometry checks
         │
         └── VITE_BASE_PATH=/3d/ npm test
@@ -335,7 +336,7 @@ apps/3d-chess-studio/
 | `vendor/chess.js` | Legal moves, FEN, PGN, game termination, attack queries |
 | `vendor/stockfish/` | Browser Stockfish JavaScript and WASM variants |
 | `apps/opening-book/` | React/Vite Catalan Atelier source, Markdown chapters, local assets, and tests |
-| `apps/3d-chess-studio/` | React/Vite/Three.js position editor, local Staunton model, themes, and static-build tests |
+| `apps/3d-chess-studio/` | React/Vite/Three.js position editor, local two-player play, procedural Staunton pieces, MPChess palette artwork, themes, and static-build tests |
 | `endgame-trainer/` | Self-contained Endgame Trainer landing page, clean-route privacy policy, styles, favicon, and app previews |
 | `.github/workflows/pages.yml` | Tests combined-site routes, builds the React/Vite apps, mounts their outputs at `/openings/`, `/openings-sicilian/`, and `/3d/`, and uploads the combined static artifact |
 
@@ -1149,9 +1150,11 @@ framework-free SPA and static lesson architecture.
 The 3D Chess Position Studio is a self-contained React/Vite/Three.js application
 whose source lives in `apps/3d-chess-studio/`. It provides a deterministic 8x8
 board, FEN import and export, click-based position setup, full orbit controls,
-camera presets, and classic, anime, and samurai visual themes. The local CC0 GLB
-supplies the Staunton meshes; the bishop uses a procedural mitred form so its
-diagonal slot remains recognizable from all camera angles.
+camera presets, and classic, anime, and samurai visual themes. Play mode hides
+the setup panels and uses client-side `chess.js` rules for a legal local
+human-versus-human game without Stockfish. Sturdy procedural geometry follows
+the main app's MPChess Staunton identities, while the palette uses the exact
+shared SVG artwork. The bishop's diagonal mitre is modeled as a recessed cut.
 
 The application has no runtime server, database, API route, or remote asset
 dependency. `VITE_BASE_PATH=/3d/` makes every generated script, stylesheet,

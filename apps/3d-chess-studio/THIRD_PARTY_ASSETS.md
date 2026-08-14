@@ -1,11 +1,14 @@
 # Third-party assets
 
-## Smooth chess pieces
+## MPChess piece artwork
 
-- Asset: `public/models/staunton.glb`
-- Original title: “Chess”
-- Creator: pjhanzlik
-- Source: https://opengameart.org/content/chess
-- License: CC0 1.0 Universal
+- Assets: `public/pieces/mpchess/*.svg`
+- Project: mpchess-pieces
+- Creator: Maxime Chupin
+- License: GNU General Public License v3 or later
+- License copy: `public/pieces/mpchess/LICENSE.txt`
 
-The application uses the source piece meshes with its own materials and deterministic square placement. Their height is normalized in code, with a modest horizontal width increase for sturdier tournament proportions.
+These are the same piece images already used by the main CD Digital Study
+Board. The 3D scene does not extrude or alter the SVG files; it uses original
+procedural geometry whose Staunton identities and proportions are visually
+aligned with the shared MPChess silhouettes.

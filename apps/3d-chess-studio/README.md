@@ -1,8 +1,13 @@
 # CD Digital 3D Chess Position Studio
 
-A completely client-side 3D chess position editor. It runs as static HTML,
-CSS, JavaScript, and a local GLB chess model—no application server, database,
-worker, sign-in, or runtime API is required.
+A completely client-side 3D chess position editor and local two-player board.
+It runs as static HTML, CSS, and JavaScript. No application server, database,
+worker, sign-in, Stockfish engine, or runtime API is required.
+
+Setup mode builds arbitrary FEN positions. Play mode hides the editing panels
+and uses `chess.js` in the browser for legal human-versus-human moves. The 3D
+pieces are sturdy procedural interpretations of the main Study Board's MPChess
+Staunton silhouettes, and the palette uses those exact shared designs.
 
 ## Prerequisites
 
@@ -32,6 +37,6 @@ Set `VITE_BASE_PATH` while building. CD Digital publishes this app at `/3d/`:
 VITE_BASE_PATH=/3d/ npm run build
 ```
 
-Every generated asset URL, including the Staunton GLB model, uses that base
-path. The `coachdinosaur/chess-study` Pages workflow builds this project and
-publishes `dist/` as `https://cddigital.top/3d/`.
+Every generated JavaScript, stylesheet, favicon, and piece-art URL uses that
+base path. The `coachdinosaur/chess-study` Pages workflow builds this project
+and publishes `dist/` as `https://cddigital.top/3d/`.

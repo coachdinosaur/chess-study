@@ -17,18 +17,15 @@ test("emits a server-free static site", async () => {
       .filter((name) => name.endsWith(".js"))
       .map((name) => readFile(resolve(root, "dist/assets", name), "utf8")),
   );
-  const model = await stat(resolve(root, "dist/models/staunton.glb"));
+  const bishopIcon = await stat(resolve(root, "dist/pieces/mpchess/wB.svg"));
 
   assert.match(html, /<div id="root"><\/div>/);
   assert.ok(html.includes(`${expectedBase}assets/`));
   assert.doesNotMatch(html, /_next|_vinext|worker\/index|server\/index/);
   assert.ok(files.some((name) => name.endsWith(".js")));
   assert.ok(files.some((name) => name.endsWith(".css")));
-  assert.ok(
-    scripts.some((script) => script.includes(`${expectedBase}models/staunton.glb`)),
-    "the runtime should load the local model from the static deployment base",
-  );
-  assert.ok(model.size > 1_000, "the local Staunton model should be copied to the static output");
+  assert.ok(scripts.every((script) => !script.includes("staunton.glb")));
+  assert.ok(bishopIcon.size > 500, "the shared MPChess artwork should be copied to the static output");
 });
 
 test("keeps deterministic board geometry and all three themes", async () => {
@@ -40,10 +37,18 @@ test("keeps deterministic board geometry and all three themes", async () => {
   assert.match(board, /new THREE\.PlaneGeometry\(0\.994, 0\.994\)/);
   assert.match(board, /file - 3\.5/);
   assert.match(board, /4\.5 - rank/);
-  assert.match(board, /createMitredBishopModel/);
-  assert.match(board, /import\.meta\.env\.BASE_URL/);
+  assert.match(board, /createMitredHeadGeometry/);
+  assert.doesNotMatch(board, /recessedMitre|carved-mitre-core/);
+  assert.doesNotMatch(board, /new RoundedBoxGeometry\(0\.024, 0\.305, 0\.17/);
+  assert.doesNotMatch(board, /\[0\.015, 1\.075, 0\.153\]/);
+  assert.match(board, /side: THREE\.DoubleSide/);
+  assert.doesNotMatch(board, /GLTFLoader|staunton\.glb/);
   assert.match(studio, /data-theme-option=\{theme\}/);
+  assert.match(studio, /className="mode-switch"/);
+  assert.match(studio, /new Chess\(fen\)/);
+  assert.match(studio, /pieces\/mpchess\/\$\{code\}\.svg/);
   assert.equal(packageJson.scripts.dev, "vite --host 0.0.0.0");
+  assert.equal(packageJson.dependencies["chess.js"], "^1.4.0");
   assert.equal(packageJson.dependencies.vinext, undefined);
   assert.equal(packageJson.dependencies["drizzle-orm"], undefined);
 });
