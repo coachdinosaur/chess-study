@@ -5,9 +5,11 @@ It runs as static HTML, CSS, and JavaScript. No application server, database,
 worker, sign-in, Stockfish engine, or runtime API is required.
 
 Setup mode builds arbitrary FEN positions. Play mode hides the editing panels
-and uses `chess.js` in the browser for legal human-versus-human moves. The 3D
-pieces are sturdy procedural interpretations of the main Study Board's MPChess
-Staunton silhouettes, and the palette uses those exact shared designs.
+and uses `chess.js` in the browser for legal human-versus-human moves. The king,
+queen, rook, knight, and pawn use the previously approved local Staunton 3D
+models. Only the bishop is custom geometry, with a clean open diagonal mitre
+and no inserted strip or accent object. The setup palette uses the main Study
+Board's exact MPChess artwork.
 
 ## Prerequisites
 
@@ -37,6 +39,6 @@ Set `VITE_BASE_PATH` while building. CD Digital publishes this app at `/3d/`:
 VITE_BASE_PATH=/3d/ npm run build
 ```
 
-Every generated JavaScript, stylesheet, favicon, and piece-art URL uses that
-base path. The `coachdinosaur/chess-study` Pages workflow builds this project
-and publishes `dist/` as `https://cddigital.top/3d/`.
+Every generated JavaScript, stylesheet, favicon, 3D-model, and piece-art URL
+uses that base path. The `coachdinosaur/chess-study` Pages workflow builds this
+project and publishes `dist/` as `https://cddigital.top/3d/`.

@@ -7,6 +7,7 @@ import {
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import type { BoardPosition, PieceCode, Square } from "./chess";
 
 export type CameraView = "angle" | "top" | "white" | "black" | "left" | "right" | "low";
@@ -90,6 +91,9 @@ type ThemeConfig = {
   hover: string;
 };
 
+type PieceTemplates = Record<PieceCode, THREE.Group>;
+type PieceLibraryStatus = "loading" | "ready" | "failed";
+
 type SceneState = {
   scene: THREE.Scene;
   camera: THREE.PerspectiveCamera;
@@ -101,6 +105,8 @@ type SceneState = {
   hover: THREE.Mesh;
   materials: Materials;
   theme: BoardTheme;
+  pieceTemplates: PieceTemplates | null;
+  pieceLibraryStatus: PieceLibraryStatus;
   latestPosition: BoardPosition;
   cameraGoal: CameraGoal | null;
 };
@@ -251,6 +257,21 @@ const THEME_CONFIGS: Record<BoardTheme, ThemeConfig> = {
   },
 };
 
+const STAUNTON_MODEL_NAMES: Record<PieceCode, string> = {
+  wK: "WhiteKing",
+  wQ: "WhiteQueen",
+  wR: "RightWhiteRook",
+  wB: "RightWhiteBishop",
+  wN: "RightWhiteKnight",
+  wP: "WhitePawnA",
+  bK: "BlackKing",
+  bQ: "BlackQueen",
+  bR: "RightBlackRook",
+  bB: "RightBlackBishop",
+  bN: "RightBlackKnight",
+  bP: "BlackPawnA",
+};
+
 const STAUNTON_TARGET_HEIGHT: Record<PieceKind, number> = {
   P: 0.88,
   R: 1.04,
@@ -259,6 +280,8 @@ const STAUNTON_TARGET_HEIGHT: Record<PieceKind, number> = {
   Q: 1.36,
   K: 1.48,
 };
+
+const STAUNTON_WIDTH_BOOST = 1.18;
 
 const PIECE_BASE_RADIUS: Record<PieceKind, number> = {
   P: 0.25,
@@ -269,6 +292,8 @@ const PIECE_BASE_RADIUS: Record<PieceKind, number> = {
   K: 0.32,
 };
 
+let sharedPieceTemplates: PieceTemplates | null = null;
+let sharedPieceTemplatesPromise: Promise<PieceTemplates> | null = null;
 let sharedAccentRingGeometry: THREE.TorusGeometry | null = null;
 
 function squarePosition(square: Square): THREE.Vector3 {
@@ -532,9 +557,43 @@ function addStauntonBase(
   );
 }
 
+function createMitredHeadGeometry() {
+  const source = new THREE.SphereGeometry(0.19, 72, 48).toNonIndexed();
+  const positions = source.getAttribute("position");
+  const keptPositions: number[] = [];
+  const gapHalfWidth = 0.018;
+
+  for (let index = 0; index < positions.count; index += 3) {
+    const triangle: [number, number, number][] = [];
+    const signedDistances: number[] = [];
+
+    for (let vertex = 0; vertex < 3; vertex += 1) {
+      const sourceIndex = index + vertex;
+      const x = positions.getX(sourceIndex) * 0.84;
+      const y = positions.getY(sourceIndex) * 1.22;
+      const z = positions.getZ(sourceIndex) * 0.84;
+      triangle.push([x, y, z]);
+      signedDistances.push((0.825 * x) - (0.565 * y));
+    }
+
+    const entirelyAbove = signedDistances.every((distance) => distance > gapHalfWidth);
+    const entirelyBelow = signedDistances.every((distance) => distance < -gapHalfWidth);
+    if (!entirelyAbove && !entirelyBelow) continue;
+
+    triangle.forEach((vertex) => keptPositions.push(...vertex));
+  }
+
+  source.dispose();
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.Float32BufferAttribute(keptPositions, 3));
+  geometry.computeVertexNormals();
+  geometry.computeBoundingSphere();
+  return geometry;
+}
+
 function createFallbackPiece(code: PieceCode, square: Square, materials: Materials): THREE.Group {
   const group = new THREE.Group();
-  const { body, accent } = pieceMaterials(code, materials);
+  const { body } = pieceMaterials(code, materials);
   const type = code[1];
 
   if (type === "P") {
@@ -681,46 +740,107 @@ function createFallbackPiece(code: PieceCode, square: Square, materials: Materia
   return group;
 }
 
-function createMitredHeadGeometry() {
-  const source = new THREE.SphereGeometry(0.19, 72, 48).toNonIndexed();
-  const positions = source.getAttribute("position");
-  const keptPositions: number[] = [];
-  const gapHalfWidth = 0.018;
+function createMitredBishopModel(code: PieceCode, materials: Materials) {
+  const model = new THREE.Group();
+  const { body } = pieceMaterials(code, materials);
 
-  for (let index = 0; index < positions.count; index += 3) {
-    const triangle: [number, number, number][] = [];
-    const signedDistances: number[] = [];
+  addStauntonBase(model, body, 0.32, 0.19);
+  model.add(lathe([
+    [0.19, 0.28],
+    [0.215, 0.37],
+    [0.18, 0.5],
+    [0.13, 0.72],
+    [0.145, 0.8],
+    [0.225, 0.86],
+    [0.23, 0.9],
+  ], body, 64));
+  addMesh(model, createMitredHeadGeometry(), body, [0, 1.055, 0]);
+  addMesh(model, new THREE.SphereGeometry(0.055, 36, 24), body, [0, 1.305, 0]);
+  configureShadows(model);
+  return model;
+}
 
-    for (let vertex = 0; vertex < 3; vertex += 1) {
-      const sourceIndex = index + vertex;
-      const x = positions.getX(sourceIndex) * 0.84;
-      const y = positions.getY(sourceIndex) * 1.22;
-      const z = positions.getZ(sourceIndex) * 0.84;
-      triangle.push([x, y, z]);
-      signedDistances.push((0.825 * x) - (0.565 * y));
-    }
+function createStauntonTemplates(root: THREE.Object3D): PieceTemplates {
+  const entries = Object.entries(STAUNTON_MODEL_NAMES).map(([pieceCode, modelName]) => {
+    const code = pieceCode as PieceCode;
+    const source = root.getObjectByName(modelName);
+    if (!source) throw new Error(`Missing chess model: ${modelName}`);
 
-    const entirelyAbove = signedDistances.every((distance) => distance > gapHalfWidth);
-    const entirelyBelow = signedDistances.every((distance) => distance < -gapHalfWidth);
-    if (!entirelyAbove && !entirelyBelow) continue;
+    const model = source.clone(true);
+    model.position.set(0, 0, 0);
+    model.traverse((child) => {
+      if (child instanceof THREE.Mesh) child.geometry = child.geometry.clone();
+    });
 
-    triangle.forEach((vertex) => keptPositions.push(...vertex));
-  }
+    const template = new THREE.Group();
+    template.add(model);
+    template.updateMatrixWorld(true);
 
-  source.dispose();
-  const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute("position", new THREE.Float32BufferAttribute(keptPositions, 3));
-  geometry.computeVertexNormals();
-  geometry.computeBoundingSphere();
-  return geometry;
+    const bounds = new THREE.Box3().setFromObject(template);
+    const center = bounds.getCenter(new THREE.Vector3());
+    model.position.x -= center.x;
+    model.position.y -= bounds.min.y;
+    model.position.z -= center.z;
+    template.updateMatrixWorld(true);
+
+    const normalizedBounds = new THREE.Box3().setFromObject(template);
+    const height = Math.max(0.001, normalizedBounds.max.y - normalizedBounds.min.y);
+    const heightScale = STAUNTON_TARGET_HEIGHT[code[1] as PieceKind] / height;
+    template.scale.set(
+      heightScale * STAUNTON_WIDTH_BOOST,
+      heightScale,
+      heightScale * STAUNTON_WIDTH_BOOST,
+    );
+    template.updateMatrixWorld(true);
+    configureShadows(template, false, false);
+    return [code, template] as const;
+  });
+
+  return Object.fromEntries(entries) as PieceTemplates;
+}
+
+function loadPieceTemplates() {
+  if (sharedPieceTemplates) return Promise.resolve(sharedPieceTemplates);
+  if (sharedPieceTemplatesPromise) return sharedPieceTemplatesPromise;
+
+  sharedPieceTemplatesPromise = new Promise<PieceTemplates>((resolve, reject) => {
+    const loader = new GLTFLoader();
+    loader.load(
+      `${import.meta.env.BASE_URL}models/staunton.glb`,
+      (asset) => {
+        try {
+          sharedPieceTemplates = createStauntonTemplates(asset.scene);
+          disposeObject(asset.scene);
+          resolve(sharedPieceTemplates);
+        } catch (error) {
+          disposeObject(asset.scene);
+          sharedPieceTemplatesPromise = null;
+          reject(error);
+        }
+      },
+      undefined,
+      (error) => {
+        sharedPieceTemplatesPromise = null;
+        reject(error);
+      },
+    );
+  });
+
+  return sharedPieceTemplatesPromise;
 }
 
 function createPiece(code: PieceCode, square: Square, state: SceneState): THREE.Group {
+  const template = state.pieceTemplates?.[code];
   const type = code[1] as PieceKind;
-  const group = createFallbackPiece(code, square, state.materials);
+  if (!template && type !== "B") return createFallbackPiece(code, square, state.materials);
+
+  const group = new THREE.Group();
+  const model = type === "B"
+    ? createMitredBishopModel(code, state.materials)
+    : template!.clone(true);
   const { body, accent } = pieceMaterials(code, state.materials);
   const pieceMeshes: THREE.Mesh[] = [];
-  group.traverse((child) => {
+  model.traverse((child) => {
     if (!(child instanceof THREE.Mesh)) return;
     if (!child.userData.preserveMaterial) child.material = body;
     child.castShadow = true;
@@ -739,6 +859,8 @@ function createPiece(code: PieceCode, square: Square, state: SceneState): THREE.
       mesh.add(outline);
     });
   }
+  group.add(model);
+
   const radius = PIECE_BASE_RADIUS[type];
   if (state.theme === "anime" || state.theme === "samurai") {
     const baseRing = new THREE.Mesh(
@@ -763,12 +885,18 @@ function createPiece(code: PieceCode, square: Square, state: SceneState): THREE.
     group.add(armorBand);
   }
 
+  group.position.copy(squarePosition(square));
+  group.position.y = TILE_TOP;
+  group.userData = { kind: "piece", square, code };
   return group;
 }
 
 function rebuildPieces(state: SceneState) {
-  disposeObject(state.pieces, { materials: false });
+  if (state.pieceLibraryStatus === "failed") {
+    disposeObject(state.pieces, { materials: false });
+  }
   state.pieces.clear();
+  if (state.pieceLibraryStatus === "loading") return;
   Object.entries(state.latestPosition).forEach(([square, code]) => {
     if (!code) return;
     state.pieces.add(createPiece(code, square as Square, state));
@@ -1189,11 +1317,29 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       hover,
       materials,
       theme,
+      pieceTemplates: sharedPieceTemplates,
+      pieceLibraryStatus: sharedPieceTemplates ? "ready" : "loading",
       latestPosition: positionRef.current,
       cameraGoal: null,
     };
     stateRef.current = state;
     rebuildPieces(state);
+
+    if (!sharedPieceTemplates) {
+      loadPieceTemplates()
+        .then((templates) => {
+          if (stateRef.current !== state) return;
+          state.pieceTemplates = templates;
+          state.pieceLibraryStatus = "ready";
+          rebuildPieces(state);
+        })
+        .catch((error) => {
+          if (stateRef.current !== state) return;
+          console.error("The smooth chess-piece set could not be loaded.", error);
+          state.pieceLibraryStatus = "failed";
+          rebuildPieces(state);
+        });
+    }
 
     let lastWidth = 0;
     let lastHeight = 0;
@@ -1318,7 +1464,9 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       renderer.domElement.removeEventListener("contextmenu", contextHandler);
       controls.dispose();
       board.remove(pieces);
-      disposeObject(pieces, { materials: false });
+      if (state.pieceLibraryStatus === "failed") {
+        disposeObject(pieces, { materials: false });
+      }
       pieces.clear();
       disposeObject(scene);
       disposeMaterialSet(materials);
