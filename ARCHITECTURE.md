@@ -284,6 +284,7 @@ apps/opening-book/
 ```text
 apps/3d-chess-studio/
 ├── app/                         React UI, chess state, and Three.js scene
+├── public/models/               Approved local Staunton 3D models
 ├── public/pieces/mpchess/       Main-app MPChess palette artwork and license
 └── tests/                       static-output and geometry checks
         │
@@ -336,7 +337,7 @@ apps/3d-chess-studio/
 | `vendor/chess.js` | Legal moves, FEN, PGN, game termination, attack queries |
 | `vendor/stockfish/` | Browser Stockfish JavaScript and WASM variants |
 | `apps/opening-book/` | React/Vite Catalan Atelier source, Markdown chapters, local assets, and tests |
-| `apps/3d-chess-studio/` | React/Vite/Three.js position editor, local two-player play, procedural Staunton pieces, MPChess palette artwork, themes, and static-build tests |
+| `apps/3d-chess-studio/` | React/Vite/Three.js position editor, local two-player play, approved local Staunton models, a procedural bishop, MPChess palette artwork, themes, and static-build tests |
 | `endgame-trainer/` | Self-contained Endgame Trainer landing page, clean-route privacy policy, styles, favicon, and app previews |
 | `.github/workflows/pages.yml` | Tests combined-site routes, builds the React/Vite apps, mounts their outputs at `/openings/`, `/openings-sicilian/`, and `/3d/`, and uploads the combined static artifact |
 
@@ -1152,9 +1153,10 @@ whose source lives in `apps/3d-chess-studio/`. It provides a deterministic 8x8
 board, FEN import and export, click-based position setup, full orbit controls,
 camera presets, and classic, anime, and samurai visual themes. Play mode hides
 the setup panels and uses client-side `chess.js` rules for a legal local
-human-versus-human game without Stockfish. Sturdy procedural geometry follows
-the main app's MPChess Staunton identities, while the palette uses the exact
-shared SVG artwork. The bishop's diagonal mitre is modeled as a recessed cut.
+human-versus-human game without Stockfish. The approved local Staunton model
+supplies the king, queen, rook, knight, and pawn; only the bishop uses custom
+geometry, with a clean open diagonal mitre and no inserted strip. The palette
+uses the main app's exact shared MPChess SVG artwork.
 
 The application has no runtime server, database, API route, or remote asset
 dependency. `VITE_BASE_PATH=/3d/` makes every generated script, stylesheet,

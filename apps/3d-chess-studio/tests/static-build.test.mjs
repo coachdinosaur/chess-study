@@ -17,6 +17,7 @@ test("emits a server-free static site", async () => {
       .filter((name) => name.endsWith(".js"))
       .map((name) => readFile(resolve(root, "dist/assets", name), "utf8")),
   );
+  const model = await stat(resolve(root, "dist/models/staunton.glb"));
   const bishopIcon = await stat(resolve(root, "dist/pieces/mpchess/wB.svg"));
 
   assert.match(html, /<div id="root"><\/div>/);
@@ -24,7 +25,8 @@ test("emits a server-free static site", async () => {
   assert.doesNotMatch(html, /_next|_vinext|worker\/index|server\/index/);
   assert.ok(files.some((name) => name.endsWith(".js")));
   assert.ok(files.some((name) => name.endsWith(".css")));
-  assert.ok(scripts.every((script) => !script.includes("staunton.glb")));
+  assert.ok(scripts.some((script) => script.includes(`${expectedBase}models/staunton.glb`)));
+  assert.ok(model.size > 1_000_000, "the approved Staunton models should be copied to the static output");
   assert.ok(bishopIcon.size > 500, "the shared MPChess artwork should be copied to the static output");
 });
 
@@ -38,11 +40,12 @@ test("keeps deterministic board geometry and all three themes", async () => {
   assert.match(board, /file - 3\.5/);
   assert.match(board, /4\.5 - rank/);
   assert.match(board, /createMitredHeadGeometry/);
+  assert.match(board, /GLTFLoader/);
+  assert.match(board, /staunton\.glb/);
   assert.doesNotMatch(board, /recessedMitre|carved-mitre-core/);
-  assert.doesNotMatch(board, /new RoundedBoxGeometry\(0\.024, 0\.305, 0\.17/);
+  assert.doesNotMatch(board, /new RoundedBoxGeometry\(0\.06, 0\.34, 0\.075/);
   assert.doesNotMatch(board, /\[0\.015, 1\.075, 0\.153\]/);
   assert.match(board, /side: THREE\.DoubleSide/);
-  assert.doesNotMatch(board, /GLTFLoader|staunton\.glb/);
   assert.match(studio, /data-theme-option=\{theme\}/);
   assert.match(studio, /className="mode-switch"/);
   assert.match(studio, /new Chess\(fen\)/);

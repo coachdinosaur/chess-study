@@ -46,6 +46,7 @@ test("the built studio is a complete static artifact rooted at /3d/", async () =
 
   await Promise.all([
     access(file("apps/3d-chess-studio/dist/app_icon.png")),
+    access(file("apps/3d-chess-studio/dist/models/staunton.glb")),
     access(file("apps/3d-chess-studio/dist/pieces/mpchess/wK.svg")),
     access(file("apps/3d-chess-studio/dist/pieces/mpchess/bB.svg")),
   ]);
