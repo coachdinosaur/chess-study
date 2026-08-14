@@ -125,16 +125,40 @@ type SceneState = {
   activeFades: ActiveFadeAnimation[];
 };
 
-const CAMERA_TARGET_Y = 0.75;
+type ViewPreset = {
+  position: [number, number, number];
+  target: [number, number, number];
+};
 
-const CAMERA_VIEWS: Record<CameraView, [number, number, number]> = {
-  angle: [8.4, 9.2, 10.2],
-  top: [0.01, 17.2, 0.01],
-  white: [0, 7.4, 12.0],
-  black: [0, 7.4, -12.0],
-  left: [-12.0, 7.0, 0],
-  right: [12.0, 7.0, 0],
-  low: [9.4, 3.8, 11.0],
+const CAMERA_VIEWS: Record<CameraView, ViewPreset> = {
+  angle: {
+    position: [8.6, 11.2, 10.8],
+    target: [0, 1.95, 0],
+  },
+  top: {
+    position: [0.01, 18.0, 0.01],
+    target: [0, 0.37, 0],
+  },
+  white: {
+    position: [0, 8.6, 12.8],
+    target: [0, 1.85, 0],
+  },
+  black: {
+    position: [0, 8.6, -12.8],
+    target: [0, 1.85, 0],
+  },
+  left: {
+    position: [-12.8, 8.2, 0],
+    target: [0, 1.85, 0],
+  },
+  right: {
+    position: [12.8, 8.2, 0],
+    target: [0, 1.85, 0],
+  },
+  low: {
+    position: [9.6, 5.4, 11.4],
+    target: [0, 1.7, 0],
+  },
 };
 
 const TILE_TOP = 0.371;
@@ -1171,8 +1195,8 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
   const positionRef = useRef(position);
   const flippedRef = useRef(flipped);
   const cameraSnapshotRef = useRef<CameraGoal>({
-    position: new THREE.Vector3(...CAMERA_VIEWS.angle),
-    target: new THREE.Vector3(0, CAMERA_TARGET_Y, 0),
+    position: new THREE.Vector3(...CAMERA_VIEWS.angle.position),
+    target: new THREE.Vector3(...CAMERA_VIEWS.angle.target),
   });
   const callbacksRef = useRef({ onSquarePress, onSquareErase });
   positionRef.current = position;
@@ -1183,17 +1207,19 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     setView(view) {
       const state = stateRef.current;
       if (!state) return;
+      const preset = CAMERA_VIEWS[view];
       state.cameraGoal = {
-        position: new THREE.Vector3(...CAMERA_VIEWS[view]),
-        target: new THREE.Vector3(0, CAMERA_TARGET_Y, 0),
+        position: new THREE.Vector3(...preset.position),
+        target: new THREE.Vector3(...preset.target),
       };
     },
     resetCamera() {
       const state = stateRef.current;
       if (!state) return;
+      const preset = CAMERA_VIEWS.angle;
       state.cameraGoal = {
-        position: new THREE.Vector3(...CAMERA_VIEWS.angle),
-        target: new THREE.Vector3(0, CAMERA_TARGET_Y, 0),
+        position: new THREE.Vector3(...preset.position),
+        target: new THREE.Vector3(...preset.target),
       };
     },
     downloadPng(filename = "chess-position.png") {

@@ -34,7 +34,7 @@ test('live-board contains 3D board container and toggle elements', async () => {
 
   // 3D module features
   assert.match(js3d, /class LiveBoard3D/);
-  assert.match(js3d, /CAMERA_TARGET_Y = 0\.75/);
+  assert.match(js3d, /CAMERA_VIEWS/);
   assert.match(js3d, /createPieceMaterials/);
   assert.match(js3d, /createMitredBishopModel/);
   assert.match(js3d, /syncState/);

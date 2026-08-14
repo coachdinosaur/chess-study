@@ -5,16 +5,35 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 const TILE_TOP = 0.371;
-const CAMERA_TARGET_Y = 0.75;
-
 const CAMERA_VIEWS = {
-  angle: [8.4, 9.2, 10.2],
-  top: [0.01, 17.2, 0.01],
-  white: [0, 7.4, 12.0],
-  black: [0, 7.4, -12.0],
-  left: [-12.0, 7.0, 0],
-  right: [12.0, 7.0, 0],
-  low: [9.4, 3.8, 11.0],
+  angle: {
+    position: [8.6, 11.2, 10.8],
+    target: [0, 1.95, 0],
+  },
+  top: {
+    position: [0.01, 18.0, 0.01],
+    target: [0, 0.37, 0],
+  },
+  white: {
+    position: [0, 8.6, 12.8],
+    target: [0, 1.85, 0],
+  },
+  black: {
+    position: [0, 8.6, -12.8],
+    target: [0, 1.85, 0],
+  },
+  left: {
+    position: [-12.8, 8.2, 0],
+    target: [0, 1.85, 0],
+  },
+  right: {
+    position: [12.8, 8.2, 0],
+    target: [0, 1.85, 0],
+  },
+  low: {
+    position: [9.6, 5.4, 11.4],
+    target: [0, 1.7, 0],
+  },
 };
 
 const THEME_CONFIG = {
@@ -461,7 +480,7 @@ export class LiveBoard3D {
     if (bgTexture) scene.background = bgTexture;
 
     const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
-    camera.position.set(...CAMERA_VIEWS.angle);
+    camera.position.set(...CAMERA_VIEWS.angle.position);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
     renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -475,7 +494,7 @@ export class LiveBoard3D {
     this.container.appendChild(renderer.domElement);
 
     const controls = new OrbitControls(camera, renderer.domElement);
-    controls.target.set(0, CAMERA_TARGET_Y, 0);
+    controls.target.set(...CAMERA_VIEWS.angle.target);
     controls.enableDamping = true;
     controls.dampingFactor = 0.075;
     controls.minDistance = 5.6;
@@ -820,10 +839,11 @@ export class LiveBoard3D {
   }
 
   setCameraView(view) {
-    if (!CAMERA_VIEWS[view]) return;
+    const preset = CAMERA_VIEWS[view];
+    if (!preset) return;
     this.cameraGoal = {
-      position: new THREE.Vector3(...CAMERA_VIEWS[view]),
-      target: new THREE.Vector3(0, CAMERA_TARGET_Y, 0),
+      position: new THREE.Vector3(...preset.position),
+      target: new THREE.Vector3(...preset.target),
     };
   }
 
