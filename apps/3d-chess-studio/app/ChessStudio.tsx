@@ -937,33 +937,27 @@ export default function ChessStudio() {
         )}
 
         <section className="board-stage" aria-label="3D chessboard workspace">
-          <div className="board-toolbar">
-            <div className="view-buttons" aria-label="Camera views">
-              {CAMERA_BUTTONS.map(({ view, label }) => (
-                <button key={view} type="button" onClick={() => boardRef.current?.setView(view)}>{label}</button>
-              ))}
-            </div>
-            <div className="board-toolbar-end">
-              {hasAnnotations && (
-                <button type="button" className="clear-marks-btn" onClick={clearAnnotations} title="Clear 3D arrows and highlights">
-                  Clear marks ({arrows.length + squareHighlights.length})
+          {!playMode && (
+            <div className="board-toolbar">
+              <div className="view-buttons" aria-label="Camera views">
+                {CAMERA_BUTTONS.map(({ view, label }) => (
+                  <button key={view} type="button" onClick={() => boardRef.current?.setView(view)}>{label}</button>
+                ))}
+              </div>
+              <div className="board-toolbar-end">
+                {hasAnnotations && (
+                  <button type="button" className="clear-marks-btn" onClick={clearAnnotations} title="Clear 3D arrows and highlights">
+                    Clear marks ({arrows.length + squareHighlights.length})
+                  </button>
+                )}
+                <button type="button" onClick={copyShareLink} title="Copy shareable direct link to position">
+                  Share link
                 </button>
-              )}
-              <button type="button" onClick={copyShareLink} title="Copy shareable direct link to position">
-                Share link
-              </button>
-              <button type="button" onClick={handleFlipBoard} aria-pressed={flipped}>
-                Flip board
-              </button>
-              <button type="button" onClick={() => boardRef.current?.resetCamera()}>Reset camera</button>
-            </div>
-          </div>
-
-          {playMode && playStatus && (
-            <div className={`play-status-bar ${playStatus.tone}`} aria-live="polite">
-              <span className="play-turn-dot" aria-hidden="true" />
-              <strong>{playStatus.label}</strong>
-              <span>{playStatus.detail}</span>
+                <button type="button" onClick={handleFlipBoard} aria-pressed={flipped}>
+                  Flip board
+                </button>
+                <button type="button" onClick={() => boardRef.current?.resetCamera()}>Reset camera</button>
+              </div>
             </div>
           )}
 
@@ -985,10 +979,12 @@ export default function ChessStudio() {
               onAddArrow={handleAddArrow}
               onToggleSquareHighlight={handleToggleSquareHighlight}
             />
-            <div className="viewport-status" aria-live="polite">
-              <span className={`status-dot ${announcement === "Ready" ? "ready" : "active"}`} />
-              {moveFrom ? `${moveFrom} selected — choose destination` : announcement}
-            </div>
+            {!playMode && (
+              <div className="viewport-status" aria-live="polite">
+                <span className={`status-dot ${announcement === "Ready" ? "ready" : "active"}`} />
+                {moveFrom ? `${moveFrom} selected — choose destination` : announcement}
+              </div>
+            )}
             {pendingPromotion && (
               <div className="promotion-picker" role="dialog" aria-modal="true" aria-labelledby="promotion-title">
                 <strong id="promotion-title">Promote pawn</strong>
@@ -1029,6 +1025,24 @@ export default function ChessStudio() {
               </div>
               <span className="step-chip">{moveHistory.length}</span>
             </div>
+
+            {playStatus && (
+              <div className={`sidebar-play-status ${playStatus.tone}`} aria-live="polite">
+                <div className="sidebar-status-main">
+                  <span className="play-turn-dot" aria-hidden="true" />
+                  <div className="sidebar-status-texts">
+                    <strong>{playStatus.label}</strong>
+                    <span>{playStatus.detail}</span>
+                  </div>
+                </div>
+                <div className="sidebar-viewport-status">
+                  <span className={`status-dot ${announcement === "Ready" && !moveFrom ? "ready" : "active"}`} aria-hidden="true" />
+                  <span className="sidebar-status-announcement">
+                    {moveFrom ? `${moveFrom} selected — choose destination` : announcement}
+                  </span>
+                </div>
+              </div>
+            )}
 
             <div className="opponent-box">
               <div className="opponent-selector" role="group" aria-label="Game opponent">
@@ -1105,6 +1119,37 @@ export default function ChessStudio() {
                   </div>
                 </div>
               )}
+            </div>
+
+            <div className="section-rule" />
+
+            <div className="sidebar-camera-section" aria-label="Camera and board controls">
+              <div className="sidebar-section-header">
+                <span className="sidebar-section-title">Camera & Board</span>
+                {hasAnnotations && (
+                  <button type="button" className="clear-marks-mini-btn" onClick={clearAnnotations} title="Clear 3D arrows and highlights">
+                    Clear marks ({arrows.length + squareHighlights.length})
+                  </button>
+                )}
+              </div>
+
+              <div className="sidebar-camera-grid" role="group" aria-label="Camera angles">
+                {CAMERA_BUTTONS.map(({ view, label }) => (
+                  <button key={view} type="button" onClick={() => boardRef.current?.setView(view)}>{label}</button>
+                ))}
+              </div>
+
+              <div className="sidebar-board-actions">
+                <button type="button" className="share-btn" onClick={copyShareLink} title="Copy shareable direct link to position">
+                  Share link
+                </button>
+                <button type="button" onClick={handleFlipBoard} aria-pressed={flipped} title="Flip board perspective (F)">
+                  Flip board
+                </button>
+                <button type="button" onClick={() => boardRef.current?.resetCamera()} title="Reset camera view (0)">
+                  Reset camera
+                </button>
+              </div>
             </div>
 
             <div className="section-rule" />
