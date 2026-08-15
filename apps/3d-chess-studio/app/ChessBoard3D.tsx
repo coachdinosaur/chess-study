@@ -721,10 +721,10 @@ function addStauntonBase(
 }
 
 function createMitredHeadGeometry() {
-  const source = new THREE.SphereGeometry(0.25, 72, 48).toNonIndexed();
+  const source = new THREE.SphereGeometry(0.27, 72, 48).toNonIndexed();
   const positions = source.getAttribute("position");
   const keptPositions: number[] = [];
-  const gapHalfWidth = 0.024;
+  const gapHalfWidth = 0.026;
 
   for (let index = 0; index < positions.count; index += 3) {
     const triangle: [number, number, number][] = [];
@@ -732,11 +732,11 @@ function createMitredHeadGeometry() {
 
     for (let vertex = 0; vertex < 3; vertex += 1) {
       const sourceIndex = index + vertex;
-      const x = positions.getX(sourceIndex) * 0.95;
-      const y = positions.getY(sourceIndex) * 1.75;
-      const z = positions.getZ(sourceIndex) * 0.95;
+      const x = positions.getX(sourceIndex) * 1.02;
+      const y = positions.getY(sourceIndex) * 2.10;
+      const z = positions.getZ(sourceIndex) * 1.02;
       triangle.push([x, y, z]);
-      signedDistances.push((0.825 * x) - (0.565 * y) + 0.045);
+      signedDistances.push((0.825 * x) - (0.565 * y) + 0.055);
     }
 
     const entirelyAbove = signedDistances.every((distance) => distance > gapHalfWidth);
@@ -846,17 +846,17 @@ function createNeoClassicPiece(code: PieceCode, square: Square, materials: Mater
   if (type === "B") {
     addNeoClassicBase(group, body, accent, 0.32, 0.19);
     group.add(lathe([
-      [0.19, 0.26],
-      [0.205, 0.30],
-      [0.165, 0.35],
-      [0.138, 0.40],
-      [0.165, 0.44],
-      [0.225, 0.47],
-      [0.23, 0.50],
+      [0.19, 0.25],
+      [0.20, 0.28],
+      [0.165, 0.32],
+      [0.138, 0.36],
+      [0.165, 0.39],
+      [0.225, 0.41],
+      [0.23, 0.43],
     ], body, 64));
-    addMesh(group, new THREE.TorusGeometry(0.165, 0.015, 12, 64), accent, [0, 0.47, 0], undefined, [Math.PI / 2, 0, 0]);
-    addMesh(group, createMitredHeadGeometry(), body, [0, 0.82, 0]);
-    addMesh(group, new THREE.SphereGeometry(0.062, 40, 28), accent, [0, 1.20, 0]);
+    addMesh(group, new THREE.TorusGeometry(0.165, 0.015, 12, 64), accent, [0, 0.41, 0], undefined, [Math.PI / 2, 0, 0]);
+    addMesh(group, createMitredHeadGeometry(), body, [0, 0.77, 0]);
+    addMesh(group, new THREE.SphereGeometry(0.065, 40, 28), accent, [0, 1.20, 0]);
   }
 
   if (type === "Q") {
@@ -942,17 +942,17 @@ function createMitredBishopModel(code: PieceCode, materials: Materials) {
 
   addStauntonBase(model, body, 0.32, 0.19);
   model.add(lathe([
-    [0.19, 0.26],
-    [0.205, 0.30],
-    [0.165, 0.35],
-    [0.138, 0.40],
-    [0.165, 0.44],
-    [0.225, 0.47],
-    [0.23, 0.50],
+    [0.19, 0.25],
+    [0.20, 0.28],
+    [0.165, 0.32],
+    [0.138, 0.36],
+    [0.165, 0.39],
+    [0.225, 0.41],
+    [0.23, 0.43],
   ], body, 64));
-  addMesh(model, new THREE.TorusGeometry(0.165, 0.015, 12, 64), body, [0, 0.47, 0], undefined, [Math.PI / 2, 0, 0]);
-  addMesh(model, createMitredHeadGeometry(), body, [0, 0.82, 0]);
-  addMesh(model, new THREE.SphereGeometry(0.060, 36, 24), body, [0, 1.20, 0]);
+  addMesh(model, new THREE.TorusGeometry(0.165, 0.015, 12, 64), body, [0, 0.41, 0], undefined, [Math.PI / 2, 0, 0]);
+  addMesh(model, createMitredHeadGeometry(), body, [0, 0.77, 0]);
+  addMesh(model, new THREE.SphereGeometry(0.062, 36, 24), body, [0, 1.20, 0]);
   configureShadows(model);
   return model;
 }
@@ -981,19 +981,23 @@ function createStauntonTemplates(root: THREE.Object3D): PieceTemplates {
             const minY = b.min.y;
             const maxY = b.max.y;
             const h = maxY - minY;
+            const collarCutoff = 0.62;
+            const baseCutoff = 0.20;
+            const targetCollarNormY = 0.31;
             for (let i = 0; i < posAttr.count; i++) {
               const y = posAttr.getY(i);
               const normY = Math.max(0, Math.min(1, (y - minY) / h));
               let newNormY = normY;
               let scaleXZ = 1.0;
-              if (normY <= 0.25) {
+              if (normY <= baseCutoff) {
                 newNormY = normY;
-              } else if (normY <= 0.44) {
-                newNormY = 0.25 + (normY - 0.25) * 0.35;
+              } else if (normY <= collarCutoff) {
+                const neckT = (normY - baseCutoff) / (collarCutoff - baseCutoff);
+                newNormY = baseCutoff + neckT * (targetCollarNormY - baseCutoff);
               } else {
-                const headT = (normY - 0.44) / 0.56;
-                newNormY = 0.3165 + headT * 0.6835;
-                scaleXZ = 1.0 + Math.sin(headT * Math.PI) * 0.22;
+                const headT = (normY - collarCutoff) / (1.0 - collarCutoff);
+                newNormY = targetCollarNormY + headT * (1.0 - targetCollarNormY);
+                scaleXZ = 1.0 + Math.sin(Math.pow(headT, 0.75) * Math.PI) * 0.28;
               }
               posAttr.setY(i, minY + newNormY * h);
               posAttr.setX(i, posAttr.getX(i) * scaleXZ);
@@ -1887,7 +1891,6 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       lastHeight = height;
       renderer.setSize(width, height, false);
       camera.aspect = width / height;
-      camera.fov = camera.aspect < 0.78 ? 52 : camera.aspect < 1.05 ? 46 : camera.aspect < 1.25 ? 40 : 38;
       camera.updateProjectionMatrix();
     };
     const scheduleResize = () => {
@@ -1902,6 +1905,7 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     const pointer = new THREE.Vector2();
     const pointerStart = new THREE.Vector2();
     let pointerDown = false;
+    let isClickOnInteractive = false;
 
     const rightPointerStart = new THREE.Vector2();
     let rightPointerDown = false;
@@ -1940,6 +1944,11 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
         pointerDown = true;
         pointerStart.set(event.clientX, event.clientY);
         hover.visible = false;
+        const interactive = pick(event.clientX, event.clientY);
+        if (interactive) {
+          isClickOnInteractive = true;
+          controls.enableRotate = false;
+        }
       } else if (event.button === 2) {
         rightPointerDown = true;
         rightPointerStart.set(event.clientX, event.clientY);
@@ -1948,11 +1957,26 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       }
     };
 
+    const pointerMoveHandler = (event: PointerEvent) => {
+      updateHover(event);
+      if (pointerDown && isClickOnInteractive) {
+        const distance = pointerStart.distanceTo(new THREE.Vector2(event.clientX, event.clientY));
+        if (distance > 7) {
+          isClickOnInteractive = false;
+          controls.enableRotate = true;
+        }
+      }
+    };
+
     const pointerUpHandler = (event: PointerEvent) => {
       if (event.button === 0) {
         const distance = pointerStart.distanceTo(new THREE.Vector2(event.clientX, event.clientY));
         pointerDown = false;
-        if (distance > 6) return;
+        if (isClickOnInteractive) {
+          isClickOnInteractive = false;
+          controls.enableRotate = true;
+        }
+        if (distance > 7) return;
         const interactive = pick(event.clientX, event.clientY);
         const square = interactive?.userData.square as Square | undefined;
         if (square) callbacksRef.current.onSquarePress(square);
@@ -1987,7 +2011,7 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
 
     renderer.domElement.addEventListener("pointerdown", pointerDownHandler);
     renderer.domElement.addEventListener("pointerup", pointerUpHandler);
-    renderer.domElement.addEventListener("pointermove", updateHover);
+    renderer.domElement.addEventListener("pointermove", pointerMoveHandler);
     renderer.domElement.addEventListener("pointerleave", leaveHandler);
     renderer.domElement.addEventListener("contextmenu", contextHandler);
 
@@ -2051,7 +2075,7 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       renderer.domElement.removeEventListener("wheel", onWheel);
       renderer.domElement.removeEventListener("pointerdown", pointerDownHandler);
       renderer.domElement.removeEventListener("pointerup", pointerUpHandler);
-      renderer.domElement.removeEventListener("pointermove", updateHover);
+      renderer.domElement.removeEventListener("pointermove", pointerMoveHandler);
       renderer.domElement.removeEventListener("pointerleave", leaveHandler);
       renderer.domElement.removeEventListener("contextmenu", contextHandler);
       controls.dispose();
