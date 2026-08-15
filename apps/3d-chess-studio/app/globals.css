@@ -1893,6 +1893,56 @@ kbd {
   }
 }
 
+/* =========================================================================
+   FOCUS MODE & COLLAPSIBLE SIDEBARS
+   ========================================================================= */
+
+.studio-grid.is-sidebar-collapsed {
+  grid-template-columns: minmax(0, 1fr) !important;
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+.floating-sidebar-toggle {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 25;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(18, 53, 36, 0.14);
+  transition: all 140ms ease;
+}
+
+.floating-sidebar-toggle:hover {
+  background: #ffffff;
+  border-color: var(--emerald);
+  transform: translateY(-1px);
+}
+
+.focus-btn.is-active {
+  background: var(--emerald) !important;
+  color: #ffffff !important;
+  border-color: var(--emerald-dark) !important;
+}
+
+.tray-toggle-btn.is-inactive {
+  opacity: 0.62;
+  background: rgba(255, 255, 255, 0.45) !important;
+}
+
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

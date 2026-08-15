@@ -95,6 +95,8 @@ type Props = {
   onSquarePress: (square: Square) => void;
   onSquareErase: (square: Square) => void;
   onSelectReservePiece?: (code: PieceCode) => void;
+  onDropReservePiece?: (code: PieceCode, square: Square) => void;
+  onDropMovePiece?: (from: Square, to: Square) => void;
   onHoverSquare?: (square: Square | null) => void;
   onAddArrow?: (arrow: ArrowAnnotation) => void;
   onToggleSquareHighlight?: (highlight: SquareAnnotation) => void;
@@ -1870,6 +1872,8 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     onSquarePress,
     onSquareErase,
     onSelectReservePiece,
+    onDropReservePiece,
+    onDropMovePiece,
     onHoverSquare,
     onAddArrow,
     onToggleSquareHighlight,
@@ -1888,6 +1892,8 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     onSquarePress,
     onSquareErase,
     onSelectReservePiece,
+    onDropReservePiece,
+    onDropMovePiece,
     onHoverSquare,
     onAddArrow,
     onToggleSquareHighlight,
@@ -1898,6 +1904,8 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     onSquarePress,
     onSquareErase,
     onSelectReservePiece,
+    onDropReservePiece,
+    onDropMovePiece,
     onHoverSquare,
     onAddArrow,
     onToggleSquareHighlight,
@@ -2116,6 +2124,30 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     let pointerDown = false;
     let isClickOnInteractive = false;
 
+    // 3D Drag & Drop state
+    const dragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -(TILE_TOP + 0.4));
+    let pendingDrag: { type: "reserve"; code: PieceCode } | { type: "board"; square: Square; code: PieceCode } | null = null;
+    let activeDragMesh: THREE.Group | null = null;
+
+    const createDragMesh = (code: PieceCode, scale = 0.85): THREE.Group | null => {
+      const template = state.pieceTemplates?.[code];
+      if (!template) return null;
+      const group = new THREE.Group();
+      const model = template.clone(true);
+      const body = pieceMaterial(code, state.materials);
+      model.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+          if (!child.userData.preserveMaterial) child.material = body;
+          child.castShadow = true;
+          child.receiveShadow = false;
+        }
+      });
+      group.add(model);
+      group.scale.setScalar(scale);
+      group.renderOrder = 999;
+      return group;
+    };
+
     const rightPointerStart = new THREE.Vector2();
     let rightPointerDown = false;
     let rightStartSquare: Square | null = null;
@@ -2164,6 +2196,20 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
         if (interactive) {
           isClickOnInteractive = true;
           controls.enableRotate = false;
+          if (interactive.userData.kind === "reserve_piece") {
+            pendingDrag = { type: "reserve", code: interactive.userData.code as PieceCode };
+          } else if (interactive.userData.square) {
+            const sq = interactive.userData.square as Square;
+            const code = positionRef.current[sq];
+            if (code) {
+              pendingDrag = { type: "board", square: sq, code };
+            } else {
+              pendingDrag = null;
+            }
+          }
+        } else {
+          pendingDrag = null;
+          isClickOnInteractive = false;
         }
       } else if (event.button === 2) {
         rightPointerDown = true;
@@ -2174,8 +2220,59 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     };
 
     const pointerMoveHandler = (event: PointerEvent) => {
+      if (pointerDown && pendingDrag) {
+        const distance = pointerStart.distanceTo(new THREE.Vector2(event.clientX, event.clientY));
+        if (distance > 7) {
+          // In 3D piece drag mode
+          if (!activeDragMesh) {
+            activeDragMesh = createDragMesh(pendingDrag.code, pendingDrag.type === "reserve" ? 0.78 : 0.98);
+            if (activeDragMesh) {
+              scene.add(activeDragMesh);
+            }
+          }
+
+          if (activeDragMesh) {
+            const bounds = renderer.domElement.getBoundingClientRect();
+            pointer.x = ((event.clientX - bounds.left) / bounds.width) * 2 - 1;
+            pointer.y = -((event.clientY - bounds.top) / bounds.height) * 2 + 1;
+            raycaster.setFromCamera(pointer, camera);
+
+            const planeHit = new THREE.Vector3();
+            if (raycaster.ray.intersectPlane(dragPlane, planeHit)) {
+              activeDragMesh.position.copy(planeHit);
+            }
+
+            // Raycast board to highlight square under dragged piece
+            const boardHits = raycaster.intersectObjects(board.children, true);
+            let hoverSq: Square | null = null;
+            for (const hit of boardHits) {
+              const inter = findInteractive(hit.object);
+              if (inter?.userData.square) {
+                hoverSq = inter.userData.square as Square;
+                break;
+              }
+            }
+
+            if (hoverSq) {
+              const loc = squarePosition(hoverSq);
+              hover.position.set(loc.x, TILE_TOP + 0.004, loc.z);
+              hover.visible = true;
+            } else {
+              hover.visible = false;
+            }
+
+            if (callbacksRef.current.onHoverSquare) {
+              callbacksRef.current.onHoverSquare(hoverSq);
+            }
+
+            renderer.domElement.style.cursor = "grabbing";
+            return;
+          }
+        }
+      }
+
       updateHover(event);
-      if (pointerDown && isClickOnInteractive) {
+      if (pointerDown && isClickOnInteractive && !pendingDrag) {
         const distance = pointerStart.distanceTo(new THREE.Vector2(event.clientX, event.clientY));
         if (distance > 7) {
           isClickOnInteractive = false;
@@ -2188,11 +2285,61 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       if (event.button === 0) {
         const distance = pointerStart.distanceTo(new THREE.Vector2(event.clientX, event.clientY));
         pointerDown = false;
+
+        if (activeDragMesh) {
+          // Drag drop action
+          scene.remove(activeDragMesh);
+          disposeObject(activeDragMesh, { materials: false });
+          activeDragMesh = null;
+
+          const bounds = renderer.domElement.getBoundingClientRect();
+          pointer.x = ((event.clientX - bounds.left) / bounds.width) * 2 - 1;
+          pointer.y = -((event.clientY - bounds.top) / bounds.height) * 2 + 1;
+          raycaster.setFromCamera(pointer, camera);
+          const boardHits = raycaster.intersectObjects(board.children, true);
+          let dropSquare: Square | null = null;
+          for (const hit of boardHits) {
+            const inter = findInteractive(hit.object);
+            if (inter?.userData.square) {
+              dropSquare = inter.userData.square as Square;
+              break;
+            }
+          }
+
+          if (dropSquare && pendingDrag) {
+            if (pendingDrag.type === "reserve") {
+              if (callbacksRef.current.onDropReservePiece) {
+                callbacksRef.current.onDropReservePiece(pendingDrag.code, dropSquare);
+              } else {
+                callbacksRef.current.onSelectReservePiece?.(pendingDrag.code);
+                callbacksRef.current.onSquarePress(dropSquare);
+              }
+            } else if (pendingDrag.type === "board") {
+              if (callbacksRef.current.onDropMovePiece) {
+                callbacksRef.current.onDropMovePiece(pendingDrag.square, dropSquare);
+              } else if (pendingDrag.square !== dropSquare) {
+                callbacksRef.current.onSquarePress(pendingDrag.square);
+                callbacksRef.current.onSquarePress(dropSquare);
+              }
+            }
+          }
+
+          pendingDrag = null;
+          isClickOnInteractive = false;
+          controls.enableRotate = true;
+          hover.visible = false;
+          renderer.domElement.style.cursor = "grab";
+          return;
+        }
+
+        pendingDrag = null;
         if (isClickOnInteractive) {
           isClickOnInteractive = false;
           controls.enableRotate = true;
         }
         if (distance > 7) return;
+
+        // Regular click action
         const interactive = pick(event.clientX, event.clientY);
         if (interactive?.userData.kind === "reserve_piece") {
           const code = interactive.userData.code as PieceCode;
@@ -2305,6 +2452,11 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       renderer.domElement.removeEventListener("pointerleave", leaveHandler);
       renderer.domElement.removeEventListener("contextmenu", contextHandler);
       controls.dispose();
+      if (activeDragMesh) {
+        scene.remove(activeDragMesh);
+        disposeObject(activeDragMesh, { materials: false });
+        activeDragMesh = null;
+      }
       board.remove(pieces);
       if (state.pieceLibraryStatus === "failed") {
         disposeObject(pieces, { materials: false });

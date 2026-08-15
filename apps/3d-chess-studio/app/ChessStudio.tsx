@@ -207,6 +207,10 @@ export default function ChessStudio() {
   const [arrows, setArrows] = useState<ArrowAnnotation[]>([]);
   const [squareHighlights, setSquareHighlights] = useState<SquareAnnotation[]>([]);
 
+  // Studio UX & Layout Optimizations
+  const [showReserveTrays, setShowReserveTrays] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
   // Live Session State
   const [liveRoomId, setLiveRoomId] = useState<string | null>(null);
   const [liveRole, setLiveRole] = useState<Role | null>(null);
@@ -905,6 +909,86 @@ export default function ChessStudio() {
     [announce, liveRole, studentMovesAllowed],
   );
 
+  const handleDropReservePiece = useCallback(
+    (code: PieceCode, square: Square) => {
+      if (liveRole === "student" && !studentMovesAllowed) {
+        announce("Board is locked by teacher");
+        return;
+      }
+      if (playMode) {
+        announce("Cannot place reserve pieces during play");
+        return;
+      }
+      setSelectedPiece(code);
+      setTool("place");
+      setMoveFrom(null);
+      const next = cloneDocument(document);
+      next.board[square] = code;
+      commit(next, `${pieceLabel(code)} placed on ${square}`);
+    },
+    [announce, commit, document, liveRole, playMode, studentMovesAllowed],
+  );
+
+  const handleDropMovePiece = useCallback(
+    (from: Square, to: Square) => {
+      if (from === to) return;
+      if (liveRole === "student" && !studentMovesAllowed) {
+        announce("Board is locked by teacher");
+        return;
+      }
+      if (playMode) {
+        const game = new Chess(fen);
+        const turn = game.turn();
+        if (playOpponent === "bot" && botThinking) {
+          announce("Computer is calculating");
+          return;
+        }
+        if (playOpponent === "bot") {
+          const humanColor = botSide === "white" ? "b" : "w";
+          if (turn !== humanColor) {
+            announce("Wait for computer move");
+            return;
+          }
+        }
+        const candidates = game
+          .moves({ square: from as RulesSquare, verbose: true })
+          .filter((move) => move.to === to);
+        if (!candidates.length) {
+          announce("That move is not legal");
+          return;
+        }
+        if (candidates.some((move) => move.isPromotion())) {
+          setPendingPromotion({ from, to, color: turn });
+          announce("Choose a promotion piece");
+          return;
+        }
+        finishPlayMove(from, to);
+        return;
+      }
+
+      const movingPiece = document.board[from];
+      if (!movingPiece) return;
+      const next = cloneDocument(document);
+      delete next.board[from];
+      next.board[to] = movingPiece;
+      commit(next, `Moved ${pieceLabel(movingPiece)} from ${from} to ${to}`);
+      setMoveFrom(null);
+    },
+    [announce, botSide, botThinking, commit, document.board, fen, finishPlayMove, liveRole, playMode, playOpponent, studentMovesAllowed],
+  );
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed((prev) => !prev);
+  };
+
+  const toggleReserveTrays = () => {
+    setShowReserveTrays((prev) => {
+      const next = !prev;
+      announce(next ? "3D Piece trays visible" : "3D Piece trays hidden");
+      return next;
+    });
+  };
+
   const handleHoverSquare = useCallback((square: Square | null) => {
     if (lastBroadcastSquareRef.current !== square) {
       lastBroadcastSquareRef.current = square;
@@ -1190,6 +1274,8 @@ export default function ChessStudio() {
       if (!playMode && event.key === "3") setTool("erase");
       if (event.key.toLowerCase() === "f") handleFlipBoard();
       if (event.key.toLowerCase() === "c") clearAnnotations();
+      if (event.key.toLowerCase() === "z" && !event.ctrlKey && !event.metaKey) toggleSidebar();
+      if (!playMode && event.key.toLowerCase() === "t") toggleReserveTrays();
       if (event.key === "0") boardRef.current?.resetCamera();
       if (playMode && event.key === "ArrowLeft") {
         event.preventDefault();
@@ -1211,7 +1297,7 @@ export default function ChessStudio() {
   const hasAnnotations = arrows.length > 0 || squareHighlights.length > 0;
 
   return (
-    <main className={`studio-shell ${playMode ? "is-play-mode" : ""}`}>
+    <main className={`studio-shell ${playMode ? "is-play-mode" : ""} ${sidebarCollapsed ? "is-sidebar-collapsed" : ""}`}>
       <header className="studio-header">
         <div className="brand-lockup">
           <span className="brand-cube" aria-hidden="true"><i /><i /><i /></span>
@@ -1277,6 +1363,15 @@ export default function ChessStudio() {
               <button className="quiet-button" type="button" onClick={redo} disabled={!future.length}>Redo</button>
             </>
           )}
+          <button
+            className={`quiet-button focus-btn ${sidebarCollapsed ? "is-active" : ""}`}
+            type="button"
+            onClick={toggleSidebar}
+            title={sidebarCollapsed ? "Show side panels (Z)" : "Focus mode - Expand board (Z)"}
+            aria-pressed={sidebarCollapsed}
+          >
+            {sidebarCollapsed ? "⛶ Panels" : "⛶ Focus"}
+          </button>
           <button
             className={`quiet-button sound-toggle ${soundMuted ? "is-muted" : ""}`}
             type="button"
@@ -1367,8 +1462,8 @@ export default function ChessStudio() {
         )}
       </div>
 
-      <section className={`studio-grid ${playMode ? "is-play-mode" : ""}`}>
-        {!playMode && (
+      <section className={`studio-grid ${playMode ? "is-play-mode" : ""} ${sidebarCollapsed ? "is-sidebar-collapsed" : ""}`}>
+        {!playMode && !sidebarCollapsed && (
           <aside className="panel tool-panel" aria-label="Piece and editing tools">
             <div className="panel-heading">
               <div>
@@ -1398,14 +1493,26 @@ export default function ChessStudio() {
             <div className="annotation-help-box">
               <p className="annotation-help-title">💡 3D Tactical Markings</p>
               <p className="right-click-note">
-                <b>Right-drag</b> to draw 3D tactical arrows (Shift=Blue, Ctrl=Red).<br />
-                <b>Right-click</b> to highlight square. Press <b>C</b> to clear.
+                <b>Drag & Drop</b> pieces from trays onto squares.<br />
+                <b>Right-drag</b> 3D tactical arrows (Shift=Blue, Ctrl=Red).<br />
+                <b>Right-click</b> square highlight. Press <b>C</b> to clear.
               </p>
             </div>
           </aside>
         )}
 
         <section className="board-stage" aria-label="3D chessboard workspace">
+          {sidebarCollapsed && (
+            <button
+              type="button"
+              className="floating-sidebar-toggle"
+              onClick={toggleSidebar}
+              title="Show side panels (Z)"
+            >
+              ▶ Panels
+            </button>
+          )}
+
           {!playMode && (
             <div className="board-toolbar">
               <div className="view-buttons" aria-label="Camera views">
@@ -1419,6 +1526,15 @@ export default function ChessStudio() {
                     Clear marks ({arrows.length + squareHighlights.length})
                   </button>
                 )}
+                <button
+                  type="button"
+                  className={`tray-toggle-btn ${!showReserveTrays ? "is-inactive" : ""}`}
+                  onClick={toggleReserveTrays}
+                  title={showReserveTrays ? "Hide 3D piece trays (T)" : "Show 3D piece trays (T)"}
+                  aria-pressed={showReserveTrays}
+                >
+                  {showReserveTrays ? "Hide Trays" : "Show Trays"}
+                </button>
                 <button type="button" onClick={copyShareLink} title="Copy shareable direct link to position">
                   Share link
                 </button>
@@ -1445,10 +1561,12 @@ export default function ChessStudio() {
               squareHighlights={squareHighlights}
               selectedReservePiece={selectedPiece}
               remotePointer={remotePointer}
-              showReserveTrays={!playMode}
+              showReserveTrays={!playMode && showReserveTrays}
               onSquarePress={actOnSquare}
               onSquareErase={playMode ? () => announce("Right-click erase is disabled in Play mode") : eraseSquare}
               onSelectReservePiece={handleSelectReservePiece}
+              onDropReservePiece={handleDropReservePiece}
+              onDropMovePiece={handleDropMovePiece}
               onHoverSquare={handleHoverSquare}
               onAddArrow={handleAddArrow}
               onToggleSquareHighlight={handleToggleSquareHighlight}
@@ -1490,7 +1608,7 @@ export default function ChessStudio() {
           )}
         </section>
 
-        {playMode && (
+        {playMode && !sidebarCollapsed && (
           <aside className="panel play-history-panel" aria-label="Game moves and history">
             <div className="panel-heading">
               <div>
