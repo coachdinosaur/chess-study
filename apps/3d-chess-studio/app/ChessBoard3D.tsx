@@ -721,10 +721,10 @@ function addStauntonBase(
 }
 
 function createMitredHeadGeometry() {
-  const source = new THREE.SphereGeometry(0.23, 72, 48).toNonIndexed();
+  const source = new THREE.SphereGeometry(0.25, 72, 48).toNonIndexed();
   const positions = source.getAttribute("position");
   const keptPositions: number[] = [];
-  const gapHalfWidth = 0.022;
+  const gapHalfWidth = 0.024;
 
   for (let index = 0; index < positions.count; index += 3) {
     const triangle: [number, number, number][] = [];
@@ -732,11 +732,11 @@ function createMitredHeadGeometry() {
 
     for (let vertex = 0; vertex < 3; vertex += 1) {
       const sourceIndex = index + vertex;
-      const x = positions.getX(sourceIndex) * 0.90;
-      const y = positions.getY(sourceIndex) * 1.55;
-      const z = positions.getZ(sourceIndex) * 0.90;
+      const x = positions.getX(sourceIndex) * 0.95;
+      const y = positions.getY(sourceIndex) * 1.75;
+      const z = positions.getZ(sourceIndex) * 0.95;
       triangle.push([x, y, z]);
-      signedDistances.push((0.825 * x) - (0.565 * y) + 0.035);
+      signedDistances.push((0.825 * x) - (0.565 * y) + 0.045);
     }
 
     const entirelyAbove = signedDistances.every((distance) => distance > gapHalfWidth);
@@ -846,16 +846,16 @@ function createNeoClassicPiece(code: PieceCode, square: Square, materials: Mater
   if (type === "B") {
     addNeoClassicBase(group, body, accent, 0.32, 0.19);
     group.add(lathe([
-      [0.19, 0.28],
-      [0.21, 0.33],
-      [0.17, 0.40],
-      [0.138, 0.48],
-      [0.165, 0.53],
-      [0.23, 0.57],
-      [0.235, 0.60],
+      [0.19, 0.26],
+      [0.205, 0.30],
+      [0.165, 0.35],
+      [0.138, 0.40],
+      [0.165, 0.44],
+      [0.225, 0.47],
+      [0.23, 0.50],
     ], body, 64));
-    addMesh(group, new THREE.TorusGeometry(0.165, 0.015, 12, 64), accent, [0, 0.57, 0], undefined, [Math.PI / 2, 0, 0]);
-    addMesh(group, createMitredHeadGeometry(), body, [0, 0.88, 0]);
+    addMesh(group, new THREE.TorusGeometry(0.165, 0.015, 12, 64), accent, [0, 0.47, 0], undefined, [Math.PI / 2, 0, 0]);
+    addMesh(group, createMitredHeadGeometry(), body, [0, 0.82, 0]);
     addMesh(group, new THREE.SphereGeometry(0.062, 40, 28), accent, [0, 1.20, 0]);
   }
 
@@ -942,16 +942,16 @@ function createMitredBishopModel(code: PieceCode, materials: Materials) {
 
   addStauntonBase(model, body, 0.32, 0.19);
   model.add(lathe([
-    [0.19, 0.28],
-    [0.21, 0.33],
-    [0.17, 0.40],
-    [0.138, 0.48],
-    [0.165, 0.53],
-    [0.23, 0.57],
-    [0.235, 0.60],
+    [0.19, 0.26],
+    [0.205, 0.30],
+    [0.165, 0.35],
+    [0.138, 0.40],
+    [0.165, 0.44],
+    [0.225, 0.47],
+    [0.23, 0.50],
   ], body, 64));
-  addMesh(model, new THREE.TorusGeometry(0.165, 0.015, 12, 64), body, [0, 0.57, 0], undefined, [Math.PI / 2, 0, 0]);
-  addMesh(model, createMitredHeadGeometry(), body, [0, 0.88, 0]);
+  addMesh(model, new THREE.TorusGeometry(0.165, 0.015, 12, 64), body, [0, 0.47, 0], undefined, [Math.PI / 2, 0, 0]);
+  addMesh(model, createMitredHeadGeometry(), body, [0, 0.82, 0]);
   addMesh(model, new THREE.SphereGeometry(0.060, 36, 24), body, [0, 1.20, 0]);
   configureShadows(model);
   return model;
@@ -986,14 +986,14 @@ function createStauntonTemplates(root: THREE.Object3D): PieceTemplates {
               const normY = Math.max(0, Math.min(1, (y - minY) / h));
               let newNormY = normY;
               let scaleXZ = 1.0;
-              if (normY <= 0.28) {
+              if (normY <= 0.25) {
                 newNormY = normY;
-              } else if (normY <= 0.54) {
-                newNormY = 0.28 + (normY - 0.28) * 0.50;
+              } else if (normY <= 0.44) {
+                newNormY = 0.25 + (normY - 0.25) * 0.35;
               } else {
-                const headT = (normY - 0.54) / 0.46;
-                newNormY = 0.41 + headT * 0.59;
-                scaleXZ = 1.0 + Math.sin(headT * Math.PI) * 0.16;
+                const headT = (normY - 0.44) / 0.56;
+                newNormY = 0.3165 + headT * 0.6835;
+                scaleXZ = 1.0 + Math.sin(headT * Math.PI) * 0.22;
               }
               posAttr.setY(i, minY + newNormY * h);
               posAttr.setX(i, posAttr.getX(i) * scaleXZ);
