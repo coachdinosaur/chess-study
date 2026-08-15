@@ -22,6 +22,7 @@
 html {
   min-width: 320px;
   background: var(--paper);
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -63,7 +64,7 @@ select:focus-visible {
   width: min(1920px, 100%);
   min-height: 100vh;
   margin: 0 auto;
-  padding: 18px clamp(14px, 2vw, 32px) 12px;
+  padding: 14px clamp(12px, 1.5vw, 24px) 10px;
 }
 
 .studio-header {
@@ -244,6 +245,10 @@ select:focus-visible {
   width: min(1600px, 100%);
   margin-inline: auto;
   grid-template-columns: minmax(0, 1fr) 330px;
+  height: calc(100svh - 110px);
+  max-height: calc(100svh - 110px);
+  min-height: 500px;
+  overflow: hidden;
 }
 
 .panel,
@@ -494,7 +499,9 @@ kbd {
 }
 
 .studio-grid.is-play-mode .board-stage {
-  min-height: calc(100svh - 118px);
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
   grid-template-rows: minmax(0, 1fr);
 }
 
@@ -600,17 +607,6 @@ kbd {
   display: block;
   touch-action: none;
   cursor: grab;
-  animation: board-canvas-in 180ms ease-out both;
-}
-
-@keyframes board-canvas-in {
-  from {
-    opacity: 0.55;
-  }
-
-  to {
-    opacity: 1;
-  }
 }
 
 .board-canvas:active {
@@ -1145,6 +1141,10 @@ kbd {
   display: flex;
   flex-direction: column;
   height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  padding: 16px;
 }
 
 .sidebar-play-status {
@@ -1373,10 +1373,11 @@ kbd {
 }
 
 .move-history-table {
-  flex: 1 1 auto;
-  min-height: 160px;
-  max-height: 480px;
+  flex: 1 1 0;
+  min-height: 80px;
+  max-height: none;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 4px 2px;
   scrollbar-width: thin;
   scrollbar-color: rgba(36, 95, 75, 0.24) transparent;
@@ -1450,7 +1451,8 @@ kbd {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
-  margin-top: 4px;
+  margin-top: auto;
+  flex-shrink: 0;
 }
 
 .history-actions button {

@@ -216,11 +216,19 @@ export default function ChessStudio() {
   const [initialPlayFen, setInitialPlayFen] = useState<string>(() => toFen(startingDocument()));
   const [lastMove, setLastMove] = useState<LastMove | null>(null);
   const [soundMuted, setSoundMuted] = useState<boolean>(() => isAudioMuted());
+  const historyTableRef = useRef<HTMLDivElement | null>(null);
 
   const fen = useMemo(() => toFen(document), [document]);
   const warnings = useMemo(() => positionWarnings(document), [document]);
   const pieceCount = Object.keys(document.board).length;
   const isReviewingHistory = playMode && historyIndex < moveHistory.length - 1;
+
+  // Auto-scroll move history table smoothly when a move is made
+  useEffect(() => {
+    if (historyTableRef.current && !isReviewingHistory) {
+      historyTableRef.current.scrollTop = historyTableRef.current.scrollHeight;
+    }
+  }, [moveHistory.length, isReviewingHistory]);
 
   const announce = useCallback((message: string) => {
     setAnnouncement(message);
@@ -1404,7 +1412,7 @@ export default function ChessStudio() {
               </div>
             )}
 
-            <div className="move-history-table" role="table" aria-label="Moves log">
+            <div ref={historyTableRef} className="move-history-table" role="table" aria-label="Moves log">
               {moveHistory.length === 0 ? (
                 <p className="empty-history-text">Make a move on the board to begin notation recording.</p>
               ) : (
