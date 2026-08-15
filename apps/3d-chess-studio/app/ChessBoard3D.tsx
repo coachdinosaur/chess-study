@@ -96,8 +96,12 @@ type Props = {
 };
 
 type CameraGoal = {
-  position: THREE.Vector3;
-  target: THREE.Vector3;
+  startPosition: THREE.Vector3;
+  startTarget: THREE.Vector3;
+  targetPosition: THREE.Vector3;
+  targetTarget: THREE.Vector3;
+  startTime: number;
+  duration: number;
 };
 
 type Materials = {
@@ -206,8 +210,8 @@ const CAMERA_VIEWS: Record<CameraView, ViewPreset> = {
     target: [-0.21, -0.80, -0.21],
   },
   top: {
-    position: [0.01, 17.5, 0.01],
-    target: [0.00, 0.37, 0.00],
+    position: [0.61, 17.5, 0.61],
+    target: [0.00, 0.35, 0.00],
   },
   white: {
     position: [0.00, 7.57, 11.86],
@@ -1610,6 +1614,24 @@ function findInteractive(object: THREE.Object3D | null): THREE.Object3D | null {
   return null;
 }
 
+function transitionCameraTo(
+  state: SceneState,
+  targetPosition: THREE.Vector3 | [number, number, number],
+  targetTarget: THREE.Vector3 | [number, number, number],
+  duration = 420,
+) {
+  const destPos = targetPosition instanceof THREE.Vector3 ? targetPosition : new THREE.Vector3(...targetPosition);
+  const destTarget = targetTarget instanceof THREE.Vector3 ? targetTarget : new THREE.Vector3(...targetTarget);
+  state.cameraGoal = {
+    startPosition: state.camera.position.clone(),
+    startTarget: state.controls.target.clone(),
+    targetPosition: destPos,
+    targetTarget: destTarget,
+    startTime: performance.now(),
+    duration,
+  };
+}
+
 export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBoard3D(
   {
     position,
@@ -1633,7 +1655,7 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
   const stateRef = useRef<SceneState | null>(null);
   const positionRef = useRef(position);
   const flippedRef = useRef(flipped);
-  const cameraSnapshotRef = useRef<CameraGoal>({
+  const cameraSnapshotRef = useRef<{ position: THREE.Vector3; target: THREE.Vector3 }>({
     position: new THREE.Vector3(...CAMERA_VIEWS.angle.position),
     target: new THREE.Vector3(...CAMERA_VIEWS.angle.target),
   });
@@ -1647,29 +1669,24 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       const state = stateRef.current;
       if (!state) return;
       const preset = CAMERA_VIEWS[view];
-      state.cameraGoal = {
-        position: new THREE.Vector3(...preset.position),
-        target: new THREE.Vector3(...preset.target),
-      };
+      transitionCameraTo(state, preset.position, preset.target);
     },
     resetCamera() {
       const state = stateRef.current;
       if (!state) return;
       const preset = CAMERA_VIEWS.angle;
-      state.cameraGoal = {
-        position: new THREE.Vector3(...preset.position),
-        target: new THREE.Vector3(...preset.target),
-      };
+      transitionCameraTo(state, preset.position, preset.target);
     },
     flipCamera() {
       const state = stateRef.current;
       if (!state) return;
       const currentPos = state.camera.position;
       const currentTarget = state.controls.target;
-      state.cameraGoal = {
-        position: new THREE.Vector3(-currentPos.x, currentPos.y, -currentPos.z),
-        target: new THREE.Vector3(-currentTarget.x, currentTarget.y, -currentTarget.z),
-      };
+      transitionCameraTo(
+        state,
+        new THREE.Vector3(-currentPos.x, currentPos.y, -currentPos.z),
+        new THREE.Vector3(-currentTarget.x, currentTarget.y, -currentTarget.z),
+      );
     },
     downloadPng(filename = "chess-position.png") {
       const state = stateRef.current;
@@ -1726,6 +1743,20 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     controls.mouseButtons.RIGHT = THREE.MOUSE.PAN;
     controls.touches.ONE = THREE.TOUCH.ROTATE;
     controls.touches.TWO = THREE.TOUCH.DOLLY_PAN;
+
+    const onControlsStart = () => {
+      if (stateRef.current) {
+        stateRef.current.cameraGoal = null;
+      }
+    };
+    controls.addEventListener("start", onControlsStart);
+
+    const onWheel = () => {
+      if (stateRef.current) {
+        stateRef.current.cameraGoal = null;
+      }
+    };
+    renderer.domElement.addEventListener("wheel", onWheel, { passive: true });
 
     const lights = addThemeLighting(scene, config, window.innerWidth < 820 ? 1024 : 2048);
     const floorMesh = createThemeFloor(config);
@@ -1955,14 +1986,14 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       }
 
       if (state.cameraGoal) {
-        camera.position.lerp(state.cameraGoal.position, 0.11);
-        controls.target.lerp(state.cameraGoal.target, 0.11);
-        if (
-          camera.position.distanceTo(state.cameraGoal.position) < 0.02 &&
-          controls.target.distanceTo(state.cameraGoal.target) < 0.01
-        ) {
-          camera.position.copy(state.cameraGoal.position);
-          controls.target.copy(state.cameraGoal.target);
+        const elapsed = performance.now() - state.cameraGoal.startTime;
+        const t = Math.min(1, Math.max(0, elapsed / state.cameraGoal.duration));
+        const ease = 1 - Math.pow(1 - t, 3);
+        camera.position.lerpVectors(state.cameraGoal.startPosition, state.cameraGoal.targetPosition, ease);
+        controls.target.lerpVectors(state.cameraGoal.startTarget, state.cameraGoal.targetTarget, ease);
+        if (t >= 1) {
+          camera.position.copy(state.cameraGoal.targetPosition);
+          controls.target.copy(state.cameraGoal.targetTarget);
           state.cameraGoal = null;
         }
       }
@@ -1979,6 +2010,8 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
         position: camera.position.clone(),
         target: controls.target.clone(),
       };
+      controls.removeEventListener("start", onControlsStart);
+      renderer.domElement.removeEventListener("wheel", onWheel);
       renderer.domElement.removeEventListener("pointerdown", pointerDownHandler);
       renderer.domElement.removeEventListener("pointerup", pointerUpHandler);
       renderer.domElement.removeEventListener("pointermove", updateHover);
@@ -2007,20 +2040,14 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     const state = stateRef.current;
     if (!state) return;
     const isLookingFromWhite = state.camera.position.z > 0;
-    if (flipped && isLookingFromWhite) {
+    if ((flipped && isLookingFromWhite) || (!flipped && !isLookingFromWhite)) {
       const currentPos = state.camera.position;
       const currentTarget = state.controls.target;
-      state.cameraGoal = {
-        position: new THREE.Vector3(-currentPos.x, currentPos.y, -currentPos.z),
-        target: new THREE.Vector3(-currentTarget.x, currentTarget.y, -currentTarget.z),
-      };
-    } else if (!flipped && !isLookingFromWhite) {
-      const currentPos = state.camera.position;
-      const currentTarget = state.controls.target;
-      state.cameraGoal = {
-        position: new THREE.Vector3(-currentPos.x, currentPos.y, -currentPos.z),
-        target: new THREE.Vector3(-currentTarget.x, currentTarget.y, -currentTarget.z),
-      };
+      transitionCameraTo(
+        state,
+        new THREE.Vector3(-currentPos.x, currentPos.y, -currentPos.z),
+        new THREE.Vector3(-currentTarget.x, currentTarget.y, -currentTarget.z),
+      );
     }
   }, [flipped]);
 
