@@ -418,21 +418,21 @@ const STAUNTON_MODEL_NAMES: Record<PieceCode, string> = {
 };
 
 const STAUNTON_TARGET_HEIGHT: Record<PieceKind, number> = {
-  P: 0.80,
-  R: 0.94,
-  N: 1.10,
-  B: 1.16,
-  Q: 1.28,
-  K: 1.42,
+  P: 0.85,
+  R: 0.96,
+  N: 1.12,
+  B: 1.22,
+  Q: 1.30,
+  K: 1.44,
 };
 
 const STAUNTON_WIDTH_BOOST: Record<PieceKind, number> = {
-  P: 1.45,
-  R: 1.50,
-  N: 1.38,
-  B: 1.40,
-  Q: 1.42,
-  K: 1.42,
+  P: 1.04,
+  R: 1.12,
+  N: 1.10,
+  B: 1.06,
+  Q: 1.12,
+  K: 1.12,
 };
 
 let sharedPieceTemplates: PieceTemplates | null = null;
@@ -732,9 +732,9 @@ function createMitredHeadGeometry() {
 
     for (let vertex = 0; vertex < 3; vertex += 1) {
       const sourceIndex = index + vertex;
-      const x = positions.getX(sourceIndex) * 0.84;
-      const y = positions.getY(sourceIndex) * 1.22;
-      const z = positions.getZ(sourceIndex) * 0.84;
+      const x = positions.getX(sourceIndex) * 0.82;
+      const y = positions.getY(sourceIndex) * 1.38;
+      const z = positions.getZ(sourceIndex) * 0.82;
       triangle.push([x, y, z]);
       signedDistances.push((0.825 * x) - (0.565 * y));
     }
@@ -773,7 +773,7 @@ function createNeoClassicPiece(code: PieceCode, square: Square, materials: Mater
       [0.176, 0.71],
     ], body, 64));
     addMesh(group, new THREE.TorusGeometry(0.168, 0.012, 12, 64), accent, [0, 0.68, 0], undefined, [Math.PI / 2, 0, 0]);
-    addMesh(group, new THREE.SphereGeometry(0.145, 48, 36), body, [0, 0.825, 0]);
+    addMesh(group, new THREE.SphereGeometry(0.15, 48, 36), body, [0, 0.84, 0]);
   }
 
   if (type === "R") {
@@ -2036,20 +2036,7 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     };
   }, []);
 
-  useEffect(() => {
-    const state = stateRef.current;
-    if (!state) return;
-    const isLookingFromWhite = state.camera.position.z > 0;
-    if ((flipped && isLookingFromWhite) || (!flipped && !isLookingFromWhite)) {
-      const currentPos = state.camera.position;
-      const currentTarget = state.controls.target;
-      transitionCameraTo(
-        state,
-        new THREE.Vector3(-currentPos.x, currentPos.y, -currentPos.z),
-        new THREE.Vector3(-currentTarget.x, currentTarget.y, -currentTarget.z),
-      );
-    }
-  }, [flipped]);
+
 
   useEffect(() => {
     const state = stateRef.current;
