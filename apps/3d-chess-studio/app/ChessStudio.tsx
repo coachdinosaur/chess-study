@@ -25,6 +25,7 @@ import {
   positionWarnings,
   startingDocument,
   toFen,
+  type BestMoveResult,
   type BotDifficulty,
   type BotSide,
   type PieceCode,
@@ -42,6 +43,7 @@ import {
   playMoveSound,
   toggleAudioMuted,
 } from "./audio";
+import { stockfishMaster } from "./stockfish-master";
 
 type Tool = "place" | "move" | "erase";
 type PromotionPiece = "q" | "r" | "b" | "n";
@@ -202,6 +204,8 @@ export default function ChessStudio() {
   const [botSide, setBotSide] = useState<BotSide>("black");
   const [botDifficulty, setBotDifficulty] = useState<BotDifficulty>("club");
   const [botThinking, setBotThinking] = useState(false);
+  const botWorkerRef = useRef<Worker | null>(null);
+  const botRequestIdRef = useRef<number>(0);
 
   // Play Mode History & Acoustic State
   const [moveHistory, setMoveHistory] = useState<MoveRecord[]>([]);
@@ -423,7 +427,23 @@ export default function ChessStudio() {
   const finishPlayMoveRef = useRef(finishPlayMove);
   finishPlayMoveRef.current = finishPlayMove;
 
-  // Trigger Local Bot Opponent Move
+  // Instantiate background bot worker for non-blocking search
+  useEffect(() => {
+    if (typeof Worker !== "undefined") {
+      try {
+        const worker = new Worker(new URL("./bot.worker.ts", import.meta.url), { type: "module" });
+        botWorkerRef.current = worker;
+        return () => {
+          worker.terminate();
+          botWorkerRef.current = null;
+        };
+      } catch (err) {
+        console.warn("Could not instantiate bot Web Worker; falling back to main thread engine.", err);
+      }
+    }
+  }, []);
+
+  // Trigger Local Bot Opponent Move (Non-blocking Web Worker with main-thread fallback)
   useEffect(() => {
     if (!playMode || playOpponent !== "bot" || isReviewingHistory) {
       setBotThinking(false);
@@ -454,23 +474,94 @@ export default function ChessStudio() {
     }
 
     setBotThinking(true);
-    const delay = 420 + Math.random() * 200;
-    const timer = setTimeout(() => {
-      try {
-        const best = findBestBotMove(game, botDifficulty);
-        if (best) {
-          finishPlayMoveRef.current(best.from, best.to, best.promotion || "q");
-        }
-      } catch (err) {
-        console.error("Bot move failed", err);
-      } finally {
-        setBotThinking(false);
-      }
-    }, delay);
+    const requestId = ++botRequestIdRef.current;
+    const minDelay = 420 + Math.random() * 200;
+    const startTime = performance.now();
 
-    return () => {
-      clearTimeout(timer);
+    let timer: ReturnType<typeof setTimeout> | undefined;
+
+    const executeMove = (best: BestMoveResult | null) => {
+      if (requestId !== botRequestIdRef.current) return;
+      setBotThinking(false);
+      if (best) {
+        finishPlayMoveRef.current(best.from, best.to, best.promotion || "q");
+      }
     };
+
+    if (botDifficulty === "master") {
+      let cancelled = false;
+      stockfishMaster
+        .findMasterMove(fen, 600)
+        .then((best) => {
+          if (cancelled || requestId !== botRequestIdRef.current) return;
+          if (best) {
+            const elapsed = performance.now() - startTime;
+            const remainingDelay = Math.max(0, minDelay - elapsed);
+            timer = setTimeout(() => {
+              executeMove(best);
+            }, remainingDelay);
+          } else {
+            // Fallback to worker if Stockfish didn't respond
+            if (botWorkerRef.current) {
+              botWorkerRef.current.postMessage({ id: requestId, fen, difficulty: "master" });
+            } else {
+              const fallback = findBestBotMove(game, "master");
+              executeMove(fallback);
+            }
+          }
+        })
+        .catch(() => {
+          if (cancelled || requestId !== botRequestIdRef.current) return;
+          if (botWorkerRef.current) {
+            botWorkerRef.current.postMessage({ id: requestId, fen, difficulty: "master" });
+          } else {
+            const fallback = findBestBotMove(game, "master");
+            executeMove(fallback);
+          }
+        });
+
+      return () => {
+        cancelled = true;
+        stockfishMaster.stop();
+        if (timer) clearTimeout(timer);
+      };
+    }
+
+    if (botWorkerRef.current) {
+      const worker = botWorkerRef.current;
+      const onMessage = (e: MessageEvent<{ id: number; bestMove: BestMoveResult | null }>) => {
+        if (e.data.id === requestId) {
+          worker.removeEventListener("message", onMessage);
+          const elapsed = performance.now() - startTime;
+          const remainingDelay = Math.max(0, minDelay - elapsed);
+          timer = setTimeout(() => {
+            executeMove(e.data.bestMove);
+          }, remainingDelay);
+        }
+      };
+
+      worker.addEventListener("message", onMessage);
+      worker.postMessage({ id: requestId, fen, difficulty: botDifficulty });
+
+      return () => {
+        worker.removeEventListener("message", onMessage);
+        if (timer) clearTimeout(timer);
+      };
+    } else {
+      timer = setTimeout(() => {
+        try {
+          const best = findBestBotMove(game, botDifficulty);
+          executeMove(best);
+        } catch (err) {
+          console.error("Bot move failed", err);
+          setBotThinking(false);
+        }
+      }, minDelay);
+
+      return () => {
+        if (timer) clearTimeout(timer);
+      };
+    }
   }, [botDifficulty, botSide, fen, isReviewingHistory, playMode, playOpponent]);
 
   const actOnPlaySquare = useCallback(

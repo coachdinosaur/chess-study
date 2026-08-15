@@ -314,6 +314,43 @@ function getSquareIndex(file: number, rank: number, isWhite: boolean): number {
   return r * 8 + f;
 }
 
+export function evaluateFen(fen: string): number {
+  let score = 0;
+  let rank = 0;
+  let file = 0;
+
+  const endIdx = fen.indexOf(" ");
+  const boardStr = endIdx === -1 ? fen : fen.slice(0, endIdx);
+
+  for (let i = 0; i < boardStr.length; i++) {
+    const char = boardStr[i];
+    if (char === "/") {
+      rank++;
+      file = 0;
+    } else if (char >= "1" && char <= "8") {
+      file += Number(char);
+    } else {
+      const isWhite = char >= "A" && char <= "Z";
+      const type = char.toLowerCase();
+      const val = PIECE_VALUES[type] || 0;
+      const sqIdx = getSquareIndex(file, 7 - rank, isWhite);
+
+      let pstBonus = 0;
+      if (type === "p") pstBonus = PST_PAWN[sqIdx];
+      else if (type === "n") pstBonus = PST_KNIGHT[sqIdx];
+      else if (type === "b") pstBonus = PST_BISHOP[sqIdx];
+      else if (type === "r") pstBonus = PST_ROOK[sqIdx];
+      else if (type === "q") pstBonus = PST_QUEEN[sqIdx];
+      else if (type === "k") pstBonus = PST_KING[sqIdx];
+
+      const totalVal = val + pstBonus;
+      score += isWhite ? totalVal : -totalVal;
+      file++;
+    }
+  }
+  return score;
+}
+
 export function evaluateBoard(board: (({ type: string; color: "w" | "b" }) | null)[][]): number {
   let score = 0;
   for (let rank = 0; rank < 8; rank++) {
@@ -346,13 +383,43 @@ export type BestMoveResult = {
   score?: number;
 };
 
+const VICTIM_SCORES: Record<string, number> = {
+  p: 100,
+  n: 320,
+  b: 330,
+  r: 500,
+  q: 900,
+  k: 20000,
+};
+
+type ChessEngineMove = {
+  from: string;
+  to: string;
+  piece?: string;
+  captured?: string;
+  promotion?: string;
+};
+
+function scoreMoveForOrdering(move: ChessEngineMove): number {
+  let score = 0;
+  if (move.captured) {
+    const victimVal = VICTIM_SCORES[move.captured] || 100;
+    const attackerVal = VICTIM_SCORES[move.piece || "p"] || 100;
+    score += 10000 + victimVal * 10 - attackerVal;
+  }
+  if (move.promotion) {
+    score += 9000;
+  }
+  return score;
+}
+
 // Import dynamically typed chess engine instance
 export function findBestBotMove(
   chess: {
     fen: () => string;
     turn: () => "w" | "b";
     board: () => (({ type: string; color: "w" | "b" }) | null)[][];
-    moves: (options: { verbose: true }) => Array<{ from: string; to: string; promotion?: string; captured?: string }>;
+    moves: (options: { verbose: true }) => Array<ChessEngineMove>;
     move: (m: { from: string; to: string; promotion?: string }) => unknown;
     undo: () => unknown;
     isCheckmate: () => boolean;
@@ -365,31 +432,41 @@ export function findBestBotMove(
 
   const isMaximizing = chess.turn() === "w";
 
-  // 1. Casual: fast depth 1 with slight random variety among top candidate moves
+  // 1. Casual: Beginner level with intentional tactical blunders/jitter
   if (difficulty === "casual") {
     const scoredMoves = legalMoves.map((move) => {
       chess.move(move);
-      const score = evaluateBoard(chess.board()) * (isMaximizing ? 1 : -1);
+      const score = evaluateFen(chess.fen()) * (isMaximizing ? 1 : -1);
       chess.undo();
-      // Add random jitter to make casual play human and varied
-      const jitter = (Math.random() - 0.5) * 60;
+      // Add noticeable jitter to create human, beginner-like inaccuracies
+      const jitter = (Math.random() - 0.5) * 120;
       return { move, score: score + jitter };
     });
     scoredMoves.sort((a, b) => b.score - a.score);
-    // Pick from top 3 with preference for best
-    const pickIndex = Math.min(
-      scoredMoves.length - 1,
-      Math.floor(Math.random() * Math.min(3, scoredMoves.length)),
-    );
-    const chosen = scoredMoves[pickIndex].move;
+
+    // Pick among top candidate moves with frequent beginner inaccuracies
+    let chosenIndex = 0;
+    const rand = Math.random();
+    if (rand < 0.45 || scoredMoves.length === 1) {
+      chosenIndex = 0;
+    } else if (rand < 0.80 && scoredMoves.length >= 2) {
+      chosenIndex = 1;
+    } else if (scoredMoves.length >= 3) {
+      chosenIndex = 2;
+    } else {
+      chosenIndex = 0;
+    }
+
+    const chosen = scoredMoves[chosenIndex].move;
     return {
       from: chosen.from as Square,
       to: chosen.to as Square,
-      promotion: chosen.promotion as "q" | "r" | "b" | "n" | undefined,
+      promotion: (chosen.promotion as "q" | "r" | "b" | "n") || undefined,
+      score: scoredMoves[chosenIndex].score,
     };
   }
 
-  // 2. Club & Master: Alpha-Beta minimax
+  // 2. Club & Master: Alpha-Beta minimax with MVV-LVA move ordering
   const maxDepth = difficulty === "master" ? 3 : 2;
 
   function minimax(
@@ -399,7 +476,7 @@ export function findBestBotMove(
     maximizing: boolean,
   ): number {
     if (depth === 0) {
-      return evaluateBoard(chess.board());
+      return evaluateFen(chess.fen());
     }
     const moves = chess.moves({ verbose: true });
     if (moves.length === 0) {
@@ -409,8 +486,8 @@ export function findBestBotMove(
       return 0; // Stalemate
     }
 
-    // Move ordering: prioritize captures
-    moves.sort((a, b) => (b.captured ? 10 : 0) - (a.captured ? 10 : 0));
+    // MVV-LVA move ordering for maximum alpha-beta cutoff efficiency
+    moves.sort((a, b) => scoreMoveForOrdering(b) - scoreMoveForOrdering(a));
 
     if (maximizing) {
       let maxEval = -Infinity;
@@ -441,7 +518,7 @@ export function findBestBotMove(
   let bestScore = isMaximizing ? -Infinity : Infinity;
 
   // Order root moves
-  legalMoves.sort((a, b) => (b.captured ? 10 : 0) - (a.captured ? 10 : 0));
+  legalMoves.sort((a, b) => scoreMoveForOrdering(b) - scoreMoveForOrdering(a));
 
   for (const move of legalMoves) {
     chess.move(move);
@@ -464,8 +541,9 @@ export function findBestBotMove(
   return {
     from: bestMove.from as Square,
     to: bestMove.to as Square,
-    promotion: bestMove.promotion as "q" | "r" | "b" | "n" | undefined,
+    promotion: (bestMove.promotion as "q" | "r" | "b" | "n") || undefined,
     score: bestScore,
   };
 }
+
 
