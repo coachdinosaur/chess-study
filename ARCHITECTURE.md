@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-Chess Lesson Study Board is a chess teaching platform served as static files. The repository combines a framework-free interactive single-page application, browser Stockfish, Lichess tablebase requests, separate legacy Endgame Puzzle and user-facing Position Study runtimes, coach-controlled student workspaces and puzzle assignments, static lesson sites with classroom presentation and a floating Teacher Board, a synchronized teacher/student Live Board, a separately built Catalan opening course, a standalone Endgame Trainer landing and privacy site, an optional AI-help panel, and optional local Python helpers.
+Chess Lesson Study Board is a chess teaching platform served as static files. The repository combines a framework-free interactive single-page application, browser Stockfish, Lichess tablebase requests, separate legacy Endgame Puzzle and user-facing Position Study runtimes, coach-controlled student workspaces and puzzle assignments, static lesson sites with classroom presentation and a floating Teacher Board, a synchronized teacher/student Live Board, a separately built Catalan opening course, a standalone Endgame Trainer landing and privacy site, a client-side 3D Chess Position Studio, and optional local Python helpers.
 
 The main Study Board, lesson sites, and Endgame Trainer site have no bundler or
 application build step. Their production assets are committed directly.
@@ -29,50 +29,46 @@ The major subsystems are:
    - `lesson-variation-tree.mjs`
    - `text-normalization.mjs`
 
-3. **AI chess-help subsystem**
-   - Browser UI: `ai-help-chat.mjs`, `ai-help-chat.css`, `ai-help-config.mjs`, `ai-help-icon.mjs`
-   - Cloudflare Worker proxy: `worker/ai-help-worker.js`, `worker/wrangler.jsonc`
-   - Gemini Interactions API, reached only from the Worker
-
-4. **Static lesson sites**
+3. **Static lesson sites**
    - Pawn, Advanced Pawn, and Bishop curricula
    - Numbered endgame lessons
    - Unified lesson header
    - Classroom presentation mode
    - Floating Teacher Board and embedded-board protocol
 
-5. **Catalan Atelier opening course**
+4. **Catalan Atelier opening course**
    - React/Vite source in `apps/opening-book/`
    - 16 Markdown-authored Catalan chapters
    - Browser-local Stockfish and interactive board
    - GitHub Pages build mounted at `/openings/`
 
-6. **3D Chess Position Studio**
+5. **3D Chess Position Studio**
    - React/Vite source in `apps/3d-chess-studio/`
-   - Three.js board with rotate, zoom, pan, top, side, and perspective views
-   - FEN-based position setup plus local two-player legal Play mode
-   - Three visual themes and the main app's MPChess piece designs
+   - Three.js board with orbit controls, camera presets, and 180° flip animation
+   - FEN-based position setup, local two-player play, and AI bot battles (Casual, Club, Master Stockfish 18 Lite WASM)
+   - Background Web Workers for non-blocking engine and minimax computation
+   - Synthesized Web Audio acoustics and four visual themes
    - GitHub Pages build mounted at `/3d/`
 
-7. **Standalone Endgame Trainer site**
+6. **Standalone Endgame Trainer site**
    - Static landing page in `endgame-trainer/index.html`
    - Android privacy policy in `endgame-trainer/privacy-policy/index.html`
    - Local styles, favicon, and app preview images
    - Direct GitHub Pages routes under `/endgame-trainer/`
 
-8. **Live Board collaboration**
+7. **Live Board collaboration**
    - `live-board.html` and Live Board interaction modules
    - Supabase-backed teacher/student rooms
    - Secure student links, move locking, prepared positions, and session messages
 
-9. **Vendored browser dependencies and data**
+8. **Vendored browser dependencies and data**
    - `vendor/chess.js`
    - `vendor/stockfish/`
    - `vendor/xlsx.full.min.js`
    - `assets/openings.tsv`
    - MPChess SVG pieces
 
-10. **Optional local services**
+9. **Optional local services**
    - `local_server.py`
    - `scanner_server.py`
    - `scanner_predict.py`
@@ -114,16 +110,7 @@ chess-study/
 ├── live-board-messages-v2.js
 ├── live-board-room-bootstrap.js
 ├── live-board-drag.js
-├── live-board-click-toggle.js
-│
-├── ai-help-chat.mjs
-├── ai-help-chat.css
-├── ai-help-config.mjs
-├── ai-help-icon.mjs
-│
-├── worker/
-│   ├── ai-help-worker.js
-│   └── wrangler.jsonc
+├── live-board.click-toggle.js
 │
 ├── assets/
 │   ├── openings.tsv
@@ -231,14 +218,6 @@ management/student-workspace.html
 └── student-workspace.mjs
     └── permanent token-scoped workspace RPCs
 
-ai-help-chat.mjs
-├── ai-help-config.mjs
-├── ai-help-icon.mjs
-├── ai-help-chat.css
-└── HTTPS POST /chat
-    └── Cloudflare Worker (`worker/ai-help-worker.js`)
-        └── Gemini Interactions API (`/v1beta/interactions`)
-
 static lesson HTML
 ├── endgame-lesson.css / advanced-pawn-lesson.css
 │   └── lesson-header.css
@@ -251,6 +230,7 @@ static lesson HTML
         └── teacher-board-illegal-moves.mjs
 
 live-board.html
+├── live-board.css
 ├── live-board.js
 ├── live-board-click-toggle.js
 ├── live-board-drag.js
@@ -283,9 +263,12 @@ apps/opening-book/
 
 ```text
 apps/3d-chess-studio/
-├── app/                         React UI, chess state, and Three.js scene
+├── app/                         React UI, Three.js scene, Web Workers, audio synthesis
+│   ├── bot.worker.ts            Background worker for Casual/Club minimax search
+│   └── stockfish-master.ts      Worker bridge for Stockfish 18 Lite WASM master engine
 ├── public/models/               Approved local Staunton 3D models
 ├── public/pieces/mpchess/       Main-app MPChess palette artwork and license
+├── public/stockfish/            Stockfish 18 Lite single-threaded JS and WASM
 └── tests/                       static-output and geometry checks
         │
         └── VITE_BASE_PATH=/3d/ npm test
@@ -321,11 +304,6 @@ apps/3d-chess-studio/
 | `lesson-position-interoperability-export-guard.mjs` | Preserves validation before metadata-aware CSV/XLSX export |
 | `lesson-variation-tree.mjs` | Preferred-child lookup, first-child main-line insertion, non-promoting variation traversal, explicit promotion, and recursive variation-depth semantics |
 | `text-normalization.mjs` | Unicode repair, punctuation normalization, and editable-text cleanup |
-| `ai-help-chat.mjs` | Dyno Bot launcher and panel, bounded context collection, endpoint storage, transcript state, timeout and request lifecycle |
-| `ai-help-chat.css` | Floating panel layout, themes, responsive hiding, Focus-mode placement |
-| `ai-help-config.mjs` | Public Worker base URL used by the browser client; never contains the Gemini API key |
-| `worker/ai-help-worker.js` | CORS enforcement, request validation, rate limiting, Gemini proxying, response normalization, `/chat` and `/health` routes |
-| `worker/wrangler.jsonc` | Cloudflare Worker name, entry point, Gemini model, allowed origins, and rate-limit binding |
 | `live-board.html` | Teacher/student room shell, board, FEN/lesson controls, move list, and messages |
 | `live-board.js` | Live Board position state, legal moves, imported positions, undo/reset behavior |
 | `live-board-realtime.js` | Room creation/joining, credentials, secure links, Supabase state synchronization |
@@ -337,7 +315,7 @@ apps/3d-chess-studio/
 | `vendor/chess.js` | Legal moves, FEN, PGN, game termination, attack queries |
 | `vendor/stockfish/` | Browser Stockfish JavaScript and WASM variants |
 | `apps/opening-book/` | React/Vite Catalan Atelier source, Markdown chapters, local assets, and tests |
-| `apps/3d-chess-studio/` | React/Vite/Three.js position editor, local two-player play, approved local Staunton models, a procedural bishop, MPChess palette artwork, themes, and static-build tests |
+| `apps/3d-chess-studio/` | React/Vite/Three.js 3D board, FEN setup, local play, AI bots (Casual, Club, Master Stockfish 18 Lite WASM), Staunton models, Web Audio synthesizer, and static-build tests |
 | `endgame-trainer/` | Self-contained Endgame Trainer landing page, clean-route privacy policy, styles, favicon, and app previews |
 | `.github/workflows/pages.yml` | Tests combined-site routes, builds the React/Vite apps, mounts their outputs at `/openings/`, `/openings-sicilian/`, and `/3d/`, and uploads the combined static artifact |
 
@@ -875,107 +853,7 @@ Click, tap, desktop drag, and pointer drag all feed the same practice move submi
 
 ---
 
-## 16. AI chess-help subsystem
-
-AI Help is a two-tier feature. The static browser application collects bounded visible chess context, while a Cloudflare Worker protects the Gemini API key and performs the provider request.
-
-```text
-Browser at https://cddigital.top
-  → ai-help-chat.mjs
-  → HTTPS POST <Worker URL>/chat
-  → Cloudflare Worker
-  → Gemini Interactions API
-  → normalized JSON { text }
-  → Dyno Bot transcript
-```
-
-The browser must never call Gemini directly and must never contain `GEMINI_API_KEY`.
-
-### 16.1 Browser client
-
-`ai-help-chat.mjs` mounts the floating Dyno Bot interface unless the page is embedded or board-only. It collects a bounded snapshot containing the lesson title, FENs, opening, active tab, position label, side to move, and notation excerpt.
-
-Notation and conversation history are capped before transmission. Requests abort after 45 seconds. The endpoint comes from `AI_HELP_ENDPOINT` in `ai-help-config.mjs`, with browser-local `chess-study-ai-endpoint-v1` retained as a testing fallback. A base Worker URL is normalized to end in `/chat`.
-
-### 16.2 Cloudflare Worker
-
-`worker/ai-help-worker.js` exposes:
-
-| Route | Method | Purpose |
-|---|---|---|
-| `/chat` | `POST` | Validate, rate-limit, call Gemini, and return `{ text }` |
-| `/health` | `GET` | Confirm Worker reachability from an allowed origin |
-| `/chat` and `/health` | `OPTIONS` | CORS preflight handling |
-
-The Worker:
-
-- reads `GEMINI_API_KEY` from a Cloudflare secret;
-- reads `GEMINI_MODEL` and `ALLOWED_ORIGINS` from Wrangler variables;
-- accepts only exact allowed origins;
-- limits request bytes, message count, message length, and context size;
-- uses `https://generativelanguage.googleapis.com/v1beta/interactions`;
-- removes an accidental `models/` prefix from a configured model ID;
-- maps provider and network failures to bounded JSON errors.
-
-Current production origins are `https://cddigital.top` and `https://www.cddigital.top`. The legacy GitHub Pages origin and localhost origins remain allowed.
-
-### 16.3 CORS behavior
-
-A missing production origin causes preflight to fail before browser JavaScript can read the Worker's JSON response. Firefox commonly reports this as:
-
-```text
-NetworkError when attempting to fetch resource.
-```
-
-When the production domain changes, update both `ALLOWED_ORIGINS` in `worker/wrangler.jsonc` and the fallback origin list in `worker/ai-help-worker.js`, then redeploy.
-
-### 16.4 Deployment boundary
-
-The static site and Worker are separate deployments. Merging Worker code into GitHub does not update the running Cloudflare Worker.
-
-```powershell
-cd worker
-npx wrangler login
-npx wrangler deploy
-```
-
-The existing secret normally remains attached. Set it only when missing:
-
-```powershell
-npx wrangler secret put GEMINI_API_KEY
-npx wrangler deploy
-```
-
-Never commit the API key to configuration, JavaScript, Markdown, logs, or screenshots.
-
-### 16.5 Validation and troubleshooting
-
-After Worker changes:
-
-1. Run `node --check worker/ai-help-worker.js`.
-2. Verify the current production origins in `worker/wrangler.jsonc`.
-3. Deploy the Worker.
-4. Test `/health` from an allowed origin.
-5. Send a short live AI Help request from `https://cddigital.top`.
-6. Inspect browser Network details and Cloudflare logs on failure.
-
-Failure categories:
-
-- **Browser network/CORS error:** Worker URL, DNS/TLS, deployment, or origin allowlist.
-- **HTTP 429/503:** rate limit, missing secret, provider outage, or temporary capacity.
-- **HTTP 502:** provider rejected the model/request or returned unusable output.
-- **Timeout:** the browser aborted after 45 seconds.
-
-### 16.6 Visibility and placement
-
-- Hidden in `embed` and `boardOnly` modes.
-- Hidden at phone widths and short coarse-pointer landscape sizes.
-- Normally fixed to the lower-right.
-- In Focus mode, `.page-shell.is-focus-mode ~ .ai-help-chat` moves it to the lower-left.
-
-The lower-right remains available for `.focus-mode-brand`.
-
-## 17. Focus mode
+## 16. Focus mode
 
 `setFocusMode()` toggles the `is-focus-mode` class on `.page-shell`.
 
@@ -985,14 +863,13 @@ Focus mode:
 - centers and enlarges the board within viewport limits
 - exposes a small Analyze/Exit control group
 - displays `.focus-mode-brand` at the lower-right
-- causes the AI Help UI to use the lower-left
 - exits through Escape or the Exit control
 
-Embed mode enters Focus mode automatically but hides the normal brand and AI Help UI.
+Embed mode enters Focus mode automatically but hides the normal brand header.
 
 ---
 
-## 18. Embed and teacher-board protocol
+## 17. Embed and teacher-board protocol
 
 Query parameters include:
 
@@ -1036,7 +913,7 @@ Same-origin checks protect readiness and request/response operations that includ
 
 ---
 
-## 19. Live Board collaboration
+## 18. Live Board collaboration
 
 The Live Board is a separate page and state machine from the lesson Teacher Board.
 
@@ -1077,7 +954,7 @@ The Live Board must be tested with two pages or browser contexts because a singl
 
 ---
 
-## 20. Persistence
+## 19. Persistence
 
 ### localStorage keys
 
@@ -1090,7 +967,6 @@ The Live Board must be tested with two pages or browser contexts because a singl
 | `endgame-puzzle-free-v1` | Daily free-use accounting |
 | `endgame-puzzle-queue-v1` | Puzzle queue |
 | `endgame-puzzle-history-v1` | Puzzle history and results |
-| `chess-study-ai-endpoint-v1` | User-supplied AI endpoint |
 | `lesson-position-builder-v1:*` | Builder state per saved position set |
 
 Draft persistence is debounced during normal work and forced on `beforeunload` outside embed mode.
@@ -1105,7 +981,7 @@ Loaded lesson graphs are normalized and validated before becoming active state.
 
 ---
 
-## 21. Opening identification database
+## 20. Opening identification database
 
 `loadOpeningBook()` fetches `assets/openings.tsv` and creates:
 
@@ -1116,7 +992,7 @@ Identification prefers the longest matching UCI move prefix, with EPD and PGN-he
 
 ---
 
-## 22. Catalan Atelier opening course
+## 21. Catalan Atelier opening course
 
 Catalan Atelier is a self-contained React/Vite application whose source lives
 in `apps/opening-book/`. It owns 16 Markdown-authored Catalan chapters,
@@ -1146,21 +1022,49 @@ framework-free SPA and static lesson architecture.
 
 ---
 
-## 23. 3D Chess Position Studio
+## 22. 3D Chess Position Studio
 
 The 3D Chess Position Studio is a self-contained React/Vite/Three.js application
 whose source lives in `apps/3d-chess-studio/`. It provides a deterministic 8x8
-board, FEN import and export, click-based position setup, full orbit controls,
-camera presets, and classic, anime, and samurai visual themes. Play mode hides
-the setup panels and uses client-side `chess.js` rules for a legal local
-human-versus-human game without Stockfish. The approved local Staunton model
-supplies the king, queen, rook, knight, and pawn; only the bishop uses custom
-geometry, with a clean open diagonal mitre and no inserted strip. The palette
-uses the main app's exact shared MPChess SVG artwork.
+3D board, FEN import and export, click-based position setup, orbit camera controls,
+camera presets, synthesized Web Audio, four visual board themes, and two distinct operating modes:
+
+### Setup Mode
+
+- Builds arbitrary FEN positions using a piece palette with the main app's exact MPChess SVG artwork.
+- Supports Board presets (**Empty**, **Start**), side-to-move toggling, castling rights, and en passant square configuration.
+- Includes a smooth 180° camera orbit flip and one-click FEN clipboard export.
+
+### Play Mode & Bot Engine Subsystem
+
+Play mode enforces legal moves using client-side `chess.js` and provides two game options:
+
+1. **Local 2-Player**: Head-to-head human-versus-human gameplay.
+2. **Play vs Computer (Bot)**: Three difficulty tiers running in non-blocking background Web Workers:
+   - *Casual* (~1000 Elo): Evaluates board material and piece-square tables with intentional tactical inaccuracies and move jitter.
+   - *Club* (~1600 Elo): Alpha-Beta minimax search (depth 2) with Piece-Square Tables (PST) and MVV-LVA move ordering (`bot.worker.ts`).
+   - *Master* (~2300 Elo): Authentic Master-level play powered by Stockfish 18 Lite WebAssembly (`stockfish-master.ts`) running single-threaded WASM (`stockfish-18-lite-single.wasm`) configured with `UCI_LimitStrength` at 2300 Elo (Skill Level 16).
+
+All bot calculations execute in background Web Workers, guaranteeing that AI searches never block the main browser thread, canvas animation frames, or UI interactions.
+
+### 3D Geometry and Aesthetics
+
+- The king, queen, rook, knight, and pawn use the approved Staunton 3D models (`staunton.glb`).
+- The bishop is custom procedural geometry designed with a prominent elongated head, compact neck, and a clean open diagonal mitre.
+- Four board themes (Tournament Wood, Classic Walnut, Midnight Obsidian, Modern Clean) feature synchronized lighting axes and piece materials.
+- Camera presets include Perspective, Top-Down, 45° Angle, and Reset, with smooth orbit transitions.
+
+### Game Lifecycle and Audio
+
+- **Move notation**: SAN move list with interactive move-by-move position review, PGN export, and zero-layout-shift scrollbar geometry.
+- **Resignation and Game Over**: 2-step inline confirmation modal for resignation, paired with Game Over overlays for checkmate, stalemate, resignation, and draw.
+- **Synthesized Web Audio**: Procedural audio engine generating zero-latency acoustics for move, capture, castle, check, and game over.
+
+### Build and Deployment
 
 The application has no runtime server, database, API route, or remote asset
 dependency. `VITE_BASE_PATH=/3d/` makes every generated script, stylesheet,
-favicon, and model URL resolve beneath the production mount:
+favicon, 3D model, and Stockfish WASM bundle resolve beneath the production mount:
 
 ```text
 Pages checkout
@@ -1177,7 +1081,7 @@ browser only.
 
 ---
 
-## 24. Standalone Endgame Trainer site
+## 23. Standalone Endgame Trainer site
 
 `endgame-trainer/` is a self-contained static site with no build step and no
 dependency on the Study Board runtime. GitHub Pages publishes the committed
@@ -1202,7 +1106,7 @@ styles, and inclusion in the root Pages artifact.
 
 ---
 
-## 25. Static lesson architecture
+## 24. Static lesson architecture
 
 The static lesson files are intentionally independent of the SPA framework because there is no framework.
 
@@ -1234,7 +1138,7 @@ Static pages are printable and can use paged-media styling without requiring the
 
 ---
 
-## 26. Optional local services
+## 25. Optional local services
 
 ### Cross-origin-isolated server
 
@@ -1261,7 +1165,7 @@ The scanner is optional and not used by the GitHub Pages deployment.
 
 ---
 
-## 27. Event bindings
+## 26. Event bindings
 
 `bindEvents()` registers delegated and board-specific handlers.
 
@@ -1296,7 +1200,80 @@ The scanner is optional and not used by the GitHub Pages deployment.
 
 ---
 
-## 28. Validation and testing
+## 27. Supabase backend and security architecture
+
+Supabase provides authentication, PostgreSQL persistence, Row Level Security (RLS), security-definer database functions (RPCs), and Realtime WebSocket synchronization. It powers two distinct functional areas of the platform:
+
+### 27.1 Coach and student management (`/management`)
+
+- **Authentication and account approval**: Teachers register with email/password through Supabase Auth. New teacher accounts enter a `pending` state until reviewed and approved by a platform administrator (`teacher_account_controls`).
+- **Student rosters and coaching sessions**: Approved teachers manage student records (`teacher_managed_students`) and record dated lessons, duration, homework, and next steps (`coaching_sessions`).
+- **Zero-login student workspaces**: Each managed student is provisioned a permanent private workspace (`student_workspaces`). Students never register, create passwords, or log in. Access is granted via unguessable, high-entropy bearer tokens in the workspace URL.
+- **Cryptographic token hashing**: Workspace and puzzle-assignment bearer tokens are generated client-side in the coach browser; Supabase stores only SHA-256 hashes (`token_hash`). Plaintext tokens are never stored in the database, preventing token leakage from database reads. Token-scoped reads and submissions execute through `SECURITY DEFINER` RPCs (`get_student_workspace_by_token_hash`, `verify_assignment_token`).
+- **Teacher puzzle assignments**: Teachers select frozen puzzle subsets from the 50,000-puzzle Lichess library, creating immutable assignment records (`puzzle_assignments`, `student_puzzle_assignments`, `puzzle_assignment_attempts`).
+- **Management audit logging**: Administrative approvals, student profile modifications, coaching sessions, and account deletions are recorded in `management_audit_log` with paginated RPC access.
+- **Service-role key isolation**: Public client code uses only the publishable/anon key. The Supabase `service_role` key is never bundled in frontend scripts or public CI workflows (asserted by GitHub Actions).
+
+### 27.2 Live Board realtime collaboration (`live-board.html`)
+
+- **Synchronized rooms**: Teachers create ephemeral or persistent rooms in `live_board_rooms`, which store FEN state, side to move, move history, and teacher lock flags.
+- **Realtime Broadcast and Postgres changes**: `live-board-realtime.js` establishes a Supabase Realtime channel (`supabase.channel(...)`) to broadcast board updates, piece drag states, and move confirmations to students with sub-100ms latency.
+- **Session messaging**: `live-board-messages-v2.js` synchronizes in-room chat messages and Lichess study links with automatic reconnection, heartbeat, and polling fallbacks.
+- **Role-based credential separation**: Teacher access tokens and student join tokens are isolated. The student join link contains only student permissions, ensuring students cannot unlock their own boards or hijack room ownership.
+
+### 27.3 Database migrations
+
+The database schema is versioned across 17 structured SQL migrations in `supabase/migrations/`, establishing tables, foreign key constraints, RLS policies, trigger-based audit logging, and RPC procedures.
+
+---
+
+## 28. Deployment architecture and multi-app pipelines
+
+The repository deploys as a cohesive static platform via GitHub Actions and GitHub Pages, combining zero-build static pages with independently compiled React/Vite applications:
+
+```text
+.github/workflows/pages.yml (GitHub Pages CI/CD)
+├── Root static SPA (index.html, styles.css, app.js)
+├── Static lesson curricula (/lessons/ - Pawn, Adv Pawn, Bishop, Endgame)
+├── Management portal (/management/ - Dashboard, Workspaces, Assignments)
+├── Live Board (/live-board.html - Synchronized classroom rooms)
+├── Catalan Atelier (/openings/ - React 19 + Vite compiled build)
+├── Sicilian Defense (/openings-sicilian/ - React 19 + Vite compiled build)
+├── 3D Chess Position Studio (/3d/ - React 19 + Three.js + Vite compiled build)
+└── Standalone Endgame Trainer (/endgame-trainer/ & /endgame-trainer/privacy-policy/)
+```
+
+### 28.1 Multi-app build pipeline
+
+The production deployment workflow (`.github/workflows/pages.yml`) executes on every push to `main`:
+
+1. **Catalan Atelier build**: Compiles `apps/opening-book/` with Vite base `/openings/`, runs Markdown chapter checks and Stockfish client tests, and outputs to `apps/opening-book/dist`.
+2. **Sicilian Defense build**: Compiles `apps/opening-book-sicilian/` with Vite base `/openings-sicilian/`, runs chapter audit tests, and outputs to `apps/opening-book-sicilian/dist`.
+3. **3D Chess Position Studio build**: Compiles `apps/3d-chess-studio/` with `VITE_BASE_PATH=/3d/`, runs static build and geometry tests, and outputs to `apps/3d-chess-studio/dist`.
+4. **Cross-app integration tests**: Executes `node --test tests/opening-book-integration.test.mjs`, `tests/endgame-trainer-integration.test.mjs`, and `tests/3d-chess-studio-integration.test.mjs` to ensure route integrity, relative asset paths, and shared favicon availability.
+5. **Mount and publish**: Moves compiled outputs to their respective production mount directories (`openings`, `openings-sicilian`, `3d`), removes source code and `node_modules` to minimize artifact size, and uploads the final combined Pages artifact.
+
+### 28.2 Production URLs and clean routing
+
+- `https://cddigital.top/` — Interactive Study SPA
+- `https://cddigital.top/lessons/` — Lesson index and curricula
+- `https://cddigital.top/management/` — Coach Dashboard and Student Workspaces
+- `https://cddigital.top/openings/` — Catalan Atelier Opening Course
+- `https://cddigital.top/openings-sicilian/` — Sicilian Defense Opening Course
+- `https://cddigital.top/3d/` — 3D Chess Position Studio
+- `https://cddigital.top/endgame-trainer/` — Endgame Trainer landing page
+- `https://cddigital.top/endgame-trainer/privacy-policy/` — Android Privacy Policy (clean extensionless directory route)
+
+### 28.3 Local development and server environments
+
+- **Basic static server**: `python -m http.server 8000` for standard UI, lesson, and management testing.
+- **Cross-origin isolated server (`local_server.py`)**: Adds `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp` headers, enabling `SharedArrayBuffer` for multi-threaded Stockfish WASM.
+- **Quick launcher (`start-local.ps1`)**: Automated PowerShell script to start the local isolated server on port 8000 (with port 8001 fallback).
+- **Scanner server (`scanner_server.py`)**: Local Python server on port 8765 for visual chessboard recognition.
+
+---
+
+## 29. Validation and testing
 
 The main Study Board has no compile step. Its validation combines syntax
 checks, targeted tests, and browser testing; the Endgame Trainer adds a static
@@ -1304,7 +1281,6 @@ route-integrity test, and each React/Vite app adds its own compiled test suite.
 
 ```powershell
 node --check app.js
-node --check ai-help-chat.mjs
 node --check lessons/pawn-teacher-board.js
 node --check lessons/teacher-board-illegal-moves.mjs
 node --check lessons/lesson-presentation.js
@@ -1314,6 +1290,7 @@ node tools/test-puzzle-api.mjs
 node --test tests/endgame-trainer-integration.test.mjs
 node --test tests/3d-chess-studio-integration.test.mjs
 npm --prefix apps/opening-book test
+npm --prefix apps/opening-book-sicilian test
 $env:VITE_BASE_PATH='/3d/'; npm --prefix apps/3d-chess-studio test
 git diff --check
 ```
@@ -1331,20 +1308,19 @@ Minimum manual matrix:
 - puzzle objectives and history
 - analysis/tablebase fallback
 - annotation gestures
-- Focus mode with AI Help closed and open
-- mobile AI-help hiding
 - embed and board-only message actions
 - lesson presentation scene collection, reveal/reset/navigation, fullscreen fallback, and click pulse
 - Teacher Board Empty/Start/Page, independent side to move, piece placement, take-back, and normal play after setup
 - Live Board teacher/student synchronization, secure student link, lock state, prepared positions, and delayed message initialization
+- 3D Chess Studio setup, local play, bot difficulty play, camera presets, and themes
 - lesson JSON and PGN round trips
 
 ---
 
-## 29. Architectural constraints
+## 30. Architectural constraints
 
 The main Study Board deliberately favors zero-build deployability and direct
-debugging. Catalan Atelier and the 3D studio remain isolated build boundaries
+debugging. Catalan Atelier, Sicilian Defense, and the 3D studio remain isolated build boundaries
 rather than changing that runtime architecture. These choices create constraints:
 
 - `app.js` is a large orchestration module.

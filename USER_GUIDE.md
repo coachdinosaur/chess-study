@@ -6,6 +6,10 @@ Live app:
 
 ```text
 https://cddigital.top/
+https://cddigital.top/openings/
+https://cddigital.top/openings-sicilian/
+https://cddigital.top/3d/
+https://cddigital.top/endgame-trainer/
 ```
 
 You do not need to install anything to use the deployed app.
@@ -70,6 +74,9 @@ Use these exact paths when you know what you want to do.
 - Review the lesson tree: use the notation panel or **Tools → Study**
 - Open the Position Set Builder: **Tools → Position Sets**
 - Browse published course lessons: open the **Lesson index** from the app/site navigation
+- Study Catalan Atelier opening course: open `/openings/`
+- Study Sicilian Defense opening course: open `/openings-sicilian/`
+- Open the 3D Chess Position Studio: open `/3d/` or click **Open 3D board** on the home page
 - Open a floating board while reading a supported lesson: click **Teacher Board** in the lesson header
 - Start a synchronized teacher/student room: open **Live Board** (`live-board.html`)
 - Open Lichess Position Training: **Tools → Puzzle → Lichess Position Training**
@@ -246,39 +253,6 @@ To show or hide the candidate lines:
 > **Where to go:** Three-dot menu → **Show PV lines** or **Hide PV lines**
 
 For legal endgames with up to seven pieces and no castling rights, the app may use the Lichess tablebase instead of Stockfish. If tablebase access fails, the app falls back to Stockfish.
-
-## Explain the Current Position with AI Help
-
-> **Where to go:** **AI Help** button at the bottom-right on supported desktop-sized layouts
-
-The AI receives a bounded snapshot of the visible lesson title, current FEN, setup FEN, active tab, side to move, opening information, position label, and notation excerpt. It does not receive saved lesson files, unrelated browser data, or the Gemini API key.
-
-Useful questions include:
-
-- “Explain this position.”
-- “What should White look for?”
-- “What changed after the last move?”
-- “Give me a small hint.”
-- “How do I import a PGN?”
-
-AI can make mistakes. Verify concrete tactics with Stockfish and app instructions against this guide.
-
-### When the AI Help button is hidden
-
-The floating control is intentionally hidden on phone-width screens, short landscape touch screens, and embedded or board-only pages. Use a wider desktop or tablet layout for AI Help.
-
-### AI Help connection errors
-
-If the panel cannot reach the AI service:
-
-1. Confirm the main app is open at `https://cddigital.top/`.
-2. Confirm the internet connection works.
-3. Reload once and try a short message such as “hello.”
-4. `NetworkError when attempting to fetch resource` usually means the Worker URL, deployment, DNS/TLS, or production-domain CORS allowlist failed before Gemini was contacted.
-5. For busy or too-many-request messages, wait about a minute and retry.
-6. For repeated timeouts, try later and report the exact message.
-
-Do not paste an API key into the chat or browser console. The Gemini key belongs only in the private Cloudflare Worker secret. The Worker must be redeployed separately after its code or allowed-origin configuration changes.
 
 ---
 
@@ -613,6 +587,54 @@ Available starting positions can include:
 - normal initial position.
 
 During a game, the panel shows clocks and provides controls such as Resign and Offer Draw.
+
+---
+
+# 3D Chess Position Studio
+
+> **Where to go:** open `/3d/` or click **Open 3D board** on the home page
+
+The 3D Chess Position Studio provides a fully interactive 3D chessboard powered by Three.js and `chess.js`, with authentic Staunton piece models, synthesized acoustics, camera orbit controls, and two primary modes: **Setup** and **Play**.
+
+## Setup Mode
+
+Use Setup Mode to build custom positions or prepare openings in 3D:
+
+1. **Piece Palette**: Select White or Black and click any piece (King, Queen, Rook, Bishop, Knight, Pawn) to place it on a square.
+2. **Erase / Clear**: Click an occupied square with the eraser tool, or click **Empty** to remove all pieces.
+3. **Starting Board**: Click **Start** to restore all 32 starting pieces.
+4. **Side to Move & Castling**: Set which side moves next, castling rights (O-O / O-O-O), and en passant details in the sidebar.
+5. **Flip Board**: Click **Flip** to orbit the camera smoothly 180° to the opposite perspective.
+6. **FEN Import / Export**: Paste a FEN string to load a position immediately, or click **Copy FEN** to share it to your clipboard.
+
+## Play Mode
+
+Switch to **Play Mode** at the top-left to start playing legal chess games:
+
+### Local Two-Player Game
+Play a head-to-head match locally on the same device. Moves are validated by `chess.js`, and legal destination squares are highlighted on piece selection.
+
+### Play Against Computer (Bot)
+Choose **vs Computer** in the sidebar and select an AI difficulty:
+
+- **Casual** (~1000 Elo): Great for beginners; plays natural chess with intentional tactical blunders.
+- **Club** (~1600 Elo): Intermediate strength using minimax search (depth 2), piece-square tables, and move ordering.
+- **Master** (~2300 Elo): Authentic Master level powered by Stockfish 18 Lite WebAssembly (WASM) in a background Web Worker.
+
+All AI calculations run in background Web Workers, keeping board animations and camera movement perfectly fluid.
+
+### Resignation and Game Over
+- Click **Resign** during a game to open a 2-step inline confirmation modal.
+- When checkmate, stalemate, resignation, or a draw occurs, a prominent Game Over banner displays the final outcome with options to restart or review.
+
+### Move History and PGN
+- The move notation panel tracks every move in standard SAN notation without causing board jitter or layout shifts.
+- Click past moves in the notation list to review earlier positions, or click **Copy PGN** to export the game.
+
+### Board Themes, Sound Effects, and Camera Presets
+- **Themes**: Switch between **Tournament Wood**, **Classic Walnut**, **Midnight Obsidian**, and **Modern Clean**.
+- **Sound Toggle**: Enable or disable Web Audio synthesized sound effects for piece moves, captures, castling, check, and game over.
+- **Camera Presets**: Use **Perspective**, **Top-Down**, **Angle (45°)**, or **Reset** to adjust your view instantly, or drag/scroll to orbit and zoom freely.
 
 ---
 

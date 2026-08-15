@@ -13,7 +13,7 @@ It contains:
 - **Numbered endgame lessons** (7 chapter pages with embedded SPA iframe)
 - **Shared lesson presentation and Teacher Board systems** used across course levels
 - **Live Board** secure teacher/student synchronized rooms backed by Supabase
-- **AI Help** browser panel backed by a separately deployed Cloudflare Worker and Gemini
+- **3D Chess Position Studio** interactive Three.js board and Web Worker Stockfish bots
 - **Piece asset pipeline** (MetaPost/LuaLaTeX font → 12 SVG pieces)
 - **Local servers** for HTTP hosting (`local_server.py`) and board scanning (`scanner_server.py`)
 
@@ -33,12 +33,13 @@ It contains:
 | **Pawn lessons** | `lessons/pawn-*.html`, `lessons/pawn-m{2,3,4,5}-*.html`, `lessons/pawn-index.html` |
 | **Advanced Pawn lessons** | `lessons/advanced-pawn-m*-lesson-*.html`, `lessons/advanced-pawn-module-*-data.js`, `lessons/advanced-pawn-index.html` |
 | **Bishop lessons** | `lessons/bishop-m*-lesson-*.html`, `lessons/bishop-index.html`, `lessons/bishop_m1/` |
-| **AI Help client** | `ai-help-chat.mjs`, `ai-help-chat.css`, `ai-help-config.mjs`, `ai-help-icon.mjs` |
-| **AI Help Worker** | `worker/ai-help-worker.js`, `worker/wrangler.jsonc` |
 | **Numbered endgame lessons** | `lessons/01-*.html` … `lessons/07-*.html`, `lessons/endgame-lesson.js`, `lessons/endgame-lesson.css` |
 | **Shared lesson header/presentation** | `lessons/lesson-header.css`, `lessons/lesson-presentation.js`, `lessons/lesson-presentation.css` |
 | **Shared Teacher Board** | `lessons/pawn-teacher-board.js`, `lessons/pawn-teacher-board.css`, `lessons/teacher-board-illegal-moves.mjs` |
 | **Live Board** | `live-board.html`, `live-board.js`, `live-board-realtime.js`, `live-board-room-bootstrap.js`, `live-board-messages-v2.js`, `live-board-drag.js`, `live-board-click-toggle.js` |
+| **3D Chess Position Studio** | `apps/3d-chess-studio/`, `tests/3d-chess-studio-integration.test.mjs` |
+| **Opening books** | `apps/opening-book/`, `apps/opening-book-sicilian/` |
+| **Endgame Trainer site** | `endgame-trainer/index.html`, `endgame-trainer/privacy-policy/index.html` |
 | **Lesson source manuscripts** | `lesson_source/` (Module 1), `lesson_source2/` (Module 2), `lesson_source3/` (Module 3) |
 | **Piece assets** | `assets/pieces/mpchess/` (12 SVGs), `mpchess-pieces/` (font sources) |
 | **Local servers** | `local_server.py`, `scanner_server.py`, `scanner_predict.py`, `start-local.ps1` |
@@ -172,17 +173,12 @@ It contains:
   Verify initial board state, click/tap and drag input, undo/reset, lock/unlock, copied link,
   prepared-position loading, and messages created immediately after a room is created.
 
-## AI Help Worker Conventions
+## Supabase and Management Security Conventions
 
-- The browser sends bounded context to the Cloudflare Worker `/chat` route. It must never call Gemini directly.
-- Keep `GEMINI_API_KEY` only as a Cloudflare Worker secret. Never commit or expose it.
-- Production runs at `https://cddigital.top`; keep it and `https://www.cddigital.top` in `ALLOWED_ORIGINS` unless deployment changes.
-- Preserve the legacy GitHub Pages and localhost origins used for fallback and local testing.
-- Exact-origin CORS failures appear as generic browser fetch/network errors. Check the allowlist before blaming Gemini.
-- Gemini uses `/v1beta/interactions` and a plain model ID; normalize away an optional `models/` prefix.
-- Preserve request/history/context bounds, rate limiting, `/health`, and sanitized public errors.
-- GitHub merges do not deploy Cloudflare. Worker changes require `cd worker` and `npx wrangler deploy`.
-- Validate with `node --check worker/ai-help-worker.js`, check Wrangler variables, deploy, test `/health`, and send a live production request.
+- **Never expose `service_role` key**: Public browser code and workflows must use only the public/anon Supabase key.
+- **Zero-login student token protection**: Student workspace and assignment links use high-entropy bearer tokens. Plaintext tokens must never be written to Supabase; the client computes and sends SHA-256 hashes (`token_hash`).
+- **RPC security**: Student operations must use `SECURITY DEFINER` Postgres functions with explicit validation, ensuring students can only access work explicitly provisioned by their coach.
+- **Teacher RLS**: Teacher-facing tables (`students`, `coaching_sessions`, `puzzle_assignments`) must remain guarded by Row Level Security linked to `auth.uid()`.
 
 ## Lesson Position Builder Conventions
 
@@ -207,6 +203,15 @@ It contains:
   `setLessonPositionBuilderActive` does NOT change tabs.
 - **Opening Lessons** restores builder state but does NOT load the board.
 
+## 3D Chess Position Studio Conventions
+
+- **Source location:** `apps/3d-chess-studio/` (React 19, Three.js, `chess.js`).
+- **Mount path:** Compiled with `VITE_BASE_PATH=/3d/` and published at `/3d/`.
+- **Operating modes:** Setup Mode (palette piece placement, presets, FEN import/export, 180° flip) and Play Mode (Local 2P & Bot Play).
+- **Bot Engine architecture:** Move searches run in background Web Workers (`bot.worker.ts` and `stockfish-master.ts`) without stalling the main UI thread. Tiers: Casual (~1000 Elo), Club (~1600 Elo), and Master (~2300 Elo Stockfish 18 Lite WASM).
+- **Piece geometry:** Staunton 3D models (`staunton.glb`) for K, Q, R, N, P; procedural geometry for Bishop with an open diagonal mitre.
+- **Validation:** Run `$env:VITE_BASE_PATH='/3d/'; npm --prefix apps/3d-chess-studio test` and `node --test tests/3d-chess-studio-integration.test.mjs`.
+
 ## Verification Checklist
 
 Before completing a task, verify:
@@ -226,7 +231,7 @@ Before completing a task, verify:
 - [ ] Shared lesson-header, presentation, and Teacher Board cache versions are current across all lesson consumers
 - [ ] Teacher Board Empty, Start, Page, side-to-move, piece placement, and post-setup play work
 - [ ] Live Board teacher/student state, lock, copied student link, prepared positions, and messages work in separate contexts
-- [ ] AI Help changes preserve secrets, allowed origins, CORS preflight, `/health`, rate limits, and deployment instructions
+- [ ] 3D Chess Studio builds cleanly and passes static and integration tests (`npm --prefix apps/3d-chess-studio test` and `node --test tests/3d-chess-studio-integration.test.mjs`)
 - [ ] No accidental changes were made outside the requested scope
 
 ## Git Rules

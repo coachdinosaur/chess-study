@@ -1,6 +1,6 @@
 # Chess Lesson Study Board
 
-A browser-based chess teaching and study platform. It combines a framework-free position editor, lesson-tree authoring, Stockfish analysis, tablebase support, practice drills, Play vs Stockfish, separate Endgame Puzzle and Position Study modes, coach-controlled student workspaces and puzzle assignments, static course lessons with classroom presentation and Teacher Board tools, a synchronized teacher/student Live Board, a separately built Catalan opening course, a standalone Endgame Trainer site, and an optional AI chess-help panel.
+A browser-based chess teaching and study platform. It combines a framework-free position editor, lesson-tree authoring, Stockfish analysis, tablebase support, practice drills, Play vs Stockfish, separate Endgame Puzzle and Position Study modes, coach-controlled student workspaces and puzzle assignments, static course lessons with classroom presentation and Teacher Board tools, a synchronized teacher/student Live Board, a separately built Catalan opening course, a standalone Endgame Trainer site, and a client-side 3D Chess Position Studio.
 
 ## Live app
 
@@ -8,6 +8,8 @@ A browser-based chess teaching and study platform. It combines a framework-free 
 https://cddigital.top/
 https://cddigital.top/lessons/
 https://cddigital.top/openings/
+https://cddigital.top/openings-sicilian/
+https://cddigital.top/3d/
 https://cddigital.top/endgame-trainer/
 https://cddigital.top/endgame-trainer/privacy-policy/
 ```
@@ -35,14 +37,14 @@ For local Windows setup, see [LOCAL_DEPLOYMENT.md](LOCAL_DEPLOYMENT.md).
 - Review CSV/XLSX position sets in the Position Set Builder and open or convert them into Study and Analysis lessons.
 - Identify openings from the bundled ECO/opening database.
 - Use static Pawn, Advanced Pawn, Bishop, and numbered endgame lesson pages in `lessons/`.
-- Study the 16-chapter interactive Catalan Atelier opening course at `/openings/`.
+- Study the interactive opening courses: Catalan Atelier at `/openings/` and Sicilian Defense at `/openings-sicilian/`.
+- Build 3D positions, play local games, and challenge AI bots (Casual, Club, Master Stockfish 18 Lite WASM) in the 3D Chess Position Studio at `/3d/`.
 - Open the standalone Endgame Trainer landing page and Android privacy policy at `/endgame-trainer/`.
 - Present supported lessons scene by scene with Previous, Reveal, Reset, Next, Exit, keyboard shortcuts, fullscreen support, and a visible click pulse for classroom projection.
 - Open the floating Teacher Board from supported lesson pages to load Page, Start, Empty, or prepared CSV positions; set the side to move; place pieces; annotate; take back; flip; and reset.
 - Create a secure synchronized Live Board room for a teacher and student, including student-move locking, FEN and lesson-position loading, move history, and session messages.
 - Run a selected student's lesson from the management Coach Session Command Center, with the latest session, next step, curriculum recommendation, puzzle progress, timer, lesson access, Live Board access, and session-log handoff in one workflow.
 - Publish one permanent private workspace per student—without a student account—and control its instructions, homework, due date, assigned lesson, FEN position, Live Board invitation, puzzle work, and visible results from `/management`.
-- Ask the optional Dyno Bot panel about the visible position and notation on supported desktop-sized layouts.
 
 ## Workspace
 
@@ -183,57 +185,6 @@ The app selects the best available analysis source:
 
 Tablebase eligibility requires a legal FEN, no castling rights, no more than seven total pieces, and no more than four pieces per side.
 
-## AI chess help
-
-`ai-help-chat.mjs` mounts an optional floating Dyno Bot panel outside embedded and board-only mode. It can explain the visible board, plans, candidate moves, tactical ideas, lesson concepts, and supported app controls.
-
-The browser sends bounded context to a Cloudflare Worker:
-
-- lesson title
-- current FEN and setup FEN
-- opening name/ECO display
-- active tab
-- side-to-move and position labels
-- visible notation, capped before transmission
-
-```text
-Browser → Cloudflare Worker /chat → Gemini Interactions API
-```
-
-The Gemini API key is never stored in the static site. It exists only as the Worker's `GEMINI_API_KEY` secret. The browser endpoint comes from `ai-help-config.mjs` or the local testing key `chess-study-ai-endpoint-v1`.
-
-The Worker lives in `worker/ai-help-worker.js`, with deployment configuration in `worker/wrangler.jsonc`. It provides `POST /chat`, `GET /health`, exact-origin CORS validation, request limits, rate limiting, and normalized public errors.
-
-Current production origins are `https://cddigital.top` and `https://www.cddigital.top`. The old GitHub Pages origin and localhost origins remain available for fallback and development.
-
-### Deploy or update the Worker
-
-Merging Worker code does not update the running Cloudflare deployment.
-
-```powershell
-cd worker
-npx wrangler login
-npx wrangler deploy
-```
-
-The existing secret normally remains attached. Set it only if Cloudflare reports it missing:
-
-```powershell
-npx wrangler secret put GEMINI_API_KEY
-npx wrangler deploy
-```
-
-Never commit the API key.
-
-### AI Help troubleshooting
-
-- **`NetworkError when attempting to fetch resource`**: check Worker deployment, endpoint URL, DNS/TLS, and `ALLOWED_ORIGINS`; this usually occurs before Gemini is contacted.
-- **Busy or temporary error**: wait briefly; rate limiting or Gemini capacity may be involved.
-- **Configuration error**: confirm the Worker secret and configured model.
-- **Timeout**: the client aborts after 45 seconds.
-
-The floating control is hidden on phone-width layouts and short coarse-pointer landscape screens so it does not cover board controls. In Focus mode it moves to the lower-left. It is disabled in `?embed=1` and board-only modes.
-
 ## Lessons and files
 
 ### Lesson JSON
@@ -259,11 +210,11 @@ PGN import/export supports:
 - comments
 - multi-game browsing and selection
 
-Use JSON when complete application state matters. Use PGN for chess notation interchange. See [LESSON_DATA_ARCHITECTURE.md](LESSON_DATA_ARCHITECTURE.md) for the shared lesson model and [LESSON_POSITION_INTEROPERABILITY.md](LESSON_POSITION_INTEROPERABILITY.md) for Position Set conversion rules. See [LESSON_DATA_ARCHITECTURE.md](LESSON_DATA_ARCHITECTURE.md) for the shared lesson model and [LESSON_POSITION_INTEROPERABILITY.md](LESSON_POSITION_INTEROPERABILITY.md) for Position Set conversion rules. See [LESSON_DATA_ARCHITECTURE.md](LESSON_DATA_ARCHITECTURE.md) for the shared lesson model and [LESSON_POSITION_INTEROPERABILITY.md](LESSON_POSITION_INTEROPERABILITY.md) for Position Set conversion rules.
+Use JSON when complete application state matters. Use PGN for chess notation interchange. See [LESSON_DATA_ARCHITECTURE.md](LESSON_DATA_ARCHITECTURE.md) for the shared lesson model and [LESSON_POSITION_INTEROPERABILITY.md](LESSON_POSITION_INTEROPERABILITY.md) for Position Set conversion rules.
 
 ### Browser draft
 
-The current lesson book is persisted locally under `setup-analysis-draft-v1`. Puzzle settings, queue, history, theme, AI endpoint, and Position Set Builder state use separate localStorage keys.
+The current lesson book is persisted locally under `setup-analysis-draft-v1`. Puzzle settings, queue, history, theme, and Position Set Builder state use separate localStorage keys.
 
 Browser storage is local to one browser profile and is not collaborative synchronization.
 
@@ -313,6 +264,22 @@ Endgame Trainer. Its Android privacy policy uses the directory route
 public URL `/endgame-trainer/privacy-policy/` without a rewrite rule or build
 step.
 
+## 3D Chess Position Studio
+
+`apps/3d-chess-studio/` is a client-side 3D chess position editor and game board built with React 19, Three.js, and `chess.js`:
+
+- **Setup Mode**: build arbitrary FEN positions using the MPChess palette, presets (Empty/Start), side-to-move toggling, castling rights, and en passant controls, with 180° camera flip and FEN copy.
+- **Play Mode**:
+  - **Local 2-Player**: play legal over-the-board games with full move validation.
+  - **Play vs Computer (Bot)**: challenge the computer across three calibrated difficulty tiers:
+    - *Casual* (~1000 Elo): tactical evaluation with intentional beginner jitter and inaccuracies.
+    - *Club* (~1600 Elo): minimax search (depth 2) with Piece-Square Tables (PST) and MVV-LVA move ordering.
+    - *Master* (~2300 Elo): authentic Master strength powered by Stockfish 18 Lite WebAssembly (WASM) with `UCI_LimitStrength` at 2300 Elo / Skill Level 16.
+- **Non-blocking Web Worker**: AI move calculation runs in dedicated background Web Workers (`bot.worker.ts` and `stockfish-master.ts`), maintaining 60 FPS rendering and smooth animations without canvas locking.
+- **Aesthetics & Audio**: authentic Staunton 3D models with a custom procedural Bishop, board themes (Tournament Wood, Classic Walnut, Midnight Obsidian, Modern Clean), Web Audio synthesized sound effects, move history notation, resignation confirmation, and game over overlays.
+
+The Pages workflow compiles the application with `VITE_BASE_PATH=/3d/` and publishes it at `https://cddigital.top/3d/`.
+
 ## Live Board
 
 `live-board.html` is a separate synchronized teaching surface for one teacher and one student.
@@ -327,6 +294,26 @@ Teacher workflow:
 
 The student opens the secure link and receives the synchronized position, move list, lock state, and messages. Supabase supplies room state, realtime updates, and message storage. The message module waits for valid room credentials and the `live-board-session-ready` event instead of assuming credentials already exist at `DOMContentLoaded`.
 
+## Supabase backend and security
+
+Supabase provides PostgreSQL persistence, Row Level Security (RLS), authentication, and Realtime WebSocket channels:
+
+- **Coach Authentication & Approval**: Teachers authenticate with email/password; accounts start in a `pending` state until reviewed by a platform admin.
+- **Zero-Login Student Workspaces & Assignments**: Students access workspaces and assignments via unguessable bearer tokens in their URLs without creating accounts.
+- **SHA-256 Token Protection**: Plaintext student tokens never reach the database; Supabase stores only cryptographic SHA-256 hashes (`token_hash`), with access managed through `SECURITY DEFINER` RPCs.
+- **Live Board Realtime**: Uses Supabase Realtime Broadcast and Postgres Changes to stream board moves and locks with sub-100ms latency.
+- **Zero Service-Role Exposure**: Public web clients use only the publishable anon key. The database `service_role` key is never exposed.
+
+## Deployment pipeline
+
+The repository deploys to GitHub Pages via `.github/workflows/pages.yml` on pushes to `main`:
+
+- **Root Static SPA & Curricula**: Framework-free Study Board, static lessons (`/lessons/`), coach management (`/management/`), and Live Board (`/live-board.html`).
+- **Catalan Atelier (`/openings/`)**: Compiled React 19 + Vite application.
+- **Sicilian Defense (`/openings-sicilian/`)**: Compiled React 19 + Vite application.
+- **3D Chess Position Studio (`/3d/`)**: Compiled React 19 + Three.js + Vite application (`VITE_BASE_PATH=/3d/`).
+- **Endgame Trainer (`/endgame-trainer/`)**: Static landing page and clean `/endgame-trainer/privacy-policy/` directory route.
+
 ## Mobile behavior
 
 Mobile-specific behavior includes:
@@ -337,7 +324,6 @@ Mobile-specific behavior includes:
 - pointer-based piece dragging
 - tap-to-move support
 - best-effort fullscreen where supported
-- hidden floating AI-help control to prevent board obstruction
 
 iPhone Safari in a normal tab may not expose browser fullscreen controls.
 
@@ -386,12 +372,6 @@ The floating Teacher Board also evaluates the embedded FEN after moves and posit
 | `management/student-workspace.html` / `management/js/student-workspace*.mjs` | Permanent token-scoped student workspace plus the coach-only editor and puzzle-assignment handoff |
 | `lesson-position-builder.mjs` | CSV/XLSX lesson-position workflow |
 | `text-normalization.mjs` | Unicode and punctuation normalization |
-| `ai-help-chat.mjs` | Dyno Bot UI, context collection, request lifecycle |
-| `ai-help-chat.css` | Floating chat styling and mobile auto-hide rules |
-| `ai-help-config.mjs` | Default AI endpoint configuration |
-| `ai-help-icon.mjs` | Embedded launcher icon data |
-| `worker/ai-help-worker.js` | Cloudflare Worker CORS, validation, rate limiting, Gemini proxy, `/chat`, and `/health` |
-| `worker/wrangler.jsonc` | Worker variables, production origins, model, and rate-limit binding |
 | `live-board.html` | Teacher/student room shell, synchronized board, lesson/FEN controls, messages |
 | `live-board.js` | Live Board position state, legal interaction, move list, lesson/FEN loading |
 | `live-board-realtime.js` | Secure room bootstrap, credentials, Supabase state synchronization |
@@ -405,8 +385,9 @@ The floating Teacher Board also evaluates the embedded FEN after moves and posit
 | `assets/openings.tsv` | Opening identification database |
 | `lessons/` | Static published lesson pages and shared lesson helpers |
 | `apps/opening-book/` | React/Vite source, Markdown chapters, tests, and local Stockfish assets for Catalan Atelier |
+| `apps/3d-chess-studio/` | React/Vite/Three.js 3D board, FEN setup, local play, AI bots (Casual, Club, Master Stockfish 18 Lite WASM), Staunton models, and Web Worker |
 | `endgame-trainer/` | Standalone Endgame Trainer landing page, privacy policy, styles, favicon, and app previews |
-| `.github/workflows/pages.yml` | Tests the combined routes, builds Catalan Atelier, mounts its output at `/openings/`, and deploys the combined Pages artifact |
+| `.github/workflows/pages.yml` | Tests the combined routes, builds Catalan Atelier and 3D Studio, mounts their outputs at `/openings/` and `/3d/`, and deploys the combined Pages artifact |
 
 A deeper implementation map is in [ARCHITECTURE.md](ARCHITECTURE.md).
 
@@ -455,6 +436,21 @@ npm test
 npm run preview
 ```
 
+### 3D Chess Studio development
+
+```powershell
+cd apps/3d-chess-studio
+npm install
+npm run dev
+```
+
+To validate the production 3D build and static tests:
+
+```powershell
+$env:VITE_BASE_PATH='/3d/'; npm test
+npm run preview
+```
+
 ### Optional board scanner
 
 The Setup tab can send `.png`, `.jpg`, or `.jpeg` board images to:
@@ -488,8 +484,6 @@ Useful checks after editing JavaScript or documentation:
 
 ```powershell
 node --check app.js
-node --check ai-help-chat.mjs
-node --check worker/ai-help-worker.js
 node --check lessons/pawn-teacher-board.js
 node --check lessons/teacher-board-illegal-moves.mjs
 node --check lessons/lesson-presentation.js
@@ -497,12 +491,14 @@ node --check live-board-realtime.js
 node --check live-board-messages-v2.js
 node tools/test-puzzle-api.mjs
 node --test tests/endgame-trainer-integration.test.mjs
+node --test tests/3d-chess-studio-integration.test.mjs
 npm --prefix apps/opening-book test
+$env:VITE_BASE_PATH='/3d/'; npm --prefix apps/3d-chess-studio test
 git diff --check
 ```
 
-The main Study Board has no build step, while the opening course is compiled
-and tested independently. Browser testing remains important. Test at minimum:
+The main Study Board has no build step, while the opening course and 3D studio
+are compiled and tested independently. Browser testing remains important. Test at minimum:
 
 - desktop click and drag moves
 - mobile tap and pointer drag moves
@@ -514,7 +510,7 @@ and tested independently. Browser testing remains important. Test at minimum:
 - lesson presentation scene navigation, reveal/reset, and click pulse
 - Teacher Board Empty, Start, Page, side-to-move, piece placement, and normal play after setup
 - Live Board teacher/student synchronization, lock state, prepared positions, and delayed message initialization
-- mobile AI-help hiding
+- 3D Chess Studio setup, local play, bot difficulty play, camera presets, and themes
 - lesson JSON and PGN round trips
 
 ## Supporting documentation

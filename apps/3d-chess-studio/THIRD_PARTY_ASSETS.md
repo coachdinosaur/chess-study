@@ -23,3 +23,15 @@ or alter the SVG files.
 The approved model supplies the king, queen, rook, knight, and pawn. The bishop
 is original procedural geometry so its diagonal mitre can remain a clean open
 cut without an inserted object.
+
+## Stockfish 18 Lite WebAssembly engine
+
+- Assets: `public/stockfish/stockfish-18-lite-single.js`, `public/stockfish/stockfish-18-lite-single.wasm`
+- Project: Stockfish Chess Engine
+- Creator: Stockfish developers and contributors
+- Source: https://github.com/official-stockfish/Stockfish
+- License: GNU General Public License v3 or later
+
+This is a browser-compatible single-threaded WebAssembly build of Stockfish 18 Lite.
+It is executed in a dedicated Web Worker to power the Master-level bot in Play mode
+with calibrated ~2300 Elo strength (`UCI_LimitStrength`).
