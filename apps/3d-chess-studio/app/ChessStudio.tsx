@@ -44,6 +44,14 @@ import {
   toggleAudioMuted,
 } from "./audio";
 import { stockfishMaster } from "./stockfish-master";
+import {
+  LiveSession,
+  createStudentLiveUrl,
+  generateRoomCode,
+  parseLiveRoomFromUrl,
+  type RemotePointer,
+  type Role,
+} from "./live-session";
 
 type Tool = "place" | "move" | "erase";
 type PromotionPiece = "q" | "r" | "b" | "n";
@@ -199,6 +207,16 @@ export default function ChessStudio() {
   const [arrows, setArrows] = useState<ArrowAnnotation[]>([]);
   const [squareHighlights, setSquareHighlights] = useState<SquareAnnotation[]>([]);
 
+  // Live Session State
+  const [liveRoomId, setLiveRoomId] = useState<string | null>(null);
+  const [liveRole, setLiveRole] = useState<Role | null>(null);
+  const [liveStatus, setLiveStatus] = useState<"disconnected" | "connecting" | "connected" | "error">("disconnected");
+  const [peerConnected, setPeerConnected] = useState<boolean>(false);
+  const [studentMovesAllowed, setStudentMovesAllowed] = useState<boolean>(true);
+  const [remotePointer, setRemotePointer] = useState<RemotePointer | null>(null);
+  const liveSessionRef = useRef<LiveSession | null>(null);
+  const lastBroadcastSquareRef = useRef<Square | null>(null);
+
   // Play Mode Opponent & AI Engine
   const [playOpponent, setPlayOpponent] = useState<"human" | "bot">("human");
   const [botSide, setBotSide] = useState<BotSide>("black");
@@ -256,8 +274,79 @@ export default function ChessStudio() {
     announce(`${label} piece colors active`);
   };
 
-  // URL Deep-Link Bridge on mount
+  const initLiveSession = useCallback((roomId: string, role: Role) => {
+    if (liveSessionRef.current) {
+      liveSessionRef.current.disconnect();
+      liveSessionRef.current = null;
+    }
+
+    setLiveRoomId(roomId);
+    setLiveRole(role);
+
+    const session = new LiveSession(roomId, role, {
+      onStatusChange: (status) => {
+        setLiveStatus(status);
+        if (status === "connected") {
+          announce(`Live session connected (${role === "teacher" ? "Coach" : "Student"})`);
+        } else if (status === "disconnected") {
+          announce("Live session disconnected");
+        }
+      },
+      onPeerPresenceChange: (online) => {
+        setPeerConnected(online);
+        if (online) {
+          announce(role === "teacher" ? "Student joined the 3D room" : "Coach is online in the 3D room");
+        }
+      },
+      onPositionSync: (doc, actionLabel, actor) => {
+        setDocument(cloneDocument(doc));
+        setFenDraft(toFen(doc));
+        setInitialPlayFen(toFen(doc));
+        setMoveFrom(null);
+        announce(`${actor === "teacher" ? "Coach" : "Student"}: ${actionLabel}`);
+      },
+      onLockStateChange: (allowed) => {
+        setStudentMovesAllowed(allowed);
+        announce(allowed ? "Coach unlocked the board" : "Coach locked the board (view only)");
+      },
+      onRemotePointer: (pointer) => {
+        setRemotePointer(pointer);
+      },
+      onAnnotationsSync: (newArrows, newHighlights) => {
+        setArrows(newArrows);
+        setSquareHighlights(newHighlights);
+      },
+      onPresetSync: (preset, actor) => {
+        const nextDoc = preset === "empty" ? emptyDocument() : startingDocument();
+        setDocument(cloneDocument(nextDoc));
+        setFenDraft(toFen(nextDoc));
+        setInitialPlayFen(toFen(nextDoc));
+        setMoveFrom(null);
+        announce(`${actor === "teacher" ? "Coach" : "Student"} loaded ${preset} preset`);
+      },
+    });
+
+    liveSessionRef.current = session;
+    session.connect();
+  }, [announce]);
+
+  // Clean up session on unmount
   useEffect(() => {
+    return () => {
+      if (liveSessionRef.current) {
+        liveSessionRef.current.disconnect();
+        liveSessionRef.current = null;
+      }
+    };
+  }, []);
+
+  // URL Deep-Link Bridge & Live Room Check on mount
+  useEffect(() => {
+    const roomParams = parseLiveRoomFromUrl();
+    if (roomParams) {
+      initLiveSession(roomParams.roomId, roomParams.role);
+    }
+
     const urlFen = parseUrlPosition();
     if (urlFen) {
       try {
@@ -270,7 +359,7 @@ export default function ChessStudio() {
         // Ignore malformed URL FEN silently
       }
     }
-  }, [announce]);
+  }, [announce, initLiveSession]);
 
   const legalDestinations = useMemo(() => {
     if (!playMode || !moveFrom) return [];
@@ -352,11 +441,18 @@ export default function ChessStudio() {
       setDocument(cloneDocument(next));
       setFenDraft(toFen(next));
       if (message) announce(message);
+      if (liveSessionRef.current) {
+        liveSessionRef.current.sendPosition(next, message || "Position updated");
+      }
     },
     [announce, document],
   );
 
   const undo = useCallback(() => {
+    if (liveRole === "student" && !studentMovesAllowed) {
+      announce("Board is locked by teacher");
+      return;
+    }
     if (resignedSide) {
       setResignedSide(null);
       setConfirmingResign(false);
@@ -384,9 +480,13 @@ export default function ChessStudio() {
     setFenDraft(toFen(previous));
     setMoveFrom(null);
     announce("Undid last change");
-  }, [announce, document, initialPlayFen, moveHistory, past, playMode, playOpponent]);
+  }, [announce, document, initialPlayFen, liveRole, moveHistory, past, playMode, playOpponent, resignedSide, studentMovesAllowed]);
 
   const redo = useCallback(() => {
+    if (liveRole === "student" && !studentMovesAllowed) {
+      announce("Board is locked by teacher");
+      return;
+    }
     if (!future.length) return;
     const next = future[0];
     setFuture((items) => items.slice(1));
@@ -395,17 +495,21 @@ export default function ChessStudio() {
     setFenDraft(toFen(next));
     setMoveFrom(null);
     announce("Redid change");
-  }, [announce, document, future]);
+  }, [announce, document, future, liveRole, studentMovesAllowed]);
 
   const eraseSquare = useCallback(
     (square: Square) => {
+      if (liveRole === "student" && !studentMovesAllowed) {
+        announce("Board is locked by teacher");
+        return;
+      }
       if (!document.board[square]) return;
       const next = cloneDocument(document);
       delete next.board[square];
       commit(next, `Removed piece from ${square}`);
       if (moveFrom === square) setMoveFrom(null);
     },
-    [commit, document, moveFrom],
+    [announce, commit, document, liveRole, moveFrom, studentMovesAllowed],
   );
 
   const finishPlayMove = useCallback(
@@ -725,6 +829,10 @@ export default function ChessStudio() {
 
   const actOnSquare = useCallback(
     (square: Square) => {
+      if (liveRole === "student" && !studentMovesAllowed) {
+        announce("Board is locked by teacher");
+        return;
+      }
       if (playMode) {
         actOnPlaySquare(square);
         return;
@@ -769,14 +877,86 @@ export default function ChessStudio() {
       commit(next, `Moved ${pieceLabel(movingPiece)} from ${moveFrom} to ${square}`);
       setMoveFrom(null);
     },
-    [actOnPlaySquare, announce, commit, document, eraseSquare, moveFrom, playMode, selectedPiece, tool],
+    [actOnPlaySquare, announce, commit, document, eraseSquare, liveRole, moveFrom, playMode, selectedPiece, studentMovesAllowed, tool],
   );
 
   const selectPiece = (piece: PieceCode) => {
+    if (liveRole === "student" && !studentMovesAllowed) {
+      announce("Board is locked by teacher");
+      return;
+    }
     setSelectedPiece(piece);
     setTool("place");
     setMoveFrom(null);
     announce(`${pieceLabel(piece)} selected`);
+  };
+
+  const handleSelectReservePiece = useCallback(
+    (code: PieceCode) => {
+      if (liveRole === "student" && !studentMovesAllowed) {
+        announce("Board is locked by teacher");
+        return;
+      }
+      setSelectedPiece(code);
+      setTool("place");
+      setMoveFrom(null);
+      announce(`${pieceLabel(code)} selected from 3D tray`);
+    },
+    [announce, liveRole, studentMovesAllowed],
+  );
+
+  const handleHoverSquare = useCallback((square: Square | null) => {
+    if (lastBroadcastSquareRef.current !== square) {
+      lastBroadcastSquareRef.current = square;
+      if (liveSessionRef.current) {
+        liveSessionRef.current.sendRemotePointer(square);
+      }
+    }
+  }, []);
+
+  const handleCreateLiveRoom = () => {
+    const newRoomId = generateRoomCode();
+    window.location.hash = `room=${newRoomId}&role=teacher`;
+    initLiveSession(newRoomId, "teacher");
+  };
+
+  const handleCopyStudentLink = async () => {
+    if (!liveRoomId) return;
+    const url = createStudentLiveUrl(liveRoomId);
+    try {
+      await navigator.clipboard.writeText(url);
+      announce("Student 3D room link copied to clipboard");
+    } catch {
+      const input = window.document.createElement("textarea");
+      input.value = url;
+      window.document.body.appendChild(input);
+      input.select();
+      window.document.execCommand("copy");
+      input.remove();
+      announce("Student 3D room link copied to clipboard");
+    }
+  };
+
+  const handleToggleLock = () => {
+    if (liveRole !== "teacher" || !liveSessionRef.current) return;
+    const nextState = !studentMovesAllowed;
+    setStudentMovesAllowed(nextState);
+    liveSessionRef.current.sendLockState(nextState);
+    announce(nextState ? "Student moves enabled" : "Student board locked");
+  };
+
+  const handleLeaveLiveRoom = () => {
+    if (liveSessionRef.current) {
+      liveSessionRef.current.disconnect();
+      liveSessionRef.current = null;
+    }
+    setLiveRoomId(null);
+    setLiveRole(null);
+    setLiveStatus("disconnected");
+    setPeerConnected(false);
+    setRemotePointer(null);
+    window.location.hash = "";
+    announce("Left live session");
   };
 
   const loadFen = () => {
@@ -844,27 +1024,36 @@ export default function ChessStudio() {
   const handleAddArrow = useCallback((arrow: ArrowAnnotation) => {
     setArrows((prev) => {
       const exists = prev.find((a) => a.from === arrow.from && a.to === arrow.to && a.color === arrow.color);
-      if (exists) {
-        return prev.filter((a) => !(a.from === arrow.from && a.to === arrow.to));
+      const next = exists
+        ? prev.filter((a) => !(a.from === arrow.from && a.to === arrow.to))
+        : [...prev.filter((a) => !(a.from === arrow.from && a.to === arrow.to)), arrow];
+      if (liveSessionRef.current) {
+        liveSessionRef.current.sendAnnotations(next, squareHighlights);
       }
-      return [...prev.filter((a) => !(a.from === arrow.from && a.to === arrow.to)), arrow];
+      return next;
     });
-  }, []);
+  }, [squareHighlights]);
 
   const handleToggleSquareHighlight = useCallback((highlight: SquareAnnotation) => {
     setSquareHighlights((prev) => {
-      const exists = prev.find((h) => h.square === highlight.square);
-      if (exists) {
-        return prev.filter((h) => h.square !== highlight.square);
+      const exists = prev.find((h) => h.square === highlight.square && h.color === highlight.color);
+      const next = exists
+        ? prev.filter((h) => h.square !== highlight.square)
+        : [...prev.filter((h) => h.square !== highlight.square), highlight];
+      if (liveSessionRef.current) {
+        liveSessionRef.current.sendAnnotations(arrows, next);
       }
-      return [...prev, highlight];
+      return next;
     });
-  }, []);
+  }, [arrows]);
 
   const clearAnnotations = useCallback(() => {
     setArrows([]);
     setSquareHighlights([]);
     boardRef.current?.clearAnnotations?.();
+    if (liveSessionRef.current) {
+      liveSessionRef.current.sendAnnotations([], []);
+    }
     announce("Cleared annotations");
   }, [announce]);
 
@@ -906,9 +1095,20 @@ export default function ChessStudio() {
   };
 
   const applyPreset = (next: PositionDocument, label: string) => {
+    if (liveRole === "student" && !studentMovesAllowed) {
+      announce("Board is locked by teacher");
+      return;
+    }
     commit(next, `${label} loaded`);
     setMoveFrom(null);
     setLastMove(null);
+    if (liveRole === "teacher" && liveSessionRef.current) {
+      if (label === "Starting position") {
+        liveSessionRef.current.sendPreset("start");
+      } else if (label === "Empty board") {
+        liveSessionRef.current.sendPreset("empty");
+      }
+    }
   };
 
   const enterPlayMode = () => {
@@ -1092,6 +1292,81 @@ export default function ChessStudio() {
         </div>
       </header>
 
+      {/* Live Collaboration Session Bar */}
+      <div className="live-session-bar" role="region" aria-label="Live collaboration">
+        {!liveRoomId ? (
+          <div className="live-session-offline">
+            <button
+              type="button"
+              className="live-create-btn"
+              onClick={handleCreateLiveRoom}
+              title="Start a synchronized 3D room with a student"
+            >
+              <span className="live-pulse-dot" />
+              <span>Start Live Room (Coach)</span>
+            </button>
+            <span className="live-hint">Share a real-time synchronized 3D board for setup training or live coaching</span>
+          </div>
+        ) : (
+          <div className="live-session-active">
+            <div className="live-room-pill">
+              <span className={`live-status-dot ${liveStatus === "connected" ? "connected" : "connecting"}`} />
+              <strong>Room {liveRoomId}</strong>
+              <span className="live-role-tag">{liveRole === "teacher" ? "Coach" : "Student"}</span>
+            </div>
+
+            <div className="live-peer-pill">
+              <span className={`peer-dot ${peerConnected ? "online" : "waiting"}`} />
+              <span>
+                {peerConnected
+                  ? liveRole === "teacher"
+                    ? "Student connected"
+                    : "Coach connected"
+                  : liveRole === "teacher"
+                  ? "Waiting for student..."
+                  : "Connecting to coach..."}
+              </span>
+            </div>
+
+            {liveRole === "teacher" && (
+              <>
+                <button
+                  type="button"
+                  className="live-action-btn primary"
+                  onClick={handleCopyStudentLink}
+                  title="Copy student link to clipboard"
+                >
+                  🔗 Copy Student Link
+                </button>
+                <button
+                  type="button"
+                  className={`live-action-btn lock-btn ${!studentMovesAllowed ? "is-locked" : ""}`}
+                  onClick={handleToggleLock}
+                  title={studentMovesAllowed ? "Lock student board" : "Unlock student board"}
+                >
+                  {studentMovesAllowed ? "🔓 Lock Student" : "🔒 Unlock Student"}
+                </button>
+              </>
+            )}
+
+            {liveRole === "student" && (
+              <span className={`live-lock-badge ${!studentMovesAllowed ? "locked" : "unlocked"}`}>
+                {!studentMovesAllowed ? "🔒 View Only (Coach Locked)" : "✏️ Setup Allowed"}
+              </span>
+            )}
+
+            <button
+              type="button"
+              className="live-action-btn exit-btn"
+              onClick={handleLeaveLiveRoom}
+              title="Leave live room"
+            >
+              ✕ Exit
+            </button>
+          </div>
+        )}
+      </div>
+
       <section className={`studio-grid ${playMode ? "is-play-mode" : ""}`}>
         {!playMode && (
           <aside className="panel tool-panel" aria-label="Piece and editing tools">
@@ -1168,8 +1443,13 @@ export default function ChessStudio() {
               piecePaletteId={piecePaletteId}
               arrows={arrows}
               squareHighlights={squareHighlights}
+              selectedReservePiece={selectedPiece}
+              remotePointer={remotePointer}
+              showReserveTrays={!playMode}
               onSquarePress={actOnSquare}
               onSquareErase={playMode ? () => announce("Right-click erase is disabled in Play mode") : eraseSquare}
+              onSelectReservePiece={handleSelectReservePiece}
+              onHoverSquare={handleHoverSquare}
               onAddArrow={handleAddArrow}
               onToggleSquareHighlight={handleToggleSquareHighlight}
             />

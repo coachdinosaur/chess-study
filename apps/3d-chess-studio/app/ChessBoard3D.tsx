@@ -89,8 +89,13 @@ type Props = {
   piecePaletteId?: PiecePaletteId;
   arrows?: ArrowAnnotation[];
   squareHighlights?: SquareAnnotation[];
+  selectedReservePiece?: PieceCode | null;
+  remotePointer?: { square: Square | null; role: "teacher" | "student"; label?: string } | null;
+  showReserveTrays?: boolean;
   onSquarePress: (square: Square) => void;
   onSquareErase: (square: Square) => void;
+  onSelectReservePiece?: (code: PieceCode) => void;
+  onHoverSquare?: (square: Square | null) => void;
   onAddArrow?: (arrow: ArrowAnnotation) => void;
   onToggleSquareHighlight?: (highlight: SquareAnnotation) => void;
 };
@@ -181,6 +186,9 @@ type SceneState = {
   selection: THREE.Group;
   highlights: THREE.Group;
   annotations: THREE.Group;
+  reserveTrays: THREE.Group;
+  reservePieces: THREE.Group;
+  remotePointers: THREE.Group;
   hover: THREE.Mesh;
   materials: Materials;
   pieceTemplates: PieceTemplates | null;
@@ -1068,6 +1076,158 @@ function loadPieceTemplates() {
   return sharedPieceTemplatesPromise;
 }
 
+const RESERVE_CODES_WHITE: PieceCode[] = ["wP", "wR", "wN", "wB", "wQ", "wK"];
+const RESERVE_CODES_BLACK: PieceCode[] = ["bP", "bR", "bN", "bB", "bQ", "bK"];
+const RESERVE_Z_OFFSETS = [-2.5, -1.5, -0.5, 0.5, 1.5, 2.5];
+
+function createReservePiece(code: PieceCode, position: THREE.Vector3, state: SceneState): THREE.Group {
+  const template = state.pieceTemplates?.[code];
+  const group = new THREE.Group();
+  if (template) {
+    const model = template.clone(true);
+    const body = pieceMaterial(code, state.materials);
+    model.traverse((child) => {
+      if (!(child instanceof THREE.Mesh)) return;
+      if (!child.userData.preserveMaterial) child.material = body;
+      child.castShadow = true;
+      child.receiveShadow = true;
+    });
+    group.add(model);
+  }
+  group.scale.setScalar(0.72);
+  group.position.copy(position);
+  group.userData = { kind: "reserve_piece", code };
+  return group;
+}
+
+function createReserveSelectionHalo(pos: THREE.Vector3, material: THREE.Material): THREE.Mesh {
+  const halo = new THREE.Mesh(
+    new THREE.TorusGeometry(0.34, 0.028, 8, 36),
+    material,
+  );
+  halo.position.set(pos.x, pos.y + 0.025, pos.z);
+  halo.rotation.x = Math.PI / 2;
+  halo.renderOrder = 8;
+  return halo;
+}
+
+function createReserveTraysGroup(theme: ThemeConfig): THREE.Group {
+  const root = new THREE.Group();
+  root.name = "reserve_trays";
+  const config = theme.board;
+
+  const frameBase = new THREE.MeshPhysicalMaterial({
+    color: config.frameBase,
+    roughness: Math.min(0.64, config.frameRoughness + 0.12),
+    metalness: 0,
+    clearcoat: config.frameClearcoat * 0.72,
+    clearcoatRoughness: 0.36,
+  });
+  const bed = new THREE.MeshStandardMaterial({
+    color: config.bed,
+    roughness: 0.72,
+    metalness: 0,
+  });
+
+  for (const xOffset of [5.3, -5.3]) {
+    const tray = new THREE.Group();
+    const baseMesh = new THREE.Mesh(
+      new RoundedBoxGeometry(1.24, 0.22, 6.2, 4, 0.08),
+      frameBase,
+    );
+    baseMesh.position.set(xOffset, 0.05, 0);
+    baseMesh.receiveShadow = true;
+    baseMesh.castShadow = true;
+    tray.add(baseMesh);
+
+    const bedMesh = new THREE.Mesh(
+      new RoundedBoxGeometry(1.04, 0.06, 5.92, 3, 0.03),
+      bed,
+    );
+    bedMesh.position.set(xOffset, 0.17, 0);
+    bedMesh.receiveShadow = true;
+    tray.add(bedMesh);
+
+    for (let i = 0; i < 6; i++) {
+      const z = RESERVE_Z_OFFSETS[i];
+      const dish = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.42, 0.42, 0.015, 24),
+        frameBase,
+      );
+      dish.position.set(xOffset, 0.195, z);
+      dish.receiveShadow = true;
+      tray.add(dish);
+    }
+    root.add(tray);
+  }
+
+  return root;
+}
+
+function rebuildReservePieces(state: SceneState, selectedCode?: PieceCode | null) {
+  disposeObject(state.reservePieces, { materials: false });
+  state.reservePieces.clear();
+  if (state.pieceLibraryStatus !== "ready") return;
+
+  for (let i = 0; i < 6; i++) {
+    const wCode = RESERVE_CODES_WHITE[i];
+    const wPos = new THREE.Vector3(5.3, TILE_TOP, RESERVE_Z_OFFSETS[i]);
+    const wMesh = createReservePiece(wCode, wPos, state);
+    state.reservePieces.add(wMesh);
+
+    const bCode = RESERVE_CODES_BLACK[i];
+    const bPos = new THREE.Vector3(-5.3, TILE_TOP, RESERVE_Z_OFFSETS[i]);
+    const bMesh = createReservePiece(bCode, bPos, state);
+    state.reservePieces.add(bMesh);
+
+    if (selectedCode === wCode) {
+      const halo = createReserveSelectionHalo(wPos, state.materials.gold);
+      state.reservePieces.add(halo);
+    }
+    if (selectedCode === bCode) {
+      const halo = createReserveSelectionHalo(bPos, state.materials.gold);
+      state.reservePieces.add(halo);
+    }
+  }
+}
+
+function updateRemotePointer(
+  state: SceneState,
+  remotePointer?: { square: Square | null; role: "teacher" | "student"; label?: string } | null,
+) {
+  disposeObject(state.remotePointers, { materials: true });
+  state.remotePointers.clear();
+  if (!remotePointer || !remotePointer.square) return;
+
+  const loc = squarePosition(remotePointer.square);
+  const color = remotePointer.role === "teacher" ? 0x10b981 : 0x38bdf8;
+  const pointerMat = new THREE.MeshBasicMaterial({
+    color,
+    transparent: true,
+    opacity: 0.88,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+  });
+
+  const outerRing = new THREE.Mesh(
+    new THREE.TorusGeometry(0.44, 0.032, 8, 36),
+    pointerMat,
+  );
+  outerRing.position.set(loc.x, TILE_TOP + 0.028, loc.z);
+  outerRing.rotation.x = Math.PI / 2;
+  outerRing.renderOrder = 9;
+  state.remotePointers.add(outerRing);
+
+  const centerDot = new THREE.Mesh(
+    new THREE.CircleGeometry(0.12, 24),
+    pointerMat,
+  );
+  centerDot.position.set(loc.x, TILE_TOP + 0.005, loc.z);
+  centerDot.rotation.x = -Math.PI / 2;
+  centerDot.renderOrder = 9;
+  state.remotePointers.add(centerDot);
+}
+
 function rebuildPieces(state: SceneState) {
   if (state.pieceLibraryStatus === "failed") {
     disposeObject(state.pieces, { materials: false });
@@ -1475,7 +1635,19 @@ function applyThemeToScene(
     const oldBoard = state.board;
     const newBoard = createBoard(anisotropy, config);
 
-    newBoard.add(state.pieces, state.selection, state.highlights, state.annotations, state.hover);
+    disposeObject(state.reserveTrays, { materials: true });
+    state.reserveTrays = createReserveTraysGroup(config);
+
+    newBoard.add(
+      state.pieces,
+      state.selection,
+      state.highlights,
+      state.annotations,
+      state.remotePointers,
+      state.reserveTrays,
+      state.reservePieces,
+      state.hover,
+    );
     state.scene.remove(oldBoard);
     disposeObject(oldBoard, { materials: true });
     state.board = newBoard;
@@ -1486,6 +1658,7 @@ function applyThemeToScene(
     disposeMaterialSet(state.materials);
     state.materials = createPieceMaterials(config, paletteId);
     rebuildPieces(state);
+    rebuildReservePieces(state);
   }
 }
 
@@ -1649,7 +1822,13 @@ function disposeMaterialSet(materials: Materials) {
 function findInteractive(object: THREE.Object3D | null): THREE.Object3D | null {
   let current = object;
   while (current) {
-    if (current.userData.kind === "piece" || current.userData.kind === "square") return current;
+    if (
+      current.userData.kind === "piece" ||
+      current.userData.kind === "square" ||
+      current.userData.kind === "reserve_piece"
+    ) {
+      return current;
+    }
     current = current.parent;
   }
   return null;
@@ -1685,8 +1864,13 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     piecePaletteId = "theme-default",
     arrows = [],
     squareHighlights = [],
+    selectedReservePiece = null,
+    remotePointer = null,
+    showReserveTrays = true,
     onSquarePress,
     onSquareErase,
+    onSelectReservePiece,
+    onHoverSquare,
     onAddArrow,
     onToggleSquareHighlight,
   },
@@ -1700,10 +1884,24 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     position: new THREE.Vector3(...CAMERA_VIEWS.angle.position),
     target: new THREE.Vector3(...CAMERA_VIEWS.angle.target),
   });
-  const callbacksRef = useRef({ onSquarePress, onSquareErase, onAddArrow, onToggleSquareHighlight });
+  const callbacksRef = useRef({
+    onSquarePress,
+    onSquareErase,
+    onSelectReservePiece,
+    onHoverSquare,
+    onAddArrow,
+    onToggleSquareHighlight,
+  });
   positionRef.current = position;
   flippedRef.current = flipped;
-  callbacksRef.current = { onSquarePress, onSquareErase, onAddArrow, onToggleSquareHighlight };
+  callbacksRef.current = {
+    onSquarePress,
+    onSquareErase,
+    onSelectReservePiece,
+    onHoverSquare,
+    onAddArrow,
+    onToggleSquareHighlight,
+  };
 
   useImperativeHandle(ref, () => ({
     setView(view) {
@@ -1812,7 +2010,13 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     highlights.name = "highlights";
     const annotations = new THREE.Group();
     annotations.name = "annotations";
-    board.add(pieces, selection, highlights, annotations);
+    const remotePointers = new THREE.Group();
+    remotePointers.name = "remotePointers";
+    const reserveTrays = createReserveTraysGroup(config);
+    const reservePieces = new THREE.Group();
+    reservePieces.name = "reservePieces";
+
+    board.add(pieces, selection, highlights, annotations, remotePointers, reserveTrays, reservePieces);
 
     const hoverMaterial = new THREE.MeshBasicMaterial({
       color: config.hover,
@@ -1843,6 +2047,9 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       selection,
       highlights,
       annotations,
+      reserveTrays,
+      reservePieces,
+      remotePointers,
       hover,
       materials,
       pieceTemplates: sharedPieceTemplates,
@@ -1862,6 +2069,7 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     };
     stateRef.current = state;
     rebuildPieces(state);
+    rebuildReservePieces(state, selectedReservePiece);
 
     if (!sharedPieceTemplates) {
       loadPieceTemplates()
@@ -1870,6 +2078,7 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
           state.pieceTemplates = templates;
           state.pieceLibraryStatus = "ready";
           rebuildPieces(state);
+          rebuildReservePieces(state, selectedReservePiece);
         })
         .catch((error) => {
           if (stateRef.current !== state) return;
@@ -1928,9 +2137,16 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       if (pointerDown || rightPointerDown) return;
       const interactive = pick(event.clientX, event.clientY);
       const square = interactive?.userData.square as Square | undefined;
+      if (callbacksRef.current.onHoverSquare) {
+        callbacksRef.current.onHoverSquare(square || null);
+      }
       if (!square) {
         hover.visible = false;
-        renderer.domElement.style.cursor = "grab";
+        if (interactive?.userData.kind === "reserve_piece") {
+          renderer.domElement.style.cursor = "pointer";
+        } else {
+          renderer.domElement.style.cursor = "grab";
+        }
         return;
       }
       const location = squarePosition(square);
@@ -1978,6 +2194,13 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
         }
         if (distance > 7) return;
         const interactive = pick(event.clientX, event.clientY);
+        if (interactive?.userData.kind === "reserve_piece") {
+          const code = interactive.userData.code as PieceCode;
+          if (code && callbacksRef.current.onSelectReservePiece) {
+            callbacksRef.current.onSelectReservePiece(code);
+          }
+          return;
+        }
         const square = interactive?.userData.square as Square | undefined;
         if (square) callbacksRef.current.onSquarePress(square);
       } else if (event.button === 2) {
@@ -2006,6 +2229,9 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
 
     const leaveHandler = () => {
       hover.visible = false;
+      if (callbacksRef.current.onHoverSquare) {
+        callbacksRef.current.onHoverSquare(null);
+      }
       renderer.domElement.style.cursor = "grab";
     };
 
@@ -2088,6 +2314,10 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       state.highlights.clear();
       disposeObject(state.annotations, { materials: true });
       state.annotations.clear();
+      disposeObject(state.remotePointers, { materials: true });
+      state.remotePointers.clear();
+      disposeObject(state.reservePieces, { materials: false });
+      state.reservePieces.clear();
       disposeObject(scene);
       disposeMaterialSet(materials);
       backgroundTexture.dispose();
@@ -2096,8 +2326,6 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       stateRef.current = null;
     };
   }, []);
-
-
 
   useEffect(() => {
     const state = stateRef.current;
@@ -2124,6 +2352,22 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     if (!state) return;
     updateAnnotations(state, arrows, squareHighlights);
   }, [arrows, squareHighlights]);
+
+  useEffect(() => {
+    const state = stateRef.current;
+    if (!state) return;
+    state.reserveTrays.visible = showReserveTrays !== false;
+    state.reservePieces.visible = showReserveTrays !== false;
+    if (showReserveTrays !== false) {
+      rebuildReservePieces(state, selectedReservePiece);
+    }
+  }, [selectedReservePiece, showReserveTrays]);
+
+  useEffect(() => {
+    const state = stateRef.current;
+    if (!state) return;
+    updateRemotePointer(state, remotePointer);
+  }, [remotePointer]);
 
   return <div className="board-host" ref={hostRef} />;
 });
