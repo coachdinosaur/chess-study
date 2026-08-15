@@ -721,10 +721,10 @@ function addStauntonBase(
 }
 
 function createMitredHeadGeometry() {
-  const source = new THREE.SphereGeometry(0.19, 72, 48).toNonIndexed();
+  const source = new THREE.SphereGeometry(0.23, 72, 48).toNonIndexed();
   const positions = source.getAttribute("position");
   const keptPositions: number[] = [];
-  const gapHalfWidth = 0.018;
+  const gapHalfWidth = 0.022;
 
   for (let index = 0; index < positions.count; index += 3) {
     const triangle: [number, number, number][] = [];
@@ -732,11 +732,11 @@ function createMitredHeadGeometry() {
 
     for (let vertex = 0; vertex < 3; vertex += 1) {
       const sourceIndex = index + vertex;
-      const x = positions.getX(sourceIndex) * 0.82;
-      const y = positions.getY(sourceIndex) * 1.38;
-      const z = positions.getZ(sourceIndex) * 0.82;
+      const x = positions.getX(sourceIndex) * 0.90;
+      const y = positions.getY(sourceIndex) * 1.55;
+      const z = positions.getZ(sourceIndex) * 0.90;
       triangle.push([x, y, z]);
-      signedDistances.push((0.825 * x) - (0.565 * y));
+      signedDistances.push((0.825 * x) - (0.565 * y) + 0.035);
     }
 
     const entirelyAbove = signedDistances.every((distance) => distance > gapHalfWidth);
@@ -847,16 +847,16 @@ function createNeoClassicPiece(code: PieceCode, square: Square, materials: Mater
     addNeoClassicBase(group, body, accent, 0.32, 0.19);
     group.add(lathe([
       [0.19, 0.28],
-      [0.215, 0.37],
-      [0.18, 0.49],
-      [0.132, 0.72],
-      [0.145, 0.8],
-      [0.225, 0.86],
-      [0.23, 0.9],
+      [0.21, 0.33],
+      [0.17, 0.40],
+      [0.138, 0.48],
+      [0.165, 0.53],
+      [0.23, 0.57],
+      [0.235, 0.60],
     ], body, 64));
-    addMesh(group, new THREE.TorusGeometry(0.145, 0.014, 12, 64), accent, [0, 0.8, 0], undefined, [Math.PI / 2, 0, 0]);
-    addMesh(group, createMitredHeadGeometry(), body, [0, 1.055, 0]);
-    addMesh(group, new THREE.SphereGeometry(0.058, 40, 28), accent, [0, 1.305, 0]);
+    addMesh(group, new THREE.TorusGeometry(0.165, 0.015, 12, 64), accent, [0, 0.57, 0], undefined, [Math.PI / 2, 0, 0]);
+    addMesh(group, createMitredHeadGeometry(), body, [0, 0.88, 0]);
+    addMesh(group, new THREE.SphereGeometry(0.062, 40, 28), accent, [0, 1.20, 0]);
   }
 
   if (type === "Q") {
@@ -943,15 +943,16 @@ function createMitredBishopModel(code: PieceCode, materials: Materials) {
   addStauntonBase(model, body, 0.32, 0.19);
   model.add(lathe([
     [0.19, 0.28],
-    [0.215, 0.37],
-    [0.18, 0.5],
-    [0.13, 0.72],
-    [0.145, 0.8],
-    [0.225, 0.86],
-    [0.23, 0.9],
+    [0.21, 0.33],
+    [0.17, 0.40],
+    [0.138, 0.48],
+    [0.165, 0.53],
+    [0.23, 0.57],
+    [0.235, 0.60],
   ], body, 64));
-  addMesh(model, createMitredHeadGeometry(), body, [0, 1.055, 0]);
-  addMesh(model, new THREE.SphereGeometry(0.055, 36, 24), body, [0, 1.305, 0]);
+  addMesh(model, new THREE.TorusGeometry(0.165, 0.015, 12, 64), body, [0, 0.57, 0], undefined, [Math.PI / 2, 0, 0]);
+  addMesh(model, createMitredHeadGeometry(), body, [0, 0.88, 0]);
+  addMesh(model, new THREE.SphereGeometry(0.060, 36, 24), body, [0, 1.20, 0]);
   configureShadows(model);
   return model;
 }
@@ -968,6 +969,43 @@ function createStauntonTemplates(root: THREE.Object3D): PieceTemplates {
       if (child instanceof THREE.Mesh) child.geometry = child.geometry.clone();
     });
 
+    const pieceKind = code[1] as PieceKind;
+
+    if (pieceKind === "B") {
+      model.traverse((child) => {
+        if (child instanceof THREE.Mesh && child.geometry?.attributes?.position) {
+          const posAttr = child.geometry.attributes.position;
+          child.geometry.computeBoundingBox();
+          const b = child.geometry.boundingBox;
+          if (b) {
+            const minY = b.min.y;
+            const maxY = b.max.y;
+            const h = maxY - minY;
+            for (let i = 0; i < posAttr.count; i++) {
+              const y = posAttr.getY(i);
+              const normY = Math.max(0, Math.min(1, (y - minY) / h));
+              let newNormY = normY;
+              let scaleXZ = 1.0;
+              if (normY <= 0.28) {
+                newNormY = normY;
+              } else if (normY <= 0.54) {
+                newNormY = 0.28 + (normY - 0.28) * 0.50;
+              } else {
+                const headT = (normY - 0.54) / 0.46;
+                newNormY = 0.41 + headT * 0.59;
+                scaleXZ = 1.0 + Math.sin(headT * Math.PI) * 0.16;
+              }
+              posAttr.setY(i, minY + newNormY * h);
+              posAttr.setX(i, posAttr.getX(i) * scaleXZ);
+              posAttr.setZ(i, posAttr.getZ(i) * scaleXZ);
+            }
+            posAttr.needsUpdate = true;
+            child.geometry.computeVertexNormals();
+          }
+        }
+      });
+    }
+
     const template = new THREE.Group();
     template.add(model);
     template.updateMatrixWorld(true);
@@ -981,7 +1019,6 @@ function createStauntonTemplates(root: THREE.Object3D): PieceTemplates {
 
     const normalizedBounds = new THREE.Box3().setFromObject(template);
     const height = Math.max(0.001, normalizedBounds.max.y - normalizedBounds.min.y);
-    const pieceKind = code[1] as PieceKind;
     const heightScale = STAUNTON_TARGET_HEIGHT[pieceKind] / height;
     const widthScale = heightScale * STAUNTON_WIDTH_BOOST[pieceKind];
     template.scale.set(
