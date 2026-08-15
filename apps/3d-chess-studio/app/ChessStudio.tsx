@@ -204,6 +204,9 @@ export default function ChessStudio() {
   const [botSide, setBotSide] = useState<BotSide>("black");
   const [botDifficulty, setBotDifficulty] = useState<BotDifficulty>("club");
   const [botThinking, setBotThinking] = useState(false);
+  const [resignedSide, setResignedSide] = useState<"w" | "b" | null>(null);
+  const [confirmingResign, setConfirmingResign] = useState<boolean>(false);
+  const resignConfirmTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const botWorkerRef = useRef<Worker | null>(null);
   const botRequestIdRef = useRef<number>(0);
 
@@ -286,8 +289,28 @@ export default function ChessStudio() {
     }
   }, [document.board, fen, playMode]);
 
+  const isGameOver = useMemo(() => {
+    if (!playMode) return false;
+    if (resignedSide) return true;
+    try {
+      const game = new Chess(fen);
+      return game.isGameOver();
+    } catch {
+      return true;
+    }
+  }, [fen, playMode, resignedSide]);
+
   const playStatus = useMemo(() => {
     if (!playMode) return null;
+    if (resignedSide) {
+      const loser = resignedSide === "w" ? "White" : "Black";
+      const winner = resignedSide === "w" ? "Black" : "White";
+      return {
+        label: `${loser} resigned`,
+        detail: `${winner} wins by resignation`,
+        tone: "game-over",
+      };
+    }
     try {
       const game = new Chess(fen);
       const turn = game.turn() === "w" ? "White" : "Black";
@@ -308,7 +331,7 @@ export default function ChessStudio() {
     } catch {
       return { label: "Position cannot be played", detail: "Return to Setup", tone: "game-over" };
     }
-  }, [botDifficulty, botThinking, fen, historyIndex, isReviewingHistory, playMode, playOpponent]);
+  }, [botDifficulty, botThinking, fen, historyIndex, isReviewingHistory, playMode, playOpponent, resignedSide]);
 
   useEffect(() => () => {
     if (announcementTimer.current) clearTimeout(announcementTimer.current);
@@ -326,6 +349,10 @@ export default function ChessStudio() {
   );
 
   const undo = useCallback(() => {
+    if (resignedSide) {
+      setResignedSide(null);
+      setConfirmingResign(false);
+    }
     if (playMode && moveHistory.length > 0) {
       // If playing vs bot, undo 2 half-moves so the human player gets their turn back
       const undoCount = playOpponent === "bot" && moveHistory.length >= 2 ? 2 : 1;
@@ -424,6 +451,52 @@ export default function ChessStudio() {
     [announce, commit, fen, historyIndex, moveHistory],
   );
 
+  const handleResign = useCallback(() => {
+    if (!playMode || resignedSide) return;
+    try {
+      const game = new Chess(fen);
+      if (game.isGameOver()) {
+        announce("Game is already finished");
+        return;
+      }
+    } catch {
+      return;
+    }
+
+    if (!confirmingResign) {
+      setConfirmingResign(true);
+      if (resignConfirmTimer.current) clearTimeout(resignConfirmTimer.current);
+      resignConfirmTimer.current = setTimeout(() => {
+        setConfirmingResign(false);
+      }, 4000);
+      announce("Click Resign again to confirm");
+      return;
+    }
+
+    // Confirmed resignation
+    if (resignConfirmTimer.current) clearTimeout(resignConfirmTimer.current);
+    setConfirmingResign(false);
+
+    let sideToResign: "w" | "b" = "w";
+    try {
+      const game = new Chess(fen);
+      if (playOpponent === "bot") {
+        sideToResign = botSide === "white" ? "b" : "w";
+      } else {
+        sideToResign = game.turn();
+      }
+    } catch {
+      sideToResign = "w";
+    }
+
+    setResignedSide(sideToResign);
+    setBotThinking(false);
+    playGameOverSound();
+    const loser = sideToResign === "w" ? "White" : "Black";
+    const winner = sideToResign === "w" ? "Black" : "White";
+    announce(`${loser} resigned. ${winner} wins!`);
+  }, [announce, botSide, confirmingResign, fen, playMode, playOpponent, resignedSide]);
+
   const finishPlayMoveRef = useRef(finishPlayMove);
   finishPlayMoveRef.current = finishPlayMove;
 
@@ -445,7 +518,7 @@ export default function ChessStudio() {
 
   // Trigger Local Bot Opponent Move (Non-blocking Web Worker with main-thread fallback)
   useEffect(() => {
-    if (!playMode || playOpponent !== "bot" || isReviewingHistory) {
+    if (!playMode || playOpponent !== "bot" || isReviewingHistory || resignedSide) {
       setBotThinking(false);
       return;
     }
@@ -562,10 +635,14 @@ export default function ChessStudio() {
         if (timer) clearTimeout(timer);
       };
     }
-  }, [botDifficulty, botSide, fen, isReviewingHistory, playMode, playOpponent]);
+  }, [botDifficulty, botSide, fen, isReviewingHistory, playMode, playOpponent, resignedSide]);
 
   const actOnPlaySquare = useCallback(
     (square: Square) => {
+      if (resignedSide) {
+        announce("Game is over by resignation");
+        return;
+      }
       if (botThinking) {
         announce("Computer is thinking...");
         return;
@@ -837,6 +914,9 @@ export default function ChessStudio() {
       setTool("move");
       setMoveFrom(null);
       setPendingPromotion(null);
+      setResignedSide(null);
+      setConfirmingResign(false);
+      if (resignConfirmTimer.current) clearTimeout(resignConfirmTimer.current);
       announce("Play mode ready");
     } catch {
       setFenError("This position is not legal enough to start a game.");
@@ -848,6 +928,9 @@ export default function ChessStudio() {
     setPlayMode(false);
     setMoveFrom(null);
     setPendingPromotion(null);
+    setResignedSide(null);
+    setConfirmingResign(false);
+    if (resignConfirmTimer.current) clearTimeout(resignConfirmTimer.current);
     announce("Setup mode ready");
   };
 
@@ -867,6 +950,9 @@ export default function ChessStudio() {
     commit(startDoc, "New game started");
     setMoveFrom(null);
     setPendingPromotion(null);
+    setResignedSide(null);
+    setConfirmingResign(false);
+    if (resignConfirmTimer.current) clearTimeout(resignConfirmTimer.current);
     if (playOpponent === "bot" && botSide === "white") {
       setFlipped(true);
       boardRef.current?.setView("black");
@@ -966,6 +1052,15 @@ export default function ChessStudio() {
           {playMode ? (
             <>
               <button className="quiet-button" type="button" onClick={undo} disabled={!moveHistory.length}>Undo move</button>
+              <button
+                className={`quiet-button danger-quiet ${confirmingResign ? "is-confirming" : ""}`}
+                type="button"
+                onClick={handleResign}
+                disabled={isGameOver}
+                title={confirmingResign ? "Click again to confirm resignation" : "Resign game"}
+              >
+                {confirmingResign ? "Confirm Resign?" : "Resign"}
+              </button>
               <button className="quiet-button" type="button" onClick={startNewGame}>New game</button>
             </>
           ) : (
@@ -1210,6 +1305,18 @@ export default function ChessStudio() {
                   </div>
                 </div>
               )}
+
+              <div className="sidebar-game-actions">
+                <button
+                  type="button"
+                  className={`sidebar-resign-btn ${confirmingResign ? "is-confirming" : ""}`}
+                  onClick={handleResign}
+                  disabled={isGameOver}
+                  title={confirmingResign ? "Click again to confirm resignation" : "Resign this game"}
+                >
+                  <span>🏳️</span> {confirmingResign ? "Confirm Resignation?" : "Resign Game"}
+                </button>
+              </div>
             </div>
 
             <div className="section-rule" />

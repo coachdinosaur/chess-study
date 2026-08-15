@@ -971,6 +971,66 @@ kbd {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
 
+.danger-quiet {
+  color: var(--danger) !important;
+}
+
+.danger-quiet:hover:not(:disabled) {
+  border-color: rgba(159, 70, 59, 0.4) !important;
+  background: rgba(159, 70, 59, 0.08) !important;
+}
+
+.danger-quiet.is-confirming {
+  border-color: var(--danger) !important;
+  background: var(--danger) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(159, 70, 59, 0.25) !important;
+}
+
+.sidebar-game-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.sidebar-resign-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid rgba(159, 70, 59, 0.28);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.65);
+  color: var(--danger);
+  font-size: 0.74rem;
+  font-weight: 720;
+  cursor: pointer;
+  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease, color 120ms ease, box-shadow 120ms ease;
+}
+
+.sidebar-resign-btn:hover:not(:disabled) {
+  border-color: var(--danger);
+  background: rgba(159, 70, 59, 0.08);
+}
+
+.sidebar-resign-btn.is-confirming {
+  border-color: var(--danger);
+  background: var(--danger);
+  color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(159, 70, 59, 0.25);
+}
+
+.sidebar-resign-btn:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  border-color: var(--line);
+  color: var(--muted);
+}
+
 .fen-heading {
   justify-content: space-between;
   margin-bottom: 7px;
