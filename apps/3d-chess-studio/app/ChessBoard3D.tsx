@@ -267,10 +267,10 @@ export const THEMES: Record<ThemeId, ThemeConfig> = {
       hemisphereIntensity: 1.05,
       keyColor: "#ffe1b8",
       keyIntensity: 3.25,
-      keyPosition: [-7, 12, 8],
+      keyPosition: [8, 12, -7],
       fillColor: "#c9dce5",
       fillIntensity: 1.15,
-      fillPosition: [8, 7, -6],
+      fillPosition: [-6, 7, 8],
     },
     hover: "#e8b552",
   },
@@ -307,10 +307,10 @@ export const THEMES: Record<ThemeId, ThemeConfig> = {
       hemisphereIntensity: 1.1,
       keyColor: "#fff8ee",
       keyIntensity: 3.1,
-      keyPosition: [-7, 13, 8],
+      keyPosition: [8, 13, -7],
       fillColor: "#d2e4df",
       fillIntensity: 1.2,
-      fillPosition: [8, 7, -6],
+      fillPosition: [-6, 7, 8],
     },
     hover: "#58ea9c",
   },
@@ -347,10 +347,10 @@ export const THEMES: Record<ThemeId, ThemeConfig> = {
       hemisphereIntensity: 1.15,
       keyColor: "#ffffff",
       keyIntensity: 3.4,
-      keyPosition: [-6, 14, 8],
+      keyPosition: [8, 14, -6],
       fillColor: "#d0e2ff",
       fillIntensity: 1.3,
-      fillPosition: [8, 8, -6],
+      fillPosition: [-6, 8, 8],
     },
     hover: "#60a5fa",
   },
@@ -387,10 +387,10 @@ export const THEMES: Record<ThemeId, ThemeConfig> = {
       hemisphereIntensity: 1.05,
       keyColor: "#fff4db",
       keyIntensity: 3.5,
-      keyPosition: [-6, 13, 8],
+      keyPosition: [8, 13, -6],
       fillColor: "#8ea4c0",
       fillIntensity: 1.35,
-      fillPosition: [8, 8, -6],
+      fillPosition: [-6, 8, 8],
     },
     hover: "#f59e0b",
   },
@@ -605,7 +605,7 @@ function addThemeLighting(scene: THREE.Scene, config: ThemeConfig, shadowMapSize
   scene.add(fill);
 
   const rim = new THREE.DirectionalLight("#eef4fc", 2.2);
-  rim.position.set(0, 12, -12);
+  rim.position.set(-12, 12, 0);
   rim.castShadow = false;
   scene.add(rim);
 
