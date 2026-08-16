@@ -318,8 +318,8 @@ After 7.axb4!, a logical line of play runs:
 <!-- FEN: rnb1kb1r/pp3ppp/5n2/3qp3/1P6/5N2/1BPP1PPP/RN1QKB1R b KQkq - 0 7 -->
 **7...Bxb4 8.Bxe5 Nc6!**
 
-<!-- FEN: rnb1kb1r/pp2pppp/5n2/3qB3/1b6/5N2/1BPP1PPP/RN1QKB1R b KQkq - 0 8 -->
-  8...Nbd7 9.Nc3 0-0 10.Bxb4 Qe4† 11.Be2 Qxb4 12.0-0 b6 13.c3 Qd6 14.d4 Bb7= is less sharp. <!-- SOURCE ERRATUM FROM 8...Nbd7: The printed move sequence 8...Nbd7 9.Nc3 0-0 contains an erroneous move order where Black has not developed the f8-bishop. -->
+<!-- FEN: rnb1k2r/pp3ppp/5n2/3qB3/1b6/5N2/2PP1PPP/RN1QKB1R b KQkq - 0 8 -->
+  **8...Nbd7 9.Bc3 0-0 10.Bxb4 Qe4† 11.Be2 Qxb4 12.0-0 b6 13.c3 Qd6 14.d4 Bb7=** is less sharp.
 
 **FEN:**
 `r1b1k2r/pp3ppp/2n2n2/3qB3/1b6/5N2/2PP1PPP/RN1QKB1R w KQkq - 1 9`
