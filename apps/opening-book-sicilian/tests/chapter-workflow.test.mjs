@@ -14,11 +14,11 @@ async function readChapterOne() {
 
 test("discovers the contiguous Markdown chapter catalog", async () => {
   const chapters = await discoverChapters();
-  assert.deepEqual(chapters.map((chapter) => chapter.id), [1, 2, 3]);
+  assert.deepEqual(chapters.map((chapter) => chapter.id), [1, 2, 3, 4]);
   assert.ok(chapters.every((chapter) => chapter.pageCount > 0));
   assert.ok(chapters.every((chapter) => chapter.visibleFenCount > 0));
   const catalog = catalogSource(chapters);
-  assert.match(catalog, /CHAPTER_IDS = \["1", "2", "3"\]/);
+  assert.match(catalog, /CHAPTER_IDS = \["1", "2", "3", "4"\]/);
   assert.doesNotMatch(catalog, /chapter-packages|manifest|pdfjs|sourcePdf/);
 });
 
