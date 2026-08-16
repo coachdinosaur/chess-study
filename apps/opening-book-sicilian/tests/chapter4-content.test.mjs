@@ -80,7 +80,7 @@ test("Chapter 4 release positions pass the strict move audit", async () => {
 
   assert.deepEqual(audit.errors, []);
   assert.equal(audit.visibleDiagrams, 44);
-  assert.equal(audit.hiddenAnchors, 200);
+  assert.equal(audit.hiddenAnchors, 205);
   assert.equal(audit.unresolved.filter((item) => item.kind === "analysis").length, 0);
 
   for (const correctedFen of [
@@ -125,16 +125,13 @@ test("Chapter 4 release positions pass the strict move audit", async () => {
     "r1b1r1k1/p3nppp/2p2q2/2Qp4/1B6/P4N2/5PPP/R3R1K1 b - - 3 19",
     "r1b1kbnr/pp3ppp/2n1p3/q7/3P4/2N2N2/P2B1PPP/R2QKB1R w KQkq - 0 9",
     "r1br2k1/pp3ppp/2nqpn2/8/P1BP4/2B2N2/2Q2PPP/2RR2K1 b - - 2 16",
-    "r2q1rk1/pp1bbppp/2n1pn2/8/3P4/2NB1N2/P2BQPPP/1R1R2K1 b - - 7 14",
-    "r1q2rk1/pR3ppp/3bpn2/3nN3/3P4/3B4/P2BQPPP/1R4K1 b - - 2 20",
+    "r4rk1/ppqbbppp/2n1pn2/8/3P4/2NB1N2/P2BQPPP/1RR3K1 b - - 11 14",
+    "rq1r2k1/1p1bbppp/p1n1p3/3n4/3PB3/2N2NP1/P2BQP1P/1RR3K1 b - - 1 18",
     "r1bq1rk1/pp1nbppp/2np4/5N2/2P1P3/N2B4/1B3PPP/R2Q1RK1 b - - 2 12",
     "rnb1k2r/pp3ppp/5n2/3qB3/1b6/5N2/2PP1PPP/RN1QKB1R b KQkq - 0 8",
     "r1bq1rk1/p3bppp/2N2n2/8/8/2P5/3P1PPP/R1BQKB1R b KQ - 0 13",
   ]) {
     assert.ok(markdown.includes(correctedFen), `Missing corrected Chapter 4 position: ${correctedFen}`);
   }
-
-  assert.match(markdown, /SOURCE ERRATUM FROM 16\.Rxc5: In the printed book, 16\.Rxc5 is given instead of 16\.dxc5, and subsequent moves contain notation anomalies\./);
-  assert.match(markdown, /SOURCE ERRATUM FROM 18\.Rdc1: In the printed book, 18\.Rxc6 is given where White has no rook on the c-file\./);
 });
 

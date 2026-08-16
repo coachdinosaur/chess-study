@@ -462,24 +462,24 @@ The most common move in this position. The idea is to develop the king’s knigh
 <!-- FEN: r3kbnr/pp2pppp/1qn5/3pPb2/1p1P4/P3B3/2P2PPP/RN1QKBNR w KQkq - 3 7 -->
   7.Nf3
 
-First played by no less a player than Alekhine in a simultaneous game back in the 30’s.
+  First played by no less a player than Alekhine in a simultaneous game back in the 30’s.
 
-7...e6
+  7...e6
 
 **FEN:**
 `r3kbnr/pp3ppp/1qn1p3/3pPb2/1p1P4/P3BN2/2P2PPP/RN1QKB1R w KQkq - 0 8`
 
-8.Bd3
+  8.Bd3
 
-This doesn’t help White, although the alternatives are unappetizing too. With the f-pawn blocked and f5 securely in Black’s hands, White doesn’t have the slightest chance of launching an attack.
+  This doesn’t help White, although the alternatives are unappetizing too. With the f-pawn blocked and f5 securely in Black’s hands, White doesn’t have the slightest chance of launching an attack.
 
-a) 8.axb4?! is simply bad in view of: 8...Qxb4†! 9.Nbd2 (9.c3? Qb2 10.Nbd2 Bxa3!-+) 9...Qc3! 10.Bb5 a6 11.0-0 Rc8∓
+  a) 8.axb4?! is simply bad in view of: 8...Qxb4†! 9.Nbd2 (9.c3? Qb2 10.Nbd2 Bxa3!-+) 9...Qc3! 10.Bb5 a6 11.0-0 Rc8∓
 
-b) Alekhine’s 8.a4 could have left him in an awkward situation after the simple 8...a6N∓, or the interesting evacuation sacrifice 8...b3!? 9.cxb3 Bb4† 10.Nbd2 Bc3!N 11.Rc1 Bb2 12.Rc5 a6∓, when the rook’s position on c5 is anything but inspiring.
+  b) Alekhine’s 8.a4 could have left him in an awkward situation after the simple 8...a6N∓, or the interesting evacuation sacrifice 8...b3!? 9.cxb3 Bb4† 10.Nbd2 Bc3!N 11.Rc1 Bb2 12.Rc5 a6∓, when the rook’s position on c5 is anything but inspiring.
 
-8...Bxd3 9.Qxd3 a5! 10.0-0 Qa6! 11.Qd1 bxa3∓
+  8...Bxd3 9.Qxd3 a5! 10.0-0 Qa6! 11.Qd1 bxa3∓
 
-After a comparison of both sides’ pluses, Black emerges far ahead on the count. In fact, it is difficult to detect anything positive in the White camp.
+  After a comparison of both sides’ pluses, Black emerges far ahead on the count. In fact, it is difficult to detect anything positive in the White camp.
 
 <!-- FEN: r3kbnr/pp2pppp/1qn5/3pPb2/1p1P4/P2BBN2/2P2PPP/RN1QK2R b KQkq - 4 7 -->
 **7...Bxd3 8.Qxd3 bxa3!**
@@ -496,14 +496,14 @@ By luring the knight to a3, Black prepares to carry out mass exchanges that will
 `r3kbnr/pp3ppp/1qn1p3/3pP3/3P4/N2QBN2/2P2PPP/R3K2R b KQkq - 1 10`
 
 <!-- FEN: r3kbnr/pp3ppp/1qn1p3/3pP3/3P4/N2QB3/2P2PPP/R3K1NR b KQkq - 0 10 -->
-10...Bxa3! 11.Rxa3 Qb2! 12.Ra4 a6 13.Qd2 (<!-- FEN: r3k1nr/1p3ppp/p1n1p3/3pP3/R2P4/4B3/2PQ1PPP/1q2K1NR w Kkq - 1 13 --> 13.Ne2 Qb3! 14.Ra1 Nb4-+) <!-- FEN: r3k1nr/1p3ppp/p1n1p3/3pP3/R2P4/4B3/2PQ1PPP/1q2K1NR w Kkq - 1 13 --> 13...Qb1†
+  10...Bxa3! 11.Rxa3 Qb2! 12.Ra4 a6 13.Qd2 (<!-- FEN: r3k1nr/1p3ppp/p1n1p3/3pP3/R2P4/4B3/2PQ1PPP/1q2K1NR w Kkq - 1 13 --> 13.Ne2 Qb3! 14.Ra1 Nb4-+) <!-- FEN: r3k1nr/1p3ppp/p1n1p3/3pP3/R2P4/4B3/2PQ1PPP/1q2K1NR w Kkq - 1 13 --> 13...Qb1†
 
 ## Page 65
 
 <!-- FEN: r3k1nr/1p3ppp/p1n1p3/3pP3/R2P4/4B3/2PQ1PPP/1q2K1NR w Kkq - 1 14 -->
-14.Qd1 Qxd1† 15.Kxd1 Nge7 16.Nf3 b5-+
+  14.Qd1 Qxd1† 15.Kxd1 Nge7 16.Nf3 b5-+
 
-Montheard – Fressinet, Auxerre 1996.
+  Montheard – Fressinet, Auxerre 1996.
 
 <!-- FEN: r3kbnr/pp3ppp/1qn1p3/3pP3/3P4/N2QBN2/2P1NPPP/R3K2R b KQkq - 1 10 -->
 **10...Bxa3 11.Rxa3**
@@ -1108,41 +1108,62 @@ This straightforward development should be good enough for equality.
   10.Ne4 Qd5 11.Nxf6† gxf6 12.Bd3 Rg8! 13.Rb5 Qd7 14.0-0 Nxd4 15.Nxd4 Qxd4 16.Be3 Qg4 17.g3 Qxd1 18.Rxd1 was an equal ending in Grobler – Wettstein, corr. 2012, in spite of Black’s two extra pawns. The game was indeed drawn some time later.
 
 <!-- FEN: r1b1kb1r/pp3ppp/2n1pn2/qB6/3P4/2N2N2/P2B1PPP/1R1QK2R b Kkq - 3 10 -->
-**10...Qd8 11.0-0 Be7 12.Qe2 0-0 13.Rfd1 Bd7 14.Bd3!?**
+**10...Qc7 11.0-0 Be7 12.Qe2 0-0 13.Rfc1 Bd7**
+
+**14.Bd3!?**
 
 **FEN:**
-`r2q1rk1/pp1bbppp/2n1pn2/8/3P4/2NB1N2/P2BQPPP/1R1R2K1 b - - 7 14`
+`r4rk1/ppqbbppp/2n1pn2/8/3P4/2NB1N2/P2BQPPP/1RR3K1 b - - 11 14`
 
 Less impressive is:
 
-<!-- FEN: r2q1rk1/pp1bbppp/2n1pn2/8/3P4/2NB1N2/P2BQPPP/1R1R2K1 b - - 7 14 -->
-14.Ne4 Nd5 15.Ne5
+<!-- FEN: r4rk1/ppqbbppp/2n1pn2/1B6/3P4/2N2N2/P2BQPPP/1RR3K1 w - - 10 14 -->
+  **14.Ne4 Nd5 15.Ne5**
 
 ## Page 76
 
-<!-- FEN: r2q1rk1/pp1bbppp/2n1pn2/3nN3/3PN3/3B4/P2BQPPP/1R1R2K1 w - - 8 15 -->
-15.Nc5?! Bxc5 16.Rxc5 (16.dxc5 Rad8∓) 16...Nxd4! 17.Rxc7 Nxe2† 18.Bxe2 Nxc7 19.Rxb7 Rfc8! 20.Ba5 Rab8 21.Rxb8 Rxb8 22.Bxc7 Rb1† 23.Bf1 Bb5 24.Nd2 Ra1∓ <!-- SOURCE ERRATUM FROM 16.Rxc5: In the printed book, 16.Rxc5 is given instead of 16.dxc5, and subsequent moves contain notation anomalies. -->
+<!-- FEN: r4rk1/ppqbbppp/2n1p3/1B1n4/3PN3/5N2/P2BQPPP/1RR3K1 w - - 12 15 -->
+    **15.Nc5?! Bxc5 16.Rxc5** (16.dxc5 Rad8⩱) **16...Nxd4! 17.Rxc7 Nxe2† 18.Bxe2 Nxc7 19.Rxb7 Rfc8! 20.Ba5 Rab8 21.Rxb8 Rxb8 22.Bxc7 Rb1† 23.Bf1 Bb5 24.Nd2 Ra1⩱**
 
-<!-- FEN: r2q1rk1/pp1bbppp/2n1pn2/3nN3/3PN3/3B4/P2BQPPP/1R1R2K1 b - - 9 15 -->
-15...Qd8!?
+<!-- FEN: r4rk1/ppqbbppp/2n1p3/1B1n4/3PN3/5N2/P2BQPPP/1RR3K1 b - - 12 15 -->
+  **15...Qd8!?**
 
-<!-- FEN: r2q1rk1/pp1bbppp/2n1pn2/3nN3/3PN3/3B4/P2BQPPP/1R1R2K1 b - - 9 15 -->
-  15...Rad8 16.Qh5!? Be8 17.Qh3 might allow White some attacking chances. <!-- SOURCE MOVE REFERENCE: 15...Rad8 is an alternative move in prose. -->
+<!-- FEN: r4rk1/ppqbbppp/2n1p3/1B1n4/3PN3/5N2/P2BQPPP/1RR3K1 b - - 12 15 -->
+    15...Rad8 16.Qh5!? Be8 17.Qh3 might allow White some attacking chances. <!-- SOURCE MOVE REFERENCE: 15...Rad8 is an alternative move in prose. -->
 
-<!-- FEN: 3q1rk1/pp1bbppp/2n1pn2/3nN3/3PN3/3B4/P2BQPPP/1R1R2K1 w - - 10 16 -->
-16.Bxc6 Bxc6 17.Nxc6 bxc6 18.Rdc1 Qd7∓ <!-- SOURCE ERRATUM FROM 18.Rdc1: In the printed book, 18.Rxc6 is given where White has no rook on the c-file. -->
+<!-- FEN: 3q1rk1/pp1bbppp/2n1p3/1B1nN3/3PN3/8/P2BQPPP/1RR3K1 w - - 13 16 -->
+  **16.Bxc6 Bxc6 17.Nxc6 bxc6 18.Rxc6 Qd7∓**
 
-<!-- FEN: r2q1rk1/pp1bbppp/2n1pn2/8/3P4/2NB1N2/P2BQPPP/1R1R2K1 b - - 7 14 -->
-**14...Nb4 15.Bc4 Bc6 16.Ne5 Bd5 17.Nxd5 Nbxd5 18.Rxb7**
+Black has the better game, thanks to the strength of his knight on d5 and White’s pawn weaknesses.
 
-<!-- FEN: r2q1rk1/pR1bbppp/4pn2/3nN3/2BP4/8/P2BQPPP/3R2K1 b - - 0 18 -->
-**18...Qc8 19.Rdb1 Bd6 20.Bd3**
+<!-- FEN: r4rk1/ppqbbppp/2n1pn2/8/3P4/2NB1N2/P2BQPPP/1RR3K1 b - - 11 14 -->
+**14...Rfd8 15.Nb5!N**
+
+<!-- FEN: r4rk1/ppqbbppp/2n1pn2/8/3P4/2NB1N2/P2BQPPP/1RR3K1 b - - 11 14 -->
+  15.Ne4 Nd5† was better for Black in Bronstein – Deep Thought, Palo Alto 1992.
+
+<!-- FEN: r2r2k1/ppqbbppp/2n1pn2/1N6/3P4/3B1N2/P2BQPPP/1RR3K1 b - - 1 15 -->
+**15...Qb8 16.g3**
+
+Preparing **Bf4**.
+
+<!-- FEN: rq1r2k1/pp1bbppp/2n1pn2/1N6/3P4/3B1NP1/P2BQP1P/1RR3K1 b - - 0 16 -->
+**16...Nd5 17.Be4 a6!**
+
+<!-- FEN: rq1r2k1/1p1bbppp/p1n1pn2/1N1n4/3PB3/5NP1/P2BQP1P/1RR3K1 w - - 0 18 -->
+  17...Be8? 18.Bxd5 Rxd5 19.Bf4 Qd8 20.Nc7±
+
+<!-- FEN: rq1r2k1/1p1bbppp/p1n1pn2/1N1n4/3PB3/5NP1/P2BQP1P/1RR3K1 w - - 0 18 -->
+**18.Nc3!**
 
 **FEN:**
-`r1q2rk1/pR3ppp/3bpn2/3nN3/3P4/3B4/P2BQPPP/1R4K1 b - - 2 20`
+`rq1r2k1/1p1bbppp/p1n1p3/3n4/3PB3/2N2NP1/P2BQP1P/1RR3K1 b - - 1 18`
 
-<!-- FEN: r1q2rk1/pR3ppp/3bpn2/3nN3/3P4/3B4/P2BQPPP/1R4K1 b - - 2 20 -->
-**20...Nc3! 21.Bxc3 Qxc3 22.Qe3 Bxe5 23.dxe5 Nd5 24.Qe4 g6 25.g3 a5 26.h4 Nb4 27.Bc4 Rac8 28.Bb3 Qc6 29.Qxc6 Rxc6=**
+<!-- FEN: rq1r2k1/1p1bbppp/p1n1p3/3n4/3PB3/2N2NP1/P2BQP1P/1RR3K1 b - - 1 18 -->
+  18.Bxd5 axb5 19.Bb3 Bf6 20.Bf4 (20.d5? exd5 21.Bxd5 Bg4!-+) 20...Qa7∓
+
+<!-- FEN: rq1r2k1/1p1bbppp/p1n1p3/3n4/3PB3/2N2NP1/P2BQP1P/1RR3K1 b - - 1 18 -->
+**18...Nf6 19.d5 exd5 20.Nxd5 Nxd5 21.Bxd5 Qd6 22.Qe4 Bg4 23.Bf4 Qd7 24.Rxb7=**
 
 The game can continue, but the verdict here is certainly equality.
 
