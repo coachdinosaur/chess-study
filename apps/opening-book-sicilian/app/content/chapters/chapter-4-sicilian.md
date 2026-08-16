@@ -64,30 +64,30 @@ Black prevents White’s plan and gains sufficient control over the centre.
 This excellent move renders White’s opening play entirely pointless.
 
 <!-- FEN: r1bqkbnr/pp1p1ppp/2n5/4p3/1pP1P3/5N2/PB1P1PPP/RN1QKB1R b KQkq - 3 5 -->
-  5...d6?!
+  **5...d6?!**
 
 This might also be enough for a slight advantage, but the following line looks somewhat problematic:
 
-6.d4 exd4 7.Nxd4 Nf6 8.Bd3!
+**6.d4 exd4 7.Nxd4 Nf6 8.Bd3!**
 
 <!-- FEN: r1bqkb1r/pp2pppp/2np1n2/8/1pPNP3/3B4/PB3PPP/RN1QK2R b KQkq - 1 8 -->
-  8.Nd2?! Be7 9.Bd3 (9.Qa4 Bd7 10.Nxc6 Bxc6 11.Qxb4 d5! 12.Bxf6 gxf6 13.c5 a5 14.Qc3 dxe4 15.Rd1 Qd5 16.Qg3 Qxc5 17.Qg7 0-0-0-+ Huenerkopf – Chandler, Erlangen 1986) 9...0-0 10.0-0 Nxd4 11.Bxd4 Nd7∓ Hector – Kudrin, Palma 1989.
+  **8.Nd2?! Be7 9.Bd3** (9.Qa4 Bd7 10.Nxc6 Bxc6 11.Qxb4 d5! 12.Bxf6 gxf6 13.c5 a5 14.Qc3 dxe4 15.Rd1 Qd5 16.Qg3 Qxc5 17.Qg7 0-0-0-+ Huenerkopf – Chandler, Erlangen 1986) **9...0-0 10.0-0 Nxd4 11.Bxd4 Nd7∓** Hector – Kudrin, Palma 1989.
 
 <!-- FEN: r1bqkb1r/pp2pppp/2np1n2/8/1pPNP3/3B4/PB3PPP/RN1QK2R b KQkq - 1 8 -->
-8...Be7 9.0-0 0-0 10.a3!
+**8...Be7 9.0-0 0-0 10.a3!**
 
 The point of delaying Nd2 is to develop the knight via a3.
 
 **FEN:**
 `r1bq1rk1/pp2bppp/2np1n2/8/1pPNP3/P2B4/1B3PPP/RN1Q1RK1 b - - 0 10`
 
-10...bxa3 11.Nxa3 Nd7! 12.Nf5!
+**10...bxa3 11.Nxa3 Nd7! 12.Nf5!**
 
-<!-- FEN: r1bq1rk1/pp1nbppp/2np4/4pN2/2P1P3/N2B4/1B3PPP/R2Q1RK1 b - - 1 12 -->
-  12.Nab5? Nc5∓
+<!-- FEN: r1bq1rk1/pp1nbppp/2np4/8/1pPNP3/N2B4/1B3PPP/R2Q1RK1 w - - 1 12 -->
+  **12.Nab5? Nc5∓**
 
-<!-- FEN: r1bq1rk1/pp1nbppp/2np4/4pN2/2P1P3/N2B4/1B3PPP/R2Q1RK1 b - - 1 12 -->
-12...Bf6 13.Bxf6 Nxf6 14.Ng3! <!-- SOURCE ERRATUM FROM 13.Bxf6: In the printed book, 13.Bxf6 is given while Black's pawn on e5 blocks the bishop diagonal. -->
+<!-- FEN: r1bq1rk1/pp1nbppp/2np4/5N2/2P1P3/N2B4/1B3PPP/R2Q1RK1 b - - 2 12 -->
+**12...Bf6 13.Bxf6 Nxf6 14.Ng3!**
 
 White has some play for the pawn, as his structure is pretty solid and d6 is a permanent weakness.
 
@@ -113,47 +113,47 @@ In Eade – Appleberry, Berkeley 1983, the inferior 6...Qf6 was played.
 <!-- FEN: r1bqk1nr/pp1p1ppp/2n5/4N3/1p1bP3/8/PB1P1PPP/RN1QKB1R w KQkq - 0 7 -->
   The main point of Black’s play is revealed after:
 
-  7.Nxf7 Qf6!
+  **7.Nxf7 Qf6!**
 
 <!-- FEN: r1bqk1nr/pp1p1Npp/2n5/8/1p1bP3/8/PB1P1PPP/RN1QKB1R b KQkq - 0 7 -->
-    7...Qe7!? 8.Bxd4 Nxd4 9.Nxh8 Qxe4† 10.Be2 Qxg2 11.Rf1 Qe4 12.f3 Nc2† 13.Kf2 Qd4† 14.Kg2 Nxa1±
+    **7...Qe7!? 8.Bxd4 Nxd4 9.Nxh8 Qxe4† 10.Be2 Qxg2 11.Rf1 Qe4 12.f3 Nc2† 13.Kf2 Qd4† 14.Kg2 Nxa1±**
 
 <!-- FEN: r1b1k1nr/pp1p1Npp/2n2q2/8/1p1bP3/8/PB1P1PPP/RN1QKB1R w KQkq - 1 8 -->
-  8.Bxd4 Qxd4 9.Nxh8 Qxa1 10.f4
+  **8.Bxd4 Qxd4 9.Nxh8 Qxa1 10.f4**
 
 <!-- FEN: r1b1k1nN/pp1p2pp/2n5/8/1pP1PP2/8/P2P2PP/qN1QKB1R w Kq - 0 10 -->
-    10.Bd3 g6∓
+    **10.Bd3 g6∓**
 
-<!-- FEN: r1b1k1nN/pp1p2pp/2n5/8/1pP1P3/8/P2P1PPP/qN1QKB1R w Kq - 0 10 -->
-    10.Nc3 Qxd1† 11.Nxd1 Nge7 12.c5 Kf8 13.Bc4 Ne5 14.Ne3 Nxc4 15.Nxc4 Kg8 16.d4 b6 17.Nd6 Kxh8 18.Kd2 bxc5 19.dxc5 Ba6∓
+<!-- FEN: r1b1k1nN/pp1p2pp/2n5/8/1pP1PP2/8/P2P1PPP/qN1QKB1R w Kq - 0 10 -->
+    **10.Nc3 Qxd1† 11.Nxd1 Nge7 12.c5 Kf8 13.Bc4 Ne5 14.Ne3 Nxc4 15.Nxc4 Kg8 16.d4 b6 17.Nd6 Kxh8 18.Kd2 bxc5 19.dxc5 Ba6∓**
 
 <!-- FEN: r1b1k1nN/pp1p2pp/2n5/8/1pP1PP2/8/P2P2PP/qN1QKB1R b Kq - 0 10 -->
-  10...Kf8 11.e5 Nge7 12.Bd3 g6∓
+  **10...Kf8 11.e5 Nge7 12.Bd3 g6∓**
 
   The desperate situation of White’s knights should seal his doom. For example:
 
-  13.Qg4
+<!-- FEN: r1b2k1N/pp1pn2p/2n3p1/4P3/1pP2PQ1/3B4/P2P2PP/qN2K2R b K - 1 13 -->
+  **13.Qg4**
 
-<!-- FEN: r1b2knN/pp1pn1pp/2n3p1/4P3/1pP2PQ1/3B4/P2P2PP/qN2K2R b K - 1 13 -->
     Even after 13.h4 Qd4 14.Qf3 d5! White won’t make it, for example: 15.cxd5 (15.h5 Bg4!; 15.exd6 Qxd6 16.h5 Bg4 17.Qxg4 Qxd3 18.Kf2 Qd4†) 15...Bg4! 16.Qg3 Nxd5 17.Bxg6 Nxe5! 18.fxe5 hxg6-+
 
-<!-- FEN: r1b2knN/pp1pn1pp/2n3p1/4P3/1pP2PQ1/3B4/P2P2PP/qN2K2R b K - 1 13 -->
-  13...Qd4! 14.Qh4 Qxd3 15.Qf6† Kg8 16.Nf7 Nf5-+ <!-- SOURCE ERRATUM FROM 15.Qf6†: The printed move sequence gives 15.Qf6† Kg8 16.Nf7 Nf5-+, where 15...Kg8 is an anomaly with the knight on h8. -->
+<!-- FEN: r1b2k1N/pp1pn2p/2n3p1/4P3/1pP2PQ1/3B4/P2P2PP/qN2K2R b K - 1 13 -->
+  **13...Qd4! 14.Qh4 Qxd3 15.Qf6† Kg8 16.Nf7 Nf5-+**
 
 <!-- FEN: r1bqk1nr/pp1p1ppp/8/4N3/1pPnP3/8/P2P1PPP/RN1QKB1R w KQkq - 0 8 -->
 **7...Nxd4 8.Be2**
 
 <!-- FEN: r1bqk1nr/pp1p1ppp/8/4N3/1pPnP3/8/P2P1PPP/RN1QKB1R w KQkq - 0 8 -->
-  8.Nd3?! Qh4! and White’s position is hopeless.
+  **8.Nd3?! Qh4!** and White’s position is hopeless.
 
 <!-- FEN: r1bqk1nr/pp1p1ppp/8/4N3/1pPnP3/8/P2P1PPP/RN1QKB1R w KQkq - 0 8 -->
-  8.Ng4!? Nf6 9.Ne3 Nxe4 10.Qg4 d5 11.Qxg7 Qf6 12.Qxf6 Nxf6 13.cxd5 0-0∓
+  **8.Ng4!? Nf6 9.Ne3 Nxe4 10.Qg4 d5 11.Qxg7 Qf6 12.Qxf6 Nxf6 13.cxd5 0-0∓**
 
 <!-- FEN: r1bqk1nr/pp1p1ppp/8/4N3/1pPnP3/8/P2PBPPP/RN1QK2R b KQkq - 1 8 -->
 **8...Qe7 9.Nf3**
 
 <!-- FEN: r1b1k1nr/pp1pqppp/8/8/1pPnP3/5N2/P2PBPPP/RN1QK2R b KQkq - 3 9 -->
-  9.Nd3 d5!-+
+  **9.Nd3 d5!-+**
 
 <!-- FEN: r1b1k1nr/pp1pqppp/8/8/1pPnP3/5N2/P2PBPPP/RN1QK2R b KQkq - 3 9 -->
 **9...Qxe4 10.0-0**

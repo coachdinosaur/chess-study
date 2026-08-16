@@ -127,14 +127,14 @@ test("Chapter 4 release positions pass the strict move audit", async () => {
     "r1br2k1/pp3ppp/2nqpn2/8/P1BP4/2B2N2/2Q2PPP/2RR2K1 b - - 2 16",
     "r2q1rk1/pp1bbppp/2n1pn2/8/3P4/2NB1N2/P2BQPPP/1R1R2K1 b - - 7 14",
     "r1q2rk1/pR3ppp/3bpn2/3nN3/3P4/3B4/P2BQPPP/1R4K1 b - - 2 20",
+    "r1bq1rk1/pp1nbppp/2np4/5N2/2P1P3/N2B4/1B3PPP/R2Q1RK1 b - - 2 12",
   ]) {
     assert.ok(markdown.includes(correctedFen), `Missing corrected Chapter 4 position: ${correctedFen}`);
   }
 
-  assert.match(markdown, /SOURCE ERRATUM FROM 13\.Bxf6: In the printed book, 13\.Bxf6 is given while Black's pawn on e5 blocks the bishop diagonal\./);
-  assert.match(markdown, /SOURCE ERRATUM FROM 15\.Qf6†: The printed move sequence gives 15\.Qf6† Kg8 16\.Nf7 Nf5-\+, where 15\.\.\.Kg8 is an anomaly with the knight on h8\./);
   assert.match(markdown, /SOURCE ERRATUM FROM 8\.\.\.Nbd7: The printed move sequence 8\.\.\.Nbd7 9\.Nc3 0-0 contains an erroneous move order where Black has not developed the f8-bishop\./);
   assert.match(markdown, /SOURCE ERRATUM FROM 19\.Bxb7: The printed move sequence omits 19\.Kh1 before capturing on a1\./);
   assert.match(markdown, /SOURCE ERRATUM FROM 16\.Rxc5: In the printed book, 16\.Rxc5 is given instead of 16\.dxc5, and subsequent moves contain notation anomalies\./);
   assert.match(markdown, /SOURCE ERRATUM FROM 18\.Rdc1: In the printed book, 18\.Rxc6 is given where White has no rook on the c-file\./);
 });
+
