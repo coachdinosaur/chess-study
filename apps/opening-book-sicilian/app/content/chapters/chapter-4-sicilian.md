@@ -729,35 +729,37 @@ This has been tested in correspondence chess and is standing up well to scrutiny
 A less ambitious solution is:
 
 <!-- FEN: rnb1k1nr/pp3ppp/8/3qp3/1b6/2P2N2/3P1PPP/RNBQKB1R b KQkq - 0 7 -->
-7...Be7 8.Na3 Nf6!
+**7...Be7 8.Na3 Nf6!**
 
 <!-- FEN: rnb1k2r/pp2bppp/5n2/3qp3/8/N1P2N2/3P1PPP/R1BQKB1R w KQkq - 1 9 -->
-  8...Nc6 9.Nb5! Qd8 10.d4±
+  **8...Nc6 9.Nb5! Qd8 10.d4≡**
 
 <!-- FEN: rnb1k2r/pp2bppp/5n2/3qp3/8/N1P2N2/3P1PPP/R1BQKB1R w KQkq - 1 9 -->
-9.Nb5 Qd8 10.Nxe5 Nc6!?
+**9.Nb5 Qd8 10.Nxe5 Nc6!?**
 
 Black has returned the extra pawn, aiming to overtake White in development.
 
-11.Nxc6
+**11.Nxc6**
 
 <!-- FEN: r1bqk2r/pp2bppp/2n2n2/1N2N3/8/2P5/3P1PPP/R1BQKB1R w KQkq - 1 11 -->
-  11.d4 0-0∓
+  **11.d4 0-0∓**
 
 <!-- FEN: r1bqk2r/pp2bppp/2N2n2/1N6/8/2P5/3P1PPP/R1BQKB1R b KQkq - 0 11 -->
-11...bxc6 12.Nd4!?
+**11...bxc6 12.Nd4!?**
 
-<!-- FEN: r1bqk2r/pp2bppp/2p2n2/8/3N4/2P5/3P1PPP/R1BQKB1R b KQkq - 0 12 -->
-  12.Qf3 Bd7 13.Nd4 0-0 14.Ba6 (14.Nxc6!?) 14...Qc7 15.h3 c5 16.Nf5 Qe5† 17.Ne3 Bd6! 18.Be2 Bc7 19.Nc4 Qe6 20.Qe3 Ne4 21.0-0 Rfe8∓ K. Lutz – De Firmian, Biel 1993.
+<!-- FEN: r1bqk2r/p3bppp/2p2n2/8/3N4/2P5/3P1PPP/R1BQKB1R b KQkq - 1 12 -->
+  **12.Qf3 Bd7 13.Nd4 0-0 14.Ba6** (14.Nxc6!?) **14...Qc7 15.h3 c5 16.Nf5 Qe5† 17.Ne3 Bd6! 18.Be2 Bc7 19.Nc4 Qe6 20.Qe3 Ne4 21.0-0 Rfe8→** K. Lutz – De Firmian, Biel 1993.
 
-<!-- FEN: r1bqk2r/pp2bppp/2p2n2/8/3N4/2P5/3P1PPP/R1BQKB1R b KQkq - 0 12 -->
-12...0-0 13.Nxc6
+<!-- FEN: r1bqk2r/p3bppp/2p2n2/8/3N4/2P5/3P1PPP/R1BQKB1R b KQkq - 1 12 -->
+**12...0-0 13.Nxc6**
 
-<!-- FEN: r1bq1rk1/pp2bppp/2N2n2/8/8/2P5/3P1PPP/R1BQKB1R w KQ - 0 13 -->
-  13.Be2 Qc7 14.0-0 Bd6= was M. Jones – Smyth, email 2007. The chances are more or less balanced; Black’s inferior pawn structure is compensated by his greater piece activity.
+<!-- FEN: r1bq1rk1/p3bppp/2N2n2/8/8/2P5/3P1PPP/R1BQKB1R w KQ - 0 13 -->
+  **13.Be2 Qc7 14.0-0 Bd6=** was M. Jones – Smyth, email 2007. The chances are more or less balanced; Black’s inferior pawn structure is compensated by his greater piece activity.
 
-<!-- FEN: r1bq1rk1/pp2bppp/2N2n2/8/8/2P5/3P1PPP/R1BQKB1R b KQ - 0 13 -->
-13...Qe8 14.Nd4 (14.Nxe7† Qxe7† 15.Be2 Re8∓; 14.Bb5 Bd7∓) 14...Bc5† 15.Be2 Bxd4 16.cxd4 Qe4 17.0-0 Bb7 18.Bf3 18...Qxd4 19.Bxb7 Qxa1 20.Bxa8 Rxa8 21.Qb3 Qd4 22.Bb2 Qxd2 23.Bxf6 gxf6 24.Qb7 Qd8 25.Qf3 a5 Reaching a level ending. <!-- SOURCE ERRATUM FROM 19.Bxb7: The printed move sequence omits 19.Kh1 before capturing on a1. -->
+<!-- FEN: r1bq1rk1/p3bppp/2N2n2/8/8/2P5/3P1PPP/R1BQKB1R b KQ - 0 13 -->
+**13...Qe8 14.Nd4** (14.Nxe7† Qxe7† 15.Be2 Re8; 14.Bb5 Bd7) **14...Bc5† 15.Be2 Bxd4 16.cxd4 Qe4 17.0-0 Bb7 18.Bf3 18...Qxd4 19.Bxb7 Qxa1 20.Bxa8 Rxa8 21.Qb3 Qd4 22.Bb2 Qxd2 23.Bxf6 gxf6 24.Qb7 Qd8 25.Qf3 a5**
+
+Reaching a level ending.
 
 <!-- FEN: rnb1k1nr/pp3ppp/3b4/3qp3/8/2P2N2/3P1PPP/RNBQKB1R w KQkq - 1 8 -->
 **8.Na3 Nc6 9.Bc4**
@@ -1146,4 +1148,4 @@ The game can continue, but the verdict here is certainly equality.
 
 ### Conclusion
 
-The Wing Gambit certainly keeps Black on his toes, but from a theoretical perspective it is nothing for us to worry about. The earlier variations in the chapter should all lead to an advantage for Black, but after 3.a3 d5 4.exd5 Qxd5 5.Nf3! and 3.Nf3 Nc6 4.d4 d5! 5.exd5 Qxd5 6.c4 bxc3 7.Nxc3 Qa5 8.Bd2! White has some practical chances. Careful study of the lines presented here will leave Black players fully equipped to handle White’s trickery, and will leave the first player with the rather depressing prospect of searching for good moves to merely secure equality.
+The Wing Gambit certainly keeps Black on his toes, but from a theoretical perspective it is nothing for us to worry about. The earlier variations in the chapter should all lead to an advantage for Black, but after 3.a3 d5 4.exd5 Qxd5 5.Nf3! and 3.Nf3 Nc6 4.d4 d5! 5.exd5 Qxd5 6.c4 bxc3 7.Nxc3 Qa5 8.Bd2! White has some practical chances. Careful study of the lines presented here will leave Black players fully equipped to handle White’s trickery, and will leave the first player with the rather depressing prospect of searching for good moves to merely secure equality. <!-- SOURCE MOVE REFERENCE: Summary moves cited in conclusion prose. -->
