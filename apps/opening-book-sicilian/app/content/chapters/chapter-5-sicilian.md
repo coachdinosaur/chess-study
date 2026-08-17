@@ -216,7 +216,7 @@ This is another way to play for Black. I regard the alignment of his forces as e
 **14.Nbd2 Re8 15.Rfe1**
 
 <!-- FEN: r2qr1k1/pp3pp1/2n1b2p/2b5/5B2/2P2N2/PP1N1PPP/R2Q1RK1 w - - 6 15 -->
-  15.b4 Bf8⩱
+  **15.b4 Bf8⩱**
 
 <!-- FEN: r2qr1k1/pp3pp1/2n1b2p/2b5/5B2/2P2N2/PP1N1PPP/R2Q1RK1 w - - 6 15 -->
   **15.Qc2!?N Qd5 16.Rfe1 Rad8 17.b4 Bf8 18.a4 Rc8! 19.Qb1 g5 20.Ne4 Bg7 21.Rd1 Qc4 22.Be3 Red8 23.Nfd2 Qd5 24.b5 Ne7** produces a tense fight.
