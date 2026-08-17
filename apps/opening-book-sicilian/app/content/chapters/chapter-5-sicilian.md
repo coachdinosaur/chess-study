@@ -175,10 +175,10 @@ White’s only attempt at deviation is as follows:
 **FEN:**
 `rnbqkb1r/pp1p1ppp/4p3/3nP3/2Bp4/2P5/PP3PPP/RNBQK1NR w KQkq - 0 6`
 
-<!-- FEN: rnbqkb1r/pp1p1ppp/4p3/3nP3/2Bp4/2P5/PP3PPP/RNBQK1NR w KQkq - 0 6 -->
+<!-- FEN: rnbqkb1r/pp1p1ppp/4p3/3nP3/2Bp4/2P5/PP3PPP/RNBQKBNR w KQkq - 0 6 -->
 **6.Bxd5**
 
-6.cxd4 d6 7.Nf3 transposes to Chapter 8. <!-- SOURCE MOVE REFERENCE: Transposition to Chapter 8. -->
+  **6.cxd4 d6 7.Nf3** transposes to Chapter 8.
 
 <!-- FEN: rnbqkb1r/pp1p1ppp/4p3/3BP3/3p4/2P5/PP3PPP/RNBQK1NR b KQkq - 0 6 -->
 **6...exd5 7.Qxd4 Nc6 8.Qxd5 d6 9.exd6 Bxd6**
