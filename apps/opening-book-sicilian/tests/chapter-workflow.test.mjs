@@ -63,7 +63,7 @@ test("Chapter 1 retains PDF-corrected moves and source references", async () => 
   const markdown = await readChapterOne();
   assert.match(markdown, /2\.Be2 is likely to transpose elsewhere/);
   assert.match(markdown, /Bersamina – Kantans, Pune 2014, and now: 13\.Re1!N=/);
-  assert.match(markdown, /16\.N2c3 Eminov – Yilmazyerli/);
+  assert.match(markdown, /16(?:\*\*)?\.N2c3(?:\*\*)? Eminov – Yilmazyerli/);
   assert.match(markdown, /9\.\.\.f5\?! 10\.Qc4 Ne5[\s\S]*13\.Nb5!N Rc8 14\.Nxa7 Rxc2 15\.Qxf5\+\-/);
   assert.match(markdown, /6\.Nc4 Ngxe5 7\.Ncxe5 fxe5 8\.Nxe5 g6!\?/);
   assert.match(markdown, /13\.Bf3 Qd7! 14\.Qd3 Nc6! 15\.Bxe4/);
@@ -145,7 +145,7 @@ test("printed PDF Page 11 keeps its exact move content and boundary", async () =
   const pageTwelve = markdown.slice(end, markdown.indexOf("## Page 13", end));
 
   assert.match(page, /16\.Bf3 Qg6∓/);
-  assert.match(page, /16\.N2c3 Eminov – Yilmazyerli/);
+  assert.match(page, /16(?:\*\*)?\.N2c3(?:\*\*)? Eminov – Yilmazyerli/);
   assert.match(page, /20\.f3 Nd4!∓/);
   assert.match(page, /14\.\.\.Qxc6 15\.0-0 a5 16\.Rc1 Qd6∓/);
   assert.match(page, /11\.\.\.Bg4/);
