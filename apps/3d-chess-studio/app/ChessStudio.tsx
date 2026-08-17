@@ -714,19 +714,6 @@ export default function ChessStudio() {
           isCastle,
         };
 
-        const isWhiteMove = game.turn() === "b";
-        if (timeControlId !== "none" && !isGameOver) {
-          const tc = TIME_CONTROLS[timeControlId];
-          if (isWhiteMove) {
-            setWhiteTimeMs((prev) => prev + tc.incrementSeconds * 1000);
-            setActiveClockSide("b");
-          } else {
-            setBlackTimeMs((prev) => prev + tc.incrementSeconds * 1000);
-            setActiveClockSide("w");
-          }
-          setClockRunning(true);
-        }
-
         const newHistory = [...moveHistory.slice(0, historyIndex + 1), record];
         setMoveHistory(newHistory);
         setHistoryIndex(newHistory.length - 1);
@@ -740,7 +727,7 @@ export default function ChessStudio() {
         announce("That move is not legal");
       }
     },
-    [announce, commit, fen, historyIndex, moveHistory, timeControlId],
+    [announce, commit, fen, historyIndex, moveHistory],
   );
 
   const handleResign = useCallback(() => {
