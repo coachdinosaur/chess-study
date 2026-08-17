@@ -139,20 +139,13 @@ Black had equalized easily in A. Hunt – Arkell, Douglas 2004.
 
 We will give two possibilities against B1) 4.Bc4, and then move on to analysing B2) 4.d4.
 
-The move 4.Nf3 is covered in the next four chapters. <!-- SOURCE MOVE REFERENCE: Move covered in next four chapters. -->
+4.Nf3 is covered in the next four chapters. <!-- SOURCE MOVE REFERENCE: Move covered in next four chapters. -->
 
-The move 4.g3 will transpose to the related line examined in Chapter 6. <!-- SOURCE MOVE REFERENCE: Transposition to Chapter 6. -->
+<!-- FEN: rnbqkb1r/pp1ppppp/8/2pnP3/8/2P5/PP1P1PPP/RNBQKBNR w KQkq - 1 4 -->
+The move 4.g3 will transpose to the related line featuring g2-g3 examined in Chapter 6, after **4...d6 5.exd6!**. For example, **5...e6 6.Bg2 Bxd6 7.Ne2 Nc6 8.0-0 0-0 9.d4 cxd4 10.Nxd4** and we have a direct transposition to variation C2 on page 102.
 
 <!-- FEN: rnbqkb1r/pp2pppp/3p4/2pnP3/8/2P3P1/PP1P1P1P/RNBQKBNR w KQkq - 0 5 -->
-  Instead, **5.d4? cxd4 6.cxd4 dxe5 7.dxe5 Nc6 8.Bg2 Qa5+!?** (8...Be6⩱)
-
-<!-- FEN: r1b1kb1r/pp2pppp/2n5/q2nP3/8/6P1/PP1B1PBP/RN1QK1NR b KQkq - 4 9 -->
-  <!-- SOURCE MOVE REFERENCE: 9.Bd2N analysis. -->
-  **9.Bd2N**
-
-<!-- FEN: r1b1kb1r/pp2pppp/2n5/q2nP3/8/6P1/PP1B1PBP/RN1QK1NR b KQkq - 4 9 -->
-  <!-- SOURCE MOVE REFERENCE: Sub-options 9.Nd2 and 9.Kf1. -->
-  (9.Nd2?! 9...Ndb4⩱ and 9.Kf1? 9...Ndb4 10.Bf4 Qa6+!N 11.Ne2 Bg4-+ are both clearly close to being lost for White.)
+  Instead, **5.d4?** leads to a much worse position for White after **5...cxd4 6.cxd4 dxe5 7.dxe5 Nc6 8.Bg2 Qa5+!?** (**8...Be6⩱**) **9.Bd2N** (**9.Nd2?! 9...Ndb4⩱** and **9.Kf1? 9...Ndb4 10.Bf4** L. Rozentalis – Eliseev, corr. 1990, **10...Qa6+!N 11.Ne2 Bg4-+** are both clearly close to being lost for White.)
 
 ## Page 80
 
