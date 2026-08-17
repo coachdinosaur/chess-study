@@ -1639,7 +1639,40 @@ export default function ChessStudio() {
             </button>
           )}
 
-          {!playMode && (
+          {playMode ? (
+            <div className="board-toolbar play-mode-toolbar">
+              <div className="view-buttons" aria-label="Game controls">
+                <button type="button" className="play-new-game-btn" onClick={startNewGame} title="Start a fresh new game">
+                  <span>✨</span> New Game
+                </button>
+                <button type="button" onClick={undo} disabled={!moveHistory.length} title="Take back last move">
+                  ↩ Undo Move
+                </button>
+                <button
+                  type="button"
+                  className={`resign-btn ${confirmingResign ? "is-confirming" : ""}`}
+                  onClick={handleResign}
+                  disabled={isGameOver}
+                  title={confirmingResign ? "Confirm resignation" : "Resign current game"}
+                >
+                  {confirmingResign ? "Confirm Resign?" : "Resign"}
+                </button>
+              </div>
+              <div className="board-toolbar-end">
+                {hasAnnotations && (
+                  <button type="button" className="clear-marks-btn" onClick={clearAnnotations} title="Clear 3D arrows and highlights">
+                    Clear marks ({arrows.length + squareHighlights.length})
+                  </button>
+                )}
+                <button type="button" onClick={handleFlipBoard} aria-pressed={flipped} title="Flip board perspective (F)">
+                  Flip board
+                </button>
+                <button type="button" onClick={() => boardRef.current?.resetCamera()} title="Reset camera view (0)">
+                  Reset camera
+                </button>
+              </div>
+            </div>
+          ) : (
             <div className="board-toolbar">
               <div className="view-buttons" aria-label="Camera views">
                 {CAMERA_BUTTONS.map(({ view, label }) => (
@@ -1696,27 +1729,41 @@ export default function ChessStudio() {
               onHoverSquare={handleHoverSquare}
               onAddArrow={handleAddArrow}
               onToggleSquareHighlight={handleToggleSquareHighlight}
+              clockState={{
+                enabled: playMode && timeControlId !== "none",
+                whiteTimeMs,
+                blackTimeMs,
+                activeSide: activeClockSide,
+                flagFallenSide,
+              }}
+              onPressClock={pressClock}
             />
             {playMode && timeControlId !== "none" && (
-              <div className="floating-tournament-clock" role="region" aria-label="Tournament chess clock">
-                <div className={`clock-side-card white-card ${activeClockSide === "w" ? "is-active" : ""} ${flagFallenSide === "w" ? "flag-fallen" : ""}`}>
-                  <span className="clock-side-label">WHITE</span>
-                  <span className="clock-digital-time">{formatClockTime(whiteTimeMs)}</span>
-                  {flagFallenSide === "w" && <span className="flag-badge">FLAG</span>}
+              <div className="floating-tournament-clock side-placed" role="region" aria-label="Tournament chess clock">
+                <div className="clock-top-rocker" aria-hidden="true">
+                  <div className={`rocker-lever white-lever ${activeClockSide === "w" ? "is-down" : "is-up"}`} />
+                  <div className={`rocker-lever black-lever ${activeClockSide === "b" ? "is-down" : "is-up"}`} />
                 </div>
-                <button
-                  type="button"
-                  className={`clock-tap-btn ${clockRunning ? "is-running" : ""}`}
-                  onClick={pressClock}
-                  title="Tap clock to end turn (Spacebar)"
-                >
-                  <span className="clock-tap-icon">⏱️</span>
-                  <span className="clock-tap-text">{activeClockSide ? "PRESS (Space)" : "START CLOCK"}</span>
-                </button>
-                <div className={`clock-side-card black-card ${activeClockSide === "b" ? "is-active" : ""} ${flagFallenSide === "b" ? "flag-fallen" : ""}`}>
-                  <span className="clock-side-label">BLACK</span>
-                  <span className="clock-digital-time">{formatClockTime(blackTimeMs)}</span>
-                  {flagFallenSide === "b" && <span className="flag-badge">FLAG</span>}
+                <div className="clock-faces-row">
+                  <div className={`clock-side-card white-card ${activeClockSide === "w" ? "is-active" : ""} ${flagFallenSide === "w" ? "flag-fallen" : ""}`}>
+                    <span className="clock-side-label">WHITE</span>
+                    <span className="clock-digital-time">{formatClockTime(whiteTimeMs)}</span>
+                    {flagFallenSide === "w" && <span className="flag-badge">FLAG</span>}
+                  </div>
+                  <button
+                    type="button"
+                    className={`clock-tap-btn ${clockRunning ? "is-running" : ""}`}
+                    onClick={pressClock}
+                    title="Tap clock to end turn (Spacebar)"
+                  >
+                    <span className="clock-tap-icon">⏱️</span>
+                    <span className="clock-tap-text">{activeClockSide ? "TAP (Space)" : "START"}</span>
+                  </button>
+                  <div className={`clock-side-card black-card ${activeClockSide === "b" ? "is-active" : ""} ${flagFallenSide === "b" ? "flag-fallen" : ""}`}>
+                    <span className="clock-side-label">BLACK</span>
+                    <span className="clock-digital-time">{formatClockTime(blackTimeMs)}</span>
+                    {flagFallenSide === "b" && <span className="flag-badge">FLAG</span>}
+                  </div>
                 </div>
               </div>
             )}
@@ -1862,6 +1909,14 @@ export default function ChessStudio() {
               )}
 
               <div className="sidebar-game-actions">
+                <button
+                  type="button"
+                  className="sidebar-new-game-btn"
+                  onClick={startNewGame}
+                  title="Start a fresh new chess game"
+                >
+                  <span>✨</span> New Game
+                </button>
                 <button
                   type="button"
                   className={`sidebar-resign-btn ${confirmingResign ? "is-confirming" : ""}`}

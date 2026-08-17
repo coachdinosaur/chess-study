@@ -80,7 +80,7 @@ test("Chapter 4 release positions pass the strict move audit", async () => {
 
   assert.deepEqual(audit.errors, []);
   assert.equal(audit.visibleDiagrams, 44);
-  assert.equal(audit.hiddenAnchors, 205);
+  assert.equal(audit.hiddenAnchors, 208);
   assert.equal(audit.unresolved.filter((item) => item.kind === "analysis").length, 0);
 
   for (const correctedFen of [

@@ -99,18 +99,20 @@ White has some play for the pawn, as his structure is pretty solid and d6 is a p
 
 ## Page 58
 
+<!-- FEN: r1bqk1nr/pp1p1ppp/2n5/2b1N3/1pP1P3/8/PB1P1PPP/RN1QKB1R b KQkq - 0 6 -->
 **6...Bd4!N**
 
 The main idea behind 5...Bc5!. As the following variations will demonstrate, White is in great difficulty.
 
 In Eade – Appleberry, Berkeley 1983, the inferior 6...Qf6 was played.
 
+<!-- FEN: r1bqk1nr/pp1p1ppp/2n5/4N3/1p1bP3/8/PB1P1PPP/RN1QKB1R w KQkq - 1 7 -->
 **7.Bxd4**
 
-<!-- FEN: r1bqk1nr/pp1p1ppp/2n5/4N3/1p1bP3/8/PB1P1PPP/RN1QKB1R w KQkq - 0 7 -->
+<!-- FEN: r1bqk1nr/pp1p1ppp/2n5/4N3/1p1bP3/8/PB1P1PPP/RN1QKB1R w KQkq - 1 7 -->
   After 7.Nxc6? dxc6 8.Qb3 Qf6-+ White is dead lost.
 
-<!-- FEN: r1bqk1nr/pp1p1ppp/2n5/4N3/1p1bP3/8/PB1P1PPP/RN1QKB1R w KQkq - 0 7 -->
+<!-- FEN: r1bqk1nr/pp1p1ppp/2n5/4N3/1p1bP3/8/PB1P1PPP/RN1QKB1R w KQkq - 1 7 -->
   The main point of Black’s play is revealed after:
 
   **7.Nxf7 Qf6!**
@@ -132,15 +134,15 @@ In Eade – Appleberry, Berkeley 1983, the inferior 6...Qf6 was played.
 
   The desperate situation of White’s knights should seal his doom. For example:
 
-<!-- FEN: r1b2k1N/pp1pn2p/2n3p1/4P3/1pP2PQ1/3B4/P2P2PP/qN2K2R b K - 1 13 -->
+<!-- FEN: r1b2k1N/pp1pn2p/2n3p1/4P3/1pP1PP2/3B4/P2P2PP/qN1QKB1R w K - 0 13 -->
   **13.Qg4**
 
-    Even after 13.h4 Qd4 14.Qf3 d5! White won’t make it, for example: 15.cxd5 (15.h5 Bg4!; 15.exd6 Qxd6 16.h5 Bg4 17.Qxg4 Qxd3 18.Kf2 Qd4†) 15...Bg4! 16.Qg3 Nxd5 17.Bxg6 Nxe5! 18.fxe5 hxg6-+
+    Even after 13.h4 Qd4 14.Qf3 d5! White won’t make it, for example: 15.cxd5 (<!-- FEN: r1b2k1N/pp1pn2p/2n3p1/3PP3/1pP3Q1/3B4/P2P2PP/qN2K2R b K - 0 15 --> 15.h5 Bg4!; 15.exd6 Qxd6 16.h5 Bg4 17.Qxg4 Qxd3 18.Kf2 Qd4†) 15...Bg4! 16.Qg3 Nxd5 17.Bxg6 Nxe5! 18.fxe5 hxg6-+
 
 <!-- FEN: r1b2k1N/pp1pn2p/2n3p1/4P3/1pP2PQ1/3B4/P2P2PP/qN2K2R b K - 1 13 -->
   **13...Qd4! 14.Qh4 Qxd3 15.Qf6† Kg8 16.Nf7 Nf5-+**
 
-<!-- FEN: r1bqk1nr/pp1p1ppp/8/4N3/1pPnP3/8/P2P1PPP/RN1QKB1R w KQkq - 0 8 -->
+<!-- FEN: r1bqk1nr/pp1p1ppp/2n5/4N3/1p1BP3/8/P2P1PPP/RN1QKB1R b KQkq - 0 7 -->
 **7...Nxd4 8.Be2**
 
 <!-- FEN: r1bqk1nr/pp1p1ppp/8/4N3/1pPnP3/8/P2P1PPP/RN1QKB1R w KQkq - 0 8 -->

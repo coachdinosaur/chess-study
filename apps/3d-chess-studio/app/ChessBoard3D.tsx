@@ -92,6 +92,14 @@ type Props = {
   selectedReservePiece?: PieceCode | null;
   remotePointer?: { square: Square | null; role: "teacher" | "student"; label?: string } | null;
   showReserveTrays?: boolean;
+  clockState?: {
+    enabled: boolean;
+    whiteTimeMs: number;
+    blackTimeMs: number;
+    activeSide: "w" | "b" | null;
+    flagFallenSide: "w" | "b" | null;
+  } | null;
+  onPressClock?: () => void;
   onSquarePress: (square: Square) => void;
   onSquareErase: (square: Square) => void;
   onSelectReservePiece?: (code: PieceCode) => void;
@@ -207,6 +215,7 @@ type SceneState = {
   floorMesh: THREE.Mesh;
   currentThemeId: ThemeId;
   currentPaletteId?: PiecePaletteId;
+  clock3D: ChessClock3D | null;
 };
 
 type ViewPreset = {
@@ -1823,6 +1832,222 @@ function disposeMaterialSet(materials: Materials) {
   });
 }
 
+export type ChessClock3D = {
+  group: THREE.Group;
+  leftButton: THREE.Mesh;
+  rightButton: THREE.Mesh;
+  leftTexture: THREE.CanvasTexture;
+  rightTexture: THREE.CanvasTexture;
+  updateTime: (
+    whiteTimeMs: number,
+    blackTimeMs: number,
+    activeSide: "w" | "b" | null,
+    flagFallenSide: "w" | "b" | null,
+    formatTime: (ms: number) => string,
+  ) => void;
+  dispose: () => void;
+};
+
+function format3DClockTime(timeMs: number): string {
+  if (timeMs <= 0) return "0:00.0";
+  const totalSeconds = Math.floor(timeMs / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  if (totalSeconds < 20) {
+    const tenths = Math.floor((timeMs % 1000) / 100);
+    return `${minutes}:${seconds.toString().padStart(2, "0")}.${tenths}`;
+  }
+  return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+}
+
+function createClockCanvasTexture(): { canvas: HTMLCanvasElement; texture: THREE.CanvasTexture; ctx: CanvasRenderingContext2D } {
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 256;
+  const ctx = canvas.getContext("2d")!;
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.anisotropy = 4;
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return { canvas, texture, ctx };
+}
+
+function renderClockFace(
+  ctx: CanvasRenderingContext2D,
+  label: string,
+  timeStr: string,
+  isActive: boolean,
+  isFlag: boolean,
+) {
+  const w = 512;
+  const h = 256;
+  ctx.fillStyle = isActive ? "#0a1f14" : isFlag ? "#2b0a0a" : "#0f1713";
+  ctx.fillRect(0, 0, w, h);
+
+  ctx.lineWidth = 14;
+  ctx.strokeStyle = isActive ? "#4ade80" : isFlag ? "#ef4444" : "#1e2e25";
+  ctx.strokeRect(7, 7, w - 14, h - 14);
+
+  ctx.font = "bold 38px sans-serif";
+  ctx.fillStyle = isActive ? "#86efac" : isFlag ? "#fca5a5" : "#64748b";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "middle";
+  ctx.fillText(label, 36, 56);
+
+  if (isFlag) {
+    ctx.fillStyle = "#ef4444";
+    ctx.font = "bold 36px sans-serif";
+    ctx.textAlign = "right";
+    ctx.fillText("FLAG", w - 36, 56);
+  } else if (isActive) {
+    ctx.fillStyle = "#4ade80";
+    ctx.beginPath();
+    ctx.arc(w - 48, 56, 16, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  ctx.font = "bold 108px monospace";
+  ctx.fillStyle = isActive ? "#4ade80" : isFlag ? "#ef4444" : "#e2e8f0";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(timeStr, w / 2, 160);
+}
+
+function create3DChessClockModel(config: ThemeConfig): ChessClock3D {
+  const group = new THREE.Group();
+  group.name = "chess-clock-3d";
+  group.position.set(5.5, 0, 0);
+  group.rotation.y = -Math.PI / 16;
+
+  const bodyGeo = new THREE.BoxGeometry(1.25, 0.65, 2.5);
+  const bodyMat = new THREE.MeshStandardMaterial({
+    color: 0x1a2620,
+    roughness: 0.35,
+    metalness: 0.3,
+  });
+  const body = new THREE.Mesh(bodyGeo, bodyMat);
+  body.position.set(0, 0.325, 0);
+  body.castShadow = true;
+  body.receiveShadow = true;
+  body.userData = { kind: "clock" };
+  group.add(body);
+
+  const faceGeo = new THREE.BoxGeometry(0.12, 0.52, 2.34);
+  const faceMat = new THREE.MeshStandardMaterial({
+    color: 0x111c16,
+    roughness: 0.5,
+    metalness: 0.2,
+  });
+  const face = new THREE.Mesh(faceGeo, faceMat);
+  face.position.set(-0.58, 0.34, 0);
+  face.rotation.z = 0.16;
+  face.castShadow = true;
+  face.receiveShadow = true;
+  face.userData = { kind: "clock" };
+  group.add(face);
+
+  const leftScreen = createClockCanvasTexture();
+  const rightScreen = createClockCanvasTexture();
+
+  const screenGeo = new THREE.PlaneGeometry(1.02, 0.44);
+  const leftScreenMat = new THREE.MeshBasicMaterial({
+    map: leftScreen.texture,
+    side: THREE.FrontSide,
+  });
+  const rightScreenMat = new THREE.MeshBasicMaterial({
+    map: rightScreen.texture,
+    side: THREE.FrontSide,
+  });
+
+  const leftScreenMesh = new THREE.Mesh(screenGeo, leftScreenMat);
+  leftScreenMesh.position.set(-0.645, 0.34, -0.58);
+  leftScreenMesh.rotation.y = -Math.PI / 2;
+  leftScreenMesh.rotation.x = -0.16;
+  leftScreenMesh.userData = { kind: "clock" };
+  group.add(leftScreenMesh);
+
+  const rightScreenMesh = new THREE.Mesh(screenGeo, rightScreenMat);
+  rightScreenMesh.position.set(-0.645, 0.34, 0.58);
+  rightScreenMesh.rotation.y = -Math.PI / 2;
+  rightScreenMesh.rotation.x = -0.16;
+  rightScreenMesh.userData = { kind: "clock" };
+  group.add(rightScreenMesh);
+
+  const buttonGeo = new THREE.BoxGeometry(0.85, 0.14, 0.92);
+  const buttonMat = new THREE.MeshStandardMaterial({
+    color: 0x2e4638,
+    roughness: 0.3,
+    metalness: 0.4,
+  });
+  const leftButton = new THREE.Mesh(buttonGeo, buttonMat.clone());
+  leftButton.position.set(0, 0.68, -0.58);
+  leftButton.castShadow = true;
+  leftButton.userData = { kind: "clock" };
+  group.add(leftButton);
+
+  const rightButton = new THREE.Mesh(buttonGeo, buttonMat.clone());
+  rightButton.position.set(0, 0.68, 0.58);
+  rightButton.castShadow = true;
+  rightButton.userData = { kind: "clock" };
+  group.add(rightButton);
+
+  renderClockFace(leftScreen.ctx, "WHITE", "05:00", false, false);
+  leftScreen.texture.needsUpdate = true;
+  renderClockFace(rightScreen.ctx, "BLACK", "05:00", false, false);
+  rightScreen.texture.needsUpdate = true;
+
+  const updateTime = (
+    whiteTimeMs: number,
+    blackTimeMs: number,
+    activeSide: "w" | "b" | null,
+    flagFallenSide: "w" | "b" | null,
+    formatTime: (ms: number) => string,
+  ) => {
+    const isWhiteActive = activeSide === "w";
+    const isBlackActive = activeSide === "b";
+    const isWhiteFlag = flagFallenSide === "w";
+    const isBlackFlag = flagFallenSide === "b";
+
+    renderClockFace(leftScreen.ctx, "WHITE", formatTime(whiteTimeMs), isWhiteActive, isWhiteFlag);
+    leftScreen.texture.needsUpdate = true;
+
+    renderClockFace(rightScreen.ctx, "BLACK", formatTime(blackTimeMs), isBlackActive, isBlackFlag);
+    rightScreen.texture.needsUpdate = true;
+
+    if (isWhiteActive) {
+      leftButton.position.y = 0.64;
+      rightButton.position.y = 0.72;
+      (leftButton.material as THREE.MeshStandardMaterial).color.setHex(0x1a2e23);
+      (rightButton.material as THREE.MeshStandardMaterial).color.setHex(0x3e6b52);
+    } else if (isBlackActive) {
+      leftButton.position.y = 0.72;
+      rightButton.position.y = 0.64;
+      (leftButton.material as THREE.MeshStandardMaterial).color.setHex(0x3e6b52);
+      (rightButton.material as THREE.MeshStandardMaterial).color.setHex(0x1a2e23);
+    } else {
+      leftButton.position.y = 0.68;
+      rightButton.position.y = 0.68;
+      (leftButton.material as THREE.MeshStandardMaterial).color.setHex(0x2e4638);
+      (rightButton.material as THREE.MeshStandardMaterial).color.setHex(0x2e4638);
+    }
+  };
+
+  const dispose = () => {
+    leftScreen.texture.dispose();
+    rightScreen.texture.dispose();
+    disposeObject(group, { geometries: true, materials: true });
+  };
+
+  return {
+    group,
+    leftButton,
+    rightButton,
+    leftTexture: leftScreen.texture,
+    rightTexture: rightScreen.texture,
+    updateTime,
+    dispose,
+  };
+}
+
 function findInteractive(object: THREE.Object3D | null): THREE.Object3D | null {
   if (!object) return null;
   let check: THREE.Object3D | null = object;
@@ -1835,7 +2060,8 @@ function findInteractive(object: THREE.Object3D | null): THREE.Object3D | null {
     if (
       current.userData.kind === "piece" ||
       current.userData.kind === "square" ||
-      current.userData.kind === "reserve_piece"
+      current.userData.kind === "reserve_piece" ||
+      current.userData.kind === "clock"
     ) {
       return current;
     }
@@ -1885,6 +2111,8 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     onHoverSquare,
     onAddArrow,
     onToggleSquareHighlight,
+    clockState,
+    onPressClock,
   },
   ref,
 ) {
@@ -1905,6 +2133,7 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     onHoverSquare,
     onAddArrow,
     onToggleSquareHighlight,
+    onPressClock,
   });
   positionRef.current = position;
   flippedRef.current = flipped;
@@ -1917,6 +2146,7 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     onHoverSquare,
     onAddArrow,
     onToggleSquareHighlight,
+    onPressClock,
   };
 
   useImperativeHandle(ref, () => ({
@@ -2051,6 +2281,10 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     board.add(hover);
     scene.add(board);
 
+    const clock3D = create3DChessClockModel(config);
+    clock3D.group.visible = Boolean(clockState?.enabled);
+    scene.add(clock3D.group);
+
     const materials = createPieceMaterials(config, piecePaletteId);
 
     const state: SceneState = {
@@ -2082,6 +2316,7 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       floorMesh,
       currentThemeId: themeId,
       currentPaletteId: piecePaletteId,
+      clock3D,
     };
     stateRef.current = state;
     rebuildPieces(state);
@@ -2165,7 +2400,8 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       pointer.x = ((clientX - bounds.left) / bounds.width) * 2 - 1;
       pointer.y = -((clientY - bounds.top) / bounds.height) * 2 + 1;
       raycaster.setFromCamera(pointer, camera);
-      const hits = raycaster.intersectObject(board, true);
+      const targets = [board, clock3D.group].filter(Boolean) as THREE.Object3D[];
+      const hits = raycaster.intersectObjects(targets, true);
       for (const hit of hits) {
         const interactive = findInteractive(hit.object);
         if (interactive) return interactive;
@@ -2182,7 +2418,7 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       }
       if (!square) {
         hover.visible = false;
-        if (interactive?.userData.kind === "reserve_piece") {
+        if (interactive?.userData.kind === "reserve_piece" || interactive?.userData.kind === "clock") {
           renderer.domElement.style.cursor = "pointer";
         } else {
           renderer.domElement.style.cursor = "grab";
@@ -2349,6 +2585,10 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
 
         // Regular click action
         const interactive = pick(event.clientX, event.clientY);
+        if (interactive?.userData.kind === "clock") {
+          callbacksRef.current.onPressClock?.();
+          return;
+        }
         if (interactive?.userData.kind === "reserve_piece") {
           const code = interactive.userData.code as PieceCode;
           if (code && callbacksRef.current.onSelectReservePiece) {
@@ -2476,8 +2716,10 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       state.annotations.clear();
       disposeObject(state.remotePointers, { materials: true });
       state.remotePointers.clear();
-      disposeObject(state.reservePieces, { materials: false });
-      state.reservePieces.clear();
+      if (state.clock3D) {
+        state.clock3D.dispose();
+        scene.remove(state.clock3D.group);
+      }
       disposeObject(scene);
       disposeMaterialSet(materials);
       backgroundTexture.dispose();
@@ -2486,6 +2728,23 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       stateRef.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    const state = stateRef.current;
+    if (!state || !state.clock3D) return;
+    if (!clockState || !clockState.enabled) {
+      state.clock3D.group.visible = false;
+      return;
+    }
+    state.clock3D.group.visible = true;
+    state.clock3D.updateTime(
+      clockState.whiteTimeMs,
+      clockState.blackTimeMs,
+      clockState.activeSide,
+      clockState.flagFallenSide,
+      format3DClockTime,
+    );
+  }, [clockState]);
 
   useEffect(() => {
     const state = stateRef.current;
