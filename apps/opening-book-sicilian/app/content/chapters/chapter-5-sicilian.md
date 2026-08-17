@@ -202,7 +202,7 @@ c3 Sicilian
   **13...Re8N 14.Bxd6 Qxd6 15.Re1**
 
 <!-- FEN: r3r1k1/pp3pp1/2nqb2p/8/8/2P2N2/PP3PPP/RN1Q1RK1 w - - 0 15 -->
-  15.Qc2 Bg4 16.Nbd2 Re2 17.Qb3 Ne5 18.Nxe5 Qxe5 19.Nc4 Qc7 20.Ne3 Be6 21.Qb5 Rd2 22.Rfd1 a6 23.Qb4 a5 24.Qb5 Rad8 25.Rxd2 Rxd2= should not worry Black either.
+  (15.Qc2 Bg4 16.Nbd2 Re2 17.Qb3 Ne5 18.Nxe5 Qxe5 19.Nc4 Qc7 20.Ne3 Be6 21.Qb5 Rd2 22.Rfd1 a6 23.Qb4 a5 24.Qb5 Rad8 25.Rxd2 Rxd2= should not worry Black either.)
 
 <!-- FEN: r3r1k1/pp3pp1/2nqb2p/8/8/2P2N2/PP3PPP/RN1QR1K1 b - - 1 15 -->
   **15...Bd7 16.Qc2 Rxe1+ 17.Nxe1 Re8 18.Na3 Ne5 19.Qd1 Qg6 20.Nac2 Bc6**
@@ -210,7 +210,7 @@ c3 Sicilian
 **FEN:**
 `4r1k1/pp3pp1/2b3qp/4n3/8/2P5/PPN2PPP/R2QN1K1 w - - 7 21`
 
-This is another way to play for Black. I regard the alignment of his forces as excellent, offering him sufficient play for the pawn. The computer suggests 21.b3 (21.Nd4 Nd3!!-+ is one brilliant point), but then 21...Be4 22.Nd4 Nc6 23.Ndf3 Ne5 24.Nxe5 Rxe5 25.f3 Bf5 should easily hold the balance. White is suffering in view of his passive e1-knight.
+This is another way to play for Black. I regard the alignment of his forces as excellent, offering him sufficient play for the pawn. The computer suggests **21.b3** (**21.Nd4 Nd3!!-+** is one brilliant point), but then **21...Be4 22.Nd4 Nc6 23.Ndf3 Ne5 24.Nxe5 Rxe5 25.f3 Bf5** should easily hold the balance. White is suffering in view of his passive e1-knight.
 
 <!-- FEN: r2q1rk1/pp3pp1/2n1b2p/2b5/5B2/2P2N2/PP3PPP/RN1Q1RK1 w - - 4 14 -->
 **14.Nbd2 Re8 15.Rfe1**
@@ -225,8 +225,7 @@ This is another way to play for Black. I regard the alignment of his forces as e
 **15...Bxa2 16.Rxe8+ Qxe8 17.Rxa2** <!-- SOURCE ERRATUM FROM 17.Rxe8+: In the print book 17.Rxe8+ was printed; White recaptures on a2. --> **17...Qe6 18.b3 g5 19.Be3 Bxe3 20.fxe3 Qxe3+ 21.Kh1 Qxc3 22.Ra1N**
 
 <!-- FEN: 4r1k1/pp3p2/2n4p/6p1/8/1PP1rN2/b5PP/R4RK1 w - - 0 21 -->
-<!-- SOURCE MOVE REFERENCE: Lazar – Kozul game continuation. -->
-  21.Rac1 g4 22.N1d2 was played in Lazar – Kozul, Rogaska Slatina 2011, and here Zdenko should have chosen **22...Re2 23.N3d2 Na5 24.Ra1 Nxb3 25.Rxa2 a5 26.Rb2 a4 27.Ra2 b5 28.c4 bxc4 29.Rxa4 Nxd2=**.
+  21.Rc1 g4 22.N1d2 was played in Lazar – Kozul, Rogaska Slatina 2011, and here Zdenko should have chosen **22...Re2 23.N3d2 Na5 24.Ra1 Nxb3 25.Rxa2 a5 26.Rb2 a4 27.Ra2 b5 28.c4 bxc4 29.Rxa4 Nxd2=**. <!-- SOURCE MOVE REFERENCE: Lazar – Kozul historical game note. -->
 
 <!-- FEN: rnbqkb1r/pp1ppppp/8/2pnP3/2B5/2P5/PP1P1PPP/RNBQK1NR b KQkq - 2 4 -->
 #### B12) 4...Nb6
