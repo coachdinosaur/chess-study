@@ -152,13 +152,12 @@ After this simple reply, it is rather White who is playing for equality. I think
 
 8.Bxf6!?
 
-<!-- FEN: r1bqk2r/pp2bppp/2n2n2/2pp2B1/3PP3/2N5/PP2NPPP/R2QKB1R w KQkq - 2 8 -->
+<!-- FEN: r1bqk2r/pp2bppp/2n2n2/2pp2B1/3PP3/2N5/PP2NPPP/R1BQKB1R w KQkq - 2 8 -->
 8.exd5 Nxd5 9.Bxe7 Ncxe7 10.dxc5 0-0
 
 ## Page 11
 
-<!-- FEN: r1bq1rk1/pp2nppp/8/2Pn4/8/2N5/PP2NPPP/R2QKB1R w KQ - 1 11 -->
-leaves the white king too exposed in the centre, and I don't like his chances at all. For example: **11.Qd2** (**11.Qd4?! Be6 12.Nf4 Nxf4 13.Qxf4 Nd5! 14.Nxd5 Qxd5 15.Be2 Qxg2 16.Bf3 Qg6∓** left White in dire straits in Eisenbeiser – Solak, Dresden 2007.) **11...Be6 12.Ne4 Qc7! 13.g3 Rad8 14.Bg2 Nf5 15.Qc1 Qa5+ 16.N2c3** Eminov – Yilmazyerli, Antalya 2013, and now: **16...Nxc3!N 17.Qxc3 Qa6 18.Bf1 Qc6 19.Bg2 Bd5 20.f3 Nd4!∓**
+leaves the white king too exposed in the centre, and I don't like his chances at all. For example: 11.Qd2 (11.Qd4?! Be6 12.Nf4 Nxf4 13.Qxf4 Nd5! 14.Nxd5 Qxd5 15.Be2 Qxg2 16.Bf3 Qg6∓ left White in dire straits in Eisenbeiser – Solak, Dresden 2007.) 11...Be6 12.Ne4 Qc7! 13.g3 Rad8 14.Bg2 Nf5 15.Qc1 Qa5+ 16.N2c3 Eminov – Yilmazyerli, Antalya 2013, and now: 16...Nxc3!N 17.Qxc3 Qa6 18.Bf1 Qc6 19.Bg2 Bd5 20.f3 Nd4!∓
 
 <!-- FEN: r1bqk2r/pp2bppp/2n2B2/2pp4/3PP3/2N5/PP2NPPP/R1BQKB1R b KQkq - 0 8 -->
 8...Bxf6 9.dxc5 d4 10.Nd5 0-0
