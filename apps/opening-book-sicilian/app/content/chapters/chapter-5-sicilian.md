@@ -301,13 +301,13 @@ c3 Sicilian
 **10...Bg4 11.h3**
 
 <!-- FEN: rn2kb1r/pp2pppp/1n6/8/2p3b1/2P2N2/PPBPKPPP/RNB4R w kq - 1 11 -->
-  11.Na3 e5 12.Nb5 Na6!⇆
+  (**11.Na3 e5 12.Nb5 Na6!⇆**)
 
 <!-- FEN: rn2kb1r/pp2pppp/1n6/8/2p3b1/2P2N1P/PPBPKPP1/RNB4R b kq - 0 11 -->
 **11...Bh5 12.b3**
 
 <!-- FEN: rn2kb1r/pp2pppp/1n6/7b/2p5/2P2N1P/PPBPKPP1/RNB4R w kq - 1 12 -->
-  12.Na3 Be6 13.Nb5 Na6⇆
+  (**12.Na3 e5 13.Nb5 Na6⇆**)
 
 <!-- FEN: rn2kb1r/pp2pppp/1n6/7b/2p5/1PP2N1P/P1BPKPP1/RNB4R b kq - 0 12 -->
 **12...cxb3 13.axb3 e5⇆**
@@ -327,7 +327,7 @@ This direct move is less elastic than 4.Nf3, but may transpose anyway.
 
 We will focus on B21) 5.Bc4, B22) 5.cxd4 and B23) 5.Qxd4.
 
-5.Nf3 e6 6.cxd4 d6 may well be White’s best option, transposing back to our main line repertoire. <!-- SOURCE MOVE REFERENCE: Transposition to main line. -->
+**5.Nf3 e6 6.cxd4 d6** may well be White’s best option, transposing back to our main line repertoire.
 
 <!-- FEN: rnbqkb1r/pp1ppppp/8/3nP3/3p4/2P5/PP3PPP/RNBQKBNR w KQkq - 0 5 -->
 ### B21) 5.Bc4
@@ -346,10 +346,7 @@ The important main line runs as follows:
 **6.Qe2 Nb6 7.Bb3!**
 
 <!-- FEN: r1b1kb1r/pp2pppp/1nnq4/8/3N4/2PB4/PP2QPPP/RNB1K2R b KQkq - 0 10 -->
-  After **7.Bd3 Nc6 8.Nf3 d5! 9.exd6 Qxd6 10.Nxd4**, the simplest solution is **10...Nxd4!? 11.cxd4 g6 12.Nc3 Bg7∞** with a decent position for Black. His king will be quite safe and, with just three pairs of minor pieces left on the board, it is more likely that the isolated d-pawn will turn out to be a
-
-<!-- FEN: r1b1kb1r/pp2pppp/1nnq4/8/3p4/2PB1N2/PP2QPPP/RNB1K2R w KQkq - 0 10 -->
-  10.0-0?! Bg4! 11.Rd1 g6 is more pleasant for Black.
+  After **7.Bd3 Nc6 8.Nf3 d5! 9.exd6 Qxd6 10.Nxd4** (**10.0-0?! Bg4! 11.Rd1 g6** is more pleasant for Black), the simplest solution is **10...Nxd4!? 11.cxd4 g6 12.Nc3 Bg7∞** with a decent position for Black. His king will be quite safe and, with just three pairs of minor pieces left on the board, it is more likely that the isolated d-pawn will turn out to be a
 
 ## Page 84
 
@@ -418,25 +415,18 @@ c3 Sicilian
 <!-- FEN: 3r2kr/1p1nb1pp/p5q1/R3p3/8/1PPpQ1N1/1P4PP/2B2RK1 b - - 9 23 -->
   **23...h6 24.Nf5 Bf8 25.Qxd3 Qb6+ 26.Be3 Qxa5 27.Ne7+ Bxe7 28.Qc4+ Kh7 29.Qd3+=** is an instructive line.
 
-<!-- FEN: r3kb1r/1p2pppp/p7/3n1b2/7N/1B1p4/PP1N1PP1/R1B1K2R b KQkq - 1 18 -->
-<!-- SOURCE MOVE REFERENCE: 16.Nc4 continuation. -->
-**16.Nc4 Qxd5 17.Qxd5 Nxd5**
+16.Nc4 Qxd5 17.Qxd5 Nxd5 <!-- SOURCE MOVE REFERENCE: 16.Nc4 continuation. -->
 
 Although the d3-pawn may appear weak, the position is still very complicated.
 
-<!-- FEN: r3kb1r/1p2pppp/p7/3n1b2/7N/1B1p4/PP1N1PP1/R1B1K2R b KQkq - 1 18 -->
-<!-- SOURCE MOVE REFERENCE: 18.h4 move discussion. -->
-**18.h4**
+18.h4 <!-- SOURCE MOVE REFERENCE: 18.h4 move discussion. -->
 
-<!-- FEN: r3kb1r/1p2pppp/p7/3n1b2/7N/1B1p4/PP1N1PP1/R1B1K2R b KQkq - 1 18 -->
-  <!-- SOURCE MOVE REFERENCE: 18.Ndf3 alternative. -->
-  18.Ndf3 f6!, planning ...0-0-0 or even ...Rc8, is not clear either.
+18.Ndf3 f6!, planning ...0-0-0 or even ...Rc8, is not clear either. <!-- SOURCE MOVE REFERENCE: 18.Ndf3 alternative. -->
 
 **FEN:**
 `r3kb1r/1p2pppp/p7/3n1b2/7N/1B1p4/PP1N1PP1/R1B1K2R b KQkq - 1 18`
 
 <!-- FEN: r3kb1r/1p2pppp/p7/3n1b2/7N/1B1p4/PP1N1PP1/R1B1K2R b KQkq - 1 18 -->
-<!-- SOURCE MOVE REFERENCE: 18...Be6 line continuation. -->
 **18...Be6 19.Ndf3 f6 20.Bd2 Ra7∞**
 
 The position is difficult to evaluate, in view of the total imbalance in the pawn structure.
