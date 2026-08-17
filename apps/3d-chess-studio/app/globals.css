@@ -491,7 +491,7 @@ kbd {
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: minmax(0, 1fr) auto;
   width: 100%;
   min-width: 0;
   min-height: clamp(560px, calc(100svh - 132px), 920px);
@@ -868,6 +868,13 @@ kbd {
   font-size: 0.68rem;
   font-weight: 780;
   color: var(--emerald-dark);
+}
+
+.floating-clear-marks {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 25;
 }
 
 .clear-marks-btn {
