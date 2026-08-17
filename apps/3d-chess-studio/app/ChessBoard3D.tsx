@@ -37,17 +37,18 @@ export type ChessBoardHandle = {
 };
 
 export type ClockDesignId =
-  | "digital-tournament"
+  | "dgt-3000"
+  | "quantum-cyber"
+  | "chronos-metal"
   | "analog-wood"
   | "analog-vintage"
-  | "digital-cyber"
   | "nordic-birch"
   | "none";
 
 export type ClockDesignConfig = {
   id: ClockDesignId;
   label: string;
-  kind: "digital" | "analog" | "none";
+  kind: "digital" | "analog" | "quantum" | "chronos" | "none";
   casingColor: number;
   casingRoughness: number;
   casingMetalness: number;
@@ -61,25 +62,55 @@ export type ClockDesignConfig = {
   activeBorderColor?: string;
 };
 
-export const CLOCK_DESIGNS: Record<ClockDesignId, ClockDesignConfig> = {
-  "digital-tournament": {
-    id: "digital-tournament",
-    label: "Digital Tournament (Emerald)",
+export const CLOCK_DESIGNS: Record<string, ClockDesignConfig> = {
+  "dgt-3000": {
+    id: "dgt-3000",
+    label: "🏆 FIDE DGT 3000 (Official)",
     kind: "digital",
-    casingColor: 0x1a2620,
+    casingColor: 0x821c27, // official FIDE burgundy/red
     casingRoughness: 0.35,
-    casingMetalness: 0.3,
-    buttonColor: 0x2e4638,
-    buttonActiveColor: 0x4ade80,
-    faceColor: 0x111c16,
-    accentColor: "#4ade80",
-    textColor: "#e2e8f0",
-    activeTextColor: "#4ade80",
-    activeBorderColor: "#4ade80",
+    casingMetalness: 0.2,
+    buttonColor: 0x242d38,
+    buttonActiveColor: 0x10b981,
+    faceColor: 0x0f172a,
+    accentColor: "#10b981",
+    textColor: "#f1f5f9",
+    activeTextColor: "#10b981",
+    activeBorderColor: "#10b981",
+  },
+  "quantum-cyber": {
+    id: "quantum-cyber",
+    label: "🛸 Quantum Cyber Titanium",
+    kind: "quantum",
+    casingColor: 0x0a0f16,
+    casingRoughness: 0.15,
+    casingMetalness: 0.94,
+    buttonColor: 0x111927,
+    buttonActiveColor: 0x00f0ff,
+    faceColor: 0x020509,
+    accentColor: "#00f0ff",
+    textColor: "#94a3b8",
+    activeTextColor: "#00f0ff",
+    activeBorderColor: "#00f0ff",
+  },
+  "chronos-metal": {
+    id: "chronos-metal",
+    label: "⚡ Chronos Blitz Metal",
+    kind: "chronos",
+    casingColor: 0xd0d8e2, // aircraft aluminum
+    casingRoughness: 0.2,
+    casingMetalness: 0.96,
+    buttonColor: 0x94a3b8,
+    buttonActiveColor: 0x22c55e,
+    faceColor: 0x020617,
+    accentColor: "#22c55e",
+    textColor: "#ef4444",
+    activeTextColor: "#22c55e",
+    activeBorderColor: "#22c55e",
   },
   "analog-wood": {
     id: "analog-wood",
-    label: "Vintage Wood Analog",
+    label: "🪵 BHB Vintage Wood Analog",
     kind: "analog",
     casingColor: 0x4a2e1b,
     casingRoughness: 0.45,
@@ -95,7 +126,7 @@ export const CLOCK_DESIGNS: Record<ClockDesignId, ClockDesignConfig> = {
   },
   "analog-vintage": {
     id: "analog-vintage",
-    label: "Retro Mechanical",
+    label: "⚙️ Retro Mechanical Chrome",
     kind: "analog",
     casingColor: 0xdcd6ca,
     casingRoughness: 0.3,
@@ -109,24 +140,9 @@ export const CLOCK_DESIGNS: Record<ClockDesignId, ClockDesignConfig> = {
     activeTextColor: "#2563eb",
     activeBorderColor: "#64748b",
   },
-  "digital-cyber": {
-    id: "digital-cyber",
-    label: "Stealth Cyber OLED",
-    kind: "digital",
-    casingColor: 0x0c1015,
-    casingRoughness: 0.2,
-    casingMetalness: 0.75,
-    buttonColor: 0x1e293b,
-    buttonActiveColor: 0x38bdf8,
-    faceColor: 0x05080c,
-    accentColor: "#38bdf8",
-    textColor: "#94a3b8",
-    activeTextColor: "#38bdf8",
-    activeBorderColor: "#38bdf8",
-  },
   "nordic-birch": {
     id: "nordic-birch",
-    label: "Nordic Birch Digital",
+    label: "🌿 Nordic Birch Minimalist",
     kind: "digital",
     casingColor: 0xd4c09e,
     casingRoughness: 0.6,
@@ -141,13 +157,44 @@ export const CLOCK_DESIGNS: Record<ClockDesignId, ClockDesignConfig> = {
   },
   "none": {
     id: "none",
-    label: "Hidden / Off",
+    label: "🚫 Hide 3D Clock",
     kind: "none",
     casingColor: 0x000000,
     casingRoughness: 1,
     casingMetalness: 0,
     buttonColor: 0x000000,
     buttonActiveColor: 0x000000,
+  },
+  // Backward-compatible aliases
+  "digital-tournament": {
+    id: "dgt-3000",
+    label: "🏆 FIDE DGT 3000 (Official)",
+    kind: "digital",
+    casingColor: 0x821c27,
+    casingRoughness: 0.35,
+    casingMetalness: 0.2,
+    buttonColor: 0x242d38,
+    buttonActiveColor: 0x10b981,
+    faceColor: 0x0f172a,
+    accentColor: "#10b981",
+    textColor: "#f1f5f9",
+    activeTextColor: "#10b981",
+    activeBorderColor: "#10b981",
+  },
+  "digital-cyber": {
+    id: "quantum-cyber",
+    label: "🛸 Quantum Cyber Titanium",
+    kind: "quantum",
+    casingColor: 0x0a0f16,
+    casingRoughness: 0.15,
+    casingMetalness: 0.94,
+    buttonColor: 0x111927,
+    buttonActiveColor: 0x00f0ff,
+    faceColor: 0x020509,
+    accentColor: "#00f0ff",
+    textColor: "#94a3b8",
+    activeTextColor: "#00f0ff",
+    activeBorderColor: "#00f0ff",
   },
 };
 
@@ -215,7 +262,7 @@ type Props = {
     activeSide: "w" | "b" | null;
     flagFallenSide: "w" | "b" | null;
   } | null;
-  onPressClock?: () => void;
+  onPressClock?: (side?: "w" | "b") => void;
   onSquarePress: (square: Square) => void;
   onSquareErase: (square: Square) => void;
   onSelectReservePiece?: (code: PieceCode) => void;
@@ -1999,28 +2046,27 @@ function renderDigitalClockFace(
   const w = 512;
   const h = 256;
 
-  if (design.id === "digital-cyber") {
-    ctx.fillStyle = isActive ? "#06121e" : isFlag ? "#2b0a0a" : "#05080c";
-  } else if (design.id === "nordic-birch") {
+  if (design.id === "nordic-birch") {
     ctx.fillStyle = isActive ? "#e4ede6" : isFlag ? "#fae8e8" : "#f1ede6";
   } else {
-    ctx.fillStyle = isActive ? "#0a1f14" : isFlag ? "#2b0a0a" : "#0f1713";
+    // FIDE DGT 3000 tournament LCD style
+    ctx.fillStyle = isActive ? "#091c13" : isFlag ? "#2b0a0a" : "#0d131a";
   }
   ctx.fillRect(0, 0, w, h);
 
   ctx.lineWidth = 14;
   if (isActive) {
-    ctx.strokeStyle = design.activeBorderColor || "#4ade80";
+    ctx.strokeStyle = design.activeBorderColor || "#10b981";
   } else if (isFlag) {
     ctx.strokeStyle = "#ef4444";
   } else {
-    ctx.strokeStyle = design.id === "nordic-birch" ? "#d2c7b5" : "#1e2e25";
+    ctx.strokeStyle = design.id === "nordic-birch" ? "#d2c7b5" : "#1e293b";
   }
   ctx.strokeRect(7, 7, w - 14, h - 14);
 
-  ctx.font = "bold 38px sans-serif";
+  ctx.font = "bold 36px sans-serif";
   if (isActive) {
-    ctx.fillStyle = design.activeTextColor || "#4ade80";
+    ctx.fillStyle = design.activeTextColor || "#10b981";
   } else if (isFlag) {
     ctx.fillStyle = "#fca5a5";
   } else {
@@ -2028,25 +2074,190 @@ function renderDigitalClockFace(
   }
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";
-  ctx.fillText(label, 36, 56);
+  ctx.fillText(label, 36, 54);
 
   if (isFlag) {
     ctx.fillStyle = "#ef4444";
-    ctx.font = "bold 36px sans-serif";
+    ctx.font = "bold 34px sans-serif";
     ctx.textAlign = "right";
-    ctx.fillText("FLAG", w - 36, 56);
+    ctx.fillText("TIME OUT", w - 36, 54);
   } else if (isActive) {
-    ctx.fillStyle = design.accentColor || "#4ade80";
+    ctx.fillStyle = design.accentColor || "#10b981";
     ctx.beginPath();
-    ctx.arc(w - 48, 56, 16, 0, Math.PI * 2);
+    ctx.arc(w - 48, 54, 16, 0, Math.PI * 2);
     ctx.fill();
   }
 
-  ctx.font = design.id === "digital-cyber" ? "bold 108px 'Consolas', 'Courier New', monospace" : "bold 108px monospace";
-  ctx.fillStyle = isActive ? (design.activeTextColor || "#4ade80") : isFlag ? "#ef4444" : (design.textColor || "#e2e8f0");
+  ctx.font = "bold 110px monospace";
+  ctx.fillStyle = isActive ? (design.activeTextColor || "#10b981") : isFlag ? "#ef4444" : (design.textColor || "#f1f5f9");
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText(timeStr, w / 2, 160);
+  ctx.fillText(timeStr, w / 2, 158);
+}
+
+function renderQuantumClockFace(
+  ctx: CanvasRenderingContext2D,
+  label: string,
+  timeStr: string,
+  isActive: boolean,
+  isFlag: boolean,
+  design: ClockDesignConfig,
+) {
+  const w = 512;
+  const h = 256;
+
+  // Futuristic deep space OLED glass
+  ctx.fillStyle = isActive ? "#030c14" : isFlag ? "#260606" : "#020408";
+  ctx.fillRect(0, 0, w, h);
+
+  // Futuristic HUD corner brackets
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = isActive ? "#00f0ff" : isFlag ? "#ef4444" : "rgba(0, 240, 255, 0.28)";
+
+  const cornerSize = 22;
+  // Top-left
+  ctx.beginPath();
+  ctx.moveTo(12, 12 + cornerSize);
+  ctx.lineTo(12, 12);
+  ctx.lineTo(12 + cornerSize, 12);
+  ctx.stroke();
+
+  // Top-right
+  ctx.beginPath();
+  ctx.moveTo(w - 12 - cornerSize, 12);
+  ctx.lineTo(w - 12, 12);
+  ctx.lineTo(w - 12, 12 + cornerSize);
+  ctx.stroke();
+
+  // Bottom-left
+  ctx.beginPath();
+  ctx.moveTo(12, h - 12 - cornerSize);
+  ctx.lineTo(12, h - 12);
+  ctx.lineTo(12 + cornerSize, h - 12);
+  ctx.stroke();
+
+  // Bottom-right
+  ctx.beginPath();
+  ctx.moveTo(w - 12 - cornerSize, h - 12);
+  ctx.lineTo(w - 12, h - 12);
+  ctx.lineTo(w - 12, h - 12 - cornerSize);
+  ctx.stroke();
+
+  // Sci-fi subgrid scan lines
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = "rgba(0, 240, 255, 0.07)";
+  for (let y = 32; y < h; y += 32) {
+    ctx.beginPath();
+    ctx.moveTo(14, y);
+    ctx.lineTo(w - 14, y);
+    ctx.stroke();
+  }
+
+  // Header / Side designation
+  ctx.font = "800 28px 'Consolas', 'Courier New', monospace";
+  ctx.fillStyle = isActive ? "#00f0ff" : isFlag ? "#fca5a5" : "#64748b";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "middle";
+  ctx.fillText(`// ${label}`, 34, 46);
+
+  if (isFlag) {
+    ctx.fillStyle = "#ef4444";
+    ctx.font = "800 28px monospace";
+    ctx.textAlign = "right";
+    ctx.fillText("[ CRITICAL: FLAG ]", w - 34, 46);
+  } else if (isActive) {
+    ctx.fillStyle = "#00f0ff";
+    ctx.font = "800 24px monospace";
+    ctx.textAlign = "right";
+    ctx.fillText("● ACTIVE TURN", w - 34, 46);
+  }
+
+  // Glowing holographic quantum numbers
+  ctx.font = "900 114px 'Consolas', 'Courier New', monospace";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
+  if (isActive) {
+    ctx.shadowColor = "#00f0ff";
+    ctx.shadowBlur = 18;
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText(timeStr, w / 2, 156);
+    ctx.shadowBlur = 0;
+  } else if (isFlag) {
+    ctx.shadowColor = "#ef4444";
+    ctx.shadowBlur = 16;
+    ctx.fillStyle = "#ef4444";
+    ctx.fillText(timeStr, w / 2, 156);
+    ctx.shadowBlur = 0;
+  } else {
+    ctx.fillStyle = "#64748b";
+    ctx.fillText(timeStr, w / 2, 156);
+  }
+}
+
+function renderChronosClockFace(
+  ctx: CanvasRenderingContext2D,
+  label: string,
+  timeStr: string,
+  isActive: boolean,
+  isFlag: boolean,
+  design: ClockDesignConfig,
+) {
+  const w = 512;
+  const h = 256;
+
+  // Chronos deep recessed LED window
+  ctx.fillStyle = "#020617";
+  ctx.fillRect(0, 0, w, h);
+
+  // Recessed inner metallic bezel border
+  ctx.lineWidth = 12;
+  ctx.strokeStyle = isActive ? "#22c55e" : isFlag ? "#ef4444" : "#1e293b";
+  ctx.strokeRect(6, 6, w - 12, h - 12);
+
+  // Small side indicator LED
+  ctx.font = "bold 32px monospace";
+  ctx.fillStyle = isActive ? "#4ade80" : isFlag ? "#ef4444" : "#64748b";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "middle";
+  ctx.fillText(label, 32, 48);
+
+  if (isFlag) {
+    ctx.fillStyle = "#ef4444";
+    ctx.font = "bold 30px monospace";
+    ctx.textAlign = "right";
+    ctx.fillText("TIME OUT", w - 32, 48);
+  } else if (isActive) {
+    ctx.fillStyle = "#22c55e";
+    ctx.beginPath();
+    ctx.arc(w - 44, 48, 14, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Classic Chronos 7-Segment style LED glow
+  ctx.font = "bold 118px 'Courier New', monospace";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
+  if (isActive) {
+    ctx.shadowColor = "#22c55e";
+    ctx.shadowBlur = 14;
+    ctx.fillStyle = "#4ade80";
+    ctx.fillText(timeStr, w / 2, 155);
+    ctx.shadowBlur = 0;
+  } else if (isFlag) {
+    ctx.shadowColor = "#ef4444";
+    ctx.shadowBlur = 14;
+    ctx.fillStyle = "#ef4444";
+    ctx.fillText(timeStr, w / 2, 155);
+    ctx.shadowBlur = 0;
+  } else {
+    ctx.shadowColor = "#ef4444";
+    ctx.shadowBlur = 6;
+    ctx.fillStyle = "#f87171";
+    ctx.fillText(timeStr, w / 2, 155);
+    ctx.shadowBlur = 0;
+  }
 }
 
 function renderAnalogClockDial(
@@ -2210,19 +2421,276 @@ function renderAnalogClockDial(
 }
 
 function create3DChessClockModel(
-  designId: ClockDesignId = "digital-tournament",
+  designId: ClockDesignId = "dgt-3000",
   config: ThemeConfig = THEME_CONFIG,
 ): ChessClock3D | null {
-  const design = CLOCK_DESIGNS[designId] || CLOCK_DESIGNS["digital-tournament"];
+  const design = CLOCK_DESIGNS[designId] || CLOCK_DESIGNS["dgt-3000"];
   if (design.kind === "none") return null;
 
   const group = new THREE.Group();
   group.name = "chess-clock-3d";
-  group.position.set(5.5, 0, 0);
-  group.rotation.y = -Math.PI / 16;
+  group.position.set(5.25, 0, 0);
+  group.rotation.y = 0;
+
+  if (design.kind === "quantum") {
+    // --- 🛸 QUANTUM CYBER TITANIUM TIMER ---
+    const bodyGeo = new THREE.BoxGeometry(1.26, 0.64, 2.54);
+    const bodyMat = new THREE.MeshStandardMaterial({
+      color: design.casingColor,
+      roughness: design.casingRoughness,
+      metalness: design.casingMetalness,
+    });
+    const body = new THREE.Mesh(bodyGeo, bodyMat);
+    body.position.set(0, 0.32, 0);
+    body.castShadow = true;
+    body.receiveShadow = true;
+    body.userData = { kind: "clock" };
+    group.add(body);
+
+    // Glowing photon edge light strips
+    const stripGeo = new THREE.BoxGeometry(0.04, 0.04, 2.46);
+    const stripMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff });
+    const topStrip = new THREE.Mesh(stripGeo, stripMat);
+    topStrip.position.set(-0.61, 0.62, 0);
+    topStrip.userData = { kind: "clock" };
+    group.add(topStrip);
+
+    const botStrip = new THREE.Mesh(stripGeo, stripMat);
+    botStrip.position.set(-0.61, 0.04, 0);
+    botStrip.userData = { kind: "clock" };
+    group.add(botStrip);
+
+    // Twin curved OLED glass screens
+    const leftScreen = createClockCanvasTexture();
+    const rightScreen = createClockCanvasTexture();
+
+    const screenGeo = new THREE.PlaneGeometry(1.02, 0.44);
+    const leftScreenMat = new THREE.MeshBasicMaterial({
+      map: leftScreen.texture,
+      side: THREE.FrontSide,
+    });
+    const rightScreenMat = new THREE.MeshBasicMaterial({
+      map: rightScreen.texture,
+      side: THREE.FrontSide,
+    });
+
+    const leftScreenMesh = new THREE.Mesh(screenGeo, leftScreenMat);
+    leftScreenMesh.position.set(-0.64, 0.33, -0.58);
+    leftScreenMesh.rotation.y = -Math.PI / 2;
+    leftScreenMesh.rotation.x = -0.16;
+    leftScreenMesh.userData = { kind: "clock" };
+    group.add(leftScreenMesh);
+
+    const rightScreenMesh = new THREE.Mesh(screenGeo, rightScreenMat);
+    rightScreenMesh.position.set(-0.64, 0.33, 0.58);
+    rightScreenMesh.rotation.y = -Math.PI / 2;
+    rightScreenMesh.rotation.x = -0.16;
+    rightScreenMesh.userData = { kind: "clock" };
+    group.add(rightScreenMesh);
+
+    // Low-profile capacitive touch sensor rocker pads
+    const padGeo = new THREE.BoxGeometry(0.86, 0.12, 0.94);
+    const padMat = new THREE.MeshStandardMaterial({
+      color: design.buttonColor,
+      roughness: 0.2,
+      metalness: 0.88,
+    });
+    const leftButton = new THREE.Mesh(padGeo, padMat.clone());
+    leftButton.position.set(0, 0.66, -0.58);
+    leftButton.castShadow = true;
+    leftButton.userData = { kind: "clock", side: "w" };
+    group.add(leftButton);
+
+    const rightButton = new THREE.Mesh(padGeo, padMat.clone());
+    rightButton.position.set(0, 0.66, 0.58);
+    rightButton.castShadow = true;
+    rightButton.userData = { kind: "clock", side: "b" };
+    group.add(rightButton);
+
+    renderQuantumClockFace(leftScreen.ctx, "WHITE", "05:00", false, false, design);
+    leftScreen.texture.needsUpdate = true;
+    renderQuantumClockFace(rightScreen.ctx, "BLACK", "05:00", false, false, design);
+    rightScreen.texture.needsUpdate = true;
+
+    const updateTime = (
+      whiteTimeMs: number,
+      blackTimeMs: number,
+      activeSide: "w" | "b" | null,
+      flagFallenSide: "w" | "b" | null,
+      formatTime: (ms: number) => string,
+    ) => {
+      const isWhiteActive = activeSide === "w";
+      const isBlackActive = activeSide === "b";
+      const isWhiteFlag = flagFallenSide === "w";
+      const isBlackFlag = flagFallenSide === "b";
+
+      renderQuantumClockFace(leftScreen.ctx, "WHITE", formatTime(whiteTimeMs), isWhiteActive, isWhiteFlag, design);
+      leftScreen.texture.needsUpdate = true;
+
+      renderQuantumClockFace(rightScreen.ctx, "BLACK", formatTime(blackTimeMs), isBlackActive, isBlackFlag, design);
+      rightScreen.texture.needsUpdate = true;
+
+      if (isWhiteActive) {
+        leftButton.position.y = 0.62;
+        rightButton.position.y = 0.70;
+        (leftButton.material as THREE.MeshStandardMaterial).color.setHex(0x0f172a);
+        (rightButton.material as THREE.MeshStandardMaterial).color.setHex(0x00f0ff);
+      } else if (isBlackActive) {
+        leftButton.position.y = 0.70;
+        rightButton.position.y = 0.62;
+        (leftButton.material as THREE.MeshStandardMaterial).color.setHex(0x00f0ff);
+        (rightButton.material as THREE.MeshStandardMaterial).color.setHex(0x0f172a);
+      } else {
+        leftButton.position.y = 0.66;
+        rightButton.position.y = 0.66;
+        (leftButton.material as THREE.MeshStandardMaterial).color.setHex(design.buttonColor);
+        (rightButton.material as THREE.MeshStandardMaterial).color.setHex(design.buttonColor);
+      }
+    };
+
+    const dispose = () => {
+      leftScreen.texture.dispose();
+      rightScreen.texture.dispose();
+      disposeObject(group, { geometries: true, materials: true });
+    };
+
+    return {
+      group,
+      leftButton,
+      rightButton,
+      leftTexture: leftScreen.texture,
+      rightTexture: rightScreen.texture,
+      updateTime,
+      dispose,
+    };
+  }
+
+  if (design.kind === "chronos") {
+    // --- ⚡ CHRONOS BLITZ METAL TIMER ---
+    const bodyGeo = new THREE.BoxGeometry(1.22, 0.62, 2.48);
+    const bodyMat = new THREE.MeshStandardMaterial({
+      color: design.casingColor,
+      roughness: design.casingRoughness,
+      metalness: design.casingMetalness,
+    });
+    const body = new THREE.Mesh(bodyGeo, bodyMat);
+    body.position.set(0, 0.31, 0);
+    body.castShadow = true;
+    body.receiveShadow = true;
+    body.userData = { kind: "clock" };
+    group.add(body);
+
+    // Front recessed face panel
+    const faceGeo = new THREE.BoxGeometry(0.08, 0.48, 2.32);
+    const faceMat = new THREE.MeshStandardMaterial({
+      color: 0x020617,
+      roughness: 0.3,
+      metalness: 0.8,
+    });
+    const face = new THREE.Mesh(faceGeo, faceMat);
+    face.position.set(-0.58, 0.31, 0);
+    face.userData = { kind: "clock" };
+    group.add(face);
+
+    // Screens
+    const leftScreen = createClockCanvasTexture();
+    const rightScreen = createClockCanvasTexture();
+
+    const screenGeo = new THREE.PlaneGeometry(1.02, 0.42);
+    const leftScreenMat = new THREE.MeshBasicMaterial({
+      map: leftScreen.texture,
+      side: THREE.FrontSide,
+    });
+    const rightScreenMat = new THREE.MeshBasicMaterial({
+      map: rightScreen.texture,
+      side: THREE.FrontSide,
+    });
+
+    const leftScreenMesh = new THREE.Mesh(screenGeo, leftScreenMat);
+    leftScreenMesh.position.set(-0.625, 0.31, -0.58);
+    leftScreenMesh.rotation.y = -Math.PI / 2;
+    leftScreenMesh.userData = { kind: "clock" };
+    group.add(leftScreenMesh);
+
+    const rightScreenMesh = new THREE.Mesh(screenGeo, rightScreenMat);
+    rightScreenMesh.position.set(-0.625, 0.31, 0.58);
+    rightScreenMesh.rotation.y = -Math.PI / 2;
+    rightScreenMesh.userData = { kind: "clock" };
+    group.add(rightScreenMesh);
+
+    // Top circular metallic touch sensor buttons
+    const touchGeo = new THREE.CylinderGeometry(0.24, 0.24, 0.08, 32);
+    const touchMat = new THREE.MeshStandardMaterial({
+      color: design.buttonColor,
+      roughness: 0.18,
+      metalness: 0.95,
+    });
+    const leftButton = new THREE.Mesh(touchGeo, touchMat.clone());
+    leftButton.position.set(0, 0.64, -0.58);
+    leftButton.castShadow = true;
+    leftButton.userData = { kind: "clock", side: "w" };
+    group.add(leftButton);
+
+    const rightButton = new THREE.Mesh(touchGeo, touchMat.clone());
+    rightButton.position.set(0, 0.64, 0.58);
+    rightButton.castShadow = true;
+    rightButton.userData = { kind: "clock", side: "b" };
+    group.add(rightButton);
+
+    renderChronosClockFace(leftScreen.ctx, "WHITE", "05:00", false, false, design);
+    leftScreen.texture.needsUpdate = true;
+    renderChronosClockFace(rightScreen.ctx, "BLACK", "05:00", false, false, design);
+    rightScreen.texture.needsUpdate = true;
+
+    const updateTime = (
+      whiteTimeMs: number,
+      blackTimeMs: number,
+      activeSide: "w" | "b" | null,
+      flagFallenSide: "w" | "b" | null,
+      formatTime: (ms: number) => string,
+    ) => {
+      const isWhiteActive = activeSide === "w";
+      const isBlackActive = activeSide === "b";
+      const isWhiteFlag = flagFallenSide === "w";
+      const isBlackFlag = flagFallenSide === "b";
+
+      renderChronosClockFace(leftScreen.ctx, "WHITE", formatTime(whiteTimeMs), isWhiteActive, isWhiteFlag, design);
+      leftScreen.texture.needsUpdate = true;
+
+      renderChronosClockFace(rightScreen.ctx, "BLACK", formatTime(blackTimeMs), isBlackActive, isBlackFlag, design);
+      rightScreen.texture.needsUpdate = true;
+
+      if (isWhiteActive) {
+        (leftButton.material as THREE.MeshStandardMaterial).color.setHex(0x64748b);
+        (rightButton.material as THREE.MeshStandardMaterial).color.setHex(0x22c55e);
+      } else if (isBlackActive) {
+        (leftButton.material as THREE.MeshStandardMaterial).color.setHex(0x22c55e);
+        (rightButton.material as THREE.MeshStandardMaterial).color.setHex(0x64748b);
+      } else {
+        (leftButton.material as THREE.MeshStandardMaterial).color.setHex(design.buttonColor);
+        (rightButton.material as THREE.MeshStandardMaterial).color.setHex(design.buttonColor);
+      }
+    };
+
+    const dispose = () => {
+      leftScreen.texture.dispose();
+      rightScreen.texture.dispose();
+      disposeObject(group, { geometries: true, materials: true });
+    };
+
+    return {
+      group,
+      leftButton,
+      rightButton,
+      leftTexture: leftScreen.texture,
+      rightTexture: rightScreen.texture,
+      updateTime,
+      dispose,
+    };
+  }
 
   if (design.kind === "analog") {
-    // --- VINTAGE / WOOD ANALOG CABINET ---
+    // --- 🪵 VINTAGE / WOOD ANALOG CABINET ---
     const bodyGeo = new THREE.BoxGeometry(1.15, 0.78, 2.45);
     const bodyMat = new THREE.MeshStandardMaterial({
       color: design.casingColor,
@@ -2305,13 +2773,13 @@ function create3DChessClockModel(
     const leftButton = new THREE.Mesh(plungerGeo, plungerMat.clone());
     leftButton.position.set(0, 0.86, -0.58);
     leftButton.castShadow = true;
-    leftButton.userData = { kind: "clock" };
+    leftButton.userData = { kind: "clock", side: "w" };
     group.add(leftButton);
 
     const rightButton = new THREE.Mesh(plungerGeo, plungerMat.clone());
     rightButton.position.set(0, 0.86, 0.58);
     rightButton.castShadow = true;
-    rightButton.userData = { kind: "clock" };
+    rightButton.userData = { kind: "clock", side: "b" };
     group.add(rightButton);
 
     // Center stopper pin
@@ -2379,7 +2847,7 @@ function create3DChessClockModel(
     };
   }
 
-  // --- DIGITAL MODERN / CYBER / BIRCH CLOCKS ---
+  // --- 🏆 FIDE DGT / NORDIC BIRCH TOURNAMENT DIGITAL CLOCKS ---
   const bodyGeo = new THREE.BoxGeometry(1.25, 0.65, 2.5);
   const bodyMat = new THREE.MeshStandardMaterial({
     color: design.casingColor,
@@ -2443,13 +2911,13 @@ function create3DChessClockModel(
   const leftButton = new THREE.Mesh(buttonGeo, buttonMat.clone());
   leftButton.position.set(0, 0.68, -0.58);
   leftButton.castShadow = true;
-  leftButton.userData = { kind: "clock" };
+  leftButton.userData = { kind: "clock", side: "w" };
   group.add(leftButton);
 
   const rightButton = new THREE.Mesh(buttonGeo, buttonMat.clone());
   rightButton.position.set(0, 0.68, 0.58);
   rightButton.castShadow = true;
-  rightButton.userData = { kind: "clock" };
+  rightButton.userData = { kind: "clock", side: "b" };
   group.add(rightButton);
 
   renderDigitalClockFace(leftScreen.ctx, "WHITE", "05:00", false, false, design);
@@ -2560,7 +3028,7 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     checkSquare,
     themeId = "classic-walnut",
     piecePaletteId = "theme-default",
-    clockDesignId = "digital-tournament",
+    clockDesignId = "dgt-3000",
     arrows = [],
     squareHighlights = [],
     selectedReservePiece = null,
@@ -2865,6 +3333,7 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       const bounds = renderer.domElement.getBoundingClientRect();
       pointer.x = ((clientX - bounds.left) / bounds.width) * 2 - 1;
       pointer.y = -((clientY - bounds.top) / bounds.height) * 2 + 1;
+      raycaster.setFromCamera(pointer, camera);
       const clockGroup = stateRef.current?.clock3D?.group || clock3D?.group;
       const targets = [board, clockGroup].filter(Boolean) as THREE.Object3D[];
       const hits = raycaster.intersectObjects(targets, true);
@@ -2908,14 +3377,16 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
           controls.enableRotate = false;
           if (interactive.userData.kind === "reserve_piece") {
             pendingDrag = { type: "reserve", code: interactive.userData.code as PieceCode };
-          } else if (interactive.userData.square) {
+          } else if (interactive.userData.kind === "piece" || interactive.userData.square) {
             const sq = interactive.userData.square as Square;
-            const code = positionRef.current[sq];
-            if (code) {
+            const code = positionRef.current[sq] || (interactive.userData.code as PieceCode);
+            if (code && sq) {
               pendingDrag = { type: "board", square: sq, code };
             } else {
               pendingDrag = null;
             }
+          } else if (interactive.userData.kind === "clock") {
+            pendingDrag = null;
           }
         } else {
           pendingDrag = null;
@@ -3052,7 +3523,8 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
         // Regular click action
         const interactive = pick(event.clientX, event.clientY);
         if (interactive?.userData.kind === "clock") {
-          callbacksRef.current.onPressClock?.();
+          const side = interactive.userData.side as "w" | "b" | undefined;
+          callbacksRef.current.onPressClock?.(side);
           return;
         }
         if (interactive?.userData.kind === "reserve_piece") {

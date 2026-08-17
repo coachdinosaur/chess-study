@@ -2238,6 +2238,13 @@ kbd {
   transform: translateY(-1px);
 }
 
+.sidebar-game-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+}
+
 .sidebar-new-game-btn {
   display: flex;
   align-items: center;
@@ -2254,12 +2261,39 @@ kbd {
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(36, 95, 75, 0.22);
   transition: all 140ms ease;
-  margin-bottom: 6px;
 }
 
 .sidebar-new-game-btn:hover {
   background: var(--emerald-dark);
   transform: translateY(-1px);
+}
+
+.sidebar-undo-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 0.74rem;
+  font-weight: 750;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+
+.sidebar-undo-btn:hover:not(:disabled) {
+  background: #ffffff;
+  border-color: var(--emerald);
+  color: var(--emerald-dark);
+}
+
+.sidebar-undo-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 @media (prefers-reduced-motion: reduce) {

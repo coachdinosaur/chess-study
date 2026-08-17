@@ -117,11 +117,12 @@ const THEME_OPTIONS: { id: ThemeId; label: string }[] = [
 ];
 
 const CLOCK_DESIGN_OPTIONS: { id: ClockDesignId; label: string }[] = [
-  { id: "digital-tournament", label: "⏱️ Tournament Digital" },
-  { id: "analog-wood", label: "🪵 Vintage Wood Analog" },
-  { id: "analog-vintage", label: "⚙️ Retro Mechanical" },
-  { id: "digital-cyber", label: "⚡ Stealth Cyber OLED" },
-  { id: "nordic-birch", label: "🌿 Nordic Birch" },
+  { id: "dgt-3000", label: "🏆 FIDE DGT 3000 (Official)" },
+  { id: "chronos-metal", label: "⚡ Chronos Blitz Metal" },
+  { id: "quantum-cyber", label: "🛸 Quantum Cyber Titanium" },
+  { id: "analog-wood", label: "🪵 BHB Vintage Wood Analog" },
+  { id: "analog-vintage", label: "⚙️ Retro Mechanical Chrome" },
+  { id: "nordic-birch", label: "🌿 Nordic Birch Minimalist" },
   { id: "none", label: "🚫 Hide 3D Clock" },
 ];
 
@@ -244,11 +245,15 @@ export default function ChessStudio() {
   const [clockDesignId, setClockDesignId] = useState<ClockDesignId>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("3d-chess-clock-design") as ClockDesignId | null;
-      if (saved && ["digital-tournament", "analog-wood", "analog-vintage", "digital-cyber", "nordic-birch", "none"].includes(saved)) {
-        return saved;
+      if (saved) {
+        if ((saved as string) === "digital-tournament") return "dgt-3000";
+        if ((saved as string) === "digital-cyber") return "quantum-cyber";
+        if (["dgt-3000", "chronos-metal", "quantum-cyber", "analog-wood", "analog-vintage", "nordic-birch", "none"].includes(saved)) {
+          return saved;
+        }
       }
     }
-    return "digital-tournament";
+    return "dgt-3000";
   });
 
   // Annotations (3D Arrows & Highlights)
@@ -359,28 +364,40 @@ export default function ChessStudio() {
     announce(tcId === "none" ? "Chess clock disabled" : `Clock set to ${TIME_CONTROLS[tcId].label}`);
   };
 
-  const pressClock = useCallback(() => {
-    if (!playMode || timeControlId === "none" || flagFallenSide || resignedSide) return;
-    const tc = TIME_CONTROLS[timeControlId];
+  const pressClock = useCallback((side?: "w" | "b") => {
+    if (flagFallenSide || resignedSide) return;
+
+    if (!playMode) {
+      setPlayMode(true);
+    }
+
+    let tcId = timeControlId;
+    if (tcId === "none") {
+      tcId = "5m";
+      setTimeControlId("5m");
+      resetClock("5m");
+    }
+
+    const tc = TIME_CONTROLS[tcId];
     playClockSound();
 
     if (!activeClockSide) {
-      const currentTurn = document.sideToMove;
-      setActiveClockSide(currentTurn === "w" ? "b" : "w");
+      const targetSide = side === "w" ? "b" : side === "b" ? "w" : (document.sideToMove === "w" ? "b" : "w");
+      setActiveClockSide(targetSide);
       setClockRunning(true);
       return;
     }
 
-    if (activeClockSide === "w") {
+    if (side === "w" || (!side && activeClockSide === "w")) {
       setWhiteTimeMs((prev) => prev + tc.incrementSeconds * 1000);
       setActiveClockSide("b");
       setClockRunning(true);
-    } else {
+    } else if (side === "b" || (!side && activeClockSide === "b")) {
       setBlackTimeMs((prev) => prev + tc.incrementSeconds * 1000);
       setActiveClockSide("w");
       setClockRunning(true);
     }
-  }, [activeClockSide, document.sideToMove, flagFallenSide, playMode, resignedSide, timeControlId]);
+  }, [activeClockSide, document.sideToMove, flagFallenSide, playMode, resetClock, resignedSide, timeControlId]);
 
   // Chess Clock Ticking Interval Effect
   useEffect(() => {
@@ -697,6 +714,19 @@ export default function ChessStudio() {
           isCastle,
         };
 
+        const isWhiteMove = game.turn() === "b";
+        if (timeControlId !== "none" && !isGameOver) {
+          const tc = TIME_CONTROLS[timeControlId];
+          if (isWhiteMove) {
+            setWhiteTimeMs((prev) => prev + tc.incrementSeconds * 1000);
+            setActiveClockSide("b");
+          } else {
+            setBlackTimeMs((prev) => prev + tc.incrementSeconds * 1000);
+            setActiveClockSide("w");
+          }
+          setClockRunning(true);
+        }
+
         const newHistory = [...moveHistory.slice(0, historyIndex + 1), record];
         setMoveHistory(newHistory);
         setHistoryIndex(newHistory.length - 1);
@@ -710,7 +740,7 @@ export default function ChessStudio() {
         announce("That move is not legal");
       }
     },
-    [announce, commit, fen, historyIndex, moveHistory],
+    [announce, commit, fen, historyIndex, moveHistory, timeControlId],
   );
 
   const handleResign = useCallback(() => {
@@ -1088,32 +1118,36 @@ export default function ChessStudio() {
         return;
       }
       if (playMode) {
-        const game = new Chess(fen);
-        const turn = game.turn();
-        if (playOpponent === "bot" && botThinking) {
-          announce("Computer is calculating");
-          return;
-        }
-        if (playOpponent === "bot") {
-          const humanColor = botSide === "white" ? "b" : "w";
-          if (turn !== humanColor) {
-            announce("Wait for computer move");
+        try {
+          const game = new Chess(fen);
+          const turn = game.turn();
+          if (playOpponent === "bot" && botThinking) {
+            announce("Computer is calculating");
             return;
           }
-        }
-        const candidates = game
-          .moves({ square: from as RulesSquare, verbose: true })
-          .filter((move) => move.to === to);
-        if (!candidates.length) {
+          if (playOpponent === "bot") {
+            const humanColor = botSide === "white" ? "b" : "w";
+            if (turn !== humanColor) {
+              announce("Wait for computer move");
+              return;
+            }
+          }
+          const candidates = game
+            .moves({ square: from as RulesSquare, verbose: true })
+            .filter((move) => move.to === to);
+          if (!candidates.length) {
+            announce("That move is not legal");
+            return;
+          }
+          if (candidates.some((move) => move.isPromotion())) {
+            setPendingPromotion({ from, to, color: turn });
+            announce("Choose a promotion piece");
+            return;
+          }
+          finishPlayMove(from, to);
+        } catch {
           announce("That move is not legal");
-          return;
         }
-        if (candidates.some((move) => move.isPromotion())) {
-          setPendingPromotion({ from, to, color: turn });
-          announce("Choose a promotion piece");
-          return;
-        }
-        finishPlayMove(from, to);
         return;
       }
 
@@ -1347,6 +1381,7 @@ export default function ChessStudio() {
   };
 
   const enterPlayMode = () => {
+    setFenError("");
     try {
       new Chess(fen);
       setPlayMode(true);
@@ -1363,8 +1398,23 @@ export default function ChessStudio() {
       resetClock();
       announce("Play mode ready");
     } catch {
-      setFenError("This position is not legal enough to start a game.");
-      announce("Correct the position before playing");
+      // If position was invalid or empty, start a standard game
+      const startDoc = startingDocument();
+      const startFen = toFen(startDoc);
+      commit(startDoc, "Standard game started");
+      setPlayMode(true);
+      setInitialPlayFen(startFen);
+      setMoveHistory([]);
+      setHistoryIndex(-1);
+      setLastMove(null);
+      setTool("move");
+      setMoveFrom(null);
+      setPendingPromotion(null);
+      setResignedSide(null);
+      setConfirmingResign(false);
+      if (resignConfirmTimer.current) clearTimeout(resignConfirmTimer.current);
+      resetClock();
+      announce("Play mode ready with standard starting position");
     }
   };
 
@@ -1387,10 +1437,13 @@ export default function ChessStudio() {
   const startNewGame = () => {
     const startDoc = startingDocument();
     const startFen = toFen(startDoc);
+    setFenError("");
+    setPlayMode(true);
     setInitialPlayFen(startFen);
     setMoveHistory([]);
     setHistoryIndex(-1);
     setLastMove(null);
+    setTool("move");
     commit(startDoc, "New game started");
     setMoveFrom(null);
     setPendingPromotion(null);
@@ -1405,6 +1458,7 @@ export default function ChessStudio() {
       setFlipped(false);
       boardRef.current?.setView("angle");
     }
+    announce("Fresh new game started");
   };
 
   useEffect(() => {
@@ -1686,69 +1740,16 @@ export default function ChessStudio() {
             </button>
           )}
 
-          {playMode ? (
-            <div className="board-toolbar play-mode-toolbar">
-              <div className="view-buttons" aria-label="Game controls">
-                <button type="button" className="play-new-game-btn" onClick={startNewGame} title="Start a fresh new game">
-                  <span>✨</span> New Game
-                </button>
-                <button type="button" onClick={undo} disabled={!moveHistory.length} title="Take back last move">
-                  ↩ Undo Move
-                </button>
-                <button
-                  type="button"
-                  className={`resign-btn ${confirmingResign ? "is-confirming" : ""}`}
-                  onClick={handleResign}
-                  disabled={isGameOver}
-                  title={confirmingResign ? "Confirm resignation" : "Resign current game"}
-                >
-                  {confirmingResign ? "Confirm Resign?" : "Resign"}
-                </button>
-              </div>
-              <div className="board-toolbar-end">
-                {hasAnnotations && (
-                  <button type="button" className="clear-marks-btn" onClick={clearAnnotations} title="Clear 3D arrows and highlights">
-                    Clear marks ({arrows.length + squareHighlights.length})
-                  </button>
-                )}
-                <button type="button" onClick={handleFlipBoard} aria-pressed={flipped} title="Flip board perspective (F)">
-                  Flip board
-                </button>
-                <button type="button" onClick={() => boardRef.current?.resetCamera()} title="Reset camera view (0)">
-                  Reset camera
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="board-toolbar">
-              <div className="view-buttons" aria-label="Camera views">
-                {CAMERA_BUTTONS.map(({ view, label }) => (
-                  <button key={view} type="button" onClick={() => boardRef.current?.setView(view)}>{label}</button>
-                ))}
-              </div>
-              <div className="board-toolbar-end">
-                {hasAnnotations && (
-                  <button type="button" className="clear-marks-btn" onClick={clearAnnotations} title="Clear 3D arrows and highlights">
-                    Clear marks ({arrows.length + squareHighlights.length})
-                  </button>
-                )}
-                <button
-                  type="button"
-                  className={`tray-toggle-btn ${!showReserveTrays ? "is-inactive" : ""}`}
-                  onClick={toggleReserveTrays}
-                  title={showReserveTrays ? "Hide 3D piece trays (T)" : "Show 3D piece trays (T)"}
-                  aria-pressed={showReserveTrays}
-                >
-                  {showReserveTrays ? "Hide Trays" : "Show Trays"}
-                </button>
-                <button type="button" onClick={copyShareLink} title="Copy shareable direct link to position">
-                  Share link
-                </button>
-                <button type="button" onClick={handleFlipBoard} aria-pressed={flipped}>
-                  Flip board
-                </button>
-                <button type="button" onClick={() => boardRef.current?.resetCamera()}>Reset camera</button>
-              </div>
+          {hasAnnotations && (
+            <div className="floating-clear-marks">
+              <button
+                type="button"
+                className="clear-marks-btn"
+                onClick={clearAnnotations}
+                title="Clear 3D tactical markings (C)"
+              >
+                Clear marks ({arrows.length + squareHighlights.length})
+              </button>
             </div>
           )}
 
@@ -1801,7 +1802,7 @@ export default function ChessStudio() {
                   <button
                     type="button"
                     className={`clock-tap-btn ${clockRunning ? "is-running" : ""}`}
-                    onClick={pressClock}
+                    onClick={() => pressClock()}
                     title="Tap clock to end turn (Spacebar)"
                   >
                     <span className="clock-tap-icon">⏱️</span>
@@ -1964,6 +1965,15 @@ export default function ChessStudio() {
                   title="Start a fresh new chess game"
                 >
                   <span>✨</span> New Game
+                </button>
+                <button
+                  type="button"
+                  className="sidebar-undo-btn"
+                  onClick={undo}
+                  disabled={!moveHistory.length}
+                  title="Take back last move"
+                >
+                  <span>↩</span> Undo Move
                 </button>
                 <button
                   type="button"
