@@ -220,8 +220,8 @@ const CAMERA_VIEWS: Record<CameraView, ViewPreset> = {
     target: [-0.21, -0.80, -0.21],
   },
   top: {
-    position: [0.61, 17.5, 0.61],
-    target: [0.00, 0.35, 0.00],
+    position: [0.001, 15.6, 1.25],
+    target: [0.00, 0.35, 1.25],
   },
   white: {
     position: [0.00, 7.57, 11.86],
@@ -731,10 +731,10 @@ function addStauntonBase(
 }
 
 function createMitredHeadGeometry() {
-  const source = new THREE.SphereGeometry(0.27, 72, 48).toNonIndexed();
+  const source = new THREE.SphereGeometry(0.22, 72, 48).toNonIndexed();
   const positions = source.getAttribute("position");
   const keptPositions: number[] = [];
-  const gapHalfWidth = 0.026;
+  const gapHalfWidth = 0.022;
 
   for (let index = 0; index < positions.count; index += 3) {
     const triangle: [number, number, number][] = [];
@@ -742,9 +742,9 @@ function createMitredHeadGeometry() {
 
     for (let vertex = 0; vertex < 3; vertex += 1) {
       const sourceIndex = index + vertex;
-      const x = positions.getX(sourceIndex) * 1.02;
-      const y = positions.getY(sourceIndex) * 2.10;
-      const z = positions.getZ(sourceIndex) * 1.02;
+      const x = positions.getX(sourceIndex) * 0.94;
+      const y = positions.getY(sourceIndex) * 2.25;
+      const z = positions.getZ(sourceIndex) * 0.94;
       triangle.push([x, y, z]);
       signedDistances.push((0.825 * x) - (0.565 * y) + 0.055);
     }
@@ -858,15 +858,15 @@ function createNeoClassicPiece(code: PieceCode, square: Square, materials: Mater
     group.add(lathe([
       [0.19, 0.25],
       [0.20, 0.28],
-      [0.165, 0.32],
-      [0.138, 0.36],
-      [0.165, 0.39],
-      [0.225, 0.41],
-      [0.23, 0.43],
+      [0.165, 0.34],
+      [0.138, 0.42],
+      [0.155, 0.48],
+      [0.195, 0.52],
+      [0.20, 0.54],
     ], body, 64));
-    addMesh(group, new THREE.TorusGeometry(0.165, 0.015, 12, 64), accent, [0, 0.41, 0], undefined, [Math.PI / 2, 0, 0]);
-    addMesh(group, createMitredHeadGeometry(), body, [0, 0.77, 0]);
-    addMesh(group, new THREE.SphereGeometry(0.065, 40, 28), accent, [0, 1.20, 0]);
+    addMesh(group, new THREE.TorusGeometry(0.15, 0.011, 12, 64), accent, [0, 0.53, 0], undefined, [Math.PI / 2, 0, 0]);
+    addMesh(group, createMitredHeadGeometry(), body, [0, 0.84, 0]);
+    addMesh(group, new THREE.SphereGeometry(0.055, 36, 24), accent, [0, 1.22, 0]);
   }
 
   if (type === "Q") {
@@ -954,15 +954,15 @@ function createMitredBishopModel(code: PieceCode, materials: Materials) {
   model.add(lathe([
     [0.19, 0.25],
     [0.20, 0.28],
-    [0.165, 0.32],
-    [0.138, 0.36],
-    [0.165, 0.39],
-    [0.225, 0.41],
-    [0.23, 0.43],
+    [0.165, 0.34],
+    [0.138, 0.42],
+    [0.155, 0.48],
+    [0.195, 0.52],
+    [0.20, 0.54],
   ], body, 64));
-  addMesh(model, new THREE.TorusGeometry(0.165, 0.015, 12, 64), body, [0, 0.41, 0], undefined, [Math.PI / 2, 0, 0]);
-  addMesh(model, createMitredHeadGeometry(), body, [0, 0.77, 0]);
-  addMesh(model, new THREE.SphereGeometry(0.062, 36, 24), body, [0, 1.20, 0]);
+  addMesh(model, new THREE.TorusGeometry(0.15, 0.011, 12, 64), body, [0, 0.53, 0], undefined, [Math.PI / 2, 0, 0]);
+  addMesh(model, createMitredHeadGeometry(), body, [0, 0.84, 0]);
+  addMesh(model, new THREE.SphereGeometry(0.055, 36, 24), body, [0, 1.22, 0]);
   configureShadows(model);
   return model;
 }
@@ -991,23 +991,25 @@ function createStauntonTemplates(root: THREE.Object3D): PieceTemplates {
             const minY = b.min.y;
             const maxY = b.max.y;
             const h = maxY - minY;
-            const collarCutoff = 0.62;
+            const collarCutoff = 0.52;
             const baseCutoff = 0.20;
-            const targetCollarNormY = 0.31;
+            const targetCollarNormY = 0.42;
             for (let i = 0; i < posAttr.count; i++) {
               const y = posAttr.getY(i);
               const normY = Math.max(0, Math.min(1, (y - minY) / h));
               let newNormY = normY;
-              let scaleXZ = 1.0;
+              let scaleXZ = 0.94;
               if (normY <= baseCutoff) {
                 newNormY = normY;
+                scaleXZ = 1.0;
               } else if (normY <= collarCutoff) {
                 const neckT = (normY - baseCutoff) / (collarCutoff - baseCutoff);
                 newNormY = baseCutoff + neckT * (targetCollarNormY - baseCutoff);
+                scaleXZ = 0.98 - neckT * 0.04;
               } else {
                 const headT = (normY - collarCutoff) / (1.0 - collarCutoff);
                 newNormY = targetCollarNormY + headT * (1.0 - targetCollarNormY);
-                scaleXZ = 1.0 + Math.sin(Math.pow(headT, 0.75) * Math.PI) * 0.28;
+                scaleXZ = 0.94 - headT * 0.08;
               }
               posAttr.setY(i, minY + newNormY * h);
               posAttr.setX(i, posAttr.getX(i) * scaleXZ);
@@ -1822,7 +1824,13 @@ function disposeMaterialSet(materials: Materials) {
 }
 
 function findInteractive(object: THREE.Object3D | null): THREE.Object3D | null {
-  let current = object;
+  if (!object) return null;
+  let check: THREE.Object3D | null = object;
+  while (check) {
+    if (!check.visible) return null;
+    check = check.parent;
+  }
+  let current: THREE.Object3D | null = object;
   while (current) {
     if (
       current.userData.kind === "piece" ||

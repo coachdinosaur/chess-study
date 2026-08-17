@@ -65,12 +65,12 @@ function StaticChessboard({ fen }: { fen: string }) {
   return <div className="static-board" role="img" aria-label={`Chess position: ${fen}`}>{pieces}</div>;
 }
 
-function FenBoard({ fen, label, navigation, onMove }: { fen: string; label: string; navigation: MoveNavigation; onMove: MoveHandler }) {
+function FenBoard({ fen, label, navigation, onMove }: { fen: string; label?: string; navigation: MoveNavigation; onMove: MoveHandler }) {
   try { new Chess(fen); }
   catch { return <div className="fen-invalid" role="alert">Invalid FEN position</div>; }
   return <div className="fen-block">
     <div className="fen-heading">
-      <strong>{label}</strong>
+      {label ? <strong>{label}</strong> : <span />}
       <button type="button" onClick={() => onMove(navigation)}>Show on main board</button>
     </div>
     <div className="fen-board-container"><StaticChessboard fen={fen} /></div>
@@ -225,7 +225,6 @@ function parseMarkdown(markdown: string, onMove: MoveHandler, resolver = new Mar
   const nodes: ReactNode[] = [];
   extractFenBlocks(markdown).forEach(({ fen }, fenIndex) => resolver.addRoot(fen, `Chapter position ${fenIndex + 1}`));
   let index = 0;
-  let currentHeading = "Diagram position";
 
   while (index < lines.length) {
     const line = lines[index];
@@ -245,9 +244,8 @@ function parseMarkdown(markdown: string, onMove: MoveHandler, resolver = new Mar
       if (fenMatch) {
         const fen = fenMatch[1].trim();
         try {
-          const label = currentHeading === "Diagram position" ? currentHeading : `${currentHeading} position`;
-          const navigation = resolver.setAnchor(fen, label);
-          nodes.push(<FenBoard fen={fen} label={label} navigation={navigation} onMove={onMove} key={`fen-${index}`} />);
+          const navigation = resolver.setAnchor(fen, "Diagram position");
+          nodes.push(<FenBoard fen={fen} navigation={navigation} onMove={onMove} key={`fen-${index}`} />);
         } catch {
           nodes.push(<div className="fen-invalid" role="alert" key={`fen-${index}`}>Invalid FEN position</div>);
         }
@@ -265,7 +263,6 @@ function parseMarkdown(markdown: string, onMove: MoveHandler, resolver = new Mar
     const heading = /^(#{1,6})\s+(.+)$/.exec(line);
     if (heading) {
       const level = heading[1].length;
-      currentHeading = heading[2].replace(/[*_`]/g, "").trim();
       const content = renderInline(heading[2], resolver, onMove, `heading-${index}`);
       if (level === 1) nodes.push(<h1 key={`h1-${index}`}>{content}</h1>);
       else if (level === 2) nodes.push(<h2 className="page-heading-markdown" key={`h2-${index}`}>{content}</h2>);

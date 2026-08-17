@@ -1942,6 +1942,210 @@ kbd {
   background: rgba(255, 255, 255, 0.45) !important;
 }
 
+/* ==========================================================================
+   Tournament Chess Clock Component
+   ========================================================================== */
+
+.floating-tournament-clock {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 28;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border-radius: 16px;
+  background: rgba(18, 30, 24, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+  user-select: none;
+}
+
+.clock-side-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 96px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 180ms ease;
+  position: relative;
+}
+
+.clock-side-card.white-card {
+  color: #f0f3f1;
+}
+
+.clock-side-card.black-card {
+  color: #d1d8d4;
+}
+
+.clock-side-card.is-active {
+  background: #143526;
+  border-color: #4ade80;
+  box-shadow: 0 0 16px rgba(74, 222, 128, 0.35);
+}
+
+.clock-side-card.flag-fallen {
+  background: #4a1212;
+  border-color: #ef4444;
+  box-shadow: 0 0 18px rgba(239, 68, 68, 0.5);
+  animation: flag-flash 800ms infinite alternate;
+}
+
+@keyframes flag-flash {
+  from { opacity: 1; }
+  to { opacity: 0.65; }
+}
+
+.clock-side-label {
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.72;
+  margin-bottom: 2px;
+}
+
+.clock-digital-time {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 1.25rem;
+  font-weight: 850;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+}
+
+.flag-badge {
+  position: absolute;
+  top: -8px;
+  right: -6px;
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 0.52rem;
+  font-weight: 900;
+  padding: 1px 5px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+
+.clock-tap-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: linear-gradient(180deg, #2a4c3a 0%, #1c3628 100%);
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.28);
+  transition: all 120ms ease;
+}
+
+.clock-tap-btn:hover {
+  background: linear-gradient(180deg, #36614a 0%, #244634 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+}
+
+.clock-tap-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.clock-tap-btn.is-running {
+  border-color: #4ade80;
+}
+
+.clock-tap-icon {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.clock-tap-text {
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* Sidebar Clock Box */
+.clock-controls-box {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 12px;
+  background: var(--surface-low);
+  border: 1px solid var(--line);
+}
+
+.clock-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.clock-section-title {
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.clock-reset-mini-btn {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 0.64rem;
+  font-weight: 750;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+
+.clock-reset-mini-btn:hover {
+  color: var(--ink);
+  border-color: var(--emerald);
+}
+
+.time-control-selector {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+.tc-pill {
+  padding: 5px 4px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.65rem;
+  font-weight: 750;
+  cursor: pointer;
+  text-align: center;
+  transition: all 120ms ease;
+}
+
+.tc-pill:hover {
+  background: #ffffff;
+  color: var(--ink);
+}
+
+.tc-pill.is-active {
+  background: var(--emerald);
+  color: #ffffff;
+  border-color: var(--emerald-dark);
+  box-shadow: 0 2px 6px rgba(36, 95, 75, 0.28);
+}
 
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -1953,4 +2157,5 @@ kbd {
     animation-iteration-count: 1 !important;
   }
 }
+
 

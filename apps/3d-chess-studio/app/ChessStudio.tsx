@@ -39,6 +39,7 @@ import {
   playCaptureSound,
   playCastleSound,
   playCheckSound,
+  playClockSound,
   playGameOverSound,
   playMoveSound,
   toggleAudioMuted,
@@ -52,6 +53,31 @@ import {
   type RemotePointer,
   type Role,
 } from "./live-session";
+
+export type TimeControlId = "none" | "1m" | "3m" | "3m2s" | "5m" | "5m3s" | "10m" | "15m10s";
+
+export const TIME_CONTROLS: Record<TimeControlId, { label: string; baseSeconds: number; incrementSeconds: number }> = {
+  none: { label: "No Clock", baseSeconds: 0, incrementSeconds: 0 },
+  "1m": { label: "1 min", baseSeconds: 60, incrementSeconds: 0 },
+  "3m": { label: "3 min", baseSeconds: 180, incrementSeconds: 0 },
+  "3m2s": { label: "3 | 2", baseSeconds: 180, incrementSeconds: 2 },
+  "5m": { label: "5 min", baseSeconds: 300, incrementSeconds: 0 },
+  "5m3s": { label: "5 | 3", baseSeconds: 300, incrementSeconds: 3 },
+  "10m": { label: "10 min", baseSeconds: 600, incrementSeconds: 0 },
+  "15m10s": { label: "15 | 10", baseSeconds: 900, incrementSeconds: 10 },
+};
+
+function formatClockTime(ms: number): string {
+  if (ms <= 0) return "0:00.0";
+  const totalSeconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  if (ms < 20000) {
+    const tenths = Math.floor((ms % 1000) / 100);
+    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}.${tenths}`;
+  }
+  return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+}
 
 type Tool = "place" | "move" | "erase";
 type PromotionPiece = "q" | "r" | "b" | "n";
@@ -240,6 +266,14 @@ export default function ChessStudio() {
   const [soundMuted, setSoundMuted] = useState<boolean>(() => isAudioMuted());
   const historyTableRef = useRef<HTMLDivElement | null>(null);
 
+  // Chess Clock State
+  const [timeControlId, setTimeControlId] = useState<TimeControlId>("none");
+  const [whiteTimeMs, setWhiteTimeMs] = useState<number>(300000);
+  const [blackTimeMs, setBlackTimeMs] = useState<number>(300000);
+  const [activeClockSide, setActiveClockSide] = useState<"w" | "b" | null>(null);
+  const [clockRunning, setClockRunning] = useState<boolean>(false);
+  const [flagFallenSide, setFlagFallenSide] = useState<"w" | "b" | null>(null);
+
   const fen = useMemo(() => toFen(document), [document]);
   const warnings = useMemo(() => positionWarnings(document), [document]);
   const pieceCount = Object.keys(document.board).length;
@@ -277,6 +311,85 @@ export default function ChessStudio() {
     const label = PIECE_PALETTES[newPalette]?.label || newPalette;
     announce(`${label} piece colors active`);
   };
+
+  const resetClock = useCallback((tcId: TimeControlId = timeControlId) => {
+    const tc = TIME_CONTROLS[tcId];
+    setWhiteTimeMs(tc.baseSeconds * 1000);
+    setBlackTimeMs(tc.baseSeconds * 1000);
+    setActiveClockSide(null);
+    setClockRunning(false);
+    setFlagFallenSide(null);
+  }, [timeControlId]);
+
+  const handleTimeControlChange = (tcId: TimeControlId) => {
+    setTimeControlId(tcId);
+    resetClock(tcId);
+    announce(tcId === "none" ? "Chess clock disabled" : `Clock set to ${TIME_CONTROLS[tcId].label}`);
+  };
+
+  const pressClock = useCallback(() => {
+    if (!playMode || timeControlId === "none" || flagFallenSide || resignedSide) return;
+    const tc = TIME_CONTROLS[timeControlId];
+    playClockSound();
+
+    if (!activeClockSide) {
+      const currentTurn = document.sideToMove;
+      setActiveClockSide(currentTurn === "w" ? "b" : "w");
+      setClockRunning(true);
+      return;
+    }
+
+    if (activeClockSide === "w") {
+      setWhiteTimeMs((prev) => prev + tc.incrementSeconds * 1000);
+      setActiveClockSide("b");
+      setClockRunning(true);
+    } else {
+      setBlackTimeMs((prev) => prev + tc.incrementSeconds * 1000);
+      setActiveClockSide("w");
+      setClockRunning(true);
+    }
+  }, [activeClockSide, document.sideToMove, flagFallenSide, playMode, resignedSide, timeControlId]);
+
+  // Chess Clock Ticking Interval Effect
+  useEffect(() => {
+    if (!playMode || timeControlId === "none" || !clockRunning || !activeClockSide || flagFallenSide || resignedSide) {
+      return;
+    }
+    let lastTime = performance.now();
+    const interval = setInterval(() => {
+      const now = performance.now();
+      const delta = now - lastTime;
+      lastTime = now;
+
+      if (activeClockSide === "w") {
+        setWhiteTimeMs((prev) => {
+          const next = prev - delta;
+          if (next <= 0) {
+            setFlagFallenSide("w");
+            setClockRunning(false);
+            playGameOverSound();
+            announce("Black won on time (White flag fell)");
+            return 0;
+          }
+          return next;
+        });
+      } else {
+        setBlackTimeMs((prev) => {
+          const next = prev - delta;
+          if (next <= 0) {
+            setFlagFallenSide("b");
+            setClockRunning(false);
+            playGameOverSound();
+            announce("White won on time (Black flag fell)");
+            return 0;
+          }
+          return next;
+        });
+      }
+    }, 50);
+
+    return () => clearInterval(interval);
+  }, [activeClockSide, announce, clockRunning, flagFallenSide, playMode, resignedSide, timeControlId]);
 
   const initLiveSession = useCallback((roomId: string, role: Role) => {
     if (liveSessionRef.current) {
@@ -531,6 +644,7 @@ export default function ChessStudio() {
 
         if (isGameOver) {
           playGameOverSound();
+          setClockRunning(false);
         } else if (isCheck) {
           playCheckSound();
         } else if (isCastle) {
@@ -674,6 +788,11 @@ export default function ChessStudio() {
       setBotThinking(false);
       if (best) {
         finishPlayMoveRef.current(best.from, best.to, best.promotion || "q");
+        if (timeControlId !== "none") {
+          setTimeout(() => {
+            pressClock();
+          }, 150);
+        }
       }
     };
 
@@ -1209,6 +1328,7 @@ export default function ChessStudio() {
       setResignedSide(null);
       setConfirmingResign(false);
       if (resignConfirmTimer.current) clearTimeout(resignConfirmTimer.current);
+      resetClock();
       announce("Play mode ready");
     } catch {
       setFenError("This position is not legal enough to start a game.");
@@ -1245,6 +1365,7 @@ export default function ChessStudio() {
     setResignedSide(null);
     setConfirmingResign(false);
     if (resignConfirmTimer.current) clearTimeout(resignConfirmTimer.current);
+    resetClock();
     if (playOpponent === "bot" && botSide === "white") {
       setFlipped(true);
       boardRef.current?.setView("black");
@@ -1267,6 +1388,11 @@ export default function ChessStudio() {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "y") {
         event.preventDefault();
         redo();
+        return;
+      }
+      if (playMode && timeControlId !== "none" && event.code === "Space") {
+        event.preventDefault();
+        pressClock();
         return;
       }
       if (!playMode && event.key === "1") setTool("place");
@@ -1292,7 +1418,7 @@ export default function ChessStudio() {
     };
     window.addEventListener("keydown", keyHandler);
     return () => window.removeEventListener("keydown", keyHandler);
-  }, [clearAnnotations, goToMoveIndex, handleFlipBoard, historyIndex, playMode, redo, undo]);
+  }, [clearAnnotations, goToMoveIndex, handleFlipBoard, historyIndex, playMode, pressClock, redo, resetClock, timeControlId, undo]);
 
   const hasAnnotations = arrows.length > 0 || squareHighlights.length > 0;
 
@@ -1571,6 +1697,29 @@ export default function ChessStudio() {
               onAddArrow={handleAddArrow}
               onToggleSquareHighlight={handleToggleSquareHighlight}
             />
+            {playMode && timeControlId !== "none" && (
+              <div className="floating-tournament-clock" role="region" aria-label="Tournament chess clock">
+                <div className={`clock-side-card white-card ${activeClockSide === "w" ? "is-active" : ""} ${flagFallenSide === "w" ? "flag-fallen" : ""}`}>
+                  <span className="clock-side-label">WHITE</span>
+                  <span className="clock-digital-time">{formatClockTime(whiteTimeMs)}</span>
+                  {flagFallenSide === "w" && <span className="flag-badge">FLAG</span>}
+                </div>
+                <button
+                  type="button"
+                  className={`clock-tap-btn ${clockRunning ? "is-running" : ""}`}
+                  onClick={pressClock}
+                  title="Tap clock to end turn (Spacebar)"
+                >
+                  <span className="clock-tap-icon">⏱️</span>
+                  <span className="clock-tap-text">{activeClockSide ? "PRESS (Space)" : "START CLOCK"}</span>
+                </button>
+                <div className={`clock-side-card black-card ${activeClockSide === "b" ? "is-active" : ""} ${flagFallenSide === "b" ? "flag-fallen" : ""}`}>
+                  <span className="clock-side-label">BLACK</span>
+                  <span className="clock-digital-time">{formatClockTime(blackTimeMs)}</span>
+                  {flagFallenSide === "b" && <span className="flag-badge">FLAG</span>}
+                </div>
+              </div>
+            )}
             {!playMode && (
               <div className="viewport-status" aria-live="polite">
                 <span className={`status-dot ${announcement === "Ready" ? "ready" : "active"}`} />
@@ -1722,6 +1871,29 @@ export default function ChessStudio() {
                 >
                   <span>🏳️</span> {confirmingResign ? "Confirm Resignation?" : "Resign Game"}
                 </button>
+              </div>
+            </div>
+
+            <div className="clock-controls-box">
+              <div className="clock-header-row">
+                <span className="clock-section-title">⏱️ Tournament Clock</span>
+                {timeControlId !== "none" && (
+                  <button type="button" className="clock-reset-mini-btn" onClick={() => resetClock()} title="Reset clock to initial time">
+                    Reset
+                  </button>
+                )}
+              </div>
+              <div className="time-control-selector" role="group" aria-label="Time control presets">
+                {(["none", "1m", "3m", "3m2s", "5m", "5m3s", "10m", "15m10s"] as TimeControlId[]).map((tc) => (
+                  <button
+                    key={tc}
+                    type="button"
+                    className={`tc-pill ${timeControlId === tc ? "is-active" : ""}`}
+                    onClick={() => handleTimeControlChange(tc)}
+                  >
+                    {TIME_CONTROLS[tc].label}
+                  </button>
+                ))}
               </div>
             </div>
 
