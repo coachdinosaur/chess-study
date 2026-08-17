@@ -2186,6 +2186,41 @@ kbd {
   box-shadow: 0 2px 6px rgba(36, 95, 75, 0.28);
 }
 
+.clock-model-select-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--line);
+}
+
+.clock-model-label {
+  font-size: 0.68rem;
+  font-weight: 750;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.clock-mini-select {
+  flex: 1;
+  padding: 4px 6px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  outline: none;
+  transition: all 120ms ease;
+}
+
+.clock-mini-select:hover {
+  border-color: var(--emerald);
+}
+
 .play-new-game-btn {
   display: inline-flex;
   align-items: center;

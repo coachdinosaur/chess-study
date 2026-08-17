@@ -36,6 +36,121 @@ export type ChessBoardHandle = {
   clearAnnotations?: () => void;
 };
 
+export type ClockDesignId =
+  | "digital-tournament"
+  | "analog-wood"
+  | "analog-vintage"
+  | "digital-cyber"
+  | "nordic-birch"
+  | "none";
+
+export type ClockDesignConfig = {
+  id: ClockDesignId;
+  label: string;
+  kind: "digital" | "analog" | "none";
+  casingColor: number;
+  casingRoughness: number;
+  casingMetalness: number;
+  buttonColor: number;
+  buttonActiveColor: number;
+  faceColor?: number;
+  accentColor?: string;
+  dialBackground?: string;
+  textColor?: string;
+  activeTextColor?: string;
+  activeBorderColor?: string;
+};
+
+export const CLOCK_DESIGNS: Record<ClockDesignId, ClockDesignConfig> = {
+  "digital-tournament": {
+    id: "digital-tournament",
+    label: "Digital Tournament (Emerald)",
+    kind: "digital",
+    casingColor: 0x1a2620,
+    casingRoughness: 0.35,
+    casingMetalness: 0.3,
+    buttonColor: 0x2e4638,
+    buttonActiveColor: 0x4ade80,
+    faceColor: 0x111c16,
+    accentColor: "#4ade80",
+    textColor: "#e2e8f0",
+    activeTextColor: "#4ade80",
+    activeBorderColor: "#4ade80",
+  },
+  "analog-wood": {
+    id: "analog-wood",
+    label: "Vintage Wood Analog",
+    kind: "analog",
+    casingColor: 0x4a2e1b,
+    casingRoughness: 0.45,
+    casingMetalness: 0.1,
+    buttonColor: 0xd4af37, // brass
+    buttonActiveColor: 0xffd700,
+    faceColor: 0x382012,
+    accentColor: "#dc2626",
+    dialBackground: "#fbf6ea",
+    textColor: "#1f2937",
+    activeTextColor: "#15803d",
+    activeBorderColor: "#8c6239",
+  },
+  "analog-vintage": {
+    id: "analog-vintage",
+    label: "Retro Mechanical",
+    kind: "analog",
+    casingColor: 0xdcd6ca,
+    casingRoughness: 0.3,
+    casingMetalness: 0.35,
+    buttonColor: 0xb0b8c0, // chrome
+    buttonActiveColor: 0xe0e6ed,
+    faceColor: 0x2b3035,
+    accentColor: "#ef4444",
+    dialBackground: "#ffffff",
+    textColor: "#111827",
+    activeTextColor: "#2563eb",
+    activeBorderColor: "#64748b",
+  },
+  "digital-cyber": {
+    id: "digital-cyber",
+    label: "Stealth Cyber OLED",
+    kind: "digital",
+    casingColor: 0x0c1015,
+    casingRoughness: 0.2,
+    casingMetalness: 0.75,
+    buttonColor: 0x1e293b,
+    buttonActiveColor: 0x38bdf8,
+    faceColor: 0x05080c,
+    accentColor: "#38bdf8",
+    textColor: "#94a3b8",
+    activeTextColor: "#38bdf8",
+    activeBorderColor: "#38bdf8",
+  },
+  "nordic-birch": {
+    id: "nordic-birch",
+    label: "Nordic Birch Digital",
+    kind: "digital",
+    casingColor: 0xd4c09e,
+    casingRoughness: 0.6,
+    casingMetalness: 0.05,
+    buttonColor: 0xe8ded0,
+    buttonActiveColor: 0x245f4b,
+    faceColor: 0xf4f1eb,
+    accentColor: "#245f4b",
+    textColor: "#334155",
+    activeTextColor: "#245f4b",
+    activeBorderColor: "#245f4b",
+  },
+  "none": {
+    id: "none",
+    label: "Hidden / Off",
+    kind: "none",
+    casingColor: 0x000000,
+    casingRoughness: 1,
+    casingMetalness: 0,
+    buttonColor: 0x000000,
+    buttonActiveColor: 0x000000,
+  },
+};
+
 export type PiecePaletteId =
   | "theme-default"
   | "boxwood-ebony"
@@ -87,6 +202,7 @@ type Props = {
   checkSquare?: Square | null;
   themeId?: ThemeId;
   piecePaletteId?: PiecePaletteId;
+  clockDesignId?: ClockDesignId;
   arrows?: ArrowAnnotation[];
   squareHighlights?: SquareAnnotation[];
   selectedReservePiece?: PieceCode | null;
@@ -215,6 +331,7 @@ type SceneState = {
   floorMesh: THREE.Mesh;
   currentThemeId: ThemeId;
   currentPaletteId?: PiecePaletteId;
+  currentClockDesignId?: ClockDesignId;
   clock3D: ChessClock3D | null;
 };
 
@@ -1860,10 +1977,10 @@ function format3DClockTime(timeMs: number): string {
   return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 }
 
-function createClockCanvasTexture(): { canvas: HTMLCanvasElement; texture: THREE.CanvasTexture; ctx: CanvasRenderingContext2D } {
+function createClockCanvasTexture(size: { width: number; height: number } = { width: 512, height: 256 }): { canvas: HTMLCanvasElement; texture: THREE.CanvasTexture; ctx: CanvasRenderingContext2D } {
   const canvas = document.createElement("canvas");
-  canvas.width = 512;
-  canvas.height = 256;
+  canvas.width = size.width;
+  canvas.height = size.height;
   const ctx = canvas.getContext("2d")!;
   const texture = new THREE.CanvasTexture(canvas);
   texture.anisotropy = 4;
@@ -1871,24 +1988,44 @@ function createClockCanvasTexture(): { canvas: HTMLCanvasElement; texture: THREE
   return { canvas, texture, ctx };
 }
 
-function renderClockFace(
+function renderDigitalClockFace(
   ctx: CanvasRenderingContext2D,
   label: string,
   timeStr: string,
   isActive: boolean,
   isFlag: boolean,
+  design: ClockDesignConfig,
 ) {
   const w = 512;
   const h = 256;
-  ctx.fillStyle = isActive ? "#0a1f14" : isFlag ? "#2b0a0a" : "#0f1713";
+
+  if (design.id === "digital-cyber") {
+    ctx.fillStyle = isActive ? "#06121e" : isFlag ? "#2b0a0a" : "#05080c";
+  } else if (design.id === "nordic-birch") {
+    ctx.fillStyle = isActive ? "#e4ede6" : isFlag ? "#fae8e8" : "#f1ede6";
+  } else {
+    ctx.fillStyle = isActive ? "#0a1f14" : isFlag ? "#2b0a0a" : "#0f1713";
+  }
   ctx.fillRect(0, 0, w, h);
 
   ctx.lineWidth = 14;
-  ctx.strokeStyle = isActive ? "#4ade80" : isFlag ? "#ef4444" : "#1e2e25";
+  if (isActive) {
+    ctx.strokeStyle = design.activeBorderColor || "#4ade80";
+  } else if (isFlag) {
+    ctx.strokeStyle = "#ef4444";
+  } else {
+    ctx.strokeStyle = design.id === "nordic-birch" ? "#d2c7b5" : "#1e2e25";
+  }
   ctx.strokeRect(7, 7, w - 14, h - 14);
 
   ctx.font = "bold 38px sans-serif";
-  ctx.fillStyle = isActive ? "#86efac" : isFlag ? "#fca5a5" : "#64748b";
+  if (isActive) {
+    ctx.fillStyle = design.activeTextColor || "#4ade80";
+  } else if (isFlag) {
+    ctx.fillStyle = "#fca5a5";
+  } else {
+    ctx.fillStyle = design.id === "nordic-birch" ? "#475569" : "#64748b";
+  }
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";
   ctx.fillText(label, 36, 56);
@@ -1899,30 +2036,355 @@ function renderClockFace(
     ctx.textAlign = "right";
     ctx.fillText("FLAG", w - 36, 56);
   } else if (isActive) {
-    ctx.fillStyle = "#4ade80";
+    ctx.fillStyle = design.accentColor || "#4ade80";
     ctx.beginPath();
     ctx.arc(w - 48, 56, 16, 0, Math.PI * 2);
     ctx.fill();
   }
 
-  ctx.font = "bold 108px monospace";
-  ctx.fillStyle = isActive ? "#4ade80" : isFlag ? "#ef4444" : "#e2e8f0";
+  ctx.font = design.id === "digital-cyber" ? "bold 108px 'Consolas', 'Courier New', monospace" : "bold 108px monospace";
+  ctx.fillStyle = isActive ? (design.activeTextColor || "#4ade80") : isFlag ? "#ef4444" : (design.textColor || "#e2e8f0");
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillText(timeStr, w / 2, 160);
 }
 
-function create3DChessClockModel(config: ThemeConfig): ChessClock3D {
+function renderAnalogClockDial(
+  ctx: CanvasRenderingContext2D,
+  sideLabel: string,
+  timeMs: number,
+  isActive: boolean,
+  isFlagFallen: boolean,
+  design: ClockDesignConfig,
+) {
+  const w = 512;
+  const h = 512;
+  const cx = w / 2;
+  const cy = h / 2;
+  const r = 215;
+
+  ctx.clearRect(0, 0, w, h);
+
+  // Dial background
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  const bgGrad = ctx.createRadialGradient(cx - 30, cy - 30, 20, cx, cy, r);
+  if (design.id === "analog-wood") {
+    bgGrad.addColorStop(0, "#fffef9");
+    bgGrad.addColorStop(0.85, "#f7eedc");
+    bgGrad.addColorStop(1, "#ebd7b2");
+  } else {
+    bgGrad.addColorStop(0, "#ffffff");
+    bgGrad.addColorStop(0.9, "#f0f2f5");
+    bgGrad.addColorStop(1, "#d9e0e8");
+  }
+  ctx.fillStyle = bgGrad;
+  ctx.fill();
+
+  // Dial outer ring border
+  ctx.lineWidth = 10;
+  ctx.strokeStyle = isActive ? (design.accentColor || "#dc2626") : (design.id === "analog-wood" ? "#8c6239" : "#64748b");
+  ctx.stroke();
+
+  // Sub-ring
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "rgba(0, 0, 0, 0.15)";
+  ctx.beginPath();
+  ctx.arc(cx, cy, r - 16, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // Minute / Hour Tick marks & Numerals
+  for (let i = 0; i < 60; i++) {
+    const angle = (i * Math.PI) / 30 - Math.PI / 2;
+    const isHour = i % 5 === 0;
+    const tickLen = isHour ? 22 : 10;
+    const innerR = r - 16 - tickLen;
+    const outerR = r - 16;
+
+    const x1 = cx + Math.cos(angle) * innerR;
+    const y1 = cy + Math.sin(angle) * innerR;
+    const x2 = cx + Math.cos(angle) * outerR;
+    const y2 = cy + Math.sin(angle) * outerR;
+
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.lineWidth = isHour ? 6 : 2;
+    ctx.strokeStyle = isHour ? "#1f2937" : "rgba(31, 41, 55, 0.45)";
+    ctx.stroke();
+
+    if (isHour) {
+      const num = i === 0 ? 12 : i / 5;
+      const numR = r - 58;
+      const nx = cx + Math.cos(angle) * numR;
+      const ny = cy + Math.sin(angle) * numR;
+
+      ctx.fillStyle = "#111827";
+      ctx.font = "bold 34px 'Cinzel', 'Georgia', serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(num.toString(), nx, ny);
+    }
+  }
+
+  // Side label badge in top quadrant
+  ctx.font = "800 24px system-ui, sans-serif";
+  ctx.fillStyle = isActive ? (design.activeTextColor || "#15803d") : "#6b7280";
+  ctx.textAlign = "center";
+  ctx.fillText(sideLabel, cx, cy - 75);
+
+  // Red Flag at 11:30 - 12:00
+  ctx.save();
+  ctx.fillStyle = isFlagFallen ? "#dc2626" : "rgba(220, 38, 38, 0.85)";
+  ctx.beginPath();
+  if (isFlagFallen) {
+    ctx.moveTo(cx - 8, cy - r + 45);
+    ctx.lineTo(cx - 8, cy - r + 90);
+    ctx.lineTo(cx + 36, cy - r + 75);
+  } else {
+    ctx.moveTo(cx - 8, cy - r + 24);
+    ctx.lineTo(cx - 8, cy - r + 68);
+    ctx.lineTo(cx + 34, cy - r + 46);
+  }
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+
+  // Hands calculation based on remaining time
+  const totalSeconds = Math.max(0, Math.floor(timeMs / 1000));
+  const minutes = (totalSeconds / 60) % 60;
+  const seconds = totalSeconds % 60;
+
+  // Minute Hand (long hand)
+  const minAngle = (minutes / 60) * Math.PI * 2 - Math.PI / 2;
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(cx - Math.cos(minAngle) * 25, cy - Math.sin(minAngle) * 25);
+  ctx.lineTo(cx + Math.cos(minAngle) * (r - 40), cy + Math.sin(minAngle) * (r - 40));
+  ctx.lineWidth = 8;
+  ctx.lineCap = "round";
+  ctx.strokeStyle = "#111827";
+  ctx.stroke();
+  ctx.restore();
+
+  // Hour / Second Hand (shorter hand)
+  const hourAngle = ((minutes / 12) / 60) * Math.PI * 2 - Math.PI / 2;
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(cx - Math.cos(hourAngle) * 18, cy - Math.sin(hourAngle) * 18);
+  ctx.lineTo(cx + Math.cos(hourAngle) * (r - 95), cy + Math.sin(hourAngle) * (r - 95));
+  ctx.lineWidth = 12;
+  ctx.lineCap = "round";
+  ctx.strokeStyle = "#111827";
+  ctx.stroke();
+  ctx.restore();
+
+  // Second tick needle
+  const secAngle = (seconds / 60) * Math.PI * 2 - Math.PI / 2;
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(cx - Math.cos(secAngle) * 35, cy - Math.sin(secAngle) * 35);
+  ctx.lineTo(cx + Math.cos(secAngle) * (r - 30), cy + Math.sin(secAngle) * (r - 30));
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = "#dc2626";
+  ctx.stroke();
+  ctx.restore();
+
+  // Center cap pin
+  ctx.beginPath();
+  ctx.arc(cx, cy, 14, 0, Math.PI * 2);
+  ctx.fillStyle = design.id === "analog-wood" ? "#d4af37" : "#374151";
+  ctx.fill();
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = "#111827";
+  ctx.stroke();
+
+  // Active glow border
+  if (isActive) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, r - 4, 0, Math.PI * 2);
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = design.accentColor || "#4ade80";
+    ctx.stroke();
+  }
+}
+
+function create3DChessClockModel(
+  designId: ClockDesignId = "digital-tournament",
+  config: ThemeConfig = THEME_CONFIG,
+): ChessClock3D | null {
+  const design = CLOCK_DESIGNS[designId] || CLOCK_DESIGNS["digital-tournament"];
+  if (design.kind === "none") return null;
+
   const group = new THREE.Group();
   group.name = "chess-clock-3d";
   group.position.set(5.5, 0, 0);
   group.rotation.y = -Math.PI / 16;
 
+  if (design.kind === "analog") {
+    // --- VINTAGE / WOOD ANALOG CABINET ---
+    const bodyGeo = new THREE.BoxGeometry(1.15, 0.78, 2.45);
+    const bodyMat = new THREE.MeshStandardMaterial({
+      color: design.casingColor,
+      roughness: design.casingRoughness,
+      metalness: design.casingMetalness,
+    });
+    const body = new THREE.Mesh(bodyGeo, bodyMat);
+    body.position.set(0, 0.39, 0);
+    body.castShadow = true;
+    body.receiveShadow = true;
+    body.userData = { kind: "clock" };
+    group.add(body);
+
+    // Cornice top & base trim
+    const trimGeo = new THREE.BoxGeometry(1.22, 0.06, 2.52);
+    const topTrim = new THREE.Mesh(trimGeo, bodyMat);
+    topTrim.position.set(0, 0.76, 0);
+    topTrim.castShadow = true;
+    topTrim.userData = { kind: "clock" };
+    group.add(topTrim);
+
+    const baseTrim = new THREE.Mesh(trimGeo, bodyMat);
+    baseTrim.position.set(0, 0.03, 0);
+    baseTrim.castShadow = true;
+    baseTrim.userData = { kind: "clock" };
+    group.add(baseTrim);
+
+    // Dual circular dials
+    const leftScreen = createClockCanvasTexture({ width: 512, height: 512 });
+    const rightScreen = createClockCanvasTexture({ width: 512, height: 512 });
+
+    const dialGeo = new THREE.CircleGeometry(0.46, 32);
+    const leftDialMat = new THREE.MeshBasicMaterial({
+      map: leftScreen.texture,
+      side: THREE.FrontSide,
+    });
+    const rightDialMat = new THREE.MeshBasicMaterial({
+      map: rightScreen.texture,
+      side: THREE.FrontSide,
+    });
+
+    const leftDialMesh = new THREE.Mesh(dialGeo, leftDialMat);
+    leftDialMesh.position.set(-0.58, 0.40, -0.58);
+    leftDialMesh.rotation.y = -Math.PI / 2;
+    leftDialMesh.userData = { kind: "clock" };
+    group.add(leftDialMesh);
+
+    const rightDialMesh = new THREE.Mesh(dialGeo, rightDialMat);
+    rightDialMesh.position.set(-0.58, 0.40, 0.58);
+    rightDialMesh.rotation.y = -Math.PI / 2;
+    rightDialMesh.userData = { kind: "clock" };
+    group.add(rightDialMesh);
+
+    // Bezel rings
+    const bezelGeo = new THREE.RingGeometry(0.45, 0.49, 32);
+    const bezelMat = new THREE.MeshStandardMaterial({
+      color: design.buttonColor,
+      roughness: 0.25,
+      metalness: 0.85,
+    });
+    const leftBezel = new THREE.Mesh(bezelGeo, bezelMat);
+    leftBezel.position.set(-0.582, 0.40, -0.58);
+    leftBezel.rotation.y = -Math.PI / 2;
+    leftBezel.userData = { kind: "clock" };
+    group.add(leftBezel);
+
+    const rightBezel = new THREE.Mesh(bezelGeo, bezelMat);
+    rightBezel.position.set(-0.582, 0.40, 0.58);
+    rightBezel.rotation.y = -Math.PI / 2;
+    rightBezel.userData = { kind: "clock" };
+    group.add(rightBezel);
+
+    // Top mechanical plungers
+    const plungerGeo = new THREE.CylinderGeometry(0.16, 0.16, 0.26, 24);
+    const plungerMat = new THREE.MeshStandardMaterial({
+      color: design.buttonColor,
+      roughness: 0.22,
+      metalness: 0.88,
+    });
+    const leftButton = new THREE.Mesh(plungerGeo, plungerMat.clone());
+    leftButton.position.set(0, 0.86, -0.58);
+    leftButton.castShadow = true;
+    leftButton.userData = { kind: "clock" };
+    group.add(leftButton);
+
+    const rightButton = new THREE.Mesh(plungerGeo, plungerMat.clone());
+    rightButton.position.set(0, 0.86, 0.58);
+    rightButton.castShadow = true;
+    rightButton.userData = { kind: "clock" };
+    group.add(rightButton);
+
+    // Center stopper pin
+    const stopPinGeo = new THREE.CylinderGeometry(0.05, 0.05, 0.18, 16);
+    const stopPin = new THREE.Mesh(stopPinGeo, plungerMat);
+    stopPin.position.set(0, 0.84, 0);
+    stopPin.userData = { kind: "clock" };
+    group.add(stopPin);
+
+    renderAnalogClockDial(leftScreen.ctx, "WHITE", 300000, false, false, design);
+    leftScreen.texture.needsUpdate = true;
+    renderAnalogClockDial(rightScreen.ctx, "BLACK", 300000, false, false, design);
+    rightScreen.texture.needsUpdate = true;
+
+    const updateTime = (
+      whiteTimeMs: number,
+      blackTimeMs: number,
+      activeSide: "w" | "b" | null,
+      flagFallenSide: "w" | "b" | null,
+      formatTime: (ms: number) => string,
+    ) => {
+      const isWhiteActive = activeSide === "w";
+      const isBlackActive = activeSide === "b";
+      const isWhiteFlag = flagFallenSide === "w";
+      const isBlackFlag = flagFallenSide === "b";
+
+      renderAnalogClockDial(leftScreen.ctx, "WHITE", whiteTimeMs, isWhiteActive, isWhiteFlag, design);
+      leftScreen.texture.needsUpdate = true;
+
+      renderAnalogClockDial(rightScreen.ctx, "BLACK", blackTimeMs, isBlackActive, isBlackFlag, design);
+      rightScreen.texture.needsUpdate = true;
+
+      if (isWhiteActive) {
+        leftButton.position.y = 0.80;
+        rightButton.position.y = 0.92;
+        (leftButton.material as THREE.MeshStandardMaterial).color.setHex(design.buttonColor);
+        (rightButton.material as THREE.MeshStandardMaterial).color.setHex(design.buttonActiveColor);
+      } else if (isBlackActive) {
+        leftButton.position.y = 0.92;
+        rightButton.position.y = 0.80;
+        (leftButton.material as THREE.MeshStandardMaterial).color.setHex(design.buttonActiveColor);
+        (rightButton.material as THREE.MeshStandardMaterial).color.setHex(design.buttonColor);
+      } else {
+        leftButton.position.y = 0.86;
+        rightButton.position.y = 0.86;
+        (leftButton.material as THREE.MeshStandardMaterial).color.setHex(design.buttonColor);
+        (rightButton.material as THREE.MeshStandardMaterial).color.setHex(design.buttonColor);
+      }
+    };
+
+    const dispose = () => {
+      leftScreen.texture.dispose();
+      rightScreen.texture.dispose();
+      disposeObject(group, { geometries: true, materials: true });
+    };
+
+    return {
+      group,
+      leftButton,
+      rightButton,
+      leftTexture: leftScreen.texture,
+      rightTexture: rightScreen.texture,
+      updateTime,
+      dispose,
+    };
+  }
+
+  // --- DIGITAL MODERN / CYBER / BIRCH CLOCKS ---
   const bodyGeo = new THREE.BoxGeometry(1.25, 0.65, 2.5);
   const bodyMat = new THREE.MeshStandardMaterial({
-    color: 0x1a2620,
-    roughness: 0.35,
-    metalness: 0.3,
+    color: design.casingColor,
+    roughness: design.casingRoughness,
+    metalness: design.casingMetalness,
   });
   const body = new THREE.Mesh(bodyGeo, bodyMat);
   body.position.set(0, 0.325, 0);
@@ -1933,7 +2395,7 @@ function create3DChessClockModel(config: ThemeConfig): ChessClock3D {
 
   const faceGeo = new THREE.BoxGeometry(0.12, 0.52, 2.34);
   const faceMat = new THREE.MeshStandardMaterial({
-    color: 0x111c16,
+    color: design.faceColor ?? 0x111c16,
     roughness: 0.5,
     metalness: 0.2,
   });
@@ -1974,7 +2436,7 @@ function create3DChessClockModel(config: ThemeConfig): ChessClock3D {
 
   const buttonGeo = new THREE.BoxGeometry(0.85, 0.14, 0.92);
   const buttonMat = new THREE.MeshStandardMaterial({
-    color: 0x2e4638,
+    color: design.buttonColor,
     roughness: 0.3,
     metalness: 0.4,
   });
@@ -1990,9 +2452,9 @@ function create3DChessClockModel(config: ThemeConfig): ChessClock3D {
   rightButton.userData = { kind: "clock" };
   group.add(rightButton);
 
-  renderClockFace(leftScreen.ctx, "WHITE", "05:00", false, false);
+  renderDigitalClockFace(leftScreen.ctx, "WHITE", "05:00", false, false, design);
   leftScreen.texture.needsUpdate = true;
-  renderClockFace(rightScreen.ctx, "BLACK", "05:00", false, false);
+  renderDigitalClockFace(rightScreen.ctx, "BLACK", "05:00", false, false, design);
   rightScreen.texture.needsUpdate = true;
 
   const updateTime = (
@@ -2007,27 +2469,27 @@ function create3DChessClockModel(config: ThemeConfig): ChessClock3D {
     const isWhiteFlag = flagFallenSide === "w";
     const isBlackFlag = flagFallenSide === "b";
 
-    renderClockFace(leftScreen.ctx, "WHITE", formatTime(whiteTimeMs), isWhiteActive, isWhiteFlag);
+    renderDigitalClockFace(leftScreen.ctx, "WHITE", formatTime(whiteTimeMs), isWhiteActive, isWhiteFlag, design);
     leftScreen.texture.needsUpdate = true;
 
-    renderClockFace(rightScreen.ctx, "BLACK", formatTime(blackTimeMs), isBlackActive, isBlackFlag);
+    renderDigitalClockFace(rightScreen.ctx, "BLACK", formatTime(blackTimeMs), isBlackActive, isBlackFlag, design);
     rightScreen.texture.needsUpdate = true;
 
     if (isWhiteActive) {
       leftButton.position.y = 0.64;
       rightButton.position.y = 0.72;
-      (leftButton.material as THREE.MeshStandardMaterial).color.setHex(0x1a2e23);
-      (rightButton.material as THREE.MeshStandardMaterial).color.setHex(0x3e6b52);
+      (leftButton.material as THREE.MeshStandardMaterial).color.setHex(design.buttonColor);
+      (rightButton.material as THREE.MeshStandardMaterial).color.setHex(design.buttonActiveColor);
     } else if (isBlackActive) {
       leftButton.position.y = 0.72;
       rightButton.position.y = 0.64;
-      (leftButton.material as THREE.MeshStandardMaterial).color.setHex(0x3e6b52);
-      (rightButton.material as THREE.MeshStandardMaterial).color.setHex(0x1a2e23);
+      (leftButton.material as THREE.MeshStandardMaterial).color.setHex(design.buttonActiveColor);
+      (rightButton.material as THREE.MeshStandardMaterial).color.setHex(design.buttonColor);
     } else {
       leftButton.position.y = 0.68;
       rightButton.position.y = 0.68;
-      (leftButton.material as THREE.MeshStandardMaterial).color.setHex(0x2e4638);
-      (rightButton.material as THREE.MeshStandardMaterial).color.setHex(0x2e4638);
+      (leftButton.material as THREE.MeshStandardMaterial).color.setHex(design.buttonColor);
+      (rightButton.material as THREE.MeshStandardMaterial).color.setHex(design.buttonColor);
     }
   };
 
@@ -2098,6 +2560,7 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     checkSquare,
     themeId = "classic-walnut",
     piecePaletteId = "theme-default",
+    clockDesignId = "digital-tournament",
     arrows = [],
     squareHighlights = [],
     selectedReservePiece = null,
@@ -2281,9 +2744,11 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
     board.add(hover);
     scene.add(board);
 
-    const clock3D = create3DChessClockModel(config);
-    clock3D.group.visible = Boolean(clockState?.enabled);
-    scene.add(clock3D.group);
+    const clock3D = create3DChessClockModel(clockDesignId, config);
+    if (clock3D) {
+      clock3D.group.visible = Boolean(clockState?.enabled);
+      scene.add(clock3D.group);
+    }
 
     const materials = createPieceMaterials(config, piecePaletteId);
 
@@ -2316,6 +2781,7 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       floorMesh,
       currentThemeId: themeId,
       currentPaletteId: piecePaletteId,
+      currentClockDesignId: clockDesignId,
       clock3D,
     };
     stateRef.current = state;
@@ -2399,8 +2865,8 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       const bounds = renderer.domElement.getBoundingClientRect();
       pointer.x = ((clientX - bounds.left) / bounds.width) * 2 - 1;
       pointer.y = -((clientY - bounds.top) / bounds.height) * 2 + 1;
-      raycaster.setFromCamera(pointer, camera);
-      const targets = [board, clock3D.group].filter(Boolean) as THREE.Object3D[];
+      const clockGroup = stateRef.current?.clock3D?.group || clock3D?.group;
+      const targets = [board, clockGroup].filter(Boolean) as THREE.Object3D[];
       const hits = raycaster.intersectObjects(targets, true);
       for (const hit of hits) {
         const interactive = findInteractive(hit.object);
@@ -2731,7 +3197,24 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
 
   useEffect(() => {
     const state = stateRef.current;
-    if (!state || !state.clock3D) return;
+    if (!state) return;
+    if (state.currentClockDesignId !== clockDesignId) {
+      state.currentClockDesignId = clockDesignId;
+      if (state.clock3D) {
+        state.scene.remove(state.clock3D.group);
+        state.clock3D.dispose();
+        state.clock3D = null;
+      }
+      const config = THEMES[themeId] || THEMES["classic-walnut"];
+      const newClock = create3DChessClockModel(clockDesignId, config);
+      if (newClock) {
+        newClock.group.visible = Boolean(clockState?.enabled);
+        state.scene.add(newClock.group);
+        state.clock3D = newClock;
+      }
+    }
+
+    if (!state.clock3D) return;
     if (!clockState || !clockState.enabled) {
       state.clock3D.group.visible = false;
       return;
@@ -2744,7 +3227,7 @@ export const ChessBoard3D = forwardRef<ChessBoardHandle, Props>(function ChessBo
       clockState.flagFallenSide,
       format3DClockTime,
     );
-  }, [clockState]);
+  }, [clockDesignId, clockState, themeId]);
 
   useEffect(() => {
     const state = stateRef.current;

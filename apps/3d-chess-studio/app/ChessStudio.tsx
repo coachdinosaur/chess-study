@@ -6,6 +6,8 @@ import {
   type ArrowAnnotation,
   type CameraView,
   type ChessBoardHandle,
+  type ClockDesignId,
+  CLOCK_DESIGNS,
   type LastMove,
   type PiecePaletteId,
   type SquareAnnotation,
@@ -112,6 +114,15 @@ const THEME_OPTIONS: { id: ThemeId; label: string }[] = [
   { id: "tournament-vinyl", label: "Tournament Vinyl" },
   { id: "modern-marble", label: "Modern Marble" },
   { id: "midnight-obsidian", label: "Midnight Obsidian" },
+];
+
+const CLOCK_DESIGN_OPTIONS: { id: ClockDesignId; label: string }[] = [
+  { id: "digital-tournament", label: "⏱️ Tournament Digital" },
+  { id: "analog-wood", label: "🪵 Vintage Wood Analog" },
+  { id: "analog-vintage", label: "⚙️ Retro Mechanical" },
+  { id: "digital-cyber", label: "⚡ Stealth Cyber OLED" },
+  { id: "nordic-birch", label: "🌿 Nordic Birch" },
+  { id: "none", label: "🚫 Hide 3D Clock" },
 ];
 
 const EN_PASSANT_OPTIONS = [
@@ -229,6 +240,17 @@ export default function ChessStudio() {
     return "theme-default";
   });
 
+  // 3D Clock Design State
+  const [clockDesignId, setClockDesignId] = useState<ClockDesignId>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("3d-chess-clock-design") as ClockDesignId | null;
+      if (saved && ["digital-tournament", "analog-wood", "analog-vintage", "digital-cyber", "nordic-birch", "none"].includes(saved)) {
+        return saved;
+      }
+    }
+    return "digital-tournament";
+  });
+
   // Annotations (3D Arrows & Highlights)
   const [arrows, setArrows] = useState<ArrowAnnotation[]>([]);
   const [squareHighlights, setSquareHighlights] = useState<SquareAnnotation[]>([]);
@@ -310,6 +332,16 @@ export default function ChessStudio() {
     }
     const label = PIECE_PALETTES[newPalette]?.label || newPalette;
     announce(`${label} piece colors active`);
+  };
+
+  // Clock Design switcher handler
+  const handleClockDesignChange = (newDesign: ClockDesignId) => {
+    setClockDesignId(newDesign);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("3d-chess-clock-design", newDesign);
+    }
+    const label = CLOCK_DESIGN_OPTIONS.find((c) => c.id === newDesign)?.label || newDesign;
+    announce(`${label} clock design loaded`);
   };
 
   const resetClock = useCallback((tcId: TimeControlId = timeControlId) => {
@@ -1468,6 +1500,21 @@ export default function ChessStudio() {
             </select>
           </div>
 
+          <div className="theme-select-wrapper" title="3D Chess clock design">
+            <select
+              className="theme-select"
+              value={clockDesignId}
+              onChange={(e) => handleClockDesignChange(e.target.value as ClockDesignId)}
+              aria-label="Select 3D chess clock design"
+            >
+              {CLOCK_DESIGN_OPTIONS.map(({ id, label }) => (
+                <option key={id} value={id}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {!playMode && <span className="position-count">{pieceCount} pieces</span>}
           {playMode ? (
             <>
@@ -1716,6 +1763,7 @@ export default function ChessStudio() {
               checkSquare={checkSquare}
               themeId={themeId}
               piecePaletteId={piecePaletteId}
+              clockDesignId={clockDesignId}
               arrows={arrows}
               squareHighlights={squareHighlights}
               selectedReservePiece={selectedPiece}
@@ -1949,6 +1997,21 @@ export default function ChessStudio() {
                     {TIME_CONTROLS[tc].label}
                   </button>
                 ))}
+              </div>
+              <div className="clock-model-select-row">
+                <span className="clock-model-label">3D Model:</span>
+                <select
+                  className="clock-mini-select"
+                  value={clockDesignId}
+                  onChange={(e) => handleClockDesignChange(e.target.value as ClockDesignId)}
+                  aria-label="Select 3D clock design"
+                >
+                  {CLOCK_DESIGN_OPTIONS.map(({ id, label }) => (
+                    <option key={id} value={id}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
