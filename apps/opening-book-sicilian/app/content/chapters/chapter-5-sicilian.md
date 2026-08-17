@@ -82,13 +82,10 @@ I consider White’s best try to be:
 **6.Na3!?**
 
 <!-- FEN: rnbqkb1r/pp3ppp/5n2/2pp4/5B2/2PP4/PP4PP/RN1QKBNR w KQkq - 0 6 -->
-  Instead, 6.e5 Nfd7 7.Nf3 Be7 8.Be2 Nc6 9.d4 (9.0-0 g5!?⇆) 9...0-0 10.0-0 f6⇆ leads to a position where Black is at least equal.
-
-<!-- FEN: r1bqk2r/pp1nbppp/2n5/2ppP3/5B2/2PP1N2/PP2B1PP/RN1QK2R w KQkq - 5 9 -->
-  9.0-0 g5!? 10.Bg3 g4 11.Nfd2 Ndxe5 12.d4 cxd4 13.cxd4 Ng6 14.Bxg4 f5 15.Bf3 f4 16.Bf2 0-0 17.Re1 Nh4 (17...Bf5 18.Rc1 Rc8 19.Nb1) 18.Bxh4 Bxh4⇆ deserves closer scrutiny.
+  Instead, 6.e5 Nfd7 7.Nf3 Be7 8.Be2 Nc6 9.d4 (9.0-0 g5!?⇆) 9...0-0 10.0-0 f6⇆ leads to a position where <!-- FEN: r1bqk2r/pp1nbppp/2n5/2ppP3/5B2/2PP1N2/PP2B1PP/RN1Q1RK1 b kq - 6 9 --> 9...g5!? 10.Bg3 g4 11.Nfd2 Ndxe5 12.d4 cxd4 13.cxd4 Ng6 14.Bxg4 f5 15.Bf3 f4 16.Bf2 0-0 17.Re1 Nh4 (<!-- FEN: r1bq1rk1/pp1nb1pp/2n3n1/2ppP3/3P1p2/2P2B2/PP1N1BPP/R2QR1K1 b - - 1 17 --> 17...Bf5 18.Rc1 Rc8 19.Nb1) <!-- FEN: r1bq1rk1/pp1nb1pp/2n3n1/2ppP3/3P1p1n/2P2B2/PP1N1BPP/R2QR1K1 w - - 2 18 --> 18.Bxh4 Bxh4⇆ deserves closer scrutiny.
 
 <!-- FEN: r1bq1rk1/pp1nb1pp/2n1pp2/3pP3/3P1B2/2P2N2/PP2B1PP/RN1Q1RK1 w - - 0 11 -->
-  11.exf6 Nxf6 12.Qd2 (<!-- FEN: r1bq1rk1/pp1nb1pp/2n1pp2/3pP3/3P1B2/2P2N2/PP1Q2PP/RN3RK1 w - - 1 12 --> 12.Nbd2?! Nh5 13.Be3 Nf4 14.Bxf4 Rxf4 15.Nb3 b6⩱) 12...Ne4 13.Qe3 cxd4 14.cxd4 Qb6 15.Nc3 Qxb2 16.Nxe4 dxe4 17.Qxe4 Rxf4 18.Qxf4 Qxe2 19.Rae1 Qxa2 20.d5 Qxd5 21.Ne5 Nxe5 22.Rxe5 Qd6 23.Qf7† Kh8 24.Qe8† Bf8 25.Rxf8† Qxf8 26.Qxf8# was 1-0 in Harestad – C. Hansen, Gausdal 1991.
+  11.exf6 Nxf6 12.Qd2 (<!-- FEN: r1bq1rk1/pp1nb1pp/2n1pn2/2pp4/3P1B2/2P2N2/PP2B1PP/RN1Q1RK1 w - - 0 12 --> 12.Nbd2?! Nh5 13.Be3 Nf4 14.Bxf4 Rxf4 15.Nb3 b6⩱) <!-- FEN: r1bq1rk1/pp1nb1pp/2n1pn2/2pp4/3P1B2/2P2N2/PP1QB1PP/RN3RK1 b - - 1 12 --> 12...Ne4 13.Qe3 cxd4 14.cxd4 Qb6 15.Nc3 Qxb2 16.Nxe4 dxe4 17.Qxe4 Rxf4 18.Qxf4 Qxe2 19.Rae1 Qxa2 20.d5 Qxd5 21.Ne5 Nxe5 22.Rxe5 Qd6 23.Qf7† Kh8 24.Qe8† Bf8 25.Rxf8† Qxf8 26.Qxf8# was 1-0 in Harestad – C. Hansen, Gausdal 1991.
 
 <!-- FEN: rnbqkb1r/pp3ppp/5n2/2pp4/5B2/N1PP4/PP4PP/R2QKBNR b KQkq - 1 6 -->
 **6...Be7 7.Be2 0-0 8.Nf3 Nc6 9.0-0 dxe4 10.dxe4 Nxe4 11.Qc2 Nf6 12.Rad1 Bd7 13.Nc4 Qc8 14.Nd6 Bxd6 15.Bxd6 Re8 16.Bxc5 Bf5 17.Bd3 Bxd3 18.Qxd3 Qg4=**
@@ -138,26 +135,26 @@ White’s alternative capture is 6.cxd4, which transposes to B21 on page 83.
 `rnbqkb1r/pp1p1ppp/8/3pP3/3P4/2P5/PP3PPP/RNBQK1NR w KQkq - 0 7`
 
 <!-- FEN: rnbqkb1r/pp1p1ppp/8/3pP3/3P4/2P5/PP3PPP/RNBQK1NR w KQkq - 0 7 -->
-**7.Qxd4**
+**7.Qxd5**
 
 Taking the pawn is by far the most common move.
 
 <!-- FEN: rnbqkb1r/pp1p1ppp/8/3pP3/3P4/2P5/PP3PPP/RNBQK1NR w KQkq - 0 7 -->
-  Instead, 7.Nf3 d6 8.0-0 Nc6 9.Re1 dxe5 10.Nxe5 Nxe5 11.Rxe5† Be6 12.Qxd4 Be7 13.Qa4† Qd7 14.Qxd7† Kxd7= was completely equal in J. Hector – J. Johannessen, Gothenburg 2005.
+  Instead, 7.Nf3 d6 8.0-0 Nc6 9.Re1 dxe5 10.Nxe5 Nxe5 11.Rxe5† Be6 12.Qxd5 Be7 13.Qa4† Qd7 14.Qxd7† Kxd7= was completely equal in J. Hector – J. Johannessen, Gothenburg 2005.
 
 <!-- FEN: rnbqkb1r/pp1p1ppp/8/3QP3/8/2P5/PP3PPP/RNB1K1NR b KQkq - 0 7 -->
-**7...Nc6 8.Qxd5 d6 9.exd6 Bxd6**
+**7...Nc6 8.Nf3 d6 9.exd6 Bxd6**
 
 Black has good compensation for the pawn due to his lead in development and White’s uncastled king.
 
-<!-- FEN: r1bqk2r/pp3ppp/2nb4/3Q4/8/2P5/PP3PPP/RNB1K1NR w KQkq - 0 10 -->
+<!-- FEN: r1bqk2r/pp3ppp/2nb4/3Q4/8/2P2N2/PP3PPP/RNB1K2R w KQkq - 0 10 -->
 **10.Qe4†**
 
-<!-- FEN: r1bqk2r/pp3ppp/2nb4/3Q4/8/2P5/PP3PPP/RNB1K1NR w KQkq - 0 10 -->
-  10.Nf3 0-0 11.0-0 h6 (11...Bxh2† 12.Nxh2 Qxd5 13.Bxd5= is an immediate draw) 12.Be3 Re8 13.Nbd2 Qf6= with fully equal play.
+<!-- FEN: r1bqk2r/pp3ppp/2nb4/3Q4/8/2P2N2/PP3PPP/RNB1K2R w KQkq - 0 10 -->
+  10.0-0 0-0 11.Rd1 Be7 12.Be3 Re8 13.Nbd2 Qf6= with fully equal play.
 
-<!-- FEN: r1bqk2r/pp3ppp/2nb4/4Q3/8/2P5/PP3PPP/RNB1K1NR b KQkq - 1 10 -->
-**10...Be6 11.Nf3 h6 12.0-0 0-0 13.Bf4**
+<!-- FEN: r1bqk2r/pp3ppp/2nb4/4Q3/8/2P2N2/PP3PPP/RNB1K2R b KQkq - 1 10 -->
+**10...Be6 11.0-0 0-0 12.Bf4**
 
 <!-- FEN: r2q1rk1/pp3pp1/2nbb2p/8/5B2/2P2N2/PP3PPP/RN3RK1 b - - 1 13 -->
   13.Be3 Re8 14.Nbd2 Bd5 15.Qc2 Qf6 16.Rfe1 Rad8= Black had comfortable play in Sveshnikov – Rozentalis, Elista 1996.
@@ -497,7 +494,7 @@ We will look at:
 Black takes his share of the centre.
 
 <!-- FEN: r1bqkb1r/pp1p2pp/2n2n2/8/8/2P2N2/PPQ2PPP/RNB1KB1R b KQkq - 1 9 -->
-  9...Bc5 10.Bd3 0-0 11.0-0 d5 12.Bg5 h6 13.Bh4 e5 14.Bg3 e4 15.Nd4 Bxd4 16.cxd4 Nxd4 17.Qd2 Ne6 18.Nc3 Qa5 19.Bxf6 Rxf6 20.Bxe4 dxe4 21.Nxe4 Qxd2 22.Nxd2 Nf4-+ White was completely busted in Minasian – Bologan, Batumi 2002.
+  <!-- FEN: r1bqkb1r/pp1p2pp/2n2n2/8/8/2P2N2/PPQ2PPP/RNB1KB1R b KQkq - 1 9 --> 9...Bc5 10.Bd3 0-0 11.0-0 d5 12.Bg5 h6 13.Bh4 e5 14.Bg3 e4 15.Nd4 Bxd4 16.cxd4 Nxd4 17.Qd2 Ne6 18.Nc3 Qa5 19.Bxf6 Rxf6 20.Bxe4 dxe4 21.Nxe4 Qxd2 22.Nxd2 Nf4-+ White was completely busted in Minasian – Bologan, Batumi 2002.
 
 <!-- FEN: r1bqkb1r/pp3ppp/2n1pn2/3p4/8/2P2N2/PPQ2PPP/RNB1KB1R w KQkq - 0 10 -->
 **10.Bd3 Bd6 11.0-0 0-0 12.Bg5 Qc7 13.Nbd2 e5 14.Bxf6 gxf6 15.Bf5 e4 16.Bxc8 Raxc8 17.Nh4 Bxh2† 18.Kh1 Bf4 19.Nf5 Qe5 20.g4 Kh8 21.f3 e3 22.Nb3 d4 23.cxd4 Nxd4 24.Qd3 Nxf5 25.gxf5 Rcd8 26.Qe4 Qxe4 27.fxe4 Bg5 28.Rfe1 Rfe8-+**
@@ -515,7 +512,7 @@ c3 Sicilian
   13.Qe2?! Ng4! 14.g3 Nce5 15.Nfxe5 Nxe5 16.Be4 Bxe4 17.Bf4, as played in Westerinen – Cramling, Alicante 1989.
 
 <!-- FEN: r1b2rk1/1pq1b1pp/p1n1p3/3p2B1/2N1Q3/2PB1N2/PP3PPP/R4RK1 w - - 0 17 -->
-  16...d5 17.Qa4† Kf7 18.Bc2 Rhf8 19.Nf3 Kg8=
+  <!-- FEN: r1bq1r2/pp1n2kp/2n2p2/4p3/7Q/2PB1N2/PP3PPP/RN3RK1 b - - 1 16 --> 16...d5 17.Qa4† Kf7 18.Bc2 Rhf8 19.Nf3 Kg8=
 
 <!-- FEN: r1b4r/1pq1bkpp/p1n1p3/3pp1B1/Q1N5/2PB1N2/PPB2PPP/R4RK1 b - - 1 18 -->
 **18...Bd7 19.Bxe7 Kxe7 20.Qa3† Kf7 21.Qd6! Qxd6 22.Nxd6† Ke7 23.Nxb7 Rab8 24.Nc5 e4 25.Nd4 Nxd4 26.cxd4 Rxb2 27.Bb3 Bb5 28.Rfb1 Rxb1† 29.Rxb1**
@@ -607,7 +604,7 @@ c3 Sicilian
 **14.c4 0-0**
 
 <!-- FEN: r1bqkb1r/1p4pp/p1n2n2/3p2B1/2PNp2Q/8/PP2BPPP/RN3RK1 b kq - 0 14 -->
-  14...Ne5 15.Nc3 Bf5 16.Nxd5 Nxd5 17.cxd5 h6 18.Qg3 Bd6 19.Bf4 Qf6 20.Rad1 0-0 21.Nd4⇆
+  <!-- FEN: r1bqkb1r/1p1p2pp/p1n2n2/3N2B1/4p2Q/2P5/PP2BPPP/R4RK1 b kq - 1 14 --> 14...Ne5 15.Nc3 Bf5 16.Nxd5 Nxd5 17.cxd5 h6 18.Qg3 Bd6 19.Bf4 Qf6 20.Rad1 0-0 21.Nd4⇆
 
 <!-- FEN: r1bq1rk1/1p2b1pp/p1n2n2/3p2B1/2PNp2Q/8/PP2BPPP/RN3RK1 w - - 1 15 -->
 **15.cxd5 Nd4 16.Nc3 Nf5 17.Qh3 Ng3 18.Qh4 Nxf1 19.Kxf1 h6⩱**
@@ -653,16 +650,16 @@ c3 Sicilian
   12...b4! 13.Qh5†
 
 <!-- FEN: r3kb1r/2qp2pp/b1n1pn2/pp2P2Q/1p5N/2P3P1/PP3PBP/RNB2RK1 b kq - 3 13 -->
-  13.c4 g6 14.b3 Bg7 15.f4 0-0= Shishkov – Fernandez Vicente, email 2006.
+  <!-- FEN: r3kb1r/2qp2pp/b1n1pn2/pp2P3/7N/2P3P1/PP2QPBP/RNB2RK1 w kq - 2 13 --> 13.c4 g6 14.b3 Bg7 15.f4 0-0= Shishkov – Fernandez Vicente, email 2006.
 
 <!-- FEN: r3kb1r/2qp2pp/b1n1pn2/pp2P2Q/1p5N/2P3P1/PP3PBP/RNB2RK1 b kq - 3 13 -->
   13...g6 14.Nxg6
 
 <!-- FEN: r3kb1r/2qp3p/b1n1pnN1/p3P2Q/1p6/2P3P1/PP3PBP/RNB2RK1 b kq - 0 14 -->
-  14...0-0-0 15.Nxh8 Bxf1 16.Bxd5 exd5 17.Bh6 Bd3 18.Bxf8 Nd2 19.Nxd2 bxc3 20.bxc3
+  <!-- FEN: r3kb1r/2qp2pp/b1n1pB2/pp2P3/7N/2P3P1/PP2QPBP/RN3RK1 b kq - 0 14 --> 14...0-0-0 15.Nxh8 Bxf1 16.Bxd5 exd5 17.Bh6 Bd3 18.Bxf8 Nd2 19.Nxd2 bxc3 20.bxc3
 
 <!-- FEN: r3kb1r/2qp2p1/b1n1pnQ1/pp2P3/1p6/2P3P1/PP3PBP/RNB2RK1 b kq - 0 15 -->
-  15...Kd8 16.Bxd5 Kc8 17.Qf6 Rg8 18.Bg2 Bxf1 19.Kxf1 Bc5 20.Bf4!N
+  <!-- FEN: r3kb1r/2qp2p1/b1n1pnQ1/pp2P3/1p6/2P3P1/PP3PBP/RNB2RK1 b kq - 0 15 --> 15...Kd8 16.Bxd5 Kc8 17.Qf6 Rg8 18.Bg2 Bxf1 19.Kxf1 Bc5 20.Bf4!N
 
 <!-- FEN: 2kr2r1/2qp2p1/b1n1p3/pp2P3/1p3B2/2P3P1/PP3PB1/RNB2K2 b - - 1 20 -->
   20...Kb7 21.cxb4
