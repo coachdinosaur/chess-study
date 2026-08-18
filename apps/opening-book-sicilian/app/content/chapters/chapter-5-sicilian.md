@@ -185,17 +185,31 @@ White’s only attempt at deviation is as follows:
 
 I consider Black’s compensation to be sufficient for the pawn in this position.
 
-<!-- FEN: r1bqk2r/pp3ppp/2nb4/3Q4/8/2P5/PP3PPP/RNB1K1NR w KQkq - 0 10 -->
-**10.Nf3 Be6 11.Qd1 h6 12.0-0 0-0 13.Bf4**
+**FEN:**
+`r1bqk2r/pp3ppp/2nb4/3Q4/8/2P5/PP3PPP/RNB1K1NR w KQkq - 0 10`
 
-<!-- FEN: r2q1rk1/pp3pp1/2nbb2p/8/8/2P2N2/PP3PPP/RNBQ1RK1 w - - 2 13 -->
-**13.Be3 Re8 14.Qa4 Qf6 15.Nbd2 Qg6 16.Rfe1 Rad8 17.Rad1 Bd5! 18.c4 Be6⩱** gives Black at least enough play for the pawn; White has lost the strong d4-base for his pieces, a fact which renders our bishop pair dangerous.
+<!-- FEN: r1bqk2r/pp3ppp/2nb4/3Q4/8/2P5/PP3PPP/RNB1K1NR w KQkq - 0 10 -->
+**10.Qe4+!**
+
+<!-- FEN: r1bqk2r/pp3ppp/2nb4/3Q4/8/2P5/PP3PPP/RNB1K1NR w KQkq - 0 10 -->
+  Dangerous is **10.Nf3 0-0 11.Be3** (11.0-0?? Bxh2+) **11...Re8∓**, in view of the lurking trap **12.Nbd2?? Rxe3+!-+**.
+
+  However, even after **12.Qd2 Bg4 13.Nd4 Ne5** or **12.Qd1 Qb6**, Black is doing well.
+
+<!-- FEN: r1bqk2r/pp3ppp/2nb4/3Q4/4Q3/2P5/PP3PPP/RNB1K1NR b KQkq - 1 10 -->
+**10...Be6 11.Nf3 h6 12.0-0 0-0 13.Bf4**
+
+<!-- FEN: r2q1rk1/pp3pp1/2nbb2p/8/4QB2/2P2N2/PP3PPP/RN3RK1 w - - 2 13 -->
+  **13.Be3 Re8 14.Qa4 Qf6 15.Nbd2 Qg6 16.Rfe1 Rad8 17.Rad1 Bd5! 18.c4 Be6⩱** gives Black at least enough play for the pawn; White has lost the strong d4-base for his pieces, a fact which renders our bishop pair dangerous.
+
+**FEN:**
+`r2q1rk1/pp3pp1/2nbb2p/8/4QB2/2P2N2/PP3PPP/RN3RK1 b - - 3 13`
 
 ## Page 81
 
 c3 Sicilian
 
-<!-- FEN: r2q1rk1/pp3pp1/2nbb2p/8/5B2/2P2N2/PP3PPP/RN1Q1RK1 b - - 3 13 -->
+<!-- FEN: r2q1rk1/pp3pp1/2nbb2p/8/4QB2/2P2N2/PP3PPP/RN3RK1 b - - 3 13 -->
 **13...Bc5!?**
 
 <!-- FEN: r2q1rk1/pp3pp1/2nbb2p/8/5B2/2P2N2/PP3PPP/RN1Q1RK1 b - - 3 13 -->
