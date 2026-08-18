@@ -186,7 +186,7 @@ Another idea is: 8...Ne7 9.Nc3 b6 10.Ne5 (10.e4 dxe4 11.Nxe4 Nxe4 12.Qxe4 Bb8∞
 
 ### Grünfeld-like approach
 
-8...b6 White is ready for the Grünfeld-like approach: 8...c5N 9.dxc5 Qa5 10.Nc3! Qxc5. Or 10...dxc4 11.Bf4 Nd5 12.Bd6 Rd8 13.Nd2! with the better game for White. 11.cxd5 Nxd5 (11...exd5? 12.Be3± is unpleasant for Black) 12.Qb3 Nxc3. 12...Qb4 13.Bd2 Qxb3 14.axb3± White retains annoying pressure. 13.bxc3 Qxc3 14.Qxc3 Bxc3 15.Rb1 Bg7 16.Ba3 Re8 17.Ng5 Black is doomed to a passive defence and White can play for two results.
+8...b6 White is ready for the Grünfeld-like approach: (8...c5N 9.dxc5 Qa5 10.Nc3! Qxc5 (10...dxc4 11.Bf4 Nd5 12.Bd6 Rd8 13.Nd2! with the better game for White.) 11.cxd5 Nxd5 (11...exd5? 12.Be3± is unpleasant for Black) 12.Qb3 Nxc3 (12...Qb4 13.Bd2 Qxb3 14.axb3± White retains annoying pressure.) 13.bxc3 Qxc3 14.Qxc3 Bxc3 15.Rb1 Bg7 16.Ba3 Re8 17.Ng5 Black is doomed to a passive defence and White can play for two results.)
 
 **A2 note before 12.Qb3**
 
@@ -199,7 +199,7 @@ Another idea is: 8...Ne7 9.Nc3 b6 10.Ne5 (10.e4 dxe4 11.Nxe4 Nxe4 12.Qxe4 Bb8∞
 
 ### Main recommendation: 9.cxd5N
 
-9.cxd5N This natural novelty improves over 9.a3 c5 10.Nc3 Bb7∞ as in Recuero Guerra - Narciso Dublan, Don Benito 2012, when the position resembles the main line below, but a2-a3 is a redundant move. 9...exd5 White would be happy to see 9...Nxd5? 10.e4 Nb4 11.Qe2±. 10.Nc3 Bb7 11.Bf4 c5 12.Be5± The position is complex, but I like White’s chances against the potentially hanging pawns, and the bishop on e5 does a good job of neutralizing its counterpart on g7.
+9.cxd5N (This natural novelty improves over 9.a3 c5 10.Nc3 Bb7∞ as in Recuero Guerra - Narciso Dublan, Don Benito 2012, when the position resembles the main line below, but a2-a3 is a redundant move.) 9...exd5 (White would be happy to see 9...Nxd5? 10.e4 Ndb4 11.Qe2±.) 10.Nc3 Bb7 11.Bf4 c5 12.Be5± The position is complex, but I like White’s chances against the potentially hanging pawns, and the bishop on e5 does a good job of neutralizing its counterpart on g7.
 
 <!-- FEN: rnbq1rk1/ppp2pbp/4pnp1/3p4/2PP4/5NP1/PPQ1PPBP/RNB2RK1 b - - 5 7 -->
 
@@ -216,7 +216,7 @@ Another idea is: 8...Ne7 9.Nc3 b6 10.Ne5 (10.e4 dxe4 11.Nxe4 Nxe4 12.Qxe4 Bb8∞
 
 ### A3 plans after 8.Bf4
 
-8.Bf4 c6 I also considered: 8...b6 9.Nc3N. The tempting 9.cxd5 led to success for White in Ortega Hermida - Perez Castellano, Gran Canaria 2009, but things would not have been so clear after 9...Nxd5N, intending 10.Bg5 Qe8! (10...f6? 11.Qc6! wins material) 11.e4 Nb4 12.Qxc7 Ba6 with a lot of counterplay. 9...Bb7 10.cxd5! This is a more favourable moment to release the tension. 10...Nxd5 (10...exd5? is bad in view of 11.Nb5±) 11.Nxd5 Bxd5 12.e4 Bb7 13.Rad1 White is obviously better.
+8.Bf4 c6 (I also considered: 8...b6 9.Nc3N (The tempting 9.cxd5 led to success for White in Ortega Hermida - Perez Castellano, Gran Canaria 2009, but things would not have been so clear after 9...Nxd5N, intending 10.Bg5 Qe8! (10...f6? 11.Qc6! wins material) 11.e4 Nb4 12.Qxc7 Ba6 with a lot of counterplay.) 9...Bb7 10.cxd5! This is a more favourable moment to release the tension. 10...Nxd5 (10...exd5? is bad in view of 11.Nb5±) 11.Nxd5 Bxd5 12.e4 Bb7 13.Rad1 White is obviously better.)
 
 **A3 note before 10...Nxd5**
 
