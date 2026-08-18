@@ -35,6 +35,7 @@ function parenDepthAt(text: string, pos: number): number {
 
 export class MarkdownMoveResolver {
   private active: PositionPath;
+  private lastBefore: PositionPath;
   private history: PositionPath[];
   private historyByMove: Map<string, PositionPath[]>;
   private knownRootFens: Set<string>;
@@ -48,6 +49,7 @@ export class MarkdownMoveResolver {
   constructor(fen = START_FEN, label = "Initial position", trackNavigationExtensions = true) {
     const root = { fen, steps: [{ fen, label }] };
     this.active = root;
+    this.lastBefore = root;
     this.history = [];
     this.historyByMove = new Map();
     this.knownRootFens = new Set();
@@ -72,6 +74,7 @@ export class MarkdownMoveResolver {
     const root = { fen, steps: [{ fen, label }] };
     this.indexRoot(root);
     this.active = root;
+    this.lastBefore = root;
     this.variationBase = null;
     this.variationStack = [];
     this.resetHistory(root);
@@ -163,6 +166,7 @@ export class MarkdownMoveResolver {
       }
       const parent = this.variationStack.at(-1)?.path ?? this.variationBase;
       this.active = parent;
+      this.lastBefore = parent;
       this.resetHistory(parent);
       const tokens = this.resolveMoveText(text);
       this.variationStack.push({ indent, path: this.active });
@@ -182,7 +186,7 @@ export class MarkdownMoveResolver {
       .filter((match) => [...match[1].matchAll(SOURCE_MOVE_TOKEN)].length === 1)
       .map((match) => ({ start: (match.index ?? 0) + 2, end: (match.index ?? 0) + 2 + match[1].length }));
     let active = this.active;
-    let lastBefore = active;
+    let lastBefore = this.lastBefore;
     let depth = 0;
     const returnStates: PositionPath[] = [];
     const branchStarts: PositionPath[] = [];
@@ -272,6 +276,7 @@ export class MarkdownMoveResolver {
       depth--;
     }
     this.active = active;
+    this.lastBefore = lastBefore;
     return tokens;
   }
 }
