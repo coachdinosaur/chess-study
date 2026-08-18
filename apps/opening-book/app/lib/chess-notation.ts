@@ -7,11 +7,12 @@ const SQUARE_ONLY = /^[a-h][1-8]$/;
 const COORDINATE_MOVE = /\b(?:[KQRBN])?[a-h][1-8](?:-[a-h][1-8])+\b/g;
 
 export function normalizeSan(raw: string): string {
-  let san = raw.replace(/^\d+\.(?:\.\.)?\s*/, "").replace(/[!?=*∞±∓→←]+/g, "").trim();
+  let san = raw.replace(/^\d+\.(?:\.\.)?\s*/, "").replace(/=(?![QRBN])/gi, "").replace(/[!?*∞±∓→←]+/g, "").trim();
   san = san.replace(/0/g, "O");
   // A final N is a printed novelty marker. A leading N remains the knight
   // designator, including in disambiguated moves such as Nfd2 and Nfxd2.
   san = san.replace(/N([+#]*)$/, "$1");
+  san = san.replace(/([a-h][18])([QRBN])([+#]*)$/, "$1=$2$3");
   if (/^O-O-O/i.test(san)) san = "O-O-O";
   else if (/^O-O/i.test(san)) san = "O-O";
   return san.replace(/[+#]+$/, "");
@@ -68,14 +69,17 @@ function legalMoves(fen: string): Move[] {
 }
 
 function matchingBookMove(moves: Move[], san: string) {
-  const match = /^([KQRBN])([a-h1-8]{1,2})?(x?)([a-h][1-8])(?:=([QRBN]))?$/.exec(san);
+  const match = /^([KQRBN]|[a-h])?([a-h1-8]{1,2})?(x?)([a-h][1-8])(?:=([QRBN]))?$/i.exec(san);
   if (!match) return null;
-  const [, piece, disambiguation = "", captureMarker, destination, promotion] = match;
+  const [, rawPiece = "P", disambiguation = "", captureMarker, destination, promotion] = match;
+  const piece = /^[KQRBN]$/i.test(rawPiece) ? rawPiece.toUpperCase() : "P";
+  const extraDisambig = /^[a-h]$/i.test(rawPiece) ? rawPiece.toLowerCase() : "";
+  const fullDisambig = `${extraDisambig}${disambiguation}`;
   const candidates = moves.filter((move) => {
     if (move.piece.toUpperCase() !== piece || move.to !== destination) return false;
     if (Boolean(captureMarker) !== move.isCapture()) return false;
-    if (promotion && move.promotion?.toUpperCase() !== promotion) return false;
-    for (const character of disambiguation) {
+    if (promotion && move.promotion?.toUpperCase() !== promotion.toUpperCase()) return false;
+    for (const character of fullDisambig) {
       if (/[a-h]/.test(character) && move.from[0] !== character) return false;
       if (/[1-8]/.test(character) && move.from[1] !== character) return false;
     }

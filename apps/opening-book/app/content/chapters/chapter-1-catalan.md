@@ -327,7 +327,7 @@ Here is a brief example of a line where White gets an easy advantage: 8...Bc7 9.
 
 ### The positional trap
 
-14...Qc7 15.f4 Rd8 16.Qf3 Ne8 17.Rad1. 17.c5N Bxe5 18.dxe5 also gives White a big advantage. The text move sets a positional trap, into which Black now falls. 17...f6? 18.c5! Bxe5 19.fxe5 f5 20.Ne4! With the knight coming to d6 next, White had a crushing advantage in Jakovenko - Rydstrom, Gibraltar 2015.
+14...Qc7 15.f4 Rd8 16.Qf3 Ne8 17.Rad1 (17.c5N Bxe5 18.dxe5 also gives White a big advantage.) The text move sets a positional trap, into which Black now falls. 17...f6? 18.c5! Bxe5 19.fxe5 f5 20.Ne4! With the knight coming to d6 next, White had a crushing advantage in Jakovenko - Rydstrom, Gibraltar 2015.
 
 <!-- FEN: r1bq1rk1/pp1n1ppp/2pbpn2/3p4/2PP4/2N3P1/PP1NPPBP/R1BQ1RK1 b - - 7 8 -->
 
@@ -350,7 +350,7 @@ This seems like the only move that demands any real accuracy from White.
 
 ### Less clear: 9.Qb3
 
-9.Qb3 a5 is less clear in view of 10.e4N e5!, but the text move is simple and strong.
+(9.Qb3 a5 is less clear in view of 10.e4N e5!, but the text move is simple and strong.)
 
 <!-- FEN: r1bq1rk1/pp1n1ppp/2p1pn2/3p4/1bPPP3/2N3P1/PP1N1PBP/R1BQ1RK1 b - - 0 9 -->
 
@@ -360,7 +360,7 @@ This seems like the only move that demands any real accuracy from White.
 
 ### The serious alternative: 9...Bxc3
 
-The only serious alternative that I would like to mention is 9...Bxc3 10.bxc3 dxe4 11.Nxe4 Nxe4 12.Bxe4 e5 as occurred in Olszewski – Hadzimanolis, Peristeri 2010. Here I propose 13.Bc2N, for instance 13...Re8 14.Re1 exd4 15.Rxe8+ Qxe8 16.cxd4 Nf6 17.Bg5 when White’s bishop pair gives him excellent chances.
+The only serious alternative that I would like to mention is (9...Bxc3 10.bxc3 dxe4 11.Nxe4 Nxe4 12.Bxe4 e5 as occurred in Olszewski – Hadzimanolis, Peristeri 2010. Here I propose 13.Bc2N, for instance 13...Re8 14.Re1 exd4 15.Rxe8+ Qxe8 16.cxd4 Nf6 17.Bg5 when White’s bishop pair gives him excellent chances.)
 
 <!-- FEN: r1bq1rk1/pp1n1ppp/2p2n2/3pp3/1bPPP3/2N3P1/PP1N1PBP/R1BQ1RK1 w - - 0 10 -->
 
@@ -385,7 +385,7 @@ This new move seems like an interesting try for Black.
 
 ### Promotion race: 11.exf6
 
-Another interesting continuation is: 11.exf6 dxc3 12.fxg7 cxd2 13.gxf8=Q+ Nxf8! Otherwise Black is just lost. 14.a3 Ba5 15.b4 dxc1=Q 16.Qxc1 Bc7 17.Qe3 The position is extremely complex, but it seems to me that White has the better prospects, as he is slightly ahead on material and has an easy plan of advancing with f2-f4 and e4-e5.
+Another interesting continuation is: (11.exf6 dxc3 12.fxg7 cxd2 13.gxf8=Q+ Nxf8! Otherwise Black is just lost. 14.a3 Ba5 15.b4 dxc1=Q 16.Qxc1 Bc7 17.Qe3 The position is extremely complex, but it seems to me that White has the better prospects, as he is slightly ahead on material and has an easy plan of advancing with f2-f4 and e4-e5.)
 
 ## Page 14
 
@@ -397,7 +397,7 @@ Another interesting continuation is: 11.exf6 dxc3 12.fxg7 cxd2 13.gxf8=Q+ Nxf8! 
 
 ### Less convincing: 12.cxd5
 
-12.cxd5 Nxe5 13.Nb3 d3 seems less convincing.
+(12.cxd5 Nxe5 13.Nb3 d3 seems less convincing.)
 
 <!-- FEN: r1bq1rk1/pp1n1ppp/2p5/3PP3/1bPp4/6P1/PP1N1PBP/R1BQ1RK1 b - - 0 12 -->
 
@@ -407,7 +407,7 @@ Another interesting continuation is: 11.exf6 dxc3 12.fxg7 cxd2 13.gxf8=Q+ Nxf8! 
 
 ### Centralized: 12...cxd5
 
-12...cxd5 13.Nf3 dxc4 14.Qxd4 Nb6 15.Be3± leaves White strongly centralized.
+(12...cxd5 13.Nf3 dxc4 14.Qxd4 Nb6 15.Be3± leaves White strongly centralized.)
 
 <!-- FEN: r1bq1rk1/pp3ppp/2p5/3Pn3/1bPp4/6P1/PP1N1PBP/R1BQ1RK1 w - - 0 13 -->
 
@@ -443,7 +443,7 @@ This is another option that I forgot to cover in my previous 1.d4 volumes. It is
 
 <!-- FEN: rnbqkb1r/pp3ppp/4pn2/2pp4/2PP4/5NP1/PP2PP1P/RNBQKB1R w KQkq - 0 5 -->
 
-5.Bg2. 5.cxd5 exd5 leads to a Tarrasch Defence, but I intend to recommend something other than the g2-g3 variation against that opening, as you will see in Volume 1B. Black also has the independent alternatives of 5...Nxd5 and 5...cxd4!?. Black has two main continuations: C1) 5...Be7 and C2) 5...Nc6. 6...dxc4 leads to a branch of the Catalan covered in Chapters 6 and 7. 5...cxd4 6.O-O is also likely to transpose elsewhere: 6...Nc6 reaches C22, while 6...dxc4 leads to variation A of Chapter 6 on page 74.
+5.Bg2 (5.cxd5 exd5 leads to a Tarrasch Defence, but I intend to recommend something other than the g2-g3 variation against that opening, as you will see in Volume 1B. Black also has the independent alternatives of 5...Nxd5 and 5...cxd4!?.) Black has two main continuations: C1) 5...Be7 and C2) (5...Nc6). (5...dxc4 leads to a branch of the Catalan covered in Chapters 6 and 7.) (5...cxd4 6.O-O is also likely to transpose elsewhere: 6...Nc6 reaches C22, while 6...dxc4 leads to variation A of Chapter 6 on page 74.)
 
 <!-- FEN: rnbqkb1r/pp3ppp/4pn2/2pp4/2PP4/5NP1/PP2PPBP/RNBQK2R b KQkq - 1 5 -->
 
@@ -451,7 +451,7 @@ This is another option that I forgot to cover in my previous 1.d4 volumes. It is
 
 <!-- FEN: rnbqk2r/pp2bppp/4pn2/2pp4/2PP4/5NP1/PP2PPBP/RNBQK2R w KQkq - 2 6 -->
 
-This move order was recommended by Aagaard and Ntirlis in Grandmaster Repertoire 10 - The Tarrasch Defence (abbreviated to GM 10 from now on). 6.O-O O-O 7.dxc5 Bxc5. 7...dxc4 8.Qc2 takes us a long way ahead to variation A of Chapter 16 - see page 253.
+This move order was recommended by Aagaard and Ntirlis in Grandmaster Repertoire 10 - The Tarrasch Defence (abbreviated to GM 10 from now on). 6.O-O O-O 7.dxc5 Bxc5 (7...dxc4 8.Qc2 takes us a long way ahead to variation A of Chapter 16 - see page 253.)
 
 **C1 position after 7...Bxc5**
 
