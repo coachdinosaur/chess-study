@@ -120,7 +120,11 @@ h1, h2, h3, h4, h5, h6 { font-family: Manrope, Inter, sans-serif; }
 .board-nav-controls span { min-width: 0; overflow: hidden; text-align: center; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; font-weight: 700; }
 .board-action-controls { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 7px; }
 .board-action-controls .analysis-button { border-color: var(--forest-2); color: white; background: var(--forest-2); }
+.board-action-controls .analysis-button:hover { border-color: var(--forest); background: var(--forest); }
 .board-action-controls .analysis-button[aria-pressed="true"] { border-color: #8b443b; background: #9d4d43; }
+.board-action-controls .analysis-button[aria-pressed="true"]:hover { border-color: #72342c; background: #843b32; }
+.board-action-controls .analysis-button:disabled:hover { border-color: var(--forest-2); background: var(--forest-2); }
+.board-action-controls .analysis-button[aria-pressed="true"]:disabled:hover { border-color: #8b443b; background: #9d4d43; }
 .board-action-controls .flip-button { padding-inline: 13px; color: var(--forest-2); }
 .analysis-branch-controls { display: flex; align-items: center; justify-content: space-between; gap: 9px; padding: 7px 9px; border: 1px solid #c6d9d0; border-radius: 9px; color: var(--forest-2); background: #edf4f0; font-size: 10px; font-weight: 750; }
 .analysis-branch-controls > div { display: flex; gap: 5px; }
