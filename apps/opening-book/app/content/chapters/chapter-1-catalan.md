@@ -780,9 +780,11 @@ White has completed development and should retain a slight but pleasant advantag
 
 ## Page 18
 
-<!-- FEN: 3rr1k1/ppbq1pp1/2n2n1p/2Bp1b2/1P6/P1NQBNP1/4PPBP/2RR2K1 w - - 3 20 -->
+<!-- FEN: 3rr1k1/ppbq1pp1/2n2n1p/2Bp4/1P4b1/P1NQ1NP1/4PPBP/2RR2K1 b - - 2 19 -->
 
 After 19...b6 20.Be3± Black's pieces on the c-file have been destabilized.
+
+<!-- FEN: 3rr1k1/ppbq1pp1/2n2n1p/2Bp1b2/1P6/P1NQ1NP1/4PPBP/2RR2K1 w - - 3 20 -->
 
 **20.Qd2 Bh3 21.Bh1±**
 
