@@ -321,9 +321,9 @@ export class MarkdownMoveResolver {
         && numberedKey
         && previousMatch
         && moveNumberKey(previousMatch[0].trim()) === numberedKey
-        && /\b[A-Z]\d*\)\s*$/.test(betweenMoves);
+        && /\b[A-Z]\d*\)[\s*_([\]]*$/.test(betweenMoves);
       const proseSibling = numberedKey
-        && /\b(?:or|while|whereas|instead|alternatively)\s*$/i.test(betweenMoves);
+        && /\b(?:or|while|whereas|instead|alternatively)\b[\s*_([\]]*$/i.test(betweenMoves);
       if (labeledSibling) {
         // Labels such as `A) 4.Nc3, B) 4.Bc4` or `D1) 3.Bb5 and D2) 3.Nf3` are sibling choices.
         active = lastBefore;

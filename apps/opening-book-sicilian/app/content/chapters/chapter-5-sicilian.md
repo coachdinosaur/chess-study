@@ -196,7 +196,7 @@ I consider Black’s compensation to be sufficient for the pawn in this position
   Dangerous is **10.Nf3 0-0 11.Be3** (11.0-0?? Bxh2+) **11...Re8∓**, in view of the lurking trap **12.Nbd2?? Rxe3+!-+**.
 
 <!-- FEN: r1bq2k1/pp3ppp/2nb4/3Q4/8/2P1BN2/PP3PPP/RN2K2R w KQ - 3 12 -->
-  However, even after **12.Qd2 Bg4 13.Nd4 Ne5** or (**12.Qd1 Qb6**), Black is doing well.
+  However, even after **12.Qd2 Bg4 13.Nd4 Ne5** or **12.Qd1 Qb6**, Black is doing well.
 
 <!-- FEN: r1bqk2r/pp3ppp/2nb4/3Q4/4Q3/2P5/PP3PPP/RNB1K1NR b KQkq - 1 10 -->
 **10...Be6 11.Nf3 h6 12.0-0 0-0 13.Bf4**

@@ -41,7 +41,7 @@ test("Chapter 5 Page 80 contains complete 10.Qe4+! line, notes, and diagrams mat
   assert.match(page80, /Dangerous is \*\*10\.Nf3 0-0 11\.Be3\*\*/);
   assert.match(page80, /12\.Nbd2\?\? Rxe3\+!-+/);
   assert.match(page80, /\*\*12\.Qd2 Bg4 13\.Nd4 Ne5\*\*/);
-  assert.match(page80, /\(\*\*12\.Qd1 Qb6\*\*\)/);
+  assert.match(page80, /\*\*12\.Qd1 Qb6\*\*/);
   assert.match(page80, /\*\*10\.\.\.Be6 11\.Nf3 h6 12\.0-0 0-0 13\.Bf4\*\*/);
   assert.match(page80, /\*\*13\.Be3 Re8 14\.Qa4 Qf6 15\.Nbd2 Qg6 16\.Rfe1 Rad8 17\.Rad1 Bd5! 18\.c4 Be6⩱\*\*/);
 });
