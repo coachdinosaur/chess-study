@@ -238,18 +238,20 @@ The position is complex, but I like White’s chances against the potentially ha
 
 I also considered:
 
-(8...b6 9.Nc3N (The tempting 9.cxd5 led to success for White in Ortega Hermida - Perez Castellano, Gran Canaria 2009, but things would not have been so clear after 9...Nxd5N, intending 10.Bg5 Qe8! (10...f6? 11.Qc6! wins material) 11.e4 Nb4 12.Qxc7 Ba6 with a lot of counterplay.) 9...Bb7 10.cxd5! This is a more favourable moment to release the tension.)
+(8...b6 9.Nc3N (The tempting 9.cxd5 led to success for White in Ortega Hermida - Perez Castellano, Gran Canaria 2009, but things would not have been so clear after 9...Nxd5N, intending 10.Bg5 Qe8! (10...f6? 11.Qc6! wins material) 11.e4 Nb4 12.Qxc7 Ba6 with a lot of counterplay.) 9...Bb7 10.cxd5! This is a more favourable moment to release the tension. 10...Nxd5 (10...exd5? is bad in view of 11.Nb5±.))
 
-**A3 note before 10...Nxd5**
+**A3 note after 10...Nxd5**
 
 **FEN:**
-`r2q1rk1/pbpn1pbp/1p2pnp1/3P4/3P1B2/2N2NP1/PPQ1PPBP/R4RK1 b - - 0 10`
+`r2q1rk1/pbpn1pbp/1p2p1p1/3n4/3P1B2/2N2NP1/PPQ1PPBP/R4RK1 w - - 0 11`
 
 ---
 
-<!-- FEN: r2q1rk1/pbpn1pbp/1p2pnp1/3P4/3P1B2/2N2NP1/PPQ1PPBP/R4RK1 b - - 0 10 -->
+<!-- FEN: r2q1rk1/pbpn1pbp/1p2p1p1/3n4/3P1B2/2N2NP1/PPQ1PPBP/R4RK1 w - - 0 11 -->
 
-10...Nxd5 (10...exd5? is bad in view of 11.Nb5±.)
+11.Nxd5 Bxd5 12.e4 Bb7 13.Rad1
+
+White is obviously better.
 
 ## Page 11
 
