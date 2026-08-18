@@ -184,6 +184,8 @@ Another idea is: 8...Ne7 9.Nc3 b6 10.Ne5 (10.e4 dxe4 11.Nxe4 Nxe4 12.Qxe4 Bb8∞
 
 <!-- FEN: r1bq1rk1/ppp2pbp/n3pnp1/3p4/2PP4/5NP1/PPQ1PPBP/RNBR2K1 b - - 7 8 -->
 
+### A2 continuation: 8...b6
+
 8...b6
 
 White is ready for the Grünfeld-like approach:
