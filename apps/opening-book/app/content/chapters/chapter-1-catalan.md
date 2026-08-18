@@ -238,7 +238,7 @@ Another idea is: 8...Ne7 9.Nc3 b6 10.Ne5 (10.e4 dxe4 11.Nxe4 Nxe4 12.Qxe4 Bb8∞
 
 ### Alternative: 9...Re8
 
-9.Nbd2 Re8. 9...Qe7 10.e4 h6 11.c5± was great for White in Hübner - Schmittdiel, Germany 1993. 10.Rfd1 Nh5 11.Bd6 f5 12.e3± In Srebrnic - S. Nikolic, Ptuj 2009, White had a pleasant position against the Stonewall formation, with an easy plan of attacking on the queenside.
+9.Nbd2 Re8 (9...Qe7 10.e4 h6 11.c5± was great for White in Hübner - Schmittdiel, Germany 1993.) 10.Rfd1 Nh5 11.Bd6 f5 12.e3± In Srebrnic - S. Nikolic, Ptuj 2009, White had a pleasant position against the Stonewall formation, with an easy plan of attacking on the queenside.
 
 <!-- FEN: rnbqkb1r/ppp2ppp/4pn2/3p4/2PP4/5NP1/PP2PP1P/RNBQKB1R b KQkq - 1 4 -->
 
@@ -257,13 +257,13 @@ I neglected to mention this option in GM 1, although I did rectify the oversight
 
 ### Development to 7.Nfd2!
 
-5.Bg2 Nbd7. 5...dxc4 leads straight to Chapter 3. 6.O-O Bd6. 6...dxc4 transposes to variation B of Chapter 5, while 6...Be7 7.Qc2 O-O takes us to variation B2 of Chapter 15. 7.Nfd2! A small refinement. In the aforementioned update I recommended 7.Nc3 O-O 8.Nd2!, but if White opts for that move order he should reckon with the possibility of 7...dxc4.
+5.Bg2 Nbd7 (5...dxc4 leads straight to Chapter 3.) 6.O-O Bd6 (6...dxc4 transposes to variation B of Chapter 5, while 6...Be7 7.Qc2 O-O takes us to variation B2 of Chapter 15.) 7.Nfd2! A small refinement. (In the aforementioned update I recommended 7.Nc3 O-O 8.Nd2!, but if White opts for that move order he should reckon with the possibility of 7...dxc4.)
 
 <!-- FEN: r1bqk2r/pp1n1ppp/2pbpn2/3p4/2PP4/6P1/PP1NPPBP/RNBQ1RK1 b kq - 5 7 -->
 
 ### The critical try: 7...e5
 
-7...O-O The only real way for Black to question White’s last move is: 7...e5 This looks slightly premature, even though it was played by Radjabov. 8.cxd5 cxd5 (8...Nxd5N 9.Nc4 Bc7 10.Nc3 Nxc3 11.bxc3 looks great for White.) 9.dxe5 Nxe5 10.Nc3 Be6 We have been following Grischuk - Radjabov, Moscow 2012, and here White should have played:
+7...O-O (The only real way for Black to question White’s last move is: 7...e5 This looks slightly premature, even though it was played by Radjabov. 8.cxd5 cxd5 (8...Nxd5N 9.Nc4 Bc7 10.Nc3 Nxc3 11.bxc3 looks great for White.) 9.dxe5 Nxe5 10.Nc3 Be6 We have been following Grischuk - Radjabov, Moscow 2012, and here White should have played:)
 
 <!-- FEN: r2qk2r/pp3ppp/3bbn2/3pn3/8/2N3P1/PP1NPPBP/R1BQ1RK1 w kq - 2 11 -->
 
@@ -295,7 +295,7 @@ Many moves have been tried here, but in most cases White simply plays e2-e4 with
 
 ### An easy advantage: 8...Bc7
 
-Here is a brief example of a line where White gets an easy advantage: 8...Bc7 9.e4 dxe4. 9...dxc4 10.Nxc4 e5 11.d5 Nb6 12.Ne3! The knight is perfectly placed here. 12...Qe7 13.b3 White had a pleasant advantage in Evans - Zielinski, email 2010. 10.Ndxe4 White is clearly better. One model example continued: 10...h6 11.Nxf6+ (11.f4!? has also been played, and is a worthy alternative.) 11...Nxf6 12.Be3 e5 13.d5! cxd5 14.Nxd5 Nxd5 15.Bxd5 Qe7 16.Qf3± Despite the simplifications, White’s advantage was obvious in Koziak - Nalbantoglu, Izmir 2013.
+Here is a brief example of a line where White gets an easy advantage: 8...Bc7 9.e4 dxe4 (9...dxc4 10.Nxc4 e5 11.d5 Nb6 12.Ne3! The knight is perfectly placed here. 12...Qe7 13.b3 White had a pleasant advantage in Evans - Zielinski, email 2010.) 10.Ndxe4 White is clearly better. One model example continued: 10...h6 11.Nxf6+ (11.f4!? has also been played, and is a worthy alternative.) 11...Nxf6 12.Be3 e5 13.d5! cxd5 14.Nxd5 Nxd5 15.Bxd5 Qe7 16.Qf3± Despite the simplifications, White’s advantage was obvious in Koziak - Nalbantoglu, Izmir 2013.
 
 **Model position after 10.Ndxe4**
 
@@ -319,7 +319,7 @@ Here is a brief example of a line where White gets an easy advantage: 8...Bc7 9.
 
 ### Main line: 9...dxe4
 
-9...dxe4 Black is not ready to strike in the centre with 9...e5?! in view of 10.exd5 cxd5 (or 10...exd4 11.Nce4 Nxe4 12.Nxe4 Be5 13.Ng5! with a strong initiative) 11.Nxd5 exd4 12.Nf3 Nxd5 13.cxd5± when the d4-pawn is falling, Sundararajan - Prakash, Calcutta 2008. 10.Ndxe4 Nxe4 11.Nxe4 Be7 12.Bf4 Nf6 13.Nc3! By avoiding the unnecessary exchange, White obtains a dream advantage, and the c8-bishop will remain passive for a long time. 13...Bd6 14.Be5! This is an important detail, which is worth remembering in similar positions. White is much better, and I will mention a recent example.
+9...dxe4 (Black is not ready to strike in the centre with 9...e5?! in view of 10.exd5 cxd5 (or 10...exd4 11.Nce4 Nxe4 12.Nxe4 Be5 13.Ng5! with a strong initiative) 11.Nxd5 exd4 12.Nf3 Nxd5 13.cxd5± when the d4-pawn is falling, Sundararajan - Prakash, Calcutta 2008.) 10.Ndxe4 Nxe4 11.Nxe4 Be7 12.Bf4 Nf6 13.Nc3! By avoiding the unnecessary exchange, White obtains a dream advantage, and the c8-bishop will remain passive for a long time. 13...Bd6 14.Be5! This is an important detail, which is worth remembering in similar positions. White is much better, and I will mention a recent example.
 
 ## Page 13
 
