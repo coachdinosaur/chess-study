@@ -257,16 +257,11 @@ White is obviously better.
 
 <!-- FEN: r1bq1rk1/pp1n1pbp/2p1pnp1/3p4/2PP1B2/5NP1/PPQ1PPBP/RN3RK1 w - - 0 9 -->
 
-**Position before 9.Nbd2**
+### A3 continuation: 9.Nbd2
 
-**FEN:**
-`r1bq1rk1/pp1n1pbp/2p1pnp1/3p4/2PP1B2/5NP1/PPQ1PPBP/RN3RK1 w - - 0 9`
+9.Nbd2 Re8 (9...Qe7 10.e4 h6 11.c5± was great for White in Hübner - Schmittdiel, Germany 1993.) 10.Rfd1 Nh5 11.Bd6 f5 12.e3±
 
----
-
-### Alternative: 9...Re8
-
-9.Nbd2 Re8 (9...Qe7 10.e4 h6 11.c5± was great for White in Hübner - Schmittdiel, Germany 1993.) 10.Rfd1 Nh5 11.Bd6 f5 12.e3± In Srebrnic - S. Nikolic, Ptuj 2009, White had a pleasant position against the Stonewall formation, with an easy plan of attacking on the queenside.
+In Srebrnic - S. Nikolic, Ptuj 2009, White had a pleasant position against the Stonewall formation, with an easy plan of attacking on the queenside.
 
 <!-- FEN: rnbqkb1r/ppp2ppp/4pn2/3p4/2PP4/5NP1/PP2PP1P/RNBQKB1R b KQkq - 1 4 -->
 
@@ -283,28 +278,44 @@ I neglected to mention this option in GM 1, although I did rectify the oversight
 
 <!-- FEN: rnbqkb1r/pp3ppp/2p1pn2/3p4/2PP4/5NP1/PP2PP1P/RNBQKB1R w KQkq - 0 5 -->
 
-### Development to 7.Nfd2!
+5.Bg2 Nbd7
 
-5.Bg2 Nbd7 (5...dxc4 leads straight to Chapter 3.) 6.O-O Bd6 (6...dxc4 transposes to variation B of Chapter 5, while 6...Be7 7.Qc2 O-O takes us to variation B2 of Chapter 15.) 7.Nfd2! A small refinement. (In the aforementioned update I recommended 7.Nc3 O-O 8.Nd2!, but if White opts for that move order he should reckon with the possibility of 7...dxc4.)
+(5...dxc4 leads straight to Chapter 3.)
 
-<!-- FEN: r1bqk2r/pp1n1ppp/2pbpn2/3p4/2PP4/6P1/PP1NPPBP/RNBQ1RK1 b kq - 5 7 -->
+6.O-O Bd6
 
-### The critical try: 7...e5
+(6...dxc4 transposes to variation B of Chapter 5, while 6...Be7 7.Qc2 O-O takes us to variation B2 of Chapter 15.)
 
-7...O-O (The only real way for Black to question White’s last move is: 7...e5 This looks slightly premature, even though it was played by Radjabov. 8.cxd5 cxd5 (8...Nxd5N 9.Nc4 Bc7 10.Nc3 Nxc3 11.bxc3 looks great for White.) 9.dxe5 Nxe5 10.Nc3 Be6 We have been following Grischuk - Radjabov, Moscow 2012, and here White should have played:)
+7.Nfd2!
 
-<!-- FEN: r2qk2r/pp3ppp/3bbn2/3pn3/8/2N3P1/PP1NPPBP/R1BQ1RK1 w kq - 2 11 -->
+A small refinement. In the aforementioned update I recommended (7.Nc3 O-O 8.Nd2!), but if White opts for that move order he should reckon with the possibility of (7...dxc4).
 
-**Position before 11.Nb3!N**
+7...O-O
+
+The only real way for Black to question White’s last move is:
+
+(7...e5 This looks slightly premature, even though it was played by Radjabov. 8.cxd5 cxd5 (8...Nxd5N 9.Nc4 Bc7 10.Nc3 Nxc3 11.bxc3 looks great for White.) 9.dxe5 Nxe5 10.Nc3 Be6 We have been following Grischuk - Radjabov, Moscow 2012, and here White should have played:)
+
+**B note to 7...e5**
 
 **FEN:**
 `r2qk2r/pp3ppp/3bbn2/3pn3/8/2N3P1/PP1NPPBP/R1BQ1RK1 w kq - 2 11`
 
 ---
 
-11.Nb3!N 11...Bb4 (11...O-O?! 12.Bg5 wins a pawn.) 12.Bf4 Nc6 13.Rc1 O-O 14.Qd3 White has a nice positional edge.
+<!-- FEN: r2qk2r/pp3ppp/3bbn2/3pn3/8/2N3P1/PP1NPPBP/R1BQ1RK1 w kq - 2 11 -->
+
+11.Nb3!N
+
+This definitely looks like a favourable position against the IQP, for instance:
 
 ## Page 12
+
+<!-- FEN: r2qk2r/pp3ppp/3bbn2/3pn3/8/1NN3P1/PP2PPBP/R1BQ1RK1 b kq - 3 11 -->
+
+11...Bb4 (11...O-O?! 12.Bg5 wins a pawn.) 12.Bf4 Nc6 13.Rc1 O-O 14.Qd3
+
+White has a nice positional edge.
 
 <!-- FEN: r1bq1rk1/pp1n1ppp/2pbpn2/3p4/2PP4/6P1/PP1NPPBP/RNBQ1RK1 w - - 6 8 -->
 
