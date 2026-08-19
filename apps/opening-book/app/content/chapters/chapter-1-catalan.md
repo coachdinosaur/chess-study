@@ -949,19 +949,15 @@ Black is doomed to a passive defence.
 
 **10.Bb2!**
 
-In contrast to the note above, 10.Nbd2 would be inaccurate here due to 10...e5!.
+In contrast to the note above, (10.Nbd2 would be inaccurate here due to 10...e5!.)
 
 **10...Qe7**
 
-<!-- FEN: r1bq1rk1/pp3ppp/1bn1pn2/3p4/1PP5/P4NP1/1B2PPBP/RN1Q1RK1 b - - 2 10 -->
-
-10...dxc4 is no problem for White in view of 11.Nbd2.
-
-<!-- FEN: r1b2rk1/pp2qppp/1bn1pn2/3p4/1PP5/P4NP1/1B2PPBP/RN1Q1RK1 w - - 3 11 -->
+(10...dxc4 is no problem for White in view of 11.Nbd2.)
 
 **11.Nbd2 Rd8 12.Qb3!N**
 
-For some reason almost everybody has played 12.Qc2 instead, but after 12...e5 I am not so convinced by White's position.
+For some reason almost everybody has played (12.Qc2 instead, but after 12...e5) I am not so convinced by White's position.
 
 <!-- FEN: r1br2k1/pp2qppp/1bn1pn2/3p4/1PP5/PQ3NP1/1B1NPPBP/R4RK1 b - - 1 12 -->
 
@@ -976,15 +972,11 @@ For some reason almost everybody has played 12.Qc2 instead, but after 12...e5 I 
 
 In view of the previous comment, it seemed logical to consider this move as the main line. If Black plays a quiet move then White will simply develop his rooks and continue improving his position.
 
-<!-- FEN: r1br2k1/pp2qppp/1bn1pn2/3p4/1PP5/PQ3NP1/1B1NPPBP/R4RK1 b - - 1 12 -->
-
-12...d4 is another attempt to force the play, but 13.c5 Bc7 14.e3 is excellent for White: 14...e5 (14...dxe3 15.Qxe3 Nd5 16.Qe4 f6 17.Nc4 clearly favours White) 15.exd4 e4 16.Ng5 Nxd4 17.Bxd4! Rxd4 18.Qb2 Be5 19.Rae1 Black loses his central pawn.
-
-<!-- FEN: r1br2k1/pp2qppp/1bn2n2/3pp3/1PP5/PQ3NP1/1B1NPPBP/R4RK1 w - - 0 13 -->
+(12...d4 is another attempt to force the play, but 13.c5 Bc7 14.e3 is excellent for White: 14...e5 (14...dxe3 15.Qxe3 Nd5 16.Qe4 f6 17.Nc4 clearly favours White) 15.exd4 e4 16.Ng5 Nxd4 17.Bxd4! Rxd4 18.Qb2 Be5 19.Rae1 Black loses his central pawn.)
 
 **13.cxd5**
 
-13.b5 leads to interesting complications that seem to favour White, but one good line is enough.
+(13.b5 leads to interesting complications that seem to favour White, but one good line is enough.)
 
 **13...Nxd5**
 
@@ -1001,17 +993,15 @@ In view of the previous comment, it seemed logical to consider this move as the 
 
 After (14.Nxe5 Nxe5 15.Bxd5 Be6 16.Bxe6 Rxd2 17.Bxe5 Rxe2 18.Bxf7+ Qxf7 19.Qxf7+ Kxf7) Black's active pieces should enable him to hold the endgame a pawn down.
 
-<!-- FEN: r1br2k1/pp2qppp/1bn5/1P1np3/8/PQ3NP1/1B1NPPBP/R4RK1 b - - 0 14 -->
-
 **14...Na5 15.Qa4 Be6**
 
-Black has to sacrifice his e-pawn, as 15...f6? 16.e4 Nc7 17.Bc3 traps the knight on a5.
+<!-- FEN: r1br2k1/pp2qppp/1b6/nP1np3/Q7/P4NP1/1B1NPPBP/R4RK1 b - - 2 15 -->
 
-<!-- FEN: r1br2k1/pp2qppp/1b2b3/nP1np3/Q7/P4NP1/1B1NPPBP/R4RK1 b - - 2 15 -->
+Black has to sacrifice his e-pawn, as (15...f6? 16.e4 Nc7 17.Bc3 traps the knight on a5.)
 
-15...a6 16.Nxe5 Qe8 17.Qh4 also favours White.
+(15...a6 16.Nxe5 Qe8 17.Qh4 also favours White.)
 
-<!-- FEN: r1br2k1/pp2qppp/1b2b3/nP1np3/Q7/P4NP1/1B1NPPBP/R4RK1 w - - 2 16 -->
+<!-- FEN: r1br2k1/pp2qppp/1b2b3/nP1np3/Q7/P4NP1/1B1NPPBP/R4RK1 w - - 3 16 -->
 
 **16.Bxe5 Qd7 17.Ne4**
 
