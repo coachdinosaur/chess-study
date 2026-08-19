@@ -214,36 +214,36 @@ c3 Sicilian
 <!-- FEN: r2q1rk1/pp3pp1/2nbb2p/8/4QB2/2P2N2/PP3PPP/RN3RK1 b - - 3 13 -->
 **13...Bc5!?**
 
-<!-- FEN: r2q1rk1/pp3pp1/2nbb2p/8/5B2/2P2N2/PP3PPP/RN1Q1RK1 b - - 3 13 -->
-  **13...Re8N 14.Bxd6 Qxd6 15.Re1**
-
-<!-- FEN: r3r1k1/pp3pp1/2nqb2p/8/8/2P2N2/PP3PPP/RN1Q1RK1 w - - 0 15 -->
-  (15.Qc2 Bg4 16.Nbd2 Re2 17.Qb3 Ne5 18.Nxe5 Qxe5 19.Nc4 Qc7 20.Ne3 Be6 21.Qb5 Rd2 22.Rfd1 a6 23.Qb4 a5 24.Qb5 Rad8 25.Rxd2 Rxd2= should not worry Black either.)
-
-<!-- FEN: r3r1k1/pp3pp1/2nqb2p/8/8/2P2N2/PP3PPP/RN1QR1K1 b - - 1 15 -->
-  **15...Bd7 16.Qc2 Rxe1+ 17.Nxe1 Re8 18.Na3 Ne5 19.Qd1 Qg6 20.Nac2 Bc6**
+<!-- FEN: r2q1rk1/pp3pp1/2nbb2p/8/4QB2/2P2N2/PP3PPP/RN3RK1 b - - 3 13 -->
+  **13...Re8N 14.Bxd6 Qxd6 15.Re1** (15.Qc2 Bg4 16.Nbd2 Re2 17.Qb3 Ne5 18.Nxe5 Qxe5 19.Nc4 Qc7 20.Ne3 Be6 21.Qb5 Rd2 22.Rfd1 a6 23.Qb4 a5 24.Qb5 Rad8 25.Rxd2 Rxd2= should not worry Black either) **15...Bd7 16.Qc2 Rxe1+ 17.Nxe1 Re8 18.Na3 Ne5 19.Qd1 Qg6 20.Nac2 Bc6**
 
 **FEN:**
 `4r1k1/pp3pp1/2b3qp/4n3/8/2P5/PPN2PPP/R2QN1K1 w - - 7 21`
 
-This is another way to play for Black. I regard the alignment of his forces as excellent, offering him sufficient play for the pawn. The computer suggests **21.b3** (**21.Nd4 Nd3!!-+** is one brilliant point), but then **21...Be4 22.Nd4 Nc6 23.Ndf3 Ne5 24.Nxe5 Rxe5 25.f3 Bf5** should easily hold the balance. White is suffering in view of his passive e1-knight.
+This is another way to play for Black. I regard the alignment of his forces as excellent, offering him sufficient play for the pawn. The computer suggests 21.b3 (21.Nd4 Nd3!!-+ is one brilliant point), but then 21...Be4 22.Nd4 Nc6 23.Ndf3 Ne5 24.Nxe5 Rxe5 25.f3 Bf5 should easily hold the balance. White is suffering in view of his passive e1-knight.
 
-<!-- FEN: r2q1rk1/pp3pp1/2n1b2p/2b5/5B2/2P2N2/PP3PPP/RN1Q1RK1 w - - 4 14 -->
-**14.Nbd2 Re8 15.Rfe1**
+<!-- FEN: r2q1rk1/pp3pp1/2n1b2p/2b5/4QB2/2P2N2/PP1N1PPP/R4RK1 w - - 4 14 -->
+**14.Nbd2 Re8 15.Rae1**
 
-<!-- FEN: r2qr1k1/pp3pp1/2n1b2p/2b5/5B2/2P2N2/PP1N1PPP/R2Q1RK1 w - - 6 15 -->
-  **15.b4 Bf8⩱**
+<!-- FEN: r2qr1k1/pp3pp1/2n1b2p/2b5/4QB2/2P2N2/PP1N1PPP/R4RK1 w - - 6 15 -->
+  15.b4 Bf8⩱
 
-<!-- FEN: r2qr1k1/pp3pp1/2n1b2p/2b5/5B2/2P2N2/PP1N1PPP/R2Q1RK1 w - - 6 15 -->
-  **15.Qc2!?N Qd5 16.Rfe1 Rad8 17.b4 Bf8 18.a4 Rc8! 19.Qb1 g5 20.Ne4 Bg7 21.Rd1 Qc4 22.Be3 Red8 23.Nfd2 Qd5 24.b5 Ne7** produces a tense fight.
+<!-- FEN: r2qr1k1/pp3pp1/2n1b2p/2b5/4QB2/2P2N2/PP1N1PPP/R4RK1 w - - 6 15 -->
+  15.Qc2!?N Qd5 16.Rfe1 Rad8 17.b4 Bf8 18.a4 may have been the best try, when 18...Rc8! 19.Qb1 g5 20.Ne4 Bg7 21.Rd1 Qc4 22.Be3 Red8 23.Nfd2 Qd5 24.b5 Ne7 produces a tense fight.
 
-<!-- FEN: r2qr1k1/pp3pp1/2n1b2p/2b5/5B2/2P2N2/PP1N1PPP/R2QR1K1 b - - 7 15 -->
-**15...Bxa2 16.Rxe8+ Qxe8 17.Rxa2** <!-- SOURCE ERRATUM FROM 17.Rxe8+: In the print book 17.Rxe8+ was printed; White recaptures on a2. --> **17...Qe6 18.b3 g5 19.Be3 Bxe3 20.fxe3 Qxe3+ 21.Kh1 Qxc3 22.Ra1N**
+<!-- FEN: r2qr1k1/pp3pp1/2n1b2p/2b5/4QB2/2P2N2/PP1N1PPP/4RRK1 b - - 7 15 -->
+**15...Bxa2 16.Qxe8+ Qxe8 17.Rxe8+ Rxe8 18.b3 g5 19.Be3 Bxe3 20.fxe3 Rxe3 21.Ra1N**
 
-<!-- FEN: 4r1k1/pp3p2/2n4p/6p1/8/1PP1rN2/b5PP/R4RK1 w - - 0 21 -->
-  21.Rc1 g4 22.N1d2 was played in Lazar – Kozul, Rogaska Slatina 2011, and here Zdenko should have chosen **22...Re2 23.N3d2 Na5 24.Ra1 Nxb3 25.Rxa2 a5 26.Rb2 a4 27.Ra2 b5 28.c4 bxc4 29.Rxa4 Nxd2=**. <!-- SOURCE MOVE REFERENCE: Lazar – Kozul historical game note. -->
+<!-- FEN: 6k1/pp3p2/2n4p/6p1/8/1PP1rN2/b2N2PP/5RK1 w - - 0 21 -->
+  21.Rc1 g4 22.Nf1 was played in Lazar – Kozul, Rogaska Slatina 2011, and here Zdenko should have chosen 22...Re2 23.N3d2 Na5 24.Ra1 Nxb3 25.Rxa2 a5 26.Rb2 a4 27.Ra2 b5 28.c4 bxc4 29.Rxa4 Nxd2=.
 
-<!-- FEN: rnbqkb1r/pp1ppppp/8/2pnP3/2B5/2P5/PP1P1PPP/RNBQK1NR b KQkq - 2 4 -->
+**FEN:**
+`6k1/pp3p2/2n4p/6p1/8/1PP1rN2/b2N2PP/R5K1 b - - 1 21`
+
+**21...Bxb3 22.Nxb3 Rxc3 23.Nbd4 Nxd4 24.Nxd4 a6=**
+
+The ensuing ending is balanced.
+
 #### B12) 4...Nb6
 
 I have chosen this to be our main line, because I consider it to be the most complicated way to play.
@@ -254,10 +254,16 @@ I have chosen this to be our main line, because I consider it to be the most com
 I like this solid option here.
 
 <!-- FEN: rnbqkb1r/pp1ppppp/1n6/2p1P3/8/1BP5/PP1P1PPP/RNBQK1NR b KQkq - 4 5 -->
-  **5...c4 6.Bc2 Nc6 7.Nf3 d6! 8.exd6 Qxd6 9.0-0 Bg4 10.h3 Bh5 11.Re1 0-0-0**
+  **5...c4 6.Bc2 Nc6 7.Nf3 d6! 8.exd6 Qxd6 9.0-0 Bg4**
 
 <!-- FEN: r1b1kb1r/pp2pppp/1nnq4/8/2p5/2P2N2/PPBP1PPP/RNBQ1RK1 b kq - 1 9 -->
   9...g6 is also possible, and in fact quite theoretical, but I am going to refrain from analysing it here.
+
+<!-- FEN: r1b1kb1r/pp2pppp/1nnq4/8/2p5/2P2N2/PPBP1PPP/RNBQ1RK1 b kq - 1 9 -->
+  **10.h3 Bh5 11.Re1 0-0-0**
+
+**FEN:**
+`2kr1b1r/pp2pppp/1nnq4/7b/2p5/2P2N1P/PPBP1PP1/RNBQR1K1 w - - 3 12`
 
 ## Page 82
 
