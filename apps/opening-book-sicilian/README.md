@@ -81,12 +81,26 @@ app on port 4174.
 Chapter files follow the pattern `chapter-N-sicilian.md`. The PDF page numbers
 must be preserved as contiguous `## Page N` boundaries in the Markdown.
 
-Use the chapter workflow commands after editing:
+For detailed authoring guidelines, move notation conventions, and diagram rules,
+see [`AUTHORING.md`](AUTHORING.md).
+
+Use the chapter workflow commands for managing and testing chapters:
 
 ```powershell
+# Check catalog overview and next expected chapter/page
 npm run chapters:status
+
+# Scaffold a new chapter template with contiguous page numbers
+node scripts/chapter-system.mjs new-chapter --title "c3 Sicilian – Main Line" --pages 5
+
+# Append pages to an existing chapter
+node scripts/chapter-system.mjs add-page 5 --count 2
+
+# Sync and validate
 npm run chapters:sync
 npm run chapters:check
+
+# Deep move and diagram audit
 npm run chapters:audit -- --chapter 1 --markdown app/content/chapters/chapter-1-sicilian.md --expected-first-page 7 --expected-pages 17
 npm run chapters:audit -- --chapter 2 --markdown app/content/chapters/chapter-2-sicilian.md --expected-first-page 24 --expected-pages 15 --expected-diagrams 47
 npm run chapters:audit -- --chapter 3 --markdown app/content/chapters/chapter-3-sicilian.md --expected-first-page 39 --expected-pages 17 --expected-diagrams 50 --strict-moves

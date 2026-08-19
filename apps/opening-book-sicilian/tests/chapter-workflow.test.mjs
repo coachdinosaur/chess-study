@@ -4,7 +4,7 @@ import test from "node:test";
 import { auditChapterMarkdown } from "../scripts/chapter-audit.ts";
 import { SOURCE_MOVE_TOKEN, normalizeSan, resolveChessMove } from "../app/lib/chess-notation.ts";
 import { MarkdownMoveResolver } from "../app/lib/markdown-moves.ts";
-import { catalogSource, discoverChapters, parseChapterMarkdown } from "../scripts/chapter-system.mjs";
+import { addPage, catalogSource, createChapter, discoverChapters, parseChapterMarkdown } from "../scripts/chapter-system.mjs";
 
 const chapterUrl = new URL("../app/content/chapters/chapter-1-sicilian.md", import.meta.url);
 
@@ -342,12 +342,12 @@ test("document move references stay plain without blocking a later concrete line
   assert.ok(tokens.slice(1).every((token) => token.navigation), "The concrete conclusion line should remain navigable.");
 });
 
-test("the Markdown contract rejects missing pages and invalid FENs", () => {
+test("the Markdown contract rejects missing pages and invalid FENs with line numbers", () => {
   assert.throws(() => parseChapterMarkdown("chapter-1-sicilian.md", "# Chapter 1\n\n**FEN:**\n`bad`\n"), /Page/);
-  assert.throws(() => parseChapterMarkdown("chapter-1-sicilian.md", "# Chapter 1\n\n## Page 1\n\n**FEN:**\n`bad`\n"), /invalid FEN/);
-  assert.throws(() => parseChapterMarkdown("chapter-1-sicilian.md", "# Chapter 1\n\n## Page 1\n## Page 3\n\n**FEN:**\n`8\/8\/8\/8\/8\/8\/4k3\/4K3 w - - 0 1`\n"), /contiguous/);
-  assert.throws(() => parseChapterMarkdown("chapter-1-sicilian.md", "# Chapter 1\n\n## Page 1\n\nA&nbsp;B\n\n**FEN:**\n`8\/8\/8\/8\/8\/8\/4k3\/4K3 w - - 0 1`\n"), /non-breaking space/);
-  assert.throws(() => parseChapterMarkdown("chapter-1-sicilian.md", "# Chapter 1\n\n## Page 1\n\nA\u00a0B\n\n**FEN:**\n`8\/8\/8\/8\/8\/8\/4k3\/4K3 w - - 0 1`\n"), /non-breaking space/);
+  assert.throws(() => parseChapterMarkdown("chapter-1-sicilian.md", "# Chapter 1\n\n## Page 1\n\n**FEN:**\n`bad`\n"), /chapter-1-sicilian\.md:5: contains an invalid FEN: bad/);
+  assert.throws(() => parseChapterMarkdown("chapter-1-sicilian.md", "# Chapter 1\n\n## Page 1\n## Page 3\n\n**FEN:**\n`8/8/8/8/8/8/4k3/4K3 w - - 0 1`\n"), /chapter-1-sicilian\.md:4: page boundaries must be contiguous/);
+  assert.throws(() => parseChapterMarkdown("chapter-1-sicilian.md", "# Chapter 1\n\n## Page 1\n\nA&nbsp;B\n\n**FEN:**\n`8/8/8/8/8/8/4k3/4K3 w - - 0 1`\n"), /chapter-1-sicilian\.md:5: contains a non-breaking space/);
+  assert.throws(() => parseChapterMarkdown("chapter-1-sicilian.md", "# Chapter 1\n\n## Page 1\n\nA\u00a0B\n\n**FEN:**\n`8/8/8/8/8/8/4k3/4K3 w - - 0 1`\n"), /chapter-1-sicilian\.md:5: contains a non-breaking space/);
 });
 
 test("Chapter 1 retains explanatory lesson prose on every page", async () => {
@@ -367,3 +367,57 @@ test("package scripts expose the Markdown chapter workflow and read-only audit",
   assert.match(packageJson.scripts.test, /--import tsx --test/);
   assert.equal(packageJson.dependencies["pdfjs-dist"], undefined);
 });
+
+test("createChapter scaffolds a new contiguous chapter and syncs catalog", async () => {
+  const originalChapters = await discoverChapters();
+  const initialCatalog = catalogSource(originalChapters);
+
+  try {
+    const result = await createChapter({ title: "Test Scaffolding Chapter", pageCount: 3 });
+    assert.equal(result.id, 6);
+    assert.equal(result.firstPage, 96);
+    assert.equal(result.lastPage, 98);
+    assert.equal(result.pageCount, 3);
+
+    const updatedChapters = await discoverChapters();
+    assert.equal(updatedChapters.length, 6);
+    assert.equal(updatedChapters[5].title, "Chapter 6: Test Scaffolding Chapter");
+    assert.equal(updatedChapters[5].pageCount, 3);
+  } finally {
+    // Teardown and restore
+    const { unlink, writeFile } = await import("node:fs/promises");
+    const { fileURLToPath } = await import("node:url");
+    const path = await import("node:path");
+    const testChapterPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "app", "content", "chapters", "chapter-6-sicilian.md");
+    const catalogPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "app", "chapter-catalog.generated.ts");
+    try { await unlink(testChapterPath); } catch {}
+    await writeFile(catalogPath, initialCatalog, "utf8");
+  }
+});
+
+test("addPage appends contiguous pages to a chapter and syncs catalog", async () => {
+  const originalChapters = await discoverChapters();
+  const initialCatalog = catalogSource(originalChapters);
+  const { unlink, writeFile } = await import("node:fs/promises");
+  const { fileURLToPath } = await import("node:url");
+  const path = await import("node:path");
+  const testChapterPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "app", "content", "chapters", "chapter-6-sicilian.md");
+  const catalogPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "app", "chapter-catalog.generated.ts");
+
+  try {
+    await createChapter({ title: "Test Add Page Chapter", pageCount: 2 });
+    const appendResult = await addPage({ chapterId: 6, count: 2 });
+    assert.equal(appendResult.chapterId, 6);
+    assert.equal(appendResult.firstNewPage, 98);
+    assert.equal(appendResult.lastNewPage, 99);
+    assert.equal(appendResult.totalPageCount, 4);
+
+    const updatedChapters = await discoverChapters();
+    assert.equal(updatedChapters[5].pageCount, 4);
+    assert.equal(updatedChapters[5].lastPage, 99);
+  } finally {
+    try { await unlink(testChapterPath); } catch {}
+    await writeFile(catalogPath, initialCatalog, "utf8");
+  }
+});
+
