@@ -437,19 +437,21 @@ c3 Sicilian
 <!-- FEN: 3r2kr/1p1nb1pp/p5q1/R3p3/8/1PPpQ1N1/1P4PP/2B2RK1 b - - 9 23 -->
   **23...h6 24.Nf5 Bf8 25.Qxd3 Qb6+ 26.Be3 Qxa5 27.Ne7+ Bxe7 28.Qc4+ Kh7 29.Qd3+=** is an instructive line.
 
-16.Nc4 Qxd5 17.Qxd5 Nxd5 <!-- SOURCE MOVE REFERENCE: 16.Nc4 continuation. -->
+<!-- FEN: r3kb1r/1p2pppp/p7/3n1b2/2N4N/1B1p4/PP3PP1/R1B1K2R w KQkq - 0 18 -->
+**16.Nc4 Qxd5 17.Qxd5 Nxd5**
 
 Although the d3-pawn may appear weak, the position is still very complicated.
 
-18.h4 <!-- SOURCE MOVE REFERENCE: 18.h4 move discussion. -->
+**18.h4**
 
-18.Ndf3 f6!, planning ...0-0-0 or even ...Rc8, is not clear either. <!-- SOURCE MOVE REFERENCE: 18.Ndf3 alternative. -->
+<!-- FEN: r3kb1r/1p2pppp/p7/3n1b2/2N4N/1B1p4/PP3PP1/R1B1K2R w KQkq - 0 18 -->
+  (**18.Ndf3 f6!**, planning ...0-0-0 or even ...Rc8, is not clear either.)
 
 **FEN:**
 `r3kb1r/1p2pppp/p7/3n1b2/7N/1B1p4/PP1N1PP1/R1B1K2R b KQkq - 1 18`
 
 <!-- FEN: r3kb1r/1p2pppp/p7/3n1b2/7N/1B1p4/PP1N1PP1/R1B1K2R b KQkq - 1 18 -->
-**18...Be6 19.Ndf3 f6 20.Bd2 Ra7∞**
+**18...Be6 19.Ndf3 f6 20.Bd2 Bf7∞**
 
 The position is difficult to evaluate, in view of the total imbalance in the pawn structure.
 

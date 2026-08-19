@@ -70,6 +70,25 @@ test("Chapter 5 Page 81 contains complete 13...Bc5!? line, 15.Rae1, Lazar-Kozul 
   assert.match(page81, /`2kr1b1r\/pp2pppp\/1nnq4\/7b\/2p5\/2P2N1P\/PPBP1PP1\/RNBQR1K1 w - - 3 12`/);
 });
 
+test("Chapter 5 Page 85 contains bold interactive move notation and accurate FEN anchors", async () => {
+  const markdown = await readChapterFive();
+  const start = markdown.indexOf("## Page 85");
+  const end = markdown.indexOf("## Page 86", start);
+  const page85 = markdown.slice(start, end);
+
+  assert.match(page85, /\*\*23\.\.\.h6 24\.Nf5 Bf8 25\.Qxd3 Qb6\+ 26\.Be3 Qxa5 27\.Ne7\+ Bxe7 28\.Qc4\+ Kh7 29\.Qd3\+=\*\*/);
+  assert.match(page85, /\*\*16\.Nc4 Qxd5 17\.Qxd5 Nxd5\*\*/);
+  assert.match(page85, /Although the d3-pawn may appear weak, the position is still very complicated\./);
+  assert.match(page85, /\*\*18\.h4\*\*/);
+  assert.match(page85, /\*\*18\.Ndf3 f6!\*\*, planning \.\.\.0-0-0 or even \.\.\.Rc8, is not clear either\./);
+  assert.match(page85, /`r3kb1r\/1p2pppp\/p7\/3n1b2\/7N\/1B1p4\/PP1N1PP1\/R1B1K2R b KQkq - 1 18`/);
+  assert.match(page85, /\*\*18\.\.\.Be6 19\.Ndf3 f6 20\.Bd2 Bf7∞\*\*/);
+  assert.match(page85, /### B22\) 5\.cxd4/);
+  assert.match(page85, /\*\*5\.\.\.d6 6\.Bc4 Nb6\*\*/);
+  assert.match(page85, /\*\*7\.Bb5\+\*\*/);
+  assert.match(page85, /\*\*7\.Bb3!\? dxe5 8\.Qh5 e6 9\.dxe5 Nc6 10\.Nf3 Qd3! 11\.Nc3 Bb4 12\.Bd2 Bxc3!\? 13\.Bxc3\*\*/);
+});
+
 test("Chapter 5 Page 95 contains conclusion", async () => {
   const start = (await readChapterFive()).indexOf("## Page 95");
   const page95 = (await readChapterFive()).slice(start);
@@ -77,4 +96,5 @@ test("Chapter 5 Page 95 contains conclusion", async () => {
   assert.match(page95, /## Conclusion/);
   assert.match(page95, /This chapter served as an introduction to the c3 Sicilian/);
 });
+
 
