@@ -782,15 +782,13 @@ White has completed development and should retain a slight but pleasant advantag
 
 <!-- FEN: 3rr1k1/ppbq1pp1/2n2n1p/2Bp4/1P4b1/P1NQ1NP1/4PPBP/2RR2K1 b - - 2 19 -->
 
-After 19...b6 20.Be3± Black's pieces on the c-file have been destabilized.
+After (19...b6 20.Be3±) Black's pieces on the c-file have been destabilized.
 
 <!-- FEN: 3rr1k1/ppbq1pp1/2n2n1p/2Bp1b2/1P6/P1NQ1NP1/4PPBP/2RR2K1 w - - 3 20 -->
 
 **20.Qd2 Bh3 21.Bh1±**
 
 The position remains complex, but White is better for sure.
-
-<!-- FEN: rnbqkb1r/pp3ppp/4pn2/2pp4/2PP4/5NP1/PP2PPBP/RNBQK2R b KQkq - 1 5 -->
 
 ### C2) 5...Nc6 6.O-O
 
@@ -809,12 +807,12 @@ This is an important branching position, where Black's two main tries are **C21)
 
 ### C21) 6...Be7 7.dxc5 Bxc5
 
-<!-- FEN: r1bqk2r/pp3ppp/2n1pn2/2bp4/3P4/5NP1/PP2PPBP/RNBQ1RK1 w kq - 0 8 -->
+<!-- FEN: r1bqk2r/pp3ppp/2n1pn2/2bp4/2P5/5NP1/PP2PPBP/RNBQ1RK1 w kq - 0 8 -->
 
 **C21 position after 7...Bxc5**
 
 **FEN:**
-`r1bqk2r/pp3ppp/2n1pn2/2bp4/3P4/5NP1/PP2PPBP/RNBQ1RK1 w kq - 0 8`
+`r1bqk2r/pp3ppp/2n1pn2/2bp4/2P5/5NP1/PP2PPBP/RNBQ1RK1 w kq - 0 8`
 
 ---
 
@@ -830,32 +828,26 @@ Black has tried several other moves, but in most cases White gets an easy advant
 
 One way for Black to alter the character of the game is:
 
-<!-- FEN: r1bqk2r/pp3ppp/2n1pn2/2bp4/2P5/P4NP1/1P2PPBP/RNBQ1RK1 b kq - 0 8 -->
-
 8...dxc4 9.Qxd8+ Nxd8
 
-<!-- FEN: r1bQk2r/pp3ppp/2n1pn2/2b5/2p5/P4NP1/1P2PPBP/RNB2RK1 b kq - 0 9 -->
-
-9...Kxd8 is worse: 10.Nbd2 c3 11.bxc3 Ke7 12.Nb3 Bd6 13.Nfd4 Bd7 (13...Nxd4 14.cxd4 Rd8 15.Bd2±) 14.Nb5 Be5 15.a4 Black was already under significant pressure in Kochyev – Yurenko, St Petersburg 1999.
-
-<!-- FEN: r1bnk2r/pp3ppp/4pn2/2b5/2p5/P4NP1/1P2PPBP/RNB2RK1 w kq - 0 10 -->
+(9...Kxd8 is worse: 10.Nbd2 c3 11.bxc3 Ke7 12.Nb3 Bd6 13.Nfd4 Bd7 (13...Nxd4 14.cxd4 Rd8 15.Bd2±) 14.Nb5 Be5 15.a4 Black was already under significant pressure in Kochyev – Yurenko, St Petersburg 1999.)
 
 10.Ne5 Bd7 11.Nc3!
 
-11.Nxc4 Bb5 is not so bad for Black.
+(11.Nxc4 Bb5 is not so bad for Black.)
 
-<!-- FEN: r2nkb1r/pp1b1ppp/4pn2/2b1N3/2p5/P1N3P1/1P2PPBP/R1B2RK1 b kq - 5 11 -->
+<!-- FEN: r2nk2r/pp1b1ppp/4pn2/2b1N3/2p5/P1N3P1/1P2PPBP/R1B2RK1 b kq - 3 11 -->
 
 **C21 note after 11.Nc3!**
 
 **FEN:**
-`r2nkb1r/pp1b1ppp/4pn2/2b1N3/2p5/P1N3P1/1P2PPBP/R1B2RK1 b kq - 5 11`
+`r2nk2r/pp1b1ppp/4pn2/2b1N3/2p5/P1N3P1/1P2PPBP/R1B2RK1 b kq - 3 11`
 
 ---
 
 ## Page 19
 
-<!-- FEN: r2nkb1r/pp1b1ppp/4pn2/2b1N3/2p5/P1N3P1/1P2PPBP/R1B2RK1 b kq - 5 11 -->
+<!-- FEN: r2nk2r/pp1b1ppp/4pn2/2b1N3/2p5/P1N3P1/1P2PPBP/R1B2RK1 b kq - 3 11 -->
 
 11...Rc8 12.Rd1 h6!?
 
