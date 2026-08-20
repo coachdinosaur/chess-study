@@ -73,349 +73,719 @@
       } catch {}
     })();
   </script>
-  <link rel="stylesheet" href="./styles.css?v=20260809-play-recovery1">
-  <link rel="stylesheet" href="./site-home.css?v=20260719-seo-branding1">
+  <link rel="stylesheet" href="./styles.css?v=20260820-layout-redesign1">
+  <link rel="stylesheet" href="./site-home.css?v=20260820-layout-redesign1">
   <link rel="stylesheet" href="./focus-analysis-popup.css?v=20260719-focus-analysis1">
 </head>
 <body class="loading">
   <div id="loadingOverlay" class="loading-overlay">
     Loading…
   </div>
-  <!-- existing page-shell markup continues here -->
 
-  <div class="page-shell">
-    <main class="workspace" aria-label="Chess lesson workspace">
-      <aside class="board-pane">
-        <article class="board-stage-card">
-          <div class="board-stage-head recording-hidden" aria-hidden="true">
+  <!-- Mobile Top App Bar (visible on <= 760px / tablet portrait) -->
+  <header class="mobile-app-bar" aria-label="Mobile Navigation Bar">
+    <button id="mobileMenuToggle" class="mobile-menu-btn" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobileNavDrawer">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+    <div class="mobile-brand">
+      <img src="./assets/pieces/app_icon.png" alt="CD Digital Chess" class="mobile-brand-icon">
+      <span class="mobile-brand-title">CD Digital Chess</span>
+    </div>
+    <div class="mobile-app-bar-actions">
+      <span id="mobileActiveScreenBadge" class="mobile-screen-badge">Analyze a Position</span>
+      <button class="mobile-theme-btn" type="button" data-action="toggle-app-theme" aria-label="Toggle light and dark theme">
+        <svg class="theme-icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile Navigation Drawer Backdrop & Drawer -->
+  <div id="mobileDrawerBackdrop" class="mobile-drawer-backdrop" aria-hidden="true"></div>
+  <aside id="mobileNavDrawer" class="mobile-drawer" aria-label="Mobile Navigation" aria-hidden="true">
+    <div class="mobile-drawer-header">
+      <div class="drawer-brand">
+        <img src="./assets/pieces/app_icon.png" alt="" class="drawer-brand-icon">
+        <div class="drawer-brand-text">
+          <span class="drawer-brand-top">CD DIGITAL</span>
+          <span class="drawer-brand-bottom">CHESS</span>
+        </div>
+      </div>
+      <button id="mobileDrawerClose" class="mobile-drawer-close" type="button" aria-label="Close navigation menu">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <nav class="mobile-drawer-nav" aria-label="Mobile Menu Navigation">
+      <!-- Group: HOME -->
+      <div class="drawer-nav-group">
+        <span class="drawer-group-label">Home</span>
+        <button class="drawer-nav-item" type="button" data-nav-target="home">
+          <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          <span>Home</span>
+        </button>
+      </div>
+
+      <!-- Group: EXPLORE -->
+      <div class="drawer-nav-group">
+        <span class="drawer-group-label">Explore</span>
+        <a class="drawer-nav-item" href="./lessons/">
+          <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path><path d="M12 6v6"></path><path d="M9 9h6"></path></svg>
+          <span>Explore Lessons</span>
+        </a>
+        <a class="drawer-nav-item" href="./openings/">
+          <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+          <span>Explore Openings</span>
+        </a>
+      </div>
+
+      <!-- Group: TOOLS -->
+      <div class="drawer-nav-group">
+        <span class="drawer-group-label">Tools</span>
+        <a class="drawer-nav-item" href="./3d/">
+          <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+          <span>Open 3D Board</span>
+        </a>
+        <button class="drawer-nav-item is-active" type="button" data-nav-target="analyze">
+          <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+          <span>Analyze a Position</span>
+        </button>
+        <a class="drawer-nav-item" href="./live-board.html">
+          <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+          <span>Live Board</span>
+        </a>
+      </div>
+
+      <!-- Group: COACHING -->
+      <div class="drawer-nav-group">
+        <span class="drawer-group-label">Coaching</span>
+        <a class="drawer-nav-item" href="./management/">
+          <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          <span>Teacher Management</span>
+        </a>
+      </div>
+
+      <!-- Group: INFO -->
+      <div class="drawer-nav-group">
+        <span class="drawer-group-label">Info</span>
+        <a class="drawer-nav-item" href="./about/">
+          <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          <span>About the App</span>
+        </a>
+      </div>
+    </nav>
+
+    <div class="drawer-footer">
+      <button class="drawer-theme-toggle" type="button" data-action="toggle-app-theme" aria-label="Toggle dark theme" aria-checked="false">
+        <span class="theme-toggle-label">Dark Theme</span>
+        <span class="theme-toggle-switch" aria-hidden="true">
+          <span class="theme-toggle-thumb"></span>
+        </span>
+      </button>
+    </div>
+  </aside>
+
+  <div class="page-shell is-view-workspace">
+    <!-- Desktop Persistent Left Navigation Sidebar -->
+    <aside id="appSidebar" class="app-sidebar" aria-label="Application Navigation">
+      <div class="sidebar-brand">
+        <img src="./assets/pieces/app_icon.png" alt="CD Digital Chess" class="sidebar-brand-icon">
+        <div class="sidebar-brand-text">
+          <span class="sidebar-brand-top">CD DIGITAL</span>
+          <span class="sidebar-brand-bottom">CHESS</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" aria-label="Primary destinations">
+        <!-- Group: HOME -->
+        <div class="nav-group">
+          <span class="nav-group-label">Home</span>
+          <button class="sidebar-nav-item" type="button" data-nav-target="home">
+            <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            <span class="nav-label">Home</span>
+          </button>
+        </div>
+
+        <!-- Group: EXPLORE -->
+        <div class="nav-group">
+          <span class="nav-group-label">Explore</span>
+          <a class="sidebar-nav-item" href="./lessons/">
+            <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path><path d="M12 6v6"></path><path d="M9 9h6"></path></svg>
+            <span class="nav-label">Explore Lessons</span>
+          </a>
+          <a class="sidebar-nav-item" href="./openings/">
+            <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+            <span class="nav-label">Explore Openings</span>
+          </a>
+        </div>
+
+        <!-- Group: TOOLS -->
+        <div class="nav-group">
+          <span class="nav-group-label">Tools</span>
+          <a class="sidebar-nav-item" href="./3d/">
+            <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+            <span class="nav-label">Open 3D Board</span>
+          </a>
+          <button class="sidebar-nav-item is-active" type="button" data-nav-target="analyze" aria-current="page">
+            <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+            <span class="nav-label">Analyze a Position</span>
+          </button>
+          <a class="sidebar-nav-item" href="./live-board.html">
+            <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+            <span class="nav-label">Live Board</span>
+          </a>
+        </div>
+
+        <!-- Group: COACHING -->
+        <div class="nav-group">
+          <span class="nav-group-label">Coaching</span>
+          <a class="sidebar-nav-item" href="./management/">
+            <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            <span class="nav-label">Teacher Management</span>
+          </a>
+        </div>
+
+        <!-- Group: INFO -->
+        <div class="nav-group">
+          <span class="nav-group-label">Info</span>
+          <a class="sidebar-nav-item" href="./about/">
+            <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <span class="nav-label">About the App</span>
+          </a>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="sidebar-theme-toggle" type="button" data-action="toggle-app-theme" aria-label="Toggle dark theme" aria-checked="false">
+          <span class="theme-toggle-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </span>
+          <span class="theme-toggle-label">Dark Theme</span>
+          <span class="theme-toggle-switch" aria-hidden="true">
+            <span class="theme-toggle-thumb"></span>
+          </span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="app-main-content">
+      <!-- 1. Dedicated Home View (displayed when Home is active) -->
+      <section id="homeView" class="home-view" hidden aria-label="Home Dashboard">
+        <div class="home-hero-card">
+          <p class="home-hero-kicker">CD Digital Chess Platform</p>
+          <h2 class="home-hero-title">Interactive Chess Study &amp; Coaching Suite</h2>
+          <p class="home-hero-description">
+            Build positions, analyze moves with Stockfish, explore master opening repertoires, solve tactical puzzles, and conduct synchronized real-time lessons right in your browser.
+          </p>
+          <div class="home-hero-actions">
+            <button type="button" class="home-hero-primary" data-home-action="analyze">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+              <span>Launch Analysis Board</span>
+            </button>
+            <a href="./lessons/" class="home-hero-secondary">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+              <span>Explore Lessons</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="home-section-head">
+          <h3 class="home-section-title">Featured Tools &amp; Resources</h3>
+          <span class="home-section-subtitle">Select a destination or tool to begin</span>
+        </div>
+
+        <div class="home-grid">
+          <article class="home-card">
             <div>
-              <p class="eyebrow">Study Board</p>
-              <h2 id="boardTitleDisplay" class="board-stage-title">Untitled position</h2>
+              <div class="home-card-header">
+                <div class="home-card-icon-wrap">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+                </div>
+                <h4 class="home-card-title">Analyze a Position</h4>
+              </div>
+              <p class="home-card-description">Set up custom positions, evaluate moves with Stockfish, build variation trees, and import/export PGN and FEN records.</p>
             </div>
-            <div class="head-pills">
-              <span id="modePill" class="pill pill-primary">Setup</span>
-              <span id="validityPill" class="pill">Ready</span>
+            <button type="button" class="home-card-link" data-home-action="analyze">Start Analyzing &rarr;</button>
+          </article>
+
+          <article class="home-card">
+            <div>
+              <div class="home-card-header">
+                <div class="home-card-icon-wrap">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path><path d="M12 6v6"></path><path d="M9 9h6"></path></svg>
+                </div>
+                <h4 class="home-card-title">Explore Lessons</h4>
+              </div>
+              <p class="home-card-description">Curriculum spanning Pawn Level fundamentals, Advanced Pawn strategy, and Bishop Level endgame mastery.</p>
             </div>
+            <a href="./lessons/" class="home-card-link">Browse Lessons &rarr;</a>
+          </article>
+
+          <article class="home-card">
+            <div>
+              <div class="home-card-header">
+                <div class="home-card-icon-wrap">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+                </div>
+                <h4 class="home-card-title">Explore Openings</h4>
+              </div>
+              <p class="home-card-description">Interactive opening books featuring the Catalan, Sicilian defenses, branching tree explorer, and practice trainers.</p>
+            </div>
+            <a href="./openings/" class="home-card-link">Explore Openings &rarr;</a>
+          </article>
+
+          <article class="home-card">
+            <div>
+              <div class="home-card-header">
+                <div class="home-card-icon-wrap">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                </div>
+                <h4 class="home-card-title">Open 3D Board</h4>
+              </div>
+              <p class="home-card-description">3D Chess Position Studio powered by Three.js with background Web Worker AI bot tiers (Casual, Club, Master).</p>
+            </div>
+            <a href="./3d/" class="home-card-link">Open 3D Studio &rarr;</a>
+          </article>
+
+          <article class="home-card">
+            <div>
+              <div class="home-card-header">
+                <div class="home-card-icon-wrap">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+                </div>
+                <h4 class="home-card-title">Live Board</h4>
+              </div>
+              <p class="home-card-description">Real-time synchronized classrooms for coaches and students with move locking, prepared decks, and instant room sharing.</p>
+            </div>
+            <a href="./live-board.html" class="home-card-link">Open Live Board &rarr;</a>
+          </article>
+
+          <article class="home-card">
+            <div>
+              <div class="home-card-header">
+                <div class="home-card-icon-wrap">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                </div>
+                <h4 class="home-card-title">Teacher Management</h4>
+              </div>
+              <p class="home-card-description">Secure coaching management dashboard for student rosters, homework assignments, and puzzle performance metrics.</p>
+            </div>
+            <a href="./management/" class="home-card-link">Open Management &rarr;</a>
+          </article>
+
+          <article class="home-card">
+            <div>
+              <div class="home-card-header">
+                <div class="home-card-icon-wrap">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </div>
+                <h4 class="home-card-title">Tactical &amp; Endgame Puzzles</h4>
+              </div>
+              <p class="home-card-description">Sharpen tactical vision and endgame technique with instant answer validation, progressive hints, and review queues.</p>
+            </div>
+            <button type="button" class="home-card-link" data-home-action="puzzle">Train Puzzles &rarr;</button>
+          </article>
+
+          <article class="home-card">
+            <div>
+              <div class="home-card-header">
+                <div class="home-card-icon-wrap">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                </div>
+                <h4 class="home-card-title">About the App</h4>
+              </div>
+              <p class="home-card-description">Learn about the project history, MetaPost font asset pipeline, security model, and open source architecture.</p>
+            </div>
+            <a href="./about/" class="home-card-link">About CD Digital Chess &rarr;</a>
+          </article>
+        </div>
+
+        <div class="home-tips-card">
+          <div class="home-tip-item">
+            <span class="home-tip-label">Quick Navigation</span>
+            <p class="home-tip-text">Use the persistent left sidebar at any time to switch tools or jump between studies and coaching views.</p>
           </div>
-
-          <div class="board-block">
-            <div class="board-column">
-              <div id="capturedTop" class="captured-row is-empty" aria-hidden="true">
-                <div id="capturedTopPieces" class="captured-pieces" aria-label="Captured pieces above the board"></div>
-              </div>
-              <div class="board-frame">
-                <div class="board-surface">
-                  <div id="boardGrid" class="board-grid" aria-label="Chess board"></div>
-                  <svg
-                    id="boardAnnotationOverlay"
-                    class="board-annotation-overlay"
-                    viewBox="0 0 800 800"
-                    aria-hidden="true"
-                    focusable="false"
-                  ></svg>
-                </div>
-              </div>
-              <div id="capturedBottom" class="captured-row is-empty" aria-hidden="true">
-                <div id="capturedBottomPieces" class="captured-pieces" aria-label="Captured pieces below the board"></div>
-              </div>
-              <div id="evalBarWrap" class="eval-bar-wrap is-hidden" aria-hidden="true">
-                <div id="turnSideMarker" class="turn-side-marker" aria-hidden="true"></div>
-                <div class="eval-bar-track">
-                  <div id="evalBarWhite" class="eval-bar-white"></div>
-                  <div class="eval-bar-divider"></div>
-                </div>
-              </div>
-            </div>
+          <div class="home-tip-item">
+            <span class="home-tip-label">Variation Stepping</span>
+            <p class="home-tip-text">Use <kbd>&larr;</kbd> and <kbd>&rarr;</kbd> keys or the notation toolbar to navigate moves in the active analysis tree.</p>
           </div>
-
-          <div id="puzzleBoardInstruction" class="puzzle-instruction-container" hidden></div>
-
-          <div class="board-stage-foot recording-hidden" aria-hidden="true">
-            <div class="meta-strip">
-              <span id="boardContextLabel" class="meta-token">Setup editor</span>
-              <span id="turnToken" class="meta-token">White to move</span>
-              <span id="castlingToken" class="meta-token">Castling KQkq</span>
-              <span id="enPassantToken" class="meta-token">En passant none</span>
-            </div>
-
-            <div class="fen-stack">
-              <div class="fen-card">
-                <div class="fen-label">Current board</div>
-                <code id="currentFenCode" class="fen-code"></code>
-              </div>
-              <div class="fen-card">
-                <div class="fen-label">Setup source</div>
-                <code id="setupFenCode" class="fen-code"></code>
-              </div>
-            </div>
+          <div class="home-tip-item">
+            <span class="home-tip-label">Board Annotations</span>
+            <p class="home-tip-text">Right-click or drag across squares to draw arrows (<kbd>Shift</kbd> for blue, <kbd>Ctrl</kbd> for orange).</p>
           </div>
-        </article>
-      </aside>
-
-      <!-- Mobile-only engine lines slot: shown below the board on small screens.
-           Populated by JS (renderNotationPanel) alongside the regular notation panel.
-           Hidden on desktop via CSS. -->
-      <div id="mobileEngineLinesSlot" class="mobile-engine-lines-slot" aria-hidden="true"></div>
-
-      <section class="control-pane">
-        <div class="control-pane-scroll">
-          <header class="site-intro" aria-labelledby="siteTitle">
-            <div class="site-intro-copy">
-              <p class="site-intro-kicker">CD Digital Chess</p>
-              <h1 id="siteTitle" class="site-intro-title">Interactive Chess Study Board</h1>
-              <p class="site-intro-description">CD Digital Chess is an independently developed personal web app for chess study and training. Build positions, study lessons, solve puzzles, analyze games, and use coaching tools in your browser.</p>
-            </div>
-            <nav class="site-intro-actions" aria-label="Quick start">
-              <a class="site-intro-button site-intro-button-primary" href="./lessons/">Explore lessons</a>
-              <a class="site-intro-button" href="./openings/">Explore openings</a>
-              <a class="site-intro-button" href="./3d/">Open 3D board</a>
-              <a class="site-intro-button" href="./management/">Teacher management</a>
-              <a class="site-intro-button" href="./about/">About the app</a>
-              <button class="site-intro-button" type="button" data-action="set-tab" data-tab="analysis">Analyze a position</button>
-            </nav>
-          </header>
-
-          <section class="lesson-header" aria-labelledby="titleInput">
-            <label class="sr-only" for="titleInput">Lesson title</label>
-            <input
-              id="titleInput"
-              class="title-input lesson-title-input"
-              type="text"
-              maxlength="120"
-              placeholder="Untitled position"
-              autocomplete="off"
-              spellcheck="false"
-            >
-            <div class="lesson-command-row">
-              <label class="sr-only" for="lessonPickerButton">Lesson selector</label>
-              <div class="lesson-overflow lesson-picker-overflow">
-                <button
-                  id="lessonPickerButton"
-                  type="button"
-                  class="lesson-picker-trigger field-select lesson-picker"
-                  data-action="toggle-lesson-picker"
-                  aria-haspopup="listbox"
-                  aria-expanded="false"
-                  aria-controls="lessonPickerMenu"
-                >
-                  <span id="lessonPickerValue" class="lesson-picker-value">Select a lesson...</span>
-                  <span class="lesson-picker-arrow" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
-                  </span>
-                </button>
-                <div id="lessonPickerMenu" class="lesson-overflow-menu lesson-picker-menu" role="listbox" aria-labelledby="lessonPickerButton" hidden>
-                  <!-- Populated by JS -->
-                </div>
-              </div>
-              <div class="lesson-overflow lesson-book-overflow">
-                <button
-                  id="lessonBookActionsButton"
-                  type="button"
-                  class="lesson-actions-button action-button tonal"
-                  data-action="toggle-lesson-book-actions"
-                  aria-haspopup="menu"
-                  aria-controls="lessonBookActionsMenu"
-                  aria-expanded="false"
-                >Actions</button>
-                <div id="lessonBookActionsMenu" class="lesson-overflow-menu lesson-book-actions-menu" role="menu" aria-labelledby="lessonBookActionsButton" hidden>
-                  <button id="newLessonButton" type="button" class="lesson-overflow-item" data-action="new-lesson" role="menuitem">New</button>
-                  <button id="duplicateLessonButton" type="button" class="lesson-overflow-item" data-action="duplicate-lesson" role="menuitem">Duplicate</button>
-                  <button id="deleteLessonButton" type="button" class="lesson-overflow-item lesson-overflow-item-danger" data-action="delete-lesson" role="menuitem">Delete</button>
-                </div>
-              </div>
-              <button
-                id="headerAnalyzeButton"
-                type="button"
-                class="header-analyze-button action-button primary"
-                data-action="toggle-analysis"
-              >Analyze</button>
-              <div class="lesson-overflow lesson-settings-overflow">
-                <button
-                  id="lessonActionsButton"
-                  type="button"
-                  class="lesson-overflow-trigger"
-                  data-action="toggle-lesson-actions"
-                  aria-label="Settings"
-                  title="Settings"
-                  aria-haspopup="menu"
-                  aria-controls="lessonActionsMenu"
-                  aria-expanded="false"
-                >
-                  <span class="lesson-overflow-dots" aria-hidden="true">
-                    <span class="lesson-overflow-dot"></span>
-                    <span class="lesson-overflow-dot"></span>
-                    <span class="lesson-overflow-dot"></span>
-                  </span>
-                </button>
-                <div id="lessonActionsMenu" class="lesson-overflow-menu" role="menu" aria-labelledby="lessonActionsButton" hidden>
-                  <!-- 1. File & Lesson Submenu -->
-                  <details class="menu-submenu" open>
-                    <summary class="menu-submenu-title">
-                      <span>File & Lesson</span>
-                      <span class="menu-submenu-arrow">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                      </span>
-                    </summary>
-                    <div class="menu-submenu-content">
-                      <button id="openLessonIndexButton" type="button" class="lesson-overflow-item" data-action="open-lesson-index" role="menuitem">Lesson index</button>
-                      <button id="openLessonButton" type="button" class="lesson-overflow-item" data-action="open-lesson" role="menuitem">Open lesson</button>
-                      <button id="saveLessonButton" type="button" class="lesson-overflow-item" data-action="save-lesson" role="menuitem">Save lesson</button>
-                      <button id="importPgnButton" type="button" class="lesson-overflow-item" data-action="import-pgn" role="menuitem">Import PGN</button>
-                      <button id="exportPgnButton" type="button" class="lesson-overflow-item" data-action="export-pgn" role="menuitem">Export PGN</button>
-                      <button id="copyFenButton" type="button" class="lesson-overflow-item" data-action="copy-fen" role="menuitem">Copy FEN</button>
-                    </div>
-                  </details>
-
-                  <!-- 2. View & Interface Submenu -->
-                  <details class="menu-submenu">
-                    <summary class="menu-submenu-title">
-                      <span>View & Interface</span>
-                      <span class="menu-submenu-arrow">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                      </span>
-                    </summary>
-                    <div class="menu-submenu-content">
-                      <button id="enterFocusModeButton" type="button" class="lesson-overflow-item" data-action="enter-focus-mode" role="menuitem">Focus mode</button>
-                      <button id="toggleNoteMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-note" role="menuitem">Show note</button>
-                      <button id="toggleFullscreenMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-fullscreen" role="menuitem" hidden>Enter fullscreen</button>
-                    </div>
-                  </details>
-
-                  <!-- 3. Engine & PGN Settings Submenu -->
-                  <details class="menu-submenu">
-                    <summary class="menu-submenu-title">
-                      <span>Engine & PGN Settings</span>
-                      <span class="menu-submenu-arrow">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                      </span>
-                    </summary>
-                    <div class="menu-submenu-content">
-                      <button id="togglePgnCommentsMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-pgn-comments" role="menuitem">Hide PGN comments</button>
-                      <button id="togglePvLinesMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-pv-lines" role="menuitem">Hide PV lines</button>
-                    </div>
-                  </details>
-
-                  <div class="lesson-overflow-divider" role="separator"></div>
-
-                  <!-- 4. Top-level Switches -->
-                  <button
-                    id="toggleLastMoveArrowButton"
-                    type="button"
-                    class="lesson-overflow-item lesson-overflow-item-toggle"
-                    data-action="toggle-last-move-arrow"
-                    role="menuitemcheckbox"
-                    aria-checked="true"
-                  >
-                    <span>Last move arrow</span>
-                    <span class="theme-toggle-switch" aria-hidden="true">
-                      <span class="theme-toggle-thumb"></span>
-                    </span>
-                  </button>
-                  <button
-                    id="toggleThemeButton"
-                    type="button"
-                    class="lesson-overflow-item lesson-overflow-item-toggle"
-                    data-action="toggle-color-theme"
-                    role="menuitemcheckbox"
-                    aria-checked="false"
-                  >
-                    <span>Dark Theme</span>
-                    <span class="theme-toggle-switch" aria-hidden="true">
-                      <span class="theme-toggle-thumb"></span>
-                    </span>
-                  </button>
-                </div>
-              </div>
-            </div>
-            <p id="lessonFileStatus" class="lesson-file-status" aria-live="polite"></p>
-            <div id="openingInfoDisplay" class="opening-info-display" hidden>
-              <span id="openingEcoText" class="opening-eco-text"></span>
-              <span id="openingNameText" class="opening-name-text"></span>
-            </div>
-            <div id="importedPgnContainer" class="imported-pgn-container" style="display: none;">
-              <div class="imported-pgn-filename" id="importedPgnFileNameWrapper">
-                <strong>Imported:</strong> <span id="importedPgnFileNameText"></span>
-              </div>
-              <div id="importedPgnStatusText" class="imported-pgn-meta"></div>
-              <div class="action-row" style="margin-top: 0.25rem; gap: 0.5rem;">
-                <button id="browsePgnGamesLink" type="button" class="action-button tonal" data-action="browse-pgn-games" style="font-size: 0.8rem; padding: 0.35rem 0.7rem; min-height: 0; display: inline-flex; align-items: center;">Browse Games</button>
-                <button id="clearPgnGamesLink" type="button" class="action-button danger" data-action="clear-pgn-games" style="font-size: 0.8rem; padding: 0.35rem 0.7rem; min-height: 0; display: inline-flex; align-items: center;">Clear</button>
-              </div>
-            </div>
-            <input id="lessonFileInput" type="file" accept=".json,.lesson.json,application/json" hidden>
-            <input id="pgnFileInput" type="file" accept=".pgn,.txt,text/plain,application/x-chess-pgn" hidden>
-            <input id="lessonPositionFileInput" type="file" accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" hidden>
-            <input id="scanBoardInput" type="file" accept=".png,.jpg,.jpeg" hidden>
-            <input id="puzzleCsvFileInput" type="file" accept=".csv,text/csv" hidden>
-            <span id="engineReadyLabel" class="sr-only">Stockfish idle</span>
-            <div id="heroBanner" class="hero-banner recording-hidden" aria-hidden="true"></div>
-          </section>
-          <nav class="tab-nav" aria-label="Workspace sections">
-            <button class="tab-chip" type="button" data-action="set-tab" data-tab="study">Study</button>
-            <button class="tab-chip" type="button" data-action="set-tab" data-tab="setup">Setup</button>
-            <button class="tab-chip" type="button" data-action="set-tab" data-tab="analysis">Analysis</button>
-            <button class="tab-chip is-active" type="button" data-action="set-tab" data-tab="play">Play</button>
-            <button class="tab-chip" type="button" data-action="set-tab" data-tab="puzzle">Puzzle</button>
-            <button class="tab-chip" type="button" data-action="set-tab" data-tab="lessons">Lessons</button>
-          </nav>
-          <section id="lessonPositionBuilderPanel" class="lesson-position-builder-panel" aria-label="Lesson Position Builder" hidden></section>
-
-          <section class="lesson-notation" aria-label="Lesson notation">
-            <p id="notationSummary" class="sr-only" aria-live="polite">Play moves from the board to build the lesson tree.</p>
-            <div id="notationPanel" class="notation-panel"></div>
-            <div class="notation-toolbar" aria-label="Move navigation">
-              <button id="notationStartButton" type="button" class="notation-nav-button" data-action="navigate-start" aria-label="Go to start">
-                <span class="notation-nav-icon" aria-hidden="true">
-                  <svg viewBox="0 0 20 20" focusable="false">
-                    <path d="M6 4.75v10.5"></path>
-                    <path d="M14.5 5.75 9 10l5.5 4.25"></path>
-                  </svg>
-                </span>
-              </button>
-              <button id="notationPrevButton" type="button" class="notation-nav-button" data-action="navigate-back" aria-label="Go to previous move">
-                <span class="notation-nav-icon" aria-hidden="true">
-                  <svg viewBox="0 0 20 20" focusable="false">
-                    <path d="M13.75 5.75 8.25 10l5.5 4.25"></path>
-                  </svg>
-                </span>
-              </button>
-              <button id="notationNextButton" type="button" class="notation-nav-button" data-action="navigate-forward" aria-label="Go to next move">
-                <span class="notation-nav-icon" aria-hidden="true">
-                  <svg viewBox="0 0 20 20" focusable="false">
-                    <path d="m6.25 5.75 5.5 4.25-5.5 4.25"></path>
-                  </svg>
-                </span>
-              </button>
-              <button id="notationEndButton" type="button" class="notation-nav-button" data-action="navigate-end" aria-label="Go to end">
-                <span class="notation-nav-icon" aria-hidden="true">
-                  <svg viewBox="0 0 20 20" focusable="false">
-                    <path d="M14 4.75v10.5"></path>
-                    <path d="m5.5 5.75 5.5 4.25-5.5 4.25"></path>
-                  </svg>
-                </span>
-              </button>
-            </div>
-          </section>
-
-          <section id="workspaceTools" class="workspace-tools" hidden>
-            <section class="lesson-tools" aria-label="Lesson tools">
-              <section class="tab-panel is-active" id="setupPanel" aria-label="Setup tab"></section>
-              <section class="tab-panel" id="analysisPanel" aria-label="Analysis tab" hidden></section>
-              <section class="tab-panel" id="playPanel" aria-label="Play tab" hidden></section>
-              <section class="tab-panel" id="puzzlePanel" aria-label="Puzzle tab" hidden></section>
-            </section>
-          </section>
         </div>
       </section>
-    </main>
+
+      <!-- 2. Workspace View (Center Chessboard + Right Study/Analysis Workspace) -->
+      <section id="workspaceView" class="workspace-view" aria-label="Chess Study Workspace">
+        <main class="workspace" aria-label="Chess lesson workspace">
+          <!-- Center Column: Board Stage -->
+          <aside class="board-pane">
+            <article class="board-stage-card">
+              <div class="board-stage-head recording-hidden" aria-hidden="true">
+                <div>
+                  <p class="eyebrow">Study Board</p>
+                  <h2 id="boardTitleDisplay" class="board-stage-title">Untitled position</h2>
+                </div>
+                <div class="head-pills">
+                  <span id="modePill" class="pill pill-primary">Setup</span>
+                  <span id="validityPill" class="pill">Ready</span>
+                </div>
+              </div>
+
+              <div class="board-block">
+                <div class="board-column">
+                  <div id="capturedTop" class="captured-row is-empty" aria-hidden="true">
+                    <div id="capturedTopPieces" class="captured-pieces" aria-label="Captured pieces above the board"></div>
+                  </div>
+                  <div class="board-frame">
+                    <div class="board-surface">
+                      <div id="boardGrid" class="board-grid" aria-label="Chess board"></div>
+                      <svg
+                        id="boardAnnotationOverlay"
+                        class="board-annotation-overlay"
+                        viewBox="0 0 800 800"
+                        aria-hidden="true"
+                        focusable="false"
+                      ></svg>
+                    </div>
+                  </div>
+                  <div id="capturedBottom" class="captured-row is-empty" aria-hidden="true">
+                    <div id="capturedBottomPieces" class="captured-pieces" aria-label="Captured pieces below the board"></div>
+                  </div>
+                  <div id="evalBarWrap" class="eval-bar-wrap is-hidden" aria-hidden="true">
+                    <div id="turnSideMarker" class="turn-side-marker" aria-hidden="true"></div>
+                    <div class="eval-bar-track">
+                      <div id="evalBarWhite" class="eval-bar-white"></div>
+                      <div class="eval-bar-divider"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="puzzleBoardInstruction" class="puzzle-instruction-container" hidden></div>
+
+              <div class="board-stage-foot recording-hidden" aria-hidden="true">
+                <div class="meta-strip">
+                  <span id="boardContextLabel" class="meta-token">Setup editor</span>
+                  <span id="turnToken" class="meta-token">White to move</span>
+                  <span id="castlingToken" class="meta-token">Castling KQkq</span>
+                  <span id="enPassantToken" class="meta-token">En passant none</span>
+                </div>
+
+                <div class="fen-stack">
+                  <div class="fen-card">
+                    <div class="fen-label">Current board</div>
+                    <code id="currentFenCode" class="fen-code"></code>
+                  </div>
+                  <div class="fen-card">
+                    <div class="fen-label">Setup source</div>
+                    <code id="setupFenCode" class="fen-code"></code>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </aside>
+
+          <!-- Mobile-only engine lines slot: shown below the board on small screens.
+               Populated by JS (renderNotationPanel) alongside the regular notation panel.
+               Hidden on desktop via CSS. -->
+          <div id="mobileEngineLinesSlot" class="mobile-engine-lines-slot" aria-hidden="true"></div>
+
+          <!-- Right Column: Study and Analysis Workspace Controls -->
+          <section class="control-pane">
+            <div class="control-pane-scroll">
+              <header class="workspace-intro" aria-labelledby="siteTitle">
+                <div class="workspace-intro-copy">
+                  <p class="workspace-intro-kicker">CD Digital Chess</p>
+                  <h1 id="siteTitle" class="workspace-intro-title">Interactive Chess Study Board</h1>
+                  <p class="workspace-intro-description">Build positions, study lessons, solve puzzles, analyze games, and use coaching tools in your browser.</p>
+                </div>
+              </header>
+
+              <section class="lesson-header" aria-labelledby="titleInput">
+                <label class="sr-only" for="titleInput">Lesson title</label>
+                <input
+                  id="titleInput"
+                  class="title-input lesson-title-input"
+                  type="text"
+                  maxlength="120"
+                  placeholder="Untitled position"
+                  autocomplete="off"
+                  spellcheck="false"
+                >
+                <div class="lesson-command-row">
+                  <label class="sr-only" for="lessonPickerButton">Lesson selector</label>
+                  <div class="lesson-overflow lesson-picker-overflow">
+                    <button
+                      id="lessonPickerButton"
+                      type="button"
+                      class="lesson-picker-trigger field-select lesson-picker"
+                      data-action="toggle-lesson-picker"
+                      aria-haspopup="listbox"
+                      aria-expanded="false"
+                      aria-controls="lessonPickerMenu"
+                    >
+                      <span id="lessonPickerValue" class="lesson-picker-value">Select a lesson...</span>
+                      <span class="lesson-picker-arrow" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                      </span>
+                    </button>
+                    <div id="lessonPickerMenu" class="lesson-overflow-menu lesson-picker-menu" role="listbox" aria-labelledby="lessonPickerButton" hidden>
+                      <!-- Populated by JS -->
+                    </div>
+                  </div>
+                  <div class="lesson-overflow lesson-book-overflow">
+                    <button
+                      id="lessonBookActionsButton"
+                      type="button"
+                      class="lesson-actions-button action-button tonal"
+                      data-action="toggle-lesson-book-actions"
+                      aria-haspopup="menu"
+                      aria-controls="lessonBookActionsMenu"
+                      aria-expanded="false"
+                    >Actions</button>
+                    <div id="lessonBookActionsMenu" class="lesson-overflow-menu lesson-book-actions-menu" role="menu" aria-labelledby="lessonBookActionsButton" hidden>
+                      <button id="newLessonButton" type="button" class="lesson-overflow-item" data-action="new-lesson" role="menuitem">New</button>
+                      <button id="duplicateLessonButton" type="button" class="lesson-overflow-item" data-action="duplicate-lesson" role="menuitem">Duplicate</button>
+                      <button id="deleteLessonButton" type="button" class="lesson-overflow-item lesson-overflow-item-danger" data-action="delete-lesson" role="menuitem">Delete</button>
+                    </div>
+                  </div>
+                  <button
+                    id="headerAnalyzeButton"
+                    type="button"
+                    class="header-analyze-button action-button primary"
+                    data-action="toggle-analysis"
+                  >Analyze</button>
+                  <div class="lesson-overflow lesson-settings-overflow">
+                    <button
+                      id="lessonActionsButton"
+                      type="button"
+                      class="lesson-overflow-trigger"
+                      data-action="toggle-lesson-actions"
+                      aria-label="Settings"
+                      title="Settings"
+                      aria-haspopup="menu"
+                      aria-controls="lessonActionsMenu"
+                      aria-expanded="false"
+                    >
+                      <span class="lesson-overflow-dots" aria-hidden="true">
+                        <span class="lesson-overflow-dot"></span>
+                        <span class="lesson-overflow-dot"></span>
+                        <span class="lesson-overflow-dot"></span>
+                      </span>
+                    </button>
+                    <div id="lessonActionsMenu" class="lesson-overflow-menu" role="menu" aria-labelledby="lessonActionsButton" hidden>
+                      <!-- 1. File & Lesson Submenu -->
+                      <details class="menu-submenu" open>
+                        <summary class="menu-submenu-title">
+                          <span>File & Lesson</span>
+                          <span class="menu-submenu-arrow">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                          </span>
+                        </summary>
+                        <div class="menu-submenu-content">
+                          <button id="openLessonIndexButton" type="button" class="lesson-overflow-item" data-action="open-lesson-index" role="menuitem">Lesson index</button>
+                          <button id="openLessonButton" type="button" class="lesson-overflow-item" data-action="open-lesson" role="menuitem">Open lesson</button>
+                          <button id="saveLessonButton" type="button" class="lesson-overflow-item" data-action="save-lesson" role="menuitem">Save lesson</button>
+                          <button id="importPgnButton" type="button" class="lesson-overflow-item" data-action="import-pgn" role="menuitem">Import PGN</button>
+                          <button id="exportPgnButton" type="button" class="lesson-overflow-item" data-action="export-pgn" role="menuitem">Export PGN</button>
+                          <button id="copyFenButton" type="button" class="lesson-overflow-item" data-action="copy-fen" role="menuitem">Copy FEN</button>
+                        </div>
+                      </details>
+
+                      <!-- 2. View & Interface Submenu -->
+                      <details class="menu-submenu">
+                        <summary class="menu-submenu-title">
+                          <span>View & Interface</span>
+                          <span class="menu-submenu-arrow">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                          </span>
+                        </summary>
+                        <div class="menu-submenu-content">
+                          <button id="enterFocusModeButton" type="button" class="lesson-overflow-item" data-action="enter-focus-mode" role="menuitem">Focus mode</button>
+                          <button id="toggleNoteMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-note" role="menuitem">Show note</button>
+                          <button id="toggleFullscreenMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-fullscreen" role="menuitem" hidden>Enter fullscreen</button>
+                        </div>
+                      </details>
+
+                      <!-- 3. Engine & PGN Settings Submenu -->
+                      <details class="menu-submenu">
+                        <summary class="menu-submenu-title">
+                          <span>Engine & PGN Settings</span>
+                          <span class="menu-submenu-arrow">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                          </span>
+                        </summary>
+                        <div class="menu-submenu-content">
+                          <button id="togglePgnCommentsMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-pgn-comments" role="menuitem">Hide PGN comments</button>
+                          <button id="togglePvLinesMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-pv-lines" role="menuitem">Hide PV lines</button>
+                        </div>
+                      </details>
+
+                      <div class="lesson-overflow-divider" role="separator"></div>
+
+                      <!-- 4. Top-level Switches -->
+                      <button
+                        id="toggleLastMoveArrowButton"
+                        type="button"
+                        class="lesson-overflow-item lesson-overflow-item-toggle"
+                        data-action="toggle-last-move-arrow"
+                        role="menuitemcheckbox"
+                        aria-checked="true"
+                      >
+                        <span>Last move arrow</span>
+                        <span class="theme-toggle-switch" aria-hidden="true">
+                          <span class="theme-toggle-thumb"></span>
+                        </span>
+                      </button>
+                      <button
+                        id="toggleThemeButton"
+                        type="button"
+                        class="lesson-overflow-item lesson-overflow-item-toggle"
+                        data-action="toggle-color-theme"
+                        role="menuitemcheckbox"
+                        aria-checked="false"
+                      >
+                        <span>Dark Theme</span>
+                        <span class="theme-toggle-switch" aria-hidden="true">
+                          <span class="theme-toggle-thumb"></span>
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <p id="lessonFileStatus" class="lesson-file-status" aria-live="polite"></p>
+                <div id="openingInfoDisplay" class="opening-info-display" hidden>
+                  <span id="openingEcoText" class="opening-eco-text"></span>
+                  <span id="openingNameText" class="opening-name-text"></span>
+                </div>
+                <div id="importedPgnContainer" class="imported-pgn-container" style="display: none;">
+                  <div class="imported-pgn-filename" id="importedPgnFileNameWrapper">
+                    <strong>Imported:</strong> <span id="importedPgnFileNameText"></span>
+                  </div>
+                  <div id="importedPgnStatusText" class="imported-pgn-meta"></div>
+                  <div class="action-row" style="margin-top: 0.25rem; gap: 0.5rem;">
+                    <button id="browsePgnGamesLink" type="button" class="action-button tonal" data-action="browse-pgn-games" style="font-size: 0.8rem; padding: 0.35rem 0.7rem; min-height: 0; display: inline-flex; align-items: center;">Browse Games</button>
+                    <button id="clearPgnGamesLink" type="button" class="action-button danger" data-action="clear-pgn-games" style="font-size: 0.8rem; padding: 0.35rem 0.7rem; min-height: 0; display: inline-flex; align-items: center;">Clear</button>
+                  </div>
+                </div>
+                <input id="lessonFileInput" type="file" accept=".json,.lesson.json,application/json" hidden>
+                <input id="pgnFileInput" type="file" accept=".pgn,.txt,text/plain,application/x-chess-pgn" hidden>
+                <input id="lessonPositionFileInput" type="file" accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" hidden>
+                <input id="scanBoardInput" type="file" accept=".png,.jpg,.jpeg" hidden>
+                <input id="puzzleCsvFileInput" type="file" accept=".csv,text/csv" hidden>
+                <span id="engineReadyLabel" class="sr-only">Stockfish idle</span>
+                <div id="heroBanner" class="hero-banner recording-hidden" aria-hidden="true"></div>
+              </section>
+              <nav class="tab-nav" aria-label="Workspace sections">
+                <button class="tab-chip" type="button" data-action="set-tab" data-tab="study">Study</button>
+                <button class="tab-chip" type="button" data-action="set-tab" data-tab="setup">Setup</button>
+                <button class="tab-chip" type="button" data-action="set-tab" data-tab="analysis">Analysis</button>
+                <button class="tab-chip is-active" type="button" data-action="set-tab" data-tab="play">Play</button>
+                <button class="tab-chip" type="button" data-action="set-tab" data-tab="puzzle">Puzzle</button>
+                <button class="tab-chip" type="button" data-action="set-tab" data-tab="lessons">Position Sets</button>
+              </nav>
+              <section id="lessonPositionBuilderPanel" class="lesson-position-builder-panel" aria-label="Lesson Position Builder" hidden></section>
+
+              <section class="lesson-notation" aria-label="Lesson notation">
+                <p id="notationSummary" class="sr-only" aria-live="polite">Play moves from the board to build the lesson tree.</p>
+                <div id="notationPanel" class="notation-panel"></div>
+                <div class="notation-toolbar" aria-label="Move navigation">
+                  <button id="notationStartButton" type="button" class="notation-nav-button" data-action="navigate-start" aria-label="Go to start">
+                    <span class="notation-nav-icon" aria-hidden="true">
+                      <svg viewBox="0 0 20 20" focusable="false">
+                        <path d="M6 4.75v10.5"></path>
+                        <path d="M14.5 5.75 9 10l5.5 4.25"></path>
+                      </svg>
+                    </span>
+                  </button>
+                  <button id="notationPrevButton" type="button" class="notation-nav-button" data-action="navigate-back" aria-label="Go to previous move">
+                    <span class="notation-nav-icon" aria-hidden="true">
+                      <svg viewBox="0 0 20 20" focusable="false">
+                        <path d="M13.75 5.75 8.25 10l5.5 4.25"></path>
+                      </svg>
+                    </span>
+                  </button>
+                  <button id="notationNextButton" type="button" class="notation-nav-button" data-action="navigate-forward" aria-label="Go to next move">
+                    <span class="notation-nav-icon" aria-hidden="true">
+                      <svg viewBox="0 0 20 20" focusable="false">
+                        <path d="m6.25 5.75 5.5 4.25-5.5 4.25"></path>
+                      </svg>
+                    </span>
+                  </button>
+                  <button id="notationEndButton" type="button" class="notation-nav-button" data-action="navigate-end" aria-label="Go to end">
+                    <span class="notation-nav-icon" aria-hidden="true">
+                      <svg viewBox="0 0 20 20" focusable="false">
+                        <path d="M14 4.75v10.5"></path>
+                        <path d="m5.5 5.75 5.5 4.25-5.5 4.25"></path>
+                      </svg>
+                    </span>
+                  </button>
+                </div>
+              </section>
+
+              <section id="workspaceTools" class="workspace-tools" hidden>
+                <section class="lesson-tools" aria-label="Lesson tools">
+                  <section class="tab-panel is-active" id="setupPanel" aria-label="Setup tab"></section>
+                  <section class="tab-panel" id="analysisPanel" aria-label="Analysis tab" hidden></section>
+                  <section class="tab-panel" id="playPanel" aria-label="Play tab" hidden></section>
+                  <section class="tab-panel" id="puzzlePanel" aria-label="Puzzle tab" hidden></section>
+                </section>
+              </section>
+            </div>
+          </section>
+        </main>
+      </section>
+
+      <!-- Application Footer -->
+      <footer class="app-footer" aria-label="Application Footer">
+        <div class="app-footer-inner">
+          <div class="footer-brand">
+            <span class="footer-title">CD Digital Chess</span>
+            <span class="footer-tagline">· Personal Chess Study &amp; Coaching Platform</span>
+          </div>
+          <nav class="footer-links" aria-label="Secondary links">
+            <a href="./about/" class="footer-link">About</a>
+            <a href="./lessons/" class="footer-link">Lessons</a>
+            <a href="./openings/" class="footer-link">Openings</a>
+            <a href="./management/" class="footer-link">Coaching</a>
+            <a href="./about/#terms" class="footer-link">Terms of Use</a>
+            <a href="./about/#privacy" class="footer-link">Privacy Policy</a>
+            <a href="./about/#contact" class="footer-link">Contact</a>
+          </nav>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Focus Mode Controls -->
     <div id="focusModeControls" class="focus-mode-controls" aria-label="Focus mode controls" hidden>
       <button
         id="focusModeAnalyzeButton"
@@ -537,6 +907,7 @@
   <script src="./vendor/xlsx.full.min.js"></script>
   <script type="module" src="./app.js?v=20260809-play-recovery1"></script>
   <script type="module" src="./focus-analysis-popup.mjs?v=20260726-position-study-wording1"></script>
+  <script type="module" src="./app-navigation.js?v=20260820-layout-redesign1"></script>
 
 <script>
   window.addEventListener('load', function () {
