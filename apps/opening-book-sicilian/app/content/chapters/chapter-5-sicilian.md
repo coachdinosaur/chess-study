@@ -789,108 +789,51 @@ c3 Sicilian
 White is obviously struggling an exchange down, but on the other hand there are certain drawing chances.
 
 <!-- FEN: r1bqkb1r/pp1p2pp/2n1p3/3nPp2/4Q3/2P2N2/PP3PPP/RNB1KB1R w KQkq f6 0 8 -->
-##### B2322) 8.Qe2
-
-This is probably the most critical reply at this point.
-
-<!-- FEN: r1bqkb1r/pp1p2pp/2n1p3/3nPp2/8/2P2N2/PP2QPPP/RNB1KB1R b KQkq - 1 8 -->
-**8...b5!**
-
-Black tries to establish the knight on the powerful d5-base as quickly as possible. I have always liked cases where tactical nuances serve a strategic aim, and this is such an example.
-
-<!-- FEN: r1bqkb1r/pp1p2pp/2n1p3/3nPp2/8/2P2N2/PP2QPPP/RNB1KB1R b KQkq - 1 8 -->
-**8...Qc7 9.g3 b5!?**
-
-This time it is not even a pawn sacrifice.
-
-<!-- FEN: r1b1kb1r/ppqp2pp/2n1p3/3nPp2/8/2P2NP1/PP2QP1P/RNB1KB1R b KQkq - 0 9 -->
-  9...d6 also comfortably equalizes for Black in due course.
-
 ## Page 93
 
 c3 Sicilian
 
-<!-- FEN: r1b1kb1r/p1qp2pp/2n1p3/1p1nPp2/8/2P2NP1/PP2QP1P/RNB1KB1R w KQkq - 0 10 -->
-**10.Bg2**
+<!-- FEN: r1bqkb1r/pp1p2pp/2n1p3/3nPp2/4Q3/2P2N2/PP3PPP/RNB1KB1R w KQkq f6 0 8 -->
+##### B2322) 8.Qe2
 
-<!-- FEN: r1b1kb1r/p1qp2pp/2n1p3/1p1nPp2/8/2P2NP1/PP2QP1P/RNB1KB1R w KQkq - 0 10 -->
-  10.Qxb5 Nxe5 11.Nxe5 Qxe5+ 12.Qe2 Qxe2+ 13.Bxe2 Bb7 was level in M. Zaitsev – Drabke, Germany 2005.
+<!-- FEN: r1bqkb1r/pp1p2pp/2n1p3/3nPp2/8/2P2N2/PP2QPPP/RNB1KB1R b KQkq - 1 8 -->
+**8...b5!**
 
-<!-- FEN: r1b1kb1r/p1qp2pp/2n1p3/1p1nPp2/8/2P2NP1/PP2QPBP/RNB1K2R b KQkq - 1 10 -->
-**10...a5 11.0-0 Ba6 12.Nh4!?**
+<!-- FEN: r1bqkb1r/pp1p2pp/2n1p3/3nPp2/8/2P2N2/PP2QPPP/RNB1KB1R b KQkq - 1 8 -->
+  **8...Qc7 9.g3 b5!?**
 
-**FEN:**
-`r3kb1r/2qp2pp/b1n1p3/pp1nPp2/7N/2P3P1/PP2QPBP/RNB2RK1 b kq - 3 12`
-
-<!-- FEN: r3kb1r/2qp2pp/b1n1p3/pp1nPp2/7N/2P3P1/PP2QPBP/RNB2RK1 b kq - 3 12 -->
-**12...b4! 13.Qh5+**
-
-<!-- FEN: r3kb1r/2qp2pp/b1n1p3/pp1nPp2/7N/2P3P1/PP2QPBP/RNB2RK1 b kq - 3 12 -->
-  13.c4 g6 14.b3 Bg7 15.f4 0-0= Shishkov – Fernandez Vicente, email 2006.
-
-<!-- FEN: r3kb1r/2qp2pp/b1n1p3/p2nPp1Q/1p5N/2P3P1/PP3PBP/RNB2RK1 b kq - 1 13 -->
-**13...g6 14.Nxg6 hxg6 15.Qxg6+**
-
-<!-- FEN: r3kb1r/2qp2pp/b1n1p3/p2nPp1Q/1p5N/2P3P1/PP3PBP/RNB2RK1 b kq - 1 13 -->
-  15.Qxh8 Bxf1 16.Bxd5 exd5 17.Bh6 0-0-0 18.Bxf8 Bd3 19.Nd2 bxc3 20.bxc3 Nxe5∞
-
-<!-- FEN: r3kb1r/2qp4/b1n1p1Q1/p2nPp2/1p6/2P3P1/PP3PBP/RNB2RK1 b kq - 0 15 -->
-**15...Kd8 16.Bxd5 Kc8 17.Qf6 Rg8 18.Bg2 Bxf1 19.Kxf1 Bc5 20.Bf4!N**
-
-<!-- FEN: r1k3r1/2qp4/2n1pQ2/p1b1Pp2/1p6/2P3P1/PP3PBP/RNB2K2 w - - 1 20 -->
-  20.Nd2 bxc3 21.bxc3 Rb8⩱ Da Fonseca – Leite, email 2006.
-
-<!-- FEN: r1k3r1/2qp4/2n1pQ2/p1b1Pp2/1p3B2/2P3P1/PP3PBP/RN3K2 b - - 2 20 -->
-**20...Kb7 21.cxb4**
-
-<!-- FEN: r1k3r1/2qp4/2n1pQ2/p1b1Pp2/1p3B2/2P3P1/PP3PBP/RN3K2 b - - 2 20 -->
-  21.Nd2 Raf8=
-
-<!-- FEN: r5r1/1kqp4/2n1pQ2/p1b1Pp2/1P3B2/6P1/PP3PBP/RN3K2 b - - 0 21 -->
-**21...axb4 22.Nd2**
-
-<!-- FEN: r5r1/1kqp4/2n1pQ2/2b1Pp2/1p3B2/6P1/PP3PBP/RN3K2 w - - 0 22 -->
-  22.Bh6 Bd4⩱
-
-<!-- FEN: r5r1/1kqp4/2n1pQ2/2b1Pp2/1p3B2/6P1/PP1N1PBP/R4K2 b - - 1 22 -->
-**22...Raf8 23.Qh6 Rh8=**
-
-With a verdict of equality.
-
+<!-- SOURCE SECTION REFERENCE: B23221) 9.g3 or B23222) 9.Qxb5. -->
 White can choose to ignore the pawn with B23221) 9.g3 or grab it with B23222) 9.Qxb5.
 
 <!-- FEN: r1bqkb1r/p2p2pp/2n1p3/1p1nPp2/8/2P2N2/PP2QPPP/RNB1KB1R w KQkq - 0 9 -->
-###### B23221) 9.g3 a5 10.Bg2
+###### B23221) 9.g3
 
-<!-- FEN: r1bqkb1r/3p2pp/2n1p3/pp1nPp2/8/2P2NP1/PP2QPBP/RNB1K2R b KQkq - 1 10 -->
-  10.Qxb5?! is now bad in view of **10...a4! 11.Qe2 Qc7 12.Nbd2 a3⩱**.
+<!-- FEN: r1bqkb1r/p2p2pp/2n1p3/1p1nPp2/8/2P2NP1/PP2QP1P/RNB1KB1R b KQkq - 0 9 -->
+**9...Bb7 10.Bg2 Nf6**
 
-**FEN:**
-`r1bqkb1r/3p2pp/2n1p3/pp1nPp2/8/2P2NP1/PP2QPBP/RNB1K2R b KQkq - 1 10`
+<!-- FEN: r2qkb1r/pb1p2pp/2n1p3/1p1nPp2/8/2P2NP1/PP2QPBP/RNB1K2R b KQkq - 2 10 -->
+  <!-- SOURCE ERRATUM FROM 14...Bg7: In Shishkov - Fernandez Vicente email 2006. --> **10...Be7 11.0-0 0-0 12.Rd1 b4 13.c4 g6 14.b3 Bg7 15.f4 0-0=** Shishkov – Fernandez Vicente, email 2006.
 
-<!-- FEN: r1bqkb1r/3p2pp/2n1p3/pp1nPp2/8/2P2NP1/PP2QPBP/RNB1K2R b KQkq - 1 10 -->
-**10...Be7 11.0-0 0-0 12.Rd1 Ba6 13.Nd4**
+<!-- FEN: r2qkb1r/pb1p2pp/2n1pn2/1p2Pp2/8/2P2NP1/PP2QPBP/RNB1K2R w KQkq - 3 11 -->
+**11.0-0**
 
-<!-- FEN: r2q1rk1/3pb1pp/b1n1p3/pp1nPp2/8/2P2NP1/PP2QPBP/RNBR2K1 w - - 6 13 -->
-  13.Nbd2 just looks bad to me, in view of the cunning **13...a4 14.Ne1 b4 15.c4 Rc8⩱** with huge pressure for Black.
+<!-- FEN: r2qkb1r/pb1p2pp/2n1pn2/1p2Pp2/8/2P2NP1/PP2QPBP/RNB2RK1 b kq - 4 11 -->
+**11...Be7**
 
-**FEN:**
-`r2q1rk1/3pb1pp/b1n1p3/pp1nPp2/3N4/2P3P1/PP2QPBP/RNBR2K1 b - - 7 13`
+<!-- FEN: r2qkb1r/pb1p2pp/2n1pn2/1p2Pp2/8/2P2NP1/PP2QPBP/RNB2RK1 b kq - 4 11 -->
+  <!-- SOURCE ERRATUM FROM 13.Qh5+: In Ibragimov - Stripunsky New York 1999. --> **11...Rc8!? 12.Re1** (**12...b4! 13.Qh5+ g6 14.Qh4 bxc3 15.bxc3 Be7 16.Qh6 Kf7 17.Nd2 Bf8 18.Qe3 h6 19.Nc4 g5 20.Ba3 Be7 21.Bxd6 Bxd6 22.Nxd6+ Qxd6 23.e6+ Kg7 24.exd7 Rcd8⩱** White was in serious trouble in Ibragimov – Stripunsky, New York 1999.)
 
-<!-- FEN: r2q1rk1/3pb1pp/b1n1p3/pp1nPp2/3N4/2P3P1/PP2QPBP/RNBR2K1 b - - 7 13 -->
-**13...Nxd4! 14.Rxd4 b4 15.c4**
+<!-- FEN: r2qk2r/pb1pb1pp/2n1pn2/1p2Pp2/8/2P2NP1/PP2QPBP/RNB2RK1 w kq - 5 12 -->
+**12.Re1 0-0 13.Nbd2 Qc7**
 
-<!-- FEN: r2q1rk1/3pb1pp/b3p3/p2nPp2/1p1R4/2P3P1/PP2QPBP/RNB3K1 w - - 0 15 -->
-  Weaker is **15.Qd1 Qc7 16.Bxd5?! exd5 17.Rxd5 Qc6** with a clear advantage to Black.
+<!-- FEN: r2q1rk1/pb1pb1pp/2n1pn2/1p2Pp2/8/2P2NP1/PP1NQPBP/R1B1R1K1 b - - 8 13 -->
+  <!-- SOURCE ERRATUM FROM 17.Rxd5: The PDF prints a rook sacrifice on d5 from an alternate branch. --> **13...Rc8 14.a4 b4 15.c4 Na5 16.b3** (**16.Nd2**) **17.Rxd5 exd5 18.Bxd5+ Kh8 19.Nd2 Bd4 20.Rb1 Rc5! 21.Qf3 Qe7 22.Nf1 Bxe5 23.Bf4 Qd6 24.Be3 Rc7⩱** gives White no real compensation for the exchange.
 
-<!-- FEN: r2q1rk1/3pb1pp/b3p3/p2nPp2/1pPR4/6P1/PP2QPBP/RNB3K1 b - - 0 15 -->
-**15...Bc5 16.Nd2**
+<!-- FEN: r4rk1/pbqpb1pp/2n1pn2/1p2Pp2/8/2P2NP1/PP1NQPBP/R1B1R1K1 w - - 9 14 -->
+**14.Nb3 Ne4**
 
-This position was reached by transposition in Mamedjarova – Smirin, Baku 2010.
-
-<!-- FEN: r2q1rk1/3p2pp/b3p3/p1bnPp2/1pPR4/6P1/PP2QPBP/RNB3K1 w - - 1 16 -->
-<!-- SOURCE MOVE REFERENCE: 16.b3 alternative with piece sacrifices. -->
-  16.b3 (16.Nd2) **17.Rxd5 exd5 18.Bxd5+ Kh8 19.Nd2 Bd4 20.Rb1 Rc5! 21.Qf3 Qe7 22.Nf1 Bxe5 23.Bf4 Qd6 24.Be3 Rc7⩱** gives White no real compensation for the exchange.
+<!-- FEN: r4rk1/pbqpb1pp/2n1p3/1p2Pp2/4n3/1NP2NP1/PP2QPBP/R1B1R1K1 w - - 11 15 -->
+**15.Bf4 Rae8 16.h4 h6 17.h5 Ng5 18.Nfd4 Nxd4 19.cxd4 Bxg2 20.Kxg2 Qb7+ 21.d5 Rc8 22.Rad1 Rc4 23.Bxg5 Bxg5 24.Na5 Qb6 25.Nxc4 bxc4 26.dxe6 dxe6 27.Qxc4 f4 28.g4 f3+ 29.Kg1 Bh4 30.Rf1 Kh8 31.Rd6 Qxb2 32.Qxe6 Bg3 33.Qe7 Rg8 34.Rd8 Bxe5 35.Rxg8+ Kxg8 36.Qe8+ Kh7 37.Qg6+ Kh8 38.Rd1 Bd4 39.Qe8+ Kh7 40.Qe4+ Kh8 41.Qxd4 1-0** Sveshnikov – Arakhamia Grant, Hastings 2003.
 
 ## Page 94
 
