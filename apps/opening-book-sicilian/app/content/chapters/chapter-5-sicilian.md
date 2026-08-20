@@ -769,25 +769,21 @@ I prefer this natural developing move, preparing to castle and eyeing h2. (Alter
 c3 Sicilian
 
 **FEN:**
-`r1bqkb1r/1p1p2pp/p1n2n2/3N2B1/4p2Q/2P5/PP2BPPP/R4RK1 b kq - 1 13`
+`r2qkb1r/1p4pp/p1n2n2/5bN1/2P1p2Q/3p4/PP1N1PPP/R1BB1RK1 b kq - 1 16`
 
-<!-- FEN: r1bqkb1r/1p1p2pp/p1n2n2/3N2B1/4p2Q/2P5/PP2BPPP/R4RK1 b kq - 1 13 -->
-<!-- SOURCE ERRATUM FROM 16...Be7: In the print book 16...Be7 was printed from an earlier analysis branch; Van Enk – Tenev analysis. -->
-16...Be7! (16...Bd6 17.c5!! Bxc5 18.g4! Bg6 19.Ne6 Qe7 20.Nxc5 Qxc5 21.g5 Nd7 22.Nxe4 Qd4 23.Bf3 0-0 24.Be3 Qxb2 25.Bg2∞ is a mess where White could be just okay.) 17.Qf4 g6 (17...Nd4! 18.Ndxe4 Nxe4 19.Nxe4 0-0 20.Be3 Nc2 21.Bf3 Nxa1 22.Rxa1⩱ leads to a position where White might be holding, but obviously the onus is on him.) 18.Ndxe4 Nxe4 19.Nxe4 Bxe4 20.Qxe4 d2 21.Bxd2 Qxd2 22.Ba4 Rf8 23.Rad1 Qf4 24.Bxc6+ bxc6 25.Qxc6+ Kf7 26.Rfe1 Kg8 27.Qd5+ Kh8 28.Qe5+ Qxe5 29.Rxe5 Rfd8 30.Red5 A balanced ending had arisen in Van Enk – Tenev, corr. 2008.
+<!-- FEN: r2qkb1r/1p4pp/p1n2n2/5bN1/2P1p2Q/3p4/PP1N1PPP/R1BB1RK1 b kq - 1 16 -->
+**16...Be7!** (**16...Bd6 17.c5!! Bxc5 18.g4! Bg6 19.Ne6 Qe7 20.Nxc5 Qxc5 21.g5 Nd7 22.Nxe4 Qd4 23.Bf3 0-0 24.Be3 Qxb2 25.Bg2∞** is a mess where White could be just okay.) **17.Qf4 g6** (**17...Nd4! 18.Ndxe4 Nxe4 19.Nxe4 0-0 20.Be3 Nc2 21.Bf3 Nxa1 22.Rxa1⩱** leads to a position where White might be holding, but obviously the onus is on him.) **18.Ndxe4 Nxe4 19.Nxe4 Bxe4 20.Qxe4 d2 21.Bxd2 Qxd2 22.Ba4 Rf8 23.Rad1 Qf4 24.Bxc6+ bxc6 25.Qxc6+ Kf7 26.Rfe1 Kg8 27.Qd5+ Kh8 28.Qe5+ Qxe5 29.Rxe5 Rfd8 30.Red5** A balanced ending had arisen in Van Enk – Tenev, corr. 2008.
 
-<!-- FEN: r1bqk2r/1p2b1pp/p1n2n2/3p2N1/2P1p2Q/8/PP2BPPP/RNB2RK1 w kq - 1 14 -->
-<!-- SOURCE MOVE REFERENCE: 14.c4 0-0 main move note. -->
+<!-- FEN: r1bqk2r/1p4pp/p1nb1n2/3p2N1/4p2Q/2P5/PP2BPPP/RNB2RK1 w kq - 2 14 -->
 **14.c4 0-0**
 
-<!-- FEN: r1bqk2r/1p2b1pp/p1n2n2/3p2N1/2P1p2Q/8/PP2BPPP/RNB2RK1 w kq - 1 14 -->
-  <!-- SOURCE MOVE REFERENCE: 14...Ne5 alternative. -->
-  14...Ne5 15.Nc3 Bf5 16.Nxd5 Nxd5 17.cxd5 h6 18.Nxe4 Qxh4 19.Nxd6+ Kf8 20.Nxf5 Qf6 21.Nd4⇆
+<!-- FEN: r1bqk2r/1p4pp/p1nb1n2/3p2N1/4p2Q/2P5/PP2BPPP/RNB2RK1 w kq - 2 14 -->
+  **14...Ne5 15.Nc3 Bf5 16.Nxd5 Nxd5 17.cxd5 h6 18.Nxe4 Qxh4 19.Nxd6+ Kf8 20.Nxf5 Qf6 21.Nd4⇆**
 
 **FEN:**
-`r1b2rk1/1p1p2pp/p1n2n2/3N2B1/2PPp2Q/8/PP2BPPP/R4RK1 w - - 2 15`
+`r1bq1rk1/1p4pp/p1nb1n2/3p2N1/2P1p2Q/8/PP2BPPP/RNB2RK1 w - - 1 15`
 
-<!-- FEN: r1b2rk1/1p1p2pp/p1n2n2/3N2B1/2PPp2Q/8/PP2BPPP/R4RK1 w - - 2 15 -->
-<!-- SOURCE MOVE REFERENCE: 15.cxd5 line continuation. -->
+<!-- FEN: r1bq1rk1/1p4pp/p1nb1n2/3p2N1/2P1p2Q/8/PP2BPPP/RNB2RK1 w - - 1 15 -->
 **15.cxd5 Nd4 16.Nc3 Nf5 17.Qh3 Ng3 18.Qh4 Nxf1 19.Kxf1 h6⩱**
 
 White is obviously struggling an exchange down, but on the other hand there are certain drawing chances.

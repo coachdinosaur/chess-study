@@ -192,6 +192,23 @@ test("Chapter 5 Page 91 contains bold interactive move notation and accurate FEN
   assert.match(page91, /I prefer this natural developing move, preparing to castle and eyeing h2\. \(Alternatively: \*\*13\.\.\.Bf5 14\.c4! d4 15\.Nd2 d3 16\.Bd1\*\*\)/);
 });
 
+test("Chapter 5 Page 92 contains bold interactive move notation and accurate FEN anchors", async () => {
+  const markdown = await readChapterFive();
+  const start = markdown.indexOf("## Page 92");
+  const end = markdown.indexOf("## Page 93", start);
+  const page92 = markdown.slice(start, end);
+
+  assert.match(page92, /`r2qkb1r\/1p4pp\/p1n2n2\/5bN1\/2P1p2Q\/3p4\/PP1N1PPP\/R1BB1RK1 b kq - 1 16`/);
+  assert.match(page92, /\*\*16\.\.\.Be7!\*\* \(\*\*16\.\.\.Bd6 17\.c5!!/);
+  assert.match(page92, /\*\*17\.Qf4 g6\*\* \(\*\*17\.\.\.Nd4! 18\.Ndxe4 Nxe4 19\.Nxe4 0-0 20\.Be3 Nc2 21\.Bf3 Nxa1 22\.Rxa1⩱\*\*/);
+  assert.match(page92, /\*\*18\.Ndxe4 Nxe4 19\.Nxe4 Bxe4 20\.Qxe4 d2 21\.Bxd2 Qxd2 22\.Ba4 Rf8 23\.Rad1 Qf4 24\.Bxc6\+ bxc6 25\.Qxc6\+ Kf7 26\.Rfe1 Kg8 27\.Qd5\+ Kh8 28\.Qe5\+ Qxe5 29\.Rxe5 Rfd8 30\.Red5\*\*/);
+  assert.match(page92, /\*\*14\.c4 0-0\*\*/);
+  assert.match(page92, /\*\*14\.\.\.Ne5 15\.Nc3 Bf5 16\.Nxd5 Nxd5 17\.cxd5 h6 18\.Nxe4 Qxh4 19\.Nxd6\+ Kf8 20\.Nxf5 Qf6 21\.Nd4⇆\*\*/);
+  assert.match(page92, /`r1bq1rk1\/1p4pp\/p1nb1n2\/3p2N1\/2P1p2Q\/8\/PP2BPPP\/RNB2RK1 w - - 1 15`/);
+  assert.match(page92, /\*\*15\.cxd5 Nd4 16\.Nc3 Nf5 17\.Qh3 Ng3 18\.Qh4 Nxf1 19\.Kxf1 h6⩱\*\*/);
+});
+
+
 
 
 
