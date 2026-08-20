@@ -902,14 +902,13 @@ This position was reached by transposition in Mamedjarova – Smirin, Baku 2010.
 c3 Sicilian
 
 **FEN:**
-`2rq1rk1/3p2pp/b3p3/p1bnPp2/1pPR4/6P1/PP1NQPBP/R1B3K1 b - - 2 16`
+`2rq1rk1/3pb1pp/b3p3/p2nPp2/1pPR4/6P1/PP1NQPBP/R1B3K1 b - - 2 16`
 
-<!-- FEN: 2rq1rk1/3p2pp/b3p3/p1bnPp2/1pPR4/6P1/PP1NQPBP/R1B3K1 b - - 2 16 -->
+<!-- FEN: 2rq1rk1/3pb1pp/b3p3/p2nPp2/1pPR4/6P1/PP1NQPBP/R1B3K1 b - - 2 16 -->
 **16...Qb6!N 17.Nf3 Bc5**
 
 Forcing a displacement of the white rook.
 
-<!-- FEN: 2rq1rk1/3p2pp/b3p3/p1bnPp2/1pPR4/6P1/PP1NQPBP/R1B3K1 b - - 2 16 -->
 **18.Rh4 Qc7 19.Bg5 Ne7 20.b3 Ng6 21.Rh5 Bb7⩱**
 
 Black is much better: with such an awful rook on h5, White will hardly survive.
