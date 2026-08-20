@@ -958,6 +958,7 @@ c3 Sicilian
 <!-- FEN: r1b1kb1r/2qp2pp/2n1p3/p2nPp2/8/2P2N2/PP1NQP1P/R1B1KB1R b KQkq - 1 11 -->
 **11...Ba6**
 
+<!-- FEN: r1b1kb1r/2qp2pp/2n1p3/p2nPp2/8/2P2N2/PP1NQP1P/R1B1KB1R b KQkq - 1 11 -->
   **11...Bc5 12.Nc4 0-0⩱** is also okay.
 
 <!-- FEN: r3kb1r/2qp2pp/b1n1p3/p2nPp2/8/2P2N2/PP1NQP1P/R1B1KB1R w KQkq - 2 12 -->
