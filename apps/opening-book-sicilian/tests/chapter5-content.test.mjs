@@ -174,6 +174,9 @@ test("Chapter 5 Page 91 contains bold interactive move notation and accurate FEN
   const end = markdown.indexOf("## Page 92", start);
   const page91 = markdown.slice(start, end);
 
+  assert.match(page91, /`r1bqkb1r\/pp1p2pp\/2n2n2\/4p3\/7Q\/2P2N2\/PP3PPP\/RNB1KB1R w KQkq - 0 10`/);
+  assert.match(page91, /\*\*10\.Bb5\*\*/);
+  assert.match(page91, /White’s only move\. \*\*10\.Bd3\?\?\*\* is a clear blunder in view of \*\*10\.\.\.e4-\+\*\*\./);
   assert.match(page91, /\*\*10\.Bg5\*\* is met simply by \*\*10\.\.\.Be7\*\*, since \*\*11\.Bd3 d5 12\.Bg6\+ Kf8⩱\*\*/);
   assert.match(page91, /\*\*10\.\.\.e4 11\.Ng5 d5\*\*/);
   assert.match(page91, /\*\*12\.0-0\*\*/);
@@ -182,8 +185,10 @@ test("Chapter 5 Page 91 contains bold interactive move notation and accurate FEN
   assert.match(page91, /\*\*12\.Be3\?\*\*, when \*\*12\.\.\.Be7 13\.Bd4 Bf5 14\.Qf4 Qd7-\+\*\*/);
   assert.match(page91, /\*\*12\.\.\.a6!⩱\*\*/);
   assert.match(page91, /\*\*12\.\.\.h6\?!\*\* is not as strong due to \*\*13\.c4!N Rg8 14\.cxd5 hxg5 15\.Bxg5 Qxd5 16\.Nc3 Qf5 17\.Rae1 Kf7 18\.Bc4\+ Be6 19\.Bxe6\+ Qxe6 20\.Nxe4 Qf5 21\.Re3\*\*/);
-  assert.match(page91, /\*\*13\.Be3!\?\*\*/);
-  assert.match(page91, /\*\*10\.Bb5 e4 11\.Nd4 d5 12\.0-0 a6 13\.Ba4\?! b5 14\.Bb3 Ne5! 15\.Nd2 Ng6 16\.Qg3 Bd6 17\.f4 Bf5⩱\*\*/);
+  assert.match(page91, /\*\*13\.Ba4\?!\*\*/);
+  assert.match(page91, /Instead, \*\*13\.Be2!\?\*\* was slightly better, but White was still struggling after: \*\*13\.\.\.Bd6\*\* \(\*\*13\.\.\.b5 14\.Be3 Be7 15\.f4 exf3 16\.Nxf3 0-0 17\.Nbd2 Ng4 18\.Bf2 Nxf2 19\.Rxf2 Rf6⩱\*\* was also unappealing for White in L\. Schneider – Cederstam Barsk, Sweden 1991\) \*\*14\.f4 exf3 15\.Nxf3 h6 16\.Nh3 0-0 17\.Nf4 Re8 18\.Nc3 Ne5 19\.Nxe5 Bxe5 20\.Bd3 Be6⩱\*\* White’s bishop on c1 was a sad sight in Rozentalis – Dambacher, Bastia 2004\./);
+  assert.match(page91, /\*\*13\.\.\.b5 14\.Bb3 Ne5!\*\*/);
+  assert.match(page91, /\*\*15\.Nd2 Ng6 16\.Qg3 Bd6 17\.f4 Bf5⩱\*\*/);
 });
 
 
