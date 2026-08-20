@@ -6,9 +6,18 @@
    1. Application Shell & Desktop 3-Column Layout Structure
    -------------------------------------------------------------------------- */
 
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
 .page-shell {
   position: relative;
   height: var(--app-height);
+  max-height: var(--app-height);
   padding: 0.6rem 0.75rem 0.6rem 0.6rem;
   overflow: hidden;
   display: flex;
@@ -21,48 +30,83 @@
   flex: 1 1 auto;
   min-width: 0;
   height: calc(var(--app-height) - 1.2rem);
+  max-height: calc(var(--app-height) - 1.2rem);
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
   position: relative;
-  scrollbar-width: thin;
-  scrollbar-color: var(--text-soft) transparent;
-}
-
-.app-main-content::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-.app-main-content::-webkit-scrollbar-thumb {
-  border-radius: 4px;
-  background: var(--text-soft);
-}
-
-.app-main-content::-webkit-scrollbar-track {
-  background: transparent;
+  transition: width 240ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .workspace-view {
-  flex: 1 0 auto;
+  flex: 1 1 auto;
   width: 100%;
   min-width: 0;
+  height: 100%;
+  max-height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: stretch;
+  overflow: hidden;
+}
+
+.workspace-view .workspace {
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  align-items: stretch;
+  transition:
+    max-width 240ms cubic-bezier(0.16, 1, 0.3, 1),
+    column-gap 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.workspace-view .board-pane {
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+.workspace-view .board-stage-card {
+  position: static;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  display: grid;
+  align-content: start;
+  gap: 0.4rem;
+}
+
+.workspace-view .control-pane {
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.workspace-view .control-pane-scroll {
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+  padding-inline-end: max(0.35rem, 8px);
 }
 
 /* --------------------------------------------------------------------------
-   2. Desktop Left Navigation Sidebar
+   2. Desktop Left Navigation Sidebar & Collapsible Icon Rail
    -------------------------------------------------------------------------- */
 
 .app-sidebar {
-  width: 240px;
-  min-width: 240px;
-  max-width: 240px;
+  width: var(--sidebar-width, 240px);
+  min-width: var(--sidebar-width, 240px);
+  max-width: var(--sidebar-width, 240px);
   height: calc(var(--app-height) - 1.2rem);
+  max-height: calc(var(--app-height) - 1.2rem);
   display: flex;
   flex-direction: column;
   background: var(--panel-strong);
@@ -77,6 +121,11 @@
   flex-shrink: 0;
   scrollbar-width: thin;
   scrollbar-color: var(--text-soft) transparent;
+  transition:
+    width 240ms cubic-bezier(0.16, 1, 0.3, 1),
+    min-width 240ms cubic-bezier(0.16, 1, 0.3, 1),
+    max-width 240ms cubic-bezier(0.16, 1, 0.3, 1),
+    padding 240ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .app-sidebar::-webkit-scrollbar {
@@ -92,10 +141,21 @@
 .sidebar-brand {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
-  padding: 0.25rem 0.45rem 0.85rem;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.25rem 0.35rem 0.75rem;
   border-bottom: 1px solid var(--section-divider-soft);
   margin-bottom: 0.65rem;
+  min-height: 38px;
+  box-sizing: border-box;
+}
+
+.sidebar-brand-main {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .sidebar-brand-icon {
@@ -103,12 +163,16 @@
   height: 30px;
   object-fit: contain;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.14));
+  flex-shrink: 0;
+  transition: transform 180ms ease;
 }
 
 .sidebar-brand-text {
   display: flex;
   flex-direction: column;
   line-height: 1.05;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .sidebar-brand-top {
@@ -127,6 +191,37 @@
   letter-spacing: 0.14em;
   color: var(--accent-strong);
   text-transform: uppercase;
+}
+
+/* Sidebar Collapse Toggle Buttons */
+.sidebar-collapse-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--chip-border);
+  border-radius: 7px;
+  background: var(--chip-bg);
+  color: var(--text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 160ms ease;
+}
+
+.sidebar-collapse-btn:hover {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  border-color: var(--focus-border);
+}
+
+.sidebar-toggle-icon {
+  transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sidebar-collapse-footer-btn {
+  display: none;
 }
 
 /* Navigation Groups & Items */
@@ -150,6 +245,7 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-soft);
+  white-space: nowrap;
 }
 
 .sidebar-nav-item,
@@ -234,6 +330,9 @@
   margin-top: auto;
   padding-top: 0.65rem;
   border-top: 1px solid var(--section-divider-soft);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .sidebar-theme-toggle,
@@ -273,6 +372,110 @@
 .theme-toggle-label {
   flex: 1 1 auto;
   text-align: left;
+}
+
+/* --------------------------------------------------------------------------
+   2B. Minimized / Collapsed Sidebar (Slim Icon Rail)
+   -------------------------------------------------------------------------- */
+
+.page-shell.is-sidebar-collapsed .app-sidebar,
+.app-sidebar.is-collapsed {
+  --sidebar-width: 60px;
+  padding: 0.75rem 0.35rem;
+  align-items: center;
+}
+
+.page-shell.is-sidebar-collapsed .sidebar-brand-text,
+.app-sidebar.is-collapsed .sidebar-brand-text,
+.page-shell.is-sidebar-collapsed .nav-group-label,
+.app-sidebar.is-collapsed .nav-group-label,
+.page-shell.is-sidebar-collapsed .nav-label,
+.app-sidebar.is-collapsed .nav-label,
+.page-shell.is-sidebar-collapsed .theme-toggle-label,
+.app-sidebar.is-collapsed .theme-toggle-label,
+.page-shell.is-sidebar-collapsed .theme-toggle-switch,
+.app-sidebar.is-collapsed .theme-toggle-switch {
+  display: none !important;
+}
+
+.page-shell.is-sidebar-collapsed .sidebar-brand,
+.app-sidebar.is-collapsed .sidebar-brand {
+  justify-content: center;
+  padding: 0.15rem 0 0.55rem;
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.page-shell.is-sidebar-collapsed .sidebar-brand-main,
+.app-sidebar.is-collapsed .sidebar-brand-main {
+  justify-content: center;
+}
+
+.page-shell.is-sidebar-collapsed #sidebarCollapseToggle,
+.app-sidebar.is-collapsed #sidebarCollapseToggle {
+  display: none;
+}
+
+.page-shell.is-sidebar-collapsed .sidebar-collapse-footer-btn,
+.app-sidebar.is-collapsed .sidebar-collapse-footer-btn {
+  display: inline-flex;
+  width: 38px;
+  height: 34px;
+  margin: 0 auto;
+}
+
+.page-shell.is-sidebar-collapsed .sidebar-collapse-btn .sidebar-toggle-icon,
+.app-sidebar.is-collapsed .sidebar-collapse-btn .sidebar-toggle-icon {
+  transform: rotate(180deg);
+}
+
+.page-shell.is-sidebar-collapsed .sidebar-nav,
+.app-sidebar.is-collapsed .sidebar-nav {
+  width: 100%;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.page-shell.is-sidebar-collapsed .nav-group,
+.app-sidebar.is-collapsed .nav-group {
+  width: 100%;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.page-shell.is-sidebar-collapsed .sidebar-nav-item,
+.app-sidebar.is-collapsed .sidebar-nav-item {
+  width: 38px;
+  height: 38px;
+  min-height: 38px;
+  padding: 0;
+  justify-content: center;
+  border-radius: 9px;
+}
+
+.page-shell.is-sidebar-collapsed .sidebar-footer,
+.app-sidebar.is-collapsed .sidebar-footer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding-top: 0.5rem;
+}
+
+.page-shell.is-sidebar-collapsed .sidebar-theme-toggle,
+.app-sidebar.is-collapsed .sidebar-theme-toggle {
+  width: 38px;
+  height: 38px;
+  min-height: 38px;
+  padding: 0;
+  justify-content: center;
+  border-radius: 9px;
+}
+
+.page-shell.is-sidebar-collapsed .theme-toggle-icon,
+.app-sidebar.is-collapsed .theme-toggle-icon {
+  margin-right: 0;
 }
 
 /* --------------------------------------------------------------------------
@@ -578,341 +781,20 @@
 }
 
 /* --------------------------------------------------------------------------
-   5. Dedicated Home Page View
-   -------------------------------------------------------------------------- */
-
-.home-view {
-  display: flex;
-  flex-direction: column;
-  gap: 1.35rem;
-  max-width: 72rem;
-  margin: 0 auto;
-  width: 100%;
-  padding: 0.35rem 0.75rem 2.5rem;
-  box-sizing: border-box;
-}
-
-.home-hero-card {
-  display: flex;
-  flex-direction: column;
-  gap: 0.9rem;
-  padding: clamp(1.35rem, 2.5vw, 2.2rem);
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius-panel, 16px);
-  background: radial-gradient(circle at 90% 15%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 60%), var(--card-bg);
-  box-shadow: 0 10px 30px var(--panel-shadow);
-}
-
-.home-hero-kicker {
-  margin: 0;
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  color: var(--accent-strong);
-  text-transform: uppercase;
-}
-
-.home-hero-title {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(1.65rem, 3.2vw, 2.35rem);
-  font-weight: 800;
-  line-height: 1.15;
-  color: var(--text);
-}
-
-.home-hero-description {
-  margin: 0;
-  font-size: 0.94rem;
-  line-height: 1.55;
-  color: var(--text-muted);
-  max-width: 52rem;
-}
-
-.home-hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.75rem;
-  margin-top: 0.4rem;
-}
-
-.home-hero-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.7rem 1.4rem;
-  border-radius: var(--radius-pill);
-  background: var(--button-primary-bg);
-  border: 1px solid var(--button-primary-border);
-  color: var(--button-primary-text);
-  font-family: var(--font-body);
-  font-size: 0.88rem;
-  font-weight: 750;
-  text-decoration: none;
-  cursor: pointer;
-  box-shadow: 0 4px 14px color-mix(in srgb, var(--button-primary-bg) 30%, transparent);
-  transition: all 160ms ease;
-}
-
-.home-hero-primary:hover {
-  background: color-mix(in srgb, var(--button-primary-bg) 90%, white 10%);
-  transform: translateY(-2px);
-  box-shadow: 0 7px 18px color-mix(in srgb, var(--button-primary-bg) 38%, transparent);
-}
-
-.home-hero-secondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  padding: 0.7rem 1.25rem;
-  border-radius: var(--radius-pill);
-  background: var(--button-tonal-bg);
-  border: 1px solid var(--button-tonal-border);
-  color: var(--accent-strong);
-  font-family: var(--font-body);
-  font-size: 0.88rem;
-  font-weight: 700;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all 160ms ease;
-}
-
-.home-hero-secondary:hover {
-  background: color-mix(in srgb, var(--button-tonal-bg) 88%, var(--accent-strong) 12%);
-  border-color: var(--focus-border);
-  transform: translateY(-2px);
-}
-
-/* Home Section Header */
-.home-section-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  margin-top: 0.4rem;
-}
-
-.home-section-title {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  font-weight: 750;
-  color: var(--text);
-}
-
-.home-section-subtitle {
-  margin: 0;
-  font-size: 0.82rem;
-  color: var(--text-soft);
-}
-
-/* Home Feature Cards Grid */
-.home-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1rem;
-}
-
-.home-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 1.15rem 1.2rem;
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius-panel, 14px);
-  background: var(--card-bg);
-  box-shadow: 0 4px 16px var(--panel-shadow);
-  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
-  box-sizing: border-box;
-}
-
-.home-card:hover {
-  transform: translateY(-3px);
-  border-color: color-mix(in srgb, var(--accent) 45%, var(--card-border));
-  box-shadow: 0 8px 24px color-mix(in srgb, var(--panel-shadow) 80%, var(--accent-soft) 20%);
-}
-
-.home-card-header {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.65rem;
-}
-
-.home-card-icon-wrap {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  background: var(--accent-soft);
-  color: var(--accent-strong);
-  flex-shrink: 0;
-}
-
-.home-card-title {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 750;
-  color: var(--text);
-}
-
-.home-card-description {
-  margin: 0 0 1rem;
-  font-size: 0.82rem;
-  line-height: 1.45;
-  color: var(--text-muted);
-  flex: 1 1 auto;
-}
-
-.home-card-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.82rem;
-  font-weight: 750;
-  color: var(--accent-strong);
-  text-decoration: none;
-  background: transparent;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  transition: transform 140ms ease;
-}
-
-.home-card-link:hover {
-  text-decoration: underline;
-  transform: translateX(2px);
-}
-
-/* Home Quick Shortcuts Panel */
-.home-tips-card {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1rem;
-  padding: 1.1rem 1.25rem;
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius-panel, 14px);
-  background: var(--panel);
-}
-
-.home-tip-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.home-tip-label {
-  font-size: 0.76rem;
-  font-weight: 750;
-  color: var(--text);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.home-tip-text {
-  margin: 0;
-  font-size: 0.8rem;
-  line-height: 1.42;
-  color: var(--text-muted);
-}
-
-kbd {
-  display: inline-block;
-  padding: 0.1rem 0.35rem;
-  font-family: var(--font-body);
-  font-size: 0.72rem;
-  font-weight: 700;
-  line-height: 1;
-  color: var(--text);
-  background: var(--panel-strong);
-  border: 1px solid var(--card-border);
-  border-radius: 4px;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12);
-}
-
-/* --------------------------------------------------------------------------
-   6. Application Footer
-   -------------------------------------------------------------------------- */
-
-.app-footer {
-  margin-top: auto;
-  padding: 1.1rem 0.5rem 0.65rem;
-  border-top: 1px solid var(--section-divider-soft);
-  box-sizing: border-box;
-}
-
-.app-footer-inner {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem 1.5rem;
-  max-width: 74rem;
-  margin: 0 auto;
-}
-
-.footer-brand {
-  display: flex;
-  align-items: baseline;
-  gap: 0.35rem;
-  font-size: 0.78rem;
-}
-
-.footer-title {
-  font-weight: 750;
-  color: var(--text);
-}
-
-.footer-tagline {
-  color: var(--text-soft);
-}
-
-.footer-links {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem 1rem;
-}
-
-.footer-link {
-  color: var(--text-muted);
-  font-size: 0.76rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: color 140ms ease;
-}
-
-.footer-link:hover {
-  color: var(--accent-strong);
-  text-decoration: underline;
-}
-
-/* --------------------------------------------------------------------------
-   7. Focus Mode & Embed Visibility Rules
+   5. Focus Mode & Embed Visibility Rules
    -------------------------------------------------------------------------- */
 
 html[data-embed="1"] .app-sidebar,
 html[data-embed="1"] .mobile-app-bar,
-html[data-embed="1"] .app-footer,
-html[data-embed="1"] #homeView,
 html[data-embed="1"] .workspace-intro,
 html[data-board-only="1"] .app-sidebar,
 html[data-board-only="1"] .mobile-app-bar,
-html[data-board-only="1"] .app-footer,
-html[data-board-only="1"] #homeView,
 html[data-board-only="1"] .workspace-intro,
 body.focus-mode .app-sidebar,
 body.is-focus-mode .app-sidebar,
 body.focus-mode-active .app-sidebar,
 body.focus-mode .mobile-app-bar,
 body.is-focus-mode .mobile-app-bar,
-body.focus-mode .app-footer,
-body.is-focus-mode .app-footer,
 body.focus-mode .workspace-intro,
 body.is-focus-mode .workspace-intro {
   display: none !important;
@@ -929,7 +811,7 @@ body.is-focus-mode .app-main-content {
 }
 
 /* --------------------------------------------------------------------------
-   8. Responsive Breakpoints
+   6. Responsive Breakpoints
    -------------------------------------------------------------------------- */
 
 /* Large Desktop (> 1400px) */
@@ -941,6 +823,11 @@ body.is-focus-mode .app-main-content {
 
 /* Standard Tablet / Medium Viewport (761px - 1100px) */
 @media (max-width: 1100px) {
+  html,
+  body {
+    overflow: auto;
+  }
+
   .page-shell {
     height: auto;
     min-height: var(--app-height);
@@ -960,7 +847,39 @@ body.is-focus-mode .app-main-content {
 
   .app-main-content {
     height: auto;
+    max-height: none;
     overflow: visible;
+  }
+
+  .workspace-view {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .workspace-view .workspace {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .workspace-view .board-pane {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .workspace-view .control-pane {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .workspace-view .control-pane-scroll {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    padding-inline-end: 0;
   }
 
   .workspace {
@@ -978,29 +897,6 @@ body.is-focus-mode .app-main-content {
   .page-shell {
     padding: 0.4rem;
     gap: 0.4rem;
-  }
-
-  .home-view {
-    padding: 0.2rem 0.2rem 2rem;
-    gap: 1rem;
-  }
-
-  .home-hero-card {
-    padding: 1.15rem 1rem;
-  }
-
-  .home-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .app-footer {
-    padding: 0.85rem 0.25rem 0.5rem;
-  }
-
-  .app-footer-inner {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.6rem;
   }
 
   .tab-nav {

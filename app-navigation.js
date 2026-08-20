@@ -1,96 +1,82 @@
 /**
  * CD Digital Chess — Application Navigation & Layout Manager
- * Manages three-column desktop sidebar, mobile drawer, Home/Workspace views, and theme sync.
+ * Manages three-column desktop sidebar, collapsible icon rail, mobile drawer, and theme synchronization.
  */
 
 (function () {
   'use strict';
 
-  const VIEW_HOME = 'home';
-  const VIEW_WORKSPACE = 'workspace';
+  const STORAGE_KEY_COLLAPSED = 'sidebar-collapsed-v1';
 
-  let currentView = VIEW_WORKSPACE;
   let mobileDrawerOpen = false;
+  let sidebarCollapsed = false;
 
   function init() {
     bindNavigationEvents();
+    bindSidebarCollapse();
     bindMobileDrawer();
     bindThemeToggles();
-    handleInitialRoute();
-    window.addEventListener('hashchange', handleHashChange);
   }
 
-  function handleInitialRoute() {
-    const hash = window.location.hash.replace(/^#\/?/, '').toLowerCase();
-    if (hash === 'home') {
-      setView(VIEW_HOME, false);
-    } else {
-      setView(VIEW_WORKSPACE, false);
-    }
-  }
+  function bindSidebarCollapse() {
+    const toggleBtns = document.querySelectorAll('.sidebar-collapse-btn, [data-action="toggle-sidebar"]');
+    
+    try {
+      const stored = window.localStorage.getItem(STORAGE_KEY_COLLAPSED);
+      if (stored === 'true') {
+        setSidebarCollapsed(true, false);
+      }
+    } catch {}
 
-  function handleHashChange() {
-    const hash = window.location.hash.replace(/^#\/?/, '').toLowerCase();
-    if (hash === 'home') {
-      setView(VIEW_HOME, false);
-    } else {
-      setView(VIEW_WORKSPACE, false);
-    }
-  }
-
-  function setView(viewName, updateHash = true) {
-    currentView = viewName;
-    const homeViewEl = document.getElementById('homeView');
-    const workspaceViewEl = document.getElementById('workspaceView');
-    const pageShell = document.querySelector('.page-shell');
-
-    if (viewName === VIEW_HOME) {
-      if (homeViewEl) homeViewEl.hidden = false;
-      if (workspaceViewEl) workspaceViewEl.hidden = true;
-      if (pageShell) {
-        pageShell.classList.add('is-view-home');
-        pageShell.classList.remove('is-view-workspace');
-      }
-      updateActiveNav('home');
-      if (updateHash) {
-        window.history.pushState(null, '', '#home');
-      }
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else {
-      if (homeViewEl) homeViewEl.hidden = true;
-      if (workspaceViewEl) workspaceViewEl.hidden = false;
-      if (pageShell) {
-        pageShell.classList.remove('is-view-home');
-        pageShell.classList.add('is-view-workspace');
-      }
-      updateActiveNav('analyze');
-      if (updateHash) {
-        window.history.pushState(null, '', '#analyze');
-      }
-    }
-  }
-
-  function updateActiveNav(navKey) {
-    const allNavButtons = document.querySelectorAll('[data-nav-target]');
-    allNavButtons.forEach((btn) => {
-      const target = btn.getAttribute('data-nav-target');
-      const isActive = target === navKey;
-      btn.classList.toggle('is-active', isActive);
-      if (isActive) {
-        btn.setAttribute('aria-current', 'page');
-      } else {
-        btn.removeAttribute('aria-current');
-      }
+    toggleBtns.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        setSidebarCollapsed(!sidebarCollapsed, true);
+      });
     });
 
-    const activeBadge = document.getElementById('mobileActiveScreenBadge');
-    if (activeBadge) {
-      if (navKey === 'home') {
-        activeBadge.textContent = 'Home';
-      } else if (navKey === 'analyze') {
-        activeBadge.textContent = 'Analyze a Position';
+    // Keyboard shortcut: Ctrl+B or Alt+B toggles sidebar
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey && e.key.toLowerCase() === 'b') || (e.altKey && e.key.toLowerCase() === 'b')) {
+        const target = e.target;
+        if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+          return;
+        }
+        e.preventDefault();
+        setSidebarCollapsed(!sidebarCollapsed, true);
       }
+    });
+  }
+
+  function setSidebarCollapsed(collapsed, persist = true) {
+    sidebarCollapsed = collapsed;
+    const pageShell = document.querySelector('.page-shell');
+    const sidebar = document.getElementById('appSidebar');
+    const toggleBtns = document.querySelectorAll('.sidebar-collapse-btn, [data-action="toggle-sidebar"]');
+
+    if (pageShell) {
+      pageShell.classList.toggle('is-sidebar-collapsed', collapsed);
     }
+    if (sidebar) {
+      sidebar.classList.toggle('is-collapsed', collapsed);
+    }
+
+    toggleBtns.forEach((btn) => {
+      btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+      btn.setAttribute('title', collapsed ? 'Expand sidebar (Ctrl+B)' : 'Collapse sidebar (Ctrl+B)');
+      btn.setAttribute('aria-label', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
+    });
+
+    if (persist) {
+      try {
+        window.localStorage.setItem(STORAGE_KEY_COLLAPSED, collapsed ? 'true' : 'false');
+      } catch {}
+    }
+
+    // Trigger resize after animation completes so board / SVG canvas recalculates smoothly
+    window.setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 260);
   }
 
   function bindNavigationEvents() {
@@ -98,42 +84,14 @@
       const navTargetBtn = e.target.closest('[data-nav-target]');
       if (navTargetBtn) {
         const target = navTargetBtn.getAttribute('data-nav-target');
-        if (target === 'home') {
+        if (target === 'analyze') {
           e.preventDefault();
-          setView(VIEW_HOME);
-          closeMobileDrawer();
-        } else if (target === 'analyze') {
-          e.preventDefault();
-          setView(VIEW_WORKSPACE);
           // Activate analysis tab if in workspace
           const analysisTabBtn = document.querySelector('.tab-chip[data-tab="analysis"]');
           if (analysisTabBtn && !analysisTabBtn.classList.contains('is-active')) {
             analysisTabBtn.click();
           }
           closeMobileDrawer();
-        }
-        return;
-      }
-
-      // Quick start action buttons from home view
-      const quickActionBtn = e.target.closest('[data-home-action]');
-      if (quickActionBtn) {
-        const action = quickActionBtn.getAttribute('data-home-action');
-        if (action === 'analyze') {
-          e.preventDefault();
-          setView(VIEW_WORKSPACE);
-          const analysisTabBtn = document.querySelector('.tab-chip[data-tab="analysis"]');
-          if (analysisTabBtn) analysisTabBtn.click();
-        } else if (action === 'puzzle') {
-          e.preventDefault();
-          setView(VIEW_WORKSPACE);
-          const puzzleTabBtn = document.querySelector('.tab-chip[data-tab="puzzle"]');
-          if (puzzleTabBtn) puzzleTabBtn.click();
-        } else if (action === 'setup') {
-          e.preventDefault();
-          setView(VIEW_WORKSPACE);
-          const setupTabBtn = document.querySelector('.tab-chip[data-tab="setup"]');
-          if (setupTabBtn) setupTabBtn.click();
         }
       }
     });
