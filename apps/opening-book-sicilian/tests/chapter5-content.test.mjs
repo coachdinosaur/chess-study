@@ -258,10 +258,19 @@ test("Chapter 5 Page 94 contains bold interactive move notation and accurate FEN
   assert.match(page94, /\*\*14\.\.\.Bc5!\?\*\* \(Also good is \*\*14\.\.\.Nb6N∓\*\*, when I don’t see a way out for White\.\) \*\*15\.h3 0-0 16\.Rb1 Nb6 17\.Qd1 Naxc4-\+\*\*/);
 });
 
-test("Chapter 5 Page 95 contains conclusion", async () => {
+test("Chapter 5 Page 95 contains complete content, diagrams, and conclusion", async () => {
   const start = (await readChapterFive()).indexOf("## Page 95");
   const page95 = (await readChapterFive()).slice(start);
 
+  assert.match(page95, /`r1b1kb1r\/2qp2pp\/2n1p3\/p2nPp2\/8\/2P2N2\/PP1NQP1P\/R1B1KB1R b KQkq - 1 11`/);
+  assert.match(page95, /\*\*11\.\.\.Ba6\*\*/);
+  assert.match(page95, /\*\*11\.\.\.Bc5 12\.Nc4 0-0⩱\*\*/);
+  assert.match(page95, /\*\*12\.Nc4 Bc5 13\.Qd1 0-0 14\.Be2\*\*/);
+  assert.match(page95, /`r4rk1\/2qp2pp\/b1n1p3\/p1bnPp2\/2N5\/2P2N2\/PP2BPPP\/R1BQK2R b KQ - 7 14`/);
+  assert.match(page95, /\*\*14\.\.\.Nde7!\*\*/);
+  assert.match(page95, /\*\*14\.\.\.Nce7 15\.Nd6!\*\* \(\*\*15\.0-0\?!/);
+  assert.match(page95, /\*\*15\.0-0 Ng6 16\.Rb1 Rab8∓\*\*/);
+  assert.match(page95, /`1r3rk1\/2qp2pp\/b1n1p1n1\/p1b1Pp2\/2N5\/2P2N2\/PP2BPPP\/1RBQ1RK1 w - - 12 17`/);
   assert.match(page95, /## Conclusion/);
   assert.match(page95, /This chapter served as an introduction to the c3 Sicilian/);
 });

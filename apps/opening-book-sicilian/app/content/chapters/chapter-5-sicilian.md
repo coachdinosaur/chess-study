@@ -952,14 +952,30 @@ The best move, although the position is already worse for White.
 
 c3 Sicilian
 
-<!-- FEN: r3kb1r/2qp2pp/b1n1p3/p2nPp2/8/2P2N2/PP1NQPPP/R1B1KB1R w KQkq - 2 12 -->
+**FEN:**
+`r1b1kb1r/2qp2pp/2n1p3/p2nPp2/8/2P2N2/PP1NQP1P/R1B1KB1R b KQkq - 1 11`
+
+<!-- FEN: r1b1kb1r/2qp2pp/2n1p3/p2nPp2/8/2P2N2/PP1NQP1P/R1B1KB1R b KQkq - 1 11 -->
+**11...Ba6**
+
+  **11...Bc5 12.Nc4 0-0⩱** is also okay.
+
+<!-- FEN: r3kb1r/2qp2pp/b1n1p3/p2nPp2/8/2P2N2/PP1NQP1P/R1B1KB1R w KQkq - 2 12 -->
 **12.Nc4 Bc5 13.Qd1 0-0 14.Be2**
 
-<!-- FEN: r4rk1/2qp2pp/b1n1p3/p1bnPp2/2N5/2P2N2/PP2BPPP/R1BQK2R b KQ - 7 14 -->
-White is also struggling after: **14...Nce7 15.Nd6! 15...Ng6 16.Bxa6 Rxa6 17.Nb5 Qb6 18.Nbd4 Bxd4 19.Qxd4 Qxd4 20.cxd4 Rb8** Best according to the engines. Black has more than enough compensation, but White might be able to hold.
+**FEN:**
+`r4rk1/2qp2pp/b1n1p3/p1bnPp2/2N5/2P2N2/PP2BPPP/R1BQK2R b KQ - 7 14`
 
 <!-- FEN: r4rk1/2qp2pp/b1n1p3/p1bnPp2/2N5/2P2N2/PP2BPPP/R1BQK2R b KQ - 7 14 -->
-**14...Nde7 15.0-0 Ng6 16.Rb1 Rab8⇆**
+**14...Nde7!**
+
+I like this redeployment, directing Black’s fire against the feeble e5-pawn.
+
+<!-- FEN: r4rk1/2qp2pp/b1n1p3/p1bnPp2/2N5/2P2N2/PP2BPPP/R1BQK2R b KQ - 7 14 -->
+  White is also struggling after: **14...Nce7 15.Nd6!** (**15.0-0?! Bxc4 16.Bxc4 Bxf2+ 17.Rxf2 Qxc4** leaves Black clearly on top. He has the better minor pieces and White is totally static – without even mentioning his weak e-pawn.) **15...Ng6 16.Bxa6 Rxa6 17.Nb5 Qb6 18.Nbd4 Bxd4 19.Qxd4 Qxd4 20.cxd4 Rb8↑** Best according to the engines. Black has more than enough compensation, but White might be able to hold.
+
+<!-- FEN: r4rk1/2qpnp1p/b1n1p3/p1b1Pp2/2N5/2P2N2/PP2BPPP/R1BQK2R w KQ - 1 15 -->
+**15.0-0 Ng6 16.Rb1 Rab8∓**
 
 **FEN:**
 `1r3rk1/2qp2pp/b1n1p1n1/p1b1Pp2/2N5/2P2N2/PP2BPPP/1RBQ1RK1 w - - 12 17`
