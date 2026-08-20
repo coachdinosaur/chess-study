@@ -149,6 +149,26 @@ test("Chapter 5 Page 89 contains bold interactive move notation and accurate FEN
   assert.match(page89, /\*\*11\.\.\.0-0!\?N 12\.Bg5 h6 13\.Bxf6 Bxf6 14\.Nbd2 d5⩱\*\*/);
 });
 
+test("Chapter 5 Page 90 contains bold interactive move notation and accurate FEN anchors", async () => {
+  const markdown = await readChapterFive();
+  const start = markdown.indexOf("## Page 90");
+  const end = markdown.indexOf("## Page 91", start);
+  const page90 = markdown.slice(start, end);
+
+  assert.match(page90, /\*\*15\.Rfe1 e5 16\.c4 e4 17\.cxd5 exd3 18\.Qc4 Qf7 19\.dxc6 bxc6 20\.Rad1 Bxb2 21\.Qxf7\+ Rxf7 22\.Nc4 Bf6\*\*/);
+  assert.match(page90, /\*\*12\.Bg5! Bb7 13\.Nbd2!\*\*/);
+  assert.match(page90, /\*\*13\.Qe2\?! Ng4! 14\.g3 Nce5 15\.Nxe5 Nxe5 16\.Be4 d5 17\.Bf4\*\*, as played in Westerinen – Cramling, Alicante 1989, should be slightly worse for White after \*\*17\.\.\.dxe4N 18\.Qh5\+ g6 19\.Qxe5 Qxe5 20\.Bxe5 0-0 21\.Nd2 Bb7 22\.Rfe1 Rad8 23\.Nxe4⩱\*\*/);
+  assert.match(page90, /\*\*14\.Nxe5 Qxe5 15\.Bxf6!N\*\*/);
+  assert.match(page90, /\*\*15\.f4 Qc7\*\*/);
+  assert.match(page90, /\*\*15\.\.\.Qxf6 16\.Be4!\*\*/);
+  assert.match(page90, /`r3k2r\/pb1pb1pp\/1p2pq2\/8\/4B3\/2P5\/PPQN1PPP\/R4RK1 b kq - 1 16`/);
+  assert.match(page90, /\*\*16\.\.\.d5 17\.Qa4\+ Kf7 18\.Bc2 Rhf8 19\.Nf3 Kg8=\*\*/);
+  assert.match(page90, /##### B23212\) 9\.Qh4/);
+  assert.match(page90, /\*\*9\.\.\.e5!\?\*\*/);
+  assert.match(page90, /\*\*9\.\.\.d5 10\.Bd3 Bd6!\*\*/);
+});
+
+
 
 test("Chapter 5 Page 95 contains conclusion", async () => {
   const start = (await readChapterFive()).indexOf("## Page 95");

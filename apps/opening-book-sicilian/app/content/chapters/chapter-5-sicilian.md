@@ -671,21 +671,19 @@ c3 Sicilian
 <!-- FEN: r1b2rk1/ppq3p1/2n1pb1p/3p4/8/2PB1N2/PPQN1PPP/R4RK1 w - - 0 15 -->
 in the centre, Black should be slightly better – he has the two bishops and no apparent weaknesses. For example, **15.Rfe1 e5 16.c4 e4 17.cxd5 exd3 18.Qc4 Qf7 19.dxc6 bxc6 20.Rad1 Bxb2 21.Qxf7+ Rxf7 22.Nc4 Bf6** and it is obvious that White is struggling to equalize.
 
-<!-- FEN: r1b1kb1r/p1qp2pp/1pn1pn2/8/8/2PB1N2/PPQ2PPP/RNB2RK1 b kq - 1 11 -->
-<!-- SOURCE MOVE REFERENCE: 12.Bg5! continuation. -->
+<!-- FEN: r1b1kb1r/p1qp2pp/1pn1pn2/8/8/2PB1N2/PPQ2PPP/RNB2RK1 w kq - 1 12 -->
 **12.Bg5! Bb7 13.Nbd2!**
 
 An improvement for White.
 
-<!-- FEN: r1b1k2r/p1qpb1pp/1pn1pn2/8/8/2PB1N2/PPQ2PPP/RNB2RK1 w kq - 2 12 -->
-<!-- SOURCE MOVE REFERENCE: Westerinen – Cramling game note. -->
+<!-- FEN: r1b1k2r/p1qpb1pp/1pn1pn2/8/8/2PB1N2/PPQ2PPP/RNB2RK1 w kq - 2 13 -->
   **13.Qe2?! Ng4! 14.g3 Nce5 15.Nxe5 Nxe5 16.Be4 d5 17.Bf4**, as played in Westerinen – Cramling, Alicante 1989, should be slightly worse for White after **17...dxe4N 18.Qh5+ g6 19.Qxe5 Qxe5 20.Bxe5 0-0 21.Nd2 Bb7 22.Rfe1 Rad8 23.Nxe4⩱**
 
 <!-- FEN: r3k2r/pbqpb1pp/1p2pn2/4n1B1/8/2PB1N2/PPQN1PPP/R4RK1 w kq - 6 14 -->
 **14.Nxe5 Qxe5 15.Bxf6!N**
 
 <!-- FEN: r3k2r/pb1pb1pp/1p2pn2/4q1B1/8/2PB4/PPQN1PPP/R4RK1 w kq - 0 15 -->
-  15.f4 Qc7 was unclear in Ziffer – Da Silva Filho, email 2002.
+  **15.f4 Qc7** was unclear in Ziffer – Da Silva Filho, email 2002.
 
 <!-- FEN: r3k2r/pb1pb1pp/1p2pB2/4q3/8/2PB4/PPQN1PPP/R4RK1 b kq - 0 15 -->
 **15...Qxf6 16.Be4!**
@@ -709,7 +707,7 @@ With a balanced position. I will give a further plausible variation:
 This powerful move seems to tip the scales in Black’s favour.
 
 <!-- FEN: r1bqkb1r/pp1p2pp/2n1pn2/8/7Q/2P2N2/PP3PPP/RNB1KB1R b KQkq - 1 9 -->
-  9...d5 10.Bd3 Bd6! is at least equal for Black. However, the text is simpler and more effective.
+  **9...d5 10.Bd3 Bd6!** is at least equal for Black. However, the text is simpler and more effective.
 
 ## Page 91
 
