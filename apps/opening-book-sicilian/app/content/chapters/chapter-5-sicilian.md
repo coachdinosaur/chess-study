@@ -902,10 +902,15 @@ This position was reached by transposition in Mamedjarova – Smirin, Baku 2010.
 c3 Sicilian
 
 **FEN:**
-`r2q1rk1/3p2pp/b3p3/p1bnPp2/1pPR4/6P1/PP1NQPBP/R1B3K1 b - - 2 16`
+`2rq1rk1/3p2pp/b3p3/p1bnPp2/1pPR4/6P1/PP1NQPBP/R1B3K1 b - - 2 16`
 
-<!-- FEN: r2q1rk1/3p2pp/b3p3/p1bnPp2/1pPR4/6P1/PP1NQPBP/R1B3K1 b - - 2 16 -->
-**16...Qb6!N 17.Rh4 Qc7 18.Nf3 Be7 19.Bg5 Bxg5 20.Nxg5 Ne7 21.b3 Ng6 22.Rh5 Bb7⩱**
+<!-- FEN: 2rq1rk1/3p2pp/b3p3/p1bnPp2/1pPR4/6P1/PP1NQPBP/R1B3K1 b - - 2 16 -->
+**16...Qb6!N 17.Nf3 Bc5**
+
+Forcing a displacement of the white rook.
+
+<!-- FEN: 2rq1rk1/3p2pp/b3p3/p1bnPp2/1pPR4/6P1/PP1NQPBP/R1B3K1 b - - 2 16 -->
+**18.Rh4 Qc7 19.Bg5 Ne7 20.b3 Ng6 21.Rh5 Bb7⩱**
 
 Black is much better: with such an awful rook on h5, White will hardly survive.
 
@@ -933,16 +938,16 @@ The bishop is coming to a6. With a safe kingside and a juicy target on e5 to pil
 The best move, although the position is already worse for White.
 
 <!-- FEN: r1b1kb1r/2qp2pp/2n1p3/p2nPp2/8/2P2N2/PP2QPPP/RNB1KB1R w KQkq - 0 11 -->
-  Instead, **11.c4 Ba6 12.Qd1** (12.g3 transposes to the next line) **12...Nb6! 13.c5 Nc4⩱** White’s position was dire in Deviatkin – Najer, Moscow 2007.
+  Instead, **11.c4 Ba6 12.Qd1** (12.g3 transposes to the next line) **12...Nb6!** allows Black a double attack which ensures he regains his pawn: **13.c5** (**13.b3 Bb4+ 14.Nbd2 Nxe5 15.Bb2 Nxf3+ 16.Qxf3 0-0 17.Qe3 e5!∓** also looks awful) **13...Nc4∓** White’s position was dire in Deviatkin – Najer, Moscow 2007.
 
 <!-- FEN: r1b1kb1r/2qp2pp/2n1p3/p2nPp2/8/2P2N2/PP2QPPP/RNB1KB1R w KQkq - 0 11 -->
-  After **11.g3 Ba6 12.c4 a4! 13.a3 Na5 14.Nbd2**
+  After **11.g3 Ba6 12.c4**, the move **12...a4!** is bad news for White. **13.a3** Trying to stave off invasions or checks on b4. (**13.Nc3 Bb4 14.Bd2 Bxc3 15.Bxc3 Nxc3 16.bxc3 Na5∓** and **13.Nbd2 Ndb4 14.Nb1 Na5 15.Na3 Rc8 16.Nd2 Bb7 17.Rg1 Bc5∓** both emphasize the weakness of the c4-pawn.) **13...Na5 14.Nbd2**
 
 **FEN:**
 `r3kb1r/2qp2pp/b3p3/n2nPp2/p1P5/P4NP1/1P1NQP1P/R1B1KB1R b KQkq - 2 14`
 
 <!-- FEN: r3kb1r/2qp2pp/b3p3/n2nPp2/p1P5/P4NP1/1P1NQP1P/R1B1KB1R b KQkq - 2 14 -->
-  **14...Bc5!? 15.h3 0-0 16.Rb1 Nb6 17.Qd1 Naxc4-+** White’s opening strategy had been a complete disaster in Poulheim – Walter, corr. 2012, and he went on to lose quickly.
+  **14...Bc5!?** (Also good is **14...Nb6N∓**, when I don’t see a way out for White.) **15.h3 0-0 16.Rb1 Nb6 17.Qd1 Naxc4-+** White’s opening strategy had been a complete disaster in Poulheim – Walter, corr. 2012, and he went on to lose quickly.
 
 ## Page 95
 
