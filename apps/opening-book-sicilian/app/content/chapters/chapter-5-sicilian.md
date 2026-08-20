@@ -894,8 +894,8 @@ White can choose to ignore the pawn with B23221) 9.g3 or grab it with B23222) 9.
 
 This position was reached by transposition in Mamedjarova – Smirin, Baku 2010.
 
-<!-- FEN: r2q1rk1/3p2pp/b3p3/p1bnPp2/1pPR4/6P1/PP2QPBP/RNB3K1 w - - 1 16 -->
-  <!-- SOURCE MOVE REFERENCE: 16.b3 alternative with piece sacrifices. --> **16.b3** (**16.Nd2**) **17.Rxd5 exd5 18.Bxd5+ Kh8 19.Nd2 Bd4 20.Rb1 Rc5! 21.Qf3 Qe7 22.Nf1 Bxe5 23.Bf4 Qd6 24.Be3 Rc7⩱** gives White no real compensation for the exchange.
+<!-- FEN: 2rq1rk1/3p2pp/b3p3/p1bnPp2/1pPR4/1P4P1/P3QPBP/RNB3K1 w - - 1 17 -->
+  **16.b3** (**16.Nd2**) **17.Rxd5 exd5 18.Bxd5+ Kh8 19.Nd2 Bd4 20.Rb1 Rc5! 21.Qf3 Qe7 22.Nf1 Bxe5 23.Bf4 Qd6 24.Be3 Rc7⩱** gives White no real compensation for the exchange.
 
 ## Page 94
 
@@ -965,5 +965,3 @@ White is kept at bay. Black’s position is wonderfully coordinated, and recover
 ## Conclusion
 
 This chapter served as an introduction to the c3 Sicilian, and after 1.e4 c5 2.c3 Nf6 3.e5 Nd5 focused on moves other than the 4.Nf3 main line. Black is in excellent theoretical shape here, and I hope the reader will be satisfied with my attempts to inject some life into White’s more insipid tries. In the lines where White plays more energetically I believe I offer a path to full equality for Black, with every chance to press later on in the game.
-
-1.e4 c5 2.c3 Nf6 3.e5 Nd5 4.d4 cxd4 5.Nf3 e6 6.cxd4 d6 <!-- SOURCE MOVE REFERENCE: Summary moves cited in conclusion prose. -->
