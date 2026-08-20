@@ -168,6 +168,25 @@ test("Chapter 5 Page 90 contains bold interactive move notation and accurate FEN
   assert.match(page90, /\*\*9\.\.\.d5 10\.Bd3 Bd6!\*\*/);
 });
 
+test("Chapter 5 Page 91 contains bold interactive move notation and accurate FEN anchors", async () => {
+  const markdown = await readChapterFive();
+  const start = markdown.indexOf("## Page 91");
+  const end = markdown.indexOf("## Page 92", start);
+  const page91 = markdown.slice(start, end);
+
+  assert.match(page91, /\*\*10\.Bg5\*\* is met simply by \*\*10\.\.\.Be7\*\*, since \*\*11\.Bd3 d5 12\.Bg6\+ Kf8⩱\*\*/);
+  assert.match(page91, /\*\*10\.\.\.e4 11\.Ng5 d5\*\*/);
+  assert.match(page91, /\*\*12\.0-0\*\*/);
+  assert.match(page91, /\*\*12\.c4\? Bb4\+⩱\*\* is close to winning for Black\. \*\*13\.Bd2\*\* \(\*\*13\.Nc3 d4 14\.Bxc6\+ bxc6 15\.a3 Ba5 16\.b4 dxc3 17\.bxa5 Qd3-\+\*\*\) \*\*13\.\.\.0-0 14\.cxd5\*\*/);
+  assert.match(page91, /\*\*14\.\.\.Bxd2\+N 15\.Nxd2 Nd4 16\.Bc4 Re8-\+\*\*/);
+  assert.match(page91, /\*\*12\.Be3\?\*\*, when \*\*12\.\.\.Be7 13\.Bd4 Bf5 14\.Qf4 Qd7-\+\*\*/);
+  assert.match(page91, /\*\*12\.\.\.a6!⩱\*\*/);
+  assert.match(page91, /\*\*12\.\.\.h6\?!\*\* is not as strong due to \*\*13\.c4!N Rg8 14\.cxd5 hxg5 15\.Bxg5 Qxd5 16\.Nc3 Qf5 17\.Rae1 Kf7 18\.Bc4\+ Be6 19\.Bxe6\+ Qxe6 20\.Nxe4 Qf5 21\.Re3\*\*/);
+  assert.match(page91, /\*\*13\.Be3!\?\*\*/);
+  assert.match(page91, /\*\*10\.Bb5 e4 11\.Nd4 d5 12\.0-0 a6 13\.Ba4\?! b5 14\.Bb3 Ne5! 15\.Nd2 Ng6 16\.Qg3 Bd6 17\.f4 Bf5⩱\*\*/);
+});
+
+
 
 
 test("Chapter 5 Page 95 contains conclusion", async () => {

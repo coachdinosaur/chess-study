@@ -286,6 +286,8 @@ export class MarkdownMoveResolver {
           branchStarts.pop();
           depth--;
           lastBefore = active;
+          sourceErratumPath = null;
+          sourceErratumBase = null;
         }
       }
 

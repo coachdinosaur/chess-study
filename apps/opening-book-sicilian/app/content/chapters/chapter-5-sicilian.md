@@ -727,14 +727,13 @@ I have not been able to find any resource for White to challenge the idea that B
 Apparently the lesser evil.
 
 <!-- FEN: r1bqkb1r/pp4pp/2n2n2/3p2N1/4p2Q/2P5/PP2BPPP/RNB1K2R w KQkq - 0 12 -->
-  <!-- SOURCE ERRATUM FROM 13.Bd2: Analysis of 12.c4? with parenthetical lines. -->
-  **12.c4? Bb4+⩱** is close to winning for Black. **13.Bd2** (13.Nc3 d4 14.Bxc6+ bxc6 15.a3 Ba5 16.b4 dxc3 17.bxa5 Qd3-+) **13...0-0 14.cxd5** was N. Kosintseva – Trofimova, Kolontaevo 1997.
+  <!-- SOURCE ERRATUM FROM 14.Bxc6+: Analysis of 12.c4? with parenthetical lines. --> **12.c4? Bb4+⩱** is close to winning for Black. **13.Bd2** (**13.Nc3 d4 14.Bxc6+ bxc6 15.a3 Ba5 16.b4 dxc3 17.bxa5 Qd3-+**) **13...0-0 14.cxd5** was N. Kosintseva – Trofimova, Kolontaevo 1997.
 
-<!-- FEN: r1bqkb1r/pp4pp/2n2n2/3p2N1/4p2Q/2P5/PP2BPPP/RNB1K2R w KQkq - 0 12 -->
+<!-- FEN: r1bq1rk1/pp4pp/2n2n2/3P2N1/1b2p2Q/8/PP1BBPPP/RN2K2R b KQ - 0 14 -->
   **14...Bxd2+N 15.Nxd2 Nd4 16.Bc4 Re8-+** clinches the issue immediately.
 
 <!-- FEN: r1bqkb1r/pp4pp/2n2n2/3p2N1/4p2Q/2P5/PP2BPPP/RNB1K2R w KQkq - 0 12 -->
-  Another move that fails to address the problems of the position is 12.Be3?, when 12...Be7 13.Bd4 Bf5 14.Qf4 Qd7-+ was already lost for White in W. Moser – Neumann, Germany 1988.
+  Another move that fails to address the problems of the position is **12.Be3?**, when **12...Be7 13.Bd4 Bf5 14.Qf4 Qd7-+** was already lost for White in W. Moser – Neumann, Germany 1988.
 
 <!-- FEN: r1bqkb1r/pp4pp/2n2n2/3p2N1/4p2Q/2P5/PP2BPPP/RNB2RK1 b kq - 1 12 -->
 **12...a6!⩱**
@@ -742,11 +741,10 @@ Apparently the lesser evil.
 Black is aiming for a solid centre.
 
 <!-- FEN: r1bqkb1r/pp4pp/2n2n2/3p2N1/4p2Q/2P5/PP2BPPP/RNB2RK1 b kq - 1 12 -->
-  12...h6?! is not as strong due to **13.c4!N Rg8 14.cxd5 hxg5 15.Bxg5 Qxd5 16.Nc3 Qf5 17.Rae1 Kf7 18.Bc4+ Be6 19.Bxe6+ Qxe6 20.Nxe4 Qf5 21.Re3** White has good compensation for the sacrificed piece.
+  **12...h6?!** is not as strong due to **13.c4!N Rg8 14.cxd5 hxg5 15.Bxg5 Qxd5 16.Nc3 Qf5 17.Rae1 Kf7 18.Bc4+ Be6 19.Bxe6+ Qxe6 20.Nxe4 Qf5 21.Re3** White has good compensation for the sacrificed piece.
 
 <!-- FEN: r1bqkb1r/1p4pp/p1n2n2/3p2N1/4p2Q/2P5/PP2BPPP/RNB2RK1 w kq - 0 13 -->
-<!-- SOURCE MOVE REFERENCE: 13.Be2!? note. -->
-**13.Be2!?**
+**13.Be3!?**
 
 White at least tries to make a fight out of the game.
 
