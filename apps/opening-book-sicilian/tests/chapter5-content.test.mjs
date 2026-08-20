@@ -192,7 +192,7 @@ test("Chapter 5 Page 91 contains bold interactive move notation and accurate FEN
   assert.match(page91, /I prefer this natural developing move, preparing to castle and eyeing h2\. \(Alternatively: \*\*13\.\.\.Bf5 14\.c4! d4 15\.Nd2 d3 16\.Bd1\*\*\)/);
 });
 
-test("Chapter 5 Page 92 contains bold interactive move notation and accurate FEN anchors", async () => {
+test("Chapter 5 Page 92 contains bold interactive move notation, B2322 section, and accurate FEN anchors", async () => {
   const markdown = await readChapterFive();
   const start = markdown.indexOf("## Page 92");
   const end = markdown.indexOf("## Page 93", start);
@@ -206,6 +206,11 @@ test("Chapter 5 Page 92 contains bold interactive move notation and accurate FEN
   assert.match(page92, /\*\*14\.\.\.Ne5 15\.Nc3 Bf5 16\.Nxd5 Nxd5 17\.cxd5 h6 18\.Nxe4 Qxh4 19\.Nxd6\+ Kf8 20\.Nxf5 Qf6 21\.Nd4⇆\*\*/);
   assert.match(page92, /`r1bq1rk1\/1p4pp\/p1nb1n2\/3p2N1\/2P1p2Q\/8\/PP2BPPP\/RNB2RK1 w - - 1 15`/);
   assert.match(page92, /\*\*15\.cxd5 Nd4 16\.Nc3 Nf5 17\.Qh3 Ng3 18\.Qh4 Nxf1 19\.Kxf1 h6⩱\*\*/);
+  assert.match(page92, /##### B2322\) 8\.Qe2/);
+  assert.match(page92, /`r1bqkb1r\/pp1p2pp\/2n1p3\/3nPp2\/8\/2P2N2\/PP2QPPP\/RNB1KB1R b KQkq - 1 8`/);
+  assert.match(page92, /\*\*8\.\.\.b5!\*\*/);
+  assert.match(page92, /\*\*8\.\.\.Qc7 9\.g3 b5!\?\*\*/);
+  assert.match(page92, /`r1b1kb1r\/p1qp2pp\/2n1p3\/1p1nPp2\/8\/2P2NP1\/PP2QP1P\/RNB1KB1R w KQkq - 0 10`/);
 });
 
 test("Chapter 5 Page 93 contains bold interactive move notation and accurate FEN anchors", async () => {
@@ -214,19 +219,23 @@ test("Chapter 5 Page 93 contains bold interactive move notation and accurate FEN
   const end = markdown.indexOf("## Page 94", start);
   const page93 = markdown.slice(start, end);
 
-  assert.match(page93, /##### B2322\) 8\.Qe2/);
-  assert.match(page93, /\*\*8\.\.\.b5!\*\*/);
-  assert.match(page93, /\*\*8\.\.\.Qc7 9\.g3 b5!\?\*\*/);
-  assert.match(page93, /###### B23221\) 9\.g3/);
-  assert.match(page93, /\*\*9\.\.\.Bb7 10\.Bg2 Nf6\*\*/);
-  assert.match(page93, /\*\*10\.\.\.Be7 11\.0-0 0-0 12\.Rd1 b4 13\.c4 g6 14\.b3 Bg7 15\.f4 0-0=\*\*/);
-  assert.match(page93, /\*\*11\.0-0\*\*/);
-  assert.match(page93, /\*\*11\.\.\.Be7\*\*/);
-  assert.match(page93, /\*\*11\.\.\.Rc8!\? 12\.Re1\*\* \(\*\*12\.\.\.b4! 13\.Qh5\+ g6 14\.Qh4 bxc3 15\.bxc3 Be7 16\.Qh6/);
-  assert.match(page93, /\*\*12\.Re1 0-0 13\.Nbd2 Qc7\*\*/);
-  assert.match(page93, /\*\*13\.\.\.Rc8 14\.a4 b4 15\.c4 Na5 16\.b3\*\* \(\*\*16\.Nd2\*\*\) \*\*17\.Rxd5 exd5 18\.Bxd5\+ Kh8 19\.Nd2 Bd4 20\.Rb1 Rc5! 21\.Qf3 Qe7 22\.Nf1 Bxe5 23\.Bf4 Qd6 24\.Be3 Rc7⩱\*\*/);
-  assert.match(page93, /\*\*14\.Nb3 Ne4\*\*/);
-  assert.match(page93, /\*\*15\.Bf4 Rae8 16\.h4 h6 17\.h5 Ng5 18\.Nfd4 Nxd4 19\.cxd4 Bxg2 20\.Kxg2 Qb7\+ 21\.d5 Rc8 22\.Rad1 Rc4 23\.Bxg5 Bxg5 24\.Na5 Qb6 25\.Nxc4 bxc4 26\.dxe6 dxe6 27\.Qxc4 f4 28\.g4 f3\+ 29\.Kg1 Bh4 30\.Rf1 Kh8 31\.Rd6 Qxb2 32\.Qxe6 Bg3 33\.Qe7 Rg8 34\.Rd8 Bxe5 35\.Rxg8\+ Kxg8 36\.Qe8\+ Kh7 37\.Qg6\+ Kh8 38\.Rd1 Bd4 39\.Qe8\+ Kh7 40\.Qe4\+ Kh8 41\.Qxd4 1-0\*\*/);
+  assert.match(page93, /\*\*10\.Bg2\*\*/);
+  assert.match(page93, /\*\*10\.Qxb5 Nxe5 11\.Nxe5 Qxe5\+ 12\.Qe2 Qxe2\+ 13\.Bxe2 Bb7\*\*/);
+  assert.match(page93, /\*\*10\.\.\.a5 11\.0-0 Ba6 12\.Nh4!\?\*\*/);
+  assert.match(page93, /`r3kb1r\/2qp2pp\/b1n1p3\/pp1nPp2\/7N\/2P3P1\/PP2QPBP\/RNB2RK1 b kq - 3 12`/);
+  assert.match(page93, /\*\*12\.\.\.b4! 13\.Qh5\+\*\*/);
+  assert.match(page93, /\*\*13\.c4 g6 14\.b3 Bg7 15\.f4 0-0=\*\*/);
+  assert.match(page93, /\*\*13\.\.\.g6 14\.Nxg6 hxg6 15\.Qxg6\+\*\*/);
+  assert.match(page93, /\*\*15\.\.\.Kd8 16\.Bxd5 Kc8 17\.Qf6 Rg8 18\.Bg2 Bxf1 19\.Kxf1 Bc5 20\.Bf4!N\*\*/);
+  assert.match(page93, /\*\*20\.\.\.Kb7 21\.cxb4\*\*/);
+  assert.match(page93, /\*\*21\.\.\.axb4 22\.Nd2\*\*/);
+  assert.match(page93, /\*\*22\.\.\.Raf8 23\.Qh6 Rh8=\*\*/);
+  assert.match(page93, /White can choose to ignore the pawn with B23221\) 9\.g3 or grab it with B23222\) 9\.Qxb5\./);
+  assert.match(page93, /###### B23221\) 9\.g3 a5 10\.Bg2/);
+  assert.match(page93, /\*\*10\.\.\.Be7 11\.0-0 0-0 12\.Rd1 Ba6 13\.Nd4\*\*/);
+  assert.match(page93, /\*\*13\.\.\.Nxd4! 14\.Rxd4 b4 15\.c4\*\*/);
+  assert.match(page93, /\*\*15\.\.\.Bc5 16\.Nd2\*\*/);
+  assert.match(page93, /\*\*16\.b3\*\* \(\*\*16\.Nd2\*\*\) \*\*17\.Rxd5 exd5 18\.Bxd5\+ Kh8 19\.Nd2 Bd4 20\.Rb1 Rc5! 21\.Qf3 Qe7 22\.Nf1 Bxe5 23\.Bf4 Qd6 24\.Be3 Rc7⩱\*\*/);
 });
 
 test("Chapter 5 Page 95 contains conclusion", async () => {
