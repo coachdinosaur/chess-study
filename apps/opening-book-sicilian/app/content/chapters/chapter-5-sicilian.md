@@ -488,7 +488,7 @@ c3 Sicilian
 **7...Bd7 8.e6!? fxe6! 9.Bd3 g6 10.h4 Nd5 11.h5 Qa5+! 12.Bd2 Qb6 13.Na3! Nc6!**
 
 <!-- FEN: r3kb1r/pp1bp2p/1qnpp1p1/3n3P/3P4/N2B4/PP1B1PP1/R2QK1NR w KQkq - 5 14 -->
-  13...Qxd4?? 14.Bc3!+-
+  **13...Qxd4?? 14.Bc3!+-**
 
 <!-- FEN: r3kb1r/pp1bp2p/1qnpp1p1/3n3P/3P4/N2B4/PP1B1PP1/R2QK1NR w KQkq - 5 14 -->
 **14.Nf3**
@@ -503,8 +503,7 @@ As played in Kouba – Wassilieff, corr. 2012. My suggestion is:
 
 Intending to castle long. Originally I considered the position as slightly better for Black, but things may not be entirely clear.
 
-<!-- FEN: r3kb1r/ppqbp2p/2npp3/3n3p/2NP4/3B1N2/PP1B1PP1/2RQK2R b Kkq - 3 16 -->
-<!-- SOURCE MOVE REFERENCE: 16.Rc1! move note. -->
+<!-- FEN: r3kb1r/ppqbp2p/2npp3/3n3p/2NP4/3B1N2/PP1B1PP1/R2QK2R w KQkq - 2 16 -->
 **16.Rc1!**
 
 White anticipates our castling manoeuvre.
@@ -513,7 +512,7 @@ White anticipates our castling manoeuvre.
 **16...0-0-0 17.Na3**
 
 <!-- FEN: 2kr1b1r/ppqbp2p/2npp3/3n3p/2NP4/3B1N2/PP1B1PP1/2RQK2R w K - 4 17 -->
-  17.Na5 Bg7! is a fine point in our favour.
+  **17.Na5 Bg7!** is a fine point in our favour.
 
 <!-- FEN: 2kr1b1r/ppqbp2p/2npp3/3n3p/3P4/N2B1N2/PP1B1PP1/2RQK2R b K - 5 17 -->
 **17...Kb8 18.b4**
@@ -524,13 +523,13 @@ White anticipates our castling manoeuvre.
 The star move, temporarily halting White’s offensive so as to allow Black the necessary respite to find counter-chances.
 
 <!-- FEN: 1k1r1b1r/ppqbp2p/2npp3/3n3p/1P1P4/N2B1N2/P2B1PP1/2RQK2R b K - 0 18 -->
-  18...Qb6 19.Nc4 Qc7 20.Ne3! is better for White.
+  **18...Qb6 19.Nc4 Qc7 20.Ne3!** is better for White.
 
 <!-- FEN: 1k1r1b1r/p1qbp2p/2npp3/1p1n3p/1P1P4/N2B1N2/P2B1PP1/2RQK2R w K - 0 19 -->
 **19.Bxb5**
 
 <!-- FEN: 1k1r1b1r/p1qbp2p/2npp3/1p1n3p/1P1P4/N2B1N2/P2B1PP1/2RQK2R w K - 0 19 -->
-  19.Nxb5 Qb7 20.a4 Bg7 21.Rxh5 is another position requiring analysis, but I don’t feel Black can be worse.
+  **19.Nxb5 Qb7 20.a4 Bg7 21.Rxh5** is another position requiring analysis, but I don’t feel Black can be worse.
 
 <!-- FEN: 1k1r1b1r/p1qbp2p/2npp3/1B1n3p/1P1P4/N4N2/P2B1PP1/2RQK2R b K - 0 19 -->
 **19...Qb7 20.Bc4 Bg7 21.Nc2 Rc8**

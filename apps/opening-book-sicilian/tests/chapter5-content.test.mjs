@@ -89,6 +89,31 @@ test("Chapter 5 Page 85 contains bold interactive move notation and accurate FEN
   assert.match(page85, /\*\*7\.Bb3!\? dxe5 8\.Qh5 e6 9\.dxe5 Nc6 10\.Nf3 Qd3! 11\.Nc3 Bb4 12\.Bd2 Bxc3!\? 13\.Bxc3\*\*/);
 });
 
+test("Chapter 5 Page 86 contains bold interactive move notation and accurate FEN anchors", async () => {
+  const markdown = await readChapterFive();
+  const start = markdown.indexOf("## Page 86");
+  const end = markdown.indexOf("## Page 87", start);
+  const page86 = markdown.slice(start, end);
+
+  assert.match(page86, /\*\*13\.\.\.Nd5 14\.Rd1 Qe4\+ 15\.Kf1 Nxc3N 16\.bxc3 b6!\?\*\*/);
+  assert.match(page86, /`rnbqkb1r\/pp2pppp\/1n1p4\/1B2P3\/3P4\/8\/PP3PPP\/RNBQK1NR b KQkq - 3 7`/);
+  assert.match(page86, /\*\*7\.\.\.Bd7 8\.e6!\? fxe6! 9\.Bd3 g6 10\.h4 Nd5 11\.h5 Qa5\+! 12\.Bd2 Qb6 13\.Na3! Nc6!\*\*/);
+  assert.match(page86, /\*\*13\.\.\.Qxd4\?\? 14\.Bc3!\+-\*\*/);
+  assert.match(page86, /\*\*14\.Nf3\*\*/);
+  assert.match(page86, /`r3kb1r\/pp1bp2p\/1qnpp1p1\/3n3P\/3P4\/N2B1N2\/PP1B1PP1\/R2QK2R b KQkq - 6 14`/);
+  assert.match(page86, /\*\*14\.\.\.gxh5N 15\.Nc4 Qc7\*\*/);
+  assert.match(page86, /\*\*16\.Rc1!\*\*/);
+  assert.match(page86, /\*\*16\.\.\.0-0-0 17\.Na3\*\*/);
+  assert.match(page86, /\*\*17\.Na5 Bg7!\*\*/);
+  assert.match(page86, /\*\*17\.\.\.Kb8 18\.b4\*\*/);
+  assert.match(page86, /\*\*18\.\.\.b5!\*\*/);
+  assert.match(page86, /\*\*18\.\.\.Qb6 19\.Nc4 Qc7 20\.Ne3!\*\*/);
+  assert.match(page86, /\*\*19\.Bxb5\*\*/);
+  assert.match(page86, /\*\*19\.Nxb5 Qb7 20\.a4 Bg7 21\.Rxh5\*\*/);
+  assert.match(page86, /\*\*19\.\.\.Qb7 20\.Bc4 Bg7 21\.Nc2 Rc8\*\*/);
+});
+
+
 test("Chapter 5 Page 88 contains bold interactive move notation and accurate FEN anchors", async () => {
   const markdown = await readChapterFive();
   const start = markdown.indexOf("## Page 88");
