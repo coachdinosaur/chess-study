@@ -185,10 +185,11 @@ test("Chapter 5 Page 91 contains bold interactive move notation and accurate FEN
   assert.match(page91, /\*\*12\.Be3\?\*\*, when \*\*12\.\.\.Be7 13\.Bd4 Bf5 14\.Qf4 Qd7-\+\*\*/);
   assert.match(page91, /\*\*12\.\.\.a6!⩱\*\*/);
   assert.match(page91, /\*\*12\.\.\.h6\?!\*\* is not as strong due to \*\*13\.c4!N Rg8 14\.cxd5 hxg5 15\.Bxg5 Qxd5 16\.Nc3 Qf5 17\.Rae1 Kf7 18\.Bc4\+ Be6 19\.Bxe6\+ Qxe6 20\.Nxe4 Qf5 21\.Re3\*\*/);
-  assert.match(page91, /\*\*13\.Ba4\?!\*\*/);
-  assert.match(page91, /Instead, \*\*13\.Be2!\?\*\* was slightly better, but White was still struggling after: \*\*13\.\.\.Bd6\*\* \(\*\*13\.\.\.b5 14\.Be3 Be7 15\.f4 exf3 16\.Nxf3 0-0 17\.Nbd2 Ng4 18\.Bf2 Nxf2 19\.Rxf2 Rf6⩱\*\* was also unappealing for White in L\. Schneider – Cederstam Barsk, Sweden 1991\) \*\*14\.f4 exf3 15\.Nxf3 h6 16\.Nh3 0-0 17\.Nf4 Re8 18\.Nc3 Ne5 19\.Nxe5 Bxe5 20\.Bd3 Be6⩱\*\* White’s bishop on c1 was a sad sight in Rozentalis – Dambacher, Bastia 2004\./);
-  assert.match(page91, /\*\*13\.\.\.b5 14\.Bb3 Ne5!\*\*/);
-  assert.match(page91, /\*\*15\.Nd2 Ng6 16\.Qg3 Bd6 17\.f4 Bf5⩱\*\*/);
+  assert.match(page91, /\*\*13\.Be2!\?\*\*/);
+  assert.match(page91, /Instead, \*\*13\.Ba4\?! b5 14\.Bb3 Ne5! 15\.Nd2 Ng6 16\.Qg3 Bd6 17\.f4 Bf5⩱\*\* was fairly dismal for White in Sobh – Hakki, Cairo 2003\./);
+  assert.match(page91, /`r1bqkb1r\/1p4pp\/p1n2n2\/3p2N1\/4p2Q\/2P5\/PP2BPPP\/RNB2RK1 b kq - 1 13`/);
+  assert.match(page91, /\*\*13\.\.\.Bd6!\?N\*\*/);
+  assert.match(page91, /I prefer this natural developing move, preparing to castle and eyeing h2\. \(Alternatively: \*\*13\.\.\.Bf5 14\.c4! d4 15\.Nd2 d3 16\.Bd1\*\*\)/);
 });
 
 

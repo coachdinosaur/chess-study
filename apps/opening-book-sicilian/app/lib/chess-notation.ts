@@ -28,7 +28,7 @@ export function isLikelyProseSquare(text: string, at: number, source: string): b
 
   const prefix = text.slice(Math.max(0, at - 12), at).toLowerCase();
   if (prefix.endsWith("...")) return true;
-  if (/(?:^|\s)(?:on|of|to|the|a|toward|from|over|square|contested|control|controls|weakens|protects|attacks) $/.test(prefix)) return true;
+  if (/(?:^|\s)(?:on|of|to|the|a|toward|from|over|square|contested|control|controls|weakens|protects|attacks|eyeing|eyes|target|targets|vacate|vacates) $/.test(prefix)) return true;
   if (/\bon [a-h][1-8] and $/.test(prefix)) return true;
 
   const suffix = text.slice(at + source.length, at + source.length + 40).toLowerCase();

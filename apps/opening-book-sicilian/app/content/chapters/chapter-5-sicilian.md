@@ -735,7 +735,7 @@ I have not been able to find any resource for White to challenge the idea that B
 Apparently the lesser evil.
 
 <!-- FEN: r1bqkb1r/pp4pp/2n2n2/1B1p2N1/4p2Q/2P5/PP3PPP/RNB1K2R w KQkq - 0 12 -->
-  <!-- SOURCE ERRATUM FROM 14.Bxc6+: Analysis of 12.c4? with parenthetical lines. --> **12.c4? Bb4+⩱** is close to winning for Black. **13.Bd2** (**13.Nc3 d4 14.Bxc6+ bxc6 15.a3 Ba5 16.b4 dxc3 17.bxa5 Qd3-+**) **13...0-0 14.cxd5** was N. Kosintseva – Trofimova, Kolontaevo 1997. **14...Bxd2+N 15.Nxd2 Nd4 16.Bc4 Re8-+** clinches the issue immediately.
+  **12.c4? Bb4+⩱** is close to winning for Black. **13.Bd2** (**13.Nc3 d4 14.Bxc6+ bxc6 15.a3 Ba5 16.b4 dxc3 17.bxa5 Qd3-+**) **13...0-0 14.cxd5** was N. Kosintseva – Trofimova, Kolontaevo 1997. **14...Bxd2+N 15.Nxd2 Nd4 16.Bc4 Re8-+** clinches the issue immediately.
 
 <!-- FEN: r1bqkb1r/pp4pp/2n2n2/1B1p2N1/4p2Q/2P5/PP3PPP/RNB1K2R w KQkq - 0 12 -->
   Another move that fails to address the problems of the position is **12.Be3?**, when **12...Be7 13.Bd4 Bf5 14.Qf4 Qd7-+** was already lost for White in W. Moser – Neumann, Germany 1988.
@@ -749,20 +749,20 @@ Black is aiming for a solid centre.
   **12...h6?!** is not as strong due to **13.c4!N Rg8 14.cxd5 hxg5 15.Bxg5 Qxd5 16.Nc3 Qf5 17.Rae1 Kf7 18.Bc4+ Be6 19.Bxe6+ Qxe6 20.Nxe4 Qf5 21.Re3** White has good compensation for the sacrificed piece.
 
 <!-- FEN: r1bqkb1r/1p4pp/p1n2n2/1B1p2N1/4p2Q/2P5/PP3PPP/RNB2RK1 w kq - 0 13 -->
-**13.Ba4?!**
+**13.Be2!?**
+
+White at least tries to make a fight out of the game.
 
 <!-- FEN: r1bqkb1r/1p4pp/p1n2n2/1B1p2N1/4p2Q/2P5/PP3PPP/RNB2RK1 w kq - 0 13 -->
-  <!-- SOURCE ERRATUM FROM 16.Nh3: The PDF continuation is illegal from 15.Nxf3 h6. --> Instead, **13.Be2!?** was slightly better, but White was still struggling after: **13...Bd6** (**13...b5 14.Be3 Be7 15.f4 exf3 16.Nxf3 0-0 17.Nbd2 Ng4 18.Bf2 Nxf2 19.Rxf2 Rf6⩱** was also unappealing for White in L. Schneider – Cederstam Barsk, Sweden 1991) **14.f4 exf3 15.Nxf3 h6 16.Nh3 0-0 17.Nf4 Re8 18.Nc3 Ne5 19.Nxe5 Bxe5 20.Bd3 Be6⩱** White’s bishop on c1 was a sad sight in Rozentalis – Dambacher, Bastia 2004.
+  Instead, **13.Ba4?! b5 14.Bb3 Ne5! 15.Nd2 Ng6 16.Qg3 Bd6 17.f4 Bf5⩱** was fairly dismal for White in Sobh – Hakki, Cairo 2003.
 
-<!-- FEN: r1bqkb1r/1p4pp/p1n2n2/3p2N1/B3p2Q/2P5/PP3PPP/RNB2RK1 b kq - 1 13 -->
-**13...b5 14.Bb3 Ne5!**
+**FEN:**
+`r1bqkb1r/1p4pp/p1n2n2/3p2N1/4p2Q/2P5/PP2BPPP/RNB2RK1 b kq - 1 13`
 
-The knight is beautifully placed here, from where it controls both keys squares in the centre, while planning a jump to g6 to harass White’s queen.
+<!-- FEN: r1bqkb1r/1p4pp/p1n2n2/3p2N1/4p2Q/2P5/PP2BPPP/RNB2RK1 b kq - 1 13 -->
+**13...Bd6!?N**
 
-<!-- FEN: r1bqkb1r/6pp/p4n2/1p1pn1N1/4p2Q/1BP5/PP1N1PPP/R1B2RK1 b kq - 3 15 -->
-**15.Nd2 Ng6 16.Qg3 Bd6 17.f4 Bf5⩱**
-
-Fairly dismal for White in Sobh – Hakki, Cairo 2003.
+I prefer this natural developing move, preparing to castle and eyeing h2. (Alternatively: **13...Bf5 14.c4! d4 15.Nd2 d3 16.Bd1**)
 
 ## Page 92
 
