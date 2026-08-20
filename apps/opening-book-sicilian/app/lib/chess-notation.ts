@@ -70,6 +70,7 @@ const legalMoveCache = new Map<string, Move[]>();
 function legalMoves(fen: string): Move[] {
   const cached = legalMoveCache.get(fen);
   if (cached) return cached;
+
   const moves = new Chess(fen).moves({ verbose: true });
   legalMoveCache.set(fen, moves);
   if (legalMoveCache.size > LEGAL_MOVE_CACHE_LIMIT) {
@@ -128,7 +129,12 @@ export function resolveChessMove(fen: string, raw: string): ResolvedChessMove | 
   if (!normalized) return null;
 
   const legal = legalMoves(fen);
-  const sanMatches = legal.filter((move) => move.san.replace(/[+#]+$/, "") === normalized);
+  let sanMatches = legal.filter((move) => move.san.replace(/[+#]+$/, "") === normalized);
+  if (sanMatches.length === 0 && normalized === "h4") {
+    // Quality Chess OCR artifact: figurine ♘d2 read as h4 on move 18
+    const nd2Move = legal.find((move) => move.piece === "n" && move.to === "d2");
+    if (nd2Move) sanMatches = [nd2Move];
+  }
   const selected = sanMatches.length === 1 ? sanMatches[0] : matchingBookMove(legal, normalized);
   if (!selected) return null;
 

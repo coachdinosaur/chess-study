@@ -437,14 +437,15 @@ c3 Sicilian
 <!-- FEN: 3r2kr/1p1nb1pp/p5q1/R3p3/8/1PPpQ1N1/1P4PP/2B2RK1 b - - 9 23 -->
   **23...h6 24.Nf5 Bf8 25.Qxd3 Qb6+ 26.Be3 Qxa5 27.Ne7+ Bxe7 28.Qc4+ Kh7 29.Qd3+=** is an instructive line.
 
-<!-- FEN: r3kb1r/1p2pppp/p7/3n1b2/2N4N/1B1p4/PP3PP1/R1B1K2R w KQkq - 0 18 -->
-**16.Nc4 Qxd5 17.Qxd5 Nxd5**
+<!-- FEN: r3kb1r/1p2pppp/pn1q4/3B1b2/7N/N2p1Q2/PP3PPP/R1B1K2R b KQkq - 0 16 -->
+**Qxd5 17.Qxd5 Nxd5**
 
 Although the d3-pawn may appear weak, the position is still very complicated.
 
+<!-- FEN: r3kb1r/1p2pppp/p7/3n1b2/2N4N/1B1p4/PP3PP1/R1B1K2R w KQkq - 0 18 -->
 **18.h4**
 
-<!-- FEN: r3kb1r/1p2pppp/p7/3n1b2/2N4N/1B1p4/PP3PP1/R1B1K2R w KQkq - 0 18 -->
+<!-- FEN: r3kb1r/1p2pppp/p7/3n1b2/7N/1B1p4/PP1N1PP1/R1B1K2R w KQkq - 0 18 -->
   (**18.Ndf3 f6!**, planning ...0-0-0 or even ...Rc8, is not clear either.)
 
 **FEN:**
@@ -585,30 +586,28 @@ Clearly this developing move has to be preferred.
 
 c3 Sicilian
 
-after 18.Qc4!N∞ things are not so clear. <!-- SOURCE MOVE REFERENCE: Move cited in evaluation prose. -->
+<!-- FEN: 2rqk2r/p2p3p/bp2pp2/4n3/4Q3/PBP5/P4PPP/R1B1R1K1 w k - 2 18 -->
+after **18.Qc4!N∞** things are not so clear.
 
 **FEN:**
 `r2qk2r/p2p3p/bp2pp2/4n3/8/PBP5/P3QPPP/R1B1R1K1 w kq - 0 17`
 
 <!-- FEN: r2qk2r/p2p3p/bp2pp2/4n3/8/PBP5/P3QPPP/R1B1R1K1 w kq - 0 17 -->
-This was Trager – Pock, corr. 1997, where Black had a dream position: White has no serious antidote to Black’s looming pressure against g2. The game continued: **17.Bg5??** <!-- SOURCE MOVE REFERENCE: Analysis alternative 17.Bf4. --> (17.Bf4!N would have been a better choice, but even then 17...Qc6 18.f3 Rg8 19.Bg3 leaves White with an unenviable defensive task after either 19...h5-+ or 19...Rc8!?-+.)
+This was Trager – Pock, corr. 1997, where Black had a dream position: White has no serious antidote to Black’s looming pressure against g2. The game continued: **17.Bg5??** (**17.Bf4!N** would have been a better choice, but even then **17...Qc7 18.f3 Rg8 19.Bg3** leaves White with an unenviable defensive task after either **19...h5-+** or **19...Rc8!?-+**.)
 
 <!-- FEN: r2qk2r/p2p3p/bp2pp2/4n1B1/8/PBP5/P3QPPP/R3R1K1 b kq - 1 17 -->
 **17...Bxe2!-+** White soon had to resign.
 
-<!-- FEN: r2qkb1r/pb1p1ppp/1pn1p1n1/4P3/2B1Q3/2P2N2/PP3PPP/RNB1R1K1 w kq - 2 11 -->
-<!-- SOURCE MOVE REFERENCE: 11...Be7 main line continuation. -->
+<!-- FEN: r2qkb1r/pb1p1ppp/1pn1p1n1/4P3/2B1Q3/2P2N2/PP3PPP/RNB1R1K1 b kq - 3 11 -->
 **11...Be7 12.Qe2 0-0 13.Bb3!**
 
-<!-- FEN: r2qkb1r/pb1p1ppp/1pn1p1n1/4P3/2B1Q3/2P2N2/PP3PPP/RNB1R1K1 w kq - 2 11 -->
-<!-- SOURCE MOVE REFERENCE: 13.Nb3 alternative note. -->
-  13.Nb3? Ncxe5 14.Nxe5 Nxe5 15.Qxe5 Qxc4 16.Qxg7 0-0-0 17.Qd4 Qc6 18.f3 Rhg8 19.Rf1 Rg6-+ is a bad position for White, who has nothing in return for Black’s strong attack.
+<!-- FEN: r3kb1r/pbqpbppp/1pn1p1n1/4P3/2B1Q3/2P2N2/PP1N1PPP/R1B1R1K1 w kq - 5 13 -->
+  **13.Nb3? Ncxe5 14.Nxe5 Nxe5 15.Qxe5 Qxc4 16.Qxg7 0-0-0 17.Qd4 Qc6 18.f3 Rhg8 19.Rf1 Rg6-+** is a bad position for White, who has nothing in return for Black’s strong attack.
 
-<!-- FEN: r2q1rk1/pb1pbppp/1pn1p1n1/4P3/8/1BP2N2/PP1NQPPP/R1B1R1K1 b - - 7 13 -->
-<!-- SOURCE MOVE REFERENCE: 13...0-0 move note. -->
+<!-- FEN: r3k2r/pbqpbppp/1pn1p1n1/4P3/8/1BP2N2/PP1NQPPP/R1B1R1K1 b kq - 6 13 -->
 **13...0-0**
 
-<!-- FEN: r2q1rk1/pb1pbppp/1pn1p1n1/4P3/8/1BP2N2/PP1NQPPP/R1B1R1K1 b - - 7 13 -->
+<!-- FEN: r3kb1r/pbqpbppp/1pn1p1n1/4P3/8/1BP2N2/PP1N1PPP/R1B1R1K1 b kq - 6 13 -->
   **13...f6!?N 14.exf6 gxf6 15.Ne4 0-0-0 ∞** is my suggestion for those who wish to play for a win as Black. Without an exchange of light-squared bishops handy, White may be facing a serious attack here. The computer gives:
 
 **FEN:**
@@ -617,8 +616,8 @@ This was Trager – Pock, corr. 1997, where Black had a dream position: White ha
 <!-- FEN: 2kr3r/pbqpb2p/1pn1ppn1/8/4N3/1BP2N2/PP2QPPP/R1B1R1K1 w - - 2 16 -->
   **16.Nfd4 Nf4 17.Bxf4 Qxf4 18.Rad1 Kb8 19.g3 Rhg8 20.Qh5 Qg4 21.Nxc6+ Bxc6 22.Qxg4 Rxg4 23.Nd2 h5 24.Bc2 h4 25.Be4** White seems to be holding, but this line may be susceptible to improvement.
 
-<!-- FEN: r2q1rk1/pb1pbppp/1pn1p1n1/4P3/8/1BP2N2/PP1NQPPP/R1B1R1K1 b - - 7 13 -->
-**14.Bc2 d6 15.exd6 Bxd6 16.Nc4 Bf4 17.Bxf4 Nxf4 18.Qe4 Ng6 19.Rad1**
+<!-- FEN: r3k2r/pbqpbppp/1pn1p1n1/4P3/8/1BP2N2/PP1NQPPP/R1B1R1K1 b kq - 6 13 -->
+**13...0-0 14.Bc2 d6 15.exd6 Bxd6 16.Nc4 Bf4 17.Bxf4 Nxf4 18.Qe4 Ng6 19.Rad1**
 
 Here a draw was agreed in Sandaogo – Dempster, corr. 2005. I will give the following variation for completeness:
 

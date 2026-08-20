@@ -77,7 +77,7 @@ test("Chapter 5 Page 85 contains bold interactive move notation and accurate FEN
   const page85 = markdown.slice(start, end);
 
   assert.match(page85, /\*\*23\.\.\.h6 24\.Nf5 Bf8 25\.Qxd3 Qb6\+ 26\.Be3 Qxa5 27\.Ne7\+ Bxe7 28\.Qc4\+ Kh7 29\.Qd3\+=\*\*/);
-  assert.match(page85, /\*\*16\.Nc4 Qxd5 17\.Qxd5 Nxd5\*\*/);
+  assert.match(page85, /\*\*Qxd5 17\.Qxd5 Nxd5\*\*/);
   assert.match(page85, /Although the d3-pawn may appear weak, the position is still very complicated\./);
   assert.match(page85, /\*\*18\.h4\*\*/);
   assert.match(page85, /\*\*18\.Ndf3 f6!\*\*, planning \.\.\.0-0-0 or even \.\.\.Rc8, is not clear either\./);
@@ -89,6 +89,23 @@ test("Chapter 5 Page 85 contains bold interactive move notation and accurate FEN
   assert.match(page85, /\*\*7\.Bb3!\? dxe5 8\.Qh5 e6 9\.dxe5 Nc6 10\.Nf3 Qd3! 11\.Nc3 Bb4 12\.Bd2 Bxc3!\? 13\.Bxc3\*\*/);
 });
 
+test("Chapter 5 Page 88 contains bold interactive move notation and accurate FEN anchors", async () => {
+  const markdown = await readChapterFive();
+  const start = markdown.indexOf("## Page 88");
+  const end = markdown.indexOf("## Page 89", start);
+  const page88 = markdown.slice(start, end);
+
+  assert.match(page88, /after \*\*18\.Qc4!N∞\*\* things are not so clear\./);
+  assert.match(page88, /The game continued: \*\*17\.Bg5\?\?\*\* \(\*\*17\.Bf4!N\*\* would have been a better choice, but even then \*\*17\.\.\.Qc7 18\.f3 Rg8 19\.Bg3\*\* leaves White with an unenviable defensive task after either \*\*19\.\.\.h5-\+\*\* or \*\*19\.\.\.Rc8!\?-\+\*\*\.\)/);
+  assert.match(page88, /\*\*17\.\.\.Bxe2!-\+\*\* White soon had to resign\./);
+  assert.match(page88, /\*\*11\.\.\.Be7 12\.Qe2 0-0 13\.Bb3!\*\*/);
+  assert.match(page88, /\*\*13\.Nb3\? Ncxe5 14\.Nxe5 Nxe5 15\.Qxe5 Qxc4 16\.Qxg7 0-0-0 17\.Qd4 Qc6 18\.f3 Rhg8 19\.Rf1 Rg6-\+\*\*/);
+  assert.match(page88, /\*\*13\.\.\.f6!\?N 14\.exf6 gxf6 15\.Ne4 0-0-0 ∞\*\*/);
+  assert.match(page88, /`2kr3r\/pbqpb2p\/1pn1ppn1\/8\/4N3\/1BP2N2\/PP2QPPP\/R1B1R1K1 w - - 2 16`/);
+  assert.match(page88, /\*\*16\.Nfd4 Nf4 17\.Bxf4 Qxf4 18\.Rad1 Kb8 19\.g3 Rhg8 20\.Qh5 Qg4 21\.Nxc6\+ Bxc6 22\.Qxg4 Rxg4 23\.Nd2 h5 24\.Bc2 h4 25\.Be4\*\*/);
+  assert.match(page88, /\*\*13\.\.\.0-0 14\.Bc2 d6 15\.exd6 Bxd6 16\.Nc4 Bf4 17\.Bxf4 Nxf4 18\.Qe4 Ng6 19\.Rad1\*\*/);
+});
+
 test("Chapter 5 Page 95 contains conclusion", async () => {
   const start = (await readChapterFive()).indexOf("## Page 95");
   const page95 = (await readChapterFive()).slice(start);
@@ -96,5 +113,6 @@ test("Chapter 5 Page 95 contains conclusion", async () => {
   assert.match(page95, /## Conclusion/);
   assert.match(page95, /This chapter served as an introduction to the c3 Sicilian/);
 });
+
 
 
