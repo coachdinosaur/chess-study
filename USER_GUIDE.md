@@ -16,37 +16,34 @@ You do not need to install anything to use the deployed app.
 
 ---
 
-## Start Here: The Three Places You Will Use Most
+## Start Here: The Application Layout
 
-### 1. Lesson controls at the top
+The study board uses a clean **three-column layout** locked to the browser window without outer scrollbars:
 
-Use these controls to manage lessons:
+### 1. Left Navigation Sidebar
+Use the persistent left sidebar to switch between app destinations:
+- **Workspace**: `Analyze a Position` (returns to the active analysis board).
+- **Explore**: `Explore Lessons`, `Explore Openings`.
+- **Tools**: `Open 3D Board`, `Live Board`.
+- **Coaching**: `Teacher Management`.
+- **Info**: `About the App`.
+- **Collapse/Expand Toggle**: click the `<` / `>` button or press `Ctrl+B` to collapse the sidebar into a slim 60px vertical icon rail.
+- **Theme Switch**: toggle between Dark and Light mode.
 
-- **Lesson picker**: switch between lessons.
-- **Actions**: create, duplicate, or delete a lesson.
-- **Analyze / Stop**: start or stop Stockfish analysis.
-- **Three-dot menu**: open, save, import, export, show or hide panels, change theme, and access other display options.
-
-### 2. The chessboard
-
-Use the board to:
-
+### 2. The Chessboard (Center)
+Use the center board to:
 - set up a position in **Setup**;
 - play legal moves in **Analysis**;
 - review recorded moves in **Study**;
 - play against Stockfish in **Play**;
 - solve endgame puzzles or train on Lichess-derived positions in **Puzzle**.
 
-### 3. The tools panel
-
-The tools panel contains the main working tabs:
-
-- **Study**: review the board and recorded notation, manage the selected main line, and work with nested variations while the tools are collapsed.
-- **Setup**: create or change the starting position.
-- **Analysis**: play moves, use Stockfish, practice, and annotate.
-- **Play**: play a complete game against Stockfish.
-- **Puzzle**: choose the legacy Endgame Puzzle mode or the separate Lichess Position Training mode.
-- **Position Sets**: create, edit, import, export, and load prepared FEN position sets.
+### 3. The Study Workspace & Tools Panel (Right)
+Use the right-side workspace to manage lessons and study moves:
+- **Lesson controls**: lesson picker, **Actions** (New, Duplicate, Delete), **Analyze / Stop**, and the **Three-dot menu**.
+- **Tabs**: Study, Setup, Analysis, Play, Puzzle, Position Sets.
+- **Move notation**: step through the move tree and variations with arrow keys or toolbar buttons.
+- **Tools panel**: configure Stockfish lines, setup piece palettes, game clocks, or position set builder tables.
 
 If the tools panel is missing:
 

@@ -29,7 +29,7 @@ It contains:
 
 | Area | Key files |
 |---|---|
-| **SPA** | `index.html`, `app.js`, `styles.css`, `pgn.mjs`, `puzzle-api.mjs`, `lesson-position-builder.mjs`, `text-normalization.mjs` |
+| **SPA** | `index.html`, `app.js`, `app-navigation.js`, `styles.css`, `site-home.css`, `pgn.mjs`, `puzzle-api.mjs`, `lesson-position-builder.mjs`, `text-normalization.mjs` |
 | **Pawn lessons** | `lessons/pawn-*.html`, `lessons/pawn-m{2,3,4,5}-*.html`, `lessons/pawn-index.html` |
 | **Advanced Pawn lessons** | `lessons/advanced-pawn-m*-lesson-*.html`, `lessons/advanced-pawn-module-*-data.js`, `lessons/advanced-pawn-index.html` |
 | **Bishop lessons** | `lessons/bishop-m*-lesson-*.html`, `lessons/bishop-index.html`, `lessons/bishop_m1/` |

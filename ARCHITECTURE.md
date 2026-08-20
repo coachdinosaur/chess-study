@@ -15,7 +15,9 @@ The major subsystems are:
 1. **Interactive Study SPA**
    - `index.html`
    - `app.js`
+   - `app-navigation.js`
    - `styles.css`
+   - `site-home.css`
 
 2. **Supporting SPA modules**
    - `pgn.mjs`
@@ -81,7 +83,9 @@ The major subsystems are:
 chess-study/
 ├── index.html
 ├── app.js
+├── app-navigation.js
 ├── styles.css
+├── site-home.css
 ├── pgn.mjs
 ├── puzzle-api.mjs
 ├── lichess-position-training.mjs
@@ -282,9 +286,11 @@ apps/3d-chess-studio/
 
 | Module | Responsibility |
 |---|---|
-| `index.html` | Static shell, board containers, tabs, panels, modals, hidden file inputs, early theme/embed detection, cache-versioned assets |
+| `index.html` | Static shell, 3-column container, board containers, tabs, panels, modals, hidden file inputs, early theme/embed detection, cache-versioned assets |
 | `app.js` | Global state, rendering, event handling, board interaction, lesson trees, Play, Puzzle, Stockfish, tablebase, persistence, embed protocol |
-| `styles.css` | Theme tokens, responsive layout, board and panel styling, clocks, drag previews, active-tab rules |
+| `app-navigation.js` | Collapsible sidebar controller, slim icon rail state persistence (`localStorage`), keyboard shortcuts (Ctrl+B), mobile drawer, and cross-component theme synchronization |
+| `styles.css` | Theme tokens, board and panel styling, clocks, drag previews, active-tab rules |
+| `site-home.css` | 3-column desktop layout shell (100vh viewport lock, zero outer scrollbar), collapsible 60px sidebar rail, smooth workspace re-centering, mobile top app bar, and drawer styles |
 | `pgn.mjs` | Lesson-tree to PGN conversion, PGN parsing, comments, variations, multi-game splitting |
 | `puzzle-api.mjs` | Legacy endgame-puzzle generation and verification with a dedicated Stockfish worker and optional tablebase checks |
 | `lichess-position-training.mjs` | Internal Position Study modal controller, board rendering, filters, objective flow, history, and library-count display |

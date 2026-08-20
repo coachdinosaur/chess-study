@@ -46,9 +46,23 @@ For local Windows setup, see [LOCAL_DEPLOYMENT.md](LOCAL_DEPLOYMENT.md).
 - Run a selected student's lesson from the management Coach Session Command Center, with the latest session, next step, curriculum recommendation, puzzle progress, timer, lesson access, Live Board access, and session-log handoff in one workflow.
 - Publish one permanent private workspace per student—without a student account—and control its instructions, homework, due date, assigned lesson, FEN position, Live Board invitation, puzzle work, and visible results from `/management`.
 
-## Workspace
+## Workspace and Layout
 
-The single-page application is organized around six tabs:
+The single-page application uses a modern **three-column desktop structure** fitted cleanly to the viewport (`100vh`) without outer page scrollbars:
+
+1. **Left Navigation Sidebar** (`app-sidebar`):
+   - Categorized destinations: **Workspace** (`Analyze a Position`), **Explore** (`Lessons`, `Openings`), **Tools** (`3D Board`, `Live Board`), **Coaching** (`Teacher Management`), and **Info** (`About`).
+   - Minimizable/collapsible into a slim 60px vertical icon rail with hover tooltips and <kbd>Ctrl</kbd>+<kbd>B</kbd> keyboard shortcut.
+   - Automatically re-centers the desktop workspace smoothly within the available space when toggled.
+   - Includes synchronized dark/light theme switch.
+2. **Center Chessboard** (`board-pane`):
+   - Dominant visual element with captured-material counts, turn indicator, evaluation bar, SVG annotations, and coordinate labels.
+3. **Right Study Workspace** (`control-pane`):
+   - Compact header, lesson picker, actions dropdown, analyze button, tabs, move notation tree, and internal scrolling panel.
+
+On mobile and small screens (<= 1100px), the permanent sidebar transforms into a compact top app bar with brand header, active screen badge, and a slide-in navigation drawer.
+
+The workspace is organized around six tabs:
 
 | Tab | Purpose |
 |---|---|
