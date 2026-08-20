@@ -624,8 +624,7 @@ Here a draw was agreed in Sandaogo – Dempster, corr. 2005. I will give the fol
 
 c3 Sicilian
 
-<!-- FEN: r2q1rk1/pb3ppp/1pn1p1n1/8/2N1Q3/1BP2N2/PP3PPP/3RR1K1 b - - 3 18 -->
-<!-- SOURCE MOVE REFERENCE: Sandaogo – Dempster continuation. -->
+<!-- FEN: r2q1rk1/pb3ppp/1pn1p1n1/8/2N1Q3/2P2N2/PPB2PPP/3RR1K1 b - - 3 19 -->
 **19...Qc7 20.Nd4 Ba6 21.Nxc6 Bxc4 22.Qe5 Qxe5 23.Nxe5 Be2 24.Rd7 Rad8 25.Rxd8 Rxd8 26.Rxe2 Nxe5=**
 
 The position is completely level.
@@ -657,10 +656,10 @@ This might be the only way to maintain chances of equality.
   **10.Bg5?! d5! 11.Nbd2 Bd6⩱ 12.Nb3? 12...0-0 13.Bd3 e5 14.Bxf6 gxf6 15.Bf5 e4 16.Nfd4 Bxf5 17.Nxf5 Nb4⩱** Black was much better in Galvao – Paramos Dominguez, Evora 2008.
 
 <!-- FEN: r1bqkb1r/pp1p2pp/2n1pn2/8/8/2P2N2/PPQ2PPP/RNB1KB1R b KQkq - 1 9 -->
-  10.Be2 b6 11.Bg5 Bb7 12.Nbd2 Nb4 13.Qb3 Nbd5⩱ is already an excellent position for Black, featured in one of my own games:
+  **10.Be2 b6 11.Bg5 Bb7 12.Nbd2 Nb4 13.Qb3 Nbd5⩱** is already an excellent position for Black, featured in one of my own games:
 
 <!-- FEN: r1b1kb1r/ppqp2pp/2n1pn2/8/8/2PB1N2/PPQ2PPP/RNB1K2R b KQkq - 3 10 -->
-**11.0-0 b6**
+**10...b6 11.0-0**
 
 <!-- FEN: r1b1k2r/ppqpb1pp/2n1pn2/8/8/2PB1N2/PPQ2PPP/RNB2RK1 b kq - 5 11 -->
   **11...0-0!?N 12.Bg5 h6 13.Bxf6 Bxf6 14.Nbd2 d5⩱** By expanding
