@@ -71,3 +71,30 @@ test('the built Sicilian output is complete, rooted at /openings-sicilian/, and 
   await assert.rejects(access(file('apps/opening-book-sicilian/dist/assets/pieces/mpchess/wK.svg')));
   await assert.rejects(access(file('apps/opening-book-sicilian/dist/stockfish/stockfish-18-lite-single.js')));
 });
+
+test('the Opening Courses Hub at /openings/ presents both Sicilian and Catalan courses', async () => {
+  const [hubComponent, distIndexHtml] = await Promise.all([
+    readFile(file('apps/opening-book/app/components/OpeningHubView.tsx'), 'utf8'),
+    readFile(file('apps/opening-book/dist/index.html'), 'utf8'),
+  ]);
+
+  // Page structure assertions
+  assert.match(hubComponent, /Opening Courses/);
+  assert.match(hubComponent, /Study practical opening repertoires, key ideas, and important variations through interactive chess lessons\./);
+  assert.match(hubComponent, /Choose an Opening Course/);
+
+  // Course Card 1: Beating the Anti-Sicilian
+  assert.match(hubComponent, /Beating the Anti-Sicilian/);
+  assert.match(hubComponent, /Sicilian Defense/);
+  assert.match(hubComponent, /A practical opening course focused on how to meet the Anti-Sicilian systems and fight for an active position as Black\./);
+  assert.match(hubComponent, /\/openings-sicilian\//);
+
+  // Course Card 2: Catalan Opening
+  assert.match(hubComponent, /Catalan Opening/);
+  assert.match(hubComponent, /Study the Catalan, its strategic ideas, important variations, and model positions through interactive lessons\./);
+  assert.match(hubComponent, /#\/chapters\/1/);
+
+  // Verify built dist bundle exists and includes hub markup
+  assert.match(distIndexHtml, /Opening Courses \| CD Digital Chess/);
+});
+

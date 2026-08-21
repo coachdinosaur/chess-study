@@ -5,6 +5,7 @@ import { Chess } from "chess.js";
 import LessonLoading from "./LessonLoading";
 import { Chessboard } from "./components/Chessboard";
 import { MarkdownChapterView } from "./components/MarkdownRenderer";
+import { OpeningHubView } from "./components/OpeningHubView";
 import { playAnalysisMove } from "./board-analysis";
 import type { AnalysisMove, BoardMoveInput } from "./board-analysis";
 import { extractFenBlocks, type ChapterSummary, type MarkdownChapter } from "./lib/markdown-chapter";
@@ -247,6 +248,7 @@ function ChapterReader({ chapter, chapters, onNavigate }: {
         <p>CD Digital Chess</p>
         <a className="platform-link" href="/"><span className="nav-glyph" aria-hidden="true">SB</span><span>Study Board</span></a>
         <a className="platform-link" href="/lessons/"><span className="nav-glyph" aria-hidden="true">LS</span><span>Lessons</span></a>
+        <a className="platform-link" href="/openings/"><span className="nav-glyph" aria-hidden="true">OC</span><span>Opening Courses</span></a>
         <p className="sidebar-section-heading">Opening Course</p>
         {chapters.map((summary) => <a className={`course-link ${summary.id === chapter.id ? "active" : ""}`} href={`#/chapters/${summary.id}`} onClick={(event) => navigateChapter(event, summary)} key={summary.id}><span className="nav-glyph">{summary.id}</span><span>{summary.label}</span></a>)}
       </nav>
@@ -261,8 +263,9 @@ function chapterIdFromLocation(): string | null {
   const hashPath = window.location.hash.replace(/^#/, "");
   const route = hashPath || window.location.pathname;
   const match = /(?:^|\/)chapters\/(\d+)\/?$/.exec(route);
-  if (match) return isChapterId(match[1]) ? match[1] : null;
-  return hashPath ? null : "1";
+  if (match) return isChapterId(match[1]) ? match[1] : "invalid";
+  if (!hashPath || hashPath === "/" || hashPath === "#") return null;
+  return "invalid";
 }
 
 function MissingChapter() {
@@ -300,7 +303,11 @@ export default function CatalanApp() {
     window.location.hash = target;
   }, []);
 
-  const chapter = chapterId ? loadChapterById(chapterId) : undefined;
+  if (chapterId === null) {
+    return <OpeningHubView onOpenCatalan={() => navigate("1")} />;
+  }
+
+  const chapter = chapterId !== "invalid" ? loadChapterById(chapterId) : undefined;
   if (!chapter) return <MissingChapter />;
 
   return <ChapterReader
