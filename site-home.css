@@ -1150,32 +1150,34 @@ body.is-focus-mode .app-main-content {
 .top-players-table-wrap {
   border: 1px solid var(--card-border);
   border-radius: var(--radius-card, 8px);
-  overflow-y: auto;
+  overflow-y: scroll;
   overflow-x: hidden;
   background: var(--panel-strong);
   flex: 1 1 auto;
-  max-height: 480px;
+  max-height: min(480px, calc(86vh - 230px));
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--accent) 70%, var(--text-soft)) color-mix(in srgb, var(--panel) 90%, transparent);
+  scrollbar-color: var(--accent-strong) color-mix(in srgb, var(--panel) 85%, transparent);
+  scrollbar-gutter: stable;
 }
 
 .top-players-table-wrap::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
+  display: block;
 }
 
 .top-players-table-wrap::-webkit-scrollbar-track {
   background: color-mix(in srgb, var(--panel) 85%, transparent);
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 .top-players-table-wrap::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--accent) 70%, var(--text-soft));
-  border-radius: 4px;
-  border: 1px solid color-mix(in srgb, var(--card-border) 60%, transparent);
+  background: var(--accent-strong);
+  border-radius: 6px;
+  border: 2px solid var(--panel-strong);
 }
 
 .top-players-table-wrap::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-strong);
+  background: color-mix(in srgb, var(--accent-strong) 80%, #ffffff);
 }
 
 .top-players-table {

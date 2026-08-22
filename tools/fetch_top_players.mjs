@@ -1,12 +1,12 @@
 /**
  * CD Digital Chess — Top Players Data Fetcher
- * Fetches official FIDE ratings for 6 categories:
- *  1. Top 10 Standard (World Open)
- *  2. Top 10 World Women
- *  3. Top 10 World Blitz
- *  4. Top 10 Philippines (Standard Open)
- *  5. Top 10 PH Women
- *  6. Top 10 Singapore (Standard Open)
+ * Fetches official FIDE ratings for 6 categories (Top 20 players each):
+ *  1. Top 20 Standard (World Open)
+ *  2. Top 20 World Women
+ *  3. Top 20 World Blitz
+ *  4. Top 20 Philippines (Standard Open)
+ *  5. Top 20 PH Women
+ *  6. Top 20 Singapore (Standard Open)
  *
  * Generates: assets/top-players.json
  *
@@ -25,7 +25,7 @@ const OUTPUT_PATH = path.join(__dirname, '..', 'assets', 'top-players.json');
 const CATEGORIES = [
   {
     id: 'world_standard',
-    title: 'Top 10 Standard (World)',
+    title: 'Top 20 Standard (World)',
     shortTitle: 'World Standard',
     category: 'Standard',
     flag: '🌐',
@@ -33,7 +33,7 @@ const CATEGORIES = [
   },
   {
     id: 'world_women',
-    title: 'Top 10 World Women',
+    title: 'Top 20 World Women',
     shortTitle: 'World Women',
     category: 'Women',
     flag: '👑',
@@ -41,7 +41,7 @@ const CATEGORIES = [
   },
   {
     id: 'world_blitz',
-    title: 'Top 10 World Blitz',
+    title: 'Top 20 World Blitz',
     shortTitle: 'World Blitz',
     category: 'Blitz',
     flag: '⚡',
@@ -49,7 +49,7 @@ const CATEGORIES = [
   },
   {
     id: 'philippines',
-    title: 'Top 10 Philippines',
+    title: 'Top 20 Philippines',
     shortTitle: 'Philippines',
     category: 'Country',
     flag: '🇵🇭',
@@ -57,7 +57,7 @@ const CATEGORIES = [
   },
   {
     id: 'philippines_women',
-    title: 'Top 10 PH Women',
+    title: 'Top 20 PH Women',
     shortTitle: 'PH Women',
     category: 'Country Women',
     flag: '🇵🇭',
@@ -65,7 +65,7 @@ const CATEGORIES = [
   },
   {
     id: 'singapore',
-    title: 'Top 10 Singapore',
+    title: 'Top 20 Singapore',
     shortTitle: 'Singapore',
     category: 'Country',
     flag: '🇸🇬',
@@ -77,7 +77,7 @@ const CATEGORIES = [
 const FED_FLAGS = {
   NOR: '🇳🇴',
   USA: '🇺🇸',
-  UZB: '🇺🇿',
+  UZB: 'UZ',
   GER: '🇩🇪',
   IND: '🇮🇳',
   CHN: '🇨🇳',
@@ -98,11 +98,15 @@ const FED_FLAGS = {
   VIE: '🇻🇳',
   INA: '🇮🇩',
   MAS: '🇲🇾',
-  THA: '🇹🇭'
+  THA: '🇹🇭',
+  SUI: '🇨🇭',
+  SLO: '🇸🇮',
+  IRI: '🇮🇷'
 };
 
 // Known official FIDE titles for curated top players
 const KNOWN_TITLES = {
+  // World Standard & Blitz Open
   '1503014': 'GM',  // Carlsen, Magnus
   '2020009': 'GM',  // Caruana, Fabiano
   '2016192': 'GM',  // Nakamura, Hikaru
@@ -113,9 +117,29 @@ const KNOWN_TITLES = {
   '14204118': 'GM', // Abdusattorov, Nodirbek
   '35009192': 'GM', // Erigaisi Arjun
   '12573981': 'GM', // Firouzja, Alireza
+  '8603405': 'GM',  // Wei, Yi
+  '25059530': 'GM', // Praggnanandhaa R
+  '1170546': 'GM',  // Duda, Jan-Krzysztof
+  '5000017': 'GM',  // Anand, Viswanathan
+  '8603677': 'GM',  // Ding, Liren
+  '12401137': 'GM', // Le, Quang Liem
+  '3503240': 'GM',  // Dominguez Perez, Leinier
+  '738590': 'GM',   // Rapport, Richard
+  '1039784': 'GM',  // Van Foreest, Jorden
+  '12521213': 'GM', // Tabatabaei, M. Amin
   '24126055': 'GM', // Dubov, Daniil
   '4168119': 'GM',  // Nepomniachtchi, Ian
-  '8603677': 'GM',  // Ding, Liren
+  '623539': 'GM',   // Vachier-Lagrave, Maxime
+  '24130737': 'GM', // Fedoseev, Vladimir
+  '8603820': 'GM',  // Yu, Yangyi
+  '25092340': 'GM', // Nihal Sarin
+  '8601445': 'GM',  // Bu, Xiangzhi
+  '13300474': 'GM', // Aronian, Levon
+  '24101605': 'GM', // Artemiev, Vladislav
+  '2093596': 'GM',  // Niemann, Hans Moke
+  '8603332': 'GM',  // Lu, Shanglei
+
+  // World Women
   '8602980': 'GM',  // Hou, Yifan
   '8605114': 'GM',  // Lei, Tingjie
   '8603006': 'GM',  // Ju, Wenjun
@@ -126,6 +150,18 @@ const KNOWN_TITLES = {
   '5008123': 'GM',  // Koneru, Humpy
   '8603642': 'GM',  // Tan, Zhongyi
   '24171760': 'IM', // Shuvalova, Polina
+  '14109336': 'GM', // Lagno, Kateryna
+  '4128125': 'GM',  // Kosteniuk, Alexandra
+  '35006916': 'IM', // Divya Deshmukh
+  '5091756': 'GM',  // Vaishali, Rameshbabu
+  '13601903': 'GM', // Dzagnidze, Nana
+  '4198026': 'GM',  // Kashlinskaya, Alina
+  '14198339': 'WFM',// Hnatyshyn, Anastasiia
+  '14114550': 'GM', // Muzychuk, Mariya
+  '13602993': 'GM', // Batsiashvili, Nino
+  '2090732': 'IM',  // Yip, Carissa
+
+  // Philippines Open
   '5201268': 'GM',  // Sadorra, Julio Catalino
   '5200750': 'GM',  // Garcia, Jan Emmanuel
   '5217911': 'GM',  // Quizon, Daniel
@@ -136,6 +172,18 @@ const KNOWN_TITLES = {
   '5202809': 'IM',  // Yap, Kim Steven
   '5201241': 'GM',  // Paragua, Mark
   '5201640': 'GM',  // Barbosa, Oliver
+  '5217873': 'IM',  // Concio, Michael Jr.
+  '5201330': 'GM',  // Laylo, Darwin
+  '5201047': 'IM',  // Salvador, Roland
+  '5203597': 'FM',  // Ballecer, Dino
+  '5258138': 'FM',  // Arca, Christian Gian Karlo
+  '5201381': 'GM',  // Gomez, John Paul
+  '5204100': 'FM',  // Severino, Sander
+  '5200032': 'GM',  // Antonio, Rogelio Jr
+  '5245010': 'FM',  // Cu, Ivan Travis
+  '5204860': 'IM',  // Pimentel, Joel
+
+  // Philippines Women
   '5212499': 'WGM', // Frayna, Janelle Mae
   '5220416': 'WIM', // Canino, Ruelle
   '5204585': 'WIM', // Fronda, Jan Jodilyn
@@ -146,6 +194,18 @@ const KNOWN_TITLES = {
   '5236215': 'WFM', // Marticio, Jersey
   '5217962': 'WFM', // Sebastian, Mhage Gerriahlou
   '5216729': 'WIM', // Doroy, Allanney Jia
+  '5201071': 'WIM', // Isurina Mariano, Cristine Rose
+  '5238480': 'WFM', // Hernandez, Lexie Grace
+  '5216257': 'WFM', // Magpily, Francois Marie
+  '5206880': 'WFM', // Mejia, Cherry Ann
+  '5219086': 'WIM', // Mordido, Kylen Joy
+  '5220424': 'WFM', // Dela Cruz, Daren
+  '5205085': 'WFM', // Revita, Samantha Glo
+  '5264022': 'WCM', // Ordizo, Kate Nicole
+  '5238447': 'WFM', // Claros, April Joy
+  '5229820': 'WCM', // Regidor, Kaye Lalaine
+
+  // Singapore Open
   '5804418': 'GM',  // Tin, Jingyao
   '5818320': 'GM',  // Siddharth, Jagadeesh
   '8605718': 'IM',  // Liu, Xiangyi
@@ -155,7 +215,17 @@ const KNOWN_TITLES = {
   '33387230': 'CM', // Ashwath Kaushik
   '5200393': 'GM',  // Villamayor, Buenaventura
   '5201322': 'IM',  // Paciencia, Enrique
-  '5801664': 'FM'   // Foo, Zhi Rong Benjamin
+  '5801664': 'FM',  // Foo, Zhi Rong Benjamin
+  '8602425': 'WGM', // Gong, Qianyun (IM)
+  '5800196': 'IM',  // Pang, Kwok Leong
+  '25996045': 'WCM',// Sreekarthika Velmurugan
+  '5800358': 'FM',  // Lee, Wang Sheng
+  '5804566': 'WFM', // Hng, Mei-En Emmanuelle
+  '5804540': 'FM',  // Goh, Jinghan Cameron
+  '5827701': 'CM',  // Wong, Yen-Hsiu Elliot
+  '5826985': 'CM',  // Tan, Yi Rui Ray
+  '5833884': 'CM',  // Gnanasekar, Jai Adithya
+  '5828678': 'CM'   // Sanjay, Vasu
 };
 
 /**
@@ -203,7 +273,7 @@ function fetchHtml(url) {
 }
 
 /**
- * Parse FIDE table rows
+ * Parse FIDE table rows for Top 20
  */
 function parseTableRows(html, isWomenCategory = false) {
   const rows = html.match(/<tr[^>]*>[\s\S]*?<\/tr>/g) || [];
@@ -237,6 +307,7 @@ function parseTableRows(html, isWomenCategory = false) {
       else if (rating >= 2400) title = isWomenCategory ? 'WGM' : 'IM';
       else if (rating >= 2300) title = isWomenCategory ? 'WIM' : 'FM';
       else if (rating >= 2200) title = isWomenCategory ? 'WFM' : 'CM';
+      else if (rating >= 2000) title = isWomenCategory ? 'WCM' : 'CM';
     }
 
     players.push({
@@ -252,14 +323,14 @@ function parseTableRows(html, isWomenCategory = false) {
       profileUrl: fideId ? `https://ratings.fide.com/profile/${fideId}` : ''
     });
 
-    if (players.length >= 10) break;
+    if (players.length >= 20) break;
   }
 
   return players;
 }
 
 async function main() {
-  console.log('Fetching FIDE Top 10 Chess Players Data...');
+  console.log('Fetching FIDE Top 20 Chess Players Data...');
   const outputData = {
     updatedAt: new Date().toISOString().split('T')[0],
     source: 'FIDE (International Chess Federation)',
@@ -293,7 +364,7 @@ async function main() {
   fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
 
   fs.writeFileSync(OUTPUT_PATH, JSON.stringify(outputData, null, 2), 'utf-8');
-  console.log(`\nSuccessfully saved top players data to: ${OUTPUT_PATH}`);
+  console.log(`\nSuccessfully saved top 20 players data to: ${OUTPUT_PATH}`);
 }
 
 main().catch((err) => {

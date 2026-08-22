@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT = path.join(__dirname, '..');
 
-test('assets/top-players.json contains all 6 required categories with valid Top 10 players', () => {
+test('assets/top-players.json contains all 6 required categories with valid Top 20 players', () => {
   const jsonPath = path.join(ROOT, 'assets', 'top-players.json');
   assert.ok(fs.existsSync(jsonPath), 'assets/top-players.json should exist');
 
@@ -29,9 +29,9 @@ test('assets/top-players.json contains all 6 required categories with valid Top 
     assert.ok(cat, `Category ${catId} must exist`);
     assert.ok(cat.title, `Category ${catId} must have a title`);
     assert.ok(Array.isArray(cat.players), `Category ${catId} must have an array of players`);
-    assert.equal(cat.players.length, 10, `Category ${catId} must have 10 players`);
+    assert.equal(cat.players.length, 20, `Category ${catId} must have 20 players`);
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 20; i++) {
       const p = cat.players[i];
       assert.equal(p.rank, i + 1, `Player index ${i} in ${catId} must have rank ${i + 1}`);
       assert.ok(p.name && p.name.trim().length > 0, `Player #${i + 1} in ${catId} must have a name`);
