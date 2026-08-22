@@ -958,8 +958,8 @@ body.is-focus-mode .app-main-content {
 }
 
 .top-players-dialog {
-  width: min(50rem, 95vw);
-  max-height: min(92vh, 840px);
+  width: min(52rem, 95vw);
+  max-height: min(92vh, 860px);
   display: flex;
   flex-direction: column;
   padding: 1rem 1.25rem 0.9rem;
@@ -1014,14 +1014,32 @@ body.is-focus-mode .app-main-content {
 .top-players-body {
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
-  padding-top: 0.65rem;
+  gap: 0.6rem;
+  padding-top: 0.6rem;
   overflow-y: auto;
   overflow-x: hidden;
   flex: 1 1 auto;
   min-height: 0;
   scrollbar-width: thin;
-  scrollbar-color: var(--text-soft) transparent;
+  scrollbar-color: color-mix(in srgb, var(--accent) 70%, var(--text-soft)) color-mix(in srgb, var(--panel) 90%, transparent);
+}
+
+.top-players-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.top-players-body::-webkit-scrollbar-track {
+  background: color-mix(in srgb, var(--panel) 85%, transparent);
+  border-radius: 4px;
+}
+
+.top-players-body::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--accent) 70%, var(--text-soft));
+  border-radius: 4px;
+}
+
+.top-players-body::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-strong);
 }
 
 /* Category Selection Pills / Tabs */
@@ -1132,9 +1150,32 @@ body.is-focus-mode .app-main-content {
 .top-players-table-wrap {
   border: 1px solid var(--card-border);
   border-radius: var(--radius-card, 8px);
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   background: var(--panel-strong);
   flex: 1 1 auto;
+  max-height: 480px;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--accent) 70%, var(--text-soft)) color-mix(in srgb, var(--panel) 90%, transparent);
+}
+
+.top-players-table-wrap::-webkit-scrollbar {
+  width: 8px;
+}
+
+.top-players-table-wrap::-webkit-scrollbar-track {
+  background: color-mix(in srgb, var(--panel) 85%, transparent);
+  border-radius: 4px;
+}
+
+.top-players-table-wrap::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--accent) 70%, var(--text-soft));
+  border-radius: 4px;
+  border: 1px solid color-mix(in srgb, var(--card-border) 60%, transparent);
+}
+
+.top-players-table-wrap::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-strong);
 }
 
 .top-players-table {
@@ -1145,8 +1186,11 @@ body.is-focus-mode .app-main-content {
 }
 
 .top-players-table th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
   padding: 0.45rem 0.65rem;
-  background: color-mix(in srgb, var(--accent) 5%, var(--panel));
+  background: color-mix(in srgb, var(--accent) 12%, var(--panel-strong));
   color: var(--text-soft);
   font-size: 0.7rem;
   font-weight: 700;
@@ -1157,7 +1201,7 @@ body.is-focus-mode .app-main-content {
 }
 
 .top-players-table td {
-  padding: 0.32rem 0.65rem;
+  padding: 0.28rem 0.65rem;
   border-bottom: 1px solid var(--section-divider-soft);
   color: var(--text);
   vertical-align: middle;
