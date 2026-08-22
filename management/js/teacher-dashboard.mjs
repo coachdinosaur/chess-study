@@ -27,6 +27,8 @@ const elements = {
   studentViewFilter: document.querySelector('#studentViewFilter'),
   studentList: document.querySelector('#studentList'),
   selectedPanel: document.querySelector('#selectedStudentPanel'),
+  noStudentPlaceholder: document.querySelector('#noStudentPlaceholder'),
+  addStudentDrawer: document.querySelector('#addStudentDrawer'),
   selectedName: document.querySelector('#selectedStudentName'),
   selectedState: document.querySelector('#selectedStudentState'),
   notes: document.querySelector('#studentDetailNotes'),
@@ -380,6 +382,9 @@ function setEditingEnabled(student) {
 function renderStudentHeader() {
   const student = selectedStudent();
   elements.selectedPanel.hidden = !student;
+  if (elements.noStudentPlaceholder) {
+    elements.noStudentPlaceholder.hidden = Boolean(student);
+  }
   if (!student) return;
 
   const archived = Boolean(student.archived_at);
@@ -426,7 +431,7 @@ function renderCurriculum() {
       ).join('');
 
       return `
-        <article class="list-card">
+        <article class="list-card curriculum-card" data-status="${escapeHtml(currentStatus)}">
           <div class="list-card-head">
             <div>
               <h3>${escapeHtml(lesson.number)}. ${escapeHtml(lesson.title)}</h3>
@@ -519,6 +524,9 @@ async function loadStudents({ preserveSelection = true } = {}) {
       || app.students[0]?.id
       || null;
   }
+  if (!app.students.length && elements.addStudentDrawer) {
+    elements.addStudentDrawer.open = true;
+  }
   renderStudents();
   await loadStudentData();
 }
@@ -529,6 +537,7 @@ async function loadStudentData() {
     app.progress = [];
     app.sessions = [];
     elements.selectedPanel.hidden = true;
+    if (elements.noStudentPlaceholder) elements.noStudentPlaceholder.hidden = false;
     return;
   }
 
@@ -587,6 +596,9 @@ async function createStudent(event) {
     elements.studentViewFilter.value = 'active';
     elements.studentSearch.value = '';
     elements.createStudentForm.reset();
+    if (elements.addStudentDrawer?.open) {
+      elements.addStudentDrawer.open = false;
+    }
     await loadStudents();
     setStatus(elements.status, `Added ${displayName}.`, 'success');
   } catch (error) {
@@ -878,6 +890,36 @@ async function handleStudentViewChange() {
   renderStudents();
 }
 
+function bindSectionNav() {
+  const links = document.querySelectorAll('.student-section-nav-link');
+  if (!links.length) return;
+
+  links.forEach((link) => {
+    link.addEventListener('click', () => {
+      links.forEach((l) => l.classList.remove('active'));
+      link.classList.add('active');
+    });
+  });
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          links.forEach((link) => {
+            if (link.getAttribute('href') === `#${id}`) {
+              links.forEach((l) => l.classList.remove('active'));
+              link.classList.add('active');
+            }
+          });
+        }
+      }
+    }, { rootMargin: '-70px 0px -65% 0px' });
+
+    document.querySelectorAll('.student-section-anchor').forEach((el) => observer.observe(el));
+  }
+}
+
 async function initialize() {
   try {
     app.profile = await requireProfile('teacher');
@@ -888,6 +930,7 @@ async function initialize() {
     populateLevelFilter();
     populateSessionLessons();
     resetSessionForm();
+    bindSectionNav();
     await loadStudents({ preserveSelection: false });
     if (app.coachSession && !app.students.some((student) =>
       student.id === app.coachSession.studentId && !student.archived_at

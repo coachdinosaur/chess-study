@@ -28,6 +28,12 @@
   border: 1px solid var(--line);
   border-radius: 14px;
   background: #09171a;
+  transition: border-color .15s ease, background .15s ease;
+}
+
+.student-workspace-publish-row:has(input:checked) {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+  background: color-mix(in srgb, var(--accent) 4%, #09171a);
 }
 
 .student-workspace-publish-row p {

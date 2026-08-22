@@ -73,6 +73,99 @@
   margin: 0;
 }
 
+/* Collapsible Add Student Drawer */
+.add-student-drawer {
+  overflow: hidden;
+  transition: border-color .15s ease;
+}
+
+.add-student-drawer > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+  font-weight: 800;
+  font-size: 1.05rem;
+  list-style: none;
+}
+
+.add-student-drawer > summary::-webkit-details-marker {
+  display: none;
+}
+
+.add-student-toggle-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--panel-strong);
+  border: 1px solid var(--line);
+  color: var(--accent);
+  font-size: 1.1rem;
+  line-height: 1;
+  transition: transform .2s ease, background .15s ease;
+}
+
+.add-student-drawer[open] .add-student-toggle-icon {
+  transform: rotate(45deg);
+}
+
+.add-student-content {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+/* Selected Student Quick-Jump Navigation */
+.student-section-nav {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--panel-strong) 92%, transparent);
+  backdrop-filter: blur(8px);
+  position: sticky;
+  top: 16px;
+  z-index: 10;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .3);
+}
+
+.student-section-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: .84rem;
+  font-weight: 750;
+  border: 1px solid transparent;
+  transition: color .15s ease, background .15s ease, border-color .15s ease;
+}
+
+.student-section-nav-link:hover,
+.student-section-nav-link:focus-visible {
+  color: var(--text);
+  background: color-mix(in srgb, var(--panel) 80%, transparent);
+}
+
+.student-section-nav-link.active {
+  color: var(--accent-strong);
+  background: color-mix(in srgb, var(--accent) 15%, var(--panel));
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+}
+
+.student-section-anchor {
+  scroll-margin-top: 75px;
+}
+
 .session-form {
   margin-bottom: 18px;
   padding-bottom: 18px;
@@ -156,6 +249,13 @@
   gap: 10px;
 }
 
+@media (min-width: 1100px) {
+  .coach-session-context {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+  }
+}
+
 .coach-session-context-card {
   min-width: 0;
   padding: 14px;
@@ -216,6 +316,56 @@
   margin-top: 0;
 }
 
+/* Curriculum matrix card polish */
+.curriculum-card[data-status="completed"] .chip {
+  border-color: color-mix(in srgb, var(--accent) 70%, var(--line));
+  color: var(--accent-strong);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.curriculum-card[data-status="practicing"] .chip {
+  border-color: color-mix(in srgb, var(--warning) 70%, var(--line));
+  color: var(--warning);
+  background: color-mix(in srgb, var(--warning) 10%, transparent);
+}
+
+.curriculum-card[data-status="taught"] .chip {
+  border-color: color-mix(in srgb, #60a5fa 70%, var(--line));
+  color: #93c5fd;
+  background: color-mix(in srgb, #60a5fa 10%, transparent);
+}
+
+.curriculum-card select[data-action="set-status"] {
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-weight: 750;
+  font-size: .84rem;
+  background: var(--panel-strong);
+  border: 1px solid var(--line);
+  color: var(--text);
+  min-height: 38px;
+}
+
+@media (min-width: 860px) {
+  .curriculum-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(160px, auto) auto;
+    gap: 14px;
+    align-items: center;
+  }
+
+  .curriculum-card .list-card-head {
+    margin-bottom: 0;
+  }
+
+  .curriculum-card .inline-actions {
+    margin-top: 0;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+  }
+}
+
 input:disabled,
 textarea:disabled,
 select:disabled {
@@ -250,5 +400,10 @@ select:disabled {
 
   .coach-session-actions {
     justify-content: flex-start;
+  }
+
+  .student-section-nav {
+    top: 8px;
+    padding: 6px 8px;
   }
 }

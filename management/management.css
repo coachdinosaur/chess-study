@@ -43,7 +43,7 @@ button { cursor: pointer; }
 button:disabled { cursor: wait; opacity: .65; }
 
 .portal-shell {
-  width: min(1180px, calc(100% - 28px));
+  width: min(1520px, calc(100% - 32px));
   margin: 0 auto;
   padding: 24px 0 56px;
 }
@@ -86,7 +86,7 @@ button:disabled { cursor: wait; opacity: .65; }
 .hero p { max-width: 68ch; color: var(--muted); font-size: 1.05rem; font-style: normal; }
 
 .portal-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
-.dashboard-grid { display: grid; grid-template-columns: minmax(250px, .7fr) minmax(0, 1.3fr); gap: 18px; }
+.dashboard-grid { display: grid; grid-template-columns: minmax(280px, 320px) minmax(0, 1fr); gap: 20px; align-items: start; }
 .stack { display: grid; gap: 14px; }
 .panel { padding: 20px; }
 .panel h1, .panel h2, .panel h3, .panel p { font-style: normal; }
@@ -208,6 +208,55 @@ button:disabled { cursor: wait; opacity: .65; }
 
 .section-head { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 12px; }
 .section-head h2 { margin: 0; }
+
+.student-empty-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: clamp(36px, 6vw, 64px) 24px;
+  min-height: 480px;
+}
+
+.student-empty-placeholder-icon {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--accent) 15%, var(--panel-strong));
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line));
+  color: var(--accent-strong);
+  font-size: 2rem;
+  margin-bottom: 16px;
+}
+
+.student-empty-placeholder h2 {
+  font-size: 1.4rem;
+  margin: 0 0 8px;
+}
+
+.student-empty-placeholder p {
+  max-width: 48ch;
+  color: var(--muted);
+  font-size: .95rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+@media (min-width: 801px) {
+  .dashboard-sidebar {
+    position: sticky;
+    top: 16px;
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line) transparent;
+    padding-right: 4px;
+  }
+}
 
 @media (max-width: 800px) {
   .portal-header { align-items: flex-start; }

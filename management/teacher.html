@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Teacher Dashboard | CD Digital Chess</title>
   <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
-  <link rel="stylesheet" href="./management.css?v=20260723-hardening1">
-  <link rel="stylesheet" href="./teacher-search.css?v=20260727-coach-session1">
+  <link rel="stylesheet" href="./management.css?v=20260822-desktop-polish1">
+  <link rel="stylesheet" href="./teacher-search.css?v=20260822-desktop-polish1">
   <link rel="stylesheet" href="./hardening.css?v=20260723-hardening1">
   <link rel="stylesheet" href="./puzzle-assignments.css?v=20260726-puzzle-assignments1">
-  <link rel="stylesheet" href="./student-workspace.css?v=20260727-student-workspace1">
+  <link rel="stylesheet" href="./student-workspace.css?v=20260822-desktop-polish1">
 </head>
 <body>
   <div class="portal-shell">
@@ -31,24 +31,29 @@
       <div id="dashboardStatus" class="status" aria-live="polite" hidden></div>
 
       <div class="dashboard-grid">
-        <aside class="stack">
-          <section class="panel">
-            <h2>Add student</h2>
-            <p class="panel-copy">Students are private teacher-managed records. They do not need accounts, email addresses, class codes, or access to this dashboard.</p>
-            <form id="createStudentForm" class="form-grid">
-              <div class="form-row">
-                <label for="studentName">Student name</label>
-                <input id="studentName" name="displayName" type="text" maxlength="80" required>
-              </div>
-              <div class="form-row">
-                <label for="studentNotes">General notes</label>
-                <textarea id="studentNotes" name="notes" maxlength="4000" placeholder="Rating, goals, schedule, parent contact note, or other private coaching information."></textarea>
-              </div>
-              <button class="button" type="submit">Add student</button>
-            </form>
-          </section>
+        <aside class="dashboard-sidebar stack">
+          <details id="addStudentDrawer" class="panel add-student-drawer">
+            <summary>
+              <span>Add student</span>
+              <span class="add-student-toggle-icon" aria-hidden="true">+</span>
+            </summary>
+            <div class="add-student-content">
+              <p class="panel-copy">Students are private teacher-managed records. They do not need accounts, email addresses, class codes, or access to this dashboard.</p>
+              <form id="createStudentForm" class="form-grid">
+                <div class="form-row">
+                  <label for="studentName">Student name</label>
+                  <input id="studentName" name="displayName" type="text" maxlength="80" required>
+                </div>
+                <div class="form-row">
+                  <label for="studentNotes">General notes</label>
+                  <textarea id="studentNotes" name="notes" maxlength="4000" placeholder="Rating, goals, schedule, parent contact note, or other private coaching information."></textarea>
+                </div>
+                <button class="button" type="submit">Add student</button>
+              </form>
+            </div>
+          </details>
 
-          <section class="panel">
+          <section class="panel student-roster-panel">
             <div class="section-head student-list-head"><h2>Your students</h2></div>
             <div class="student-filters">
               <label class="curriculum-filter-label" for="studentSearch">
@@ -68,8 +73,22 @@
           </section>
         </aside>
 
+        <div id="noStudentPlaceholder" class="panel student-empty-placeholder">
+          <div class="student-empty-placeholder-icon" aria-hidden="true">♟</div>
+          <h2>Select a student</h2>
+          <p>Choose a student from the roster to prepare coaching sessions, track curriculum progress, customize their private workspace, or assign tactical puzzles.</p>
+        </div>
+
         <section id="selectedStudentPanel" class="stack" hidden>
-          <article class="panel">
+          <nav class="student-section-nav" aria-label="Student sections">
+            <a href="#studentProfileSection" class="student-section-nav-link active">Overview</a>
+            <a href="#coachSessionCommand" class="student-section-nav-link">Session Command</a>
+            <a href="#studentWorkspacePanel" class="student-section-nav-link">Workspace &amp; Homework</a>
+            <a href="#sessionPanel" class="student-section-nav-link">Session History</a>
+            <a href="#curriculumPanel" class="student-section-nav-link">Curriculum</a>
+          </nav>
+
+          <article class="panel student-section-anchor" id="studentProfileSection">
             <div class="section-head student-detail-head">
               <div>
                 <div class="heading-with-chip">
@@ -90,7 +109,7 @@
             </div>
           </article>
 
-          <article class="panel coach-session-command" id="coachSessionCommand" aria-labelledby="coachSessionCommandTitle">
+          <article class="panel coach-session-command student-section-anchor" id="coachSessionCommand" aria-labelledby="coachSessionCommandTitle">
             <div class="section-head coach-session-command-head">
               <div>
                 <p class="coach-session-kicker">Coach Session Command Center</p>
@@ -210,7 +229,7 @@
             </form>
           </article>
 
-          <article class="panel" id="sessionPanel">
+          <article class="panel student-section-anchor" id="sessionPanel">
             <div class="section-head">
               <div>
                 <h2>Coaching sessions</h2>
@@ -258,7 +277,7 @@
             <div id="sessionList" class="list session-list"><div class="empty">No coaching sessions recorded yet.</div></div>
           </article>
 
-          <article class="panel">
+          <article class="panel student-section-anchor" id="curriculumPanel">
             <div class="section-head curriculum-head">
               <div>
                 <h2>Lesson curriculum</h2>
@@ -300,7 +319,7 @@
   </div>
 
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  <script type="module" src="./js/teacher-dashboard.mjs?v=20260727-coach-session1"></script>
+  <script type="module" src="./js/teacher-dashboard.mjs?v=20260822-desktop-polish1"></script>
   <script type="module" src="./js/teacher-shell.mjs?v=20260723-hardening1"></script>
   <script type="module" src="./js/puzzle-assignment-dashboard.mjs?v=20260727-coach-session1"></script>
   <script type="module" src="./js/student-workspace-dashboard.mjs?v=20260727-student-workspace1"></script>
