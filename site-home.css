@@ -958,11 +958,11 @@ body.is-focus-mode .app-main-content {
 }
 
 .top-players-dialog {
-  width: min(48rem, 95vw);
-  max-height: min(88vh, 680px);
+  width: min(50rem, 95vw);
+  max-height: min(92vh, 840px);
   display: flex;
   flex-direction: column;
-  padding: 1.1rem 1.25rem 1rem;
+  padding: 1rem 1.25rem 0.9rem;
   border-radius: var(--radius-panel, 14px);
   box-sizing: border-box;
   overflow: hidden;
@@ -973,7 +973,7 @@ body.is-focus-mode .app-main-content {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding-bottom: 0.85rem;
+  padding-bottom: 0.65rem;
   border-bottom: 1px solid var(--section-divider-soft);
   flex-shrink: 0;
 }
@@ -988,8 +988,8 @@ body.is-focus-mode .app-main-content {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   border-radius: 10px;
   background: var(--accent-soft);
   color: var(--accent-strong);
@@ -1006,16 +1006,16 @@ body.is-focus-mode .app-main-content {
 }
 
 .top-players-subtitle {
-  margin: 0.15rem 0 0;
-  font-size: 0.78rem;
+  margin: 0.12rem 0 0;
+  font-size: 0.76rem;
   color: var(--text-muted);
 }
 
 .top-players-body {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
-  padding-top: 0.85rem;
+  gap: 0.65rem;
+  padding-top: 0.65rem;
   overflow-y: auto;
   overflow-x: hidden;
   flex: 1 1 auto;
@@ -1028,7 +1028,7 @@ body.is-focus-mode .app-main-content {
 .top-players-nav {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: 0.35rem;
   flex-shrink: 0;
 }
 
@@ -1036,13 +1036,13 @@ body.is-focus-mode .app-main-content {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.35rem 0.65rem;
+  padding: 0.3rem 0.6rem;
   border: 1px solid var(--chip-border);
   border-radius: 9999px;
   background: var(--chip-bg);
   color: var(--text-muted);
   font-family: var(--font-body);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
@@ -1073,7 +1073,7 @@ body.is-focus-mode .app-main-content {
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  padding: 0.55rem 0.85rem;
+  padding: 0.45rem 0.75rem;
   background: color-mix(in srgb, var(--accent) 8%, var(--panel-strong));
   border: 1px solid var(--card-border);
   border-radius: var(--radius-card, 8px);
@@ -1089,7 +1089,7 @@ body.is-focus-mode .app-main-content {
 
 .cat-head-title {
   margin: 0;
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--text);
   white-space: nowrap;
@@ -1099,8 +1099,8 @@ body.is-focus-mode .app-main-content {
 
 .cat-head-badge {
   display: inline-block;
-  padding: 0.15rem 0.45rem;
-  font-size: 0.68rem;
+  padding: 0.12rem 0.4rem;
+  font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -1113,11 +1113,11 @@ body.is-focus-mode .app-main-content {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   font-weight: 600;
   color: var(--accent-strong);
   text-decoration: none;
-  padding: 0.2rem 0.45rem;
+  padding: 0.15rem 0.4rem;
   border-radius: 5px;
   transition: background-color 140ms ease;
   flex-shrink: 0;
@@ -1140,15 +1140,15 @@ body.is-focus-mode .app-main-content {
 .top-players-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.84rem;
+  font-size: 0.82rem;
   text-align: left;
 }
 
 .top-players-table th {
-  padding: 0.55rem 0.75rem;
+  padding: 0.45rem 0.65rem;
   background: color-mix(in srgb, var(--accent) 5%, var(--panel));
   color: var(--text-soft);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -1157,7 +1157,7 @@ body.is-focus-mode .app-main-content {
 }
 
 .top-players-table td {
-  padding: 0.45rem 0.75rem;
+  padding: 0.32rem 0.65rem;
   border-bottom: 1px solid var(--section-divider-soft);
   color: var(--text);
   vertical-align: middle;
