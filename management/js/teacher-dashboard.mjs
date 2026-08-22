@@ -18,7 +18,7 @@ const STATUS_LABELS = Object.freeze({
   completed: 'Completed',
 });
 
-const elements = {
+const elements = typeof document === 'undefined' ? {} : {
   profileName: document.querySelector('#profileName'),
   signOut: document.querySelector('#signOutButton'),
   status: document.querySelector('#dashboardStatus'),
@@ -32,6 +32,8 @@ const elements = {
   selectedName: document.querySelector('#selectedStudentName'),
   selectedState: document.querySelector('#selectedStudentState'),
   notes: document.querySelector('#studentDetailNotes'),
+  notesDirtyIndicator: document.querySelector('#studentNotesDirtyIndicator'),
+  notesToast: document.querySelector('#studentNotesToast'),
   saveNotes: document.querySelector('#saveStudentNotesButton'),
   archiveStudent: document.querySelector('#archiveStudentButton'),
   exportStudent: document.querySelector('#exportStudentButton'),
@@ -75,6 +77,9 @@ const app = {
   profile: null,
   students: [],
   selectedStudentId: null,
+  activeSectionId: '#studentProfileSection',
+  isNotesDirty: false,
+  notesToastTimer: null,
   catalog: [],
   progress: [],
   sessions: [],
@@ -94,6 +99,38 @@ function progressFor(lessonKey) {
 
 function sessionFor(sessionId) {
   return app.sessions.find((session) => session.id === sessionId) || null;
+}
+
+function setNotesDirty(dirty) {
+  app.isNotesDirty = Boolean(dirty);
+  if (elements.notesDirtyIndicator) {
+    elements.notesDirtyIndicator.hidden = !app.isNotesDirty;
+  }
+  if (elements.notes) {
+    elements.notes.classList.toggle('is-dirty', app.isNotesDirty);
+  }
+}
+
+function updateNotesDirtyState() {
+  const student = selectedStudent();
+  if (!student) {
+    setNotesDirty(false);
+    return;
+  }
+  const currentVal = elements.notes ? elements.notes.value : '';
+  const savedVal = student.notes || '';
+  setNotesDirty(currentVal !== savedVal);
+}
+
+function showNotesToast(message = 'Notes saved ✓', duration = 3500) {
+  if (!elements.notesToast) return;
+  if (app.notesToastTimer) window.clearTimeout(app.notesToastTimer);
+  elements.notesToast.textContent = message;
+  elements.notesToast.hidden = false;
+  app.notesToastTimer = window.setTimeout(() => {
+    elements.notesToast.hidden = true;
+    app.notesToastTimer = null;
+  }, duration);
 }
 
 function normalizeSearch(value) {
@@ -385,12 +422,16 @@ function renderStudentHeader() {
   if (elements.noStudentPlaceholder) {
     elements.noStudentPlaceholder.hidden = Boolean(student);
   }
-  if (!student) return;
+  if (!student) {
+    setNotesDirty(false);
+    return;
+  }
 
   const archived = Boolean(student.archived_at);
   elements.selectedName.textContent = student.display_name;
   elements.selectedState.textContent = archived ? 'Archived' : 'Active';
   elements.notes.value = student.notes || '';
+  setNotesDirty(false);
   elements.archiveStudent.textContent = archived ? 'Restore student' : 'Archive student';
   elements.archiveStudent.className = archived ? 'button-secondary' : 'button-danger';
   setEditingEnabled(student);
@@ -613,12 +654,14 @@ async function saveStudentNotes() {
   if (!student || student.archived_at) return;
   setBusy(elements.saveNotes, true, 'Saving…');
   try {
-    const notes = elements.notes.value.trim();
+    const notes = elements.notes.value;
     const supabase = getSupabase();
     const { error } = await supabase.from('managed_students').update({ notes }).eq('id', student.id);
     if (error) throw error;
     student.notes = notes;
+    setNotesDirty(false);
     renderStudents();
+    showNotesToast('Notes saved ✓');
     setStatus(elements.status, 'Student notes saved.', 'success');
   } catch (error) {
     setStatus(elements.status, readableError(error), 'error');
@@ -816,8 +859,11 @@ function prefillSession(lessonKey) {
   elements.sessionNotes.focus({ preventScroll: true });
 }
 
-function csvCell(value) {
-  const text = String(value ?? '');
+export function csvCell(value) {
+  let text = String(value ?? '');
+  if (/^[\s]*[=+\-@\t\r]/.test(text)) {
+    text = `'${text}`;
+  }
   return `"${text.replaceAll('"', '""')}"`;
 }
 
@@ -868,12 +914,23 @@ function exportStudentCsv() {
 }
 
 async function selectStudent(studentId) {
+  if (studentId === app.selectedStudentId) return;
+
+  if (app.isNotesDirty) {
+    const current = selectedStudent();
+    const studentName = current ? current.display_name : 'the current student';
+    const discard = window.confirm(`You have unsaved changes in notes for ${studentName}. Discard changes and switch student?`);
+    if (!discard) return;
+  }
+
   app.selectedStudentId = studentId;
   app.assignmentSummary = null;
   app.assignmentSummaryLoaded = false;
+  setNotesDirty(false);
   renderStudents();
   try {
     await loadStudentData();
+    restoreActiveSection();
   } catch (error) {
     setStatus(elements.status, readableError(error), 'error');
   }
@@ -890,14 +947,46 @@ async function handleStudentViewChange() {
   renderStudents();
 }
 
+function setActiveSection(sectionId, { scroll = false } = {}) {
+  if (!sectionId) return;
+  app.activeSectionId = sectionId;
+  const links = document.querySelectorAll('.student-section-nav-link');
+  links.forEach((link) => {
+    const matches = link.getAttribute('href') === sectionId;
+    link.classList.toggle('active', matches);
+  });
+  if (scroll) {
+    const target = document.querySelector(sectionId);
+    if (target && !target.hidden) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+}
+
+function restoreActiveSection() {
+  if (!app.activeSectionId || app.activeSectionId === '#studentProfileSection') {
+    setActiveSection('#studentProfileSection');
+    return;
+  }
+  const target = document.querySelector(app.activeSectionId);
+  if (target && !target.hidden) {
+    setActiveSection(app.activeSectionId);
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else {
+    setActiveSection('#studentProfileSection');
+  }
+}
+
 function bindSectionNav() {
   const links = document.querySelectorAll('.student-section-nav-link');
   if (!links.length) return;
 
   links.forEach((link) => {
     link.addEventListener('click', () => {
-      links.forEach((l) => l.classList.remove('active'));
-      link.classList.add('active');
+      const href = link.getAttribute('href');
+      if (href && href.startsWith('#')) {
+        setActiveSection(href);
+      }
     });
   });
 
@@ -906,12 +995,9 @@ function bindSectionNav() {
       for (const entry of entries) {
         if (entry.isIntersecting) {
           const id = entry.target.id;
-          links.forEach((link) => {
-            if (link.getAttribute('href') === `#${id}`) {
-              links.forEach((l) => l.classList.remove('active'));
-              link.classList.add('active');
-            }
-          });
+          if (id) {
+            setActiveSection(`#${id}`);
+          }
         }
       }
     }, { rootMargin: '-70px 0px -65% 0px' });
@@ -945,51 +1031,54 @@ async function initialize() {
   }
 }
 
-elements.signOut?.addEventListener('click', () => signOut().catch((error) => setStatus(elements.status, readableError(error), 'error')));
-elements.createStudentForm?.addEventListener('submit', createStudent);
-elements.studentSearch?.addEventListener('input', renderStudents);
-elements.studentViewFilter?.addEventListener('change', () => handleStudentViewChange().catch((error) => setStatus(elements.status, readableError(error), 'error')));
-elements.saveNotes?.addEventListener('click', saveStudentNotes);
-elements.archiveStudent?.addEventListener('click', toggleArchiveStudent);
-elements.exportStudent?.addEventListener('click', exportStudentCsv);
-elements.startCoachSession?.addEventListener('click', startCoachSession);
-elements.endCoachSession?.addEventListener('click', endCoachSession);
-elements.sessionForm?.addEventListener('submit', saveSession);
-elements.sessionLessonKey?.addEventListener('change', syncActiveCoachSessionLesson);
-elements.cancelSessionEdit?.addEventListener('click', resetSessionForm);
-elements.lessonSearch?.addEventListener('input', renderCurriculum);
-elements.levelFilter?.addEventListener('change', renderCurriculum);
-elements.statusFilter?.addEventListener('change', renderCurriculum);
+if (typeof document !== 'undefined') {
+  elements.signOut?.addEventListener('click', () => signOut().catch((error) => setStatus(elements.status, readableError(error), 'error')));
+  elements.createStudentForm?.addEventListener('submit', createStudent);
+  elements.studentSearch?.addEventListener('input', renderStudents);
+  elements.studentViewFilter?.addEventListener('change', () => handleStudentViewChange().catch((error) => setStatus(elements.status, readableError(error), 'error')));
+  elements.notes?.addEventListener('input', updateNotesDirtyState);
+  elements.saveNotes?.addEventListener('click', saveStudentNotes);
+  elements.archiveStudent?.addEventListener('click', toggleArchiveStudent);
+  elements.exportStudent?.addEventListener('click', exportStudentCsv);
+  elements.startCoachSession?.addEventListener('click', startCoachSession);
+  elements.endCoachSession?.addEventListener('click', endCoachSession);
+  elements.sessionForm?.addEventListener('submit', saveSession);
+  elements.sessionLessonKey?.addEventListener('change', syncActiveCoachSessionLesson);
+  elements.cancelSessionEdit?.addEventListener('click', resetSessionForm);
+  elements.lessonSearch?.addEventListener('input', renderCurriculum);
+  elements.levelFilter?.addEventListener('change', renderCurriculum);
+  elements.statusFilter?.addEventListener('change', renderCurriculum);
 
-elements.studentList?.addEventListener('click', (event) => {
-  const button = event.target.closest('[data-action="select-student"]');
-  if (button) selectStudent(button.dataset.studentId);
-});
+  elements.studentList?.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-action="select-student"]');
+    if (button) selectStudent(button.dataset.studentId);
+  });
 
-elements.curriculumList?.addEventListener('change', (event) => {
-  const select = event.target.closest('[data-action="set-status"]');
-  if (select) setLessonStatus(select);
-});
+  elements.curriculumList?.addEventListener('change', (event) => {
+    const select = event.target.closest('[data-action="set-status"]');
+    if (select) setLessonStatus(select);
+  });
 
-elements.curriculumList?.addEventListener('click', (event) => {
-  const button = event.target.closest('[data-action="prefill-session"]');
-  if (button) prefillSession(button.dataset.lessonKey);
-});
+  elements.curriculumList?.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-action="prefill-session"]');
+    if (button) prefillSession(button.dataset.lessonKey);
+  });
 
-elements.sessionList?.addEventListener('click', (event) => {
-  const button = event.target.closest('[data-action]');
-  if (!button) return;
-  if (button.dataset.action === 'edit-session') editSession(button.dataset.sessionId);
-  if (button.dataset.action === 'delete-session') deleteSession(button.dataset.sessionId);
-});
+  elements.sessionList?.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-action]');
+    if (!button) return;
+    if (button.dataset.action === 'edit-session') editSession(button.dataset.sessionId);
+    if (button.dataset.action === 'delete-session') deleteSession(button.dataset.sessionId);
+  });
 
-document.addEventListener('coach-session:assignment-summary', (event) => {
-  const detail = event.detail;
-  if (!detail || typeof detail.studentId !== 'string') return;
-  if (detail.studentId !== app.selectedStudentId) return;
-  app.assignmentSummary = detail;
-  app.assignmentSummaryLoaded = true;
-  renderCoachSessionCommand();
-});
+  document.addEventListener('coach-session:assignment-summary', (event) => {
+    const detail = event.detail;
+    if (!detail || typeof detail.studentId !== 'string') return;
+    if (detail.studentId !== app.selectedStudentId) return;
+    app.assignmentSummary = detail;
+    app.assignmentSummaryLoaded = true;
+    renderCoachSessionCommand();
+  });
 
-initialize();
+  initialize();
+}

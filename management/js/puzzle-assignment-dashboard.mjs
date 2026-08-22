@@ -28,6 +28,7 @@ const state = {
   studentAssignments: [],
   currentStudentId: null,
   loaded: false,
+  historyLoadVersion: 0,
 };
 
 function readTokenStore() {
@@ -317,8 +318,18 @@ function replacePreview(index) {
 }
 
 async function generatePreview() {
+  const titleInput = document.querySelector('#puzzleAssignmentTitle');
+  const title = titleInput?.value.trim();
+  if (!title) {
+    setLocalStatus('Enter an assignment title before generating.', 'error');
+    titleInput?.focus();
+    return;
+  }
+
   const button = document.querySelector('#generatePuzzleAssignmentButton');
+  const refreshButton = document.querySelector('#refreshPuzzleAssignmentsButton');
   setBusy(button, true, 'Generating…');
+  if (refreshButton) refreshButton.disabled = true;
   setLocalStatus('');
   try {
     if (!state.loaded) {
@@ -328,28 +339,35 @@ async function generatePreview() {
     }
     state.preview = selectAssignmentPuzzles(state.records, formSettings());
     renderPreview();
-    setLocalStatus(`Generated ${state.preview.length} exact positions for teacher review.`, 'success');
-    document.querySelector('#puzzleAssignmentPreviewSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setLocalStatus(`Generated ${state.preview.length} exact positions for “${title}”.`, 'success');
+    document.querySelector('#puzzleAssignmentPreviewSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   } catch (error) {
     state.preview = [];
     renderPreview();
     setLocalStatus(readableError(error), 'error');
   } finally {
     setBusy(button, false);
+    if (refreshButton) refreshButton.disabled = false;
   }
 }
 
 async function publishAssignment(event) {
   event.preventDefault();
   const button = document.querySelector('#publishPuzzleAssignmentButton');
+  const refreshButton = document.querySelector('#refreshPuzzleAssignmentsButton');
   setBusy(button, true, 'Publishing…');
+  if (refreshButton) refreshButton.disabled = true;
   setLocalStatus('');
   try {
     if (!state.preview.length) throw new Error('Generate and review the puzzle set first.');
     const studentIds = [...document.querySelectorAll('input[name="assignmentStudent"]:checked')].map((input) => input.value);
     if (!studentIds.length) throw new Error('Select at least one active student.');
-    const title = document.querySelector('#puzzleAssignmentTitle').value.trim();
-    if (!title) throw new Error('Enter an assignment title.');
+    const titleInput = document.querySelector('#puzzleAssignmentTitle');
+    const title = titleInput?.value.trim();
+    if (!title) {
+      titleInput?.focus();
+      throw new Error('Enter an assignment title.');
+    }
 
     const tokens = new Map();
     const students = [];
@@ -424,6 +442,7 @@ async function publishAssignment(event) {
     setLocalStatus(readableError(error), 'error');
   } finally {
     setBusy(button, false);
+    if (refreshButton) refreshButton.disabled = false;
   }
 }
 
@@ -449,29 +468,42 @@ async function loadStudents() {
 }
 
 async function loadAssignmentHistory() {
-  const supabase = getSupabase();
-  const { data: assignments, error } = await supabase
-    .from('puzzle_assignments')
-    .select('id, title, level, min_rating, max_rating, puzzle_count, passing_score, due_at, status, published_at, created_at')
-    .eq('teacher_id', state.profile.id)
-    .order('created_at', { ascending: false })
-    .limit(50);
-  if (error) throw error;
-  state.assignments = assignments || [];
-  const ids = state.assignments.map((assignment) => assignment.id);
-  if (!ids.length) {
-    state.studentAssignments = [];
+  const button = document.querySelector('#refreshPuzzleAssignmentsButton');
+  const currentVersion = ++state.historyLoadVersion;
+  if (button) setBusy(button, true, 'Refreshing…');
+  try {
+    const supabase = getSupabase();
+    const { data: assignments, error } = await supabase
+      .from('puzzle_assignments')
+      .select('id, title, level, min_rating, max_rating, puzzle_count, passing_score, due_at, status, published_at, created_at')
+      .eq('teacher_id', state.profile.id)
+      .order('created_at', { ascending: false })
+      .limit(50);
+    if (error) throw error;
+    if (currentVersion !== state.historyLoadVersion) return;
+
+    state.assignments = assignments || [];
+    const ids = state.assignments.map((assignment) => assignment.id);
+    if (!ids.length) {
+      state.studentAssignments = [];
+      renderHistory();
+      return;
+    }
+    const { data: rows, error: rowError } = await supabase
+      .from('puzzle_assignment_students')
+      .select('id, assignment_id, student_id, status, current_index, score, started_at, completed_at, last_opened_at')
+      .in('assignment_id', ids)
+      .order('created_at', { ascending: true });
+    if (rowError) throw rowError;
+    if (currentVersion !== state.historyLoadVersion) return;
+
+    state.studentAssignments = rows || [];
     renderHistory();
-    return;
+  } finally {
+    if (button && currentVersion === state.historyLoadVersion) {
+      setBusy(button, false);
+    }
   }
-  const { data: rows, error: rowError } = await supabase
-    .from('puzzle_assignment_students')
-    .select('id, assignment_id, student_id, status, current_index, score, started_at, completed_at, last_opened_at')
-    .in('assignment_id', ids)
-    .order('created_at', { ascending: true });
-  if (rowError) throw rowError;
-  state.studentAssignments = rows || [];
-  renderHistory();
 }
 
 function formatDate(value) {

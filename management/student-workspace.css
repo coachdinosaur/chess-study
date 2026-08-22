@@ -252,3 +252,55 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Teacher Notes Dirty State & Toast Notifications */
+.label-with-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.chip-warning {
+  border-color: color-mix(in srgb, var(--warning) 70%, var(--line));
+  color: var(--warning);
+  background: color-mix(in srgb, var(--warning) 12%, transparent);
+  font-weight: 750;
+}
+
+.chip-success {
+  border-color: color-mix(in srgb, var(--accent) 70%, var(--line));
+  color: var(--accent-strong);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  font-weight: 750;
+}
+
+#studentDetailNotes.is-dirty {
+  border-color: color-mix(in srgb, var(--warning) 75%, var(--line));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--warning) 40%, transparent);
+}
+
+.status-toast {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid color-mix(in srgb, var(--accent) 70%, var(--line));
+  border-radius: 999px;
+  color: var(--accent-strong);
+  background: color-mix(in srgb, var(--accent) 14%, var(--panel));
+  font-size: .84rem;
+  font-weight: 750;
+  animation: toastFadeIn .2s ease-out;
+}
+
+@keyframes toastFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Teacher Dashboard | CD Digital Chess</title>
   <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
-  <link rel="stylesheet" href="./management.css?v=20260822-desktop-polish1">
-  <link rel="stylesheet" href="./teacher-search.css?v=20260822-desktop-polish1">
+  <link rel="stylesheet" href="./management.css?v=20260822-hardening1">
+  <link rel="stylesheet" href="./teacher-search.css?v=20260822-hardening1">
   <link rel="stylesheet" href="./hardening.css?v=20260723-hardening1">
-  <link rel="stylesheet" href="./puzzle-assignments.css?v=20260726-puzzle-assignments1">
-  <link rel="stylesheet" href="./student-workspace.css?v=20260822-desktop-polish1">
+  <link rel="stylesheet" href="./puzzle-assignments.css?v=20260822-hardening1">
+  <link rel="stylesheet" href="./student-workspace.css?v=20260822-hardening1">
 </head>
 <body>
   <div class="portal-shell">
@@ -100,12 +100,16 @@
               <button id="archiveStudentButton" class="button-danger" type="button">Archive student</button>
             </div>
             <div class="form-row">
-              <label for="studentDetailNotes">General student notes</label>
+              <div class="label-with-chip">
+                <label for="studentDetailNotes">General student notes</label>
+                <span id="studentNotesDirtyIndicator" class="chip chip-warning" hidden>Unsaved changes</span>
+              </div>
               <textarea id="studentDetailNotes" maxlength="4000"></textarea>
             </div>
             <div class="inline-actions">
               <button id="saveStudentNotesButton" class="button-secondary" type="button">Save notes</button>
               <button id="exportStudentButton" class="button-secondary" type="button">Export student CSV</button>
+              <span id="studentNotesToast" class="status-toast" aria-live="polite" hidden></span>
             </div>
           </article>
 
@@ -319,9 +323,9 @@
   </div>
 
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  <script type="module" src="./js/teacher-dashboard.mjs?v=20260822-desktop-polish1"></script>
+  <script type="module" src="./js/teacher-dashboard.mjs?v=20260822-hardening1"></script>
   <script type="module" src="./js/teacher-shell.mjs?v=20260723-hardening1"></script>
-  <script type="module" src="./js/puzzle-assignment-dashboard.mjs?v=20260727-coach-session1"></script>
+  <script type="module" src="./js/puzzle-assignment-dashboard.mjs?v=20260822-hardening1"></script>
   <script type="module" src="./js/student-workspace-dashboard.mjs?v=20260727-student-workspace1"></script>
 </body>
 </html>
