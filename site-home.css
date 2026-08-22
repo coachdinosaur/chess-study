@@ -948,3 +948,490 @@ body.is-focus-mode .app-main-content {
 .notation-variation-paren {
   align-self: baseline;
 }
+
+/* --------------------------------------------------------------------------
+   8. Top Players Leaderboards Modal & Table Styles
+   -------------------------------------------------------------------------- */
+
+.top-players-modal {
+  z-index: 50;
+}
+
+.top-players-dialog {
+  width: min(48rem, 95vw);
+  max-height: min(88vh, 680px);
+  display: flex;
+  flex-direction: column;
+  padding: 1.1rem 1.25rem 1rem;
+  border-radius: var(--radius-panel, 14px);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.top-players-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--section-divider-soft);
+  flex-shrink: 0;
+}
+
+.top-players-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.top-players-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  flex-shrink: 0;
+}
+
+.top-players-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.top-players-subtitle {
+  margin: 0.15rem 0 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.top-players-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding-top: 0.85rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1 1 auto;
+  min-height: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-soft) transparent;
+}
+
+/* Category Selection Pills / Tabs */
+.top-players-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.top-players-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--chip-border);
+  border-radius: 9999px;
+  background: var(--chip-bg);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 150ms ease;
+}
+
+.top-players-chip:hover {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  border-color: var(--focus-border);
+}
+
+.top-players-chip.is-active {
+  background: var(--accent-strong);
+  color: #ffffff;
+  border-color: var(--accent-strong);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--accent-strong) 35%, transparent);
+}
+
+.chip-flag {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+/* Category Header Banner */
+.top-players-cat-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.55rem 0.85rem;
+  background: color-mix(in srgb, var(--accent) 8%, var(--panel-strong));
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-card, 8px);
+  flex-shrink: 0;
+}
+
+.cat-head-info {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.cat-head-title {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cat-head-badge {
+  display: inline-block;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 4px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.cat-fide-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--accent-strong);
+  text-decoration: none;
+  padding: 0.2rem 0.45rem;
+  border-radius: 5px;
+  transition: background-color 140ms ease;
+  flex-shrink: 0;
+}
+
+.cat-fide-link:hover {
+  background: var(--accent-soft);
+  text-decoration: underline;
+}
+
+/* Table Wrapper */
+.top-players-table-wrap {
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-card, 8px);
+  overflow: hidden;
+  background: var(--panel-strong);
+  flex: 1 1 auto;
+}
+
+.top-players-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+  text-align: left;
+}
+
+.top-players-table th {
+  padding: 0.55rem 0.75rem;
+  background: color-mix(in srgb, var(--accent) 5%, var(--panel));
+  color: var(--text-soft);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--section-divider-soft);
+  white-space: nowrap;
+}
+
+.top-players-table td {
+  padding: 0.45rem 0.75rem;
+  border-bottom: 1px solid var(--section-divider-soft);
+  color: var(--text);
+  vertical-align: middle;
+}
+
+.top-player-row:last-child td {
+  border-bottom: none;
+}
+
+.top-player-row:hover td {
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+
+/* Rank column */
+.th-rank,
+.td-rank {
+  width: 40px;
+  text-align: center;
+  padding-left: 0.6rem !important;
+  padding-right: 0.4rem !important;
+}
+
+.rank-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.rank-badge.rank-gold {
+  background: #fef3c7;
+  color: #b45309;
+  font-size: 0.95rem;
+}
+
+.rank-badge.rank-silver {
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 0.95rem;
+}
+
+.rank-badge.rank-bronze {
+  background: #ffedd5;
+  color: #c2410c;
+  font-size: 0.95rem;
+}
+
+[data-theme="dark"] .rank-badge.rank-gold {
+  background: rgba(245, 158, 11, 0.22);
+  color: #fbbf24;
+}
+
+[data-theme="dark"] .rank-badge.rank-silver {
+  background: rgba(148, 163, 184, 0.22);
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .rank-badge.rank-bronze {
+  background: rgba(234, 88, 12, 0.22);
+  color: #fb923c;
+}
+
+/* Player name & Title */
+.player-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.player-name {
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-title-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.12rem 0.35rem;
+  font-size: 0.65rem;
+  font-weight: 800;
+  line-height: 1;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.player-title-badge.title-gm {
+  background: #fef08a;
+  color: #854d0e;
+  border: 1px solid #facc15;
+}
+
+.player-title-badge.title-wgm {
+  background: #fbcfe8;
+  color: #9d174d;
+  border: 1px solid #f472b6;
+}
+
+.player-title-badge.title-im {
+  background: #e0f2fe;
+  color: #075985;
+  border: 1px solid #7dd3fc;
+}
+
+.player-title-badge.title-wim {
+  background: #f3e8ff;
+  color: #6b21a8;
+  border: 1px solid #c084fc;
+}
+
+.player-title-badge.title-fm,
+.player-title-badge.title-wfm,
+.player-title-badge.title-cm {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+[data-theme="dark"] .player-title-badge.title-gm {
+  background: rgba(234, 179, 8, 0.2);
+  color: #fde047;
+  border-color: rgba(234, 179, 8, 0.4);
+}
+
+[data-theme="dark"] .player-title-badge.title-wgm {
+  background: rgba(236, 72, 153, 0.2);
+  color: #f472b6;
+  border-color: rgba(236, 72, 153, 0.4);
+}
+
+[data-theme="dark"] .player-title-badge.title-im {
+  background: rgba(14, 165, 233, 0.2);
+  color: #38bdf8;
+  border-color: rgba(14, 165, 233, 0.4);
+}
+
+[data-theme="dark"] .player-title-badge.title-wim {
+  background: rgba(168, 85, 247, 0.2);
+  color: #c084fc;
+  border-color: rgba(168, 85, 247, 0.4);
+}
+
+[data-theme="dark"] .player-title-badge.title-fm,
+[data-theme="dark"] .player-title-badge.title-wfm,
+[data-theme="dark"] .player-title-badge.title-cm {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+  border-color: rgba(34, 197, 94, 0.4);
+}
+
+/* Country flag & code */
+.fed-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+.fed-flag {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.fed-code {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-soft);
+}
+
+/* Rating badge */
+.rating-badge {
+  display: inline-block;
+  padding: 0.18rem 0.5rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.82rem;
+  font-weight: 700;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--accent) 12%, var(--panel-strong));
+  color: var(--accent-strong);
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+.birth-year {
+  font-size: 0.78rem;
+  color: var(--text-soft);
+}
+
+/* Action button */
+.fide-profile-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 5px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--accent-strong);
+  background: var(--accent-soft);
+  text-decoration: none;
+  transition: all 140ms ease;
+  white-space: nowrap;
+}
+
+.fide-profile-btn:hover {
+  background: color-mix(in srgb, var(--accent) 24%, transparent);
+  transform: translateY(-1px);
+}
+
+/* Footer metadata */
+.top-players-footer-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.4rem;
+  font-size: 0.74rem;
+  color: var(--text-soft);
+  flex-shrink: 0;
+}
+
+.top-players-footer-meta strong {
+  color: var(--text-muted);
+}
+
+.meta-link {
+  color: var(--accent-strong);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.meta-link:hover {
+  text-decoration: underline;
+}
+
+/* Mobile adjustments */
+@media (max-width: 640px) {
+  .top-players-dialog {
+    width: 96vw;
+    padding: 0.85rem 0.85rem 0.75rem;
+  }
+
+  .top-players-nav {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+
+  .top-players-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .th-year,
+  .td-year {
+    display: none;
+  }
+
+  .top-players-table th,
+  .top-players-table td {
+    padding: 0.4rem 0.5rem;
+  }
+
+  .player-name {
+    max-width: 130px;
+  }
+}
+

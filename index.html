@@ -153,6 +153,10 @@
           <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
           <span>Explore Openings</span>
         </a>
+        <button class="drawer-nav-item" type="button" data-action="open-top-players">
+          <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.45 1-1 1H7c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h10c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1h-2c-.55 0-1-.45-1-1v-2.34"></path><path d="M18 4H6v7a6 6 0 0 0 12 0V4z"></path></svg>
+          <span>Top Players</span>
+        </button>
       </div>
 
       <!-- Group: TOOLS -->
@@ -247,6 +251,10 @@
             <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
             <span class="nav-label">Explore Openings</span>
           </a>
+          <button class="sidebar-nav-item" type="button" data-action="open-top-players" title="Top Players Leaderboards">
+            <svg class="nav-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.45 1-1 1H7c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h10c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1h-2c-.55 0-1-.45-1-1v-2.34"></path><path d="M18 4H6v7a6 6 0 0 0 12 0V4z"></path></svg>
+            <span class="nav-label">Top Players</span>
+          </button>
         </div>
 
         <!-- Group: TOOLS -->
@@ -761,10 +769,37 @@
     </div>
   </div>
 
+  <div id="topPlayersModal" class="promotion-modal top-players-modal" hidden aria-hidden="true">
+    <div class="promotion-dialog top-players-dialog" role="dialog" aria-modal="true" aria-labelledby="topPlayersTitle">
+      <div class="promotion-head top-players-head">
+        <div class="top-players-title-wrap">
+          <div class="top-players-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+              <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+              <path d="M4 22h16"></path>
+              <path d="M10 14.66V17c0 .55-.45 1-1 1H7c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h10c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1h-2c-.55 0-1-.45-1-1v-2.34"></path>
+              <path d="M18 4H6v7a6 6 0 0 0 12 0V4z"></path>
+            </svg>
+          </div>
+          <div>
+            <h3 id="topPlayersTitle" class="top-players-title">Top Chess Players</h3>
+            <p class="top-players-subtitle">Official FIDE Leaderboards &amp; Rankings</p>
+          </div>
+        </div>
+        <button type="button" class="icon-button" data-action="close-top-players" aria-label="Close top players dialog">×</button>
+      </div>
+      <div id="topPlayersContent" class="top-players-body">
+        <!-- Dynamically rendered by top-players.mjs -->
+      </div>
+    </div>
+  </div>
+
   <script src="./vendor/xlsx.full.min.js"></script>
   <script type="module" src="./app.js?v=20260809-play-recovery1"></script>
   <script type="module" src="./focus-analysis-popup.mjs?v=20260726-position-study-wording1"></script>
   <script type="module" src="./app-navigation.js?v=20260820-layout-redesign1"></script>
+  <script type="module" src="./top-players.mjs?v=20260822-top-players1"></script>
 
 <script>
   window.addEventListener('load', function () {

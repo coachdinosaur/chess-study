@@ -81,6 +81,11 @@
 
   function bindNavigationEvents() {
     document.addEventListener('click', (e) => {
+      if (e.target.closest('[data-action="open-top-players"]')) {
+        closeMobileDrawer();
+        return;
+      }
+
       const navTargetBtn = e.target.closest('[data-nav-target]');
       if (navTargetBtn) {
         const target = navTargetBtn.getAttribute('data-nav-target');

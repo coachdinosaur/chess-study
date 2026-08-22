@@ -29,6 +29,7 @@ The major subsystems are:
    - `lesson-model.mjs`, `lesson-migrations.mjs`, and `lesson-position-adapter.mjs`
    - `lesson-position-interoperability-core.mjs`, `lesson-position-interoperability-export-guard.mjs`, and `lesson-position-interoperability.mjs`
    - `lesson-variation-tree.mjs`
+   - `top-players.mjs` and `assets/top-players.json` for FIDE Top 10 leaderboards across 6 categories
    - `text-normalization.mjs`
 
 3. **Static lesson sites**
