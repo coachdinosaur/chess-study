@@ -66,6 +66,8 @@ const LESSON_ACTIONS_MENU_GAP_REM = 0.4;
 const LESSON_ACTIONS_MENU_VIEWPORT_PADDING_REM = 0.5;
 const MOBILE_VIEWPORT_MEDIA_QUERY = '(max-width: 760px)';
 const MOBILE_LAYOUT_VIEWPORT_MEDIA_QUERY = '(max-width: 768px)';
+const MOBILE_LANDSCAPE_LAYOUT_MEDIA_QUERY = '(orientation: landscape) and (max-width: 930px), (orientation: landscape) and (max-height: 500px)';
+const TABLET_PORTRAIT_LAYOUT_MEDIA_QUERY = '(orientation: portrait) and (min-width: 601px) and (max-width: 1024px)';
 const MOBILE_COARSE_LANDSCAPE_MEDIA_QUERY = '(max-width: 1100px) and (min-width: 640px) and (orientation: landscape) and (pointer: coarse)';
 const ENGINE_SEARCH_MODE_CHECKPOINT = 'checkpoint';
 const ENGINE_SEARCH_MODE_CONTINUE = 'continue';
@@ -576,6 +578,8 @@ const PIECE_ASSETS = Object.freeze({
 const dom = {
   rootElement: document.documentElement,
   pageShell: document.querySelector('.page-shell'),
+  appSidebar: document.getElementById('appSidebar'),
+  appMainContent: document.querySelector('.app-main-content'),
   boardGrid: document.getElementById('boardGrid'),
   boardAnnotationOverlay: document.getElementById('boardAnnotationOverlay'),
   boardFrame: document.querySelector('.board-frame'),
@@ -6617,6 +6621,14 @@ function mobilePortraitLayoutActive() {
   return Boolean(window.matchMedia?.(MOBILE_LAYOUT_VIEWPORT_MEDIA_QUERY).matches);
 }
 
+function mobileLandscapeLayoutActive() {
+  return Boolean(window.matchMedia?.(MOBILE_LANDSCAPE_LAYOUT_MEDIA_QUERY).matches);
+}
+
+function tabletPortraitLayoutActive() {
+  return Boolean(window.matchMedia?.(TABLET_PORTRAIT_LAYOUT_MEDIA_QUERY).matches);
+}
+
 function elementPaddingInsetPx(element, axis) {
   if (!element) {
     return 0;
@@ -7231,7 +7243,17 @@ function syncBoardSize() {
       ? Math.min(containerWidth || focusWidthBudget, focusWidthBudget)
       : containerWidth;
   } else if (!isMobilePortrait && window.innerWidth > 1100) {
-    const pageShellWidth = dom.pageShell?.clientWidth || window.innerWidth;
+    // Measure the real main-content width: the desktop sidebar (~220px) sits
+    // beside .app-main-content, so pageShell width alone overestimates the
+    // workspace and inflates --board-size (distorting squares on
+    // landscape tablets like 1138x712).
+    const sidebarWidth = (dom.appSidebar && dom.appSidebar.offsetParent !== null)
+      ? dom.appSidebar.offsetWidth
+      : 0;
+
+    const mainContentWidth = dom.appMainContent?.clientWidth
+      || Math.max(0, (dom.pageShell?.clientWidth || window.innerWidth) - sidebarWidth);
+
     const pageShellStyles = dom.pageShell ? window.getComputedStyle(dom.pageShell) : null;
     const pageShellPaddingX = pageShellStyles
       ? cssLengthToPx(pageShellStyles.paddingLeft, remToPx(0.75)) + cssLengthToPx(pageShellStyles.paddingRight, remToPx(0.75))
@@ -7245,7 +7267,7 @@ function syncBoardSize() {
     const controlPane = workspace?.querySelector('.control-pane');
     const controlPaneWidth = controlPane?.clientWidth || remToPx(29);
 
-    const availableWorkspaceWidth = Math.min(maxWorkspaceWidth, pageShellWidth - pageShellPaddingX);
+    const availableWorkspaceWidth = Math.min(maxWorkspaceWidth, mainContentWidth - pageShellPaddingX);
     containerWidth = Math.max(0, availableWorkspaceWidth - controlPaneWidth - gapPx);
   }
   if (!containerWidth || (!stageHeight && !isMobilePortrait)) {
@@ -7254,7 +7276,7 @@ function syncBoardSize() {
 
   const columnStyles = window.getComputedStyle(dom.boardColumn);
   const framePadding = cssLengthToPx(columnStyles.getPropertyValue('--board-frame-padding'), remToPx(0.5));
-  if (isMobilePortrait) {
+  if (isMobilePortrait && !mobileLandscapeLayoutActive()) {
     const vw = currentViewportWidth();
     const vh = currentViewportHeight();
     const evalRailWidth = cssLengthToPx(columnStyles.getPropertyValue('--eval-rail-track-width'), remToPx(0.8));
@@ -7302,7 +7324,13 @@ function syncBoardSize() {
   }
 
   const capturedSizingMetrics = capturedSizingMetricsFromStyles(columnStyles);
-  const maxBoardSize = state.focusMode ? remToPx(56) : remToPx(42);
+  let maxBoardSize = state.focusMode ? remToPx(56) : remToPx(42);
+  if (!state.focusMode && tabletPortraitLayoutActive()) {
+    // Tablet portrait: cap the board so header, tabs, and engine lines
+    // remain visible near the initial fold instead of scrolling away.
+    const foldBudget = Math.floor(currentViewportHeight() * 0.56);
+    maxBoardSize = Math.min(maxBoardSize, Math.max(foldBudget, remToPx(18)));
+  }
   let boardSize = Math.min(containerWidth, stageHeight, maxBoardSize);
 
   for (let index = 0; index < 6; index += 1) {

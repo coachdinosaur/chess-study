@@ -753,8 +753,16 @@ code {
 }
 
 .board-frame {
-  width: min(100%, calc(var(--board-size) + (var(--board-frame-padding) * 2) + 2px));
-  height: calc(var(--board-size) + (var(--board-frame-padding) * 2) + 2px);
+  /* Strict square shell: width clamps to the column, height follows via
+     aspect-ratio — the frame can never distort into a rectangle even if
+     --board-size is briefly larger than the available column width. */
+  --board-shell-size: calc(var(--board-size) + (var(--board-frame-padding) * 2) + 2px);
+  width: min(100%, var(--board-shell-size));
+  max-width: var(--board-shell-size);
+  aspect-ratio: 1 / 1;
+  height: auto;
+  max-height: var(--board-shell-size);
+  box-sizing: border-box;
   margin: 0 auto;
   padding: var(--board-frame-padding);
   border-radius: 0;
@@ -769,6 +777,8 @@ code {
   position: relative;
   width: 100%;
   height: 100%;
+  max-width: 100%;
+  max-height: 100%;
   aspect-ratio: 1 / 1;
 }
 
@@ -780,6 +790,7 @@ code {
   grid-template-rows: repeat(8, minmax(0, 1fr));
   width: 100%;
   height: 100%;
+  aspect-ratio: 1 / 1;
   border-radius: 0;
   overflow: hidden;
   user-select: none;
@@ -4200,6 +4211,213 @@ html[data-board-only="1"] .eval-bar-wrap {
 
   .piece-tool-label {
     display: none;
+  }
+}
+
+/* ---- Mobile landscape split view ----
+   Phones/small screens in landscape (or any landscape viewport under 500px
+   tall): board on the left, independently scrolling controls on the right.
+   Placed after the tablet split-view block so it wins shared properties in
+   the 769–930px overlap; display overrides use page-shell-scoped selectors
+   with !important because site-home.css loads later and forces
+   display: contents at <= 768px. */
+@media (max-width: 930px) and (orientation: landscape),
+       (max-height: 500px) and (orientation: landscape) {
+  html,
+  body {
+    overflow: hidden;
+  }
+
+  .page-shell {
+    height: var(--app-height);
+    min-height: 0;
+    padding: 0.45rem;
+    overflow: hidden;
+  }
+
+  .workspace-view .workspace {
+    height: calc(var(--app-height) - 0.9rem);
+    max-height: none;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: stretch;
+    gap: 0.55rem;
+  }
+
+  /* Left column: the chessboard, full height, vertically centered. */
+  .board-pane {
+    order: 0;
+    margin-inline: 0;
+    width: auto;
+    min-width: 0;
+    height: 100%;
+    display: grid;
+    place-items: center start;
+  }
+
+  .board-stage-card {
+    position: static;
+    height: 100%;
+    max-height: 100%;
+    gap: 0.3rem;
+  }
+
+  .board-column {
+    --board-available-height: calc(
+      var(--app-height)
+      - 0.9rem
+      - (var(--captured-row-height) * 2)
+      - (var(--captured-row-gap) * 2)
+    );
+    justify-self: center;
+    width: var(--board-size);
+  }
+
+  /* Right column: real pane again — header, tabs, tools scroll inside it. */
+  .page-shell .control-pane,
+  .page-shell .workspace-view .control-pane {
+    display: flex !important;
+    flex-direction: column;
+    order: 1;
+    height: 100%;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+    position: static;
+  }
+
+  .page-shell .control-pane-scroll,
+  .page-shell .workspace-view .control-pane-scroll {
+    display: flex !important;
+    flex-direction: column;
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-gutter: stable;
+    gap: 0.6rem;
+    padding-inline-end: max(0.35rem, 8px);
+  }
+
+  .workspace-intro {
+    display: none !important;
+  }
+
+  .control-pane .lesson-header {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--panel-strong);
+    padding-bottom: 0.3rem;
+  }
+
+  /* Engine PV returns to the notation panel on the right; the under-board
+     slot would steal scarce left-column height. */
+  .mobile-engine-lines-slot {
+    display: none !important;
+  }
+
+  #notationPanel .notation-pv {
+    display: block;
+  }
+
+  /* Duplicate meta strip / FEN stack has no room in landscape. */
+  .board-stage-foot {
+    display: none !important;
+  }
+}
+
+/* ---- Tablet portrait hierarchy (769–1024px portrait) ----
+   Mirrors the mobile vertical flow (header → tabs → board → engine lines →
+   tools) now that the control pane participates in workspace ordering. */
+@media (min-width: 769px) and (max-width: 1024px) and (orientation: portrait) {
+  .workspace-view .workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .page-shell .control-pane,
+  .page-shell .workspace-view .control-pane,
+  .page-shell .control-pane-scroll,
+  .page-shell .workspace-view .control-pane-scroll {
+    display: contents !important;
+  }
+
+  .lesson-header {
+    order: 0;
+    position: sticky;
+    top: calc(52px + env(safe-area-inset-top, 0px));
+    z-index: 30;
+    background: var(--panel-strong);
+    border-bottom: 1px solid var(--section-divider-soft);
+    padding-bottom: 0.25rem;
+  }
+
+  .control-pane-scroll > :not(.lesson-header) {
+    order: 6;
+  }
+
+  .control-pane-scroll > .tab-nav {
+    order: 1;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 0.55rem;
+    padding-bottom: 0.3rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .control-pane-scroll > .tab-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .control-pane-scroll > .tab-nav .tab-chip {
+    flex-shrink: 0;
+  }
+
+  .board-pane {
+    order: 2;
+    position: relative;
+    z-index: 1;
+  }
+
+  .mobile-engine-lines-slot {
+    display: block;
+    order: 3;
+  }
+
+  #notationPanel .notation-pv {
+    display: none;
+  }
+
+  .control-pane-scroll > .workspace-tools {
+    order: 4;
+  }
+
+  .lesson-notation,
+  .lesson-position-builder-panel {
+    order: 5;
+  }
+}
+
+/* ---- Tablet portrait touch targets (601–1024px portrait) ----
+   Keep primary controls at comfortable touch sizes. */
+@media (min-width: 601px) and (max-width: 1024px) and (orientation: portrait) {
+  .tab-chip {
+    padding-top: 0.55rem;
+    padding-bottom: 0.55rem;
+  }
+
+  .notation-panel .action-button,
+  .notation-toolbar button,
+  .notation-mainline-control .action-button {
+    min-height: 2.75rem;
+  }
+
+  .piece-tool-button {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
   }
 }
 
