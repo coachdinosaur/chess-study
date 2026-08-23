@@ -954,7 +954,7 @@ body.is-focus-mode .app-main-content {
    -------------------------------------------------------------------------- */
 
 .top-players-modal {
-  z-index: 50;
+  z-index: 1500;
 }
 
 .top-players-dialog {
@@ -1448,9 +1448,35 @@ body.is-focus-mode .app-main-content {
 }
 
 /* Mobile adjustments */
+@media (max-width: 768px) {
+  /* Hide secondary columns: Country, B-Year, Profile — keep Rank, Player, Rating */
+  .th-fed,
+  .td-fed,
+  .th-year,
+  .td-year,
+  .th-action,
+  .td-action {
+    display: none;
+  }
+
+  .player-name {
+    max-width: none;
+    width: 100%;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  .player-name-cell {
+    flex-wrap: wrap;
+  }
+}
+
 @media (max-width: 640px) {
   .top-players-dialog {
     width: 96vw;
+    max-height: min(88vh, 860px);
+    margin-top: max(0.75rem, env(safe-area-inset-top, 0px));
     padding: 0.85rem 0.85rem 0.75rem;
   }
 
@@ -1466,18 +1492,13 @@ body.is-focus-mode .app-main-content {
     display: none;
   }
 
-  .th-year,
-  .td-year {
-    display: none;
-  }
-
   .top-players-table th,
   .top-players-table td {
     padding: 0.4rem 0.5rem;
   }
 
-  .player-name {
-    max-width: 130px;
+  .rating-badge {
+    font-size: 0.78rem;
   }
 }
 

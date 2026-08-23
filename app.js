@@ -65,7 +65,7 @@ const ANALYSIS_TARGET_DEPTH_MAX = 99;
 const LESSON_ACTIONS_MENU_GAP_REM = 0.4;
 const LESSON_ACTIONS_MENU_VIEWPORT_PADDING_REM = 0.5;
 const MOBILE_VIEWPORT_MEDIA_QUERY = '(max-width: 760px)';
-const MOBILE_PORTRAIT_VIEWPORT_MEDIA_QUERY = '(max-width: 760px) and (orientation: portrait)';
+const MOBILE_LAYOUT_VIEWPORT_MEDIA_QUERY = '(max-width: 768px)';
 const MOBILE_COARSE_LANDSCAPE_MEDIA_QUERY = '(max-width: 1100px) and (min-width: 640px) and (orientation: landscape) and (pointer: coarse)';
 const ENGINE_SEARCH_MODE_CHECKPOINT = 'checkpoint';
 const ENGINE_SEARCH_MODE_CONTINUE = 'continue';
@@ -6614,7 +6614,7 @@ function currentViewportHeight() {
 }
 
 function mobilePortraitLayoutActive() {
-  return Boolean(window.matchMedia?.(MOBILE_PORTRAIT_VIEWPORT_MEDIA_QUERY).matches);
+  return Boolean(window.matchMedia?.(MOBILE_LAYOUT_VIEWPORT_MEDIA_QUERY).matches);
 }
 
 function elementPaddingInsetPx(element, axis) {
@@ -7256,12 +7256,39 @@ function syncBoardSize() {
   const framePadding = cssLengthToPx(columnStyles.getPropertyValue('--board-frame-padding'), remToPx(0.5));
   if (isMobilePortrait) {
     const vw = currentViewportWidth();
+    const vh = currentViewportHeight();
     const evalRailWidth = cssLengthToPx(columnStyles.getPropertyValue('--eval-rail-track-width'), remToPx(0.8));
-    const turnSize = cssLengthToPx(columnStyles.getPropertyValue('--turn-marker-size'), remToPx(1.0));
-    const turnGap = cssLengthToPx(columnStyles.getPropertyValue('--turn-marker-gap'), remToPx(0.5));
     // Only the eval rail reserves space beside the board; the turn marker
-    // is hidden in portrait (display: none), so its size + gap are excluded.
-    const mobileBoardSize = Math.floor(Math.max(0, vw - evalRailWidth));
+    // is hidden on mobile, so its size + gap are excluded.
+    const widthBudget = Math.max(0, vw - evalRailWidth);
+
+    // Vertical budget: viewport minus page padding, the sticky lesson header,
+    // the tab nav, puzzle instructions, and the captured rows so the board
+    // fits alongside the compact mobile controls in any orientation.
+    let reservedHeight = elementPaddingInsetPx(dom.pageShell, 'y') + remToPx(0.9);
+    for (const selector of ['.lesson-header', '.control-pane-scroll > .tab-nav']) {
+      const chromeEl = document.querySelector(selector);
+      if (chromeEl && chromeEl.offsetHeight) {
+        reservedHeight += chromeEl.offsetHeight;
+      }
+    }
+    if (dom.puzzleBoardInstruction && !dom.puzzleBoardInstruction.hidden && dom.puzzleBoardInstruction.offsetHeight) {
+      reservedHeight += dom.puzzleBoardInstruction.offsetHeight;
+    }
+
+    const heightBudget = Math.max(0, vh - reservedHeight);
+    let mobileBoardSize = Math.min(widthBudget, heightBudget);
+    const capturedMetrics = capturedSizingMetricsFromStyles(columnStyles);
+    for (let index = 0; index < 4; index += 1) {
+      const capturedRowsHeight = (capturedRowHeightForBoardSize(mobileBoardSize, capturedMetrics) + capturedRowGapForBoardSize(mobileBoardSize)) * 2;
+      const nextSize = Math.floor(Math.max(0, Math.min(widthBudget, heightBudget - capturedRowsHeight)));
+      if (Math.abs(nextSize - mobileBoardSize) < 1) {
+        mobileBoardSize = nextSize;
+        break;
+      }
+      mobileBoardSize = nextSize;
+    }
+
     if (mobileBoardSize > 0) {
       dom.boardColumn.style.setProperty('--board-size', `${mobileBoardSize}px`);
       dom.rootElement.style.setProperty('--board-side-gap', '0px');

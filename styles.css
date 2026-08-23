@@ -2914,7 +2914,7 @@ html[data-active-tab="puzzle"] .lesson-title-input {
 .promotion-modal {
   position: fixed;
   inset: 0;
-  z-index: 20;
+  z-index: 1500;
   display: grid;
   place-items: center;
   padding: 1rem;
@@ -3589,7 +3589,11 @@ html[data-board-only="1"] .eval-bar-wrap {
   }
 }
 
-@media (max-width: 760px) and (orientation: portrait) {
+/* ---- Unified mobile layout (any orientation) ----
+   Vertical hierarchy: sticky header → tab nav → board → engine lines →
+   active tab tools. Applies at all mobile widths so landscape, split-screen,
+   and browser-chrome resizing cannot fall back to a broken layout. */
+@media (max-width: 768px) {
   .workspace {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -3610,7 +3614,7 @@ html[data-board-only="1"] .eval-bar-wrap {
   }
 
   .board-pane {
-    order: 1;
+    order: 2;
     position: relative;
     z-index: 1;
     margin-inline: -0.55rem;
@@ -3650,10 +3654,10 @@ html[data-board-only="1"] .eval-bar-wrap {
     margin: 0 auto;
   }
 
-  /* Mobile engine lines slot: show between board (order:1) and workspace tools (order:3) */
+  /* Mobile engine lines slot: show between board (order:2) and workspace tools (order:4) */
   .mobile-engine-lines-slot {
     display: block;
-    order: 2;
+    order: 3;
     /* Compact spacing between board and engine lines */
     padding-top: 0;
     padding-bottom: 0;
@@ -3666,17 +3670,41 @@ html[data-board-only="1"] .eval-bar-wrap {
   }
 
   .control-pane-scroll > :not(.lesson-header) {
-    order: 4;
+    order: 6;
+  }
+
+  /* Tab navigation sits directly beneath the header and above the board,
+     so switching tabs never requires scrolling past the board or tools.
+     Single horizontally-scrollable row keeps it compact. */
+  .control-pane-scroll > .tab-nav {
+    order: 1;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 0.55rem;
+    padding-bottom: 0.3rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .control-pane-scroll > .tab-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .control-pane-scroll > .tab-nav .tab-chip {
+    flex-shrink: 0;
+    padding-bottom: var(--space-xs);
   }
 
   .control-pane-scroll > .workspace-tools {
-    order: 3;
+    order: 4;
     padding-top: 0;
   }
 
   .lesson-notation,
   .lesson-position-builder-panel {
-    order: 4;
+    order: 5;
   }
 
   .lesson-tools,
@@ -3702,6 +3730,34 @@ html[data-board-only="1"] .eval-bar-wrap {
     display: none;
   }
 
+  /* Setup on mobile: compact, touch-friendly controls so palette + board
+     share one screen without scrolling back and forth. */
+  .setup-board-actions {
+    order: 1;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.35rem;
+  }
+
+  .setup-board-actions .action-button {
+    width: 100%;
+    min-width: 0;
+    min-height: 2.75rem;
+    padding: 0.4rem 0.5rem;
+    justify-content: center;
+  }
+
+  .setup-palette-panel .piece-palette {
+    margin-top: 0;
+  }
+
+  /* Piece tools: keep 40–44px touch targets (overrides the smaller
+     ≤760px sizing earlier in this file). */
+  .setup-piece-palette .piece-tool-button,
+  .piece-palette .piece-tool-button {
+    width: clamp(2.5rem, 11vw, 2.75rem);
+  }
+
   .setup-palette-panel {
     order: 0;
   }
@@ -3718,10 +3774,6 @@ html[data-board-only="1"] .eval-bar-wrap {
 
   .setup-palette-color {
     order: 2;
-  }
-
-  .setup-board-actions {
-    order: 1;
   }
 
   .setup-board-divider {
@@ -3777,14 +3829,15 @@ html[data-board-only="1"] .eval-bar-wrap {
     box-shadow: none;
   }
 
-  /* Side-to-move marker hidden on portrait — the page title already states
+  /* Side-to-move marker hidden on mobile — the page title already states
      "White to move" / "Black to move", so the floating square is redundant. */
   .turn-side-marker {
     display: none !important;
   }
 
-  /* Bottom toolbar (FEN, meta-strip) hidden on portrait — duplicates
-     controls already available above the board. */
+  /* Bottom toolbar (FEN, meta-strip) hidden on mobile — duplicates
+     controls already available above the board and keeps the FEN stack
+     from pushing the palette away from the board in Setup mode. */
   .board-stage-foot {
     display: none !important;
   }
@@ -3911,8 +3964,8 @@ html[data-board-only="1"] .eval-bar-wrap {
 }
 
 /* ---- Mobile-width tweaks (any orientation) ----
-   Mirrors the portrait block above so these also apply in landscape /
-   inside the lessons iframe, which may not report orientation: portrait. */
+   Complements the unified mobile block above; also covers contexts such as
+   the lessons iframe, which may report a different viewport. */
 @media (max-width: 760px) {
   /* Higher-specificity selector so it also wins inside the landscape
      media block (which sets min-width: 5.4rem on this button). */
@@ -4010,7 +4063,9 @@ html[data-board-only="1"] .eval-bar-wrap {
   }
 }
 
-@media (max-width: 1100px) and (min-width: 640px) and (orientation: landscape) {
+/* Tablet split view: starts above the unified mobile breakpoint so widths
+   ≤768px always use the single-column mobile flow, in any orientation. */
+@media (max-width: 1100px) and (min-width: 769px) and (orientation: landscape) {
   :root {
     --notation-text-size: 1.14rem;
   }
