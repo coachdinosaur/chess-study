@@ -916,6 +916,34 @@ body.is-focus-mode .app-main-content {
   }
 }
 
+/* Unified mobile layout (<= 768px): this file loads after styles.css, and
+   .workspace-view .control-pane { display: flex } above would otherwise
+   override styles.css's display: contents — leaving .control-pane as a
+   single grid item so the chessboard lands below the entire control pane.
+   Force display: contents so header/tabs/board/tools participate directly
+   in the workspace grid's flex ordering. */
+@media (max-width: 768px) {
+  .workspace-intro {
+    display: none !important;
+  }
+
+  .workspace-view .control-pane,
+  .workspace-view .control-pane-scroll,
+  .control-pane,
+  .control-pane-scroll {
+    display: contents !important;
+  }
+
+  /* Embedded board-only view keeps a real pane so its height-capped
+     setup sheet and internal scrolling continue to work. */
+  html[data-board-only="1"] .workspace-view .control-pane,
+  html[data-board-only="1"] .control-pane,
+  body.is-board-only .workspace-view .control-pane,
+  body.is-board-only .control-pane {
+    display: flex !important;
+  }
+}
+
 /* Notation styling preservation */
 .notation-tree > .notation-segment > .notation-line .notation-inline-comment {
   margin-right: 0.5rem;

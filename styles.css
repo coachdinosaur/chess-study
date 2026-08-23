@@ -3598,9 +3598,20 @@ html[data-board-only="1"] .eval-bar-wrap {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  /* !important + .workspace-view variants: site-home.css loads after this
+     stylesheet and sets .workspace-view .control-pane { display: flex }
+     with higher specificity — without this, display: contents loses and
+     the whole control pane renders as one block above the board. */
   .control-pane,
-  .control-pane-scroll {
-    display: contents;
+  .control-pane-scroll,
+  .workspace-view .control-pane,
+  .workspace-view .control-pane-scroll {
+    display: contents !important;
+  }
+
+  /* The intro card wastes prime viewport space above the board on mobile. */
+  .workspace-intro {
+    display: none !important;
   }
 
   .lesson-header {
