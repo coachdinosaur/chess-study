@@ -7278,7 +7278,7 @@ function syncBoardSize() {
   const framePadding = cssLengthToPx(columnStyles.getPropertyValue('--board-frame-padding'), remToPx(0.5));
   if (isMobilePortrait && !mobileLandscapeLayoutActive()) {
     const vw = currentViewportWidth();
-    const vh = currentViewportHeight();
+    const vh = window.innerHeight || currentViewportHeight();
     const evalRailWidth = cssLengthToPx(columnStyles.getPropertyValue('--eval-rail-track-width'), remToPx(0.8));
     // Only the eval rail reserves space beside the board; the turn marker
     // is hidden on mobile, so its size + gap are excluded.

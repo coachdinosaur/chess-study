@@ -3916,7 +3916,8 @@ html[data-board-only="1"] .eval-bar-wrap {
     height: 1.75rem;
   }
 
-  .lesson-overflow-menu {
+  .lesson-overflow-menu,
+  .lesson-picker-overflow .lesson-picker-menu {
     z-index: 40;
     max-width: calc(100vw - 1.1rem);
   }

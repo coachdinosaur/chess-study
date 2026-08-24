@@ -1,7 +1,7 @@
 import './focus-analysis-popup-core.mjs?v=20260723-live-board-link1';
 import './lesson-position-interoperability-export-guard.mjs?v=20260726-stage2-validation1';
 import './lesson-position-interoperability.mjs?v=20260726-stage2';
-import './lesson-picker-search.mjs?v=20260813-lesson-search1';
+import './lesson-picker-search.mjs?v=20260824-lesson-search2';
 import './lichess-position-training.mjs?v=20260726-position-study-wording1';
 import './position-study-single-hint-patch.mjs?v=20260726-single-hint1';
 import './lichess-position-training-interactions.mjs?v=20260725-board-interaction1';

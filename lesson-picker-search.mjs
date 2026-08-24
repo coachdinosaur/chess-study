@@ -16,6 +16,17 @@ export function lessonTitleMatchesSearch(title, query) {
   return normalizeLessonSearchText(title).includes(normalizedQuery);
 }
 
+export function shouldAutoFocusLessonSearch(win = typeof window !== 'undefined' ? window : null) {
+  if (!win || typeof win.matchMedia !== 'function') {
+    return false;
+  }
+  try {
+    return !win.matchMedia('(pointer: coarse), (max-width: 768px)').matches;
+  } catch {
+    return false;
+  }
+}
+
 function installStyles(doc) {
   if (doc.getElementById(STYLE_ID)) {
     return;
@@ -37,7 +48,7 @@ function installStyles(doc) {
 
     .lesson-picker-search-input {
       width: 100%;
-      min-width: 12rem;
+      min-width: 0;
       box-sizing: border-box;
       border: 1px solid var(--input-border);
       border-radius: 0.55rem;
@@ -206,7 +217,9 @@ function installLessonPickerSearch(doc = document) {
     if (!menu.hidden && mutations.some((mutation) => (
       mutation.type === 'attributes' && mutation.attributeName === 'hidden'
     ))) {
-      requestAnimationFrame(() => input?.focus({ preventScroll: true }));
+      if (shouldAutoFocusLessonSearch(doc?.defaultView || (typeof window !== 'undefined' ? window : null))) {
+        requestAnimationFrame(() => input?.focus({ preventScroll: true }));
+      }
     }
   });
 
