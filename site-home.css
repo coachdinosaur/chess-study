@@ -999,6 +999,45 @@ body.is-focus-mode .app-main-content {
     flex-wrap: nowrap !important;
   }
 
+  .page-shell .control-pane-scroll > .tab-nav,
+  .workspace-view .control-pane-scroll > .tab-nav,
+  .control-pane-scroll > .tab-nav,
+  .tab-nav {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 0.35rem !important;
+    position: sticky !important;
+    top: 2.2rem !important;
+    z-index: 19 !important;
+    background: var(--panel-strong) !important;
+    flex-shrink: 0 !important;
+    order: 1 !important;
+  }
+
+  html:not([data-active-tab="play"]):not([data-active-tab="puzzle"]) .control-pane-scroll > .tab-nav {
+    top: 4.15rem !important;
+  }
+
+  html[data-active-tab="play"] .control-pane-scroll > .tab-nav,
+  html[data-active-tab="puzzle"] .control-pane-scroll > .tab-nav {
+    top: 2.2rem !important;
+  }
+
+  .control-pane-scroll > .workspace-tools {
+    order: 2 !important;
+  }
+
+  .lesson-notation,
+  .lesson-position-builder-panel {
+    order: 3 !important;
+  }
+
   .app-main-content {
     height: 100% !important;
     max-height: 100% !important;

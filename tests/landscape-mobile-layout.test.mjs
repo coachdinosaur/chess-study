@@ -51,3 +51,11 @@ test('app-navigation.js binds all mobile drawer toggle triggers', () => {
   assert.match(appNavJs, /#landscapeMenuToggle/);
   assert.match(appNavJs, /toggle-mobile-menu/);
 });
+
+test('styles.css and site-home.css keep tab-nav sticky and accessible in mobile landscape across all tabs', () => {
+  assert.match(stylesCss, /\.control-pane-scroll\s*>\s*\.tab-nav[\s\S]*position:\s*sticky\s*!important;/, 'tab-nav must be sticky in landscape');
+  assert.match(stylesCss, /\.control-pane-scroll\s*>\s*\.tab-nav[\s\S]*order:\s*1\s*!important;/, 'tab-nav must have order: 1');
+  assert.match(stylesCss, /\.control-pane-scroll\s*>\s*\.workspace-tools\s*\{[\s\S]*order:\s*2\s*!important;/, 'workspace-tools must have order: 2');
+  assert.match(siteHomeCss, /\.control-pane-scroll\s*>\s*\.tab-nav[\s\S]*position:\s*sticky\s*!important;/, 'tab-nav must be sticky in site-home.css landscape block');
+});
+

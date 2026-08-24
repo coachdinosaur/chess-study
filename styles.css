@@ -4617,14 +4617,37 @@ html[data-board-only="1"] .eval-bar-wrap {
     justify-content: center !important;
   }
 
-  .control-pane-scroll > .tab-nav {
+  .page-shell .control-pane-scroll > .tab-nav,
+  .workspace-view .control-pane-scroll > .tab-nav,
+  .control-pane-scroll > .tab-nav,
+  .tab-nav {
     display: flex !important;
+    flex-direction: row !important;
     flex-wrap: nowrap !important;
+    align-items: center !important;
     overflow-x: auto !important;
+    overflow-y: hidden !important;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     gap: 0.35rem !important;
-    padding-bottom: 2px;
+    padding: 0.15rem 0 0.25rem !important;
+    margin: 0 !important;
+    border-bottom: 1px solid var(--section-divider-soft) !important;
+    background: var(--panel-strong) !important;
+    position: sticky !important;
+    top: 2.2rem !important;
+    z-index: 19 !important;
+    flex-shrink: 0 !important;
+    order: 1 !important;
+  }
+
+  html:not([data-active-tab="play"]):not([data-active-tab="puzzle"]) .control-pane-scroll > .tab-nav {
+    top: 4.15rem !important;
+  }
+
+  html[data-active-tab="play"] .control-pane-scroll > .tab-nav,
+  html[data-active-tab="puzzle"] .control-pane-scroll > .tab-nav {
+    top: 2.2rem !important;
   }
 
   .control-pane-scroll > .tab-nav::-webkit-scrollbar {
@@ -4637,6 +4660,21 @@ html[data-board-only="1"] .eval-bar-wrap {
     min-height: 1.85rem !important;
     padding: 0 0.5rem !important;
     font-size: 0.76rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+  }
+
+  .control-pane-scroll > .workspace-tools {
+    order: 2 !important;
+    padding-top: 0.25rem !important;
+    margin-top: 0 !important;
+  }
+
+  .lesson-notation,
+  .lesson-position-builder-panel {
+    order: 3 !important;
   }
 
   /* Engine PV returns to the notation panel on the right; the under-board
