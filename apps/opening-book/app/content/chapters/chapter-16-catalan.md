@@ -24,35 +24,35 @@
 
 7.Qc2
 
-A) 7...c5                                                          253
+A) 7...c5 — Page 2
 
 <!-- FEN: rnbq1rk1/ppp1bppp/4pn2/8/2pP4/5NP1/PPQ1PPBP/RNB2RK1 b - - 1 7 -->
 
-B) 7...Bd7 8.Qxc4 Bc6 9.Nc3                                      256
-   B1) 9...a6                                                     257
-   B2) 9...Nbd7                                                   258
+B) 7...Bd7 8.Qxc4 Bc6 9.Nc3 — Page 5
+   B1) 9...a6 — Page 6
+   B2) 9...Nbd7 — Page 7
 
-C) 7...b5!?                                                       260
+C) 7...b5!? — Page 9
 
 <!-- FEN: rnbq1rk1/ppp1bppp/4pn2/8/2pP4/5NP1/PPQ1PPBP/RNB2RK1 b - - 1 7 -->
 
-D) 7...a6 8.a4                                                    264
-   D1) 8...b6                                                     265
-   D2) 8...c5                                                     266
-   D3) 8...Nc6                                                    267
-   D4) 8...Bd7 9.Qxc4 Bc6 10.Bf4                                  268
-       D41) 10...Nd5                                              269
-       D42) 10...Bd6                                              270
-       D43) 10...Nbd7 11.Nc3                                      272
-            D431) 11...Bd6                                       273
-            D432) 11...Rc8                                       274
-            D433) 11...Nb6                                       275
-       D44) 10...a5 11.Nc3 Na6 12.Rac1! Nb4
-            13.Ne5 Bxg2 14.Kxg2 Nfd5 15.Nxd5                    277
-            D441) 15...Qxd5+                                     280
-            D442) 15...Nxd5 16.Bd2                               281
-                   D4421) 16...Bb4                               281
-                   D4422) 16...c6                                 282
+D) 7...a6 8.a4 — Page 13
+   D1) 8...b6 — Page 14
+   D2) 8...c5 — Page 15
+   D3) 8...Nc6 — Page 16
+   D4) 8...Bd7 9.Qxc4 Bc6 10.Bf4 — Page 17
+       D41) 10...Nd5 — Page 18
+       D42) 10...Bd6 — Page 19
+       D43) 10...Nbd7 11.Nc3 — Page 21
+            D431) 11...Bd6 — Page 22
+            D432) 11...Rc8 — Page 23
+            D433) 11...Nb6 — Page 24
+       D44) 10...a5 11.Nc3 Na6 12.Rac1! Nb4 — Page 26
+            13.Ne5 Bxg2 14.Kxg2 Nfd5 15.Nxd5 — Page 27
+            D441) 15...Qxd5+ — Page 29
+            D442) 15...Nxd5 16.Bd2 — Page 30
+                   D4421) 16...Bb4 — Page 30
+                   D4422) 16...c6 — Page 31
 
 ---
 
@@ -342,7 +342,7 @@ With the bishop pair and more active pieces, White had achieved a Catalan player
 **FEN:**
 `rn1q1rk1/pppbbppp/4pn2/8/2pP4/5NP1/PPQ1PPBP/RNB2RK1 w - - 2 8`
 
-Black intends to post the bishop on c6. There is an obvious parallel with the later variation D4, coverage of which begins on page 268. You can think of this as a ‘lazy version’ for Black: he has avoided the major theoretical paths of **7...a6 8.Qxc4**, but the absence of the moves **...a6** and **a2-a4** helps White, as Black will not have the b4-outpost for his pieces.
+Black intends to post the bishop on c6. There is an obvious parallel with the later variation D4, coverage of which begins in Chapter 16, Page 17. You can think of this as a ‘lazy version’ for Black: he has avoided the major theoretical paths of **7...a6 8.Qxc4**, but the absence of the moves **...a6** and **a2-a4** helps White, as Black will not have the b4-outpost for his pieces.
 
 <!-- FEN: rn1q1rk1/pppbbppp/4pn2/8/2pP4/5NP1/PPQ1PPBP/RNB2RK1 w - - 2 8 -->
 

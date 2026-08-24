@@ -508,7 +508,7 @@ Black has two main continuations: **C1) 5...Be7** and **C2) 5...Nc6**.
 
 6...dxc4 leads to a branch of the Catalan which is covered in Chapters 6 and 7.
 
-5...cxd4 6.O-O is also likely to transpose elsewhere. 6...Nc6 reaches the later variation C22, while 6...dxc4 leads to variation A of Chapter 6 on page 74.
+5...cxd4 6.O-O is also likely to transpose elsewhere. 6...Nc6 reaches the later variation C22, while 6...dxc4 leads to variation A in Chapter 6, Page 2.
 
 ### C1) 5...Be7
 
@@ -516,7 +516,7 @@ This move order was recommended by Aagaard and Ntirlis in *Grandmaster Repertoir
 
 **6.O-O O-O 7.dxc5 Bxc5**
 
-7...dxc4 8.Qc2 takes us a long way ahead to variation A of Chapter 16 – see page 253.
+7...dxc4 8.Qc2 takes us a long way ahead to variation A in Chapter 16, Page 2.
 
 **C1 position after 7...Bxc5**
 
@@ -803,7 +803,7 @@ The position remains complex, but White is better for sure.
 
 This is an important branching position, where Black's two main tries are **C21) 6...Be7** and **C22) 6...cxd4**.
 
-6...dxc4 is another significant option, but it immediately transposes to a major variation of the Catalan, coverage of which begins in variation B of Chapter 6 on page 80.
+6...dxc4 is another significant option, but it immediately transposes to a major variation of the Catalan, coverage of which begins in variation B of Chapter 6, Page 8.
 
 ### C21) 6...Be7 7.dxc5 Bxc5
 

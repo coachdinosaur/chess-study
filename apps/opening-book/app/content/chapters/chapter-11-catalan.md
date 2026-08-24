@@ -78,7 +78,7 @@ This is a pretty rare choice, but it is quite natural to develop while preparing
 
 ## 11.Na3!
 
-(This important move would obviously not be available with the bishop on d2 instead of c1. That is why, in variation D1 on page 160, I recommend a different course of action with **Na3** instead of **Ne5** a few moves earlier.) **11...Nc5 12.Qa5! O-O 13.Be3 Nd7 14.Qxc7 c3 15.bxc3** White was clearly better in Ragger – Baumegger, Vienna 2010.
+(This important move would obviously not be available with the bishop on d2 instead of c1. That is why, in Chapter 11, Page 15 (variation D1), I recommend a different course of action with **Na3** instead of **Ne5** a few moves earlier.) **11...Nc5 12.Qa5! O-O 13.Be3 Nd7 14.Qxc7 c3 15.bxc3** White was clearly better in Ragger – Baumegger, Vienna 2010.
 
 ## 10.O-O O-O 11.Qa5!
 
@@ -114,7 +114,7 @@ Objectively this line is not so bad for Black, but it does not leave him a full 
 
 This is a significant branching point, where Black’s main options are **B1) 9...Qb6, B2) 9...Rc8** and **B3) 9...Bc6**.
 
-**9...c4?** can be considered an inferior version of variation C1 of Chapter 7, which can be found on page 94, as Black has played the decentralizing **...Na5** instead of the more useful **...b5**. Here is the model example: **10.Qc2 Bc6 11.Nc3 Bb4 12.Bg5 O-O 13.Rad1 h6 14.d5 exd5 15.Bxf6 Qxf6 16.Nxd5 Bxd5 17.Rxd5±** Black’s minor pieces were badly misplaced on the queenside in P.H. Nielsen – Hjartarson, Copenhagen 1996.
+**9...c4?** can be considered an inferior version of Chapter 7, Page 8 (variation C1), as Black has played the decentralizing **...Na5** instead of the more useful **...b5**. Here is the model example: **10.Qc2 Bc6 11.Nc3 Bb4 12.Bg5 O-O 13.Rad1 h6 14.d5 exd5 15.Bxf6 Qxf6 16.Nxd5 Bxd5 17.Rxd5±** Black’s minor pieces were badly misplaced on the queenside in P.H. Nielsen – Hjartarson, Copenhagen 1996.
 
 ## B1) 9...Qb6 10.Nc3
 
@@ -167,7 +167,7 @@ Golombek – Ed. Lasker, Hastings 1953.
 
 ## 11...Qxd4
 
-**11...Qc6 12.Qh4!** produces a surprising transposition to variation B11 of Chapter 7, with one extra move played here — see page 90.
+**11...Qc6 12.Qh4!** produces a surprising transposition to variation B11 in Chapter 7, Page 4, with one extra move played here.
 
 ## 12.Nxd4 Bc5
 

@@ -16,15 +16,15 @@
 1.d4 Nf6 2.c4 e6 3.g3 d5 4.Nf3 Bb4+ 5.Bd2 Be7
 6.Bg2 0-0 7.0-0
 
-A) 7...dxc4?! — 182
-B) 7...Nbd7 — 184
-C) 7...c6 8.Qc2 b6 9.Bf4 — 186
-    C1) 9...Ba6 10.cxd5 cxd5 11.Rc1! Nbd7 12.Nc3 — 186
-        C11) 12...Nh5 — 188
-        C12) 12...b5 — 189
-    C2) 9...Bb7 10.Rd1 — 190
-        C21) 10...Nh5 — 191
-        C22) 10...Na6 — 194
+A) 7...dxc4?! — Page 3
+B) 7...Nbd7 — Page 5
+C) 7...c6 8.Qc2 b6 9.Bf4 — Page 7
+    C1) 9...Ba6 10.cxd5 cxd5 11.Rc1! Nbd7 12.Nc3 — Page 7
+        C11) 12...Nh5 — Page 9
+        C12) 12...b5 — Page 10
+    C2) 9...Bb7 10.Rd1 — Page 11
+        C21) 10...Nh5 — Page 12
+        C22) 10...Na6 — Page 15
 
 ---
 
@@ -177,7 +177,7 @@ This is the most natural way to take advantage of the free tempo.
 
 **183**
 
-you can find the position without the free tempo analysed from page 208.
+you can find the position without the free tempo analysed in Chapter 14, Page 13.
 
 <!-- FEN: rn1q1rk1/1bp2ppp/p2bpn2/1p6/3P4/5NP1/PPQBPPBP/RNR3K1 w - - 4 12 -->
 
@@ -243,13 +243,13 @@ The great majority of games from this position have continued with **8...c6**, t
 ### 8...Ne4
 
 **FEN:**
-`r1bq1rk1/pppnbppp/4p3/3p4/2PPn3/5NP1/PPQBPPBP/RN3RK1 w - - 10 9`
+`r1bq1rk1/pppnbppp/4p3/3p4/2PPn3/5NP1/PPQBPPBP/RN1Q1RK1 w - - 10 9`
 
-<!-- FEN: r1bq1rk1/pppnbppp/4pn2/3p4/2PP4/5NP1/PPQBPPBP/RN3RK1 b - - 9 8 -->
+<!-- FEN: r1bq1rk1/pppnbppp/4pn2/3p4/2PP4/5NP1/PPQBPPBP/RN1Q1RK1 b - - 9 8 -->
 
 Black is intending to play in the spirit of the Stonewall, having avoided the thematic plan of b2-b3 and Ba3.
 
-**8...b6** can be dealt with quickly. (There is a reason why most players prefer to preface this move with **...c6**.) **9.cxd5! Nxd5** (**9...exd5 10.Bf4 c5 11.Nc3 Bb7** transposes to variation B12 of Chapter 15, with one extra move having been played – see page 234.) The text move is an independent alternative, but it is not much of an equalizing attempt. The simplest answer is **10.e4N Nb4 11.Bxb4 Bxb4 12.a3 Be7 13.Nc3 Bb7 14.Rad1** and White has a pleasant edge thanks to his central superiority.
+**8...b6** can be dealt with quickly. (There is a reason why most players prefer to preface this move with **...c6**.) **9.cxd5! Nxd5** (**9...exd5 10.Bf4 c5 11.Nc3 Bb7** transposes to variation B12 in Chapter 15, Page 7, with one extra move having been played.) The text move is an independent alternative, but it is not much of an equalizing attempt. The simplest answer is **10.e4N Nb4 11.Bxb4 Bxb4 12.a3 Be7 13.Nc3 Bb7 14.Rad1** and White has a pleasant edge thanks to his central superiority.
 
 <!-- FEN: r1bq1rk1/pppnbppp/4p3/3p4/2PPn3/5NP1/PPQBPPBP/RN3RK1 w - - 10 9 -->
 
@@ -423,7 +423,7 @@ Previously I recommended **10.b3**, but I later realized that this would be an i
 
 ### 10...cxd5
 
-**10...Nxd5 11.Rd1 Nd7 12.Nc3 Rc8 13.Ne5** transposes to variation C131 of the next chapter on page 209.
+**10...Nxd5 11.Rd1 Nd7 12.Nc3 Rc8 13.Ne5** transposes to variation C131 in Chapter 14, Page 14.
 
 <!-- FEN: rnbq1rk1/p3bppp/1pp1pn2/3p4/2PP1B2/5NP1/PPQ1PPBP/RN3RK1 b - - 1 9 -->
 <!-- FEN: rn1q1rk1/p3bppp/bp2pn2/3p4/3P1B2/5NP1/PPQ1PPBP/RN3RK1 w - - 0 11 -->
@@ -680,7 +680,7 @@ Black is doomed to passive defence.
 **FEN:**
 `rn1q1rk1/pb2bppp/1pp1pn2/3p4/2PP1B2/5NP1/PPQ1PPBP/RN1R2K1 b - - 3 10`
 
-I consider this White’s most flexible move. Now Black’s main continuation is **10...Nbd7**, which transposes to variation C2 of the next chapter on page 214. In the rest of this chapter we will focus on **C21) 10...Nh5** and **C22) 10...Na6**.
+I consider this White’s most flexible move. Now Black’s main continuation is **10...Nbd7**, which transposes to variation C2 in Chapter 14, Page 19. In the rest of this chapter we will focus on **C21) 10...Nh5** and **C22) 10...Na6**.
 
 <!-- FEN: rn1q1rk1/pb2bppp/1pp1pn2/3p4/2PP1B2/5NP1/PPQ1PPBP/RN1R2K1 b - - 3 10 -->
 
@@ -965,7 +965,7 @@ White will follow up with either Ne5 or Na5, and his position looks clearly pref
 
 This is where I am diverging from *GM 1*.
 
-**12.Nc3 dxc4 13.Ne5 Nd5 14.Nxc4 Nxf4 15.gxf4 Nc7 16.e3 Nd5** transposes to a position mentioned in the next chapter, which I now prefer to avoid, for reasons explained on page 214 in the note to move 11.
+**12.Nc3 dxc4 13.Ne5 Nd5 14.Nxc4 Nxf4 15.gxf4 Nc7 16.e3 Nd5** transposes to a position mentioned in the next chapter, which I now prefer to avoid, for reasons explained in Chapter 14, Page 19 in the note to move 11.
 
 <!-- FEN: r1q2rk1/pb2bppp/npp1pn2/3pN3/2PP1B2/P5P1/1PQ1PPBP/RN1R2K1 b - - 2 12 -->
 

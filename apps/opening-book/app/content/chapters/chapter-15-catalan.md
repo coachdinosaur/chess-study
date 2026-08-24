@@ -17,22 +17,22 @@
 
 6.O-O
 
-A) 6...c6                                                     229
-B) 6...Nbd7 7.Qc2                                            232
-    B1) 7...b6 8.cxd5                      232
-        B11) 8...Nxd5  233
-        B12) 8...exd5  234
-    B2) 7...c6 8.Nbd2 b6 9.e4              235
-        B21) 9...dxe4 236
-        B22) 9...Bb7 10.e5 Ne8 11.cxd5 237
-            B221) 11...exd5 237
-            B222) 11...cxd5 12.Re1 239
-                B2221) 12...Ba6 240
-                B2222) 12...Qc7 241
-                B2223) 12...Rc8 243
-        B23) 9...Ba6 10.b3 Rc8 11.Bb2 c5 12.exd5 exd5 13.Rfd1! 245
-            B231) 13...Re8 248
-            B232) 13...cxd4 249
+A) 6...c6 — Page 2
+B) 6...Nbd7 7.Qc2 — Page 5
+    B1) 7...b6 8.cxd5 — Page 5
+        B11) 8...Nxd5 — Page 6
+        B12) 8...exd5 — Page 7
+    B2) 7...c6 8.Nbd2 b6 9.e4 — Page 8
+        B21) 9...dxe4 — Page 9
+        B22) 9...Bb7 10.e5 Ne8 11.cxd5 — Page 10
+            B221) 11...exd5 — Page 10
+            B222) 11...cxd5 12.Re1 — Page 12
+                B2221) 12...Ba6 — Page 13
+                B2222) 12...Qc7 — Page 14
+                B2223) 12...Rc8 — Page 16
+        B23) 9...Ba6 10.b3 Rc8 11.Bb2 c5 12.exd5 exd5 13.Rfd1! — Page 18
+            B231) 13...Re8 — Page 21
+            B232) 13...cxd4 — Page 22
 
 A) note to 14...Rc8
 

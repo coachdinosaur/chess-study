@@ -16,30 +16,30 @@
 **FEN:**
 `r1bq1rk1/pp1nbppp/2p1pn2/3p4/2PP1B2/5NP1/PPQ1PPBP/RN3RK1 b - - 3 9`
 
-A) 9...Nh5 197
+A) 9...Nh5 — Page 2
 
-B) 9...a5 10.Rd1 Nh5 11.Bc1 198
-    B1) 11...f5 199
-    B2) 11...b5 200
+B) 9...a5 10.Rd1 Nh5 11.Bc1 — Page 3
+    B1) 11...f5 — Page 4
+    B2) 11...b5 — Page 5
 
-C) 9...b6 10.Rd1 202
-    C1) 10...Ba6 11.Ne5 202
-        C11) 11...Qc8 202
-        C12) 11...Nxe5 203
-        C13) 11...Rc8 12.cxd5! 208
-            C131) 12...Nxd5 209
-            C132) 12...cxd5 13.Nc6 210
-                C1321) 13...Qe8 210
-                C1322) 13...Bb5 211
-                C1323) 13...Nh5 213
+C) 9...b6 10.Rd1 — Page 7
+    C1) 10...Ba6 11.Ne5 — Page 7
+        C11) 11...Qc8 — Page 7
+        C12) 11...Nxe5 — Page 8
+        C13) 11...Rc8 12.cxd5! — Page 13
+            C131) 12...Nxd5 — Page 14
+            C132) 12...cxd5 13.Nc6 — Page 15
+                C1321) 13...Qe8 — Page 15
+                C1322) 13...Bb5 — Page 16
+                C1323) 13...Nh5 — Page 18
 
-    C2) 10...Bb7 11.Ne5! 214
-        C21) 11...Nxe5 214
-        C22) 11...Nh5 217
-        C23) 11...b5 221
-        C24) 11...Rc8 12.Nc3 Nh5 13.Bc1 222
-            C241) 13...f5 224
-            C242) 13...Nhf6 225
+    C2) 10...Bb7 11.Ne5! — Page 19
+        C21) 11...Nxe5 — Page 19
+        C22) 11...Nh5 — Page 22
+        C23) 11...b5 — Page 26
+        C24) 11...Rc8 12.Nc3 Nh5 13.Bc1 — Page 27
+            C241) 13...f5 — Page 29
+            C242) 13...Nhf6 — Page 30
 
 ---
 
@@ -1587,7 +1587,7 @@ This position has occurred in more than sixty games, and the number jumps to mor
 **12.Nc3 Nh5**
 This has been Black’s most popular choice by far. It is worth mentioning a couple of alternatives:
 
-**12...Nxe5 13.dxe5 Nd7 14.cxd5 cxd5 15.e4** transposes to a position covered earlier on page 215 – see **14...Rc8 15.Nc3** in the notes to variation C21.
+**12...Nxe5 13.dxe5 Nd7 14.cxd5 cxd5 15.e4** transposes to a position covered earlier in Chapter 14, Page 20 – see **14...Rc8 15.Nc3** in the notes to variation C21.
 
 **12...b5 13.c5**
 Once again, the blocked structure yields a slight plus for White.
