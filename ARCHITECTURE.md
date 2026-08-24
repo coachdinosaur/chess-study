@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-Chess Lesson Study Board is a chess teaching platform served as static files. The repository combines a framework-free interactive single-page application, browser Stockfish, Lichess tablebase requests, separate legacy Endgame Puzzle and user-facing Position Study runtimes, coach-controlled student workspaces and puzzle assignments, static lesson sites with classroom presentation and a floating Teacher Board, a synchronized teacher/student Live Board, a separately built Catalan opening course, a standalone Endgame Trainer landing and privacy site, a client-side 3D Chess Position Studio, and optional local Python helpers.
+Chess Lesson Study Board is a chess teaching platform served as static files. The repository combines a framework-free interactive single-page application, browser Stockfish, Lichess tablebase requests, separate legacy Endgame Puzzle and user-facing Position Study runtimes, coach-controlled student workspaces and puzzle assignments, static lesson sites with classroom presentation and a floating Teacher Board, a synchronized teacher/student Live Board, a customizable mobile fullscreen digital chess clock for face-to-face games, a separately built Catalan opening course, a standalone Endgame Trainer landing and privacy site, a client-side 3D Chess Position Studio, and optional local Python helpers.
 
 The main Study Board, lesson sites, and Endgame Trainer site have no bundler or
 application build step. Their production assets are committed directly.
@@ -64,14 +64,21 @@ The major subsystems are:
    - Supabase-backed teacher/student rooms
    - Secure student links, move locking, prepared positions, and session messages
 
-8. **Vendored browser dependencies and data**
+8. **Digital Chess Clock application**
+   - Dedicated mobile-first full-screen clock at `clock/index.html`
+   - Pure timing engine in `clock/clock-engine.mjs` (Fischer, USCF delay, Bronstein, Handicap)
+   - Zero-latency Web Audio API sound synthesizer and haptics in `clock/clock-audio.mjs`
+   - Responsive multi-device layout in `clock/clock.css` (180° portrait opponent rotation, tablet dual console, desktop tournament chassis)
+   - UI lifecycle controller in `clock/clock-app.js` with Screen Wake Lock API and Fullscreen API
+
+9. **Vendored browser dependencies and data**
    - `vendor/chess.js`
    - `vendor/stockfish/`
    - `vendor/xlsx.full.min.js`
    - `assets/openings.tsv`
    - MPChess SVG pieces
 
-9. **Optional local services**
+10. **Optional local services**
    - `local_server.py`
    - `scanner_server.py`
    - `scanner_predict.py`
@@ -156,6 +163,13 @@ chess-study/
 │       ├── favicon.png
 │       ├── light-portrait.png
 │       └── puzzle-landscape.png
+│
+├── clock/
+│   ├── index.html
+│   ├── clock.css
+│   ├── clock-engine.mjs
+│   ├── clock-audio.mjs
+│   └── clock-app.js
 │
 ├── local_server.py
 ├── scanner_server.py
@@ -1244,6 +1258,7 @@ The repository deploys as a cohesive static platform via GitHub Actions and GitH
 ├── Static lesson curricula (/lessons/ - Pawn, Adv Pawn, Bishop, Endgame)
 ├── Management portal (/management/ - Dashboard, Workspaces, Assignments)
 ├── Live Board (/live-board.html - Synchronized classroom rooms)
+├── Digital Chess Clock (/clock/ - Customizable mobile full-screen chess clock)
 ├── Catalan Atelier (/openings/ - React 19 + Vite compiled build)
 ├── Sicilian Defense (/openings-sicilian/ - React 19 + Vite compiled build)
 ├── 3D Chess Position Studio (/3d/ - React 19 + Three.js + Vite compiled build)
@@ -1257,7 +1272,7 @@ The production deployment workflow (`.github/workflows/pages.yml`) executes on e
 1. **Catalan Atelier build**: Compiles `apps/opening-book/` with Vite base `/openings/`, runs Markdown chapter checks and Stockfish client tests, and outputs to `apps/opening-book/dist`.
 2. **Sicilian Defense build**: Compiles `apps/opening-book-sicilian/` with Vite base `/openings-sicilian/`, runs chapter audit tests, and outputs to `apps/opening-book-sicilian/dist`.
 3. **3D Chess Position Studio build**: Compiles `apps/3d-chess-studio/` with `VITE_BASE_PATH=/3d/`, runs static build and geometry tests, and outputs to `apps/3d-chess-studio/dist`.
-4. **Cross-app integration tests**: Executes `node --test tests/opening-book-integration.test.mjs`, `tests/endgame-trainer-integration.test.mjs`, and `tests/3d-chess-studio-integration.test.mjs` to ensure route integrity, relative asset paths, and shared favicon availability.
+4. **Cross-app integration tests**: Executes `node --test tests/opening-book-integration.test.mjs`, `tests/endgame-trainer-integration.test.mjs`, `tests/3d-chess-studio-integration.test.mjs`, and `tests/chess-clock.test.mjs`.
 5. **Mount and publish**: Moves compiled outputs to their respective production mount directories (`openings`, `openings-sicilian`, `3d`), removes source code and `node_modules` to minimize artifact size, and uploads the final combined Pages artifact.
 
 ### 28.2 Production URLs and clean routing
@@ -1265,6 +1280,7 @@ The production deployment workflow (`.github/workflows/pages.yml`) executes on e
 - `https://cddigital.top/` — Interactive Study SPA
 - `https://cddigital.top/lessons/` — Lesson index and curricula
 - `https://cddigital.top/management/` — Coach Dashboard and Student Workspaces
+- `https://cddigital.top/clock/` — Digital Chess Clock
 - `https://cddigital.top/openings/` — Catalan Atelier Opening Course
 - `https://cddigital.top/openings-sicilian/` — Sicilian Defense Opening Course
 - `https://cddigital.top/3d/` — 3D Chess Position Studio

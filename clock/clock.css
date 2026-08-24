@@ -1,0 +1,911 @@
+/* ==========================================================================
+   CD Digital Chess — Customizable Digital Chess Clock
+   Mobile-First, Fullscreen, Face-to-Face OTB Responsive Stylesheet
+   ========================================================================== */
+
+:root {
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  
+  /* Midnight OLED Theme (Default) */
+  --bg-app: #000000;
+  --bg-clock-idle: #12141a;
+  --bg-clock-active: #0a251b;
+  --bg-clock-low: #3a1515;
+  --border-clock: #232733;
+  --border-active: #10b981;
+  --border-low: #ef4444;
+  --text-primary: #f8fafc;
+  --text-muted: #64748b;
+  --text-active: #34d399;
+  --text-low: #f87171;
+  --accent: #10b981;
+  --accent-glow: rgba(16, 185, 129, 0.35);
+  --hud-bg: rgba(18, 20, 26, 0.85);
+  --hud-border: rgba(255, 255, 255, 0.12);
+  --modal-bg: #161a23;
+  --modal-border: #2e3547;
+  --shadow-active: 0 0 35px var(--accent-glow);
+}
+
+/* --- THEMES --- */
+
+/* 1. DGT Classic Tournament Amber LCD */
+[data-theme="dgt"] {
+  --bg-app: #181512;
+  --bg-clock-idle: #26211c;
+  --bg-clock-active: #3a2e15;
+  --bg-clock-low: #421815;
+  --border-clock: #4a3e31;
+  --border-active: #f59e0b;
+  --border-low: #ef4444;
+  --text-primary: #fbbf24;
+  --text-muted: #927e65;
+  --text-active: #fcd34d;
+  --text-low: #fca5a5;
+  --accent: #f59e0b;
+  --accent-glow: rgba(245, 158, 11, 0.35);
+  --hud-bg: rgba(38, 33, 28, 0.9);
+  --hud-border: rgba(245, 158, 11, 0.2);
+  --modal-bg: #221d18;
+  --modal-border: #4a3e31;
+}
+
+/* 2. Cyber Emerald / Slate */
+[data-theme="cyber"] {
+  --bg-app: #090d16;
+  --bg-clock-idle: #111827;
+  --bg-clock-active: #064e3b;
+  --bg-clock-low: #450a0a;
+  --border-clock: #1f2937;
+  --border-active: #059669;
+  --border-low: #dc2626;
+  --text-primary: #e2e8f0;
+  --text-muted: #64748b;
+  --text-active: #6ee7b7;
+  --text-low: #fca5a5;
+  --accent: #10b981;
+  --accent-glow: rgba(16, 185, 129, 0.4);
+  --hud-bg: rgba(17, 24, 39, 0.9);
+  --hud-border: rgba(255, 255, 255, 0.15);
+  --modal-bg: #151e2e;
+  --modal-border: #2d3748;
+}
+
+/* 3. Warm Wood / Studio */
+[data-theme="wood"] {
+  --bg-app: #1a120b;
+  --bg-clock-idle: #2b1e16;
+  --bg-clock-active: #442817;
+  --bg-clock-low: #4a1515;
+  --border-clock: #53392a;
+  --border-active: #d97706;
+  --border-low: #dc2626;
+  --text-primary: #fef3c7;
+  --text-muted: #a89078;
+  --text-active: #fde68a;
+  --text-low: #fca5a5;
+  --accent: #d97706;
+  --accent-glow: rgba(217, 119, 6, 0.35);
+  --hud-bg: rgba(43, 30, 22, 0.92);
+  --hud-border: rgba(217, 119, 6, 0.25);
+  --modal-bg: #2d1f16;
+  --modal-border: #5a3d2a;
+}
+
+/* Reset & Box Sizing */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  touch-action: manipulation;
+}
+
+/* --- APP SHELL --- */
+.clock-shell {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  background-color: var(--bg-app);
+  position: relative;
+}
+
+/* --- DESKTOP TOP HEADER (Hidden on mobile) --- */
+.clock-desktop-header {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: var(--hud-bg);
+  border-bottom: 1px solid var(--hud-border);
+  z-index: 50;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.header-brand svg {
+  color: var(--accent);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--hud-border);
+  color: var(--text-primary);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.nav-link-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--accent);
+}
+
+/* --- CLOCK MAIN ARENA --- */
+.clock-arena {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* --- CLOCK HALF / TOUCH ZONE --- */
+.clock-zone {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-clock-idle);
+  position: relative;
+  cursor: pointer;
+  padding: 20px;
+  transition: background-color 0.2s, box-shadow 0.2s, transform 0.05s;
+  outline: none;
+  border: none;
+  width: 100%;
+}
+
+.clock-zone:active {
+  filter: brightness(1.1);
+}
+
+/* Rotated Top Player (Opponent Face-to-Face in Portrait) */
+.clock-zone-top {
+  border-bottom: 2px solid var(--border-clock);
+}
+
+.clock-zone-top .clock-content {
+  transform: rotate(180deg);
+  transition: transform 0.25s ease;
+}
+
+/* When 180° rotation is disabled */
+.clock-shell.is-unmirrored .clock-zone-top .clock-content {
+  transform: rotate(0deg);
+}
+
+.clock-zone-bottom {
+  border-top: 2px solid var(--border-clock);
+}
+
+/* Active Clock Zone Highlight */
+.clock-zone.is-active {
+  background-color: var(--bg-clock-active);
+  box-shadow: inset 0 0 40px var(--accent-glow);
+}
+
+.clock-zone.is-active .time-digits {
+  color: var(--text-active);
+  text-shadow: 0 0 25px var(--accent-glow);
+}
+
+.clock-zone.is-active .player-badge {
+  background-color: var(--accent);
+  color: #000000;
+  font-weight: 700;
+}
+
+/* Low Time State (<20s / <10s) */
+.clock-zone.is-low-time {
+  background-color: var(--bg-clock-low) !important;
+}
+
+.clock-zone.is-low-time .time-digits {
+  color: var(--text-low) !important;
+  animation: pulse-low 1.2s infinite ease-in-out;
+}
+
+@keyframes pulse-low {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Flagged State */
+.clock-zone.is-flagged {
+  background-color: #450a0a !important;
+  border-color: #ef4444 !important;
+}
+
+.clock-zone.is-flagged .time-digits {
+  color: #ef4444 !important;
+}
+
+/* --- CLOCK CONTENT WRAPPER --- */
+.clock-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 600px;
+  gap: 12px;
+  pointer-events: none; /* Let the parent zone capture all taps */
+}
+
+/* Header row inside clock: Player name badge & moves */
+.clock-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 16px;
+  max-width: 480px;
+}
+
+.player-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: clamp(0.75rem, 2.5vw, 0.95rem);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  transition: background 0.2s, color 0.2s;
+}
+
+.moves-badge {
+  font-size: clamp(0.75rem, 2.5vw, 0.95rem);
+  font-weight: 500;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+/* Large Time Digits */
+.time-display {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  width: 100%;
+}
+
+.time-digits {
+  font-family: var(--font-mono);
+  font-size: clamp(4rem, 16vw, 8.5rem);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--text-primary);
+  transition: color 0.15s ease, text-shadow 0.15s ease;
+}
+
+/* Delay Countdown Badge */
+.delay-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fbbf24;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: clamp(0.7rem, 2vw, 0.85rem);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  margin-top: -4px;
+}
+
+.delay-badge[hidden] {
+  display: none !important;
+}
+
+/* Ready State Prompt */
+.clock-prompt {
+  font-size: clamp(0.75rem, 2.2vw, 0.9rem);
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* --- CENTER HUD CONTROLS PILL --- */
+.clock-hud {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--hud-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--hud-border);
+  padding: 6px 12px;
+  border-radius: 40px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  z-index: 40;
+}
+
+.hud-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: transform 0.1s, background 0.15s, border-color 0.15s;
+}
+
+.hud-btn:active {
+  transform: scale(0.92);
+}
+
+.hud-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: var(--accent);
+}
+
+.hud-btn-primary {
+  width: 52px;
+  height: 52px;
+  background: var(--accent);
+  color: #000000;
+  border: none;
+}
+
+.hud-btn-primary:hover {
+  background: var(--text-active);
+}
+
+.hud-btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+.hud-btn-primary svg {
+  width: 26px;
+  height: 26px;
+}
+
+/* --- FLAG FALL / TIME OUT OVERLAY --- */
+.flag-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+  gap: 20px;
+  padding: 24px;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.flag-overlay[hidden] {
+  display: none !important;
+}
+
+.flag-title {
+  font-size: clamp(2rem, 8vw, 3.5rem);
+  font-weight: 800;
+  color: #ef4444;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.flag-subtitle {
+  font-size: clamp(1.1rem, 3.5vw, 1.6rem);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.flag-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #000000;
+  font-weight: 700;
+  padding: 12px 28px;
+  border-radius: 12px;
+  border: none;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: transform 0.1s, opacity 0.15s;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.btn-primary:active {
+  transform: scale(0.96);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: 1px solid var(--hud-border);
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* --- MODALS (Settings, Custom Builder, Shortcuts) --- */
+.clock-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+  animation: fadeIn 0.2s ease;
+}
+
+.clock-modal-backdrop[hidden] {
+  display: none !important;
+}
+
+.clock-modal {
+  background: var(--modal-bg);
+  border: 1px solid var(--modal-border);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 540px;
+  max-height: 90vh;
+  max-height: 90dvh;
+  overflow-y: auto;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--modal-border);
+  position: sticky;
+  top: 0;
+  background: var(--modal-bg);
+  z-index: 10;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.modal-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.modal-body {
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.setting-section-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+/* Preset Chips Grid */
+.presets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 8px;
+}
+
+.preset-chip {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--modal-border);
+  color: var(--text-primary);
+  padding: 10px 8px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.preset-chip:hover {
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.preset-chip.is-selected {
+  background: var(--accent);
+  color: #000000;
+  border-color: var(--accent);
+  font-weight: 700;
+}
+
+/* Theme selector pills */
+.themes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.theme-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--modal-border);
+  padding: 10px 14px;
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.theme-pill.is-selected {
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.theme-color-preview {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Sound Options */
+.sound-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sound-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--modal-border);
+  color: var(--text-primary);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.sound-btn.is-selected {
+  background: var(--accent);
+  color: #000000;
+  font-weight: 600;
+  border-color: var(--accent);
+}
+
+/* Toggle Switches */
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.setting-label {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.setting-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 26px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 26px;
+  transition: 0.2s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.2s;
+}
+
+input:checked + .slider {
+  background-color: var(--accent);
+}
+
+input:checked + .slider:before {
+  transform: translateX(22px);
+  background-color: #000000;
+}
+
+/* Custom Time Builder Inputs */
+.custom-inputs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.input-group label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.input-field {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--modal-border);
+  color: var(--text-primary);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: var(--font-mono);
+  outline: none;
+}
+
+.input-field:focus {
+  border-color: var(--accent);
+}
+
+/* Modal Footer */
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 22px;
+  border-top: 1px solid var(--modal-border);
+  background: var(--modal-bg);
+  position: sticky;
+  bottom: 0;
+}
+
+/* --- KEYBOARD SHORTCUTS TABLE --- */
+.shortcuts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.shortcut-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+}
+
+.kbd-badge {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.4);
+}
+
+/* --- RESPONSIVE BREAKPOINTS --- */
+
+/* 1. Mobile Landscape & Tablet Landscape */
+@media (min-aspect-ratio: 1/1) and (max-width: 1024px) {
+  .clock-arena {
+    flex-direction: row;
+  }
+
+  .clock-zone-top {
+    border-bottom: none;
+    border-right: 2px solid var(--border-clock);
+  }
+
+  .clock-zone-top .clock-content {
+    transform: rotate(0deg); /* Facing player in landscape */
+  }
+
+  .clock-zone-bottom {
+    border-top: none;
+    border-left: 2px solid var(--border-clock);
+  }
+
+  .clock-hud {
+    flex-direction: column;
+    padding: 12px 6px;
+  }
+}
+
+/* 2. Desktop Tournament Studio Console Mode (> 1024px) */
+@media (min-width: 1025px) {
+  .clock-desktop-header {
+    display: flex;
+  }
+
+  .clock-shell:not(.is-fullscreen-app) .clock-arena {
+    max-width: 1100px;
+    max-height: 640px;
+    margin: auto;
+    flex-direction: row;
+    border-radius: 28px;
+    border: 2px solid var(--border-clock);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+    overflow: hidden;
+  }
+
+  .clock-shell:not(.is-fullscreen-app) .clock-zone-top {
+    border-bottom: none;
+    border-right: 2px solid var(--border-clock);
+  }
+
+  .clock-shell:not(.is-fullscreen-app) .clock-zone-top .clock-content {
+    transform: rotate(0deg);
+  }
+
+  .clock-shell:not(.is-fullscreen-app) .clock-zone-bottom {
+    border-top: none;
+    border-left: 2px solid var(--border-clock);
+  }
+
+  .clock-shell:not(.is-fullscreen-app) .clock-hud {
+    flex-direction: column;
+    padding: 12px 6px;
+  }
+
+  /* Fullscreen Mode on Desktop */
+  .clock-shell.is-fullscreen-app .clock-desktop-header {
+    display: none;
+  }
+
+  .clock-shell.is-fullscreen-app .clock-arena {
+    flex-direction: row;
+  }
+
+  .clock-shell.is-fullscreen-app .clock-zone-top {
+    border-bottom: none;
+    border-right: 2px solid var(--border-clock);
+  }
+
+  .clock-shell.is-fullscreen-app .clock-zone-top .clock-content {
+    transform: rotate(0deg);
+  }
+
+  .clock-shell.is-fullscreen-app .clock-zone-bottom {
+    border-top: none;
+    border-left: 2px solid var(--border-clock);
+  }
+
+  .clock-shell.is-fullscreen-app .clock-hud {
+    flex-direction: column;
+    padding: 12px 6px;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

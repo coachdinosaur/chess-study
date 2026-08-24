@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="midnight">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Digital Chess Clock | CD Digital Chess</title>
+  <meta name="description" content="A customizable, mobile-first full-screen digital chess clock for face-to-face over-the-board chess games. Supports Fischer, Delay, Bronstein, and Handicap time controls.">
+  <meta name="theme-color" content="#000000">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
+  <link rel="stylesheet" href="./clock.css">
+</head>
+<body>
+  <div id="clockShell" class="clock-shell">
+    
+    <!-- DESKTOP TOP HEADER -->
+    <header class="clock-desktop-header">
+      <a href="../" class="header-brand" title="Back to Chess Study Platform">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        <span>CD Chess Clock</span>
+      </a>
+      <div class="header-actions">
+        <span id="activeTimeControlLabel" class="nav-link-btn" style="cursor: default; opacity: 0.85;">Blitz 5+3</span>
+        <button id="headerShortcutsBtn" class="nav-link-btn" type="button" title="View Keyboard Shortcuts">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M6 8h.001M10 8h.001M14 8h.001M18 8h.001M8 12h.001M12 12h.001M16 12h.001M6 16h12"></path></svg>
+          Shortcuts
+        </button>
+        <button id="headerSettingsBtn" class="nav-link-btn" type="button" title="Time Controls & Settings">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          Settings
+        </button>
+        <a href="../" class="nav-link-btn" title="Back to Chess App">Exit</a>
+      </div>
+    </header>
+
+    <!-- MAIN CLOCK ARENA -->
+    <main class="clock-arena">
+      
+      <!-- TOP PLAYER (Player 2 / Black / Opponent) -->
+      <button id="clockZone2" class="clock-zone clock-zone-top" type="button" aria-label="Black Clock" data-player="2">
+        <div class="clock-content">
+          <div class="clock-meta">
+            <span class="player-badge">Black</span>
+            <span id="movesLabel2" class="moves-badge">0 moves</span>
+          </div>
+          
+          <div class="time-display">
+            <span id="timeDigits2" class="time-digits">05:00</span>
+          </div>
+
+          <span id="delayBadge2" class="delay-badge" hidden>Delay 5s</span>
+          <span id="promptLabel2" class="clock-prompt">Tap to start White's clock</span>
+        </div>
+      </button>
+
+      <!-- CENTER HUD CONTROLS PILL -->
+      <nav class="clock-hud" aria-label="Clock Controls">
+        <button id="btnSettings" class="hud-btn" type="button" title="Time Controls & Settings (S)" aria-label="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </button>
+
+        <button id="btnPlayPause" class="hud-btn hud-btn-primary" type="button" title="Play / Pause (P / Space)" aria-label="Play or Pause">
+          <!-- Play Icon -->
+          <svg id="iconPlay" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+          <!-- Pause Icon (hidden by default) -->
+          <svg id="iconPause" viewBox="0 0 24 24" fill="currentColor" hidden><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+        </button>
+
+        <button id="btnReset" class="hud-btn" type="button" title="Reset Clock (R)" aria-label="Reset Clock">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+        </button>
+
+        <button id="btnSound" class="hud-btn" type="button" title="Sound Toggle (M)" aria-label="Toggle Sound">
+          <svg id="iconSoundOn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+          <svg id="iconSoundOff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+        </button>
+
+        <button id="btnFullscreen" class="hud-btn" type="button" title="Fullscreen (F)" aria-label="Toggle Fullscreen">
+          <svg id="iconEnterFullscreen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+          <svg id="iconExitFullscreen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path></svg>
+        </button>
+      </nav>
+
+      <!-- BOTTOM PLAYER (Player 1 / White / You) -->
+      <button id="clockZone1" class="clock-zone clock-zone-bottom" type="button" aria-label="White Clock" data-player="1">
+        <div class="clock-content">
+          <div class="clock-meta">
+            <span class="player-badge">White</span>
+            <span id="movesLabel1" class="moves-badge">0 moves</span>
+          </div>
+
+          <div class="time-display">
+            <span id="timeDigits1" class="time-digits">05:00</span>
+          </div>
+
+          <span id="delayBadge1" class="delay-badge" hidden>Delay 5s</span>
+          <span id="promptLabel1" class="clock-prompt">Tap to start Black's clock</span>
+        </div>
+      </button>
+
+    </main>
+
+    <!-- FLAG FALL / TIME OUT BANNER -->
+    <div id="flagOverlay" class="flag-overlay" hidden>
+      <h2 class="flag-title">TIME OUT</h2>
+      <p id="flagMessage" class="flag-subtitle">Black's flag fell! White wins on time.</p>
+      <div class="flag-actions">
+        <button id="btnFlagRestart" class="btn-primary" type="button">New Game</button>
+        <button id="btnFlagClose" class="btn-secondary" type="button">Close</button>
+      </div>
+    </div>
+
+    <!-- SETTINGS & TIME CONTROL BUILDER MODAL -->
+    <div id="settingsModalBackdrop" class="clock-modal-backdrop" hidden>
+      <div class="clock-modal" role="dialog" aria-labelledby="settingsModalTitle">
+        <div class="modal-header">
+          <h3 id="settingsModalTitle" class="modal-title">Clock Settings</h3>
+          <button id="btnCloseSettings" class="modal-close-btn" type="button" aria-label="Close settings">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          
+          <!-- Presets -->
+          <section>
+            <h4 class="setting-section-title">Popular Presets</h4>
+            <div id="presetsGrid" class="presets-grid">
+              <!-- Dynamically populated from PRESET_TIME_CONTROLS -->
+            </div>
+          </section>
+
+          <!-- Custom Time Control Builder -->
+          <section>
+            <h4 class="setting-section-title">Custom Time Control</h4>
+            
+            <div class="custom-inputs-grid">
+              <div class="input-group">
+                <label for="customMinutes">Minutes</label>
+                <input id="customMinutes" class="input-field" type="number" min="0" max="180" value="5">
+              </div>
+              <div class="input-group">
+                <label for="customSeconds">Seconds</label>
+                <input id="customSeconds" class="input-field" type="number" min="0" max="59" value="0">
+              </div>
+              <div class="input-group">
+                <label for="customIncrement">Inc / Delay (s)</label>
+                <input id="customIncrement" class="input-field" type="number" min="0" max="120" value="3">
+              </div>
+            </div>
+
+            <div style="margin-top: 12px;">
+              <label for="customMode" style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase;">Timing System</label>
+              <select id="customMode" class="input-field" style="cursor: pointer;">
+                <option value="fischer">Fischer (Bonus increment added per move)</option>
+                <option value="delay">Simple Delay (USCF countdown pause)</option>
+                <option value="bronstein">Bronstein Delay (Time refund up to delay)</option>
+                <option value="none">Sudden Death (No increment or delay)</option>
+              </select>
+            </div>
+          </section>
+
+          <!-- Themes -->
+          <section>
+            <h4 class="setting-section-title">Visual Theme</h4>
+            <div class="themes-grid">
+              <button class="theme-pill" type="button" data-theme-val="midnight">
+                <span class="theme-color-preview" style="background: #10b981;"></span>
+                Midnight OLED
+              </button>
+              <button class="theme-pill" type="button" data-theme-val="dgt">
+                <span class="theme-color-preview" style="background: #f59e0b;"></span>
+                DGT Amber LCD
+              </button>
+              <button class="theme-pill" type="button" data-theme-val="cyber">
+                <span class="theme-color-preview" style="background: #064e3b;"></span>
+                Cyber Emerald
+              </button>
+              <button class="theme-pill" type="button" data-theme-val="wood">
+                <span class="theme-color-preview" style="background: #d97706;"></span>
+                Warm Wood
+              </button>
+            </div>
+          </section>
+
+          <!-- Audio Sounds -->
+          <section>
+            <h4 class="setting-section-title">Clock Sound</h4>
+            <div class="sound-options">
+              <button class="sound-btn" type="button" data-sound-val="mechanical">Mechanical Click</button>
+              <button class="sound-btn" type="button" data-sound-val="beep">Digital Beep</button>
+              <button class="sound-btn" type="button" data-sound-val="wood">Wood Tap</button>
+              <button class="sound-btn" type="button" data-sound-val="silent">Muted</button>
+            </div>
+          </section>
+
+          <!-- Device & Orientation Toggles -->
+          <section style="display: flex; flex-direction: column; gap: 16px;">
+            <div class="setting-row">
+              <div>
+                <div class="setting-label">Invert Opponent Clock</div>
+                <div class="setting-desc">Rotates top clock 180° for face-to-face seating</div>
+              </div>
+              <label class="switch">
+                <input id="toggleRotateOpponent" type="checkbox" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="setting-row">
+              <div>
+                <div class="setting-label">Haptic Vibration</div>
+                <div class="setting-desc">Vibrate phone lightly upon clock press</div>
+              </div>
+              <label class="switch">
+                <input id="toggleHaptics" type="checkbox" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+          </section>
+
+        </div>
+
+        <div class="modal-footer">
+          <button id="btnApplySettings" class="btn-primary" type="button">Apply & Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESET CONFIRMATION MODAL -->
+    <div id="resetModalBackdrop" class="clock-modal-backdrop" hidden>
+      <div class="clock-modal" style="max-width: 400px; text-align: center;">
+        <div class="modal-body" style="gap: 16px;">
+          <h3 class="modal-title">Reset Clock?</h3>
+          <p style="color: var(--text-muted); font-size: 0.95rem;">Are you sure you want to reset both clocks and restart the game?</p>
+          <div style="display: flex; gap: 12px; justify-content: center; margin-top: 8px;">
+            <button id="btnConfirmReset" class="btn-primary" style="background: #ef4444; color: #ffffff;" type="button">Yes, Reset</button>
+            <button id="btnCancelReset" class="btn-secondary" type="button">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KEYBOARD SHORTCUTS MODAL -->
+    <div id="shortcutsModalBackdrop" class="clock-modal-backdrop" hidden>
+      <div class="clock-modal" style="max-width: 480px;">
+        <div class="modal-header">
+          <h3 class="modal-title">Keyboard Shortcuts</h3>
+          <button id="btnCloseShortcuts" class="modal-close-btn" type="button" aria-label="Close shortcuts">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="shortcuts-list">
+            <div class="shortcut-item">
+              <span>Switch Turn / Start</span>
+              <span class="kbd-badge">Spacebar</span>
+            </div>
+            <div class="shortcut-item">
+              <span>Play / Pause</span>
+              <span class="kbd-badge">P</span>
+            </div>
+            <div class="shortcut-item">
+              <span>Reset Clock</span>
+              <span class="kbd-badge">R</span>
+            </div>
+            <div class="shortcut-item">
+              <span>Toggle Fullscreen</span>
+              <span class="kbd-badge">F</span>
+            </div>
+            <div class="shortcut-item">
+              <span>Open Settings</span>
+              <span class="kbd-badge">S</span>
+            </div>
+            <div class="shortcut-item">
+              <span>Tap White Clock</span>
+              <span class="kbd-badge">1 / ←</span>
+            </div>
+            <div class="shortcut-item">
+              <span>Tap Black Clock</span>
+              <span class="kbd-badge">2 / →</span>
+            </div>
+            <div class="shortcut-item">
+              <span>Mute / Unmute Sound</span>
+              <span class="kbd-badge">M</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module" src="./clock-app.js"></script>
+</body>
+</html>
