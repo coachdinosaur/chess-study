@@ -39,6 +39,7 @@ For local Windows setup, see [LOCAL_DEPLOYMENT.md](LOCAL_DEPLOYMENT.md).
 - Use static Pawn, Advanced Pawn, Bishop, and numbered endgame lesson pages in `lessons/`.
 - Study the interactive opening courses: Catalan Atelier at `/openings/` and Sicilian Defense at `/openings-sicilian/`.
 - Build 3D positions, play local games, and challenge AI bots (Casual, Club, Master Stockfish 18 Lite WASM) in the 3D Chess Position Studio at `/3d/`.
+- Open the standalone Digital Chess Clock at `/clock/` for over-the-board face-to-face play, supporting Fischer, USCF delay, Bronstein, and Handicap time controls with zero-latency Web Audio sound synthesis, haptics, portrait opponent rotation, and Screen Wake Lock.
 - Open the standalone Endgame Trainer landing page and Android privacy policy at `/endgame-trainer/`.
 - Present supported lessons scene by scene with Previous, Reveal, Reset, Next, Exit, keyboard shortcuts, fullscreen support, and a visible click pulse for classroom projection.
 - Open the floating Teacher Board from supported lesson pages to load Page, Start, Empty, or prepared CSV positions; set the side to move; place pieces; annotate; take back; flip; and reset.
@@ -384,6 +385,7 @@ The floating Teacher Board also evaluates the embedded FEN after moves and posit
 | `management/teacher.html` / `management/js/teacher-dashboard.mjs` | Private coach dashboard, student records, curriculum progress, session command center, and coaching-session logs |
 | `management/js/coach-session-command.mjs` | Session recommendation, elapsed-time, and reload-safe timer-state helpers |
 | `management/student-workspace.html` / `management/js/student-workspace*.mjs` | Permanent token-scoped student workspace plus the coach-only editor and puzzle-assignment handoff |
+| `lesson-picker-search.mjs` | Lesson search filter input, real-time title matching, and coarse/mobile auto-focus suppression |
 | `lesson-position-builder.mjs` | CSV/XLSX lesson-position workflow |
 | `text-normalization.mjs` | Unicode and punctuation normalization |
 | `live-board.html` | Teacher/student room shell, synchronized board, lesson/FEN controls, messages |
@@ -400,6 +402,7 @@ The floating Teacher Board also evaluates the embedded FEN after moves and posit
 | `lessons/` | Static published lesson pages and shared lesson helpers |
 | `apps/opening-book/` | React/Vite source, Markdown chapters, tests, and local Stockfish assets for Catalan Atelier |
 | `apps/3d-chess-studio/` | React/Vite/Three.js 3D board, FEN setup, local play, AI bots (Casual, Club, Master Stockfish 18 Lite WASM), Staunton models, and Web Worker |
+| `clock/` | Standalone mobile-first fullscreen digital chess clock (Fischer, delay, Bronstein, handicap, Web Audio synth, screen wake lock) |
 | `endgame-trainer/` | Standalone Endgame Trainer landing page, privacy policy, styles, favicon, and app previews |
 | `.github/workflows/pages.yml` | Tests the combined routes, builds Catalan Atelier and 3D Studio, mounts their outputs at `/openings/` and `/3d/`, and deploys the combined Pages artifact |
 

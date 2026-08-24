@@ -211,6 +211,7 @@ index.html
     └── text-normalization.mjs
 
 focus-analysis-popup.mjs
+├── lesson-picker-search.mjs
 └── lichess-position-training.mjs
     ├── lichess-position-training-core.mjs
     ├── lichess-position-training-data.mjs
@@ -318,6 +319,7 @@ apps/3d-chess-studio/
 | `management/js/coach-session-command.mjs` | Pure lesson recommendation, elapsed-time, and sessionStorage validation helpers for an active coaching session |
 | `management/js/puzzle-assignment-*.mjs` | Teacher assignment selection/lifecycle and token-scoped student assignment runtime |
 | `management/js/student-workspace*.mjs` | Coach-only workspace editing, permanent-link generation, token-scoped student rendering, and assignment-link authorization |
+| `lesson-picker-search.mjs` | Lesson search filter input, real-time title matching, and coarse/mobile auto-focus suppression |
 | `lesson-position-builder.mjs` | CSV/XLSX import, field normalization, position-set CRUD, persistence, and builder UI |
 | `lesson-model.mjs` / `lesson-migrations.mjs` | Versioned lesson contracts, normalization, stable IDs, compatibility detection, and non-destructive migration |
 | `lesson-position-adapter.mjs` | Converts rich lesson roots or selected nodes to flat positions and converts position sets into lesson documents/books |
@@ -337,6 +339,7 @@ apps/3d-chess-studio/
 | `vendor/stockfish/` | Browser Stockfish JavaScript and WASM variants |
 | `apps/opening-book/` | React/Vite Catalan Atelier source, Markdown chapters, local assets, and tests |
 | `apps/3d-chess-studio/` | React/Vite/Three.js 3D board, FEN setup, local play, AI bots (Casual, Club, Master Stockfish 18 Lite WASM), Staunton models, Web Audio synthesizer, and static-build tests |
+| `clock/` | Standalone mobile-first fullscreen digital chess clock (Fischer, delay, Bronstein, handicap, Web Audio synth, screen wake lock) |
 | `endgame-trainer/` | Self-contained Endgame Trainer landing page, clean-route privacy policy, styles, favicon, and app previews |
 | `.github/workflows/pages.yml` | Tests combined-site routes, builds the React/Vite apps, mounts their outputs at `/openings/`, `/openings-sicilian/`, and `/3d/`, and uploads the combined static artifact |
 
@@ -533,7 +536,7 @@ Arrows and the last-move arrow use SVG overlays. Painted squares, circles, and s
 - evaluation rail and turn-marker offsets
 - Focus-mode limits
 
-Desktop and landscape layouts balance width and height. Mobile portrait uses nearly the full viewport width and reserves only the space needed by the visible evaluation rail.
+Desktop and landscape layouts balance width and height. Mobile portrait uses nearly the full viewport width and reserves only the space needed by the visible evaluation rail. Sizing in mobile portrait uses the stable window layout height (`window.innerHeight || currentViewportHeight()`) and suppresses programmatic auto-focus on coarse/touch devices when opening the lesson picker dropdown, ensuring the chessboard does not squish or jump behind open menus or soft keyboards.
 
 ---
 

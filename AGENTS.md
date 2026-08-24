@@ -14,6 +14,7 @@ It contains:
 - **Shared lesson presentation and Teacher Board systems** used across course levels
 - **Live Board** secure teacher/student synchronized rooms backed by Supabase
 - **3D Chess Position Studio** interactive Three.js board and Web Worker Stockfish bots
+- **Digital Chess Clock** customizable mobile fullscreen chess clock (`clock/`)
 - **Piece asset pipeline** (MetaPost/LuaLaTeX font → 12 SVG pieces)
 - **Local servers** for HTTP hosting (`local_server.py`) and board scanning (`scanner_server.py`)
 
@@ -38,6 +39,7 @@ It contains:
 | **Shared Teacher Board** | `lessons/pawn-teacher-board.js`, `lessons/pawn-teacher-board.css`, `lessons/teacher-board-illegal-moves.mjs` |
 | **Live Board** | `live-board.html`, `live-board.js`, `live-board-realtime.js`, `live-board-room-bootstrap.js`, `live-board-messages-v2.js`, `live-board-drag.js`, `live-board-click-toggle.js` |
 | **3D Chess Position Studio** | `apps/3d-chess-studio/`, `tests/3d-chess-studio-integration.test.mjs` |
+| **Digital Chess Clock** | `clock/index.html`, `clock/clock-app.js`, `clock/clock-engine.mjs`, `clock/clock-audio.mjs`, `clock/clock.css`, `tests/chess-clock.test.mjs` |
 | **Opening books** | `apps/opening-book/`, `apps/opening-book-sicilian/` |
 | **Endgame Trainer site** | `endgame-trainer/index.html`, `endgame-trainer/privacy-policy/index.html` |
 | **Lesson source manuscripts** | `lesson_source/` (Module 1), `lesson_source2/` (Module 2), `lesson_source3/` (Module 3) |
