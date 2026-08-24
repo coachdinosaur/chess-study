@@ -498,6 +498,7 @@ This looks more in keeping with White’s strategy of developing the queenside f
 
 Chapter 7 – Various 7th Moves
 
+<!-- FEN: r2qkb1r/pp3ppp/2n1p3/3pP3/3P4/2B2N2/PP3PPP/R2QKB1R w KQkq - 0 12 -->
 12.0-0 Be7 13.Ne1 b5 14.b3 Rc8 15.Qd2 Qb6 16.f4 0-0 17.Nf3 a5 18.Qd3
 
 **FEN:**
@@ -551,6 +552,7 @@ With a double-edged position; both sides have their chances.
 
 c3 Sicilian
 
+<!-- FEN: rn1qkb1r/pp3ppp/2bpp3/3nP3/3P4/2N2N2/PP1B1PPP/R2QKB1R w KQkq - 2 9 -->
 As they say, moving the same piece twice in the opening is rarely good, and that seems to be the case with 9.Ne4 after: 9...dxe5! 10.Nxe5 Be7 11.Rc1 0-0 12.Bd3 Qb6 13.Ng5 Bxg5 14.Bxg5 Qb4+ 15.Qd2 (15.Kf1? Bb5∓)
 
 **FEN:**
@@ -643,10 +645,12 @@ White must now choose which way to recapture on e5:
 
 c3 Sicilian
 
+<!-- FEN: r1b2rk1/ppq2pp1/4p3/4b2Q/8/2P5/P2B1PPP/R3R1K1 w - - 2 17 -->
 17.Rxe5!
 
 Only this move convincingly maintains equality.
 
+<!-- FEN: r1b2rk1/ppq2pp1/4p3/4b2Q/8/2P5/P2B1PPP/R3R1K1 w - - 2 17 -->
 17.Qxe5?! Qxe5 18.Rxe5 f6 19.Re4 Bd7 20.Rd4 Bc6 21.Be3 Kf7!⩱/∓
 
 **FEN:**
@@ -656,6 +660,7 @@ This is not a piece of cake to defend after a rook switch to the fifth rank via 
 
 After 17.Rxe5! I could indeed find nothing better for Black than equality, for instance:
 
+<!-- FEN: r1b2rk1/ppq2pp1/4p3/4R2Q/8/2P5/P2B1PPP/R5K1 b - - 0 17 -->
 17...f6 18.Re3 (18.Re4 Qf7∓ Kozlicek – Cerveny, Czech Republic 2007.) 18...e5 (18...Qf7 19.Qe2! [19.Qh4 e5 20.Rg3 Bf5 21.Bh6 Bg6∓ remains worse for White, if only slightly] 19...Rd8 20.Rg3 e5 21.Bh6 g6 22.Qh5 Kh7 23.Qh4 Kg8 24.Qh5 Kh7= leads to a draw as well.) 19.Rg3 Be6 20.Re1 Rad8 21.Bh6 Rf7 22.h3 Qc4 23.Qg6 Rdd7 24.Bxg7 Rxg7 25.Qe8+ Kh7 26.Qh5+ Kg8 27.Qe8+ A draw was the unavoidable outcome in Fuentes Parra – Gajek, Caldas Novas 2011.
 
 <!-- FEN: r1b1kb1r/ppqn1p1p/4p1p1/4p3/3P4/2PB1N2/P2B1PPP/R2Q1RK1 w kq - 0 12 -->
@@ -717,6 +722,7 @@ Black has easily equalized out of the opening, and perhaps even a bit more than 
 <!-- FEN: r4rk1/pbqn1ppp/1p1bp3/8/3P4/2PB1N2/P2B1PPP/R2QR1K1 w - - 3 14 -->
 **14.h3**
 
+<!-- FEN: r4rk1/pbqn1ppp/1p1bp3/8/3P4/2PB1N2/P2B1PPP/R2QR1K1 w - - 3 14 -->
 After 14.Be4 Bxe4 15.Rxe4 Rfe8 16.Qc2 Rac8 17.Rh4 Nf8∓ Black is given a chance to play on the light squares, as in Khamrakulov – Bologan, Sanxenxo 2003.
 
 **FEN:**
@@ -756,6 +762,7 @@ After 14...Rad8 my game took the following course:
 <!-- FEN: 3r1rk1/pbq2ppp/1p1bpn2/6N1/3P4/2PB3P/P1QB1PP1/R3R1K1 b - - 0 16 -->
 **16...g6! 17.Ne4 Bxe4 18.Bxe4 Nxe4 19.Qxe4 Qc4! 20.a4**
 
+<!-- FEN: 3r1rk1/pb3p1p/1p1bp1p1/8/2q1Q3/2PB3P/P2B1PP1/R3R1K1 w - - 0 20 -->
 (20.Qb7 Qa4!∓)
 
 <!-- FEN: 3r1rk1/pb3p1p/1p1bp1p1/8/P1q1Q3/2PB3P/3B1PP1/R3R1K1 b - - 0 20 -->
@@ -834,6 +841,7 @@ Passive is instead 10.Bd2, intending to bring out the knight on c3 without weake
 
 c3 Sicilian
 
+<!-- FEN: r2qk2r/pp2bppp/2b1p3/2n1P3/8/P1BB1N2/1P3PPP/R2Q1RK1 w kq - 1 14 -->
 14.Bc2 (14.Bc4 allows 14...Na4!∓ Milton – Karasev, St Petersburg 1999; 14.Be2 0-0 15.b4 Ne4 16.Bd4 a5! 17.b5 Bd5∓ was better for Black in Doncevic – Illescas, Las Palmas 1989) 14...Qxd1 15.Rfxd1 Na4 16.Bd4 0-0 17.Rac1 Rfd8=/∓ Black is just a shade better in this dry ending.
 
 #### D1) 10.Nbd2
@@ -950,6 +958,7 @@ This seems to me like the most testing. White forces the bishop to move again, h
 
 Harmless is instead:
 
+<!-- FEN: r2qk2r/pp1nbppp/2bpp3/3nP3/3P4/P2B1N2/1P3PPP/RNBQR1K1 w kq - 1 11 -->
 11.Nbd2 dxe5! 12.dxe5 Nc5 13.Bf1
 
 Black has a variety of good choices. My preference is for:
@@ -1060,6 +1069,7 @@ Chapter 7 – Various 7th Moves
 
 I promoted this standard undermining of White’s queenside to be my main line here.
 
+<!-- FEN: r2qkb1r/1p1n1ppp/p1bpp3/3nP3/1P1P4/P2B1N2/3N1PPP/R1BQ1RK1 b kq - 1 11 -->
 Also possible is: 11...Nf4 12.Be4 d5 13.Bc2 Bb5 14.Re1 Nd3 15.Re3 Nxc1 16.Rxc1
 
 **FEN:**
@@ -1067,6 +1077,7 @@ Also possible is: 11...Nf4 12.Be4 d5 13.Bc2 Bb5 14.Re1 Nd3 15.Re3 Nxc1 16.Rxc1
 
 16...Be7 Intending to answer 17.a4N Bc6 18.Rb1 with 18...Nb6 19.a5 Nc4⇆. My belief is that Black is quite okay, for instance: 20.Rc3 0-0!? 21.Nxc4 dxc4 22.Rxc4 Qd7∞ We have at least sufficient compensation for the missing pawn.
 
+<!-- FEN: r2qkb1r/1p1n1ppp/p1bpp3/3nP3/1P1P4/P2B1N2/3N1PPP/R1BQ1RK1 b kq - 1 11 -->
 11...Nc3 The main theoretical recipe. 12.Qc2 Rc8 13.Qxc3 Bxf3 14.Qb2
 
 **FEN:**
@@ -1120,6 +1131,7 @@ The engines say that the black king is not in danger on the queenside, and I hav
 <!-- FEN: 2kr3r/1p2bppp/4p3/pP2P3/3P4/3nBN2/5PPP/R2R2K1 w - - 1 20 -->
 **20.a4**
 
+<!-- FEN: 2kr3r/1p2bppp/4p3/pP2P3/3P4/3nBN2/5PPP/R2R2K1 w - - 1 20 -->
 After 20.Bb6 Rd5 21.Bxa5 Rxb5 only Black can be better.
 
 **FEN:**
@@ -1250,13 +1262,15 @@ The knight continues its trip towards the target square.
 **FEN:**
 `r2qk2r/1p1nbppp/p1b1p3/3n4/1P1PN3/P2B1N2/5PPP/R1BQR1K1 b kq - 3 14`
 
-<!-- FEN: r2qkb1r/1p1nbppp/p1b1p3/3n4/1P1PN3/P2B1N2/5PPP/R1BQR1K1 b kq - 3 14 -->
+<!-- FEN: r2qk2r/1p1nbppp/p1b1p3/3n4/1P1PN3/P2B1N2/5PPP/R1BQR1K1 b kq - 3 14 -->
 **14...0-0 15.Nc5**
 
 Jumping immediately to c5 looks like the most sensible way to play.
 
+<!-- FEN: r2q1rk1/1p1nbppp/p1b1p3/3n4/1P1PN3/P2B1N2/5PPP/R1BQR1K1 w - - 4 15 -->
 Much weaker is instead 15.Bd2?! N5f6!∓, after which the knight jump has been rendered impossible and White already has to think about equalizing.
 
+<!-- FEN: r2q1rk1/1p1nbppp/p1b1p3/3n4/1P1PN3/P2B1N2/5PPP/R1BQR1K1 w - - 4 15 -->
 A viable alternative is: 15.Qe2 Now I found the following impressive (by my own standards) continuation: 15...Bb5! 16.Bxb5 axb5 17.Bb2 Qe8!! 18.Nc5! (18.Qxb5 Ne5! 19.Qxe8 Nxf3+ 20.gxf3 Rfxe8∞ is, unsurprisingly, a position where Black may even be better in spite of being a pawn down, as he has a much better bishop and a healthy pawn structure.)
 
 **FEN:**
@@ -1309,8 +1323,10 @@ An attempt to further cramp Black by preventing ...a4. Some other options are be
 
 Chapter 7 – Various 7th Moves
 
+<!-- FEN: r2q1rk1/1p1bb1pp/4pp2/pP1n4/3P4/P2B1N2/5PPP/R1BQR1K1 w - - 0 18 -->
 18.Nd2 Rc8 (18...a4!?) 19.a4 Kh8 20.Ba3 Bxa3 21.Rxa3 Qb6 22.Qa1 Nb4⇆ is at least equal for Black, in view of the strong knight on b4 and the possibility of doubling rooks on the c-file.
 
+<!-- FEN: r2q1rk1/1p1bb1pp/4pp2/pP1n4/3P4/P2B1N2/5PPP/R1BQR1K1 w - - 0 18 -->
 Finally, 18.Qc2 is simply answered by: 18...Kh8! 19.Bd2 (19.Bxh7 Rc8 20.Qb1 Nc3 is a draw)
 
 **FEN:**
