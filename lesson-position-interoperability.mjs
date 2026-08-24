@@ -397,8 +397,8 @@ function injectBuilderActions() {
 function renameBuilderUi() {
   const tab = tabButton('lessons');
   if (tab) {
-    tab.textContent = 'Position Sets';
-    tab.setAttribute('aria-label', 'Open Position Sets');
+    tab.textContent = 'Positions';
+    tab.setAttribute('aria-label', 'Open Positions');
   }
   const panel = document.getElementById('lessonPositionBuilderPanel');
   panel?.setAttribute('aria-label', 'Position Set Builder');
