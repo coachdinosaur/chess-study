@@ -332,13 +332,13 @@ c3 Sicilian
 
 Black has the somewhat easier game, though objectively the chances are approximately balanced. We will follow a correspondence game to verify this assessment:
 
-<!-- FEN: 3rrbk1/pb1qn1pp/1p3p2/2pnp3/P1N4N/2PP2P1/1PQ1RPBP/2B2RK1 w - - 4 20 -->
+<!-- FEN: 3rrbk1/pb1qn1pp/1p3p2/2pnp3/P1N4N/2PP2P1/1PQ2PBP/2B1RRK1 w - - 4 20 -->
 <!-- SOURCE MOVE REFERENCE: Move annotation. -->
 **20.Re2**
 
 This may actually not be best.
 
-<!-- FEN: 3rrbk1/pb1qn1pp/1p3p2/2pnp3/P1N4N/2PP2P1/1PQ1RPBP/2B2RK1 w - - 4 20 -->
+<!-- FEN: 3rrbk1/pb1qn1pp/1p3p2/2pnp3/P1N4N/2PP2P1/1PQ2PBP/2B1RRK1 w - - 4 20 -->
   **20.Be4!N g6 21.Rd1 Bc6 22.b3 Bg7 23.Rfe1=** would have kept the position equal by maximizing White’s activity.
 
 **FEN:**
