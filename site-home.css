@@ -515,6 +515,11 @@ body {
   color: var(--accent-strong);
 }
 
+.lesson-menu-toggle-btn,
+.header-fullscreen-button {
+  display: none !important;
+}
+
 .mobile-brand {
   display: flex;
   align-items: center;
@@ -953,6 +958,14 @@ body.is-focus-mode .app-main-content {
        (max-height: 500px) and (orientation: landscape) {
   .mobile-app-bar {
     display: none !important;
+  }
+
+  .lesson-menu-toggle-btn {
+    display: inline-flex !important;
+  }
+
+  .header-fullscreen-button {
+    display: inline-flex !important;
   }
 
   .workspace-view .control-pane,

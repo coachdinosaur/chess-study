@@ -2205,20 +2205,11 @@ html[data-active-tab="puzzle"] .lesson-title-input {
 }
 
 .lesson-menu-toggle-btn {
-  display: none;
+  display: none !important;
 }
 
 .header-fullscreen-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 2.25rem;
-  width: 2.25rem;
-  height: 2.25rem;
-  padding: 0;
-  border-radius: var(--radius-btn, 8px);
-  color: var(--text-main);
-  flex-shrink: 0;
+  display: none !important;
 }
 
 .mobile-fullscreen-btn {
@@ -4473,6 +4464,18 @@ html[data-board-only="1"] .eval-bar-wrap {
     background: var(--control-bg);
     color: var(--text-main);
     cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .header-fullscreen-button {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border-radius: var(--radius-btn, 8px);
+    color: var(--text-main);
     flex-shrink: 0;
   }
 

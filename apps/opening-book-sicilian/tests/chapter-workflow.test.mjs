@@ -14,11 +14,11 @@ async function readChapterOne() {
 
 test("discovers the contiguous Markdown chapter catalog", async () => {
   const chapters = await discoverChapters();
-  assert.deepEqual(chapters.map((chapter) => chapter.id), [1, 2, 3, 4, 5, 6]);
+  assert.deepEqual(chapters.map((chapter) => chapter.id), [1, 2, 3, 4, 5, 6, 7]);
   assert.ok(chapters.every((chapter) => chapter.pageCount > 0));
   assert.ok(chapters.every((chapter) => chapter.visibleFenCount > 0));
   const catalog = catalogSource(chapters);
-  assert.match(catalog, /CHAPTER_IDS = \["1", "2", "3", "4", "5", "6"\]/);
+  assert.match(catalog, /CHAPTER_IDS = \["1", "2", "3", "4", "5", "6", "7"\]/);
   assert.doesNotMatch(catalog, /chapter-packages|manifest|pdfjs|sourcePdf/);
 });
 
@@ -374,21 +374,21 @@ test("createChapter scaffolds a new contiguous chapter and syncs catalog", async
 
   try {
     const result = await createChapter({ title: "Test Scaffolding Chapter", pageCount: 3 });
-    assert.equal(result.id, 7);
-    assert.equal(result.firstPage, 107);
-    assert.equal(result.lastPage, 109);
+    assert.equal(result.id, 8);
+    assert.equal(result.firstPage, 136);
+    assert.equal(result.lastPage, 138);
     assert.equal(result.pageCount, 3);
 
     const updatedChapters = await discoverChapters();
-    assert.equal(updatedChapters.length, 7);
-    assert.equal(updatedChapters[6].title, "Chapter 7: Test Scaffolding Chapter");
-    assert.equal(updatedChapters[6].pageCount, 3);
+    assert.equal(updatedChapters.length, 8);
+    assert.equal(updatedChapters[7].title, "Chapter 8: Test Scaffolding Chapter");
+    assert.equal(updatedChapters[7].pageCount, 3);
   } finally {
     // Teardown and restore
     const { unlink, writeFile } = await import("node:fs/promises");
     const { fileURLToPath } = await import("node:url");
     const path = await import("node:path");
-    const testChapterPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "app", "content", "chapters", "chapter-7-sicilian.md");
+    const testChapterPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "app", "content", "chapters", "chapter-8-sicilian.md");
     const catalogPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "app", "chapter-catalog.generated.ts");
     try { await unlink(testChapterPath); } catch {}
     await writeFile(catalogPath, initialCatalog, "utf8");
@@ -401,20 +401,20 @@ test("addPage appends contiguous pages to a chapter and syncs catalog", async ()
   const { unlink, writeFile } = await import("node:fs/promises");
   const { fileURLToPath } = await import("node:url");
   const path = await import("node:path");
-  const testChapterPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "app", "content", "chapters", "chapter-7-sicilian.md");
+  const testChapterPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "app", "content", "chapters", "chapter-8-sicilian.md");
   const catalogPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "app", "chapter-catalog.generated.ts");
 
   try {
     await createChapter({ title: "Test Add Page Chapter", pageCount: 2 });
-    const appendResult = await addPage({ chapterId: 7, count: 2 });
-    assert.equal(appendResult.chapterId, 7);
-    assert.equal(appendResult.firstNewPage, 109);
-    assert.equal(appendResult.lastNewPage, 110);
+    const appendResult = await addPage({ chapterId: 8, count: 2 });
+    assert.equal(appendResult.chapterId, 8);
+    assert.equal(appendResult.firstNewPage, 138);
+    assert.equal(appendResult.lastNewPage, 139);
     assert.equal(appendResult.totalPageCount, 4);
 
     const updatedChapters = await discoverChapters();
-    assert.equal(updatedChapters[6].pageCount, 4);
-    assert.equal(updatedChapters[6].lastPage, 110);
+    assert.equal(updatedChapters[7].pageCount, 4);
+    assert.equal(updatedChapters[7].lastPage, 139);
   } finally {
     try { await unlink(testChapterPath); } catch {}
     await writeFile(catalogPath, initialCatalog, "utf8");
