@@ -51,3 +51,22 @@ test('index.html contains Top Players triggers and modal dialog', () => {
   assert.ok(indexHtml.includes('id="topPlayersModal"'), 'index.html must include topPlayersModal element');
   assert.ok(indexHtml.includes('top-players.mjs'), 'index.html must load top-players.mjs');
 });
+
+test('site-home.css sets high-contrast theme-aware text color for active category chips', () => {
+  const cssPath = path.join(ROOT, 'site-home.css');
+  const cssContent = fs.readFileSync(cssPath, 'utf-8');
+
+  assert.ok(
+    cssContent.includes('.top-players-chip.is-active'),
+    'site-home.css must style .top-players-chip.is-active'
+  );
+  assert.ok(
+    cssContent.includes('var(--button-primary-text'),
+    'site-home.css must use var(--button-primary-text) for active category chip text color'
+  );
+  assert.ok(
+    !/\.top-players-chip\.is-active[^{]*\{[^}]*color:\s*#ffffff;/i.test(cssContent),
+    'site-home.css must not hardcode static white text for active chip'
+  );
+});
+

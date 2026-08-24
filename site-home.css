@@ -1177,9 +1177,10 @@ body.is-focus-mode .app-main-content {
   border-color: var(--focus-border);
 }
 
-.top-players-chip.is-active {
+.top-players-chip.is-active,
+.top-players-chip.is-active:hover {
   background: var(--accent-strong);
-  color: #ffffff;
+  color: var(--button-primary-text, #ffffff);
   border-color: var(--accent-strong);
   box-shadow: 0 2px 8px color-mix(in srgb, var(--accent-strong) 35%, transparent);
 }
