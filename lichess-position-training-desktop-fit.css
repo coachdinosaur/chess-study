@@ -1,4 +1,4 @@
-@import url('./lichess-position-training.css?v=20260824-landscape-board1');
+@import url('./lichess-position-training.css?v=20260824-landscape-board2');
 
 /* Flush, square board treatment across desktop and mobile. */
 .position-training-board-wrap {
@@ -435,8 +435,8 @@
   .position-training-content {
     display: grid !important;
     grid-template-columns: minmax(0, auto) minmax(240px, 1fr) !important;
-    grid-template-rows: auto minmax(0, 1fr) !important;
-    gap: 0.55rem !important;
+    grid-template-rows: auto minmax(0, 1fr) auto !important;
+    gap: 0.35rem 0.65rem !important;
     padding: 0.35rem 0.55rem !important;
     width: 100vw !important;
     height: 100dvh !important;
@@ -450,12 +450,13 @@
     display: contents !important;
   }
 
+  /* Left Column: Board on Top spanning rows 1 & 2 */
   .position-training-board-wrap {
     grid-column: 1 !important;
-    grid-row: 1 !important;
+    grid-row: 1 / span 2 !important;
     width: auto !important;
-    height: calc(100dvh - 3.2rem) !important;
-    max-height: calc(100dvh - 3.2rem) !important;
+    height: 100% !important;
+    max-height: calc(100dvh - 3.1rem) !important;
     aspect-ratio: 1 / 1 !important;
     margin: 0 auto !important;
     padding: 0 !important;
@@ -470,25 +471,26 @@
     width: 100% !important;
     height: 100% !important;
     aspect-ratio: 1 / 1 !important;
-    max-width: calc(100dvh - 3.2rem) !important;
-    max-height: calc(100dvh - 3.2rem) !important;
+    max-width: calc(100dvh - 3.1rem) !important;
+    max-height: calc(100dvh - 3.1rem) !important;
   }
 
+  /* Left Column: Comment / Instruction in row 3 directly below board */
   .position-training-feedback {
     grid-column: 1 !important;
-    grid-row: 2 !important;
+    grid-row: 3 !important;
     width: 100% !important;
-    max-width: calc(100dvh - 3.2rem) !important;
-    min-height: 1.95rem !important;
+    max-width: calc(100dvh - 3.1rem) !important;
+    min-height: 1.85rem !important;
     height: auto !important;
     margin: 0 auto !important;
-    padding: 0.25rem 0.5rem !important;
+    padding: 0.22rem 0.5rem !important;
     font-size: 0.76rem !important;
     line-height: 1.25 !important;
     border-radius: 8px !important;
     display: flex !important;
     align-items: center !important;
-    align-self: start !important;
+    align-self: end !important;
     justify-self: center !important;
     box-sizing: border-box !important;
   }
@@ -504,15 +506,16 @@
     grid-column: 1 !important;
     grid-row: 3 !important;
     width: 100% !important;
-    max-width: calc(100dvh - 3.2rem) !important;
+    max-width: calc(100dvh - 3.1rem) !important;
     margin: 0 auto !important;
-    padding: 0.25rem 0.5rem !important;
+    padding: 0.22rem 0.5rem !important;
     font-size: 0.72rem !important;
     max-height: 3rem !important;
     justify-self: center !important;
     box-sizing: border-box !important;
   }
 
+  /* Right Column: Actions in row 1 at top */
   .position-training-actions {
     grid-column: 2 !important;
     grid-row: 1 !important;
@@ -520,6 +523,8 @@
     flex-direction: row !important;
     gap: 0.35rem !important;
     width: 100% !important;
+    height: 2.05rem !important;
+    min-height: 2.05rem !important;
     margin: 0 !important;
     padding: 0 2.5rem 0 0 !important;
     border-top: none !important;
@@ -541,6 +546,7 @@
     flex: 1.25 1 0 !important;
   }
 
+  /* Right Column: Full-height scrollable sidebar spanning rows 2 & 3 */
   .position-training-sidebar {
     grid-column: 2 !important;
     grid-row: 2 / span 2 !important;

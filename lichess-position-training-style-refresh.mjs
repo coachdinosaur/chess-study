@@ -1,4 +1,4 @@
-const STYLE_URL = './lichess-position-training-premium-layout.css?v=20260824-landscape-board1';
+const STYLE_URL = './lichess-position-training-premium-layout.css?v=20260824-landscape-board2';
 
 function installLatestTrainerStyles() {
   for (const link of document.querySelectorAll('link[rel="stylesheet"]')) {
