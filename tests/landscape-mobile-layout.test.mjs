@@ -19,7 +19,7 @@ test('index.html contains all landscape mobile slots and fullscreen controls', (
 
 test('styles.css configures mobile landscape two-column layout with left board pane and right content pane', () => {
   // Left pane scrollable
-  assert.match(stylesCss, /\.board-pane\s*\{[\s\S]*overflow-y:\s*auto;/, 'board-pane should be scrollable in landscape');
+  assert.match(stylesCss, /\.board-pane\s*\{[\s\S]*overflow-y:\s*auto\s*!important;/, 'board-pane should be scrollable in landscape');
   // Captured pieces hidden in landscape
   assert.match(stylesCss, /#capturedTop,\s*#capturedBottom,[\s\S]*display:\s*none\s*!important;/, 'captured rows must be hidden in landscape');
   // Eval bar on left
@@ -27,12 +27,15 @@ test('styles.css configures mobile landscape two-column layout with left board p
   // Move nav under board in landscape
   assert.match(stylesCss, /\.board-move-nav-slot\s*\{[\s\S]*display:\s*block;/, 'boardMoveNavSlot visible in landscape');
   // Right pane scrollable
-  assert.match(stylesCss, /\.page-shell\s+\.control-pane-scroll[\s\S]*overflow-y:\s*auto;/, 'right control pane scrollable');
+  assert.match(stylesCss, /\.page-shell\s+\.control-pane-scroll[\s\S]*overflow-y:\s*auto\s*!important;/, 'right control pane scrollable');
   // Fullscreen icon toggle
   assert.match(stylesCss, /html\.is-fullscreen-app\s+\.fullscreen-enter-icon[\s\S]*display:\s*none\s*!important;/, 'fullscreen icon toggles properly');
 });
 
-test('site-home.css hides mobile app bar in mobile landscape', () => {
+test('site-home.css locks outer viewport and enables independent scrolling for left and right columns in landscape', () => {
+  assert.match(siteHomeCss, /@media\s*\(max-width:\s*930px\)\s*and\s*\(orientation:\s*landscape\)[\s\S]*html,\s*body\s*\{[\s\S]*overflow:\s*hidden\s*!important;/);
+  assert.match(siteHomeCss, /@media\s*\(max-width:\s*930px\)\s*and\s*\(orientation:\s*landscape\)[\s\S]*\.workspace-view\s+\.board-pane[\s\S]*overflow-y:\s*auto\s*!important;/);
+  assert.match(siteHomeCss, /@media\s*\(max-width:\s*930px\)\s*and\s*\(orientation:\s*landscape\)[\s\S]*\.workspace-view\s+\.control-pane-scroll[\s\S]*overflow-y:\s*auto\s*!important;/);
   assert.match(siteHomeCss, /@media\s*\(max-width:\s*930px\)\s*and\s*\(orientation:\s*landscape\)[\s\S]*\.mobile-app-bar\s*\{\s*display:\s*none\s*!important;\s*\}/);
 });
 

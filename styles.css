@@ -4276,37 +4276,74 @@ html[data-board-only="1"] .eval-bar-wrap {
        (max-height: 500px) and (orientation: landscape) {
   html,
   body {
-    overflow: hidden;
+    overflow: hidden !important;
+    height: 100% !important;
+    height: var(--app-height) !important;
   }
 
   .page-shell {
-    height: var(--app-height);
-    min-height: 0;
-    padding: 0.35rem 0.45rem;
-    overflow: hidden;
+    height: 100% !important;
+    height: var(--app-height) !important;
+    max-height: var(--app-height) !important;
+    min-height: 0 !important;
+    padding: 0.35rem 0.45rem !important;
+    overflow: hidden !important;
+    flex-direction: column !important;
+    gap: 0 !important;
   }
 
-  .workspace-view .workspace {
-    height: calc(var(--app-height) - 0.7rem);
-    max-height: none;
-    grid-template-columns: minmax(0, auto) minmax(0, 1fr);
-    align-items: stretch;
-    gap: 0.65rem;
+  .app-sidebar {
+    display: none !important;
+  }
+
+  .app-main-content {
+    height: 100% !important;
+    max-height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+  }
+
+  .workspace-view {
+    height: 100% !important;
+    max-height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+  }
+
+  .workspace-view .workspace,
+  .workspace {
+    height: 100% !important;
+    max-height: 100% !important;
+    min-height: 0 !important;
+    grid-template-columns: minmax(0, auto) minmax(0, 1fr) !important;
+    align-items: stretch !important;
+    gap: 0.65rem !important;
+    overflow: hidden !important;
+    display: grid !important;
   }
 
   /* Left column: chess board + move navigation + eval bar (scrollable) */
+  .workspace-view .board-pane,
   .board-pane {
-    order: 0;
-    margin-inline: 0;
-    width: auto;
-    min-width: 0;
-    height: 100%;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow-y: auto;
-    overflow-x: hidden;
+    order: 0 !important;
+    margin-inline: 0 !important;
+    width: auto !important;
+    min-width: 0 !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    min-height: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior-y: contain;
     scrollbar-gutter: stable;
     padding-inline: clamp(0.25rem, 0.8vw, 0.5rem);
     -webkit-overflow-scrolling: touch;
@@ -4319,7 +4356,7 @@ html[data-board-only="1"] .eval-bar-wrap {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 0.25rem;
     padding: 0;
     width: 100%;
@@ -4330,6 +4367,7 @@ html[data-board-only="1"] .eval-bar-wrap {
     flex-direction: column;
     align-items: center;
     width: 100%;
+    margin-block: auto;
   }
 
   .board-column {
@@ -4415,26 +4453,33 @@ html[data-board-only="1"] .eval-bar-wrap {
 
   /* Right column: real pane — header, burger menu, tabs, notation, tools scroll inside it. */
   .page-shell .control-pane,
-  .page-shell .workspace-view .control-pane {
+  .page-shell .workspace-view .control-pane,
+  .workspace-view .control-pane,
+  .control-pane {
     display: flex !important;
-    flex-direction: column;
-    order: 1;
-    height: 100%;
-    min-height: 0;
-    min-width: 0;
-    overflow: hidden;
-    position: static;
+    flex-direction: column !important;
+    order: 1 !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    position: static !important;
   }
 
   .page-shell .control-pane-scroll,
-  .page-shell .workspace-view .control-pane-scroll {
+  .page-shell .workspace-view .control-pane-scroll,
+  .workspace-view .control-pane-scroll,
+  .control-pane-scroll {
     display: flex !important;
-    flex-direction: column;
-    flex: 1 1 auto;
-    height: 100%;
-    min-height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior-y: contain;
     scrollbar-gutter: stable;
     gap: 0.5rem;
     padding-inline-end: max(0.35rem, 8px);
@@ -4445,50 +4490,153 @@ html[data-board-only="1"] .eval-bar-wrap {
     display: none !important;
   }
 
-  .control-pane .lesson-header {
+    .control-pane .lesson-header {
     position: sticky;
     top: 0;
-    z-index: 5;
+    z-index: 20;
     background: var(--panel-strong);
-    padding: 0.15rem 0 0.25rem;
+    padding: 0.1rem 0 0.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .title-input.lesson-title-input {
+    min-height: 1.85rem !important;
+    height: 1.85rem !important;
+    font-size: 0.88rem !important;
+    padding: 0.15rem 0.45rem !important;
+  }
+
+  .lesson-command-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.25rem !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    flex-wrap: nowrap !important;
   }
 
   .lesson-menu-toggle-btn {
     display: inline-flex !important;
     align-items: center;
     justify-content: center;
-    width: 2.25rem;
-    height: 2.25rem;
+    width: 1.95rem !important;
+    height: 1.95rem !important;
+    min-width: 1.95rem !important;
+    min-height: 1.95rem !important;
+    padding: 0 !important;
     border-radius: var(--radius-btn, 8px);
     border: 1px solid var(--control-border);
     background: var(--control-bg);
     color: var(--text-main);
     cursor: pointer;
-    flex-shrink: 0;
+    flex: 0 0 1.95rem !important;
+  }
+
+  .lesson-picker-overflow {
+    flex: 1 1 0% !important;
+    min-width: 4rem !important;
+    width: auto !important;
+    display: flex !important;
+  }
+
+  .lesson-picker-overflow .lesson-picker-trigger {
+    height: 1.95rem !important;
+    min-height: 1.95rem !important;
+    padding: 0 0.35rem !important;
+    font-size: 0.74rem !important;
+    width: 100% !important;
+  }
+
+  .lesson-book-overflow {
+    flex: 0 0 auto !important;
+    display: flex !important;
+  }
+
+  .lesson-book-overflow .lesson-actions-button {
+    height: 1.95rem !important;
+    min-height: 1.95rem !important;
+    min-width: auto !important;
+    padding: 0 0.45rem !important;
+    font-size: 0.74rem !important;
+    white-space: nowrap !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .lesson-command-row .header-analyze-button {
+    position: static !important;
+    width: auto !important;
+    min-width: auto !important;
+    height: 1.95rem !important;
+    min-height: 1.95rem !important;
+    padding: 0 0.5rem !important;
+    font-size: 0.74rem !important;
+    white-space: nowrap !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 auto !important;
+  }
+
+  .lesson-command-row .header-analyze-button::before,
+  .lesson-command-row .header-analyze-button::after {
+    display: none !important;
   }
 
   .header-fullscreen-button {
     display: inline-flex !important;
     align-items: center;
     justify-content: center;
-    width: 2.25rem;
-    height: 2.25rem;
-    padding: 0;
+    width: 1.95rem !important;
+    height: 1.95rem !important;
+    min-width: 1.95rem !important;
+    min-height: 1.95rem !important;
+    padding: 0 !important;
     border-radius: var(--radius-btn, 8px);
     color: var(--text-main);
-    flex-shrink: 0;
+    flex: 0 0 1.95rem !important;
   }
 
-  .lesson-command-row {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    width: 100%;
+  .lesson-settings-overflow {
+    flex: 0 0 1.95rem !important;
+    width: 1.95rem !important;
+    display: flex !important;
   }
 
-  .lesson-picker-overflow {
-    flex: 1 1 auto;
-    min-width: 0;
+  .lesson-settings-overflow .lesson-overflow-trigger {
+    width: 1.95rem !important;
+    height: 1.95rem !important;
+    min-width: 1.95rem !important;
+    min-height: 1.95rem !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .control-pane-scroll > .tab-nav {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 0.35rem !important;
+    padding-bottom: 2px;
+  }
+
+  .control-pane-scroll > .tab-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab-chip {
+    flex-shrink: 0 !important;
+    height: 1.85rem !important;
+    min-height: 1.85rem !important;
+    padding: 0 0.5rem !important;
+    font-size: 0.76rem !important;
   }
 
   /* Engine PV returns to the notation panel on the right; the under-board

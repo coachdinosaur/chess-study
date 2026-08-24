@@ -952,10 +952,32 @@ body.is-focus-mode .app-main-content {
 }
 
 /* Mobile landscape (small widths, or any very short landscape viewport):
-   Hide the top mobile app bar — navigation burger menu, fullscreen toggle,
-   and controls are neatly integrated into the scrollable right column header. */
+   Hide the top mobile app bar, lock the outer viewport, and split into two
+   independently scrollable columns: left board pane and right control pane. */
 @media (max-width: 930px) and (orientation: landscape),
        (max-height: 500px) and (orientation: landscape) {
+  html,
+  body {
+    overflow: hidden !important;
+    height: 100% !important;
+    height: var(--app-height) !important;
+  }
+
+  .page-shell {
+    height: 100% !important;
+    height: var(--app-height) !important;
+    max-height: var(--app-height) !important;
+    min-height: 0 !important;
+    padding: 0.35rem 0.45rem !important;
+    overflow: hidden !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+  }
+
+  .app-sidebar {
+    display: none !important;
+  }
+
   .mobile-app-bar {
     display: none !important;
   }
@@ -968,16 +990,101 @@ body.is-focus-mode .app-main-content {
     display: inline-flex !important;
   }
 
+  .lesson-command-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.25rem !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .app-main-content {
+    height: 100% !important;
+    max-height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+  }
+
+  .workspace-view {
+    height: 100% !important;
+    max-height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+  }
+
+  .workspace-view .workspace,
+  .workspace {
+    height: 100% !important;
+    max-height: 100% !important;
+    min-height: 0 !important;
+    grid-template-columns: minmax(0, auto) minmax(0, 1fr) !important;
+    align-items: stretch !important;
+    gap: 0.65rem !important;
+    overflow: hidden !important;
+    display: grid !important;
+  }
+
+  /* Left column: chess board + move navigation + eval bar (independently scrollable) */
+  .workspace-view .board-pane,
+  .board-pane {
+    order: 0 !important;
+    margin-inline: 0 !important;
+    width: auto !important;
+    min-width: 0 !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    min-height: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior-y: contain;
+    scrollbar-gutter: stable;
+    padding-inline: clamp(0.25rem, 0.8vw, 0.5rem);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Right column: header, burger menu, tabs, notation, tools (independently scrollable) */
+  .page-shell .control-pane,
+  .page-shell .workspace-view .control-pane,
   .workspace-view .control-pane,
   .control-pane {
     display: flex !important;
-    flex-direction: column;
+    flex-direction: column !important;
+    order: 1 !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    position: static !important;
   }
 
+  .page-shell .control-pane-scroll,
+  .page-shell .workspace-view .control-pane-scroll,
   .workspace-view .control-pane-scroll,
   .control-pane-scroll {
     display: flex !important;
-    flex-direction: column;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior-y: contain;
+    scrollbar-gutter: stable;
+    gap: 0.5rem !important;
+    padding-inline-end: max(0.35rem, 8px) !important;
+    -webkit-overflow-scrolling: touch;
   }
 }
 
