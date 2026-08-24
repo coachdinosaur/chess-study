@@ -114,7 +114,7 @@ test("Chapter 7 Page 112 contains A3) 8.Bb5+ Bd7, A31) 9.Be2, and Kargosha – B
 
   assert.match(page112, /#### A3\) 8\.Bb5\+ Bd7/);
   assert.match(page112, /##### A31\) 9\.Be2/);
-  assert.match(page112, /\*\*9\.\.\.Bc6 10\.0-0 N5d5\*\*/);
+  assert.match(page112, /\*\*9\.\.\.Bc6 10\.0-0 Nd5\*\*/);
   assert.match(page112, /\*\*11\.Bg5\*\*/);
   assert.match(page112, /Kargosha – Bjelobrk, Sydney 2014/);
 });
