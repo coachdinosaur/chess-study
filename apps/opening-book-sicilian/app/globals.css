@@ -44,6 +44,10 @@ h1, h2, h3, h4, h5, h6 { font-family: Manrope, Inter, sans-serif; }
 .sidebar-toggle { width: 38px; height: 38px; flex: 0 0 38px; display: grid; place-items: center; margin-right: 12px; padding: 0; border: 0; border-radius: 10px; color: var(--forest); background: transparent; font-size: 21px; }
 .sidebar-toggle:hover { background: var(--mint); }
 .menu-button { display: none; }
+.topbar-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.topbar-button { width: 38px; height: 38px; flex: 0 0 38px; display: grid; place-items: center; padding: 0; border: 1px solid var(--line); border-radius: 10px; color: var(--forest); background: var(--surface); transition: background .18s ease, border-color .18s ease; }
+.topbar-button:hover { border-color: #9eb4aa; background: white; }
+.topbar-button:active { background: var(--mint); }
 
 .sidebar { position: fixed; z-index: 15; inset: var(--topbar) auto 0 0; width: var(--sidebar); display: flex; flex-direction: column; padding: 30px 18px 20px; color: white; background: var(--forest); transition: transform .22s ease, visibility 0s; }
 .sidebar nav { min-height: 0; flex: 1 1 auto; overflow-y: auto; overscroll-behavior: contain; scrollbar-color: rgba(255, 255, 255, .28) transparent; scrollbar-width: thin; }
@@ -252,21 +256,266 @@ h1, h2, h3, h4, h5, h6 { font-family: Manrope, Inter, sans-serif; }
   .lesson-page-controls strong { grid-column: 1 / -1; grid-row: 1; }
 }
 
-@media (orientation: landscape) and (max-width: 1000px) and (max-height: 600px) {
-  :root { --topbar: 58px; --landscape-board: max(220px, min(42vw, calc(100dvh - 78px))); }
-  .menu-button { display: grid; }
+@media (orientation: landscape) and (max-height: 640px) {
+  :root {
+    --topbar: 48px;
+    --landscape-board: clamp(280px, 46vw, 440px);
+  }
+
   .desktop-sidebar-toggle { display: none; }
-  .topbar { left: calc(24px + var(--landscape-board)); padding: 0 14px; }
-  .topbar .brand small { display: none; }
-  .sidebar { top: 0; transform: translateX(-100%); }
-  .sidebar.open { transform: translateX(0); }
-  .scrim { inset: 0; }
-  .content { height: 100dvh; padding: 0; overflow: hidden; }
-  .lesson-reader { height: 100dvh; padding: 10px 12px; overflow: hidden; }
-  .guided-layout { height: 100%; grid-template-columns: var(--landscape-board) minmax(0, 1fr); gap: 12px; }
-  .sticky-board { position: static; height: 100%; max-width: none; overflow-y: auto; }
-  .narrative { height: 100%; padding: calc(var(--topbar) + 8px) 7px 32px 3px; overflow-y: auto; }
-  .analysis-pv { height: 30px; margin-bottom: 6px; }
+  .menu-button { display: grid; width: 34px; height: 34px; flex: 0 0 34px; margin-right: 8px; font-size: 19px; }
+
+  .app-shell {
+    height: 100dvh;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .content {
+    height: 100dvh;
+    height: 100vh;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .view.lesson-reader {
+    height: 100dvh;
+    height: 100vh;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .guided-layout {
+    height: 100%;
+    grid-template-columns: var(--landscape-board) minmax(0, 1fr);
+    gap: 0;
+    align-items: stretch;
+    overflow: hidden;
+  }
+
+  /* Left Pane: Chessboard, Eval bar, PV line, Navigation, Analyze & Flip buttons */
+  .sticky-board {
+    position: static;
+    height: 100dvh;
+    height: 100vh;
+    max-width: none;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding: 8px 10px 24px 10px;
+    border-right: 1px solid var(--line);
+    background: var(--paper);
+  }
+
+  .analysis-pv {
+    height: 28px;
+    margin-bottom: 6px;
+    padding: 0 8px;
+    font-size: 10.5px;
+    border-radius: 8px;
+  }
+
+  .board-frame {
+    padding: 6px;
+    border-radius: 12px;
+  }
+
+  .board-analysis-row {
+    gap: 5px;
+  }
+
+  .evaluation-rail {
+    flex: 0 0 7px;
+  }
+
+  .board-controls {
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .board-controls button {
+    min-height: 36px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+
+  .board-nav-controls {
+    grid-template-columns: 36px 36px minmax(0, 1fr) 36px 36px;
+    gap: 4px;
+  }
+
+  .board-nav-controls span {
+    font-size: 11.5px;
+  }
+
+  .board-action-controls {
+    gap: 6px;
+  }
+
+  .board-action-controls .flip-button {
+    padding-inline: 10px;
+  }
+
+  .analysis-branch-controls {
+    padding: 5px 8px;
+    font-size: 9.5px;
+  }
+
+  .analysis-branch-controls button {
+    min-height: 26px;
+    padding: 2px 7px;
+  }
+
+  .active-line {
+    margin-top: 8px;
+    padding: 8px 10px;
+    gap: 6px;
+    border-radius: 8px;
+  }
+
+  .active-line span {
+    font-size: 9.5px;
+  }
+
+  .active-line strong {
+    font-size: 11.5px;
+  }
+
+  .active-line small {
+    font-size: 10.5px;
+  }
+
+  /* Right Pane: Top Header on right, Scrollable Lesson Content */
+  .topbar {
+    position: fixed;
+    inset: 0 0 auto auto;
+    left: var(--landscape-board);
+    right: 0;
+    width: auto;
+    height: var(--topbar);
+    padding: 0 12px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(255, 253, 248, .96);
+    backdrop-filter: blur(12px);
+    z-index: 20;
+  }
+
+  .brand {
+    gap: 8px;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .brand-mark {
+    width: 28px;
+    height: 28px;
+    flex: 0 0 28px;
+  }
+
+  .brand strong {
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .brand small {
+    display: none;
+  }
+
+  .topbar-button {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    border-radius: 8px;
+  }
+
+  .lesson-page-column {
+    height: 100dvh;
+    height: 100vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding: calc(var(--topbar) + 10px) 14px 40px 14px;
+    min-width: 0;
+  }
+
+  .lesson-page-controls {
+    margin: 0 0 14px;
+    padding: 6px 8px;
+    border-radius: 9px;
+  }
+
+  .lesson-page-controls button {
+    min-height: 32px;
+    font-size: 10.5px;
+    padding: 4px 8px;
+  }
+
+  .lesson-page-controls strong {
+    font-size: 11px;
+  }
+
+  .narrative {
+    height: auto;
+    padding-bottom: 20px;
+    overflow: visible;
+    font-size: 14.5px;
+    line-height: 1.65;
+  }
+
+  .narrative h1 {
+    margin: 0 0 16px;
+    font-size: 24px;
+  }
+
+  .narrative h2 {
+    margin: 24px 0 12px;
+    font-size: 18px;
+  }
+
+  .narrative h3 {
+    margin: 20px 0 10px;
+    font-size: 15px;
+  }
+
+  .narrative p {
+    margin: 0 0 14px;
+  }
+
+  .narrative ul {
+    margin: 0 0 14px;
+    padding-left: 18px;
+  }
+
+  .fen-block {
+    margin: 14px 0 18px;
+    padding: 10px;
+  }
+
+  .fen-board-container {
+    width: min(240px, 100%);
+  }
+
+  /* Navigation Drawer in landscape */
+  .sidebar {
+    top: 0;
+    width: min(var(--sidebar), 85vw);
+    transform: translateX(-100%);
+    z-index: 100;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .scrim {
+    inset: 0;
+    z-index: 90;
+    display: block;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -219,6 +219,75 @@ function LessonReader({ chapter }: { chapter: MarkdownChapter }) {
   </main>;
 }
 
+function isDocumentFullscreen(): boolean {
+  if (typeof document === "undefined") return false;
+  const doc = document as Document & {
+    webkitFullscreenElement?: Element | null;
+    mozFullScreenElement?: Element | null;
+    msFullscreenElement?: Element | null;
+  };
+  return Boolean(
+    doc.fullscreenElement ||
+    doc.webkitFullscreenElement ||
+    doc.mozFullScreenElement ||
+    doc.msFullscreenElement
+  );
+}
+
+async function requestAppFullscreen(element?: HTMLElement | null): Promise<void> {
+  const target = element ?? document.documentElement;
+  const targetEl = target as HTMLElement & {
+    webkitRequestFullscreen?: () => Promise<void>;
+    mozRequestFullScreen?: () => Promise<void>;
+    msRequestFullscreen?: () => Promise<void>;
+  };
+  try {
+    if (targetEl.requestFullscreen) {
+      await targetEl.requestFullscreen();
+    } else if (targetEl.webkitRequestFullscreen) {
+      await targetEl.webkitRequestFullscreen();
+    } else if (targetEl.mozRequestFullScreen) {
+      await targetEl.mozRequestFullScreen();
+    } else if (targetEl.msRequestFullscreen) {
+      await targetEl.msRequestFullscreen();
+    }
+  } catch {
+    // Ignore fullscreen rejection
+  }
+}
+
+async function exitAppFullscreen(): Promise<void> {
+  const doc = document as Document & {
+    webkitExitFullscreen?: () => Promise<void>;
+    mozCancelFullScreen?: () => Promise<void>;
+    msExitFullscreen?: () => Promise<void>;
+  };
+  try {
+    if (doc.exitFullscreen) {
+      await doc.exitFullscreen();
+    } else if (doc.webkitExitFullscreen) {
+      await doc.webkitExitFullscreen();
+    } else if (doc.mozCancelFullScreen) {
+      await doc.mozCancelFullScreen();
+    } else if (doc.msExitFullscreen) {
+      await doc.msExitFullscreen();
+    }
+  } catch {
+    // Ignore exit rejection
+  }
+}
+
+function FullscreenIcon({ isFullscreen }: { isFullscreen: boolean }) {
+  if (isFullscreen) {
+    return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M4 14h6v6m10-10h-6V4m0 16v-6h6M4 10h6V4" />
+    </svg>;
+  }
+  return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+  </svg>;
+}
+
 function ChapterReader({ chapter, chapters, onNavigate }: {
   chapter: MarkdownChapter;
   chapters: readonly ChapterSummary[];
@@ -226,7 +295,32 @@ function ChapterReader({ chapter, chapters, onNavigate }: {
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [chapterTarget, setChapterTarget] = useState<ChapterSummary>();
+
+  useEffect(() => {
+    const onFullscreenChange = () => {
+      setIsFullscreen(isDocumentFullscreen());
+    };
+    document.addEventListener("fullscreenchange", onFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", onFullscreenChange);
+    document.addEventListener("mozfullscreenchange", onFullscreenChange);
+    document.addEventListener("MSFullscreenChange", onFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", onFullscreenChange);
+      document.removeEventListener("webkitfullscreenchange", onFullscreenChange);
+      document.removeEventListener("mozfullscreenchange", onFullscreenChange);
+      document.removeEventListener("MSFullscreenChange", onFullscreenChange);
+    };
+  }, []);
+
+  const toggleFullscreen = useCallback(async () => {
+    if (isDocumentFullscreen()) {
+      await exitAppFullscreen();
+    } else {
+      await requestAppFullscreen();
+    }
+  }, []);
 
   const navigateChapter = (event: MouseEvent<HTMLAnchorElement>, target: ChapterSummary) => {
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || target.id === chapter.id) return;
@@ -241,6 +335,18 @@ function ChapterReader({ chapter, chapters, onNavigate }: {
       <button className="sidebar-toggle desktop-sidebar-toggle" onClick={() => setSidebarCollapsed((current) => !current)} aria-label={sidebarCollapsed ? "Show navigation" : "Hide navigation"}>☰</button>
       <button className="sidebar-toggle menu-button" onClick={() => setMenuOpen((current) => !current)} aria-label="Toggle navigation">☰</button>
       <a className="brand" href={`#/chapters/${chapter.id}`}><img className="brand-mark" src={assetUrl("app_icon_chess_study.png")} alt="" width={38} height={38} /><span><strong>Sicilian Defense: Beating the Anti-Sicilian</strong><small>Chapter {chapter.chapterNumber}</small></span></a>
+      <div className="topbar-actions">
+        <button
+          type="button"
+          className="topbar-button fullscreen-toggle-btn"
+          onClick={toggleFullscreen}
+          aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+          title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+          aria-pressed={isFullscreen}
+        >
+          <FullscreenIcon isFullscreen={isFullscreen} />
+        </button>
+      </div>
     </header>
     <aside id="course-sidebar" className={`sidebar ${menuOpen ? "open" : ""}`}>
       <nav>
