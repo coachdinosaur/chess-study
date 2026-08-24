@@ -282,7 +282,7 @@ Chapter 6 – Rare 5th Moves
 <!-- FEN: 3r1rk1/pbbq3p/1pn1pp2/3n4/P1NP4/5NP1/1P1B1PBP/R2QR1K1 w - - 0 17 -->
 equal, I would like Black’s position in actual play. The manoeuvre ...Nc6-e7-f5 is on the cards, while White is hard pressed to find a constructive plan.
 
-<!-- FEN: r1bq1rk1/pp2bppp/2nbp3/2pn4/8/N1P2NP1/PP1P1PBP/R1BQ1RK1 w - - 4 10 -->
+<!-- FEN: r1bq1rk1/pp2bppp/2n1p3/2pn4/8/N1P2NP1/PP1P1PBP/R1BQ1RK1 w - - 4 10 -->
 **10.d3**
 
 In case of **10.Re1** (preventing ...e5, as **10.Nc2 e5** is quite okay for the second player), Black plays normal moves and gets a nice position: **10...b6 11.Nc2 Bb7 12.d4 cxd4 13.Nfxd4 Nxd4 14.Nxd4 Rc8 15.Qe2** This was Deviatkin – B. Savchenko, St Petersburg 2009, when most accurate was:
@@ -293,7 +293,7 @@ In case of **10.Re1** (preventing ...e5, as **10.Nc2 e5** is quite okay for the 
 <!-- FEN: 2rq1rk1/pb2bppp/1p2p3/3n4/3N4/2P3P1/PP2QPBP/R1B1R1K1 b - - 2 15 -->
 **15...Bf6!N** Putting the question to the knight on d4, with complete equality. It is possible to take this position a bit further: **16.Rd1 Qd7 17.Qg4 Rfd8 18.Bg5 Bxg5 19.Qxg5 h6 20.Qe5 Nf6=** After the exchange of light-squared bishops, the white monarch becomes weaker, and this renders White’s pawn preponderance on the queenside unimportant; Black will always have counterplay by harassing His Majesty, one way or another.
 
-<!-- FEN: r1bq1rk1/pp2bppp/2nbp3/2pn4/8/N1PP1NP1/PP3PBP/R1BQ1RK1 b - - 0 10 -->
+<!-- FEN: r1bq1rk1/pp2bppp/2n1p3/2pn4/8/N1PP1NP1/PP3PBP/R1BQ1RK1 b - - 0 10 -->
 **10...b6 11.Nc4 Bb7 12.a4 Qc7**
 
 Black’s position is harmonious, and his slightly superior pawn structure means that he can never be worse. The next step is to place the rooks on the central files.
@@ -302,7 +302,6 @@ Black’s position is harmonious, and his slightly superior pawn structure means
 `r4rk1/pbq1bppp/1pn1p3/2pn4/P1N5/2PP1NP1/1P3PBP/R1BQ1RK1 w - - 1 13`
 
 <!-- FEN: r4rk1/pbq1bppp/1pn1p3/2pn4/P1N5/2PP1NP1/1P3PBP/R1BQ1RK1 w - - 1 13 -->
-<!-- SOURCE MOVE REFERENCE: Analysis mention. -->
 **13.Qe2!?**
 
 A friend pointed out to me that White can already play **13.a5** here, when I think one possible reply for Black is:
@@ -333,25 +332,25 @@ c3 Sicilian
 
 Black has the somewhat easier game, though objectively the chances are approximately balanced. We will follow a correspondence game to verify this assessment:
 
-<!-- FEN: 3rrbk1/pb1qn1pp/1p3p2/2pnp3/P1N4N/2PP2P1/1PQ1RPBP/5RK1 w - - 4 20 -->
+<!-- FEN: 3rrbk1/pb1qn1pp/1p3p2/2pnp3/P1N4N/2PP2P1/1PQ1RPBP/2B2RK1 w - - 4 20 -->
 <!-- SOURCE MOVE REFERENCE: Move annotation. -->
 **20.Re2**
 
 This may actually not be best.
 
-<!-- FEN: 3rrbk1/pb1qn1pp/1p3p2/2pnp3/P1N4N/2PP2P1/1PQ2PBP/4RRK1 w - - 4 20 -->
+<!-- FEN: 3rrbk1/pb1qn1pp/1p3p2/2pnp3/P1N4N/2PP2P1/1PQ1RPBP/2B2RK1 w - - 4 20 -->
   **20.Be4!N g6 21.Rd1 Bc6 22.b3 Bg7 23.Rfe1=** would have kept the position equal by maximizing White’s activity.
 
 **FEN:**
-`3rrbk1/pb1qn1pp/1p3p2/2pnp3/P1N4N/2PP2P1/1PQ1RPBP/5RK1 b - - 5 20`
+`3rrbk1/pb1qn1pp/1p3p2/2pnp3/P1N4N/2PP2P1/1PQ1RPBP/2B2RK1 b - - 5 20`
 
-<!-- FEN: 3rrbk1/pb1qn1pp/1p3p2/2pnp3/P1N4N/2PP2P1/1PQ1RPBP/5RK1 b - - 5 20 -->
+<!-- FEN: 3rrbk1/pb1qn1pp/1p3p2/2pnp3/P1N4N/2PP2P1/1PQ1RPBP/2B2RK1 b - - 5 20 -->
 **20...g5!?**
 
-<!-- FEN: 3rrbk1/pb1qn1pp/1p3p2/2pnp3/P1N4N/2PP2P1/1PQ1RPBP/5RK1 b - - 5 20 -->
+<!-- FEN: 3rrbk1/pb1qn1pp/1p3p2/2pnp3/P1N4N/2PP2P1/1PQ1RPBP/2B2RK1 b - - 5 20 -->
   **20...Bc6!?N 21.b3 a6!∓**, intending ...b5, seems to lead to an advantage for Black.
 
-<!-- FEN: 3rrbk1/pb1qn2p/1p3p2/2pnp1p1/P1N4N/2PP2P1/1PQ1RPBP/5RK1 w - - 0 21 -->
+<!-- FEN: 3rrbk1/pb1qn2p/1p3p2/2pnp1p1/P1N4N/2PP2P1/1PQ1RPBP/2B2RK1 w - - 0 21 -->
 **21.Nf3 Bg7 22.Qb3 g4 23.Nh4 Bc6 24.a5 Kh8 25.axb6 axb6 26.Rfe1 b5⇆**
 
 Black was doing fine in Chopin – Bertrand, corr. 1994.
