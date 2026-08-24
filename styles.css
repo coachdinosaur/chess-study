@@ -2195,6 +2195,65 @@ html[data-active-tab="puzzle"] .lesson-title-input {
   box-shadow: none;
 }
 
+.board-move-nav-slot {
+  display: none;
+  width: 100%;
+}
+
+.notation-toolbar-slot {
+  display: contents;
+}
+
+.lesson-menu-toggle-btn {
+  display: none;
+}
+
+.header-fullscreen-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border-radius: var(--radius-btn, 8px);
+  color: var(--text-main);
+  flex-shrink: 0;
+}
+
+.mobile-fullscreen-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--control-border);
+  background: var(--control-bg);
+  color: var(--text-main);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.header-fullscreen-button:hover,
+.mobile-fullscreen-btn:hover {
+  background: var(--control-hover-bg);
+  border-color: var(--control-hover-border);
+}
+
+html.is-fullscreen-app .fullscreen-enter-icon,
+:fullscreen .fullscreen-enter-icon,
+:-webkit-full-screen .fullscreen-enter-icon {
+  display: none !important;
+}
+
+html.is-fullscreen-app .fullscreen-exit-icon,
+:fullscreen .fullscreen-exit-icon,
+:-webkit-full-screen .fullscreen-exit-icon {
+  display: inline-block !important;
+}
+
 .tab-nav {
   display: flex;
   flex-wrap: wrap;
@@ -4232,48 +4291,138 @@ html[data-board-only="1"] .eval-bar-wrap {
   .page-shell {
     height: var(--app-height);
     min-height: 0;
-    padding: 0.45rem;
+    padding: 0.35rem 0.45rem;
     overflow: hidden;
   }
 
   .workspace-view .workspace {
-    height: calc(var(--app-height) - 0.9rem);
+    height: calc(var(--app-height) - 0.7rem);
     max-height: none;
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: minmax(0, auto) minmax(0, 1fr);
     align-items: stretch;
-    gap: 0.55rem;
+    gap: 0.65rem;
   }
 
-  /* Left column: the chessboard, full height, vertically centered. */
+  /* Left column: chess board + move navigation + eval bar (scrollable) */
   .board-pane {
     order: 0;
     margin-inline: 0;
     width: auto;
     min-width: 0;
     height: 100%;
-    display: grid;
-    place-items: center start;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-gutter: stable;
+    padding-inline: clamp(0.25rem, 0.8vw, 0.5rem);
+    -webkit-overflow-scrolling: touch;
   }
 
   .board-stage-card {
     position: static;
-    height: 100%;
-    max-height: 100%;
-    gap: 0.3rem;
+    height: auto;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0;
+    width: 100%;
+  }
+
+  .board-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
   }
 
   .board-column {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: var(--board-size);
+    max-width: 100%;
+    margin-inline: auto;
+    --board-frame-padding: 0.25rem;
     --board-available-height: calc(
       var(--app-height)
-      - 0.9rem
-      - (var(--captured-row-height) * 2)
-      - (var(--captured-row-gap) * 2)
+      - 0.7rem
+      - 2.8rem
+      - (var(--board-frame-padding) * 2)
     );
-    justify-self: center;
-    width: var(--board-size);
   }
 
-  /* Right column: real pane again — header, tabs, tools scroll inside it. */
+  /* Remove captured pieces in landscape to save space */
+  #capturedTop,
+  #capturedBottom,
+  .captured-row {
+    display: none !important;
+  }
+
+  /* Eval bar on the left of the chessboard */
+  .eval-bar-wrap {
+    position: absolute;
+    top: calc(var(--board-frame-padding) + 1px);
+    height: var(--board-size);
+    left: calc(50% - (var(--board-size) / 2) - var(--eval-rail-track-width) - var(--eval-rail-gap));
+    z-index: 2;
+    display: flex;
+    align-items: stretch;
+    width: var(--eval-rail-track-width);
+    pointer-events: none;
+  }
+
+  .eval-bar-wrap.is-hidden {
+    display: none !important;
+  }
+
+  .eval-bar-track {
+    border-radius: 3px;
+    box-shadow: none;
+  }
+
+  .turn-side-marker {
+    display: none !important;
+  }
+
+  /* Move navigation slot directly under the board */
+  .board-move-nav-slot {
+    display: block;
+    width: 100%;
+    max-width: var(--board-size);
+    margin-top: 0.3rem;
+  }
+
+  .board-move-nav-slot .notation-toolbar {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.35rem;
+    padding: 0.2rem;
+    margin: 0 auto;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-panel);
+    background: var(--card-bg);
+    box-shadow: 0 4px 12px var(--panel-shadow);
+  }
+
+  .board-move-nav-slot .notation-nav-button {
+    width: 100%;
+    height: 2.2rem;
+    border-radius: var(--radius-pill);
+  }
+
+  .notation-toolbar-slot:empty {
+    display: none !important;
+  }
+
+  /* Right column: real pane — header, burger menu, tabs, notation, tools scroll inside it. */
   .page-shell .control-pane,
   .page-shell .workspace-view .control-pane {
     display: flex !important;
@@ -4291,13 +4440,14 @@ html[data-board-only="1"] .eval-bar-wrap {
     display: flex !important;
     flex-direction: column;
     flex: 1 1 auto;
-    height: auto;
+    height: 100%;
     min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-gutter: stable;
-    gap: 0.6rem;
+    gap: 0.5rem;
     padding-inline-end: max(0.35rem, 8px);
+    -webkit-overflow-scrolling: touch;
   }
 
   .workspace-intro {
@@ -4309,7 +4459,33 @@ html[data-board-only="1"] .eval-bar-wrap {
     top: 0;
     z-index: 5;
     background: var(--panel-strong);
-    padding-bottom: 0.3rem;
+    padding: 0.15rem 0 0.25rem;
+  }
+
+  .lesson-menu-toggle-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--radius-btn, 8px);
+    border: 1px solid var(--control-border);
+    background: var(--control-bg);
+    color: var(--text-main);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .lesson-command-row {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    width: 100%;
+  }
+
+  .lesson-picker-overflow {
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   /* Engine PV returns to the notation panel on the right; the under-board

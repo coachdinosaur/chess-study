@@ -103,19 +103,20 @@
   }
 
   function bindMobileDrawer() {
-    const toggleBtn = document.getElementById('mobileMenuToggle');
+    const toggleBtns = document.querySelectorAll('#mobileMenuToggle, #landscapeMenuToggle, [data-action="toggle-mobile-menu"]');
     const closeBtn = document.getElementById('mobileDrawerClose');
     const backdrop = document.getElementById('mobileDrawerBackdrop');
 
-    if (toggleBtn) {
-      toggleBtn.addEventListener('click', () => {
+    toggleBtns.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
         if (mobileDrawerOpen) {
           closeMobileDrawer();
         } else {
           openMobileDrawer();
         }
       });
-    }
+    });
 
     if (closeBtn) {
       closeBtn.addEventListener('click', closeMobileDrawer);
@@ -135,7 +136,7 @@
   function openMobileDrawer() {
     const drawer = document.getElementById('mobileNavDrawer');
     const backdrop = document.getElementById('mobileDrawerBackdrop');
-    const toggleBtn = document.getElementById('mobileMenuToggle');
+    const toggleBtns = document.querySelectorAll('#mobileMenuToggle, #landscapeMenuToggle, [data-action="toggle-mobile-menu"]');
 
     if (drawer) {
       drawer.classList.add('is-open');
@@ -144,9 +145,9 @@
     if (backdrop) {
       backdrop.classList.add('is-open');
     }
-    if (toggleBtn) {
-      toggleBtn.setAttribute('aria-expanded', 'true');
-    }
+    toggleBtns.forEach((btn) => {
+      btn.setAttribute('aria-expanded', 'true');
+    });
     document.body.classList.add('mobile-drawer-active');
     mobileDrawerOpen = true;
   }
@@ -154,7 +155,7 @@
   function closeMobileDrawer() {
     const drawer = document.getElementById('mobileNavDrawer');
     const backdrop = document.getElementById('mobileDrawerBackdrop');
-    const toggleBtn = document.getElementById('mobileMenuToggle');
+    const toggleBtns = document.querySelectorAll('#mobileMenuToggle, #landscapeMenuToggle, [data-action="toggle-mobile-menu"]');
 
     if (drawer) {
       drawer.classList.remove('is-open');
@@ -163,9 +164,9 @@
     if (backdrop) {
       backdrop.classList.remove('is-open');
     }
-    if (toggleBtn) {
-      toggleBtn.setAttribute('aria-expanded', 'false');
-    }
+    toggleBtns.forEach((btn) => {
+      btn.setAttribute('aria-expanded', 'false');
+    });
     document.body.classList.remove('mobile-drawer-active');
     mobileDrawerOpen = false;
   }

@@ -616,6 +616,8 @@ const dom = {
   toggleToolsMenuButton: document.getElementById('toggleToolsMenuButton'),
   togglePvLinesMenuButton: document.getElementById('togglePvLinesMenuButton'),
   toggleFullscreenMenuButton: document.getElementById('toggleFullscreenMenuButton'),
+  headerFullscreenButton: document.getElementById('headerFullscreenButton'),
+  mobileFullscreenToggle: document.getElementById('mobileFullscreenToggle'),
   focusModeControls: document.getElementById('focusModeControls'),
   focusModeAnalyzeButton: document.getElementById('focusModeAnalyzeButton'),
   exitFocusModeButton: document.getElementById('exitFocusModeButton'),
@@ -640,6 +642,9 @@ const dom = {
   notationSummary: document.getElementById('notationSummary'),
   notationPanel: document.getElementById('notationPanel'),
   mobileEngineLinesSlot: document.getElementById('mobileEngineLinesSlot'),
+  boardMoveNavSlot: document.getElementById('boardMoveNavSlot'),
+  notationToolbarSlot: document.getElementById('notationToolbarSlot'),
+  notationToolbar: document.getElementById('notationToolbar'),
   notationStartButton: document.getElementById('notationStartButton'),
   notationPrevButton: document.getElementById('notationPrevButton'),
   notationNextButton: document.getElementById('notationNextButton'),
@@ -2715,21 +2720,49 @@ function canRequestDocumentFullscreen() {
 }
 
 function shouldShowFullscreenMenuItem() {
-  return isMobileLessonViewport() && canRequestDocumentFullscreen();
+  return canRequestDocumentFullscreen();
 }
 
 function syncFullscreenMenuState() {
-  if (!dom.toggleFullscreenMenuButton) {
-    return;
+  const isFs = isFullscreenActive();
+  const canFs = canRequestDocumentFullscreen();
+  document.documentElement.classList.toggle('is-fullscreen-app', isFs);
+
+  if (dom.toggleFullscreenMenuButton) {
+    dom.toggleFullscreenMenuButton.hidden = !canFs;
+    dom.toggleFullscreenMenuButton.textContent = isFs ? 'Exit fullscreen' : 'Enter fullscreen';
   }
-  const visible = shouldShowFullscreenMenuItem();
-  dom.toggleFullscreenMenuButton.hidden = !visible;
-  dom.toggleFullscreenMenuButton.textContent = isFullscreenActive() ? 'Exit fullscreen' : 'Enter fullscreen';
+
+  for (const btn of [dom.headerFullscreenButton, dom.mobileFullscreenToggle]) {
+    if (btn) {
+      btn.hidden = !canFs;
+      btn.setAttribute('aria-label', isFs ? 'Exit fullscreen' : 'Enter fullscreen');
+      btn.setAttribute('title', isFs ? 'Exit fullscreen' : 'Enter fullscreen');
+      const enterIcon = btn.querySelector('.fullscreen-enter-icon');
+      const exitIcon = btn.querySelector('.fullscreen-exit-icon');
+      if (enterIcon) enterIcon.hidden = isFs;
+      if (exitIcon) exitIcon.hidden = !isFs;
+    }
+  }
 }
 
 function syncFullscreenUi() {
   syncFullscreenMenuState();
   syncOpenLessonActionsMenuLayout();
+}
+
+function syncNotationToolbarSlot() {
+  const toolbar = dom.notationToolbar || document.getElementById('notationToolbar');
+  const boardSlot = dom.boardMoveNavSlot || document.getElementById('boardMoveNavSlot');
+  const notationSlot = dom.notationToolbarSlot || document.getElementById('notationToolbarSlot');
+  if (!toolbar || !boardSlot || !notationSlot) {
+    return;
+  }
+  const isLandscapeMobile = mobileLandscapeLayoutActive();
+  const targetParent = isLandscapeMobile ? boardSlot : notationSlot;
+  if (toolbar.parentElement !== targetParent) {
+    targetParent.appendChild(toolbar);
+  }
 }
 
 function reportFullscreenToggleError(error) {
@@ -2781,7 +2814,7 @@ async function exitDocumentFullscreen() {
 
 async function toggleFullscreenMode() {
   closeLessonActionsMenu();
-  if (!shouldShowFullscreenMenuItem()) {
+  if (!canRequestDocumentFullscreen()) {
     syncFullscreenUi();
     return;
   }
@@ -2791,8 +2824,8 @@ async function toggleFullscreenMode() {
       : await requestDocumentFullscreen();
     if (!changed) {
       syncLessonFileStatus('Unable to toggle fullscreen in this browser.');
-      syncFullscreenUi();
     }
+    syncFullscreenUi();
   } catch (error) {
     reportFullscreenToggleError(error);
   }
@@ -2982,8 +3015,9 @@ function toggleLessonActionsMenu() {
 
 function syncResponsiveLayout() {
   state.boardLayoutFrame = 0;
+  syncNotationToolbarSlot();
   syncBoardSize();
-  syncFullscreenMenuState();
+  syncFullscreenUi();
   syncOpenHeaderMenusLayout();
 }
 
@@ -2999,7 +3033,7 @@ function handleViewportResize() {
 }
 
 function handleFullscreenChange() {
-  syncFullscreenMenuState();
+  syncFullscreenUi();
   handleViewportResize();
 }
 
@@ -7226,6 +7260,8 @@ function syncBoardSize() {
     return;
   }
 
+  syncNotationToolbarSlot();
+
   dom.rootElement.style.setProperty('--board-side-gap', '0px');
 
   const stageCard = dom.boardColumn.closest('.board-stage-card');
@@ -7276,6 +7312,27 @@ function syncBoardSize() {
 
   const columnStyles = window.getComputedStyle(dom.boardColumn);
   const framePadding = cssLengthToPx(columnStyles.getPropertyValue('--board-frame-padding'), remToPx(0.5));
+
+  if (mobileLandscapeLayoutActive()) {
+    const vh = window.innerHeight || currentViewportHeight();
+    const vw = currentViewportWidth();
+    const pagePaddingY = elementPaddingInsetPx(dom.pageShell, 'y') || remToPx(0.7);
+    const moveNavHeight = remToPx(2.7);
+    const frameShellPadding = (framePadding * 2) + 2;
+    const heightBudget = Math.max(0, vh - pagePaddingY - moveNavHeight - frameShellPadding - 8);
+
+    const evalRailWidth = cssLengthToPx(columnStyles.getPropertyValue('--eval-rail-track-width'), remToPx(0.8));
+    const evalRailGap = cssLengthToPx(columnStyles.getPropertyValue('--eval-rail-gap'), remToPx(0.45));
+    const maxWidthBudget = Math.max(0, (vw * 0.55) - evalRailWidth - evalRailGap - frameShellPadding);
+
+    const landscapeBoardSize = Math.floor(Math.min(heightBudget, maxWidthBudget, remToPx(38)));
+    if (landscapeBoardSize > 0) {
+      dom.boardColumn.style.setProperty('--board-size', `${landscapeBoardSize}px`);
+      dom.rootElement.style.setProperty('--board-side-gap', '0px');
+    }
+    return;
+  }
+
   if (isMobilePortrait && !mobileLandscapeLayoutActive()) {
     const vw = currentViewportWidth();
     const vh = window.innerHeight || currentViewportHeight();

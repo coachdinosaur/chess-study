@@ -73,8 +73,8 @@
       } catch {}
     })();
   </script>
-  <link rel="stylesheet" href="./styles.css?v=20260824-lesson-dropdown-resize1">
-  <link rel="stylesheet" href="./site-home.css?v=20260824-darktheme-contrast1">
+  <link rel="stylesheet" href="./styles.css?v=20260824-landscape-mobile1">
+  <link rel="stylesheet" href="./site-home.css?v=20260824-landscape-mobile1">
   <link rel="stylesheet" href="./focus-analysis-popup.css?v=20260719-focus-analysis1">
 </head>
 <body class="loading">
@@ -108,6 +108,14 @@
           <line x1="21" y1="12" x2="23" y2="12"></line>
           <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
           <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+      </button>
+      <button id="mobileFullscreenToggle" class="mobile-fullscreen-btn" type="button" data-action="toggle-fullscreen" aria-label="Toggle fullscreen" title="Toggle fullscreen">
+        <svg class="fullscreen-enter-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+        </svg>
+        <svg class="fullscreen-exit-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden>
+          <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path>
         </svg>
       </button>
     </div>
@@ -370,6 +378,7 @@
                       <div class="eval-bar-divider"></div>
                     </div>
                   </div>
+                  <div id="boardMoveNavSlot" class="board-move-nav-slot" aria-label="Board move navigation"></div>
                 </div>
               </div>
 
@@ -425,6 +434,22 @@
                   spellcheck="false"
                 >
                 <div class="lesson-command-row">
+                  <button
+                    id="landscapeMenuToggle"
+                    class="lesson-menu-toggle-btn mobile-menu-btn"
+                    type="button"
+                    data-action="toggle-mobile-menu"
+                    aria-label="Open navigation menu"
+                    aria-expanded="false"
+                    aria-controls="mobileNavDrawer"
+                    title="Menu"
+                  >
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="3" y1="12" x2="21" y2="12"></line>
+                      <line x1="3" y1="6" x2="21" y2="6"></line>
+                      <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                  </button>
                   <label class="sr-only" for="lessonPickerButton">Lesson selector</label>
                   <div class="lesson-overflow lesson-picker-overflow">
                     <button
@@ -469,6 +494,21 @@
                     class="header-analyze-button action-button primary"
                     data-action="toggle-analysis"
                   >Analyze</button>
+                  <button
+                    id="headerFullscreenButton"
+                    class="header-fullscreen-button action-button tonal"
+                    type="button"
+                    data-action="toggle-fullscreen"
+                    aria-label="Toggle fullscreen"
+                    title="Toggle fullscreen"
+                  >
+                    <svg class="fullscreen-enter-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                    </svg>
+                    <svg class="fullscreen-exit-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden>
+                      <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path>
+                    </svg>
+                  </button>
                   <div class="lesson-overflow lesson-settings-overflow">
                     <button
                       id="lessonActionsButton"
@@ -521,7 +561,7 @@
                         <div class="menu-submenu-content">
                           <button id="enterFocusModeButton" type="button" class="lesson-overflow-item" data-action="enter-focus-mode" role="menuitem">Focus mode</button>
                           <button id="toggleNoteMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-note" role="menuitem">Show note</button>
-                          <button id="toggleFullscreenMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-fullscreen" role="menuitem" hidden>Enter fullscreen</button>
+                          <button id="toggleFullscreenMenuButton" type="button" class="lesson-overflow-item" data-action="toggle-fullscreen" role="menuitem">Enter fullscreen</button>
                         </div>
                       </details>
 
@@ -609,37 +649,39 @@
               <section class="lesson-notation" aria-label="Lesson notation">
                 <p id="notationSummary" class="sr-only" aria-live="polite">Play moves from the board to build the lesson tree.</p>
                 <div id="notationPanel" class="notation-panel"></div>
-                <div class="notation-toolbar" aria-label="Move navigation">
-                  <button id="notationStartButton" type="button" class="notation-nav-button" data-action="navigate-start" aria-label="Go to start">
-                    <span class="notation-nav-icon" aria-hidden="true">
-                      <svg viewBox="0 0 20 20" focusable="false">
-                        <path d="M6 4.75v10.5"></path>
-                        <path d="M14.5 5.75 9 10l5.5 4.25"></path>
-                      </svg>
-                    </span>
-                  </button>
-                  <button id="notationPrevButton" type="button" class="notation-nav-button" data-action="navigate-back" aria-label="Go to previous move">
-                    <span class="notation-nav-icon" aria-hidden="true">
-                      <svg viewBox="0 0 20 20" focusable="false">
-                        <path d="M13.75 5.75 8.25 10l5.5 4.25"></path>
-                      </svg>
-                    </span>
-                  </button>
-                  <button id="notationNextButton" type="button" class="notation-nav-button" data-action="navigate-forward" aria-label="Go to next move">
-                    <span class="notation-nav-icon" aria-hidden="true">
-                      <svg viewBox="0 0 20 20" focusable="false">
-                        <path d="m6.25 5.75 5.5 4.25-5.5 4.25"></path>
-                      </svg>
-                    </span>
-                  </button>
-                  <button id="notationEndButton" type="button" class="notation-nav-button" data-action="navigate-end" aria-label="Go to end">
-                    <span class="notation-nav-icon" aria-hidden="true">
-                      <svg viewBox="0 0 20 20" focusable="false">
-                        <path d="M14 4.75v10.5"></path>
-                        <path d="m5.5 5.75 5.5 4.25-5.5 4.25"></path>
-                      </svg>
-                    </span>
-                  </button>
+                <div id="notationToolbarSlot" class="notation-toolbar-slot">
+                  <div id="notationToolbar" class="notation-toolbar" aria-label="Move navigation">
+                    <button id="notationStartButton" type="button" class="notation-nav-button" data-action="navigate-start" aria-label="Go to start">
+                      <span class="notation-nav-icon" aria-hidden="true">
+                        <svg viewBox="0 0 20 20" focusable="false">
+                          <path d="M6 4.75v10.5"></path>
+                          <path d="M14.5 5.75 9 10l5.5 4.25"></path>
+                        </svg>
+                      </span>
+                    </button>
+                    <button id="notationPrevButton" type="button" class="notation-nav-button" data-action="navigate-back" aria-label="Go to previous move">
+                      <span class="notation-nav-icon" aria-hidden="true">
+                        <svg viewBox="0 0 20 20" focusable="false">
+                          <path d="M13.75 5.75 8.25 10l5.5 4.25"></path>
+                        </svg>
+                      </span>
+                    </button>
+                    <button id="notationNextButton" type="button" class="notation-nav-button" data-action="navigate-forward" aria-label="Go to next move">
+                      <span class="notation-nav-icon" aria-hidden="true">
+                        <svg viewBox="0 0 20 20" focusable="false">
+                          <path d="m6.25 5.75 5.5 4.25-5.5 4.25"></path>
+                        </svg>
+                      </span>
+                    </button>
+                    <button id="notationEndButton" type="button" class="notation-nav-button" data-action="navigate-end" aria-label="Go to end">
+                      <span class="notation-nav-icon" aria-hidden="true">
+                        <svg viewBox="0 0 20 20" focusable="false">
+                          <path d="M14 4.75v10.5"></path>
+                          <path d="m5.5 5.75 5.5 4.25-5.5 4.25"></path>
+                        </svg>
+                      </span>
+                    </button>
+                  </div>
                 </div>
               </section>
 
@@ -804,9 +846,9 @@
   </div>
 
   <script src="./vendor/xlsx.full.min.js"></script>
-  <script type="module" src="./app.js?v=20260824-lesson-dropdown-resize1"></script>
+  <script type="module" src="./app.js?v=20260824-landscape-mobile1"></script>
   <script type="module" src="./focus-analysis-popup.mjs?v=20260824-lesson-search2"></script>
-  <script type="module" src="./app-navigation.js?v=20260820-layout-redesign1"></script>
+  <script type="module" src="./app-navigation.js?v=20260824-landscape-mobile1"></script>
   <script type="module" src="./top-players.mjs?v=20260822-top-players3"></script>
 
 <script>
