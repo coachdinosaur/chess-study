@@ -53,12 +53,16 @@ test("Chapter 7 Page 108 contains tabiya FEN, A) 7.Bd3 Nb4!, and A1) 8.Be2", asy
   const end = markdown.indexOf("## Page 109", start);
   const page108 = markdown.slice(start, end);
 
+  assert.match(page108, /\*\*1\.e4 c5 2\.c3 Nf6 3\.e5 Nd5 4\.Nf3 e6 5\.d4\*\*/);
+  assert.match(page108, /\*\*5\.\.\.cxd4 6\.cxd4 d6\*\*/);
   assert.match(page108, /### A\) 7\.Bd3/);
   assert.match(page108, /\*\*7\.\.\.Nb4!\*\*/);
   assert.match(page108, /#### A1\) 8\.Be2/);
   assert.match(page108, /\*\*8\.\.\.dxe5 9\.dxe5\*\*/);
+  assert.match(page108, /9\.Nxe5\? Qxd4 is a free pawn/);
   assert.match(page108, /\*\*9\.\.\.Qxd1\+ 10\.Kxd1\*\*/);
   assert.match(page108, /\*\*10\.\.\.Bc5!\?\*\*/);
+  assert.match(page108, /10\.\.\.Be7 11\.a3 Nd5 12\.Bd2 0-0/);
   assert.match(page108, /Pujos – Delchev, St Affrique 2002/);
 });
 

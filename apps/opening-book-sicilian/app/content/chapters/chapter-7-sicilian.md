@@ -39,12 +39,10 @@ c3 Sicilian
 
 c3 Sicilian
 
-<!-- SOURCE MOVE REFERENCE: Introductory moves. -->
 **1.e4 c5 2.c3 Nf6 3.e5 Nd5 4.Nf3 e6 5.d4**
 
 Clearly the most challenging option.
 
-<!-- FEN: rnbqkb1r/pp1ppppp/8/2pnP3/3P4/2P2N2/PP3PPP/RNBQKB1R b KQkq - 0 5 -->
 **5...cxd4 6.cxd4 d6**
 
 **FEN:**
@@ -75,7 +73,7 @@ As on the previous move, White has a choice of four continuations: A1) 8.Be2, A2
 **8...dxe5 9.dxe5**
 
 <!-- FEN: rnbqkb1r/pp3ppp/3pp3/4P3/1n1P4/5N2/PP2BPPP/RNBQK2R b KQkq - 1 8 -->
-**9.Nxe5? Qxd4** is a free pawn which has scored 3/3 for Black on my database.
+9.Nxe5? Qxd4 is a free pawn which has scored 3/3 for Black on my database.
 
 <!-- FEN: rnbqkb1r/pp3ppp/4p3/4P3/1n1P4/5N2/PP2BPPP/RNBQK2R b KQkq - 0 9 -->
 **9...Qxd1+ 10.Kxd1**
@@ -92,7 +90,7 @@ I consider this to be the most accurate choice.
 
 I would like to show an instructive game where Black went astray by exchanging the wrong pieces:
 <!-- FEN: rnb1kb1r/pp3ppp/4p3/4P3/1n6/5N2/PP2BPPP/RNBK3R b kq - 0 10 -->
-**10...Be7 11.a3 Nd5 12.Bd2 0-0** (**12...Bd7! 13.Nc3 Nxc3+ 14.Bxc3 Ba4+ 15.Kd2 Nd7∓** as played in Pujos – Delchev, St Affrique 2002, looks a trifle better for Black.)
+10...Be7 11.a3 Nd5 12.Bd2 0-0 (12...Bd7! 13.Nc3 Nxc3+ 14.Bxc3 Ba4+ 15.Kd2 Nd7∓ as played in Pujos – Delchev, St Affrique 2002, looks a trifle better for Black.)
 
 ## Page 109
 
