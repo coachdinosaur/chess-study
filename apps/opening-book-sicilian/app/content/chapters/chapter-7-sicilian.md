@@ -484,7 +484,10 @@ c3 Sicilian
 I was happy to find this positional continuation.
 
 <!-- FEN: rn2kb1r/pp1b1pp1/1q2p2p/3pP3/3P4/P1NQBN2/1P3PPP/R4RK1 b kq - 0 13 -->
-Instead, **13...a5!? 14.Qc2 a4** occurred in R. Stein – D. Popovic, corr. 2000. Rather than the game’s **15.Rfb1**, I would have preferred **15.Ne1!N Be7 16.Nd3 0-0 17.Qd1** with some attacking chances for White.
+Instead, **13...a5!? 14.Qc2 a4** occurred in R. Stein – D. Popovic, corr. 2000. 
+
+<!-- FEN: rn2kb1r/1p1b1pp1/1q2p2p/3pP3/p2P4/P1NQBN2/1PQ2PPP/R4RK1 w kq - 0 15 -->
+Rather than the game’s **15.Rfb1**, I would have preferred **15.Ne1!N Be7 16.Nd3 0-0 17.Qd1** with some attacking chances for White.
 
 <!-- FEN: rn2kb1r/pp1b1pp1/q3p2p/3pP3/3P4/P1NQBN2/1P3PPP/R4RK1 w kq - 1 14 -->
 **14.Qd1**
@@ -494,7 +497,7 @@ To keep access to the kingside, but now Rfc1 has been obstructed, which is quite
 <!-- FEN: rn2kb1r/pp1b1pp1/q3p2p/3pP3/3P4/P1N1BN2/1P3PPP/R2Q1RK1 b kq - 2 14 -->
 **14...Nc6 15.Rc1 Rc8 16.Re1**
 
-<!-- FEN: 2r1kb1r/pp1b1pp1/q1n1p2p/3pP3/3P4/P1N1BN2/1P3PPP/2RQR1K1 b k - 0 16 -->
+<!-- FEN: 2r1kb1r/pp1b1pp1/q1n1p2p/3pP3/3P4/P1N1BN2/1P3PPP/2RQ1RK1 w k - 3 16 -->
 **16.Ne1** can be answered with either **16...Na5** or **16...Ne7**.
 
 **FEN:**
@@ -524,7 +527,7 @@ This is a solid continuation, guarding b4 and preparing to play Nc3 – without 
 
 The answer is no. Notwithstanding its merits, White’s move is slow and allows Black to bolster his control over the most important square in the position: d5.
 
-<!-- FEN: rnbqkb1r/pp3ppp/3pp3/3nP3/3P4/5N2/PP1B1PPP/RN1QKB1R w KQkq - 1 8 -->
+<!-- FEN: rn1qkb1r/pp1b1ppp/3pp3/3nP3/3P4/5N2/PP1B1PPP/RN1QKB1R w KQkq - 1 8 -->
 **8.Nc3 Bc6**
 
 Black has achieved his aim and the position is equal.
@@ -546,7 +549,6 @@ Chapter 7 – Various 7th Moves
 
 **FEN:**
 `2r2rk1/4bppp/1qn1p3/pp1pP3/3P1P2/1PBQ1N2/P5PP/R4RK1 b - - 1 18`
-
 This all occurred in Schmitz – Cramling, Gibraltar 2003, when rather than the game’s **18...Rc7**, which allows **19.f5!N±**, I would have preferred:
 
 <!-- FEN: 2r2rk1/4bppp/1qn1p3/pp1pP3/3P1P2/1PBQ1N2/P5PP/R4RK1 b - - 1 18 -->
@@ -574,7 +576,7 @@ After **19.g4?! Rc7 20.f5 Rfc8∓** it turns out that White has weakened himself
 <!-- FEN: 2r2bk1/2r2p1p/q1n1p1p1/1p1pP3/p2P1P2/1P1Q1NP1/PBR2RKP/8 w - - 3 25 -->
 **25.Qd1** (**25.Bc3 axb3 26.axb3 Qa3! 27.Be1** [**27.Qxb5?? Na7-+**] **27...Bb4!** is also tough for White.) **25...Nb4 26.Rxc7 Rxc7 27.Qb1 Qc8 28.Ne1 Nc6 29.Qd3 a3 30.Bc3 Nxe5 31.fxe5 Rxc3 32.Qxb5 Bh6! 33.Re2 Be3 34.Qb6 h5↑** With weaknesses on the a2-square and d4-square, and an exposed king, it is highly unlikely that White will survive.
 
-<!-- FEN: rn1qkb1r/pp3ppp/2bpp3/3nP3/3P4/2N2N2/PP1B1PPP/2RQKB1R b Kkq - 3 9 -->
+<!-- FEN: rn1qkb1r/pp3ppp/2bpp3/3nP3/3P4/2N2N2/PP1B1PPP/R2QKB1R w KQkq - 2 9 -->
 **9.Bc4**
 
 I believe the most interesting way to play is:
@@ -594,7 +596,7 @@ I believe the most interesting way to play is:
 <!-- FEN: rn1qkb1r/pp3ppp/1nbpp3/4P3/3P4/1BN2N2/PP1B1PPP/R2QK2R b KQkq - 1 10 -->
 **10...N8d7 11.0-0 dxe5N 12.dxe5 Be7 13.Bf4!**
 
-<!-- FEN: r2qkb1r/pp1nbppp/1n1pp3/4P3/3P1B2/1BN2N2/PP3PPP/R2Q1RK1 b kq - 1 13 -->
+<!-- FEN: r2qk2r/pp1nbppp/1nb1p3/4P3/3P4/1BN2N2/PP1B1PPP/R2Q1RK1 w kq - 2 13 -->
 After **13.Qe2 Bxf3 14.Qxf3 Nxe5 15.Qe2 Nc6! 16.Rad1 Qb8 17.Qg4 Qe5 18.Rfe1 Qf6 19.Nb5 0-0 20.Bc3 Qg6** White’s compensation, if it exists, is not at all clear to me.
 
 <!-- FEN: r2qk2r/pp1nbppp/1nb1p3/4P3/5B2/1BN2N2/PP3PPP/R2Q1RK1 b kq - 2 13 -->
@@ -835,8 +837,8 @@ After 14...Rad8 my game took the following course:
 <!-- FEN: 3r1rk1/pbq2ppp/1p1bpn2/6N1/3P4/2PB3P/P1QB1PP1/R3R1K1 b - - 0 16 -->
 **16...g6! 17.Ne4 Bxe4 18.Bxe4 Nxe4 19.Qxe4 Qc4! 20.a4**
 
-<!-- FEN: 3r1rk1/pb3p1p/1p1bp1p1/8/2q1Q3/2PB3P/P2B1PP1/R3R1K1 w - - 0 20 -->
-(**20.Qb7 Qa4!∓**)
+<!-- FEN: 3r1rk1/pb3p1p/1p1bp1p1/8/2q1Q3/2P4P/P2B1PP1/R3R1K1 w - - 0 20 -->
+**20.Qb7 Qa4!∓**
 
 <!-- FEN: 3r1rk1/p4p1p/1p1bp1p1/8/P1qPQ3/2P4P/3B1PP1/R3R1K1 b - - 0 20 -->
 **20...Rd7 21.Qb1**
@@ -858,23 +860,23 @@ A brilliant point, directed against Qb5.
 <!-- FEN: 5rk1/3r1p1p/pp1bp1p1/8/P1qP4/2P4P/Q2B1PP1/R3R1K1 b - - 1 22 -->
 **22...Rc8 23.Reb1 Qc6 24.Rb3 Bc7 25.Be3 Qd6 26.g3 h5! 27.h4 Qd5 28.Rb4**
 
-<!-- FEN: 2r3k1/2r2p2/pp1bp1p1/3q3p/PR1P3P/2P1B1P1/Q4P2/R5K1 b - - 1 28 -->
+<!-- FEN: 2r3k1/2br1p2/pp2p1p1/3q3p/PR1P3P/2P1B1P1/Q4P2/R5K1 b - - 1 28 -->
 **28.c4?** is bravely answered by **28...Qxc4 29.Rc1 Qd5∓**, as the temporary pin on the c-file cannot be exploited.
 
-<!-- FEN: 2r3k1/2r2p2/pp1bp1p1/3q3p/PR1P3P/2P1B1P1/Q4P2/R5K1 b - - 1 28 -->
+<!-- FEN: 2r3k1/2br1p2/pp2p1p1/3q3p/PR1P3P/2P1B1P1/Q4P2/R5K1 b - - 1 28 -->
 **28...Qf3**
 
-<!-- FEN: 2r3k1/2r2p2/pp1bp1p1/3q3p/PR1P3P/2P1B1P1/Q4P2/R5K1 b - - 1 28 -->
+<!-- FEN: 2r3k1/2br1p2/pp2p1p1/3q3p/PR1P3P/2P1B1P1/Q4P2/R5K1 b - - 1 28 -->
 **28...Bd8!?N∓** also looks good.
 
-<!-- FEN: 2r3k1/2r2p2/pp1bp1p1/7p/PR1P3P/2P1BqP1/Q4P2/R5K1 w - - 2 29 -->
+<!-- FEN: 2r3k1/2br1p2/pp2p1p1/7p/PR1P3P/2P1BqP1/Q4P2/R5K1 w - - 2 29 -->
 **29.Rc4?**
 
-<!-- FEN: 2r3k1/2r2p2/pp1bp1p1/7p/PR1P3P/2P1BqP1/Q4P2/R5K1 w - - 2 29 -->
+<!-- FEN: 2r3k1/2br1p2/pp2p1p1/7p/PR1P3P/2P1BqP1/Q4P2/R5K1 w - - 2 29 -->
 **29.Qc4!N∓** was the move to keep White in the game, but it is actually rather hard to find.
 
 **FEN:**
-`2r3k1/2r2p2/pp1bp1p1/7p/P1RP3P/2P1BqP1/Q4P2/R5K1 b - - 4 29`
+`2r3k1/2br1p2/pp2p1p1/7p/P1RP3P/2P1BqP1/Q4P2/R5K1 b - - 4 29`
 
 ## Page 123
 
@@ -1107,7 +1109,7 @@ More to the point seems **14.Nfe5N**, but Black has two good ways to cope with i
 `r2q1rk1/pp3ppp/1n2p3/3bN2Q/3P4/P2B2P1/1P3P1P/2R1R1K1 b - - 2 18`
 
 <!-- FEN: r2q1rk1/pp3ppp/1n2p3/3bN2Q/3P4/P2B2P1/1P3P1P/2R1R1K1 b - - 2 18 -->
-**18...g6** (**18...h6!?** could be more combative.) **19.Qh6 Rc8** The diminished material means that White’s attack lacks punch. A possible end to the game could be: **20.Rxc8** (**20.Rc3 Qe7!⇆**) **20...Nxc8 21.h4 Ne7! 22.h5 Nf5 23.Bxf5 exf5 24.hxg6 fxg6 25.Nxg6 fxg6 26.Qxg6+=**
+**18...g6** (**18...h6!?** could be more combative.) **19.Qh6 Rc8** The diminished material means that White’s attack lacks punch. A possible end to the game could be: **20.Rxc8** (**20.Rc3 Qe7!⇆**) **20...Nxc8 21.h4 Ne7! 22.h5 Nf5 23.Bxf5 exf5 24.hxg6 fxg6 25.Nxg6 hxg6 26.Qxg6+=**
 
 <!-- FEN: r2q1rk1/pp1n1ppp/2b1p3/3n4/2NP1b2/P2B1N2/1P1B1PPP/R2QR1K1 b - - 5 14 -->
 **14...Bxd2**
@@ -1266,7 +1268,7 @@ Chapter 7 – Various 7th Moves
 <!-- FEN: 1k1r4/5ppp/1p2p3/1PbrP3/P7/3n1N2/5PPP/R2RBK2 w - - 2 25 -->
 **25.g3 g6 26.Ng5 Nxe5 27.Rxd5 exd5 28.Nxh7 Rh8 29.Nf6 Rxh2 30.Nxd5 Nf3 31.Ra2 Nxe1 32.Kxe1 Rh1+ 33.Ke2 Bxf2 34.Ra3=**
 
-<!-- FEN: r2qkb1r/pp1n1ppp/2bpp3/3nP3/3P4/P2B1N2/5PPP/RNBQ1RK1 w kq - 5 10 -->
+<!-- FEN: r2qkb1r/1p1n1ppp/p1bpp3/3nP3/1P1P4/P2B1N2/5PPP/RNBQ1RK1 w kq - 0 11 -->
 ##### D32) 11.Qe2
 
 **FEN:**
@@ -1467,7 +1469,7 @@ Finally, **18.Qc2** is simply answered by: **18...Kh8! 19.Bd2** (**19.Bxh7 Rc8 2
 <!-- FEN: r2q1rk1/1p1bb1pp/4pp2/pP1n4/P2P4/3B1N2/5PPP/R1BQR1K1 b - - 0 18 -->
 **18...Bb4 19.Bd2 Rc8 20.Qb1 Bxd2**
 
-<!-- FEN: 2rq1rk1/1p1bb1pp/4pp2/pP1n4/P2P4/3B1N2/3B1PPP/RQ2R1K1 b - - 0 20 -->
+<!-- FEN: 2rq1rk1/1p1b2pp/4pp2/pP1n4/Pb1P4/3B1N2/3B1PPP/RQ2R1K1 b - - 1 20 -->
 Riskier is **20...g6!?** (**21.Be4 Nc3=**) (**21.Bxg6 f5 22.Bh5 Bxd2 23.Nxd2 Qg5 24.Qd1 Nc3 25.Qf3 Qxd2 26.Qg3+ Kh8 27.Qe5+=**) **21.Bxb4!? Nxb4 22.Bxg6 f5 23.Bh5 Nc2 24.Qb3 Nxa1 25.Rxa1 Kh8∞**
 
 <!-- FEN: 2rq1rk1/1p1b2pp/4pp2/pP1n4/P2P4/3B1N2/3b1PPP/RQ2R1K1 w - - 0 21 -->
