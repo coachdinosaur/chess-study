@@ -3493,7 +3493,11 @@ html[data-board-only="1"] .eval-bar-wrap {
 
   .board-stage-card {
     position: static;
-    height: calc(var(--app-height) - 1.8rem);
+    height: auto;
+  }
+
+  .board-block {
+    height: auto;
   }
 
   .control-pane {
@@ -4695,11 +4699,12 @@ html[data-board-only="1"] .eval-bar-wrap {
   }
 }
 
-/* ---- Tablet portrait hierarchy (769–1024px portrait) ----
+/* ---- Unified portrait hierarchy (all portrait viewports & <= 768px) ----
    Mirrors the mobile vertical flow (header → tabs → board → engine lines →
    tools) now that the control pane participates in workspace ordering. */
-@media (min-width: 769px) and (max-width: 1024px) and (orientation: portrait) {
-  .workspace-view .workspace {
+@media (orientation: portrait), (max-width: 768px) {
+  .workspace-view .workspace,
+  .workspace {
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -4748,7 +4753,8 @@ html[data-board-only="1"] .eval-bar-wrap {
     order: 2;
     position: relative;
     z-index: 1;
-    max-width: min(75vw, 560px);
+    width: 100%;
+    max-width: min(72vw, 480px);
     margin-inline: auto;
   }
 
@@ -4780,6 +4786,12 @@ html[data-board-only="1"] .eval-bar-wrap {
 
   .board-block {
     height: auto;
+  }
+}
+
+@media (orientation: portrait) and (max-width: 480px) {
+  .board-pane {
+    max-width: 100%;
   }
 }
 

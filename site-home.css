@@ -921,15 +921,61 @@ body.is-focus-mode .app-main-content {
   }
 }
 
-/* Unified mobile layout (<= 768px, plus tablet portrait 769–1024px):
-   this file loads after styles.css, and .workspace-view .control-pane
-   { display: flex } above would otherwise override styles.css's
-   display: contents — leaving .control-pane as a single grid item so the
-   chessboard lands below the entire control pane. Force display: contents
-   so header/tabs/board/tools participate directly in the workspace grid's
-   flex ordering. */
-@media (max-width: 768px),
-       (min-width: 769px) and (max-width: 1024px) and (orientation: portrait) {
+/* Unified mobile & tablet portrait layout (all portrait viewports and screens <= 768px):
+   Forces single-column vertical flow with full-page scrollability. */
+@media (orientation: portrait), (max-width: 768px) {
+  html,
+  body {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    height: auto !important;
+    min-height: 100% !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .page-shell {
+    height: auto !important;
+    min-height: var(--app-height) !important;
+    max-height: none !important;
+    overflow: visible !important;
+    flex-direction: column !important;
+    padding: 0.4rem 0.5rem 1.5rem !important;
+    gap: 0.4rem !important;
+  }
+
+  .app-sidebar {
+    display: none !important;
+  }
+
+  .mobile-app-bar {
+    display: flex !important;
+  }
+
+  .app-main-content {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    flex: 1 1 auto !important;
+  }
+
+  .workspace-view {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .workspace-view .workspace,
+  .workspace {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    max-width: 100% !important;
+    gap: 0.5rem !important;
+  }
+
   .workspace-intro {
     display: none !important;
   }
@@ -939,6 +985,26 @@ body.is-focus-mode .app-main-content {
   .control-pane,
   .control-pane-scroll {
     display: contents !important;
+  }
+
+  .board-pane,
+  .workspace-view .board-pane {
+    order: 2 !important;
+    position: relative !important;
+    z-index: 1 !important;
+    width: 100% !important;
+    max-width: min(72vw, 480px) !important;
+    margin-inline: auto !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .board-stage-card,
+  .workspace-view .board-stage-card,
+  .board-block {
+    height: auto !important;
+    max-height: none !important;
   }
 
   /* Embedded board-only view keeps a real pane so its height-capped
@@ -951,11 +1017,18 @@ body.is-focus-mode .app-main-content {
   }
 }
 
-/* Mobile landscape (small widths, or any very short landscape viewport):
-   Hide the top mobile app bar, lock the outer viewport, and split into two
-   independently scrollable columns: left board pane and right control pane. */
+@media (orientation: portrait) and (max-width: 480px) {
+  .board-pane,
+  .workspace-view .board-pane {
+    max-width: 100% !important;
+  }
+}
+
+/* Tablet & Mobile landscape split view (up to 1280px landscape or short screens):
+   Hide top app bar/sidebar, lock outer viewport, 2 independently scrollable columns. */
 @media (max-width: 930px) and (orientation: landscape),
-       (max-height: 500px) and (orientation: landscape) {
+       (max-width: 1280px) and (orientation: landscape),
+       (orientation: landscape) and (max-height: 600px) {
   html,
   body {
     overflow: hidden !important;
@@ -1124,47 +1197,6 @@ body.is-focus-mode .app-main-content {
     gap: 0.5rem !important;
     padding-inline-end: max(0.35rem, 8px) !important;
     -webkit-overflow-scrolling: touch;
-  }
-}
-
-/* Tablet landscape split view (769–1100px landscape): desktop-like
-   two-column workspace with a locked page shell — only the control pane
-   scrolls internally. Loads after styles.css so these rules win cascade
-   ties with the earlier tablet/mobile blocks. */
-@media (max-width: 1100px) and (min-width: 769px) and (orientation: landscape) {
-  html,
-  body {
-    overflow: hidden;
-  }
-
-  .page-shell {
-    height: var(--app-height);
-    max-height: var(--app-height);
-    overflow: hidden;
-    flex-direction: row;
-  }
-
-  .workspace-view .workspace {
-    grid-template-columns: minmax(0, auto) minmax(18rem, 26rem) !important;
-    gap: 0.75rem;
-    height: 100%;
-    overflow: hidden;
-  }
-
-  .board-stage-card {
-    height: calc(var(--app-height) - 1.5rem);
-  }
-
-  .control-pane {
-    height: calc(var(--app-height) - 1.5rem);
-    max-height: calc(var(--app-height) - 1.5rem);
-    display: flex !important;
-    flex-direction: column;
-  }
-
-  .control-pane-scroll {
-    overflow-y: auto;
-    height: 100%;
   }
 }
 

@@ -65,10 +65,10 @@ const ANALYSIS_TARGET_DEPTH_MAX = 99;
 const LESSON_ACTIONS_MENU_GAP_REM = 0.4;
 const LESSON_ACTIONS_MENU_VIEWPORT_PADDING_REM = 0.5;
 const MOBILE_VIEWPORT_MEDIA_QUERY = '(max-width: 760px)';
-const MOBILE_LAYOUT_VIEWPORT_MEDIA_QUERY = '(max-width: 768px)';
-const MOBILE_LANDSCAPE_LAYOUT_MEDIA_QUERY = '(orientation: landscape) and (max-width: 930px), (orientation: landscape) and (max-height: 500px)';
-const TABLET_PORTRAIT_LAYOUT_MEDIA_QUERY = '(orientation: portrait) and (min-width: 601px) and (max-width: 1024px)';
-const MOBILE_COARSE_LANDSCAPE_MEDIA_QUERY = '(max-width: 1100px) and (min-width: 640px) and (orientation: landscape) and (pointer: coarse)';
+const MOBILE_LAYOUT_VIEWPORT_MEDIA_QUERY = '(orientation: portrait), (max-width: 768px)';
+const MOBILE_LANDSCAPE_LAYOUT_MEDIA_QUERY = '(orientation: landscape) and (max-width: 1280px), (orientation: landscape) and (max-height: 600px)';
+const TABLET_PORTRAIT_LAYOUT_MEDIA_QUERY = '(orientation: portrait) and (min-width: 480px) and (max-width: 1024px)';
+const MOBILE_COARSE_LANDSCAPE_MEDIA_QUERY = '(max-width: 1280px) and (min-width: 640px) and (orientation: landscape) and (pointer: coarse)';
 const ENGINE_SEARCH_MODE_CHECKPOINT = 'checkpoint';
 const ENGINE_SEARCH_MODE_CONTINUE = 'continue';
 const ENGINE_BUNDLE_CANDIDATES = Object.freeze([
@@ -7333,7 +7333,7 @@ function syncBoardSize() {
 
     const evalRailWidth = cssLengthToPx(columnStyles.getPropertyValue('--eval-rail-track-width'), remToPx(0.8));
     const evalRailGap = cssLengthToPx(columnStyles.getPropertyValue('--eval-rail-gap'), remToPx(0.45));
-    const maxWidthBudget = Math.max(0, (vw * 0.55) - evalRailWidth - evalRailGap - frameShellPadding);
+    const maxWidthBudget = Math.max(0, (vw * 0.50) - evalRailWidth - evalRailGap - frameShellPadding);
 
     const landscapeBoardSize = Math.floor(Math.min(heightBudget, maxWidthBudget, remToPx(38)));
     if (landscapeBoardSize > 0) {
@@ -7349,7 +7349,11 @@ function syncBoardSize() {
     const evalRailWidth = cssLengthToPx(columnStyles.getPropertyValue('--eval-rail-track-width'), remToPx(0.8));
     // Only the eval rail reserves space beside the board; the turn marker
     // is hidden on mobile, so its size + gap are excluded.
-    const widthBudget = Math.max(0, vw - evalRailWidth);
+    // On tablets in portrait (>= 480px), cap width to 72vw / 480px max so the
+    // board doesn't occupy 100% of the screen width and remains comfortable.
+    const isTabletPortrait = vw >= 480;
+    const widthLimit = isTabletPortrait ? Math.min(vw * 0.72, 480) : vw;
+    const widthBudget = Math.max(0, widthLimit - evalRailWidth);
 
     // Vertical budget: viewport minus page padding, the sticky lesson header,
     // the tab nav, puzzle instructions, and the captured rows so the board
