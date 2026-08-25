@@ -5311,11 +5311,6 @@ function currentPvPlaceholderText() {
     return 'Stopping analysis...';
   }
   if (state.engine.analyzing) {
-    if (state.engine.searchMode === ENGINE_SEARCH_MODE_CONTINUE) {
-      return Number.isFinite(state.engine.searchTargetDepth)
-        ? `Continuing analysis past depth ${state.engine.searchTargetDepth}...`
-        : 'Continuing analysis from the current board position...';
-    }
     return '';
   }
   return 'No principal variation yet.';
@@ -5446,7 +5441,9 @@ function parseInfoLine(line) {
     scoreType: '',
     scoreValue: null,
     pv: [],
+    hasPv: false,
     multipv: 1,
+    hasMultipv: false,
     nodes: null,
   };
   for (let index = 1; index < tokens.length; index += 1) {
@@ -5457,6 +5454,7 @@ function parseInfoLine(line) {
         index += 1;
         break;
       case 'multipv':
+        info.hasMultipv = true;
         info.multipv = Number.parseInt(tokens[index + 1], 10) || 1;
         index += 1;
         break;
@@ -5474,6 +5472,7 @@ function parseInfoLine(line) {
         index += 1;
         break;
       case 'pv':
+        info.hasPv = true;
         info.pv = tokens.slice(index + 1);
         index = tokens.length;
         break;
@@ -5717,15 +5716,26 @@ function handleWorkerMessage(event) {
     const nextEvalLabel = info.scoreType
       ? formatScoreLabel(normalizedScore.scoreType, normalizedScore.scoreValue)
       : existingLine.evalLabel;
-    state.engine.pvLines[pvIndex] = {
-      index: info.multipv,
-      line: sanLine.length ? sanLine.join(' ') : '',
-      uciMoves: uciLine.slice(0, sanLine.length || uciLine.length),
-      depth: Number.isFinite(info.depth) ? info.depth : existingLine.depth,
-      scoreType: normalizedScore.scoreType || existingLine.scoreType,
-      scoreValue: Number.isFinite(normalizedScore.scoreValue) ? normalizedScore.scoreValue : existingLine.scoreValue,
-      evalLabel: nextEvalLabel,
-    };
+    if (info.hasPv && sanLine.length) {
+      state.engine.pvLines[pvIndex] = {
+        index: info.multipv,
+        line: sanLine.join(' '),
+        uciMoves: uciLine.slice(0, sanLine.length),
+        depth: Number.isFinite(info.depth) ? info.depth : existingLine.depth,
+        scoreType: normalizedScore.scoreType || existingLine.scoreType,
+        scoreValue: Number.isFinite(normalizedScore.scoreValue) ? normalizedScore.scoreValue : existingLine.scoreValue,
+        evalLabel: nextEvalLabel,
+      };
+    } else if (info.scoreType && info.hasMultipv) {
+      state.engine.pvLines[pvIndex] = {
+        ...existingLine,
+        index: info.multipv,
+        depth: Number.isFinite(info.depth) ? info.depth : existingLine.depth,
+        scoreType: normalizedScore.scoreType || existingLine.scoreType,
+        scoreValue: Number.isFinite(normalizedScore.scoreValue) ? normalizedScore.scoreValue : existingLine.scoreValue,
+        evalLabel: nextEvalLabel,
+      };
+    }
     if (info.multipv === 1 && info.scoreType) {
       state.engine.scoreType = normalizedScore.scoreType;
       state.engine.scoreValue = normalizedScore.scoreValue;
