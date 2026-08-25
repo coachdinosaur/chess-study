@@ -22,7 +22,7 @@ test("the opening book has no application server dependency", async () => {
 test("all Markdown chapters are bundled as static source content", async () => {
   const filenames = (await readdir(new URL("app/content/chapters/", root)))
     .filter((name) => /^chapter-\d+-sicilian\.md$/.test(name));
-  assert.equal(filenames.length, 7);
+  assert.equal(filenames.length, 8);
   await Promise.all([
     access(new URL("dist/index.html", root)),
     access(new URL("dist/404.html", root)),
@@ -33,6 +33,7 @@ test("all Markdown chapters are bundled as static source content", async () => {
     access(new URL("dist/chapters/5/index.html", root)),
     access(new URL("dist/chapters/6/index.html", root)),
     access(new URL("dist/chapters/7/index.html", root)),
+    access(new URL("dist/chapters/8/index.html", root)),
   ]);
   const indexHtml = await readFile(new URL("dist/index.html", root), "utf8");
   const chapterOneRedirect = await readFile(new URL("dist/chapters/1/index.html", root), "utf8");
