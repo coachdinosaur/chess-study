@@ -172,20 +172,23 @@ h1, h2, h3, h4, h5, h6 { font-family: Manrope, Inter, sans-serif; }
 .fen-string { display: block; margin-top: 8px; color: #5b6b63; font-size: 11px; word-break: break-all; }
 .fen-invalid { margin: 16px 0; padding: 12px; border-radius: 8px; color: #8b3029; background: #f6e6e4; }
 
-/* Chapter 2, 3, 4, and 5 follow the source PDF's hierarchy in one reading column. */
-.chapter-2-narrative, .chapter-3-narrative, .chapter-4-narrative, .chapter-5-narrative { line-height: 1.62; }
-.chapter-2-narrative h1, .chapter-3-narrative h1, .chapter-4-narrative h1, .chapter-5-narrative h1 { max-width: 28ch; margin: 0 auto 30px; text-align: center; font-size: clamp(27px, 3.4vw, 38px); line-height: 1.16; }
-.chapter-2-narrative h2.page-heading-markdown, .chapter-3-narrative h2.page-heading-markdown, .chapter-4-narrative h2.page-heading-markdown, .chapter-5-narrative h2.page-heading-markdown { margin: 0 0 30px; padding: 0 0 9px; color: var(--muted); font-size: 12px; letter-spacing: .1em; text-align: right; text-transform: uppercase; }
+/* Chapters 2 through 8 follow the source PDF's hierarchy in one reading column. */
+.chapter-2-narrative, .chapter-3-narrative, .chapter-4-narrative, .chapter-5-narrative, .chapter-6-narrative, .chapter-7-narrative, .chapter-8-narrative { line-height: 1.62; }
+.chapter-2-narrative h1, .chapter-3-narrative h1, .chapter-4-narrative h1, .chapter-5-narrative h1, .chapter-6-narrative h1, .chapter-7-narrative h1, .chapter-8-narrative h1 { max-width: 28ch; margin: 0 auto 30px; text-align: center; font-size: clamp(27px, 3.4vw, 38px); line-height: 1.16; }
+.chapter-2-narrative h2.page-heading-markdown, .chapter-3-narrative h2.page-heading-markdown, .chapter-4-narrative h2.page-heading-markdown, .chapter-5-narrative h2.page-heading-markdown, .chapter-6-narrative h2.page-heading-markdown, .chapter-7-narrative h2.page-heading-markdown, .chapter-8-narrative h2.page-heading-markdown { margin: 0 0 30px; padding: 0 0 9px; color: var(--muted); font-size: 12px; letter-spacing: .1em; text-align: right; text-transform: uppercase; }
 .chapter-2-narrative h3, .chapter-2-narrative h4, .chapter-2-narrative h5, .chapter-2-narrative h6,
 .chapter-3-narrative h3, .chapter-3-narrative h4, .chapter-3-narrative h5, .chapter-3-narrative h6,
 .chapter-4-narrative h3, .chapter-4-narrative h4, .chapter-4-narrative h5, .chapter-4-narrative h6,
-.chapter-5-narrative h3, .chapter-5-narrative h4, .chapter-5-narrative h5, .chapter-5-narrative h6 { max-width: 34ch; margin-right: auto; margin-left: auto; text-align: center; line-height: 1.3; }
-.chapter-2-narrative h3, .chapter-3-narrative h3, .chapter-4-narrative h3, .chapter-5-narrative h3 { margin-top: 34px; margin-bottom: 18px; font-size: 20px; }
-.chapter-2-narrative h4, .chapter-3-narrative h4, .chapter-4-narrative h4, .chapter-5-narrative h4 { margin-top: 30px; margin-bottom: 16px; font-size: 18px; }
-.chapter-2-narrative h5, .chapter-3-narrative h5, .chapter-4-narrative h5, .chapter-5-narrative h5 { margin-top: 27px; margin-bottom: 14px; font-size: 17px; }
-.chapter-2-narrative h6, .chapter-3-narrative h6, .chapter-4-narrative h6, .chapter-5-narrative h6 { margin-top: 24px; margin-bottom: 12px; font-size: 16px; }
-.chapter-2-narrative p, .chapter-3-narrative p, .chapter-4-narrative p, .chapter-5-narrative p { margin-bottom: 13px; }
-.chapter-2-narrative p.prose-paragraph, .chapter-3-narrative p.prose-paragraph, .chapter-4-narrative p.prose-paragraph, .chapter-5-narrative p.prose-paragraph { text-align: justify; text-indent: 1.15em; text-wrap: pretty; }
+.chapter-5-narrative h3, .chapter-5-narrative h4, .chapter-5-narrative h5, .chapter-5-narrative h6,
+.chapter-6-narrative h3, .chapter-6-narrative h4, .chapter-6-narrative h5, .chapter-6-narrative h6,
+.chapter-7-narrative h3, .chapter-7-narrative h4, .chapter-7-narrative h5, .chapter-7-narrative h6,
+.chapter-8-narrative h3, .chapter-8-narrative h4, .chapter-8-narrative h5, .chapter-8-narrative h6 { max-width: 34ch; margin-right: auto; margin-left: auto; text-align: center; line-height: 1.3; }
+.chapter-2-narrative h3, .chapter-3-narrative h3, .chapter-4-narrative h3, .chapter-5-narrative h3, .chapter-6-narrative h3, .chapter-7-narrative h3, .chapter-8-narrative h3 { margin-top: 34px; margin-bottom: 18px; font-size: 20px; }
+.chapter-2-narrative h4, .chapter-3-narrative h4, .chapter-4-narrative h4, .chapter-5-narrative h4, .chapter-6-narrative h4, .chapter-7-narrative h4, .chapter-8-narrative h4 { margin-top: 30px; margin-bottom: 16px; font-size: 18px; }
+.chapter-2-narrative h5, .chapter-3-narrative h5, .chapter-4-narrative h5, .chapter-5-narrative h5, .chapter-6-narrative h5, .chapter-7-narrative h5, .chapter-8-narrative h5 { margin-top: 27px; margin-bottom: 14px; font-size: 17px; }
+.chapter-2-narrative h6, .chapter-3-narrative h6, .chapter-4-narrative h6, .chapter-5-narrative h6, .chapter-6-narrative h6, .chapter-7-narrative h6, .chapter-8-narrative h6 { margin-top: 24px; margin-bottom: 12px; font-size: 16px; }
+.chapter-2-narrative p, .chapter-3-narrative p, .chapter-4-narrative p, .chapter-5-narrative p, .chapter-6-narrative p, .chapter-7-narrative p, .chapter-8-narrative p { margin-bottom: 13px; }
+.chapter-2-narrative p.prose-paragraph, .chapter-3-narrative p.prose-paragraph, .chapter-4-narrative p.prose-paragraph, .chapter-5-narrative p.prose-paragraph, .chapter-6-narrative p.prose-paragraph, .chapter-7-narrative p.prose-paragraph, .chapter-8-narrative p.prose-paragraph { text-align: justify; text-indent: 1.15em; text-wrap: pretty; }
 .chapter-2-narrative :is(h1, h2, h3, h4, h5, h6) + p.prose-paragraph,
 .chapter-2-narrative p.source-chapter-title,
 .chapter-3-narrative :is(h1, h2, h3, h4, h5, h6) + p.prose-paragraph,
@@ -193,28 +196,34 @@ h1, h2, h3, h4, h5, h6 { font-family: Manrope, Inter, sans-serif; }
 .chapter-4-narrative :is(h1, h2, h3, h4, h5, h6) + p.prose-paragraph,
 .chapter-4-narrative p.source-chapter-title,
 .chapter-5-narrative :is(h1, h2, h3, h4, h5, h6) + p.prose-paragraph,
-.chapter-5-narrative p.source-chapter-title { text-indent: 0; }
-.chapter-2-narrative p.source-chapter-title, .chapter-3-narrative p.source-chapter-title, .chapter-4-narrative p.source-chapter-title, .chapter-5-narrative p.source-chapter-title { margin: 2px 0 12px; color: var(--forest); font: 750 clamp(24px, 3.2vw, 34px)/1.16 Manrope, Inter, sans-serif; letter-spacing: -.025em; text-align: center; }
-.chapter-2-narrative p.move-paragraph, .chapter-3-narrative p.move-paragraph, .chapter-4-narrative p.move-paragraph, .chapter-5-narrative p.move-paragraph { margin-top: 17px; margin-bottom: 9px; line-height: 1.58; }
-.chapter-2-narrative p.source-indented, .chapter-3-narrative p.source-indented, .chapter-4-narrative p.source-indented, .chapter-5-narrative p.source-indented { width: auto; margin-left: clamp(18px, 4vw, 38px); }
-.chapter-2-narrative p.option-paragraph, .chapter-3-narrative p.option-paragraph, .chapter-4-narrative p.option-paragraph, .chapter-5-narrative p.option-paragraph { padding-left: 1.35em; text-indent: -1.35em; }
-.chapter-2-narrative .fen-block, .chapter-3-narrative .fen-block, .chapter-4-narrative .fen-block, .chapter-5-narrative .fen-block { margin: 19px auto 23px; }
-.chapter-2-narrative .fen-board-container, .chapter-3-narrative .fen-board-container, .chapter-4-narrative .fen-board-container, .chapter-5-narrative .fen-board-container { margin-right: auto; margin-left: auto; }
-.chapter-2-narrative .markdown-list-block, .chapter-3-narrative .markdown-list-block, .chapter-4-narrative .markdown-list-block, .chapter-5-narrative .markdown-list-block { margin: 14px 0 30px; }
-.chapter-2-narrative .variation-index-list, .chapter-3-narrative .variation-index-list, .chapter-4-narrative .variation-index-list, .chapter-5-narrative .variation-index-list { margin: 0; padding: 0; list-style: none; }
-.chapter-2-narrative .variation-index-list .variation-index-list, .chapter-3-narrative .variation-index-list .variation-index-list, .chapter-4-narrative .variation-index-list .variation-index-list, .chapter-5-narrative .variation-index-list .variation-index-list { margin: 4px 0 0 clamp(18px, 4vw, 34px); padding: 0; }
-.chapter-2-narrative .variation-index-list li, .chapter-3-narrative .variation-index-list li, .chapter-4-narrative .variation-index-list li, .chapter-5-narrative .variation-index-list li { margin: 5px 0; }
-.chapter-2-narrative .variation-index-entry, .chapter-3-narrative .variation-index-entry, .chapter-4-narrative .variation-index-entry, .chapter-5-narrative .variation-index-entry { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; align-items: baseline; }
-.chapter-2-narrative .variation-index-entry > span:first-child, .chapter-3-narrative .variation-index-entry > span:first-child, .chapter-4-narrative .variation-index-entry > span:first-child, .chapter-5-narrative .variation-index-entry > span:first-child { min-width: 0; }
-.chapter-2-narrative .variation-index-page, .chapter-3-narrative .variation-index-page, .chapter-4-narrative .variation-index-page, .chapter-5-narrative .variation-index-page { color: var(--muted); font: 750 12px Manrope, Inter, sans-serif; }
-.chapter-2-narrative p.variation-index-shared, .chapter-3-narrative p.variation-index-shared, .chapter-4-narrative p.variation-index-shared, .chapter-5-narrative p.variation-index-shared { margin: 7px auto; text-align: center; }
-.chapter-2-narrative p.variation-index-shared + hr, .chapter-3-narrative p.variation-index-shared + hr, .chapter-4-narrative p.variation-index-shared + hr, .chapter-5-narrative p.variation-index-shared + hr { margin: 6px auto; width: min(72%, 430px); }
-.chapter-2-narrative hr, .chapter-3-narrative hr, .chapter-4-narrative hr, .chapter-5-narrative hr { margin: 25px 0; }
+.chapter-5-narrative p.source-chapter-title,
+.chapter-6-narrative :is(h1, h2, h3, h4, h5, h6) + p.prose-paragraph,
+.chapter-6-narrative p.source-chapter-title,
+.chapter-7-narrative :is(h1, h2, h3, h4, h5, h6) + p.prose-paragraph,
+.chapter-7-narrative p.source-chapter-title,
+.chapter-8-narrative :is(h1, h2, h3, h4, h5, h6) + p.prose-paragraph,
+.chapter-8-narrative p.source-chapter-title { text-indent: 0; }
+.chapter-2-narrative p.source-chapter-title, .chapter-3-narrative p.source-chapter-title, .chapter-4-narrative p.source-chapter-title, .chapter-5-narrative p.source-chapter-title, .chapter-6-narrative p.source-chapter-title, .chapter-7-narrative p.source-chapter-title, .chapter-8-narrative p.source-chapter-title { margin: 2px 0 12px; color: var(--forest); font: 750 clamp(24px, 3.2vw, 34px)/1.16 Manrope, Inter, sans-serif; letter-spacing: -.025em; text-align: center; }
+.chapter-2-narrative p.move-paragraph, .chapter-3-narrative p.move-paragraph, .chapter-4-narrative p.move-paragraph, .chapter-5-narrative p.move-paragraph, .chapter-6-narrative p.move-paragraph, .chapter-7-narrative p.move-paragraph, .chapter-8-narrative p.move-paragraph { margin-top: 17px; margin-bottom: 9px; line-height: 1.58; }
+.chapter-2-narrative p.source-indented, .chapter-3-narrative p.source-indented, .chapter-4-narrative p.source-indented, .chapter-5-narrative p.source-indented, .chapter-6-narrative p.source-indented, .chapter-7-narrative p.source-indented, .chapter-8-narrative p.source-indented { width: auto; margin-left: clamp(18px, 4vw, 38px); }
+.chapter-2-narrative p.option-paragraph, .chapter-3-narrative p.option-paragraph, .chapter-4-narrative p.option-paragraph, .chapter-5-narrative p.option-paragraph, .chapter-6-narrative p.option-paragraph, .chapter-7-narrative p.option-paragraph, .chapter-8-narrative p.option-paragraph { padding-left: 1.35em; text-indent: -1.35em; }
+.chapter-2-narrative .fen-block, .chapter-3-narrative .fen-block, .chapter-4-narrative .fen-block, .chapter-5-narrative .fen-block, .chapter-6-narrative .fen-block, .chapter-7-narrative .fen-block, .chapter-8-narrative .fen-block { margin: 19px auto 23px; }
+.chapter-2-narrative .fen-board-container, .chapter-3-narrative .fen-board-container, .chapter-4-narrative .fen-board-container, .chapter-5-narrative .fen-board-container, .chapter-6-narrative .fen-board-container, .chapter-7-narrative .fen-board-container, .chapter-8-narrative .fen-board-container { margin-right: auto; margin-left: auto; }
+.chapter-2-narrative .markdown-list-block, .chapter-3-narrative .markdown-list-block, .chapter-4-narrative .markdown-list-block, .chapter-5-narrative .markdown-list-block, .chapter-6-narrative .markdown-list-block, .chapter-7-narrative .markdown-list-block, .chapter-8-narrative .markdown-list-block { margin: 14px 0 30px; }
+.chapter-2-narrative .variation-index-list, .chapter-3-narrative .variation-index-list, .chapter-4-narrative .variation-index-list, .chapter-5-narrative .variation-index-list, .chapter-6-narrative .variation-index-list, .chapter-7-narrative .variation-index-list, .chapter-8-narrative .variation-index-list { margin: 0; padding: 0; list-style: none; }
+.chapter-2-narrative .variation-index-list .variation-index-list, .chapter-3-narrative .variation-index-list .variation-index-list, .chapter-4-narrative .variation-index-list .variation-index-list, .chapter-5-narrative .variation-index-list .variation-index-list, .chapter-6-narrative .variation-index-list .variation-index-list, .chapter-7-narrative .variation-index-list .variation-index-list, .chapter-8-narrative .variation-index-list .variation-index-list { margin: 4px 0 0 clamp(18px, 4vw, 34px); padding: 0; }
+.chapter-2-narrative .variation-index-list li, .chapter-3-narrative .variation-index-list li, .chapter-4-narrative .variation-index-list li, .chapter-5-narrative .variation-index-list li, .chapter-6-narrative .variation-index-list li, .chapter-7-narrative .variation-index-list li, .chapter-8-narrative .variation-index-list li { margin: 5px 0; }
+.chapter-2-narrative .variation-index-entry, .chapter-3-narrative .variation-index-entry, .chapter-4-narrative .variation-index-entry, .chapter-5-narrative .variation-index-entry, .chapter-6-narrative .variation-index-entry, .chapter-7-narrative .variation-index-entry, .chapter-8-narrative .variation-index-entry { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; align-items: baseline; }
+.chapter-2-narrative .variation-index-entry > span:first-child, .chapter-3-narrative .variation-index-entry > span:first-child, .chapter-4-narrative .variation-index-entry > span:first-child, .chapter-5-narrative .variation-index-entry > span:first-child, .chapter-6-narrative .variation-index-entry > span:first-child, .chapter-7-narrative .variation-index-entry > span:first-child, .chapter-8-narrative .variation-index-entry > span:first-child { min-width: 0; }
+.chapter-2-narrative .variation-index-page, .chapter-3-narrative .variation-index-page, .chapter-4-narrative .variation-index-page, .chapter-5-narrative .variation-index-page, .chapter-6-narrative .variation-index-page, .chapter-7-narrative .variation-index-page, .chapter-8-narrative .variation-index-page { color: var(--muted); font: 750 12px Manrope, Inter, sans-serif; }
+.chapter-2-narrative p.variation-index-shared, .chapter-3-narrative p.variation-index-shared, .chapter-4-narrative p.variation-index-shared, .chapter-5-narrative p.variation-index-shared, .chapter-6-narrative p.variation-index-shared, .chapter-7-narrative p.variation-index-shared, .chapter-8-narrative p.variation-index-shared { margin: 7px auto; text-align: center; }
+.chapter-2-narrative p.variation-index-shared + hr, .chapter-3-narrative p.variation-index-shared + hr, .chapter-4-narrative p.variation-index-shared + hr, .chapter-5-narrative p.variation-index-shared + hr, .chapter-6-narrative p.variation-index-shared + hr, .chapter-7-narrative p.variation-index-shared + hr, .chapter-8-narrative p.variation-index-shared + hr { margin: 6px auto; width: min(72%, 430px); }
+.chapter-2-narrative hr, .chapter-3-narrative hr, .chapter-4-narrative hr, .chapter-5-narrative hr, .chapter-6-narrative hr, .chapter-7-narrative hr, .chapter-8-narrative hr { margin: 25px 0; }
 
 @media (max-width: 600px) {
-  .chapter-2-narrative p.prose-paragraph, .chapter-3-narrative p.prose-paragraph, .chapter-4-narrative p.prose-paragraph, .chapter-5-narrative p.prose-paragraph { text-align: left; }
-  .chapter-2-narrative p.source-indented, .chapter-3-narrative p.source-indented, .chapter-4-narrative p.source-indented, .chapter-5-narrative p.source-indented { margin-left: 16px; }
-  .chapter-2-narrative .variation-index-list .variation-index-list, .chapter-3-narrative .variation-index-list .variation-index-list, .chapter-4-narrative .variation-index-list .variation-index-list, .chapter-5-narrative .variation-index-list .variation-index-list { margin-left: 16px; }
+  .chapter-2-narrative p.prose-paragraph, .chapter-3-narrative p.prose-paragraph, .chapter-4-narrative p.prose-paragraph, .chapter-5-narrative p.prose-paragraph, .chapter-6-narrative p.prose-paragraph, .chapter-7-narrative p.prose-paragraph, .chapter-8-narrative p.prose-paragraph { text-align: left; }
+  .chapter-2-narrative p.source-indented, .chapter-3-narrative p.source-indented, .chapter-4-narrative p.source-indented, .chapter-5-narrative p.source-indented, .chapter-6-narrative p.source-indented, .chapter-7-narrative p.source-indented, .chapter-8-narrative p.source-indented { margin-left: 16px; }
+  .chapter-2-narrative .variation-index-list .variation-index-list, .chapter-3-narrative .variation-index-list .variation-index-list, .chapter-4-narrative .variation-index-list .variation-index-list, .chapter-5-narrative .variation-index-list .variation-index-list, .chapter-6-narrative .variation-index-list .variation-index-list, .chapter-7-narrative .variation-index-list .variation-index-list, .chapter-8-narrative .variation-index-list .variation-index-list { margin-left: 16px; }
 }
 
 @media (min-width: 821px) {

@@ -74,7 +74,10 @@ We will consider **A) 9.Nc3**, **B) 9.Bxd5**, **C) 9.exd6!?**, **D) 9.Bd2** and 
 
 The main line 9.Qe2 is the topic of Chapter 9.
 
-One last possibility is 9.Re1, which should normally transpose to other lines of our repertoire. A deviation that we should only consider as a gift is: <!-- FEN: r1bqk2r/pp2bppp/2npp3/3nP3/2BP4/5N2/PP3PPP/RNBQR1K1 b kq - 1 9 --> 9...0-0 10.Nc3?! (10.exd6!? Bxd6 11.Nc3 h6 and 10.a3 Bd7 lead to positions we look at in variations C2 and E respectively) 10...Nxc3 11.bxc3 dxe5 12.Nxe5 Nxe5 13.Rxe5 Qc7 14.Qd3 Bd7 15.Bd2 (15.Bf4 Bd6 16.Rc5 Bc6 is slightly better for Black) 15...Rac8 16.Bb3 Bf6 17.Rh5 g6 18.Re1 b5 19.Re3
+One last possibility is 9.Re1, which should normally transpose to other lines of our repertoire. A deviation that we should only consider as a gift is:
+
+<!-- FEN: r1bqk2r/pp2bppp/2npp3/3nP3/2BP4/5N2/PP3PPP/RNBQR1K1 b kq - 1 9 -->
+9...0-0 10.Nc3?! (10.exd6!? Bxd6 11.Nc3 h6 and 10.a3 Bd7 lead to positions we look at in variations C2 and E respectively) 10...Nxc3 11.bxc3 dxe5 12.Nxe5 Nxe5 13.Rxe5 Qc7 14.Qd3 Bd7 15.Bd2 (15.Bf4 Bd6 16.Rc5 Bc6 is slightly better for Black) 15...Rac8 16.Bb3 Bf6 17.Rh5 g6 18.Re1 b5 19.Re3
 
 **FEN:**
 `2r2rk1/p1qb1p1p/4pbp1/1p5R/3P4/1BPRR3/P2B1PPP/6K1 b - - 1 19`
@@ -176,6 +179,7 @@ This has been the standard way of treating this variation so far. Black should b
 
 <!-- FEN: r1br2k1/pp2bppp/2nqpn2/3n4/2BP4/2N2N2/PP3PPP/R1BQR1K1 w - - 4 12 -->
 12.a3!? is an interesting possibility, as 12...Nb6?! 13.Bd3!N Nxd4 14.Ne5 Nf5 15.Nb5↑ is too dangerous for my taste and is perhaps even worse for Black.
+
 12...a6! is correct, but that represents some sort of gain for White. He didn't have to lose a tempo by retreating his bishop to b3, and therefore has some extra options due to the useful move a2-a3.
 
 <!-- FEN: r1br2k1/pp2bppp/2nqpn2/3n4/3P4/1BN2N2/PP3PPP/R1BQR1K1 b - - 5 12 -->
@@ -303,6 +307,7 @@ c3 Sicilian
 
 <!-- FEN: r1bq1Bk1/pp3pp1/4pn1p/8/8/1Bb5/PP3PPP/R2QR1K1 b - - 0 17 -->
 17...Qxd1 18.Rexd1 Bxb2 19.Rab1 Kxf8 20.Rxb2 Bd7=
+
 With two pawns for the exchange, I think we are in excellent shape.
 
 **FEN:**
@@ -351,14 +356,12 @@ A logical move at this point: White wishes to develop without allowing any damag
 <!-- FEN: r1bqk2r/pp2bppp/2npp3/3nP3/2BP4/5N2/PP1B1PPP/RN1Q1RK1 b kq - 3 9 -->
 **9...0-0 10.Nc3 dxe5!**
 
-The alternative method of implementing our
-
 ## Page 143
 
 Chapter 8 – 7.Bc4
 
 <!-- FEN: r1bq1rk1/pp2bppp/2npp3/3nP3/2BP4/2N2N2/PP1B1PPP/R2Q1RK1 b - - 0 10 -->
-plan is 10...Nb6 11.Bb5 Bd7, but it is slightly riskier due to:
+The alternative method of implementing our plan is 10...Nb6 11.Bb5 Bd7, but it is slightly riskier due to:
 
 **FEN:**
 `r2q1rk1/pp1b1ppp/1nnbp3/1B2P3/3P4/2N2N2/PP1B1PPP/R2Q1RK1 w - - 3 12`
@@ -768,13 +771,11 @@ Finally, 13.b4 has been the only try in practice so far, but it gives Black a ta
 `r4rk1/ppqbbppp/2n1p3/3nP3/1PB5/P4N2/3N1PPP/R1BQR1K1 b - - 0 13`
 
 <!-- FEN: r4rk1/ppqbbppp/2n1p3/3nP3/1PB5/P4N2/3N1PPP/R1BQR1K1 b - - 0 13 -->
-13...b5! 14.Bxd5!N (14.Bb3?! a5∓ is already
+13...b5! 14.Bxd5!N (14.Bb3?! a5∓ is already slightly worse for White, and after 15.bxa5 Nxa5 16.Ne4 Nxb3 17.Qxb3 b4 18.Bg5 Ba4!∓ he went down quickly in Luk – Novikovas, corr. 2003.) 14...exd5 15.Nb3!? (15.Bb2 a5∓; 15.Nb1 Be6 16.Nc3 Nxe5 17.Nxd5 Nxf3† 18.Qxf3 Bxd5 19.Qxd5 Bf6 20.Rb1 a6=)
 
 ## Page 151
 
 Chapter 8 – 7.Bc4
-
-slightly worse for White, and after 15.bxa5 Nxa5 16.Ne4 Nxb3 17.Qxb3 b4 18.Bg5 Ba4!∓ he went down quickly in Luk – Novikovas, corr. 2003.) 14...exd5 15.Nb3!? (15.Bb2 a5∓; 15.Nb1 Be6 16.Nc3 Nxe5 17.Nxd5 Nxf3† 18.Qxf3 Bxd5 19.Qxd5 Bf6 20.Rb1 a6=)
 
 **FEN:**
 `r4rk1/p1qbbppp/2n5/1p1pP3/1P6/PN3N2/3N1PPP/R1BQR1K1 b - - 1 15`
