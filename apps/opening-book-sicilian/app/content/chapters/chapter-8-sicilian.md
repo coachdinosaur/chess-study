@@ -98,28 +98,28 @@ White has a worse pawn formation and must play accurately to make a draw.
 
 c3 Sicilian
 
-<!-- FEN: r3k2r/pp1b1ppp/4p3/4P3/2B5/2P5/P4PPP/R1BR2K1 w kq - 1 14 -->
+<!-- FEN: r3k2r/pp1bbppp/4p3/4P3/2B5/2P5/P4PPP/R1BR2K1 w kq - 1 14 -->
 **14.Rb1?!**
 
-<!-- FEN: r3k2r/pp1b1ppp/4p3/4P3/2B5/2P5/P4PPP/R1BR2K1 w kq - 1 14 -->
+<!-- FEN: r3k2r/pp1bbppp/4p3/4P3/2B5/2P5/P4PPP/R1BR2K1 w kq - 1 14 -->
 14.a4! a6 15.Be2! Bc6 16.Bf3!N Bxf3 17.gxf3 Rc8 18.Rb1 Rc7 19.Be3 f6 20.Bb6 Rd7 21.Be3 Rxd1† 22.Rxd1 fxe5 23.Rb1 b5 24.axb5 axb5 25.Rxb5 Kf7 26.Rxe5 Rc8 27.Bd4 Bf6 28.Re4 Bxd4 29.cxd4= is actually the way for White to proceed, but it involves finding a series of accurate moves.
 
 **FEN:**
-`r3k2r/pp1b1ppp/4p3/4P3/2B5/2P5/P4PPP/1R1R2K1 b kq - 1 14`
+`r3k2r/pp1bbppp/4p3/4P3/2B5/2P5/P4PPP/1RBR2K1 b kq - 2 14`
 
-<!-- FEN: r3k2r/pp1b1ppp/4p3/4P3/2B5/2P5/P4PPP/1R1R2K1 b kq - 1 14 -->
+<!-- FEN: r3k2r/pp1bbppp/4p3/4P3/2B5/2P5/P4PPP/1RBR2K1 b kq - 2 14 -->
 **14...b6!**
 
-<!-- FEN: r3k2r/pp1b1ppp/4p3/4P3/2B5/2P5/P4PPP/1R1R2K1 b kq - 1 14 -->
+<!-- FEN: r3k2r/pp1bbppp/4p3/4P3/2B5/2P5/P4PPP/1RBR2K1 b kq - 2 14 -->
 14...Bc6 15.Bb5 Bxb5 16.Rxb5 b6 17.Be3 Rd8 18.Rdb1!= allows White to draw rather easily by pushing the a-pawn.
 
-<!-- FEN: r3k2r/pp1b1ppp/1p2p3/4P3/2B5/2P5/P4PPP/1R1R2K1 w kq - 0 15 -->
+<!-- FEN: r3k2r/p2bbppp/1p2p3/4P3/2B5/2P5/P4PPP/1RBR2K1 w kq - 0 15 -->
 **15.Ba6 Rd8!N**
 
-<!-- FEN: r3k2r/pp1b1ppp/B3p3/4P3/8/2P5/P4PPP/1R1R2K1 b kq - 2 15 -->
+<!-- FEN: r3k2r/p2bbppp/Bp2p3/4P3/8/2P5/P4PPP/1RBR2K1 b kq - 1 15 -->
 15...Bc5, as played in Arribas Robaina – Galego, Santa Clara 2005, allows the somewhat surprising 16.Be3!N Bxe3 17.fxe3 Ke7 18.Rb4! (intending Rc4) 18...Bc8 19.Bb5 Rd8 20.Rxd8 Kxd8 21.Rg4 g6 22.Rd4† Ke7 23.a4= when White has eliminated all his problems.
 
-<!-- FEN: 3r1rk1/pp1b1ppp/B3p3/4P3/8/2P1B3/P4PPP/1R1R2K1 b - - 3 16 -->
+<!-- FEN: 3rk2r/p2bbppp/Bp2p3/4P3/8/2P5/P4PPP/1RBR2K1 w k - 2 16 -->
 **16.Be3 0-0∓**
 
 White is fighting to draw, as it is not easy for him to get rid of his weak pawns. Black is ready to contest the d-file by ...Ba4, and I would really rate his winning chances as significant – especially against a somewhat weaker opponent.
