@@ -4746,6 +4746,8 @@ html[data-board-only="1"] .eval-bar-wrap {
     order: 2;
     position: relative;
     z-index: 1;
+    max-width: min(75vw, 560px);
+    margin-inline: auto;
   }
 
   .mobile-engine-lines-slot {
@@ -4764,6 +4766,18 @@ html[data-board-only="1"] .eval-bar-wrap {
   .lesson-notation,
   .lesson-position-builder-panel {
     order: 5;
+  }
+
+  /* In single-column portrait the board must not consume the entire
+     viewport height — otherwise everything below it (tabs, tools,
+     notation) is pushed off-screen and unreachable, especially in
+     fullscreen.  Let it size naturally so the page scrolls. */
+  .board-stage-card {
+    height: auto;
+  }
+
+  .board-block {
+    height: auto;
   }
 }
 
