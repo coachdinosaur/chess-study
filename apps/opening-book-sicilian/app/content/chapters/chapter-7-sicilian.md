@@ -486,8 +486,8 @@ I was happy to find this positional continuation.
 <!-- FEN: rn2kb1r/pp1b1pp1/1q2p2p/3pP3/3P4/P1NQBN2/1P3PPP/R4RK1 b kq - 0 13 -->
 Instead, **13...a5!? 14.Qc2 a4** occurred in R. Stein – D. Popovic, corr. 2000. 
 
-<!-- FEN: rn2kb1r/1p1b1pp1/1q2p2p/3pP3/p2P4/P1NQBN2/1PQ2PPP/R4RK1 w kq - 0 15 -->
-Rather than the game’s **15.Rfb1**, I would have preferred **15.Ne1!N Be7 16.Nd3 0-0 17.Qd1** with some attacking chances for White.
+<!-- FEN: rn2kb1r/1p1b1pp1/1q2p2p/3pP3/p2P4/P1N1BN2/1PQ2PPP/R4RK1 w kq - 0 15 -->
+Rather than the game’s (**15.Rfb1**), I would have preferred **15.Ne1!N Be7 16.Nd3 0-0 17.Qd1** with some attacking chances for White.
 
 <!-- FEN: rn2kb1r/pp1b1pp1/q3p2p/3pP3/3P4/P1NQBN2/1P3PPP/R4RK1 w kq - 1 14 -->
 **14.Qd1**
@@ -1130,7 +1130,7 @@ c3 Sicilian
 <!-- FEN: r2q1rk1/pp1n1ppp/4p1B1/3b4/3P1Q2/P3NN2/1P3PPP/R3R1K1 b - - 0 18 -->
 **18...fxg6! 19.Qd6 Bxf3 20.Qxe6+ Kh8 21.gxf3 Rxf3 22.Qd5 Rf8 23.Rac1** (**23.Qxb7 Rb8↑**)
 
-<!-- FEN: r4r1k/p2n2pp/1p4p1/3Q4/3P4/P3N3/1P3P1P/2R1R1K1 b - - 1 23 -->
+<!-- FEN: r2q1r1k/pp1n2pp/6p1/3Q4/3P4/P3N3/1P3P1P/2R1R1K1 b - - 3 23 -->
 **23...b6 24.Ng4 Qh4!**
 
 This move nullifies White’s slight initiative.
@@ -1198,19 +1198,19 @@ Also possible is: **11...Nf4 12.Be4 d5 13.Bc2 Bb5 14.Re1 Nd3 15.Re3 Nxc1 16.Rxc1
 <!-- FEN: 2rqkb1r/1p1n1ppp/p1bpp3/1P2P3/3P4/P2B4/1Q1N1PPP/R1B2RK1 b k - 0 15 -->
 **15...axb5 16.Bxb5** This was Kalvaitis – Genutis, Lithuania 2007, and now I would like to recommend: **16...dxe5N 17.dxe5 Qc7 18.Bxc6 Qxc6 19.Nf3 Bc5 20.Rb1 b6 21.Bd2 0-0 22.Bb4 h6=** Black has a fully equal game.
 
-<!-- FEN: r2qkb1r/1p1n1ppp/p1b1p3/3nP3/1P1P4/P2B1N2/3N1PPP/R1BQ1RK1 w kq - 0 12 -->
+<!-- FEN: r2qkb1r/1p1n1ppp/p1b1p3/3np3/1P1P4/P2B1N2/3N1PPP/R1BQ1RK1 w kq - 0 12 -->
 **12.dxe5**
 
 **FEN:**
-`r2qkb1r/1p1n1ppp/p1b1p3/3nP3/1P1P4/P2B1N2/3N1PPP/R1BQ1RK1 b kq - 0 12`
+`r2qkb1r/1p1n1ppp/p1b1p3/3nP3/1P6/P2B1N2/3N1PPP/R1BQ1RK1 b kq - 0 12`
 
-<!-- FEN: r2qkb1r/1p1n1ppp/p1b1p3/3nP3/1P1P4/P2B1N2/3N1PPP/R1BQ1RK1 b kq - 0 12 -->
+<!-- FEN: r2qkb1r/1p1n1ppp/p1b1p3/3nP3/1P6/P2B1N2/3N1PPP/R1BQ1RK1 b kq - 0 12 -->
 <!-- SOURCE MOVE REFERENCE: Move introduction. -->
 **12...a5!N**
 
 To my knowledge this has not been played in this particular position, but it is a typical reaction, exploiting White’s overextension.
 
-<!-- FEN: r2qkb1r/1p1n1ppp/p1b1p3/p2nP3/1P1P4/P2B1N2/3N1PPP/R1BQ1RK1 w kq - 0 13 -->
+<!-- FEN: r2qkb1r/1p1n1ppp/2b1p3/p2nP3/1P6/P2B1N2/3N1PPP/R1BQ1RK1 w kq - 0 13 -->
 **13.b5 Nc3!**
 
 ## Page 130
@@ -1219,10 +1219,10 @@ c3 Sicilian
 
 The point: hitting both the queen and the b5-pawn.
 
-<!-- FEN: r2qkb1r/1p1n1ppp/p1b1p3/1P2P3/3P4/P1nB1N2/3N1PPP/R1BQ1RK1 w kq - 1 14 -->
+<!-- FEN: r2qkb1r/1p1n1ppp/2b1p3/pP2P3/8/P1nB1N2/3N1PPP/R1BQ1RK1 w kq - 1 14 -->
 **14.Qb3**
 
-<!-- FEN: r2qkb1r/1p1n1ppp/p1b1p3/1P2P3/3P4/P1nB1N2/3N1PPP/R1BQ1RK1 w kq - 1 14 -->
+<!-- FEN: r2qkb1r/1p1n1ppp/2b1p3/pP2P3/8/P1nB1N2/3N1PPP/R1BQ1RK1 w kq - 1 14 -->
 After **14.Qc2!?** Black does not have to take the pawn, but may instead continue with:
 
 **FEN:**
@@ -1307,7 +1307,8 @@ It will now be hard for White to complete the mobilization of his queenside forc
 <!-- FEN: 2rqk2r/1p1nbppp/p1bpp3/3nP3/1P1P4/P2B1N2/R3QPPP/1NB1R1K1 b k - 0 13 -->
 **13...Ba4!N**
 
-I think it is better for Black to refrain from **13...N7b6**, as played in Markovic – Rublevsky, Budva 2004, since the text move allows Black to halt White’s idea to improve his rook with Rc2. I believe Black holds the slightly better chances.
+<!-- FEN: 2rqk2r/1p1nbppp/p1bpp3/3nP3/1P1P4/P2B1N2/R3QPPP/1NB1R1K1 b k - 0 13 -->
+I think it is better for Black to refrain from **13...N7b6**, as played in Markovic – Rublevsky, Budva 2004, since the text move allows Black to halt White’s idea to improve his rook with `Rc2`. I believe Black holds the slightly better chances.
 
 ## Page 132
 

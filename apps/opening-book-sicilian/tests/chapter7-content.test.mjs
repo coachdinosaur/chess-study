@@ -172,6 +172,8 @@ test("Chapter 7 Page 116 contains 13...Qa6!N, R. Stein – D. Popovic note, and 
 
   assert.match(page116, /\*\*13\.\.\.Qa6!N\*\*/);
   assert.match(page116, /R\. Stein – D\. Popovic, corr\. 2000/);
+  assert.match(page116, /\(\*\*15\.Rfb1\*\*\)/);
+  assert.match(page116, /\*\*15\.Ne1!N Be7 16\.Nd3 0-0 17\.Qd1\*\*/);
   assert.match(page116, /\*\*14\.Qd1\*\*/);
   assert.match(page116, /\*\*14\.\.\.Nc6 15\.Rc1 Rc8 16\.Re1\*\*/);
   assert.match(page116, /\*\*16\.\.\.Be7\*\*/);
@@ -387,6 +389,7 @@ test("Chapter 7 Page 131 contains perpetual line, D32) 11.Qe2, and 13...Ba4!N", 
   assert.match(page131, /\*\*13\.Ra2\*\*/);
   assert.match(page131, /Alavkin – Negi, Moscow 2005/);
   assert.match(page131, /\*\*13\.\.\.Ba4!N\*\*/);
+  assert.match(page131, /\*\*13\.\.\.N7b6\*\*/);
   assert.match(page131, /Markovic – Rublevsky, Budva 2004/);
 });
 
