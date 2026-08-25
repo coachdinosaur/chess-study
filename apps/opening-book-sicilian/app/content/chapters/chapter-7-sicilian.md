@@ -89,30 +89,52 @@ The position should favour us: White has lost castling privileges, and his e5-pa
 I consider this to be the most accurate choice.
 
 I would like to show an instructive game where Black went astray by exchanging the wrong pieces:
+
 <!-- FEN: rnb1kb1r/pp3ppp/4p3/4P3/1n6/5N2/PP2BPPP/RNBK3R b kq - 0 10 -->
-10...Be7 11.a3 Nd5 12.Bd2 0-0 (12...Bd7! 13.Nc3 Nxc3+ 14.Bxc3 Ba4+ 15.Kd2 Nd7∓ as played in Pujos – Delchev, St Affrique 2002, looks a trifle better for Black.)
+10...Be7 11.a3 Nd5 12.Bd2 0-0
+
+<!-- FEN: rnb1kb1r/pp3ppp/4p3/4P3/1n6/5N2/PP2BPPP/RNBK3R b kq - 0 10 -->
+(12...Bd7! 13.Nc3 Nxc3+ 14.Bxc3 Ba4+ 15.Kd2 Nd7∓ as played in Pujos – Delchev, St Affrique 2002, looks a trifle better for Black.)
 
 ## Page 109
 
 Chapter 7 – Various 7th Moves
 
 <!-- FEN: r1b2rk1/pp2bppp/4p3/3nP3/8/P4N2/1P1B1PPP/RN1K3R w - - 3 13 -->
-**13.Nc3 Nxc3+ 14.Bxc3 b6?!** (**14...Bd7!N∓** was better, in Delchev’s style.)
+13.Nc3 Nxc3+ 14.Bxc3 b6?!
+
+<!-- FEN: r1b2rk1/pp2bppp/4p3/3nP3/8/P4N2/1P1B1PPP/RN1K3R w - - 3 13 -->
+(14...Bd7!N∓ was better, in Delchev’s style.)
 
 **FEN:**
 `rnb2rk1/p3bppp/1p2p3/4P3/8/P1B2N2/1P2BPPP/R2K3R w - - 0 15`
 
 <!-- FEN: rnb2rk1/p3bppp/1p2p3/4P3/8/P1B2N2/1P2BPPP/R2K3R w - - 0 15 -->
-**15.Nd4! Bb7 16.Bf3 Bxf3+ 17.Nxf3=** Now White has equalized, and Black should take care not to become overexposed on the light squares. **17...Na6 18.Rc1 Rfc8 19.Ke2 Nc7 20.Bd2 Nd5 21.Rxc8+ Rxc8 22.Rc1 Rxc1 23.Bxc1 b5?!** A step in the wrong direction. (**23...Kf8 24.Nd4 Ke8=** would have easily maintained equality.) **24.Nd4! a6 25.Nc6 Bc5 26.Be3! Nxe3 27.fxe3 Bb6 28.Kd3 Kf8 29.Nb4 a5 30.Nc6 Ke8 31.Nd4 Bc7 32.Ke4 b4 33.axb4 axb4 34.Nc6 f5+ 35.exf6 gxf6 36.h3 Bd6 37.Kd3 Kd7 38.Nd4 f5 39.Kc4±** By this point White had a distinct advantage, and he went on to convert the full point in Gomez Esteban – Illescas, Benasque 2013. This game serves as a good example of the type of relaxation this structure might cause, and at the same time is a warning that every position can be lost – even by the very best.
+15.Nd4! Bb7 16.Bf3 Bxf3+ 17.Nxf3=
+
+Now White has equalized, and Black should take care not to become overexposed on the light squares.
+
+17...Na6 18.Rc1 Rfc8 19.Ke2 Nc7 20.Bd2 Nd5 21.Rxc8+ Rxc8 22.Rc1 Rxc1 23.Bxc1 b5?!
+
+A step in the wrong direction.
+
+<!-- FEN: 6k1/p3bppp/1p2p3/3nP3/8/P4N2/1P2KPPP/2B5 b - - 0 23 -->
+(23...Kf8 24.Nd4 Ke8= would have easily maintained equality.)
+
+24.Nd4! a6 25.Nc6 Bc5 26.Be3! Nxe3 27.fxe3 Bb6 28.Kd3 Kf8 29.Nb4 a5 30.Nc6 Ke8 31.Nd4 Bc7 32.Ke4 b4 33.axb4 axb4 34.Nc6 f5+ 35.exf6 gxf6 36.h3 Bd6 37.Kd3 Kd7 38.Nd4 f5 39.Kc4±
+
+By this point White had a distinct advantage, and he went on to convert the full point in Gomez Esteban – Illescas, Benasque 2013.
+
+This game serves as a good example of the type of relaxation this structure might cause, and at the same time is a warning that every position can be lost – even by the very best.
 
 <!-- FEN: rnb1k2r/pp3ppp/4p3/2b1P3/1n6/5N2/PP2BPPP/RNBK3R w kq - 1 11 -->
 **11.Rf1**
 
 <!-- FEN: rnb1k2r/pp3ppp/4p3/2b1P3/1n6/5N2/PP2BPPP/RNBK3R w kq - 1 11 -->
-**11.Nc3? Bxf2 12.Ne4 Bb6 13.Nd6+ Ke7+** just blunders away a pawn.
+(11.Nc3? Bxf2 12.Ne4 Bb6 13.Nd6+ Ke7+ just blunders away a pawn.)
 
 <!-- FEN: rnb1k2r/pp3ppp/4p3/2b1P3/1n6/5N2/PP2BPPP/RNBK3R w kq - 1 11 -->
-**11.a3** should probably be met by **11...Nd5N∓**.
+(11.a3 should probably be met by 11...Nd5N∓.)
 
 <!-- FEN: rnb1k2r/pp3ppp/4p3/2b1P3/1n6/5N2/PP2BPPP/RNBK1R2 b kq - 2 11 -->
 **11...0-0 12.Bd2 Rd8**
@@ -124,16 +146,22 @@ Chapter 7 – Various 7th Moves
 **13.Nc3**
 
 <!-- FEN: rnbr2k1/pp3ppp/4p3/2b1P3/1n6/2N2N2/PP1BBPPP/R2K1R2 b - - 1 13 -->
-**13...N8c6** (**13...Nd7!? 14.a3 Nc6 15.Bg5 Be7 16.Bxe7 Nxe7** may be even simpler.)
+**13...N8c6**
+
+<!-- FEN: rnbr2k1/pp3ppp/4p3/2b1P3/1n6/2N2N2/PP1BBPPP/R2K1R2 b - - 1 13 -->
+(13...Nd7!? 14.a3 Nc6 15.Bg5 Be7 16.Bxe7 Nxe7 may be even simpler.)
 
 <!-- FEN: r1br2k1/pp3ppp/2n1p3/2b1P3/1n6/2N2N2/PP1BBPPP/R2K1R2 w - - 2 14 -->
 **14.Rc1N**
 
 <!-- FEN: r1br2k1/pp3ppp/2n1p3/2b1P3/1n6/2N2N2/PP1BBPPP/R2K1R2 w - - 2 14 -->
-**14.Ne4 Bb6** is slightly better for Black, as was (**14.a3 Nd5∓**) in Olszewski – Reinderman, Warsaw 2005.
+(14.Ne4 Bb6 is slightly better for Black, as was [14.a3 Nd5∓] in Olszewski – Reinderman, Warsaw 2005.)
 
 <!-- FEN: r1br2k1/pp3ppp/2n1p3/2b1P3/1n6/2N2N2/PP1BBPPP/2RK1R2 b - - 3 14 -->
-**14...Nd4 15.Ne4 Nxf3 16.gxf3** (**16.Bxf3 Bf8∓**)
+**14...Nd4 15.Ne4 Nxf3 16.gxf3**
+
+<!-- FEN: r1br2k1/pp3ppp/2n1p3/2b1P3/4N3/5P2/PP1BBP1P/2RK1R2 b - - 0 16 -->
+(16.Bxf3 Bf8∓)
 
 **FEN:**
 `r1br2k1/pp3ppp/4p3/2b1P3/4N3/5P2/PP1BBP1P/2RK1R2 b - - 0 16`
@@ -721,8 +749,15 @@ This is not a piece of cake to defend after a rook switch to the fifth rank via 
 After **17.Rxe5!** I could indeed find nothing better for Black than equality, for instance:
 
 <!-- FEN: r1b2rk1/ppq2pp1/4p3/4R2Q/8/2P5/P2B1PPP/R5K1 b - - 0 17 -->
-**17...f6 18.Re3** (**18.Re4 Qf7∓** Kozlicek – Cerveny, Czech Republic 2007.) **18...e5** (**18...Qf7 19.Qe2!** [**19.Qh4 e5 20.Rg3 Bf5 21.Bh6 Bg6∓** remains worse for White, if only slightly] **19...Rd8 20.Rg3 e5 21.Bh6 g6 22.Qh5 Kh7 23.Qh4 Kg8 24.Qh5 Kh7=** leads to a draw as well.) **19.Rg3 Be6 20.Re1 Rad8 21.Bh6 Rf7 22.h3 Qc4 23.Qg6 Rdd7 24.Bxg7 Rxg7 25.Qe8+ Kh7 26.Qh5+ Kg8 27.Qe8+** A draw was the unavoidable outcome in Fuentes Parra – Gajek, Caldas Novas 2011.
+**17...f6 18.Re3** (**18.Re4 Qf7∓** Kozlicek – Cerveny, Czech Republic 2007.)
 
+<!-- FEN: r1b2rk1/ppq3p1/4pp2/4R2Q/8/2P1R3/P2B1PPP/6K1 b - - 0 18 -->
+(18...Qf7 19.Qe2! [19.Qh4 e5 20.Rg3 Bf5 21.Bh6 Bg6∓ remains worse for White, if only slightly] 19...Rd8 20.Rg3 e5 21.Bh6 g6 22.Qh5 Kh7 23.Qh4 Kg8 24.Qh5 Kh7= leads to a draw as well.)
+
+<!-- FEN: r1b2rk1/ppq3p1/4pp2/4R2Q/8/2P1R3/P2B1PPP/6K1 b - - 0 18 -->
+**18...e5 19.Rg3 Be6 20.Re1 Rad8 21.Bh6 Rf7 22.h3 Qc4 23.Qg6 Rdd7 24.Bxg7 Rxg7 25.Qe8+ Kh7 26.Qh5+ Kg8 27.Qe8+**
+
+A draw was the unavoidable outcome in Fuentes Parra – Gajek, Caldas Novas 2011.
 <!-- FEN: r1b1kb1r/ppqn1p1p/4p1p1/4p3/3P4/2PB1N2/P2B1PPP/R2Q1RK1 w kq - 0 12 -->
 **12.Qa4!**
 
@@ -904,13 +939,14 @@ Slightly awkward at first sight, but in fact very principled. The bishop hurries
 <!-- FEN: rnbqkb1r/pp1b1ppp/3pp3/3nP3/3P4/P4N2/1P3PPP/RNBQKB1R w KQkq - 1 8 -->
 **8.Bd3 Bc6 9.0-0 Nd7**
 
-Let us pause for a moment and examine the situation. Black is close to completing his set-up, while White faces problems with the development of his queenside; Nbd2 allows the d5-knight to invade on the f4-square. In addition, the first player should be wary of a timely ...dxe5 followed by ...Nc5, as there is a whole complex of light-square weaknesses on his queenside that he needs to take care of. Considering this, it is not surprising that White often employs the move b2-b4 to take c5 away from the black knight, but this has the disadvantage of weakening c3.
+Let us pause for a moment and examine the situation.
+
+Black is close to completing his set-up, while White faces problems with the development of his queenside; Nbd2 allows the d5-knight to invade on the f4-square. In addition, the first player should be wary of a timely ...dxe5 followed by ...Nc5, as there is a whole complex of light-square weaknesses on his queenside that he needs to take care of. Considering this, it is not surprising that White often employs the move b2-b4 to take c5 away from the black knight, but this has the disadvantage of weakening c3.
 
 **FEN:**
 `r2qkb1r/pp1n1ppp/2bpp3/3nP3/3P4/P2B1N2/1P3PPP/RNBQ1RK1 w kq - 5 10`
 
 We will first examine what happens if White does allow Black the option of ...Nf4 by playing D1) 10.Nbd2. Then D2) 10.Re1 is slightly more common but, as was alluded to above, D3) 10.b4 is an important prophylactic measure.
-
 <!-- FEN: r2qkb1r/pp1n1ppp/2bpp3/3nP3/3P4/P2B1N2/1P3PPP/RNBQ1RK1 w kq - 5 10 -->
 Passive is instead **10.Bd2**, intending to bring out the knight on c3 without weakening the pawn structure. After **10...Be7 11.Nc3 Nxc3 12.Bxc3 dxe5 13.dxe5 Nc5**
 
@@ -1182,20 +1218,38 @@ Also possible is: **11...Nf4 12.Be4 d5 13.Bc2 Bb5 14.Re1 Nd3 15.Re3 Nxc1 16.Rxc1
 **16...Be7** Intending to answer **17.a4N Bc6 18.Rb1** with **18...Nb6 19.a5 Nc4⇆**. My belief is that Black is quite okay, for instance: **20.Rc3 0-0!? 21.Nxc4 dxc4 22.Rxc4 Qd7∞** We have at least sufficient compensation for the missing pawn.
 
 <!-- FEN: r2qkb1r/1p1n1ppp/p1bpp3/3nP3/1P1P4/P2B1N2/3N1PPP/R1BQ1RK1 b kq - 1 11 -->
-**11...Nc3** The main theoretical recipe. **12.Qc2 Rc8 13.Qxc3 Bxf3 14.Qb2**
+**11...Nc3**
+
+The main theoretical recipe.
+
+<!-- FEN: r2qkb1r/1p1n1ppp/p1bpp3/3nP3/1P1P4/P2B1N2/3N1PPP/R1BQ1RK1 b kq - 1 11 -->
+**12.Qc2 Rc8 13.Qxc3 Bxf3 14.Qb2**
 
 **FEN:**
 `2rqkb1r/1p1n1ppp/p2pp3/4P3/1P1P4/P2B1b2/1Q1N1PPP/R1B2RK1 b k - 1 14`
 
 <!-- FEN: 2rqkb1r/1p1n1ppp/p2pp3/4P3/1P1P4/P2B1b2/1Q1N1PPP/R1B2RK1 b k - 1 14 -->
-**14...Bc6** Also viable is **14...Bd5!? 15.Ne4 dxe5** (**15...Bxe4!? 16.Bxe4 d5! 17.Bd3 Nb6N 18.b5! Nc4 19.Bxc4 Rxc4 20.bxa6 bxa6 21.Be3 Be7 22.Qb7 0-0 23.Qxa6 Qa8=** is another way to equalize) **16.dxe5 Be7 17.Rd1 0-0 18.Bf4 b5 19.Nc3** (**19.a4N bxa4 20.Rxa4 Qb6=**) **19...Nb6 20.Be3 Qc7! 21.Nxd5 Nxd5 22.Rac1 Qb8 23.Bd4 g6 24.g3 Nb6=** with approximate equality in Cerveny – Cvek, Pardubice 2013.
+**14...Bc6**
+
+Also viable is:
+
+<!-- FEN: 2rqkb1r/1p1n1ppp/p2pp3/4P3/1P1P4/P2B1b2/1Q1N1PPP/R1B2RK1 b k - 1 14 -->
+14...Bd5!? 15.Ne4 dxe5 (15...Bxe4!? 16.Bxe4 d5! 17.Bd3 Nb6N 18.b5! Nc4 19.Bxc4 Rxc4 20.bxa6 bxa6 21.Be3 Be7 22.Qb7 0-0 23.Qxa6 Qa8= is another way to equalize) 16.dxe5 Be7 17.Rd1 0-0 18.Bf4 b5 19.Nc3 (19.a4N bxa4 20.Rxa4 Qb6=) 19...Nb6 20.Be3 Qc7! 21.Nxd5 Nxd5 22.Rac1 Qb8 23.Bd4 g6 24.g3 Nb6= with approximate equality in Cerveny – Cvek, Pardubice 2013.
 
 <!-- FEN: 2rqkb1r/1p1n1ppp/p2pp3/4P3/1P1P4/P2B1b2/1Q1N1PPP/R1B2RK1 w k - 0 15 -->
-**15.b5** After **15.Nc4** White’s slight initiative is defused in the following way: **15...dxe5 16.dxe5 Bb5! 17.Nd6+** (**17.Qe2** allows **17...Bxc4N 18.Bxc4 Qc7!**) **17...Bxd6 18.Bxb5 Bc7! 19.Bxd7+ Qxd7 20.Bf4 0-0 21.Rfd1 Qa4=** Black had no reason to complain in Lanin – Soreghy, corr. 2009.
+**15.b5**
+
+After **15.Nc4** White’s slight initiative is defused in the following way: **15...dxe5 16.dxe5 Bb5! 17.Nd6+** (**17.Qe2** allows **17...Bxc4N 18.Bxc4 Qc7!**) **17...Bxd6 18.Bxb5 Bc7! 19.Bxd7+ Qxd7 20.Bf4 0-0 21.Rfd1 Qa4=** Black had no reason to complain in Lanin – Soreghy, corr. 2009.
 
 <!-- FEN: 2rqkb1r/1p1n1ppp/p1bpp3/1P2P3/3P4/P2B4/1Q1N1PPP/R1B2RK1 b k - 0 15 -->
-**15...axb5 16.Bxb5** This was Kalvaitis – Genutis, Lithuania 2007, and now I would like to recommend: **16...dxe5N 17.dxe5 Qc7 18.Bxc6 Qxc6 19.Nf3 Bc5 20.Rb1 b6 21.Bd2 0-0 22.Bb4 h6=** Black has a fully equal game.
+**15...axb5 16.Bxb5**
 
+This was Kalvaitis – Genutis, Lithuania 2007, and now I would like to recommend:
+
+<!-- FEN: 2rqkb1r/1p1n1ppp/p1bpp3/1B2P3/3P4/P2B4/1Q1N1PPP/R1B2RK1 b k - 0 16 -->
+**16...dxe5N 17.dxe5 Qc7 18.Bxc6 Qxc6 19.Nf3 Bc5 20.Rb1 b6 21.Bd2 0-0 22.Bb4 h6=**
+
+Black has a fully equal game.
 <!-- FEN: r2qkb1r/1p1n1ppp/p1b1p3/3np3/1P1P4/P2B1N2/3N1PPP/R1BQ1RK1 w kq - 0 12 -->
 **12.dxe5**
 
@@ -1219,7 +1273,6 @@ The point: hitting both the queen and the b5-pawn.
 <!-- FEN: r2qkb1r/1p1n1ppp/2b1p3/pP2P3/8/P1nB1N2/3N1PPP/R1BQ1RK1 w kq - 1 14 -->
 **14.Qb3**
 
-<!-- FEN: r2qkb1r/1p1n1ppp/2b1p3/pP2P3/8/P1nB1N2/3N1PPP/R1BQ1RK1 w kq - 1 14 -->
 After **14.Qc2!?** Black does not have to take the pawn, but may instead continue with:
 
 **FEN:**
@@ -1257,7 +1310,6 @@ Black is so strongly placed that it is White who has to start searching for ways
 
 **FEN:**
 `1k1r4/5ppp/1p2p3/1PbrP3/P7/3n1N2/5PPP/R2RBK2 w - - 2 25`
-
 ## Page 131
 
 Chapter 7 – Various 7th Moves
@@ -1279,13 +1331,18 @@ Throwing this in with the b2-b4 set-up might appear natural, but what does White
 In my opinion more prudent is:
 
 <!-- FEN: r2qk2r/1p1nbppp/p1bpp3/3nP3/1P1P4/P2B1N2/4QPPP/RNB2RK1 w kq - 2 12 -->
-**12.Bd2!? 0-0 13.Rc1** (**13.Nc3 Nxc3 14.Bxc3 b5!N∓** sees the b6-square become an excellent square for the black knight.)
+12.Bd2!? 0-0 13.Rc1 (13.Nc3 Nxc3 14.Bxc3 b5!N∓ sees the b6-square become an excellent square for the black knight.)
 
 **FEN:**
 `r2q1rk1/1p1nbppp/p1bpp3/3nP3/1P1P4/P2B1N2/3BQPPP/RNR3K1 b - - 0 13`
 
 <!-- FEN: r2q1rk1/1p1nbppp/p1bpp3/3nP3/1P1P4/P2B1N2/3BQPPP/RNR3K1 b - - 0 13 -->
-**13...Rc8!N** (Less convincing is **13...Qb6 14.Nc3 Nxc3 15.Bxc3 dxe5 16.dxe5 Rfc8 17.Nd2 Qd8** as played in Khaetsky – Ortiz Suarez, Barcelona 2013, although Black went on to win the game after an unsound sacrifice by White.) **14.Nc3 Nxc3 15.Bxc3** (**15.Rxc3 dxe5 16.dxe5 Bxf3 17.gxf3 Rxc3 18.Bxc3 Nb6∞**) **15...Nb6 16.Bd2 Qd7 17.Bf4 f6⇆** Black does not look any worse to me, although he is probably not better either.
+13...Rc8!N
+
+(Less convincing is 13...Qb6 14.Nc3 Nxc3 15.Bxc3 dxe5 16.dxe5 Rfc8 17.Nd2 Qd8 as played in Khaetsky – Ortiz Suarez, Barcelona 2013, although Black went on to win the game after an unsound sacrifice by White.)
+
+<!-- FEN: 2rq1rk1/1p1nbppp/p1bpp3/3nP3/1P1P4/P2B1N2/3BQPPP/RNR3K1 w - - 1 14 -->
+14.Nc3 Nxc3 15.Bxc3 (15.Rxc3 dxe5 16.dxe5 Bxf3 17.gxf3 Rxc3 18.Bxc3 Nb6∞) 15...Nb6 16.Bd2 Qd7 17.Bf4 f6⇆ Black does not look any worse to me, although he is probably not better either.
 
 <!-- FEN: r2qk2r/1p1nbppp/p1bpp3/3nP3/1P1P4/P2B1N2/4QPPP/RNB1R1K1 b kq - 1 12 -->
 **12...Rc8**
@@ -1362,14 +1419,20 @@ I think this is the most logical continuation, forcing the bishop to move again.
 Chapter 7 – Various 7th Moves
 
 <!-- FEN: r2qk2r/1p1nbppp/p1bpp3/3nP3/1P1P4/P2B1N2/5PPP/RNBQR1K1 w kq - 1 12 -->
-**12.Nbd2** This can be met in typical fashion: **12...dxe5 13.dxe5 a5!** Black frees the c5-square for use by his pieces, and he may already be slightly for choice.
+**12.Nbd2** This can be met in typical fashion:
+
+<!-- FEN: r2qk2r/1p1nbppp/p1bpp3/3nP3/1P1P4/P2B1N2/3N1PPP/R1BQR1K1 b kq - 2 12 -->
+**12...dxe5 13.dxe5 a5!**
+
+Black frees the c5-square for use by his pieces, and he may already be slightly for choice.
 
 **FEN:**
 `r2qk2r/1p1nbppp/2b1p3/p2nP3/1P6/P2B1N2/3N1PPP/R1BQR1K1 w kq a6 0 14`
 
 <!-- FEN: r2qk2r/1p1nbppp/2b1p3/p2nP3/1P6/P2B1N2/3N1PPP/R1BQR1K1 w kq a6 0 14 -->
-**14.bxa5** (**14.b5 Nc3 15.Qb3N Bxf3 16.Nxf3 Nc5 17.Qxc3 Qxd3 18.Qxd3 Nxd3 19.Rd1 0-0-0∓** is a position that compares favourably with the note on 11.Nbd2, as White has wasted a tempo on Re1. Still, this might have been the lesser evil for him.) **14...Nc5 15.Bf1 Ba4 16.Qe2 Nf4** (**16...0-0N∓**) **17.Qc4 Nfd3 18.Re3 Nxc1 19.Rxc1 0-0 20.a6** (**20.Qf4!?N Rxa5 21.Nc4 Ra7∓**) **20...Rxa6 21.Qg4 Ra8 22.Rc4 Bc6 23.Rd4 Ra4! 24.Rxa4 Bxa4 25.h4 Bc2∓** Black was dominating proceedings in Velchev – P.H. Nielsen, Rogaska Slatina 2011.
+**14.bxa5** (**14.b5 Nc3 15.Qb3N Bxf3 16.Nxf3 Nc5 17.Qxc3 Qxd3 18.Qxd3 Nxd3 19.Rd1 0-0-0∓** is a position that compares favourably with the note on 11.Nbd2, as White has wasted a tempo on Re1. Still, this might have been the lesser evil for him.) **14...Nc5 15.Bf1 Ba4 16.Qe2 Nf4** (**16...0-0N∓**) **17.Qc4 Nfd3 18.Re3 Nxc1 19.Rxc1 0-0 20.a6** (**20.Qf4!?N Rxa5 21.Nc4 Ra7∓**) **20...Rxa6 21.Qg4 Ra8 22.Rc4 Bc6 23.Rd4 Ra4! 24.Rxa4 Bxa4 25.h4 Bc2∓**
 
+Black was dominating proceedings in Velchev – P.H. Nielsen, Rogaska Slatina 2011.
 <!-- FEN: r2qk2r/1p1nbppp/2bPp3/3n4/1P1P4/P2B1N2/5PPP/RNBQR1K1 b kq - 0 12 -->
 **12...Bxd6 13.Nbd2 Be7 14.Ne4**
 
@@ -1390,7 +1453,17 @@ Jumping immediately to c5 looks like the most sensible way to play.
 Much weaker is instead **15.Bd2?! N5f6!∓**, after which the knight jump has been rendered impossible and White already has to think about equalizing.
 
 <!-- FEN: r2q1rk1/1p1nbppp/p1b1p3/3n4/1P1PN3/P2B1N2/5PPP/R1BQR1K1 w - - 4 15 -->
-A viable alternative is: **15.Qe2** Now I found the following impressive (by my own standards) continuation: **15...Bb5! 16.Bxb5 axb5 17.Bb2 Qe8!! 18.Nc5!** (**18.Qxb5 Ne5! 19.Qxe8 Nxf3+ 20.gxf3 Rfxe8∞** is, unsurprisingly, a position where Black may even be better in spite of being a pawn down, as he has a much better bishop and a healthy pawn structure.)
+A viable alternative is:
+
+<!-- FEN: r2q1rk1/1p1nbppp/p1b1p3/3n4/1P1PN3/P2B1N2/5PPP/R1BQR1K1 w - - 4 15 -->
+15.Qe2
+
+Now I found the following impressive (by my own standards) continuation:
+
+<!-- FEN: r2q1rk1/1p1nbppp/p1b1p3/3n4/1P1PN3/P2B1N2/5PPP/R1BQR1K1 w - - 4 15 -->
+15...Bb5! 16.Bxb5 axb5 17.Bb2 Qe8!! 18.Nc5!
+
+(18.Qxb5 Ne5! 19.Qxe8 Nxf3+ 20.gxf3 Rfxe8∞ is, unsurprisingly, a position where Black may even be better in spite of being a pawn down, as he has a much better bishop and a healthy pawn structure.)
 
 **FEN:**
 `r3qrk1/1p1nbppp/4p3/1pNn4/1P1P4/P4N2/1B2QPPP/R3R1K1 b - - 3 18`
@@ -1479,6 +1552,8 @@ Riskier is **20...g6!?** (**21.Be4 Nc3=**) (**21.Bxg6 f5 22.Bh5 Bxd2 23.Nxd2 Qg5
 
 ## Conclusion
 
-This chapter took us into more main line territory after **1.e4 c5 2.c3 Nf6 3.e5 Nd5 4.Nf3 e6 5.d4 cxd4 6.cxd4 d6**. White has a dangerous sacrifice after **7.Nc3 Nxc3 8.bxc3 Qc7! 9.Bd2 Nd7 10.Bd3!?** when I have managed to find a path to equality, though probably not more.
+This chapter took us into more main line territory after **1.e4 c5 2.c3 Nf6 3.e5 Nd5 4.Nf3 e6 5.d4 cxd4 6.cxd4 d6**.
+
+White has a dangerous sacrifice after **7.Nc3 Nxc3 8.bxc3 Qc7! 9.Bd2 Nd7 10.Bd3!?** when I have managed to find a path to equality, though probably not more.
 
 I also spent a lot of time analysing **7.a3 Bd7!? 8.Bd3 Bc6 9.0-0 Nd7**, concluding that Black has excellent chances. The game will remain double-edged, but the variations presented here provide Black with a solid positional basis from which to begin the middlegame battle.
