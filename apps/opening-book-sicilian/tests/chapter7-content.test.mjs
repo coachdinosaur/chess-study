@@ -405,7 +405,7 @@ test("Chapter 7 Page 132 contains 14.Qe4, 17...Rxc1+, and D33) 11.Re1", async ()
 
   assert.match(page132, /\*\*14\.Qe4 dxe5 15\.dxe5 h5!\?\*\*/);
   assert.match(page132, /\*\*16\.Bd2 N7b6 17\.Rc1\*\*/);
-  assert.match(page132, /\*\*17\.\.\.Rxc1\+ 18\.Bxc1 Qc7 19\.Bd2 g6 20\.Nd4 Qd7 21\.Bb2 0-0∓\*\*/);
+  assert.match(page132, /\*\*17\.\.\.Rxc1\+ 18\.Bxc1 Qc7 19\.Bd2 g6 20\.Nd4 Qd7 21\.Rb2 0-0∓\*\*/);
   assert.match(page132, /##### D33\) 11\.Re1/);
   assert.match(page132, /\*\*11\.\.\.Be7 12\.exd6!\*\*/);
 });

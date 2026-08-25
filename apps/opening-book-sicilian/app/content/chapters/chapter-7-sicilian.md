@@ -1203,7 +1203,6 @@ Also possible is: **11...Nf4 12.Be4 d5 13.Bc2 Bb5 14.Re1 Nd3 15.Re3 Nxc1 16.Rxc1
 `r2qkb1r/1p1n1ppp/p1b1p3/3nP3/1P6/P2B1N2/3N1PPP/R1BQ1RK1 b kq - 0 12`
 
 <!-- FEN: r2qkb1r/1p1n1ppp/p1b1p3/3nP3/1P6/P2B1N2/3N1PPP/R1BQ1RK1 b kq - 0 12 -->
-<!-- SOURCE MOVE REFERENCE: Move introduction. -->
 **12...a5!N**
 
 To my knowledge this has not been played in this particular position, but it is a typical reaction, exploiting White’s overextension.
@@ -1341,8 +1340,7 @@ After **16.Nd4 g6 17.Qg4** (**17.Bh6 Bg5! 18.Bxg5 Qxg5∓**) **17...h5! 18.Qf3**
 `2rqk2r/1p2bpp1/pn2p3/3nP2p/bP2Q3/P2B1N2/R2B1PPP/1NR3K1 b k - 3 17`
 
 <!-- FEN: 2rqk2r/1p2bpp1/pn2p3/3nP2p/bP2Q3/P2B1N2/R2B1PPP/1NR3K1 b k - 3 17 -->
-<!-- SOURCE MOVE REFERENCE: Move printed in source as 21.Bb2. -->
-**17...Rxc1+ 18.Bxc1 Qc7 19.Bd2 g6 20.Nd4 Qd7 21.Bb2 0-0∓**
+**17...Rxc1+ 18.Bxc1 Qc7 19.Bd2 g6 20.Nd4 Qd7 21.Rb2 0-0∓**
 
 White has no attack and the problems with his coordination have not been solved. The advantage, even if it is a slight one, rests with Black.
 
@@ -1370,7 +1368,6 @@ Chapter 7 – Various 7th Moves
 `r2qk2r/1p1nbppp/2b1p3/p2nP3/1P6/P2B1N2/3N1PPP/R1BQR1K1 w kq a6 0 14`
 
 <!-- FEN: r2qk2r/1p1nbppp/2b1p3/p2nP3/1P6/P2B1N2/3N1PPP/R1BQR1K1 w kq a6 0 14 -->
-<!-- SOURCE MOVE REFERENCE: Game transcription citation in notes. -->
 **14.bxa5** (**14.b5 Nc3 15.Qb3N Bxf3 16.Nxf3 Nc5 17.Qxc3 Qxd3 18.Qxd3 Nxd3 19.Rd1 0-0-0∓** is a position that compares favourably with the note on 11.Nbd2, as White has wasted a tempo on Re1. Still, this might have been the lesser evil for him.) **14...Nc5 15.Bf1 Ba4 16.Qe2 Nf4** (**16...0-0N∓**) **17.Qc4 Nfd3 18.Re3 Nxc1 19.Rxc1 0-0 20.a6** (**20.Qf4!?N Rxa5 21.Nc4 Ra7∓**) **20...Rxa6 21.Qg4 Ra8 22.Rc4 Bc6 23.Rd4 Ra4! 24.Rxa4 Bxa4 25.h4 Bc2∓** Black was dominating proceedings in Velchev – P.H. Nielsen, Rogaska Slatina 2011.
 
 <!-- FEN: r2qk2r/1p1nbppp/2bPp3/3n4/1P1P4/P2B1N2/5PPP/RNBQR1K1 b kq - 0 12 -->
