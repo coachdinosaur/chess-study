@@ -2759,7 +2759,8 @@ function syncNotationToolbarSlot() {
     return;
   }
   const isLandscapeMobile = mobileLandscapeLayoutActive();
-  const targetParent = isLandscapeMobile ? boardSlot : notationSlot;
+  const isPortraitAnalyze = mobilePortraitLayoutActive() && state.activeTab === 'analysis';
+  const targetParent = (isLandscapeMobile || isPortraitAnalyze) ? boardSlot : notationSlot;
   if (toolbar.parentElement !== targetParent) {
     targetParent.appendChild(toolbar);
   }
@@ -7333,9 +7334,9 @@ function syncBoardSize() {
 
     const evalRailWidth = cssLengthToPx(columnStyles.getPropertyValue('--eval-rail-track-width'), remToPx(0.8));
     const evalRailGap = cssLengthToPx(columnStyles.getPropertyValue('--eval-rail-gap'), remToPx(0.45));
-    const maxWidthBudget = Math.max(0, (vw * 0.50) - evalRailWidth - evalRailGap - frameShellPadding);
+    const maxWidthBudget = Math.max(0, Math.min(vw * 0.60, vw - remToPx(22)) - evalRailWidth - evalRailGap - frameShellPadding);
 
-    const landscapeBoardSize = Math.floor(Math.min(heightBudget, maxWidthBudget, remToPx(38)));
+    const landscapeBoardSize = Math.floor(Math.min(heightBudget, maxWidthBudget, remToPx(42)));
     if (landscapeBoardSize > 0) {
       dom.boardColumn.style.setProperty('--board-size', `${landscapeBoardSize}px`);
       dom.rootElement.style.setProperty('--board-side-gap', '0px');
@@ -7345,42 +7346,17 @@ function syncBoardSize() {
 
   if (isMobilePortrait && !mobileLandscapeLayoutActive()) {
     const vw = currentViewportWidth();
-    const vh = window.innerHeight || currentViewportHeight();
     const evalRailWidth = cssLengthToPx(columnStyles.getPropertyValue('--eval-rail-track-width'), remToPx(0.8));
     // Only the eval rail reserves space beside the board; the turn marker
     // is hidden on mobile, so its size + gap are excluded.
     // On tablets in portrait (>= 480px), cap width to 72vw / 480px max so the
     // board doesn't occupy 100% of the screen width and remains comfortable.
+    // Sizing is purely width-derived in portrait so it remains 100% consistent across all tabs.
     const isTabletPortrait = vw >= 480;
-    const widthLimit = isTabletPortrait ? Math.min(vw * 0.72, 480) : vw;
+    const widthLimit = isTabletPortrait ? Math.min(vw * 0.72, 480) : Math.max(0, vw - 16);
     const widthBudget = Math.max(0, widthLimit - evalRailWidth);
 
-    // Vertical budget: viewport minus page padding, the sticky lesson header,
-    // the tab nav, puzzle instructions, and the captured rows so the board
-    // fits alongside the compact mobile controls in any orientation.
-    let reservedHeight = elementPaddingInsetPx(dom.pageShell, 'y') + remToPx(0.9);
-    for (const selector of ['.lesson-header', '.control-pane-scroll > .tab-nav']) {
-      const chromeEl = document.querySelector(selector);
-      if (chromeEl && chromeEl.offsetHeight) {
-        reservedHeight += chromeEl.offsetHeight;
-      }
-    }
-    if (dom.puzzleBoardInstruction && !dom.puzzleBoardInstruction.hidden && dom.puzzleBoardInstruction.offsetHeight) {
-      reservedHeight += dom.puzzleBoardInstruction.offsetHeight;
-    }
-
-    const heightBudget = Math.max(0, vh - reservedHeight);
-    let mobileBoardSize = Math.min(widthBudget, heightBudget);
-    const capturedMetrics = capturedSizingMetricsFromStyles(columnStyles);
-    for (let index = 0; index < 4; index += 1) {
-      const capturedRowsHeight = (capturedRowHeightForBoardSize(mobileBoardSize, capturedMetrics) + capturedRowGapForBoardSize(mobileBoardSize)) * 2;
-      const nextSize = Math.floor(Math.max(0, Math.min(widthBudget, heightBudget - capturedRowsHeight)));
-      if (Math.abs(nextSize - mobileBoardSize) < 1) {
-        mobileBoardSize = nextSize;
-        break;
-      }
-      mobileBoardSize = nextSize;
-    }
+    const mobileBoardSize = Math.floor(widthBudget);
 
     if (mobileBoardSize > 0) {
       dom.boardColumn.style.setProperty('--board-size', `${mobileBoardSize}px`);
@@ -8583,6 +8559,7 @@ function renderTabs() {
     panel.hidden = !active;
     panel.classList.toggle('is-active', active);
   });
+  syncNotationToolbarSlot();
 }
 
 function renderActiveToolPanel() {
