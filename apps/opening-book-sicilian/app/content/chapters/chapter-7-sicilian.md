@@ -93,7 +93,7 @@ I would like to show an instructive game where Black went astray by exchanging t
 <!-- FEN: rnb1kb1r/pp3ppp/4p3/4P3/1n6/5N2/PP2BPPP/RNBK3R b kq - 0 10 -->
 10...Be7 11.a3 Nd5 12.Bd2 0-0
 
-<!-- FEN: rnb1kb1r/pp3ppp/4p3/4P3/1n6/5N2/PP2BPPP/RNBK3R b kq - 0 10 -->
+<!-- FEN: rnb1k2r/pp2bppp/4p3/3nP3/8/P4N2/1P1B1PPP/RN1K3R b kq - 1 12 -->
 (12...Bd7! 13.Nc3 Nxc3+ 14.Bxc3 Ba4+ 15.Kd2 Nd7∓ as played in Pujos – Delchev, St Affrique 2002, looks a trifle better for Black.)
 
 ## Page 109
@@ -103,7 +103,7 @@ Chapter 7 – Various 7th Moves
 <!-- FEN: r1b2rk1/pp2bppp/4p3/3nP3/8/P4N2/1P1B1PPP/RN1K3R w - - 3 13 -->
 13.Nc3 Nxc3+ 14.Bxc3 b6?!
 
-<!-- FEN: r1b2rk1/pp2bppp/4p3/3nP3/8/P4N2/1P1B1PPP/RN1K3R w - - 3 13 -->
+<!-- FEN: r1b2rk1/pp2bppp/4p3/4P3/8/P1B2N2/1P3PPP/R2K3R b - - 0 14 -->
 (14...Bd7!N∓ was better, in Delchev’s style.)
 
 **FEN:**
@@ -751,10 +751,10 @@ After **17.Rxe5!** I could indeed find nothing better for Black than equality, f
 <!-- FEN: r1b2rk1/ppq2pp1/4p3/4R2Q/8/2P5/P2B1PPP/R5K1 b - - 0 17 -->
 **17...f6 18.Re3** (**18.Re4 Qf7∓** Kozlicek – Cerveny, Czech Republic 2007.)
 
-<!-- FEN: r1b2rk1/ppq3p1/4pp2/4R2Q/8/2P1R3/P2B1PPP/6K1 b - - 0 18 -->
+<!-- FEN: r1b2rk1/ppq3p1/4pp2/7Q/8/2P1R3/P2B1PPP/R5K1 b - - 1 18 -->
 (18...Qf7 19.Qe2! [19.Qh4 e5 20.Rg3 Bf5 21.Bh6 Bg6∓ remains worse for White, if only slightly] 19...Rd8 20.Rg3 e5 21.Bh6 g6 22.Qh5 Kh7 23.Qh4 Kg8 24.Qh5 Kh7= leads to a draw as well.)
 
-<!-- FEN: r1b2rk1/ppq3p1/4pp2/4R2Q/8/2P1R3/P2B1PPP/6K1 b - - 0 18 -->
+<!-- FEN: r1b2rk1/ppq3p1/4pp2/7Q/8/2P1R3/P2B1PPP/R5K1 b - - 1 18 -->
 **18...e5 19.Rg3 Be6 20.Re1 Rad8 21.Bh6 Rf7 22.h3 Qc4 23.Qg6 Rdd7 24.Bxg7 Rxg7 25.Qe8+ Kh7 26.Qh5+ Kg8 27.Qe8+**
 
 A draw was the unavoidable outcome in Fuentes Parra – Gajek, Caldas Novas 2011.
@@ -1273,13 +1273,7 @@ The point: hitting both the queen and the b5-pawn.
 <!-- FEN: r2qkb1r/1p1n1ppp/2b1p3/pP2P3/8/P1nB1N2/3N1PPP/R1BQ1RK1 w kq - 1 14 -->
 **14.Qb3**
 
-After **14.Qc2!?** Black does not have to take the pawn, but may instead continue with:
-
-**FEN:**
-`r2qkb1r/1p1n1ppp/2b1p3/pP2P3/8/P1nB1N2/2QN1PPP/R1B2RK1 b kq - 0 14`
-
-<!-- FEN: r2qkb1r/1p1n1ppp/2b1p3/pP2P3/8/P1nB1N2/2QN1PPP/R1B2RK1 b kq - 0 14 -->
-**14...Nc5!? 15.Qxc3** (**15.bxc6 Qxd3 16.cxb7 Rb8 17.Qxd3 Nxd3 18.Nc4 Rxb7∓** is difficult for White) **15...Bxf3 16.Bc4** (**16.Nxf3 Qxd3 17.Qxd3 Nxd3** is a direct transposition to our main line with 14.Qb3) **16...Bd5 17.Bb2 Na4 18.Qb3 Nxb2 19.Qxb2 Bc5 20.Rad1 Qe7 21.Bxd5 exd5 22.a4 0-0 23.Nf3 Rfd8=**
+(After **14.Qc2!?** Black does not have to take the pawn, but may instead continue with: **14...Nc5!? 15.Qxc3** [**15.bxc6 Qxd3 16.cxb7 Rb8 17.Qxd3 Nxd3 18.Nc4 Rxb7∓** is difficult for White] **15...Bxf3 16.Bc4 Bd5 17.Bb2 Na4 18.Qb3 Nxb2 19.Qxb2 Bc5 20.Rad1 Qe7 21.Bxd5 exd5 22.a4 0-0 23.Nf3 Rfd8=**)
 
 **FEN:**
 `r2qkb1r/1p1n1ppp/2b1p3/pP2P3/8/PQnB1N2/3N1PPP/R1B2RK1 b kq - 0 14`
@@ -1430,7 +1424,7 @@ Black frees the c5-square for use by his pieces, and he may already be slightly 
 `r2qk2r/1p1nbppp/2b1p3/p2nP3/1P6/P2B1N2/3N1PPP/R1BQR1K1 w kq a6 0 14`
 
 <!-- FEN: r2qk2r/1p1nbppp/2b1p3/p2nP3/1P6/P2B1N2/3N1PPP/R1BQR1K1 w kq a6 0 14 -->
-**14.bxa5** (**14.b5 Nc3 15.Qb3N Bxf3 16.Nxf3 Nc5 17.Qxc3 Qxd3 18.Qxd3 Nxd3 19.Rd1 0-0-0∓** is a position that compares favourably with the note on 11.Nbd2, as White has wasted a tempo on Re1. Still, this might have been the lesser evil for him.) **14...Nc5 15.Bf1 Ba4 16.Qe2 Nf4** (**16...0-0N∓**) **17.Qc4 Nfd3 18.Re3 Nxc1 19.Rxc1 0-0 20.a6** (**20.Qf4!?N Rxa5 21.Nc4 Ra7∓**) **20...Rxa6 21.Qg4 Ra8 22.Rc4 Bc6 23.Rd4 Ra4! 24.Rxa4 Bxa4 25.h4 Bc2∓**
+**14.bxa5** (**14.b5 Nc3 15.Qb3N Bxf3 16.Nxf3 Nc5 17.Qxc3 Qxd3 18.Qxd3 Nxd3 19.Rd1 0-0-0∓** is a position that compares favourably with the note on `11.Nbd2`, as White has wasted a tempo on Re1. Still, this might have been the lesser evil for him.) **14...Nc5 15.Bf1 Ba4 16.Qe2 Nf4** (**16...0-0N∓**) **17.Qc4 Nfd3 18.Re3 Nxc1 19.Rxc1 0-0 20.a6** (**20.Qf4!?N Rxa5 21.Nc4 Ra7∓**) **20...Rxa6 21.Qg4 Ra8 22.Rc4 Bc6 23.Rd4 Ra4! 24.Rxa4 Bxa4 25.h4 Bc2∓**
 
 Black was dominating proceedings in Velchev – P.H. Nielsen, Rogaska Slatina 2011.
 <!-- FEN: r2qk2r/1p1nbppp/2bPp3/3n4/1P1P4/P2B1N2/5PPP/RNBQR1K1 b kq - 0 12 -->
@@ -1460,10 +1454,8 @@ A viable alternative is:
 
 Now I found the following impressive (by my own standards) continuation:
 
-<!-- FEN: r2q1rk1/1p1nbppp/p1b1p3/3n4/1P1PN3/P2B1N2/5PPP/R1BQR1K1 w - - 4 15 -->
-15...Bb5! 16.Bxb5 axb5 17.Bb2 Qe8!! 18.Nc5!
-
-(18.Qxb5 Ne5! 19.Qxe8 Nxf3+ 20.gxf3 Rfxe8∞ is, unsurprisingly, a position where Black may even be better in spite of being a pawn down, as he has a much better bishop and a healthy pawn structure.)
+<!-- FEN: r2q1rk1/1p1nbppp/p1b1p3/3n4/1P1PN3/P2B1N2/4QPPP/R1B1R1K1 b - - 5 15 -->
+15...Bb5! 16.Bxb5 axb5 17.Bb2 Qe8!! 18.Nc5! (18.Qxb5 Ne5! 19.Qxe8 Nxf3+ 20.gxf3 Rfxe8∞ is, unsurprisingly, a position where Black may even be better in spite of being a pawn down, as he has a much better bishop and a healthy pawn structure.)
 
 **FEN:**
 `r3qrk1/1p1nbppp/4p3/1pNn4/1P1P4/P4N2/1B2QPPP/R3R1K1 b - - 3 18`
