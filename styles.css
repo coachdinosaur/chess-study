@@ -4030,9 +4030,11 @@ html[data-board-only="1"] .eval-bar-wrap {
   /* Tighter vertical rhythm — compress spacing between sections. */
   .board-stage-card {
     gap: 0.25rem;
+    height: auto;
   }
   .board-block {
     gap: 0;
+    height: auto;
   }
 }
 
