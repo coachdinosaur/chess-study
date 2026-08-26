@@ -465,7 +465,7 @@ Chapter 8 – 7.Bc4
 As in the earlier part of the chapter on page 139, I would like to give the reader a choice of continuations: **E11) 15...Bd6** or the untested **E12) 15...Ne8!?N**.
 
 <!-- FEN: r1bq1rk1/pp2bppp/2npp3/3nP3/2BP4/P4N2/1P3PPP/RNBQ1RK1 w - - 1 10 -->
-11.Re1!? Rc8 12.Nbd2 dxe5 13.dxe5 Qc7 transposes to variation E22.
+  11.Re1!? Rc8 12.Nbd2 dxe5 13.dxe5 Qc7 transposes to variation E22.
 
 <!-- FEN: r2q1rk1/pp1bbppp/2npp3/3nP3/3P4/P2B1N2/1P2QPPP/RNB2RK1 b - - 2 11 -->
 **11...Rc8 12.Qe4 f5 13.exf6 Nxf6 14.Qe2 d5**
@@ -479,7 +479,7 @@ Black simply gets a good version of a French Tarrasch structure.
 **15.Nc3**
 
 <!-- FEN: 2rq1rk1/pp1bb1pp/2n1pn2/3p4/3P4/P2B1N2/1P2QPPP/RNB2RK1 w - - 0 15 -->
-15.Bf4?! does not impress in view of 15...Nh5 16.Be3 Nf4 17.Bxf4 Rxf4 18.Qe3 Bd6 19.Nbd2 Qf8∓, with the better game for Black.
+  15.Bf4?! does not impress in view of 15...Nh5 16.Be3 Nf4 17.Bxf4 Rxf4 18.Qe3 Bd6 19.Nbd2 Qf8∓, with the better game for Black.
 
 <!-- FEN: 2rq1rk1/pp1bb1pp/2n1pn2/3p4/3P4/P1NB1N2/1P2QPPP/R1B2RK1 b - - 1 15 -->
 ##### E11) 15...Bd6
@@ -488,13 +488,14 @@ This leads to a lively struggle where Black has good chances.
 
 **16.Bg5**
 
-16.h3 h6, intending ...Nh5, should be pleasant for Black.
+<!-- FEN: 2rq1rk1/pp1b2pp/2nbpn2/3p4/3P4/P1NB1N2/1P2QPPP/R1B2RK1 w - - 2 16 -->
+  16.h3 h6, intending ...Nh5, should be pleasant for Black.
 
-<!-- FEN: 2rq1rk1/pp1bb1pp/2nbpn2/3p2B1/3P4/P1NB1N2/1P2QPPP/R4RK1 b - - 2 16 -->
+<!-- FEN: 2rq1rk1/pp1b2pp/2nbpn2/3p2B1/3P4/P1NB1N2/1P2QPPP/R4RK1 b - - 3 16 -->
 **16...Qe8!?**
 
-<!-- FEN: 2rq1rk1/pp1bb1pp/2nbpn2/3p2B1/3P4/P1NB1N2/1P2QPPP/R4RK1 b - - 2 16 -->
-16...Qb6 17.Rad1 Kh8 18.Bb1±, as played in Adianto – Zhang Zhong, Beijing 2008, is better for White in my opinion.
+<!-- FEN: 2rq1rk1/pp1b2pp/2nbpn2/3p2B1/3P4/P1NB1N2/1P2QPPP/R4RK1 b - - 3 16 -->
+  16...Qb6 17.Rad1 Kh8 18.Bb1±, as played in Adianto – Zhang Zhong, Beijing 2008, is better for White in my opinion.
 
 <!-- FEN: 2r1qrk1/pp1b2pp/2nbpn2/3p2B1/3P4/P1NB1N2/1P2QPPP/R4RK1 w - - 3 17 -->
 **17.h3**
@@ -505,13 +506,13 @@ This leads to a lively struggle where Black has good chances.
 <!-- FEN: 2r1qrk1/pp1b2pp/2nbpn2/3p2B1/3P4/P1NB1N1P/1P2QPP1/R4RK1 b - - 0 17 -->
 **17...Nh5!N**
 
-An important improvement over Andronov – Sklyarov, Joensuu 2008, which went 17...Qh5?! 18.Rfe1 Rce8 19.Qd2 h6 20.Be3 g5 21.Ne2! Re7 22.Ne5 Rg7 23.Ng3± with a clear advantage for White.
+  An important improvement over Andronov – Sklyarov, Joensuu 2008, which went 17...Qh5?! 18.Rfe1 Rce8 19.Qd2 h6 20.Be3 g5 21.Ne2! Re7 22.Ne5 Rg7 23.Ng3± with a clear advantage for White.
 
-<!-- FEN: 2r1qrk1/pp1b2pp/2nbpn2/3p2Bn/3P4/P1NB1N1P/1P2QPP1/R4RK1 w - - 1 18 -->
+<!-- FEN: 2r1qrk1/pp1b2pp/2nbp3/3p2Bn/3P4/P1NB1N1P/1P2QPP1/R4RK1 w - - 1 18 -->
 **18.Qc2!?**
 
-<!-- FEN: 2r1qrk1/pp1b2pp/2nbpn2/3p2Bn/3P4/P1NB1N1P/1P2QPP1/R4RK1 w - - 1 18 -->
-18.Rad1 a6 19.Bb1 Nf4 20.Bxf4 Rxf4 21.Rfe1 Qd8 22.Qd3 g6 23.Ne2 Rf8 24.Qe3 Qe7∓ is a tad better for Black, due to his two bishops and control over e5.
+<!-- FEN: 2r1qrk1/pp1b2pp/2nbp3/3p2Bn/3P4/P1NB1N1P/1P2QPP1/R4RK1 w - - 1 18 -->
+  18.Rad1 a6 19.Bb1 Nf4 20.Bxf4 Rxf4 21.Rfe1 Qd8 22.Qd3 g6 23.Ne2 Rf8 24.Qe3 Qe7∓ is a tad better for Black, due to his two bishops and control over e5.
 
 ## Page 146
 

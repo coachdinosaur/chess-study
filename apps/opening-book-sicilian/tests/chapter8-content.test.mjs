@@ -143,7 +143,7 @@ test("Chapter 8 Page 144 contains variation E", async () => {
   assert.match(page144, /\*\*9\.\.\.0-0\*\*/);
 });
 
-test("Chapter 8 Page 145 contains variation E1 and E11", async () => {
+test("Chapter 8 Page 145 contains variation E1, E11, and 18.Rad1 line", async () => {
   const markdown = await readChapterEight();
   const start = markdown.indexOf("## Page 145");
   const end = markdown.indexOf("## Page 146", start);
@@ -152,6 +152,7 @@ test("Chapter 8 Page 145 contains variation E1 and E11", async () => {
   assert.match(page145, /#### E1\) 10\.Bd3 Bd7 11\.Qe2/);
   assert.match(page145, /##### E11\) 15\.\.\.Bd6/);
   assert.match(page145, /\*\*17\.\.\.Nh5!N\*\*/);
+  assert.match(page145, /18\.Rad1 a6 19\.Bb1 Nf4 20\.Bxf4 Rxf4 21\.Rfe1 Qd8 22\.Qd3 g6 23\.Ne2 Rf8 24\.Qe3 Qe7/);
 });
 
 test("Chapter 8 Page 146 contains variation E12", async () => {
