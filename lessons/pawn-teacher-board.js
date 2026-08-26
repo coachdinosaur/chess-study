@@ -5,7 +5,7 @@
   var STORAGE_PREFIX = "teacher-board-lesson-csv-v1:";
   var STORAGE_VERSION = 1;
   var GAME_STATUS_STORAGE_KEY = "teacher-board-game-status-enabled-v1";
-  var TEACHER_CACHE_VERSION = "20260826-teacher-board-size-fix2";
+  var TEACHER_CACHE_VERSION = "20260826-teacher-board-size-fix3";
   var PIECES = ["K", "Q", "R", "B", "N", "P"];
   var PIECE_LABELS = {
     K: "King",
@@ -720,8 +720,31 @@
     iframe.contentWindow.postMessage(message, window.location.origin);
   }
 
+  function postBoardSyncSize() {
+    if (!panel || !iframe || !iframe.contentWindow) {
+      return;
+    }
+    var body = panel.querySelector(".teacher-board-body");
+    var rect = body ? body.getBoundingClientRect() : null;
+    var width = rect && rect.width > 0 ? Math.round(rect.width) : undefined;
+    var height = rect && rect.height > 0 ? Math.round(rect.height) : undefined;
+    postToBoard({
+      type: "syncSize",
+      width: width,
+      height: height
+    });
+  }
+
   function requestIframeReady() {
-    postToBoard({ type: "teacherBoardPing" });
+    var body = panel ? panel.querySelector(".teacher-board-body") : null;
+    var rect = body ? body.getBoundingClientRect() : null;
+    var width = rect && rect.width > 0 ? Math.round(rect.width) : undefined;
+    var height = rect && rect.height > 0 ? Math.round(rect.height) : undefined;
+    postToBoard({
+      type: "teacherBoardPing",
+      width: width,
+      height: height
+    });
   }
 
   function setButtonState(button, active) {
@@ -964,6 +987,13 @@
     panel.addEventListener("click", handlePanelClick);
     panel.addEventListener("contextmenu", handlePanelContextMenu, true);
     document.body.appendChild(panel);
+    if (typeof ResizeObserver === "function") {
+      var panelObserver = new ResizeObserver(function () {
+        postBoardSyncSize();
+      });
+      panelObserver.observe(panel);
+    }
+    window.addEventListener("resize", postBoardSyncSize);
     syncTeacherGameStatusControl();
     syncLessonMenuUi();
   }
@@ -1334,13 +1364,10 @@
     panel.hidden = false;
     panel.classList.remove("is-minimized");
     requestIframeReady();
-    postToBoard({ type: "syncSize" });
-    setTimeout(function () {
-      postToBoard({ type: "syncSize" });
-    }, 50);
-    setTimeout(function () {
-      postToBoard({ type: "syncSize" });
-    }, 200);
+    postBoardSyncSize();
+    setTimeout(postBoardSyncSize, 50);
+    setTimeout(postBoardSyncSize, 150);
+    setTimeout(postBoardSyncSize, 300);
     if (lessonPositions.length) {
       var position = lessonPositionById(activeLessonPositionId) ||
         lessonPositionById(restoredLessonPositionId) ||
@@ -1365,13 +1392,10 @@
     }
     syncSelectedPieceButtons();
     syncLessonMenuUi();
-    postToBoard({ type: "syncSize" });
-    setTimeout(function () {
-      postToBoard({ type: "syncSize" });
-    }, 50);
-    setTimeout(function () {
-      postToBoard({ type: "syncSize" });
-    }, 200);
+    postBoardSyncSize();
+    setTimeout(postBoardSyncSize, 50);
+    setTimeout(postBoardSyncSize, 150);
+    setTimeout(postBoardSyncSize, 300);
   }
 
   function closePanel() {
@@ -1412,13 +1436,10 @@
     panel.classList.toggle("is-minimized");
     syncSelectedPieceButtons();
     syncLessonMenuUi();
-    postToBoard({ type: "syncSize" });
-    setTimeout(function () {
-      postToBoard({ type: "syncSize" });
-    }, 50);
-    setTimeout(function () {
-      postToBoard({ type: "syncSize" });
-    }, 200);
+    postBoardSyncSize();
+    setTimeout(postBoardSyncSize, 50);
+    setTimeout(postBoardSyncSize, 150);
+    setTimeout(postBoardSyncSize, 300);
   }
 
   function handlePieceSelect(piece) {
