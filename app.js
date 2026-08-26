@@ -7330,6 +7330,22 @@ function syncBoardSize() {
   const columnStyles = window.getComputedStyle(dom.boardColumn);
   const framePadding = cssLengthToPx(columnStyles.getPropertyValue('--board-frame-padding'), remToPx(0.5));
 
+  if (state.boardOnlyMode) {
+    const vh = currentViewportHeight() || window.innerHeight;
+    const vw = currentViewportWidth() || window.innerWidth;
+    const pagePaddingY = elementPaddingInsetPx(dom.pageShell, 'y');
+    const pagePaddingX = elementPaddingInsetPx(dom.pageShell, 'x');
+    const frameShellPadding = (framePadding * 2) + 2;
+    const availHeight = Math.max(0, vh - pagePaddingY - frameShellPadding);
+    const availWidth = Math.max(0, vw - pagePaddingX - frameShellPadding);
+    const boardSize = Math.floor(Math.min(availWidth, availHeight));
+    if (boardSize > 0) {
+      dom.boardColumn.style.setProperty('--board-size', `${boardSize}px`);
+      dom.rootElement.style.setProperty('--board-side-gap', '0px');
+    }
+    return;
+  }
+
   if (!state.focusMode && mobileLandscapeLayoutActive()) {
     const vh = window.innerHeight || currentViewportHeight();
     const vw = currentViewportWidth();

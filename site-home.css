@@ -1239,11 +1239,59 @@ body.is-board-only .workspace-view .board-block {
   }
 
   /* Embedded board-only mode overrides for landscape viewports */
+  body.is-board-only,
+  html[data-board-only="1"] {
+    overflow: hidden !important;
+  }
+
+  body.is-board-only .page-shell,
+  html[data-board-only="1"] .page-shell {
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 100% !important;
+  }
+
   body.is-board-only:not(.is-board-only-setup-open) .workspace,
   html[data-board-only="1"]:not([data-board-only-setup-open]) .workspace,
   body.is-board-only:not(.is-board-only-setup-open) .workspace-view .workspace,
   html[data-board-only="1"]:not([data-board-only-setup-open]) .workspace-view .workspace {
     grid-template-columns: minmax(0, 1fr) !important;
+    place-items: center !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  body.is-board-only .board-pane,
+  html[data-board-only="1"] .board-pane,
+  body.is-board-only .board-stage-card,
+  html[data-board-only="1"] .board-stage-card,
+  body.is-board-only .board-block,
+  html[data-board-only="1"] .board-block {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  body.is-board-only .board-column,
+  html[data-board-only="1"] .board-column {
+    margin: auto !important;
+    --focus-side-offset: 0px !important;
+    width: calc(var(--board-size) + (var(--board-frame-padding, 0.5rem) * 2) + 2px) !important;
+  }
+
+  body.is-board-only .board-frame,
+  html[data-board-only="1"] .board-frame {
+    margin: 0 auto !important;
   }
 
   body.is-board-only:not(.is-board-only-setup-open) .control-pane,
