@@ -331,16 +331,16 @@ Instead, Stevic chose 13.Bb3 b6 14.Bc2 Nf6 15.Ne5, which should have led to appr
 
 After my improvement, play is most likely to continue as follows:
 
-<!-- FEN: r1bq1rk1/pp3pp1/2nbp2p/3n4/1n1P4/5N2/PP2QPPP/R1B1R1K1 w - - 2 13 -->
+<!-- FEN: r1bq1rk1/pp3pp1/3bp2p/3n4/1nBP4/2NQ1N2/PP3PPP/R1B1R1K1 w - - 2 13 -->
 **13.Qe2 b6 14.Ne4**
 
-<!-- FEN: r1bq1rk1/p4pp1/1p1bp2p/3n4/1n1PN3/5N2/PP2QPPP/R1B1R1K1 b - - 1 14 -->
+<!-- FEN: r1bq1rk1/p4pp1/1p1bp2p/3n4/1nBP4/2N2N2/PP2QPPP/R1B1R1K1 w - - 0 14 -->
 14.a3 Nxc3 15.bxc3 Nd5 16.Bd2 Bb7 is more than okay for Black.
 
 **FEN:**
-`r1bq1rk1/p4pp1/1p1bp2p/3n4/1n1PN3/5N2/PP2QPPP/R1B1R1K1 b - - 1 14`
+`r1bq1rk1/p4pp1/1p1bp2p/3n4/1nBPN3/5N2/PP2QPPP/R1B1R1K1 b - - 1 14`
 
-<!-- FEN: r1bq1rk1/p4pp1/1p1bp2p/3n4/1n1PN3/5N2/PP2QPPP/R1B1R1K1 b - - 1 14 -->
+<!-- FEN: r1bq1rk1/p4pp1/1p1bp2p/3n4/1nBPN3/5N2/PP2QPPP/R1B1R1K1 b - - 1 14 -->
 **14...Bb7! 15.a3 Nc6 16.Bxd5 exd5 17.Nxd6 Qxd6 18.b4 a6=**
 
 The chances are completely balanced, and due to the opposite-coloured bishops a draw is the most likely outcome.

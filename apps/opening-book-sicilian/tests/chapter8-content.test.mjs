@@ -105,13 +105,16 @@ test("Chapter 8 Page 141 contains variation C2", async () => {
   assert.match(page141, /\*\*12\.Qd3\*\*/);
 });
 
-test("Chapter 8 Page 142 contains variation D", async () => {
+test("Chapter 8 Page 142 contains variation D and 12...Ncb4!N lines", async () => {
   const markdown = await readChapterEight();
   const start = markdown.indexOf("## Page 142");
   const end = markdown.indexOf("## Page 143", start);
   const page142 = markdown.slice(start, end);
 
   assert.match(page142, /\*\*12\.\.\.Ncb4!N\*\*/);
+  assert.match(page142, /\*\*13\.Qe2 b6 14\.Ne4\*\*/);
+  assert.match(page142, /14\.a3 Nxc3 15\.bxc3 Nd5 16\.Bd2 Bb7/);
+  assert.match(page142, /\*\*14\.\.\.Bb7! 15\.a3 Nc6 16\.Bxd5 exd5 17\.Nxd6 Qxd6 18\.b4 a6=\*\*/);
   assert.match(page142, /### D\) 9\.Bd2/);
   assert.match(page142, /\*\*9\.\.\.0-0 10\.Nc3 dxe5!\*\*/);
 });
