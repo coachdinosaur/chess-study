@@ -58,6 +58,7 @@
   padding: .7rem .8rem;
   border-bottom: 1px solid var(--line, rgba(52, 74, 78, 0.92));
   background: color-mix(in srgb, var(--panel-strong, #1c2b30) 78%, transparent);
+  flex-shrink: 0;
 }
 
 .teacher-board-title {
@@ -105,16 +106,42 @@
 .teacher-board-body {
   position: relative;
   min-height: 0;
+  min-width: 0;
   overflow: hidden;
   background: #071012;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .teacher-board-frame {
-  width: 100%;
+  width: auto;
   height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: 1 / 1;
   display: block;
   border: 0;
   background: #071012;
+  margin: 0 auto;
+}
+
+.teacher-board-panel.is-maximized .teacher-board-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  min-width: 0;
+  height: 100%;
+}
+
+.teacher-board-panel.is-maximized .teacher-board-frame {
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
 }
 
 .teacher-board-game-status {
@@ -177,6 +204,7 @@
   padding: .65rem .75rem;
   border-top: 1px solid var(--line, rgba(52, 74, 78, 0.92));
   background: color-mix(in srgb, var(--panel-strong, #1c2b30) 74%, transparent);
+  flex-shrink: 0;
 }
 
 .teacher-board-setup-tray {
@@ -187,6 +215,7 @@
   padding: .42rem .65rem;
   border-top: 1px solid var(--line, rgba(52, 74, 78, 0.92));
   background: color-mix(in srgb, var(--panel, rgba(27, 42, 46, 0.92)) 88%, #000 12%);
+  flex-shrink: 0;
 }
 
 .teacher-board-setup-tray[hidden] {
@@ -443,6 +472,7 @@
   padding: .5rem .78rem;
   border-top: 1px solid var(--line, rgba(52, 74, 78, 0.92));
   background: color-mix(in srgb, var(--panel, rgba(27, 42, 46, 0.92)) 88%, transparent);
+  flex-shrink: 0;
 }
 
 .teacher-lesson-status[hidden] {

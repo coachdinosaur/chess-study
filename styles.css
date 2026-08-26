@@ -3386,23 +3386,71 @@ html[data-board-only="1"] .board-move-nav-slot {
   display: none !important;
 }
 
+body.is-board-only .page-shell,
+html[data-board-only="1"] .page-shell,
 .page-shell.is-board-only.is-focus-mode {
-  --focus-padding: clamp(0.35rem, 1.1vw, 0.8rem);
+  --focus-padding: 0px;
   --captured-cell-min: 0.8rem;
   --captured-cell-divisor: 20;
   --captured-cell-max: 1.12rem;
   --captured-row-extra-height: 0.22rem;
   --captured-row-gap: clamp(0.12rem, calc(var(--board-size, 42rem) / 260), 0.22rem);
   --captured-row-height: calc(var(--captured-cell-size) + var(--captured-row-extra-height) + 2px);
-  padding: var(--focus-padding);
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 100% !important;
+  width: 100% !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
 }
 
+body.is-board-only .app-main-content,
+html[data-board-only="1"] .app-main-content {
+  height: 100% !important;
+  width: 100% !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+body.is-board-only:not(.is-board-only-setup-open) .workspace,
+html[data-board-only="1"]:not([data-board-only-setup-open]) .workspace,
 .page-shell.is-board-only.is-focus-mode .workspace {
-  grid-template-columns: minmax(0, 1fr);
-  gap: clamp(0.45rem, 1vw, 0.8rem);
-  place-items: center;
+  grid-template-columns: minmax(0, 1fr) !important;
+  place-items: center !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  gap: 0 !important;
 }
 
+body.is-board-only .board-pane,
+html[data-board-only="1"] .board-pane,
+body.is-board-only .board-stage-card,
+html[data-board-only="1"] .board-stage-card,
+body.is-board-only .board-block,
+html[data-board-only="1"] .board-block {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+body.is-board-only .board-column,
+html[data-board-only="1"] .board-column,
 .page-shell.is-board-only.is-focus-mode .board-column {
   --focus-side-offset: 0px !important;
   width: min(100%, calc(var(--board-size) + (var(--board-frame-padding) * 2) + 2px)) !important;

@@ -5,7 +5,7 @@
   var STORAGE_PREFIX = "teacher-board-lesson-csv-v1:";
   var STORAGE_VERSION = 1;
   var GAME_STATUS_STORAGE_KEY = "teacher-board-game-status-enabled-v1";
-  var TEACHER_CACHE_VERSION = "20260826-teacher-board-size-fix2";
+  var TEACHER_CACHE_VERSION = "20260826-teacher-board-max-size";
   var PIECES = ["K", "Q", "R", "B", "N", "P"];
   var PIECE_LABELS = {
     K: "King",
@@ -964,6 +964,14 @@
     panel.addEventListener("click", handlePanelClick);
     panel.addEventListener("contextmenu", handlePanelContextMenu, true);
     document.body.appendChild(panel);
+    if (typeof ResizeObserver !== "undefined") {
+      var panelResizeObserver = new ResizeObserver(function () {
+        if (panel && !panel.hidden) {
+          postToBoard({ type: "syncSize" });
+        }
+      });
+      panelResizeObserver.observe(panel);
+    }
     syncTeacherGameStatusControl();
     syncLessonMenuUi();
   }
@@ -1642,6 +1650,11 @@
   restoreTeacherGameStatusPreference();
   restoreImportedLesson();
   window.addEventListener("message", handleTeacherBoardMessage);
+  window.addEventListener("resize", function () {
+    if (panel && !panel.hidden) {
+      postToBoard({ type: "syncSize" });
+    }
+  });
   document.addEventListener("click", handleDocumentClick);
   document.addEventListener("keydown", handleDocumentKeydown);
 
