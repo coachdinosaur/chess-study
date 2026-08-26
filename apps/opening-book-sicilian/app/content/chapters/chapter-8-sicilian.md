@@ -318,16 +318,17 @@ With two pawns for the exchange, I think we are in excellent shape.
 
 I think this is a slight improvement over Kozul's play, completely equalizing the chances.
 
-In Stevic – Kozul, Stari Mikanovci (rapid) 2010, the Croatian maestro played 12...Nce7, giving his opponent the opportunity to play:
+<!-- FEN: r1bq1rk1/pp3pp1/2nbp2p/3n4/2BP4/2NQ1N2/PP3PPP/R1B1R1K1 b - - 1 12 -->
+  In Stevic – Kozul, Stari Mikanovci (rapid) 2010, the Croatian maestro played 12...Nce7, giving his opponent the opportunity to play:
 
 **FEN:**
 `r1bq1rk1/pp2npp1/3bp2p/3n4/2BP4/2NQ1N2/PP3PPP/R1B1R1K1 w - - 2 13`
 
 <!-- FEN: r1bq1rk1/pp2npp1/3bp2p/3n4/2BP4/2NQ1N2/PP3PPP/R1B1R1K1 w - - 2 13 -->
-13.Ne5!N±
+  13.Ne5!N±
 
 <!-- FEN: r1bq1rk1/pp2npp1/3bp2p/3n4/2BP4/2NQ1N2/PP3PPP/R1B1R1K1 w - - 2 13 -->
-Instead, Stevic chose 13.Bb3 b6 14.Bc2 Nf6 15.Ne5, which should have led to approximate equality after 15...Bxe5!? 16.dxe5 Qxd3 17.Bxd3 Nfd5 18.Nxd5 Nxd5=.
+  Instead, Stevic chose 13.Bb3 b6 14.Bc2 Nf6 15.Ne5, which should have led to approximate equality after 15...Bxe5!? 16.dxe5 Qxd3 17.Bxd3 Nfd5 18.Nxd5 Nxd5=.
 
 After my improvement, play is most likely to continue as follows:
 
@@ -335,7 +336,7 @@ After my improvement, play is most likely to continue as follows:
 **13.Qe2 b6 14.Ne4**
 
 <!-- FEN: r1bq1rk1/p4pp1/1p1bp2p/3n4/1nBP4/2N2N2/PP2QPPP/R1B1R1K1 w - - 0 14 -->
-14.a3 Nxc3 15.bxc3 Nd5 16.Bd2 Bb7 is more than okay for Black.
+  14.a3 Nxc3 15.bxc3 Nd5 16.Bd2 Bb7 is more than okay for Black.
 
 **FEN:**
 `r1bq1rk1/p4pp1/1p1bp2p/3n4/1nBPN3/5N2/PP2QPPP/R1B1R1K1 b - - 1 14`
