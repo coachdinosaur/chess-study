@@ -3372,6 +3372,7 @@ body.is-board-only .mobile-engine-lines-slot,
 body.is-board-only .puzzle-instruction-container,
 body.is-board-only .focus-mode-controls,
 body.is-board-only .eval-bar-wrap,
+body.is-board-only .board-move-nav-slot,
 html[data-board-only="1"] .board-stage-head,
 html[data-board-only="1"] .board-stage-foot,
 html[data-board-only="1"] .lesson-header,
@@ -3380,7 +3381,8 @@ html[data-board-only="1"] .lesson-notation,
 html[data-board-only="1"] .mobile-engine-lines-slot,
 html[data-board-only="1"] .puzzle-instruction-container,
 html[data-board-only="1"] .focus-mode-controls,
-html[data-board-only="1"] .eval-bar-wrap {
+html[data-board-only="1"] .eval-bar-wrap,
+html[data-board-only="1"] .board-move-nav-slot {
   display: none !important;
 }
 
@@ -4722,6 +4724,30 @@ html[data-board-only="1"] .eval-bar-wrap {
 
   /* Duplicate meta strip / FEN stack has no room in landscape. */
   .board-stage-foot {
+    display: none !important;
+  }
+
+  /* Embedded board-only mode overrides for landscape viewports */
+  body.is-board-only:not(.is-board-only-setup-open) .workspace,
+  html[data-board-only="1"]:not([data-board-only-setup-open]) .workspace,
+  body.is-board-only:not(.is-board-only-setup-open) .workspace-view .workspace,
+  html[data-board-only="1"]:not([data-board-only-setup-open]) .workspace-view .workspace {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body.is-board-only:not(.is-board-only-setup-open) .control-pane,
+  html[data-board-only="1"]:not([data-board-only-setup-open]) .control-pane,
+  body.is-board-only:not(.is-board-only-setup-open) .workspace-view .control-pane,
+  html[data-board-only="1"]:not([data-board-only-setup-open]) .workspace-view .control-pane {
+    display: none !important;
+  }
+
+  body.is-board-only .tab-nav,
+  html[data-board-only="1"] .tab-nav,
+  body.is-board-only .control-pane-scroll > .tab-nav,
+  html[data-board-only="1"] .control-pane-scroll > .tab-nav,
+  body.is-board-only .board-move-nav-slot,
+  html[data-board-only="1"] .board-move-nav-slot {
     display: none !important;
   }
 }

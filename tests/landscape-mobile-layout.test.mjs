@@ -59,3 +59,18 @@ test('styles.css and site-home.css keep tab-nav sticky and accessible in mobile 
   assert.match(siteHomeCss, /\.control-pane-scroll\s*>\s*\.tab-nav[\s\S]*position:\s*sticky\s*!important;/, 'tab-nav must be sticky in site-home.css landscape block');
 });
 
+test('styles.css and site-home.css suppress control-pane, tab-nav, and under-board move nav in board-only mode across landscape', () => {
+  // Suppress control pane in board-only mode when setup is not open
+  assert.match(stylesCss, /body\.is-board-only:not\(\.is-board-only-setup-open\)\s+\.control-pane[\s\S]*display:\s*none\s*!important;/);
+  assert.match(siteHomeCss, /body\.is-board-only:not\(\.is-board-only-setup-open\)\s+\.control-pane[\s\S]*display:\s*none\s*!important;/);
+  // Suppress tab-nav and under-board move nav slot in board-only mode
+  assert.match(stylesCss, /body\.is-board-only\s+\.tab-nav[\s\S]*display:\s*none\s*!important;/);
+  assert.match(stylesCss, /body\.is-board-only\s+\.board-move-nav-slot[\s\S]*display:\s*none\s*!important;/);
+  assert.match(siteHomeCss, /body\.is-board-only\s+\.tab-nav[\s\S]*display:\s*none\s*!important;/);
+  assert.match(siteHomeCss, /body\.is-board-only\s+\.board-move-nav-slot[\s\S]*display:\s*none\s*!important;/);
+  // Keep workspace single-column in board-only mode
+  assert.match(stylesCss, /body\.is-board-only:not\(\.is-board-only-setup-open\)\s+\.workspace[\s\S]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s*!important;/);
+  assert.match(siteHomeCss, /body\.is-board-only:not\(\.is-board-only-setup-open\)\s+\.workspace[\s\S]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s*!important;/);
+});
+
+

@@ -2758,6 +2758,12 @@ function syncNotationToolbarSlot() {
   if (!toolbar || !boardSlot || !notationSlot) {
     return;
   }
+  if (state.boardOnlyMode) {
+    if (toolbar.parentElement !== notationSlot) {
+      notationSlot.appendChild(toolbar);
+    }
+    return;
+  }
   const isLandscapeMobile = mobileLandscapeLayoutActive();
   const isPortraitAnalyze = mobilePortraitLayoutActive() && state.activeTab === 'analysis';
   const targetParent = (isLandscapeMobile || isPortraitAnalyze) ? boardSlot : notationSlot;

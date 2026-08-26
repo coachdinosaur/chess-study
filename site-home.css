@@ -1007,13 +1007,18 @@ body.is-focus-mode .app-main-content {
     max-height: none !important;
   }
 
-  /* Embedded board-only view keeps a real pane so its height-capped
-     setup sheet and internal scrolling continue to work. */
-  html[data-board-only="1"] .workspace-view .control-pane,
-  html[data-board-only="1"] .control-pane,
-  body.is-board-only .workspace-view .control-pane,
-  body.is-board-only .control-pane {
+  /* Embedded board-only view keeps a real pane only when setup is open */
+  html[data-board-only="1"][data-board-only-setup-open] .workspace-view .control-pane,
+  html[data-board-only="1"][data-board-only-setup-open] .control-pane,
+  body.is-board-only.is-board-only-setup-open .workspace-view .control-pane,
+  body.is-board-only.is-board-only-setup-open .control-pane {
     display: flex !important;
+  }
+  html[data-board-only="1"]:not([data-board-only-setup-open]) .workspace-view .control-pane,
+  html[data-board-only="1"]:not([data-board-only-setup-open]) .control-pane,
+  body.is-board-only:not(.is-board-only-setup-open) .workspace-view .control-pane,
+  body.is-board-only:not(.is-board-only-setup-open) .control-pane {
+    display: none !important;
   }
 }
 
@@ -1197,6 +1202,30 @@ body.is-focus-mode .app-main-content {
     gap: 0.5rem !important;
     padding-inline-end: max(0.35rem, 8px) !important;
     -webkit-overflow-scrolling: touch;
+  }
+
+  /* Embedded board-only mode overrides for landscape viewports */
+  body.is-board-only:not(.is-board-only-setup-open) .workspace,
+  html[data-board-only="1"]:not([data-board-only-setup-open]) .workspace,
+  body.is-board-only:not(.is-board-only-setup-open) .workspace-view .workspace,
+  html[data-board-only="1"]:not([data-board-only-setup-open]) .workspace-view .workspace {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body.is-board-only:not(.is-board-only-setup-open) .control-pane,
+  html[data-board-only="1"]:not([data-board-only-setup-open]) .control-pane,
+  body.is-board-only:not(.is-board-only-setup-open) .workspace-view .control-pane,
+  html[data-board-only="1"]:not([data-board-only-setup-open]) .workspace-view .control-pane {
+    display: none !important;
+  }
+
+  body.is-board-only .tab-nav,
+  html[data-board-only="1"] .tab-nav,
+  body.is-board-only .control-pane-scroll > .tab-nav,
+  html[data-board-only="1"] .control-pane-scroll > .tab-nav,
+  body.is-board-only .board-move-nav-slot,
+  html[data-board-only="1"] .board-move-nav-slot {
+    display: none !important;
   }
 }
 
