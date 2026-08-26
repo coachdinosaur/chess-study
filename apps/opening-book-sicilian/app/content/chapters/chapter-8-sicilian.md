@@ -198,32 +198,32 @@ c3 Sicilian
 The real expert of the position – French super-GM Romain Edouard – now demonstrated a way out for Black:
 
 **FEN:**
-`r1br2k1/pp1qbppp/2n1pn2/1N6/2BP1B2/1B3N2/PP3PPP/R2QR1K1 b - - 5 14`
+`r1br2k1/pp1qbppp/2n1pn2/1N6/3P1B2/1B3N2/PP3PPP/R2QR1K1 b - - 5 14`
 
-<!-- FEN: r1br2k1/pp1qbppp/2n1pn2/1N6/2BP1B2/1B3N2/PP3PPP/R2QR1K1 b - - 5 14 -->
+<!-- FEN: r1br2k1/pp1qbppp/2n1pn2/1N6/3P1B2/1B3N2/PP3PPP/R2QR1K1 b - - 5 14 -->
 **14...Bb4! 15.Re2 a6!**
 
-<!-- FEN: r1br2k1/pp1qbppp/2n1pn2/1N6/2BP1B2/1B3N2/PP2RPPP/R2Q2K1 b - - 6 15 -->
+<!-- FEN: r1br2k1/pp1q1ppp/2n1pn2/1N6/1b1P1B2/1B3N2/PP2RPPP/R2Q2K1 b - - 7 15 -->
 15...Ba5 takes the bishop too far away from the kingside, allowing 16.Bg5!↑.
 
-<!-- FEN: r1br2k1/1p1qbppp/p1n1pn2/1N6/2BP1B2/1B3N2/PP2RPPP/R2Q2K1 w - - 0 16 -->
+<!-- FEN: r1br2k1/1p1q1ppp/p1n1pn2/1N6/1b1P1B2/1B3N2/PP2RPPP/R2Q2K1 w - - 0 16 -->
 **16.Nc3!**
 
-<!-- FEN: r1br2k1/1p1qbppp/p1n1pn2/1N6/2BP1B2/1B3N2/PP2RPPP/R2Q2K1 w - - 0 16 -->
+<!-- FEN: r1br2k1/1p1q1ppp/p1n1pn2/1N6/1b1P1B2/1B3N2/PP2RPPP/R2Q2K1 w - - 0 16 -->
 16.Nc7!?N Ra7! 17.d5 exd5 18.Nxd5 Nxd5 19.Qxd5 Qxd5 20.Bxd5 Bf5= forces a draw if White wants one.
 
-<!-- FEN: r1br2k1/1p1qbppp/p1n1pn2/1N6/2BP1B2/1BN2N2/PP2RPPP/R2Q2K1 b - - 1 16 -->
+<!-- FEN: r1br2k1/1p1q1ppp/p1n1pn2/8/1b1P1B2/1BN2N2/PP2RPPP/R2Q2K1 b - - 1 16 -->
 **16...b5 17.Bg5 Be7 18.Ne5!**
 
-<!-- FEN: r1br2k1/p2qbppp/p1n1pn2/1p2N1B1/2BP4/1BN5/PP2RPPP/R2Q2K1 b - - 0 18 -->
+<!-- FEN: r1br2k1/3qbppp/p1n1pn2/1p4B1/3P4/1BN2N2/PP2RPPP/R2Q2K1 w - - 2 18 -->
 18.d5!?N Nxd5! (18...Na5 19.dxe6 Qxd1† 20.Rxd1 Nxb3 21.exf7† Kxf7 22.Ne5† Kf8 23.axb3 Bb7±/= is a position where Black should eventually equalize in spite of the minus pawn, but in my view it is more pleasant to play as White.) 19.Nxd5 exd5 20.Rxe7! Nxe7 21.Ne5
 
 **FEN:**
-`r1br2k1/3qnppp/p3p3/1p1pN1B1/3P4/1B6/PP3PPP/R2Q2K1 b - - 0 21`
+`r1br2k1/3qnppp/p7/1p1pN1B1/8/1B6/PP3PPP/R2Q2K1 b - - 1 21`
 
-21...Qe8! 22.Bxe7 Re8! 23.Nxf7! Qxe7 24.Bxd5 Be6 25.Bxa8 Rxa8 26.Ne5 Bxa2= Another line where play bails out to a completely drawish position.
+21...Qe6! 22.Bxe7 Re8! 23.Nxf7! Qxe7 24.Bxd5 Be6 25.Bxa8 Rxa8 26.Ne5 Bxa2= Another line where play bails out to a completely drawish position.
 
-<!-- FEN: r1br2k1/p2qbppp/p1n1pn2/1p2N1B1/2BP4/1BN5/PP2RPPP/R2Q2K1 b - - 0 18 -->
+<!-- FEN: r1br2k1/3qbppp/p1n1pn2/1p2N1B1/3P4/1BN5/PP2RPPP/R2Q2K1 b - - 3 18 -->
 **18...Nxe5 19.dxe5 Qe8 20.Rd2!**
 
 So far, we have been following Asis Gargatagli – Edouard, Leon 2012. At this point Romain missed the best defensive course, which was:
