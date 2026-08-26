@@ -795,13 +795,27 @@ html[data-embed="1"] .workspace-intro,
 html[data-board-only="1"] .app-sidebar,
 html[data-board-only="1"] .mobile-app-bar,
 html[data-board-only="1"] .workspace-intro,
+html[data-board-only="1"] .captured-row,
 body.focus-mode .app-sidebar,
 body.is-focus-mode .app-sidebar,
 body.focus-mode-active .app-sidebar,
 body.focus-mode .mobile-app-bar,
 body.is-focus-mode .mobile-app-bar,
 body.focus-mode .workspace-intro,
-body.is-focus-mode .workspace-intro {
+body.is-focus-mode .workspace-intro,
+body.is-board-only .captured-row,
+html[data-board-only="1"]:not([data-board-only-setup-open]) .control-pane,
+html[data-board-only="1"]:not([data-board-only-setup-open]) .workspace-view .control-pane,
+html[data-board-only="1"]:not([data-board-only-setup-open]) .setup-palette-panel,
+html[data-board-only="1"]:not([data-board-only-setup-open]) .piece-palette,
+html[data-board-only="1"]:not([data-board-only-setup-open]) .setup-board-section,
+html[data-board-only="1"]:not([data-board-only-setup-open]) .workspace-tools,
+body.is-board-only:not(.is-board-only-setup-open) .control-pane,
+body.is-board-only:not(.is-board-only-setup-open) .workspace-view .control-pane,
+body.is-board-only:not(.is-board-only-setup-open) .setup-palette-panel,
+body.is-board-only:not(.is-board-only-setup-open) .piece-palette,
+body.is-board-only:not(.is-board-only-setup-open) .setup-board-section,
+body.is-board-only:not(.is-board-only-setup-open) .workspace-tools {
   display: none !important;
 }
 
@@ -819,7 +833,10 @@ body.is-board-only .page-shell {
   align-items: center !important;
   justify-content: center !important;
   height: 100% !important;
+  width: 100% !important;
   min-height: 100% !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
   padding: 0 !important;
 }
 
@@ -834,6 +851,8 @@ body.is-focus-mode .app-main-content {
 
 body.is-board-only .app-main-content {
   height: 100% !important;
+  width: 100% !important;
+  max-height: 100% !important;
   overflow: hidden !important;
   display: flex !important;
   align-items: center !important;
@@ -852,9 +871,12 @@ body.is-board-only:not(.is-board-only-setup-open) .workspace-view,
 body.is-board-only:not(.is-board-only-setup-open) .workspace-view .workspace {
   height: 100% !important;
   width: 100% !important;
+  max-height: 100% !important;
+  max-width: 100% !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
+  overflow: hidden !important;
   gap: 0 !important;
 }
 

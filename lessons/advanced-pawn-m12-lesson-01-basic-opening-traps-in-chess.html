@@ -9,7 +9,7 @@
   <meta name="description" content="Advanced Pawn Module 12: thirteen opening-trap families and sixteen interactive FEN exercises focused on recognition, avoidance, defensive calculation, and tactical motifs.">
   <script>(function(){try{var stored=localStorage.getItem('lesson-theme-v1')||localStorage.getItem('chess-lesson-theme');if(stored==='light'||stored==='dark')document.documentElement.dataset.theme=stored;}catch(e){}})();</script>
   <link rel="stylesheet" href="advanced-pawn-lesson.css?v=20260724-m12">
-  <link rel="stylesheet" href="pawn-teacher-board.css?v=20260826-teacher-board-max-size">
+  <link rel="stylesheet" href="pawn-teacher-board.css?v=20260826-teacher-board-aspect-ratio-fix">
   <style>
     .hero-card{min-height:360px}
     .hero-pieces{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -495,6 +495,6 @@
     const bar=document.getElementById('progressBar');const update=()=>{const max=document.documentElement.scrollHeight-window.innerHeight;bar.style.width=(max>0?Math.min(100,Math.max(0,window.scrollY/max*100)):0)+'%';};update();window.addEventListener('scroll',update,{passive:true});
   })();
   </script>
-  <script src="pawn-teacher-board.js?v=20260826-teacher-board-max-size" defer></script>
+  <script src="pawn-teacher-board.js?v=20260826-teacher-board-aspect-ratio-fix" defer></script>
   <script src="lesson-presentation.js?v=20260725-presentation-click-pulse-v5" defer></script>
 </body></html>

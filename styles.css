@@ -1093,7 +1093,7 @@ code {
 .coord-file {
   position: absolute;
   z-index: 2;
-  font-size: 0.9rem;
+  font-size: clamp(0.55rem, calc(var(--board-size, 42rem) / 38), 0.9rem);
   font-weight: 800;
   line-height: 1;
   opacity: 0.9;
@@ -1104,13 +1104,13 @@ code {
 }
 
 .coord-rank {
-  top: clamp(0.22rem, calc(var(--board-size, 42rem) / 160), 0.34rem);
-  left: clamp(0.22rem, calc(var(--board-size, 42rem) / 150), 0.36rem);
+  top: clamp(0.16rem, calc(var(--board-size, 42rem) / 160), 0.34rem);
+  left: clamp(0.16rem, calc(var(--board-size, 42rem) / 150), 0.36rem);
 }
 
 .coord-file {
-  right: clamp(0.22rem, calc(var(--board-size, 42rem) / 150), 0.36rem);
-  bottom: clamp(0.18rem, calc(var(--board-size, 42rem) / 170), 0.32rem);
+  right: clamp(0.16rem, calc(var(--board-size, 42rem) / 150), 0.36rem);
+  bottom: clamp(0.14rem, calc(var(--board-size, 42rem) / 170), 0.32rem);
 }
 
 .coord-light {
@@ -3359,8 +3359,13 @@ html[data-embed="1"] .captured-piece-count {
 
 /* Board-only teacher popup mode: keep the app to board + optional setup tools. */
 html[data-board-only="1"],
-html[data-board-only="1"] body {
-  overflow: hidden;
+html[data-board-only="1"] body,
+body.is-board-only {
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 body.is-board-only .board-stage-head,
@@ -3373,6 +3378,18 @@ body.is-board-only .puzzle-instruction-container,
 body.is-board-only .focus-mode-controls,
 body.is-board-only .eval-bar-wrap,
 body.is-board-only .board-move-nav-slot,
+body.is-board-only .captured-row,
+body.is-board-only .mobile-app-bar,
+body.is-board-only .mobile-nav-drawer,
+body.is-board-only .bottom-nav,
+body.is-board-only .site-footer,
+body.is-board-only .app-sidebar,
+body.is-board-only:not(.is-board-only-setup-open) .control-pane,
+body.is-board-only:not(.is-board-only-setup-open) .workspace-intro,
+body.is-board-only:not(.is-board-only-setup-open) .workspace-tools,
+body.is-board-only:not(.is-board-only-setup-open) .setup-palette-panel,
+body.is-board-only:not(.is-board-only-setup-open) .piece-palette,
+body.is-board-only:not(.is-board-only-setup-open) .setup-board-section,
 html[data-board-only="1"] .board-stage-head,
 html[data-board-only="1"] .board-stage-foot,
 html[data-board-only="1"] .lesson-header,
@@ -3382,7 +3399,19 @@ html[data-board-only="1"] .mobile-engine-lines-slot,
 html[data-board-only="1"] .puzzle-instruction-container,
 html[data-board-only="1"] .focus-mode-controls,
 html[data-board-only="1"] .eval-bar-wrap,
-html[data-board-only="1"] .board-move-nav-slot {
+html[data-board-only="1"] .board-move-nav-slot,
+html[data-board-only="1"] .captured-row,
+html[data-board-only="1"] .mobile-app-bar,
+html[data-board-only="1"] .mobile-nav-drawer,
+html[data-board-only="1"] .bottom-nav,
+html[data-board-only="1"] .site-footer,
+html[data-board-only="1"] .app-sidebar,
+html[data-board-only="1"]:not([data-board-only-setup-open]) .control-pane,
+html[data-board-only="1"]:not([data-board-only-setup-open]) .workspace-intro,
+html[data-board-only="1"]:not([data-board-only-setup-open]) .workspace-tools,
+html[data-board-only="1"]:not([data-board-only-setup-open]) .setup-palette-panel,
+html[data-board-only="1"]:not([data-board-only-setup-open]) .piece-palette,
+html[data-board-only="1"]:not([data-board-only-setup-open]) .setup-board-section {
   display: none !important;
 }
 
@@ -3403,6 +3432,7 @@ html[data-board-only="1"] .page-shell,
   height: 100% !important;
   width: 100% !important;
   max-height: 100% !important;
+  max-width: 100% !important;
   overflow: hidden !important;
 }
 
@@ -3411,10 +3441,13 @@ html[data-board-only="1"] .app-main-content {
   height: 100% !important;
   width: 100% !important;
   max-height: 100% !important;
+  max-width: 100% !important;
   overflow: hidden !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 body.is-board-only:not(.is-board-only-setup-open) .workspace,
@@ -3427,7 +3460,12 @@ html[data-board-only="1"]:not([data-board-only-setup-open]) .workspace,
   justify-content: center !important;
   width: 100% !important;
   height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
   gap: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
 }
 
 body.is-board-only .board-pane,
@@ -3441,6 +3479,8 @@ html[data-board-only="1"] .board-block {
   justify-content: center !important;
   width: 100% !important;
   height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
   margin: 0 auto !important;
   padding: 0 !important;
   overflow: hidden !important;
@@ -3454,35 +3494,59 @@ html[data-board-only="1"] .board-column,
 .page-shell.is-board-only.is-focus-mode .board-column {
   --focus-side-offset: 0px !important;
   width: min(100%, calc(var(--board-size) + (var(--board-frame-padding) * 2) + 2px)) !important;
-  max-width: 100%;
-  max-height: 100%;
+  height: min(100%, calc(var(--board-size) + (var(--board-frame-padding) * 2) + 2px)) !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
   margin: auto !important;
+  padding: 0 !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
+  overflow: hidden !important;
 }
 
-.page-shell.is-board-only.is-focus-mode .board-frame,
-.page-shell.is-board-only.is-focus-mode .captured-row {
-  margin-left: 0;
-  padding-right: var(--board-frame-padding);
+body.is-board-only .board-frame,
+html[data-board-only="1"] .board-frame,
+.page-shell.is-board-only.is-focus-mode .board-frame {
+  margin: auto !important;
+  padding: var(--board-frame-padding, 4px) !important;
+  width: min(100%, calc(var(--board-size) + (var(--board-frame-padding) * 2) + 2px)) !important;
+  height: min(100%, calc(var(--board-size) + (var(--board-frame-padding) * 2) + 2px)) !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  aspect-ratio: 1 / 1 !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
 }
 
-.page-shell.is-board-only.is-focus-mode .captured-row {
-  box-shadow: none;
+body.is-board-only .board-surface,
+html[data-board-only="1"] .board-surface {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  aspect-ratio: 1 / 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
 }
 
-.page-shell.is-board-only.is-focus-mode .captured-piece,
-.page-shell.is-board-only.is-focus-mode .captured-piece-placeholder {
-  width: calc(var(--captured-cell-size) * 0.82);
-  height: calc(var(--captured-cell-size) * 0.82);
-}
-
-.page-shell.is-board-only.is-focus-mode .captured-piece-count {
-  min-width: 0.95rem;
-  height: 0.95rem;
-  font-size: 0.62rem;
+body.is-board-only .board-grid,
+html[data-board-only="1"] .board-grid {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  aspect-ratio: 1 / 1 !important;
+  display: grid !important;
+  grid-template-columns: repeat(8, minmax(0, 1fr)) !important;
+  grid-template-rows: repeat(8, minmax(0, 1fr)) !important;
+  overflow: hidden !important;
 }
 
 .page-shell.is-board-only.is-focus-mode.is-board-only-setup-open .workspace {
