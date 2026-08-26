@@ -72,8 +72,8 @@ test('styles.css and site-home.css suppress control-pane, tab-nav, and under-boa
 });
 
 test('app.js calculates board-only dynamic sizing at the start of syncBoardSize and handles syncSize messages', () => {
-  assert.match(appJs, /if\s*\(state\.boardOnlyMode\)\s*\{[\s\S]*Math\.floor\(Math\.min\(availWidth,\s*availHeight\)\)/, 'syncBoardSize computes board-only size from full viewport');
-  assert.match(appJs, /if\s*\(data\.type === 'syncSize'\)\s*\{[\s\S]*syncBoardSize\(/, 'app.js handles syncSize message');
+  assert.match(appJs, /if\s*\(state\.boardOnlyMode\)\s*\{[\s\S]*const vh = currentViewportHeight\(\)[\s\S]*Math\.floor\(Math\.min\(availWidth,\s*availHeight\)\)/, 'syncBoardSize computes board-only size from full viewport');
+  assert.match(appJs, /if\s*\(data\.type === 'syncSize'\)\s*\{\s*syncBoardSize\(\);\s*return;\s*\}/, 'app.js handles syncSize message');
   assert.match(appJs, /new ResizeObserver\(\(\) => \{\s*syncBoardSize\(\);/, 'app.js monitors resize via ResizeObserver');
 });
 

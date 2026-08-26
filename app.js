@@ -685,7 +685,6 @@ const state = {
   focusMode: false,
   embedMode: false,
   boardOnlyMode: false,
-  boardOnlyDimensions: { width: 0, height: 0 },
   boardOnlySetupVisible: false,
   boardOnlyTeacherSetupActive: false,
   boardOnlyInitialFen: DEFAULT_POSITION,
@@ -7273,7 +7272,7 @@ function renderBoard() {
   dom.evalBarWrap?.setAttribute('aria-hidden', 'true');
 }
 
-function syncBoardSize(options = {}) {
+function syncBoardSize() {
   if (!dom.rootElement || !dom.boardFrame || !dom.boardColumn) {
     return;
   }
@@ -7286,22 +7285,13 @@ function syncBoardSize(options = {}) {
   const framePadding = cssLengthToPx(columnStyles.getPropertyValue('--board-frame-padding'), remToPx(0.5));
 
   if (state.boardOnlyMode) {
-    if (typeof options?.width === 'number' && options.width > 0) {
-      state.boardOnlyDimensions.width = options.width;
-    }
-    if (typeof options?.height === 'number' && options.height > 0) {
-      state.boardOnlyDimensions.height = options.height;
-    }
-
-    const parentW = state.boardOnlyDimensions.width;
-    const parentH = state.boardOnlyDimensions.height;
-    const vh = parentH || window.innerHeight || document.documentElement?.clientHeight || dom.pageShell?.clientHeight || 0;
-    const vw = parentW || window.innerWidth || document.documentElement?.clientWidth || dom.pageShell?.clientWidth || 0;
+    const vh = currentViewportHeight() || window.innerHeight;
+    const vw = currentViewportWidth() || window.innerWidth;
     const pagePaddingY = elementPaddingInsetPx(dom.pageShell, 'y');
     const pagePaddingX = elementPaddingInsetPx(dom.pageShell, 'x');
     const frameShellPadding = (framePadding * 2) + 2;
-    const availHeight = Math.max(0, vh - pagePaddingY - frameShellPadding - 6);
-    const availWidth = Math.max(0, vw - pagePaddingX - frameShellPadding - 6);
+    const availHeight = Math.max(0, vh - pagePaddingY - frameShellPadding);
+    const availWidth = Math.max(0, vw - pagePaddingX - frameShellPadding);
     const boardSize = Math.floor(Math.min(availWidth, availHeight));
     if (boardSize > 0) {
       dom.rootElement.style.setProperty('--board-size', `${boardSize}px`);
@@ -12515,11 +12505,11 @@ function bindEmbedMessageListener() {
 
     const isSameOriginParent = event.source === window.parent && event.origin === window.location.origin;
     if (data.type === 'syncSize') {
-      syncBoardSize({ width: data.width, height: data.height });
+      syncBoardSize();
       return;
     }
     if (data.type === 'teacherBoardPing') {
-      syncBoardSize({ width: data.width, height: data.height });
+      syncBoardSize();
       if (isSameOriginParent) {
         event.source.postMessage({ type: 'teacherBoardReady' }, event.origin);
       }
