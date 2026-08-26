@@ -5,7 +5,7 @@
   var STORAGE_PREFIX = "teacher-board-lesson-csv-v1:";
   var STORAGE_VERSION = 1;
   var GAME_STATUS_STORAGE_KEY = "teacher-board-game-status-enabled-v1";
-  var TEACHER_CACHE_VERSION = "20260826-teacher-board-aspect-ratio-fix";
+  var TEACHER_CACHE_VERSION = "20260826-teacher-board-loading-screen";
   var PIECES = ["K", "Q", "R", "B", "N", "P"];
   var PIECE_LABELS = {
     K: "King",
@@ -18,6 +18,7 @@
 
   var panel;
   var iframe;
+  var loadingEl;
   var setupOpen = false;
   var annotateOpen = false;
   var selectedPiece = "";
@@ -927,6 +928,10 @@
       '  <button type="button" class="teacher-board-icon-button" data-teacher-action="close" aria-label="Close teacher board" title="Close">x</button>',
       '</div>',
       '<div class="teacher-board-body">',
+      '  <div class="teacher-board-loading" aria-label="Loading chessboard">',
+      '    <div class="teacher-board-spinner" aria-hidden="true"></div>',
+      '    <div class="teacher-board-loading-text">Loading board…</div>',
+      '  </div>',
       '  <iframe class="teacher-board-frame" title="Interactive teacher chessboard" loading="lazy"></iframe>',
       '  <div class="teacher-board-game-status" role="status" aria-live="assertive" hidden></div>',
       '</div>',
@@ -957,6 +962,7 @@
       '<input type="file" class="teacher-lesson-file-input" accept=".csv,text/csv" aria-label="Choose Lesson CSV" hidden>'
     ].join("");
 
+    loadingEl = panel.querySelector(".teacher-board-loading");
     iframe = panel.querySelector(".teacher-board-frame");
     lessonFileInput = panel.querySelector(".teacher-lesson-file-input");
     iframe.addEventListener("load", handleTeacherIframeLoad);
@@ -980,6 +986,13 @@
     syncLessonMenuUi();
   }
 
+  function setTeacherLoading(loading) {
+    if (!loadingEl) {
+      return;
+    }
+    loadingEl.hidden = !loading;
+  }
+
   function handlePanelContextMenu(event) {
     if (!event.shiftKey) {
       return;
@@ -994,6 +1007,7 @@
     }
     if (iframe && !iframe.getAttribute("src")) {
       iframeReady = false;
+      setTeacherLoading(true);
       iframe.setAttribute("src", boardUrl());
     }
   }
@@ -1248,6 +1262,7 @@
     }
     if (data.type === "teacherBoardReady") {
       iframeReady = true;
+      setTeacherLoading(false);
       observeTeacherGameStatus();
       syncSetupSideToMoveFromFen();
       sendPendingLessonLoad();
@@ -1262,6 +1277,7 @@
     disconnectTeacherGameStatusObserver();
     clearTeacherGameStatus();
     iframeReady = false;
+    setTeacherLoading(true);
     requestIframeReady();
   }
 
@@ -1350,6 +1366,9 @@
     ensurePanel();
     panel.hidden = false;
     panel.classList.remove("is-minimized");
+    if (!iframeReady) {
+      setTeacherLoading(true);
+    }
     requestIframeReady();
     postToBoard({ type: "syncSize" });
     setTimeout(function () {

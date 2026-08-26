@@ -45,7 +45,7 @@
     if (document.querySelector('link[href*="endgame-lesson.css"], link[href*="lesson-header.css"]')) return;
     var link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = assetUrl("lesson-header.css?v=20260724-unified-header-v2");
+    link.href = assetUrl("lesson-header.css?v=20260826-swipeable-nav");
     link.setAttribute("data-unified-lesson-header", "v2");
     document.head.appendChild(link);
   }

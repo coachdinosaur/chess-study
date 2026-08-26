@@ -116,6 +116,50 @@
   height: 100%;
 }
 
+.teacher-board-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  background: #071012;
+  color: var(--text, #f7faf5);
+  font-family: inherit;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+  pointer-events: auto;
+}
+
+.teacher-board-loading[hidden] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.teacher-board-spinner {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  border: 3px solid rgba(138, 216, 183, 0.2);
+  border-top-color: var(--gold, #8ad8b7);
+  animation: teacher-spin 0.75s linear infinite;
+}
+
+.teacher-board-loading-text {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text, #f7faf5);
+  letter-spacing: 0.02em;
+}
+
+@keyframes teacher-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .teacher-board-frame {
   --teacher-header-footer-offset: 140px;
   width: min(calc(100vh - var(--teacher-header-footer-offset)), 75vw, 100%);

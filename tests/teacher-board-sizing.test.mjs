@@ -1,4 +1,4 @@
-﻿import test from 'node:test';
+import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 
@@ -119,6 +119,42 @@ test('pawn-teacher-board.js observes container resize, toggles is-setup-open, an
     teacherJs,
     /panel\.classList\.toggle\("is-setup-open",\s*setupOpen\)/,
     'pawn-teacher-board.js should toggle is-setup-open class on panel',
+  );
+});
+
+test('pawn-teacher-board provides a dark themed loading screen and prevents white flash/bare HTML', () => {
+  // teacher-board loading element in pawn-teacher-board.css
+  assert.match(
+    teacherCss,
+    /\.teacher-board-loading\s*\{[\s\S]*position:\s*absolute;[\s\S]*background:\s*#071012;/,
+    'pawn-teacher-board.css must define .teacher-board-loading with dark background',
+  );
+
+  assert.match(
+    teacherCss,
+    /\.teacher-board-spinner\s*\{[\s\S]*animation:\s*teacher-spin/,
+    'pawn-teacher-board.css must define .teacher-board-spinner with animation',
+  );
+
+  // teacher-board loading in pawn-teacher-board.js
+  assert.match(
+    teacherJs,
+    /teacher-board-loading/,
+    'pawn-teacher-board.js must render teacher-board-loading element',
+  );
+
+  assert.match(
+    teacherJs,
+    /function setTeacherLoading/,
+    'pawn-teacher-board.js must include setTeacherLoading function',
+  );
+
+  // index.html pre-render inline style preventing white flash
+  const indexHtml = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+  assert.match(
+    indexHtml,
+    /<style>[\s\S]*html\[data-board-only="1"\][\s\S]*background:\s*#071012\s*!important;/,
+    'index.html must include inline pre-render styles for dark background on board-only iframe',
   );
 });
 
