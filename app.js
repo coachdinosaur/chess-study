@@ -7281,6 +7281,26 @@ function syncBoardSize() {
 
   dom.rootElement.style.setProperty('--board-side-gap', '0px');
 
+  const columnStyles = window.getComputedStyle(dom.boardColumn);
+  const framePadding = cssLengthToPx(columnStyles.getPropertyValue('--board-frame-padding'), remToPx(0.5));
+
+  if (state.boardOnlyMode) {
+    const vh = currentViewportHeight() || window.innerHeight;
+    const vw = currentViewportWidth() || window.innerWidth;
+    const pagePaddingY = elementPaddingInsetPx(dom.pageShell, 'y');
+    const pagePaddingX = elementPaddingInsetPx(dom.pageShell, 'x');
+    const frameShellPadding = (framePadding * 2) + 2;
+    const availHeight = Math.max(0, vh - pagePaddingY - frameShellPadding);
+    const availWidth = Math.max(0, vw - pagePaddingX - frameShellPadding);
+    const boardSize = Math.floor(Math.min(availWidth, availHeight));
+    if (boardSize > 0) {
+      dom.rootElement.style.setProperty('--board-size', `${boardSize}px`);
+      dom.boardColumn.style.setProperty('--board-size', `${boardSize}px`);
+      dom.rootElement.style.setProperty('--board-side-gap', '0px');
+    }
+    return;
+  }
+
   const stageCard = dom.boardColumn.closest('.board-stage-card');
   const stageRect = stageCard?.getBoundingClientRect();
   let stageHeight = stageRect?.height || 0;
@@ -7324,25 +7344,6 @@ function syncBoardSize() {
     containerWidth = Math.max(0, availableWorkspaceWidth - controlPaneWidth - gapPx);
   }
   if (!containerWidth || (!stageHeight && !isMobilePortrait)) {
-    return;
-  }
-
-  const columnStyles = window.getComputedStyle(dom.boardColumn);
-  const framePadding = cssLengthToPx(columnStyles.getPropertyValue('--board-frame-padding'), remToPx(0.5));
-
-  if (state.boardOnlyMode) {
-    const vh = currentViewportHeight() || window.innerHeight;
-    const vw = currentViewportWidth() || window.innerWidth;
-    const pagePaddingY = elementPaddingInsetPx(dom.pageShell, 'y');
-    const pagePaddingX = elementPaddingInsetPx(dom.pageShell, 'x');
-    const frameShellPadding = (framePadding * 2) + 2;
-    const availHeight = Math.max(0, vh - pagePaddingY - frameShellPadding);
-    const availWidth = Math.max(0, vw - pagePaddingX - frameShellPadding);
-    const boardSize = Math.floor(Math.min(availWidth, availHeight));
-    if (boardSize > 0) {
-      dom.boardColumn.style.setProperty('--board-size', `${boardSize}px`);
-      dom.rootElement.style.setProperty('--board-side-gap', '0px');
-    }
     return;
   }
 
@@ -12503,7 +12504,12 @@ function bindEmbedMessageListener() {
     }
 
     const isSameOriginParent = event.source === window.parent && event.origin === window.location.origin;
+    if (data.type === 'syncSize') {
+      syncBoardSize();
+      return;
+    }
     if (data.type === 'teacherBoardPing') {
+      syncBoardSize();
       if (isSameOriginParent) {
         event.source.postMessage({ type: 'teacherBoardReady' }, event.origin);
       }
@@ -12634,6 +12640,15 @@ function bindEvents() {
   });
   window.addEventListener('resize', handleViewportResize);
   window.visualViewport?.addEventListener('resize', handleViewportResize);
+  if (typeof ResizeObserver === 'function' && dom.pageShell) {
+    const resizeObserver = new ResizeObserver(() => {
+      syncBoardSize();
+    });
+    resizeObserver.observe(dom.pageShell);
+    if (dom.appMainContent && dom.appMainContent !== dom.pageShell) {
+      resizeObserver.observe(dom.appMainContent);
+    }
+  }
   window.addEventListener('blur', () => {
     cancelAnnotationGesture();
     cancelBoardPointerDrag();

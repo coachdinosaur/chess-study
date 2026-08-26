@@ -5,7 +5,7 @@
   var STORAGE_PREFIX = "teacher-board-lesson-csv-v1:";
   var STORAGE_VERSION = 1;
   var GAME_STATUS_STORAGE_KEY = "teacher-board-game-status-enabled-v1";
-  var TEACHER_CACHE_VERSION = "20260731-teacher-board-game-status1";
+  var TEACHER_CACHE_VERSION = "20260826-teacher-board-size-fix2";
   var PIECES = ["K", "Q", "R", "B", "N", "P"];
   var PIECE_LABELS = {
     K: "King",
@@ -1334,6 +1334,13 @@
     panel.hidden = false;
     panel.classList.remove("is-minimized");
     requestIframeReady();
+    postToBoard({ type: "syncSize" });
+    setTimeout(function () {
+      postToBoard({ type: "syncSize" });
+    }, 50);
+    setTimeout(function () {
+      postToBoard({ type: "syncSize" });
+    }, 200);
     if (lessonPositions.length) {
       var position = lessonPositionById(activeLessonPositionId) ||
         lessonPositionById(restoredLessonPositionId) ||
@@ -1358,6 +1365,13 @@
     }
     syncSelectedPieceButtons();
     syncLessonMenuUi();
+    postToBoard({ type: "syncSize" });
+    setTimeout(function () {
+      postToBoard({ type: "syncSize" });
+    }, 50);
+    setTimeout(function () {
+      postToBoard({ type: "syncSize" });
+    }, 200);
   }
 
   function closePanel() {
@@ -1398,6 +1412,13 @@
     panel.classList.toggle("is-minimized");
     syncSelectedPieceButtons();
     syncLessonMenuUi();
+    postToBoard({ type: "syncSize" });
+    setTimeout(function () {
+      postToBoard({ type: "syncSize" });
+    }, 50);
+    setTimeout(function () {
+      postToBoard({ type: "syncSize" });
+    }, 200);
   }
 
   function handlePieceSelect(piece) {
