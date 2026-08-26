@@ -365,10 +365,10 @@ Chapter 8 – 7.Bc4
 The alternative method of implementing our plan is 10...Nb6 11.Bb5 Bd7, but it is slightly riskier due to:
 
 **FEN:**
-`r2q1rk1/pp1b1ppp/1nnbp3/1B2P3/3P4/2N2N2/PP1B1PPP/R2Q1RK1 w - - 3 12`
+`r2q1rk1/pp1bbppp/1nnpp3/1B2P3/3P4/2N2N2/PP1B1PPP/R2Q1RK1 w - - 3 12`
 
-<!-- FEN: r2q1rk1/pp1b1ppp/1nnbp3/1B2P3/3P4/2N2N2/PP1B1PPP/R2Q1RK1 w - - 3 12 -->
-12.exd6! (12.Be3 Nb4! is what Black is aiming for. This would be impossible with the d-pawns exchanged, due to Bxb6.) 12...Bxd6 13.Bd3! The white bishops were optimally configured for the attack in Stockfish 4 – Houdini 4, engine game 2013. Consequently, Black first freezes the central structure.
+<!-- FEN: r2q1rk1/pp1bbppp/1nnpp3/1B2P3/3P4/2N2N2/PP1B1PPP/R2Q1RK1 w - - 3 12 -->
+  12.exd6! (12.Be3 Nb4! is what Black is aiming for. This would be impossible with the d-pawns exchanged, due to Bxb6.) 12...Bxd6 13.Bd3! The white bishops were optimally configured for the attack in Stockfish 4 – Houdini 4, engine game 2013. Consequently, Black first freezes the central structure.
 
 <!-- FEN: r1bq1rk1/pp2bppp/2n1p3/3np3/2BP4/2N2N2/PP1B1PPP/R2Q1RK1 w - - 0 11 -->
 **11.dxe5 Nb6!**
@@ -384,31 +384,31 @@ The knight retreats but the black position gains in potential, as the white bish
 The trickiest possibility.
 
 <!-- FEN: r1bq1rk1/pp2bppp/1nn1p3/4P3/2B5/2N2N2/PP1B1PPP/R2Q1RK1 w - - 1 12 -->
-12.Bb3 Na5!
+  12.Bb3 Na5!
 
 <!-- FEN: r1bq1rk1/pp2bppp/1nn1p3/4P3/2B5/2N2N2/PP1B1PPP/R2Q1RK1 w - - 1 12 -->
-12...Nd7!? 13.Bf4! Nc5 14.Qb1! Nxb3 15.axb3 Nd4 16.Qd1!± gave White some chances to apply pressure in BarmikiM – Ludving, engine game 2011.
+  12...Nd7!? 13.Bf4! Nc5 14.Qb1! Nxb3 15.axb3 Nd4 16.Qd1!± gave White some chances to apply pressure in BarmikiM – Ludving, engine game 2011.
 
 <!-- FEN: r1bq1rk1/pp2bppp/1n2p3/n3P3/8/1BN2N2/PP1B1PPP/R2Q1RK1 w - - 2 13 -->
-13.Bc2
+  13.Bc2
 
 <!-- FEN: r1bq1rk1/pp2bppp/1n2p3/n3P3/8/1BN2N2/PP1B1PPP/R2Q1RK1 w - - 2 13 -->
-13.Qe2 Nxb3 14.axb3 Bd7= is okay for Black.
+  13.Qe2 Nxb3 14.axb3 Bd7= is okay for Black.
 
 **FEN:**
 `r1bq1rk1/pp2bppp/1n2p3/n3P3/8/2N2N2/PPBB1PPP/R2Q1RK1 b - - 3 13`
 
 <!-- FEN: r1bq1rk1/pp2bppp/1n2p3/n3P3/8/2N2N2/PPBB1PPP/R2Q1RK1 b - - 3 13 -->
-13...Nac4! 14.Qe2 Nxd2 15.Nxd2 Bd7 16.Nde4 Bc6 17.Rad1 Nd7!
+  13...Nac4! 14.Qe2 Nxd2 15.Nxd2 Bd7 16.Nde4 Bc6 17.Rad1 Nd7!
 
-In the case of 17...Qc7 the pseudo-sacrifice 18.Nf6†! causes us a slight annoyance, although even here Black should be okay in the long run: 18...Bxf6 19.exf6 Qf4! 20.fxg7 Rfd8 21.Be4 Na4! 22.Bxc6 Nxc3 23.bxc3 bxc3 24.Qa6 Qc7±/=
+  In the case of 17...Qc7 the pseudo-sacrifice 18.Nf6†! causes us a slight annoyance, although even here Black should be okay in the long run: 18...Bxf6 19.exf6 Qf4! 20.fxg7 Rfd8 21.Be4 Na4! 22.Bxc6 Nxc3 23.bxc3 bxc6 24.Qa6 Qc7±/=
 
-18.Nd6 Qa5! 19.f4 Rad8N
+  18.Nd6 Qa5! 19.f4 Rad8N
 
-19...Qb6† 20.Rf2 wasn't as convincing for Black in Alfjoo – Neapus, engine game 2012. After the text move, Black has reached full equality. A possible sequel is: 20.Kh1 Bxd6 21.Rxd6 Nc5 22.Rfd1 Rxd6 23.Rxd6 Qb4 24.Qd2 g6=
+  19...Qb6† 20.Rf2 wasn't as convincing for Black in Alfjoo – Neapus, engine game 2012. After the text move, Black has reached full equality. A possible sequel is: 20.Kh1 Bxd6 21.Rxd6 Nc5 22.Rfd1 Rxd6 23.Rxd6 Qb4 24.Qd2 g6=
 
 <!-- FEN: r1bq1rk1/pp2bppp/1nn1p3/4P3/2B5/2N2N2/PP1B1PPP/R2Q1RK1 w - - 1 12 -->
-12.Be2 is best answered by: 12...Nd7!? 13.Bf4 g5!? 14.Be3! (14.Bg3 g4 15.Nd4 Ndxe5 16.Bxg4 f5! 17.Bxe5 Nxe5 18.Be2 Bf6N 19.Rc1 a6!∞ is another important variation, guaranteeing Black fine chances.) 14...Ndxe5 15.Nxe5 At this point I would like to recommend a clear-cut equalizer for Black:
+  12.Be2 is best answered by: 12...Nd7!? 13.Bf4 g5!? 14.Be3! (14.Bg3 g4 15.Nd4 Ndxe5 16.Bxg4 f5! 17.Bxe5 Nxe5 18.Be2 Bf6N 19.Rc1 a6!∞ is another important variation, guaranteeing Black fine chances.) 14...Ndxe5 15.Nxe5 At this point I would like to recommend a clear-cut equalizer for Black:
 
 ## Page 144
 

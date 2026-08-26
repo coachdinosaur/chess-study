@@ -119,6 +119,19 @@ test("Chapter 8 Page 142 contains variation D and 12...Ncb4!N lines", async () =
   assert.match(page142, /\*\*9\.\.\.0-0 10\.Nc3 dxe5!\*\*/);
 });
 
+test("Chapter 8 Page 143 contains 10...Nb6 sideline, 11.dxe5 Nb6!, and 13...Nac4! lines", async () => {
+  const markdown = await readChapterEight();
+  const start = markdown.indexOf("## Page 143");
+  const end = markdown.indexOf("## Page 144", start);
+  const page143 = markdown.slice(start, end);
+
+  assert.match(page143, /12\.exd6!/);
+  assert.match(page143, /\*\*11\.dxe5 Nb6!\*\*/);
+  assert.match(page143, /\*\*12\.Bb5\*\*/);
+  assert.match(page143, /13\.\.\.Nac4! 14\.Qe2/);
+  assert.match(page143, /23\.bxc3 bxc6 24\.Qa6 Qc7/);
+});
+
 test("Chapter 8 Page 144 contains variation E", async () => {
   const markdown = await readChapterEight();
   const start = markdown.indexOf("## Page 144");
