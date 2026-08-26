@@ -7330,7 +7330,7 @@ function syncBoardSize() {
   const columnStyles = window.getComputedStyle(dom.boardColumn);
   const framePadding = cssLengthToPx(columnStyles.getPropertyValue('--board-frame-padding'), remToPx(0.5));
 
-  if (mobileLandscapeLayoutActive()) {
+  if (!state.focusMode && mobileLandscapeLayoutActive()) {
     const vh = window.innerHeight || currentViewportHeight();
     const vw = currentViewportWidth();
     const pagePaddingY = elementPaddingInsetPx(dom.pageShell, 'y') || remToPx(0.7);
