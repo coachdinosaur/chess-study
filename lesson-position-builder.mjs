@@ -102,7 +102,50 @@ function isXlsxFile(file) {
     || type.includes('excel');
 }
 
+let xlsxLoadingPromise = null;
+async function ensureXlsxLoaded() {
+  const XLSX = globalThis.XLSX;
+  if (XLSX?.read && XLSX?.utils?.sheet_to_json && XLSX?.utils?.aoa_to_sheet && XLSX?.writeFile) {
+    return XLSX;
+  }
+  if (xlsxLoadingPromise) {
+    return xlsxLoadingPromise;
+  }
+
+  xlsxLoadingPromise = new Promise((resolve, reject) => {
+    if (typeof document !== 'undefined') {
+      const existing = document.querySelector('script[data-vendor="xlsx"]');
+      if (existing) {
+        existing.addEventListener('load', () => resolve(globalThis.XLSX));
+        existing.addEventListener('error', () => {
+          xlsxLoadingPromise = null;
+          reject(new Error('Failed to load vendor/xlsx.full.min.js'));
+        });
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = new URL('./vendor/xlsx.full.min.js', import.meta.url).href;
+      script.dataset.vendor = 'xlsx';
+      script.onload = () => resolve(globalThis.XLSX);
+      script.onerror = () => {
+        xlsxLoadingPromise = null;
+        reject(new Error('Failed to load vendor/xlsx.full.min.js'));
+      };
+      document.head.appendChild(script);
+    } else {
+      resolve(globalThis.XLSX);
+    }
+  });
+
+  return xlsxLoadingPromise;
+}
+
 async function readXlsxRows(file) {
+  try {
+    await ensureXlsxLoaded();
+  } catch (err) {
+    throw new Error('XLSX support did not load. Check vendor/xlsx.full.min.js.');
+  }
   const XLSX = globalThis.XLSX;
   if (!XLSX?.read || !XLSX?.utils?.sheet_to_json) {
     throw new Error('XLSX support did not load. Check vendor/xlsx.full.min.js.');
@@ -892,10 +935,19 @@ export function createLessonPositionBuilder({ host, fileInput, callbacks = {} } 
     render();
   }
 
-  function exportXlsx() {
+  async function exportXlsx() {
     const check = exportable();
     if (!check.ok) {
       state.message = check.summary || 'Cannot export Excel.';
+      state.messageKind = 'danger';
+      render();
+      return;
+    }
+
+    try {
+      await ensureXlsxLoaded();
+    } catch {
+      state.message = 'XLSX support did not load. Check vendor/xlsx.full.min.js.';
       state.messageKind = 'danger';
       render();
       return;

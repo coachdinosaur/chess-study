@@ -1036,29 +1036,48 @@ function buildEpdIndex(rows) {
   return map;
 }
 
+let openingBookLoadPromise = null;
 async function loadOpeningBook() {
-  try {
-    state.openingBook.loading = true;
-    syncOpeningInfoDisplay();
-    
-    const response = await fetch("./assets/openings.tsv");
-    if (!response.ok) throw new Error("Opening book not found");
-    const text = await response.text();
-    const rows = parseOpeningRows(text);
+  if (state.openingBook.loaded) return;
+  if (openingBookLoadPromise) return openingBookLoadPromise;
 
-    state.openingBook.rows = rows;
-    state.openingBook.byUci = buildUciIndex(rows);
-    state.openingBook.byEpd = buildEpdIndex(rows);
-    state.openingBook.loaded = true;
-    state.openingBook.failed = false;
-  } catch (error) {
-    console.warn("Opening book unavailable:", error);
-    state.openingBook.loaded = false;
-    state.openingBook.failed = true;
-    state.openingBook.rows = [];
-  } finally {
-    state.openingBook.loading = false;
-    syncOpeningInfoDisplay();
+  openingBookLoadPromise = (async () => {
+    try {
+      state.openingBook.loading = true;
+      syncOpeningInfoDisplay();
+      
+      const response = await fetch("./assets/openings.tsv");
+      if (!response.ok) throw new Error("Opening book not found");
+      const text = await response.text();
+      const rows = parseOpeningRows(text);
+
+      state.openingBook.rows = rows;
+      state.openingBook.byUci = buildUciIndex(rows);
+      state.openingBook.byEpd = buildEpdIndex(rows);
+      state.openingBook.loaded = true;
+      state.openingBook.failed = false;
+    } catch (error) {
+      console.warn("Opening book unavailable:", error);
+      state.openingBook.loaded = false;
+      state.openingBook.failed = true;
+      state.openingBook.rows = [];
+    } finally {
+      state.openingBook.loading = false;
+      syncOpeningInfoDisplay();
+    }
+  })();
+  return openingBookLoadPromise;
+}
+
+function deferOpeningBookLoad() {
+  if (typeof window !== 'undefined' && typeof window.requestIdleCallback === 'function') {
+    window.requestIdleCallback(() => {
+      loadOpeningBook();
+    }, { timeout: 3000 });
+  } else if (typeof setTimeout === 'function') {
+    setTimeout(() => {
+      loadOpeningBook();
+    }, 1500);
   }
 }
 
@@ -1163,6 +1182,10 @@ function syncOpeningInfoDisplay() {
     dom.openingInfoDisplay.hidden = true;
     dom.openingInfoDisplay.setAttribute('aria-hidden', 'true');
     return;
+  }
+
+  if (!state.openingBook.loaded && !state.openingBook.loading && !state.openingBook.failed) {
+    loadOpeningBook();
   }
   
   const { uciMoves, epds } = getGameMovesAndEpds();
@@ -5515,14 +5538,21 @@ function uciMovesToSan(fen, moves) {
   }
 }
 
+const stockfishAssetExistsCache = new Map();
 async function stockfishAssetExists(path) {
+  if (stockfishAssetExistsCache.has(path)) {
+    return stockfishAssetExistsCache.get(path);
+  }
   try {
     const response = await window.fetch(new URL(path, import.meta.url), {
       method: 'HEAD',
-      cache: 'no-store',
+      cache: 'default',
     });
-    return response.ok;
+    const exists = response.ok;
+    stockfishAssetExistsCache.set(path, exists);
+    return exists;
   } catch {
+    stockfishAssetExistsCache.set(path, false);
     return false;
   }
 }
@@ -5535,15 +5565,20 @@ async function isStockfishBundleInstalled(candidate) {
   return workerExists && wasmExists;
 }
 
+let cachedStockfishCandidate = null;
 async function resolveStockfishBundleCandidate() {
+  if (cachedStockfishCandidate) {
+    return cachedStockfishCandidate;
+  }
+
   const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
     || window.matchMedia('(max-width: 760px)').matches
     || ('ontouchstart' in window)
     || (navigator.maxTouchPoints > 0);
 
-  // On mobile, prefer lite bundles first to avoid crashing/timeout due to the 113MB WASM footprint.
+  // On mobile or non-crossOriginIsolated web environments, prefer lite bundles first to avoid crashing/timeout.
   const candidates = [...ENGINE_BUNDLE_CANDIDATES];
-  if (isMobile) {
+  if (isMobile || !window.crossOriginIsolated) {
     candidates.sort((a, b) => {
       const aIsLite = a.id.includes('lite');
       const bIsLite = b.id.includes('lite');
@@ -5559,6 +5594,7 @@ async function resolveStockfishBundleCandidate() {
       continue;
     }
     if (!candidate.requiresCrossOriginIsolation || window.crossOriginIsolated) {
+      cachedStockfishCandidate = candidate;
       return candidate;
     }
     sawThreadedOnlyInstall = true;
@@ -12671,7 +12707,7 @@ syncAnalysisGameFromTree();
 initializeLessonPositionBuilder();
 bindEvents();
 bindEmbedMessageListener();
-loadOpeningBook();
+deferOpeningBookLoad();
 renderAll();
 if (state.lessonPositionBuilder.active) {
   lessonPositionBuilder?.open();

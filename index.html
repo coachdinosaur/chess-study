@@ -868,7 +868,6 @@
     </div>
   </div>
 
-  <script src="./vendor/xlsx.full.min.js"></script>
   <script type="module" src="./app.js?v=20260826-board-loading-fix1"></script>
   <script type="module" src="./focus-analysis-popup.mjs?v=20260826-board-loading-fix1"></script>
   <script type="module" src="./app-navigation.js?v=20260826-board-loading-fix1"></script>
@@ -881,6 +880,12 @@
       overlay.remove();
     }
     document.body.classList.remove('loading');
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(function (err) {
+        console.warn('ServiceWorker registration failed:', err);
+      });
+    }
   });
 </script>
 
