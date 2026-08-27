@@ -887,10 +887,20 @@
     window.dismissLoadingOverlay();
   }, 8000);
 
+  // Unregister any active service worker and purge caches to prevent sub-app interference
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js?v=20260827-v2').catch(function (err) {
-      console.warn('ServiceWorker registration failed:', err);
-    });
+    navigator.serviceWorker.getRegistrations().then(function (registrations) {
+      for (const registration of registrations) {
+        registration.unregister();
+      }
+    }).catch(function () {});
+    if (typeof caches !== 'undefined') {
+      caches.keys().then(function (keys) {
+        for (const key of keys) {
+          caches.delete(key);
+        }
+      }).catch(function () {});
+    }
   }
 </script>
 

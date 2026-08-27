@@ -11,6 +11,13 @@
     <link rel="icon" type="image/png" href="%BASE_URL%app_icon.png" />
     <link rel="apple-touch-icon" href="%BASE_URL%app_icon.png" />
     <title>3D Chess Position Studio - CD Digital Chess</title>
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function (regs) {
+          for (const r of regs) r.unregister();
+        }).catch(function () {});
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

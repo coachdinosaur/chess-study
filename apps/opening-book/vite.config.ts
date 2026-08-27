@@ -16,6 +16,16 @@ export default defineConfig({
   },
   build: {
     target: "es2022",
-    sourcemap: true,
+    sourcemap: false,
+    chunkSizeWarningLimit: 600,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules/react")) return "react";
+          if (id.includes("node_modules/chess.js")) return "chess";
+          return undefined;
+        },
+      },
+    },
   },
 });
