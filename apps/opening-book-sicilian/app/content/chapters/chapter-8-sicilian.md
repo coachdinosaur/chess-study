@@ -428,8 +428,10 @@ c3 Sicilian
 
 I was a bit amazed to find out that this is the best reaction here, letting White weaken our structure with gain of time. But a bishop is a bishop, and it must be taken!
 
+<!-- FEN: r1bq1rk1/pp2bppp/1nn1p3/1B2P3/8/2N2N2/PP1B1PPP/R2Q1RK1 b - - 2 12 -->
 My original intention was to suggest 12...Bd7, but then I realized that, with the d-pawns gone, White has 13.Be3! stopping ...Nb4. Black stands worse, even if only slightly, and the text is much stronger.
 
+<!-- FEN: r1bq1rk1/1p2bppp/pnn1p3/1B2P3/8/2N2N2/PP1B1PPP/R2Q1RK1 w - - 0 13 -->
 **13.Bxc6 bxc6 14.Qc2 Bb7 15.Rfd1 c5**
 
 The light-squared bishop has found a beautiful diagonal, and Black is already enjoying fine prospects.
