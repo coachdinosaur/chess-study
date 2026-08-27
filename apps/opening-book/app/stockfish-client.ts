@@ -199,14 +199,17 @@ export function formatPvSan(fen: string, sanMoves: readonly string[], maxPlies =
   return output.join(" ");
 }
 
-export function resolveWorkerUrl(baseUrl: string | URL): string {
-  return new URL(ENGINE_FILE, baseUrl).href;
+export function resolveWorkerUrl(baseUrl?: string | URL): string {
+  if (baseUrl) {
+    return new URL(ENGINE_FILE, baseUrl).href;
+  }
+  const base = (typeof import.meta !== "undefined" && import.meta.env?.BASE_URL) || "/openings/";
+  const normalizedBase = base.endsWith("/") ? base : `${base}/`;
+  return `${normalizedBase}${ENGINE_FILE}`;
 }
 
 function defaultWorkerUrl(): string {
-  if (typeof document !== "undefined") return resolveWorkerUrl(document.baseURI);
-  if (typeof location !== "undefined") return resolveWorkerUrl(location.href);
-  return ENGINE_FILE;
+  return resolveWorkerUrl();
 }
 
 function defaultWorkerFactory(url: string): StockfishWorkerLike {

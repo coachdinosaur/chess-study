@@ -36,7 +36,7 @@ class StockfishMasterEngine {
             console.warn("Stockfish master worker initialization timed out; using fallback.");
             resolve(false);
           }
-        }, 8000);
+        }, 30000);
 
         worker.onmessage = (event: MessageEvent<string | { data: string }>) => {
           const line = typeof event.data === "string" ? event.data : event.data?.data || "";

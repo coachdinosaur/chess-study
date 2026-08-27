@@ -49,8 +49,8 @@ const LAST_MOVE_ARROW_TIP_INSET = 30;
 const LAST_MOVE_ARROW_HEAD_LENGTH = 24;
 const LAST_MOVE_ARROW_HEAD_WIDTH = 34;
 const ENGINE_MULTI_PV_COUNT = 3;
-const ENGINE_READY_TIMEOUT_MS = 15000;
-const ENGINE_RECHECK_TIMEOUT_MS = 4000;
+const ENGINE_READY_TIMEOUT_MS = 35000;
+const ENGINE_RECHECK_TIMEOUT_MS = 10000;
 const GAME_RESULT_REVEAL_DELAY_MS = 650;
 const TABLEBASE_ENDPOINT = 'https://tablebase.lichess.org/standard';
 const TABLEBASE_FETCH_TIMEOUT_MS = 30000;
@@ -5544,11 +5544,20 @@ async function stockfishAssetExists(path) {
     return stockfishAssetExistsCache.get(path);
   }
   try {
-    const response = await window.fetch(new URL(path, import.meta.url), {
+    const assetUrl = new URL(path, import.meta.url);
+    let response = await window.fetch(assetUrl, {
       method: 'HEAD',
       cache: 'default',
     });
-    const exists = response.ok;
+    if (response.status === 405) {
+      // Host or CDN does not support HEAD method; fall back to GET with byte-range
+      response = await window.fetch(assetUrl, {
+        method: 'GET',
+        headers: { Range: 'bytes=0-0' },
+        cache: 'default',
+      });
+    }
+    const exists = response.ok || response.status === 206 || response.status === 304;
     stockfishAssetExistsCache.set(path, exists);
     return exists;
   } catch {
@@ -5590,14 +5599,17 @@ async function resolveStockfishBundleCandidate() {
 
   let sawThreadedOnlyInstall = false;
   for (const candidate of candidates) {
+    // When cross-origin isolation is absent, immediately skip candidates requiring it
+    // without issuing redundant HEAD/GET network requests.
+    if (candidate.requiresCrossOriginIsolation && !window.crossOriginIsolated) {
+      sawThreadedOnlyInstall = true;
+      continue;
+    }
     if (!await isStockfishBundleInstalled(candidate)) {
       continue;
     }
-    if (!candidate.requiresCrossOriginIsolation || window.crossOriginIsolated) {
-      cachedStockfishCandidate = candidate;
-      return candidate;
-    }
-    sawThreadedOnlyInstall = true;
+    cachedStockfishCandidate = candidate;
+    return candidate;
   }
   if (sawThreadedOnlyInstall && !window.crossOriginIsolated) {
     throw new Error('A multi-threaded Stockfish bundle is installed, but this server is missing the headers it needs. Run python local_server.py or install a single-threaded bundle.');
@@ -10162,7 +10174,8 @@ async function startPlayGame(options = {}) {
     }
     console.error('Failed to load Stockfish', error);
     if (state.play.active) {
-      stopPlayGame({ reason: 'Stockfish worker failed to load' });
+      const errorDetail = error?.message ? ` (${error.message})` : '';
+      stopPlayGame({ reason: `Stockfish worker failed to load${errorDetail}` });
     }
     return;
   }
