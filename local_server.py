@@ -16,6 +16,25 @@ class CrossOriginIsolatedHandler(SimpleHTTPRequestHandler):
         self.send_header("Cross-Origin-Resource-Policy", "same-origin")
         super().end_headers()
 
+    def translate_path(self, path: str) -> str:
+        clean_path = path.split("?", 1)[0].split("#", 1)[0]
+        routes = {
+            "/3d": "apps/3d-chess-studio/dist",
+            "/openings": "apps/opening-book/dist",
+            "/openings-sicilian": "apps/opening-book-sicilian/dist",
+        }
+        base_dir = Path(self.directory).resolve()
+        for prefix, rel_target in routes.items():
+            if clean_path == prefix or clean_path.startswith(prefix + "/"):
+                root_target = base_dir / prefix.lstrip("/")
+                if not root_target.exists():
+                    sub_target = base_dir / rel_target
+                    remainder = clean_path[len(prefix):].lstrip("/")
+                    if remainder:
+                        return str(sub_target / remainder)
+                    return str(sub_target)
+        return super().translate_path(path)
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(

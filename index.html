@@ -96,9 +96,9 @@
       letter-spacing: 0.02em;
     }
   </style>
-  <link rel="stylesheet" href="./styles.css?v=20260826-board-loading-fix1">
-  <link rel="stylesheet" href="./site-home.css?v=20260826-board-loading-fix1">
-  <link rel="stylesheet" href="./focus-analysis-popup.css?v=20260826-board-loading-fix1">
+  <link rel="stylesheet" href="./styles.css?v=20260827-board-loading-fix2">
+  <link rel="stylesheet" href="./site-home.css?v=20260827-board-loading-fix2">
+  <link rel="stylesheet" href="./focus-analysis-popup.css?v=20260827-board-loading-fix2">
 </head>
 <body class="loading">
   <div id="loadingOverlay" class="loading-overlay">
@@ -868,25 +868,30 @@
     </div>
   </div>
 
-  <script type="module" src="./app.js?v=20260826-board-loading-fix1"></script>
-  <script type="module" src="./focus-analysis-popup.mjs?v=20260826-board-loading-fix1"></script>
-  <script type="module" src="./app-navigation.js?v=20260826-board-loading-fix1"></script>
-  <script type="module" src="./top-players.mjs?v=20260826-board-loading-fix1"></script>
+  <script type="module" src="./app.js?v=20260827-board-loading-fix2"></script>
+  <script type="module" src="./focus-analysis-popup.mjs?v=20260827-board-loading-fix2"></script>
+  <script type="module" src="./app-navigation.js?v=20260827-board-loading-fix2"></script>
+  <script type="module" src="./top-players.mjs?v=20260827-board-loading-fix2"></script>
 
 <script>
-  window.addEventListener('load', function () {
+  window.dismissLoadingOverlay = function () {
     const overlay = document.getElementById('loadingOverlay');
     if (overlay) {
       overlay.remove();
     }
     document.body.classList.remove('loading');
+  };
 
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').catch(function (err) {
-        console.warn('ServiceWorker registration failed:', err);
-      });
-    }
-  });
+  // Safety fallback: dismiss after 8s so user is never permanently blocked by network stalls
+  setTimeout(function () {
+    window.dismissLoadingOverlay();
+  }, 8000);
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js?v=20260827-v2').catch(function (err) {
+      console.warn('ServiceWorker registration failed:', err);
+    });
+  }
 </script>
 
 </body>

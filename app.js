@@ -1,5 +1,5 @@
-console.log("APP VERSION: board-debug-20260707");
-document.body.dataset.appVersion = "board-debug-20260707";
+console.log("APP VERSION: board-debug-20260827-fix2");
+document.body.dataset.appVersion = "board-debug-20260827-fix2";
 
 import { Chess, DEFAULT_POSITION, validateFen } from './vendor/chess.js';
 import { buildPgnFromLessonTree, parsePgnToLessonTree, splitPgnGames, extractPgnHeaders } from './pgn.mjs';
@@ -8667,6 +8667,15 @@ function renderAll() {
   renderPromotionModal();
   syncPgnBrowseButton();
   syncOpeningInfoDisplay();
+  if (typeof window.dismissLoadingOverlay === 'function') {
+    window.dismissLoadingOverlay();
+  } else {
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+      overlay.remove();
+    }
+    document.body?.classList.remove('loading');
+  }
 }
 
 function renderAfterSetupMetaChange() {

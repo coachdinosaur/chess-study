@@ -4,7 +4,7 @@
  * opening databases, spreadsheet tools, and piece assets.
  */
 
-const CACHE_NAME = 'cd-chess-cache-v1';
+const CACHE_NAME = 'cd-chess-cache-v2';
 
 const PRECACHE_ASSETS = [
   './assets/pieces/app_icon.png',
@@ -52,14 +52,23 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  const url = new URL(request.url);
+  let url;
+  try {
+    url = new URL(request.url);
+  } catch {
+    return;
+  }
+
+  // Only process http/https requests
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+    return;
+  }
 
   // Bypass third-party APIs (Supabase, Lichess Tablebase, local scanner)
   if (
     url.hostname.includes('supabase.co') ||
     url.hostname.includes('lichess.ovh') ||
-    url.port === '8765' ||
-    url.protocol === 'chrome-extension:'
+    url.port === '8765'
   ) {
     return;
   }
@@ -82,7 +91,7 @@ self.addEventListener('fetch', (event) => {
         try {
           const networkResponse = await fetch(request);
           if (networkResponse && networkResponse.status === 200) {
-            cache.put(request, networkResponse.clone());
+            cache.put(request, networkResponse.clone()).catch(() => {});
           }
           return networkResponse;
         } catch (err) {
@@ -94,15 +103,25 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 2. Core App Files (HTML, CSS, Root JS Modules): Stale-While-Revalidate / Network-First
+  // 2. Core App Files (HTML, CSS, Root JS Modules): Network-First with safe 304 fallback
   event.respondWith(
     caches.open(CACHE_NAME).then(async (cache) => {
       try {
         const networkResponse = await fetch(request);
-        if (networkResponse && networkResponse.status === 200) {
-          cache.put(request, networkResponse.clone());
+        if (networkResponse) {
+          if (networkResponse.status === 200) {
+            cache.put(request, networkResponse.clone()).catch(() => {});
+            return networkResponse;
+          }
+          // If server returns 304 Not Modified, Fetch spec forbids passing 304 directly to respondWith()
+          if (networkResponse.status === 304) {
+            const cachedResponse = await cache.match(request);
+            if (cachedResponse) {
+              return cachedResponse;
+            }
+          }
+          return networkResponse;
         }
-        return networkResponse;
       } catch (err) {
         const cachedResponse = await cache.match(request);
         if (cachedResponse) {
@@ -110,6 +129,11 @@ self.addEventListener('fetch', (event) => {
         }
         throw err;
       }
+      const fallbackCached = await cache.match(request);
+      if (fallbackCached) {
+        return fallbackCached;
+      }
+      return fetch(request);
     })
   );
 });
