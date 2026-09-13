@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  var EMBED_CACHE_BUSTER = "20260721-bishop-captured-layout-complete";
+  var EMBED_CACHE_BUSTER = "20260913-embed-height-contract";
   var PIECE_FILES = {
     K: "wK.svg", Q: "wQ.svg", R: "wR.svg", B: "wB.svg", N: "wN.svg", P: "wP.svg",
     k: "bK.svg", q: "bQ.svg", r: "bR.svg", b: "bB.svg", n: "bN.svg", p: "bP.svg"
@@ -168,6 +168,105 @@
     }
   }
 
+  /* ----------------------------------------------------------------------
+     Embed height contract: the app inside the iframe reports its natural
+     document height ("embedDocumentHeight") and this page grows the .board
+     container vertically to match, so no rank is ever clipped. Fixed-height
+     contexts (presentation scenes) instead send a maxHeight cap via
+     "syncSize" and keep their square container.
+     ---------------------------------------------------------------------- */
+  var embedHeightContractBound = false;
+  var embedAdoptedHeights = new WeakMap();
+
+  function presentationActive() {
+    return document.body.classList.contains("lesson-presentation-active");
+  }
+
+  function embedSizingMessage(iframe) {
+    var message = { type: "syncSize", sizing: "width-driven", maxHeight: null };
+    if (presentationActive()) {
+      var board = iframe.closest(".board");
+      var height = board ? Math.round(board.getBoundingClientRect().height) : 0;
+      if (height > 0) message.maxHeight = height;
+    }
+    try {
+      iframe.contentWindow.postMessage(message, window.location.origin);
+    } catch (e) { /* Same-origin embed expected; ignore until the iframe is ready. */ }
+  }
+
+  function adoptEmbedReportedHeight(iframe, height) {
+    if (presentationActive()) return;
+    var board = iframe.closest(".board");
+    if (!board || !isFinite(height) || height < 120) return;
+    embedAdoptedHeights.set(board, height);
+    /* aspect-ratio:auto keeps the reported height from feeding back into the
+       board's transferred min-content width (shrink-to-fit grid tracks). */
+    board.style.aspectRatio = "auto";
+    board.style.height = Math.ceil(height) + "px";
+  }
+
+  function bindEmbedHeightContract() {
+    if (embedHeightContractBound) return;
+    embedHeightContractBound = true;
+
+    window.addEventListener("message", function (event) {
+      if (event.origin !== window.location.origin) return;
+      var data = event.data;
+      if (!data || data.type !== "embedDocumentHeight" || !isFinite(data.height)) return;
+      var iframes = document.querySelectorAll("iframe.board-iframe");
+      for (var i = 0; i < iframes.length; i++) {
+        if (iframes[i].contentWindow === event.source) {
+          adoptEmbedReportedHeight(iframes[i], data.height);
+          return;
+        }
+      }
+    });
+
+    if ("MutationObserver" in window && document.body) {
+      var lastActive = presentationActive();
+      new MutationObserver(function () {
+        var active = presentationActive();
+        if (active === lastActive) return;
+        lastActive = active;
+        document.querySelectorAll("iframe.board-iframe").forEach(function (iframe) {
+          var board = iframe.closest(".board");
+          if (active) {
+            /* Presentation scenes constrain the container themselves. */
+            if (board) {
+              board.style.height = "";
+              board.style.aspectRatio = "";
+            }
+          }
+          embedSizingMessage(iframe);
+          if (!active && board) {
+            var height = embedAdoptedHeights.get(board);
+            if (height) adoptEmbedReportedHeight(iframe, height);
+          }
+        });
+      }).observe(document.body, { attributes: true, attributeFilter: ["class"] });
+    }
+
+    var resizeTimer = 0;
+    window.addEventListener("resize", function () {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(function () {
+        document.querySelectorAll("iframe.board-iframe").forEach(function (iframe) {
+          var board = iframe.closest(".board");
+          if (presentationActive()) {
+            embedSizingMessage(iframe);
+          } else if (board && board.style.height) {
+            /* Release pinned sizing so the iframe returns to its CSS width,
+               then re-adopt from the next height report. */
+            board.style.height = "";
+            board.style.aspectRatio = "";
+            embedAdoptedHeights.delete(board);
+            embedSizingMessage(iframe);
+          }
+        });
+      }, 200);
+    });
+  }
+
   function buildIframe(fen, orientation, marks) {
     var src = appPath() + "?fen=" + encodeURIComponent(fen) + "&embed=1&_b=" + EMBED_CACHE_BUSTER;
     var iframe = document.createElement("iframe");
@@ -186,6 +285,7 @@
         if (markList.length) {
           iframe.contentWindow.postMessage({ type: "setAnnotations", mark: markList }, "*");
         }
+        embedSizingMessage(iframe);
       } catch (e) {}
     });
     return iframe;
@@ -279,6 +379,7 @@
 
   function init() {
     var base = resolvePieceBase();
+    bindEmbedHeightContract();
     var items = [];
     document.querySelectorAll(".board[data-fen]").forEach(function (board) {
       var initialize = renderBoard(board, base);

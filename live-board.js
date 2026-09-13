@@ -142,6 +142,7 @@ function publish(type = 'state') {
 
 function applyRemoteState(state) {
   if (!state || !state.fen || Number(state.revision) < revision) return;
+  closePromotionChooser();
   try {
     const nextGame = new Chess();
     if (state.pgn) {
@@ -327,9 +328,8 @@ function render() {
   }
 }
 
-function tryMove(from, to) {
+function completeMove(from, to, promotion) {
   if (!canMovePieces()) return false;
-  const promotion = legalMoves.some((move) => move.from === from && move.to === to && move.promotion) ? 'q' : undefined;
   try {
     const move = game.move({ from, to, ...(promotion ? { promotion } : {}) });
     if (!move) return false;
@@ -341,6 +341,131 @@ function tryMove(from, to) {
     publish(role === 'student' ? 'student-move' : 'state');
     return true;
   } catch { return false; }
+}
+
+function tryMove(from, to) {
+  if (!canMovePieces()) return false;
+  const isPromotion = legalMoves.some((move) => move.from === from && move.to === to && move.promotion);
+  if (isPromotion) {
+    // Wait for an explicit piece choice; nothing is committed or published
+    // until the chooser resolves, so dismissal leaves a valid position.
+    openPromotionChooser(from, to);
+    return true;
+  }
+  return completeMove(from, to);
+}
+
+const PROMOTION_CHOICES = ['q', 'r', 'b', 'n'];
+const PROMOTION_NAMES = { q: 'Queen', r: 'Rook', b: 'Bishop', n: 'Knight' };
+let pendingPromotion = null;
+let promotionOverlay = null;
+let promotionKeyHandler = null;
+let promotionOutsideHandler = null;
+
+function ensurePromotionOverlay() {
+  if (promotionOverlay) return promotionOverlay;
+  promotionOverlay = document.createElement('div');
+  promotionOverlay.className = 'promotion-overlay';
+  promotionOverlay.setAttribute('role', 'dialog');
+  promotionOverlay.setAttribute('aria-modal', 'true');
+  promotionOverlay.setAttribute('aria-label', 'Choose a promotion piece');
+  promotionOverlay.hidden = true;
+
+  const dialog = document.createElement('div');
+  dialog.className = 'promotion-dialog';
+  const title = document.createElement('p');
+  title.className = 'promotion-title';
+  title.textContent = 'Promote to:';
+  const options = document.createElement('div');
+  options.className = 'promotion-options';
+  dialog.append(title, options);
+  promotionOverlay.appendChild(dialog);
+  promotionOverlay.addEventListener('pointerdown', (event) => {
+    // Clicks on the backdrop dismiss; clicks on piece buttons are handled by
+    // their own click listeners and never reach the board squares.
+    if (event.target === promotionOverlay) cancelPromotionChooser();
+  });
+  (elements.board.parentElement || document.body).appendChild(promotionOverlay);
+  return promotionOverlay;
+}
+
+function openPromotionChooser(from, to) {
+  const color = game.turn();
+  closePromotionChooser();
+  const overlay = ensurePromotionOverlay();
+  pendingPromotion = { from, to, color };
+
+  const options = overlay.querySelector('.promotion-options');
+  options.replaceChildren();
+  PROMOTION_CHOICES.forEach((piece, index) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = `promotion-option ${color}-piece`;
+    button.dataset.piece = piece;
+    button.setAttribute('aria-label', `Promote to ${PROMOTION_NAMES[piece]}`);
+    button.title = PROMOTION_NAMES[piece];
+    const image = document.createElement('img');
+    image.src = PIECE_ASSETS[`${color}${piece}`];
+    image.alt = '';
+    image.draggable = false;
+    button.appendChild(image);
+    button.addEventListener('click', () => choosePromotionPiece(piece));
+    options.appendChild(button);
+    if (index === 0) button.dataset.autofocus = '';
+  });
+
+  overlay.hidden = false;
+  const firstOption = options.querySelector('button');
+  firstOption?.focus({ preventScroll: true });
+
+  promotionKeyHandler = (event) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      cancelPromotionChooser();
+    }
+  };
+  promotionOutsideHandler = (event) => {
+    if (event.target instanceof Node && !promotionOverlay.contains(event.target)) {
+      // Cancel quietly and let the outside click continue its normal board
+      // handling (e.g. selecting a different piece or destination).
+      closePromotionChooser();
+    }
+  };
+  document.addEventListener('keydown', promotionKeyHandler, true);
+  document.addEventListener('pointerdown', promotionOutsideHandler, true);
+}
+
+function choosePromotionPiece(piece) {
+  const pending = pendingPromotion;
+  if (!pending) return;
+  closePromotionChooser();
+  // Re-validate in case the position changed while the chooser was open.
+  const stillLegal = legalMoves.some((move) => move.from === pending.from && move.to === pending.to && move.promotion);
+  if (!stillLegal || !canMovePieces()) {
+    render();
+    return;
+  }
+  completeMove(pending.from, pending.to, piece);
+}
+
+function cancelPromotionChooser() {
+  closePromotionChooser();
+  selectedSquare = null;
+  legalMoves = [];
+  renderBoard();
+}
+
+function closePromotionChooser() {
+  if (!pendingPromotion) return;
+  const destinationSquare = pendingPromotion.to;
+  pendingPromotion = null;
+  if (promotionOverlay) promotionOverlay.hidden = true;
+  if (promotionKeyHandler) document.removeEventListener('keydown', promotionKeyHandler, true);
+  if (promotionOutsideHandler) document.removeEventListener('pointerdown', promotionOutsideHandler, true);
+  promotionKeyHandler = null;
+  promotionOutsideHandler = null;
+  const destination = elements.board.querySelector(`.square[data-square="${destinationSquare}"]`);
+  destination?.focus?.({ preventScroll: true });
 }
 
 function handleSquareClick(square) {
@@ -382,6 +507,7 @@ function replacePosition(fen, nextOrientation = orientation, lessonId = '') {
   legalMoves = [];
   lastMove = null;
   revision += 1;
+  closePromotionChooser();
   render();
   publish('state');
 }
@@ -523,6 +649,7 @@ elements.undoButton.addEventListener('click', () => {
   revision += 1;
   selectedSquare = null;
   legalMoves = [];
+  closePromotionChooser();
   render();
   publish('state');
 });

@@ -684,6 +684,9 @@ const state = {
   colorTheme: document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light',
   focusMode: false,
   embedMode: false,
+  embedSizeMode: 'legacy',
+  embedMaxHeight: null,
+  embedReportedHeight: 0,
   boardOnlyMode: false,
   boardOnlySetupVisible: false,
   boardOnlyTeacherSetupActive: false,
@@ -7349,6 +7352,11 @@ function syncBoardSize() {
     return;
   }
 
+  if (state.embedSizeMode === 'width-driven') {
+    syncEmbedBoardSize(columnStyles, framePadding);
+    return;
+  }
+
   const stageCard = dom.boardColumn.closest('.board-stage-card');
   const stageRect = stageCard?.getBoundingClientRect();
   let stageHeight = stageRect?.height || 0;
@@ -7474,6 +7482,58 @@ function syncBoardSize() {
   const boardWidth = dom.boardFrame.offsetWidth;
   const boardSideGap = state.focusMode ? 0 : Math.max(0, (containerWidth - boardWidth) / 2);
   dom.rootElement.style.setProperty('--board-side-gap', `${boardSideGap}px`);
+}
+
+function syncEmbedBoardSize(columnStyles, framePadding) {
+  // Lesson embeds in width-driven mode size the board from the iframe width;
+  // the parent lesson page grows the container vertically to the height
+  // reported by reportEmbedDocumentHeight(). A parent-supplied maxHeight
+  // (fixed-height contexts such as presentation scenes) additionally caps the
+  // board so the whole embed still fits without clipping.
+  const viewportWidth = currentViewportWidth();
+  const pagePaddingX = elementPaddingInsetPx(dom.pageShell, 'x');
+  const evalRailWidth = cssLengthToPx(columnStyles.getPropertyValue('--eval-rail-track-width'), remToPx(0.8));
+  const evalRailGap = cssLengthToPx(columnStyles.getPropertyValue('--eval-rail-gap'), remToPx(0.45));
+  const frameShellWidth = (framePadding * 2) + 2;
+
+  const maxBoardSize = remToPx(56);
+  const minBoardSize = remToPx(14);
+  let boardSize = Math.min(
+    maxBoardSize,
+    Math.floor(Math.max(0, viewportWidth - pagePaddingX - evalRailWidth - evalRailGap - frameShellWidth)),
+  );
+
+  const maxHeight = state.embedMaxHeight;
+  if (Number.isFinite(maxHeight) && maxHeight > 0) {
+    for (let index = 0; index < 4; index += 1) {
+      dom.boardColumn.style.setProperty('--board-size', `${boardSize}px`);
+      const overflow = document.documentElement.scrollHeight - maxHeight;
+      if (overflow <= 0 || boardSize <= minBoardSize) break;
+      boardSize = Math.max(minBoardSize, boardSize - overflow);
+    }
+  }
+
+  if (boardSize > 0) {
+    dom.boardColumn.style.setProperty('--board-size', `${Math.floor(boardSize)}px`);
+  }
+  dom.rootElement.style.setProperty('--board-side-gap', '0px');
+  reportEmbedDocumentHeight();
+}
+
+function reportEmbedDocumentHeight() {
+  if (!state.embedMode || !window.parent || window.parent === window) {
+    return;
+  }
+  const height = Math.ceil(document.documentElement.scrollHeight);
+  if (!height || height === state.embedReportedHeight) {
+    return;
+  }
+  state.embedReportedHeight = height;
+  try {
+    window.parent.postMessage({ type: 'embedDocumentHeight', height }, window.location.origin);
+  } catch (error) {
+    /* Cross-origin parents cannot receive the report; the square-container fallback applies. */
+  }
 }
 
 function renderHeaderMeta() {
@@ -12563,6 +12623,12 @@ function bindEmbedMessageListener() {
 
     const isSameOriginParent = event.source === window.parent && event.origin === window.location.origin;
     if (data.type === 'syncSize') {
+      if (data.sizing === 'width-driven' || data.sizing === 'legacy') {
+        state.embedSizeMode = data.sizing;
+      }
+      if (data.maxHeight === null || (Number.isFinite(data.maxHeight) && data.maxHeight > 0)) {
+        state.embedMaxHeight = data.maxHeight ?? null;
+      }
       syncBoardSize();
       return;
     }

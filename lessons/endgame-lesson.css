@@ -1088,19 +1088,14 @@ body {
 .lesson-footer .chapter-name { font-style: italic; }
 
 /* ---------- Compact numbered endgame boards on desktop -------------------
-   Keep the iframe's original layout viewport, then scale its complete visual
-   output so board chrome, pieces, coordinates, trays, controls, and eval rail
-   all shrink together. Tablet/mobile and print retain their existing rules. */
+   The 0.875 iframe scale hack was removed: numbered endgame pages now use the
+   same embed height contract as the other lesson families (the app sizes the
+   board to the iframe width and reports its natural height, so the lesson
+   container grows instead of clipping). The width cap keeps the numbered
+   pages' narrower board column. Tablet/mobile and print retain their rules. */
 @media screen and (min-width: 861px) {
   html[data-lesson-series="endgame"] {
     --board-max: clamp(245px, calc(100vw * 0.35 + 52.5px), 560px);
-  }
-
-  html[data-lesson-series="endgame"] .board-iframe {
-    width: 114.285714%;
-    height: 114.285714%;
-    transform: scale(0.875);
-    transform-origin: 0 0;
   }
 
   html[data-lesson-series="endgame"] .test-diagram .board {

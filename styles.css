@@ -3283,6 +3283,23 @@ body.is-embed .page-shell,
 html[data-embed="1"] .page-shell {
   padding: clamp(0.55rem, 1.2vw, 1rem);
 }
+/* Width-driven embeds (lesson height contract): keep the column ancestors at
+   full width so the board sizes exactly to the iframe viewport instead of
+   chasing shrink-to-fit feedback between --board-size and its containers. */
+body.is-embed:not(.is-board-only) .app-main-content,
+body.is-embed:not(.is-board-only) .workspace-view,
+body.is-embed:not(.is-board-only) .workspace {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+body.is-embed:not(.is-board-only) .workspace {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+body.is-embed:not(.is-board-only) .board-pane,
+body.is-embed:not(.is-board-only) .board-block {
+  width: 100% !important;
+  max-width: 100% !important;
+}
 body.is-embed .board-stage-card,
 html[data-embed="1"] .board-stage-card {
   border: 1px solid rgba(138, 216, 183, 0.18);
