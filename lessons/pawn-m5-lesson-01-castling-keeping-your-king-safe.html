@@ -70,7 +70,7 @@
     @media (max-width:720px) { .page,.footer { width:min(100% - 22px,var(--max)); } .objective-grid { grid-template-columns:1fr; } .lesson-section { border-radius:18px; } .section-head { gap:.75rem; } .number { width:2.15rem; height:2.15rem; } .lesson-nav-row { flex-direction:column; } }
     @media print { :root,[data-theme="light"],[data-theme="dark"] { --bg:#fff; --bg-2:#fff; --panel:#fff; --panel-strong:#fff; --text:#111827; --muted:#374151; --line:#d1d5db; --shadow:none; } body { background:#fff; } .index-header,.toc,.progress { display:none!important; } .page,.footer { width:100%; } .hero { padding-top:0; } .layout { display:block; padding:0; } .lesson-section,.objective,.board-panel { break-inside:avoid; box-shadow:none; } .lesson-svg { max-width:330px; } }
   </style>
-  <link rel="stylesheet" href="endgame-lesson.css?v=20260913-embed-height-contract">
+  <link rel="stylesheet" href="endgame-lesson.css?v=20260915-lesson-board-chrome-v2">
   <link rel="stylesheet" href="pawn-teacher-board.css?v=20260826-teacher-board-loading-screen">
 </head>
 <body>
@@ -150,7 +150,7 @@
     const progressBar=document.getElementById('progressBar'); const updateProgress=()=>{const max=document.documentElement.scrollHeight-window.innerHeight;const pct=max>0?(window.scrollY/max)*100:0;progressBar.style.width=Math.min(100,Math.max(0,pct))+'%';};
     updateProgress(); window.addEventListener('scroll',updateProgress,{passive:true});
   </script>
-  <script src="endgame-lesson.js?v=20260913-embed-height-contract" defer></script>
+  <script src="endgame-lesson.js?v=20260915-lesson-board-chrome-v2" defer></script>
   <script src="pawn-teacher-board.js?v=20260826-teacher-board-loading-screen" defer></script>
 </body>
 </html>

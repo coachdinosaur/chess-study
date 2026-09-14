@@ -58,10 +58,15 @@
     (() => {
       try {
         const params = new URLSearchParams(window.location.search);
-        if (params.get('embed') === '1' || params.get('embed') === 'true') {
+        const isEmbed = params.get('embed') === '1' || params.get('embed') === 'true';
+        const isBoardOnly = params.get('boardOnly') === '1' || params.get('boardOnly') === 'true';
+        if (isEmbed) {
           document.documentElement.dataset.embed = '1';
+          if (!isBoardOnly && (params.get('lesson') === '1' || params.get('lesson') === 'true')) {
+            document.documentElement.dataset.lessonBoard = '1';
+          }
         }
-        if (params.get('boardOnly') === '1' || params.get('boardOnly') === 'true') {
+        if (isBoardOnly) {
           document.documentElement.dataset.boardOnly = '1';
           if (params.get('setupPanel') === 'open') {
             document.documentElement.dataset.boardOnlySetupOpen = '1';
@@ -96,7 +101,7 @@
       letter-spacing: 0.02em;
     }
   </style>
-  <link rel="stylesheet" href="./styles.css?v=20260913-embed-height-contract">
+  <link rel="stylesheet" href="./styles.css?v=20260915-lesson-board-chrome-v2">
   <link rel="stylesheet" href="./site-home.css?v=20260827-board-loading-fix2">
   <link rel="stylesheet" href="./focus-analysis-popup.css?v=20260827-board-loading-fix2">
 </head>
@@ -868,7 +873,7 @@
     </div>
   </div>
 
-  <script type="module" src="./app.js?v=20260913-embed-height-contract"></script>
+  <script type="module" src="./app.js?v=20260915-lesson-board-chrome-v2"></script>
   <script type="module" src="./focus-analysis-popup.mjs?v=20260827-board-loading-fix2"></script>
   <script type="module" src="./app-navigation.js?v=20260827-board-loading-fix2"></script>
   <script type="module" src="./top-players.mjs?v=20260827-board-loading-fix2"></script>

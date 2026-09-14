@@ -709,6 +709,37 @@ body {
   overflow: hidden;
 }
 /* Screen: interactive iframe (reuses the real app board). Print: static grid. */
+.position,
+.position-body,
+.position-body > *,
+.hero > * {
+  min-width: 0;
+}
+
+body.lesson-presentation-active .presentation-current .hero-board-card {
+  width: 100%;
+  max-width: 100%;
+}
+
+body.lesson-presentation-active .presentation-current .board[data-fen] {
+  width: min(100%, 72vh, 760px) !important;
+  min-width: 0 !important;
+  height: auto !important;
+  aspect-ratio: 1 / 1 !important;
+}
+
+body.lesson-presentation-active .presentation-current .diagram:has(.board[data-fen]) {
+  height: auto !important;
+}
+
+body.lesson-presentation-active .presentation-current .board[data-fen] .board-screen,
+body.lesson-presentation-active .presentation-current .board[data-fen] .board-iframe {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  aspect-ratio: auto !important;
+}
+
 .board-screen {
   position: absolute;
   inset: 0;

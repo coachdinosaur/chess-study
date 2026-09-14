@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  var EMBED_CACHE_BUSTER = "20260913-embed-height-contract";
+  var EMBED_CACHE_BUSTER = "20260915-lesson-board-chrome-v2";
   var PIECE_FILES = {
     K: "wK.svg", Q: "wQ.svg", R: "wR.svg", B: "wB.svg", N: "wN.svg", P: "wP.svg",
     k: "bK.svg", q: "bQ.svg", r: "bR.svg", b: "bB.svg", n: "bN.svg", p: "bP.svg"
@@ -185,8 +185,7 @@
   function embedSizingMessage(iframe) {
     var message = { type: "syncSize", sizing: "width-driven", maxHeight: null };
     if (presentationActive()) {
-      var board = iframe.closest(".board");
-      var height = board ? Math.round(board.getBoundingClientRect().height) : 0;
+      var height = iframe.clientHeight;
       if (height > 0) message.maxHeight = height;
     }
     try {
@@ -202,7 +201,9 @@
     /* aspect-ratio:auto keeps the reported height from feeding back into the
        board's transferred min-content width (shrink-to-fit grid tracks). */
     board.style.aspectRatio = "auto";
-    board.style.height = Math.ceil(height) + "px";
+    var styles = window.getComputedStyle(board);
+    var borderHeight = parseFloat(styles.borderTopWidth) + parseFloat(styles.borderBottomWidth);
+    board.style.height = Math.ceil(height + (styles.boxSizing === "border-box" ? borderHeight : 0)) + "px";
   }
 
   function bindEmbedHeightContract() {
@@ -268,7 +269,7 @@
   }
 
   function buildIframe(fen, orientation, marks) {
-    var src = appPath() + "?fen=" + encodeURIComponent(fen) + "&embed=1&_b=" + EMBED_CACHE_BUSTER;
+    var src = appPath() + "?fen=" + encodeURIComponent(fen) + "&embed=1&lesson=1&_b=" + EMBED_CACHE_BUSTER;
     var iframe = document.createElement("iframe");
     iframe.className = "board-iframe";
     iframe.setAttribute("src", src);

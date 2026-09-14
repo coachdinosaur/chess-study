@@ -3337,6 +3337,94 @@ body.is-embed .focus-mode-controls {
   right: 0.4rem;
 }
 
+/* Lesson-board embed (the app iframed as a chessboard inside a lesson page):
+   strip all study/editor chrome so the embed is just the board + its rail.
+   Selected by html[data-lesson-board] (set pre-render from ?embed=1&lesson=1)
+   and body.is-lesson-board (JS state, also set by legacy width-driven syncSize). */
+body.is-lesson-board .page-shell .workspace-view .control-pane,
+html[data-lesson-board="1"] .page-shell .workspace-view .control-pane,
+body.is-lesson-board .page-shell .control-pane-scroll,
+html[data-lesson-board="1"] .page-shell .control-pane-scroll,
+body.is-lesson-board .lesson-header,
+html[data-lesson-board="1"] .lesson-header,
+body.is-lesson-board .lesson-notation,
+html[data-lesson-board="1"] .lesson-notation,
+body.is-lesson-board .tab-nav,
+html[data-lesson-board="1"] .tab-nav,
+body.is-lesson-board .workspace-intro,
+html[data-lesson-board="1"] .workspace-intro,
+body.is-lesson-board .workspace-tools,
+html[data-lesson-board="1"] .workspace-tools,
+body.is-lesson-board .lesson-position-builder-panel,
+html[data-lesson-board="1"] .lesson-position-builder-panel,
+body.is-lesson-board .board-move-nav-slot,
+html[data-lesson-board="1"] .board-move-nav-slot,
+body.is-lesson-board .focus-mode-controls,
+html[data-lesson-board="1"] .focus-mode-controls,
+body.is-lesson-board .puzzle-instruction-container,
+html[data-lesson-board="1"] .puzzle-instruction-container,
+body.is-lesson-board .mobile-app-bar,
+html[data-lesson-board="1"] .mobile-app-bar,
+body.is-lesson-board .mobile-drawer,
+html[data-lesson-board="1"] .mobile-drawer,
+body.is-lesson-board .mobile-drawer-backdrop,
+html[data-lesson-board="1"] .mobile-drawer-backdrop {
+  display: none !important;
+}
+
+body.is-lesson-board .page-shell,
+html[data-lesson-board="1"] .page-shell,
+body.is-lesson-board .page-shell .app-main-content,
+html[data-lesson-board="1"] .page-shell .app-main-content,
+body.is-lesson-board .page-shell .workspace-view,
+html[data-lesson-board="1"] .page-shell .workspace-view,
+body.is-lesson-board .page-shell .workspace,
+html[data-lesson-board="1"] .page-shell .workspace,
+body.is-lesson-board .page-shell .board-pane,
+html[data-lesson-board="1"] .page-shell .board-pane,
+body.is-lesson-board .page-shell .board-stage-card,
+html[data-lesson-board="1"] .page-shell .board-stage-card,
+body.is-lesson-board .page-shell .board-block,
+html[data-lesson-board="1"] .page-shell .board-block {
+  display: block !important;
+  position: static !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  gap: 0 !important;
+  overflow: visible !important;
+}
+
+body.is-lesson-board .page-shell .board-column,
+html[data-lesson-board="1"] .page-shell .board-column {
+  --focus-side-offset: calc(var(--eval-rail-track-width) + var(--eval-rail-gap)) !important;
+  --focus-board-shell-width: calc(var(--board-size) + (var(--board-frame-padding) * 2) + 2px) !important;
+  --board-system-offset: 0px !important;
+  width: calc(var(--focus-board-shell-width) + var(--focus-side-offset)) !important;
+  height: auto !important;
+  max-height: none !important;
+  margin: 0 auto !important;
+  flex: none !important;
+}
+
+body.is-lesson-board .page-shell .board-frame,
+html[data-lesson-board="1"] .page-shell .board-frame,
+body.is-lesson-board .page-shell .captured-row,
+html[data-lesson-board="1"] .page-shell .captured-row {
+  margin: 0 0 0 var(--focus-side-offset) !important;
+  flex-shrink: 0;
+}
+
+body.is-lesson-board .page-shell .eval-bar-wrap,
+html[data-lesson-board="1"] .page-shell .eval-bar-wrap {
+  left: 0 !important;
+}
+
 /* Embed mode: no in-iframe PV/tablebase rendering — it goes to the parent page popup */
 body.is-embed .mobile-engine-lines-slot,
 body.is-embed .notation-pv {

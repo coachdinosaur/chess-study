@@ -684,6 +684,8 @@ const state = {
   colorTheme: document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light',
   focusMode: false,
   embedMode: false,
+  lessonBoardEmbed: false,
+  lessonBoardMode: false,
   embedSizeMode: 'legacy',
   embedMaxHeight: null,
   embedReportedHeight: 0,
@@ -2784,7 +2786,7 @@ function syncNotationToolbarSlot() {
   if (!toolbar || !boardSlot || !notationSlot) {
     return;
   }
-  if (state.boardOnlyMode) {
+  if (state.boardOnlyMode || state.lessonBoardMode) {
     if (toolbar.parentElement !== notationSlot) {
       notationSlot.appendChild(toolbar);
     }
@@ -7352,7 +7354,7 @@ function syncBoardSize() {
     return;
   }
 
-  if (state.embedSizeMode === 'width-driven') {
+  if (state.embedSizeMode === 'width-driven' || state.lessonBoardMode) {
     syncEmbedBoardSize(columnStyles, framePadding);
     return;
   }
@@ -7497,7 +7499,7 @@ function syncEmbedBoardSize(columnStyles, framePadding) {
   const frameShellWidth = (framePadding * 2) + 2;
 
   const maxBoardSize = remToPx(56);
-  const minBoardSize = remToPx(14);
+  const minBoardSize = state.lessonBoardMode ? 1 : remToPx(14);
   let boardSize = Math.min(
     maxBoardSize,
     Math.floor(Math.max(0, viewportWidth - pagePaddingX - evalRailWidth - evalRailGap - frameShellWidth)),
@@ -7507,7 +7509,8 @@ function syncEmbedBoardSize(columnStyles, framePadding) {
   if (Number.isFinite(maxHeight) && maxHeight > 0) {
     for (let index = 0; index < 4; index += 1) {
       dom.boardColumn.style.setProperty('--board-size', `${boardSize}px`);
-      const overflow = document.documentElement.scrollHeight - maxHeight;
+      const contentHeight = state.lessonBoardMode ? dom.pageShell.getBoundingClientRect().height : document.documentElement.scrollHeight;
+      const overflow = Math.ceil(contentHeight) - maxHeight;
       if (overflow <= 0 || boardSize <= minBoardSize) break;
       boardSize = Math.max(minBoardSize, boardSize - overflow);
     }
@@ -7524,7 +7527,7 @@ function reportEmbedDocumentHeight() {
   if (!state.embedMode || !window.parent || window.parent === window) {
     return;
   }
-  const height = Math.ceil(document.documentElement.scrollHeight);
+  const height = Math.ceil(state.lessonBoardMode ? dom.pageShell.getBoundingClientRect().height : document.documentElement.scrollHeight);
   if (!height || height === state.embedReportedHeight) {
     return;
   }
@@ -12579,10 +12582,13 @@ function applyEmbedDeepLink() {
     const fen = (params.get('fen') || '').trim();
     const embed = (params.get('embed') || '').trim();
     const boardOnly = (params.get('boardOnly') || '').trim();
+    const lessonBoard = (params.get('lesson') || '').trim();
     const setupPanel = (params.get('setupPanel') || 'hidden').trim();
     if (embed === '1' || embed === 'true') {
       state.embedMode = true;
       state.boardOnlyMode = boardOnly === '1' || boardOnly === 'true';
+      state.lessonBoardEmbed = (lessonBoard === '1' || lessonBoard === 'true') && !state.boardOnlyMode;
+      state.lessonBoardMode = state.lessonBoardEmbed;
       state.boardOnlySetupVisible = state.boardOnlyMode && setupPanel === 'open';
       state.activeTab = state.boardOnlySetupVisible ? TAB_SETUP : TAB_ANALYSIS;
       state.previousNonLessonTab = TAB_ANALYSIS;
@@ -12590,6 +12596,9 @@ function applyEmbedDeepLink() {
       document.body?.classList.add('is-embed');
       if (state.boardOnlyMode) {
         document.body?.classList.add('is-board-only');
+      }
+      if (state.lessonBoardMode) {
+        document.body?.classList.add('is-lesson-board');
       }
     }
     if (fen) {
@@ -12611,6 +12620,18 @@ function applyEmbedDeepLink() {
   }
 }
 
+function applyEmbedSyncSize(data, isSameOriginParent) {
+  if (isSameOriginParent && window.parent !== window && (data.sizing === 'width-driven' || data.sizing === 'legacy')) {
+    state.embedSizeMode = data.sizing;
+    state.lessonBoardMode = !state.boardOnlyMode && (state.lessonBoardEmbed || data.sizing === 'width-driven');
+    document.body.classList.toggle('is-lesson-board', state.lessonBoardMode);
+    state.embedReportedHeight = 0;
+  }
+  if (data.maxHeight === null || (Number.isFinite(data.maxHeight) && data.maxHeight > 0)) {
+    state.embedMaxHeight = data.maxHeight ?? null;
+  }
+}
+
 function bindEmbedMessageListener() {
   window.addEventListener('message', (event) => {
     if (!state.embedMode) {
@@ -12623,12 +12644,7 @@ function bindEmbedMessageListener() {
 
     const isSameOriginParent = event.source === window.parent && event.origin === window.location.origin;
     if (data.type === 'syncSize') {
-      if (data.sizing === 'width-driven' || data.sizing === 'legacy') {
-        state.embedSizeMode = data.sizing;
-      }
-      if (data.maxHeight === null || (Number.isFinite(data.maxHeight) && data.maxHeight > 0)) {
-        state.embedMaxHeight = data.maxHeight ?? null;
-      }
+      applyEmbedSyncSize(data, isSameOriginParent);
       syncBoardSize();
       return;
     }
