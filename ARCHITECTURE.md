@@ -197,7 +197,7 @@ chess-study/
 ├── articles/
 │   ├── index.html
 │   ├── articles.css
-│   └── chess-training-top-countries/index.html
+│   └── chess-training-top-countries/  (series index + part-*/ pages)
 │
 ├── clock/
 │   ├── index.html / clock.css / clock-app.js
