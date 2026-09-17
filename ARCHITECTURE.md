@@ -71,14 +71,20 @@ The major subsystems are:
    - Responsive multi-device layout in `clock/clock.css` (180° portrait opponent rotation, tablet dual console, desktop tournament chassis)
    - UI lifecycle controller in `clock/clock-app.js` with Screen Wake Lock API and Fullscreen API
 
-9. **Vendored browser dependencies and data**
+9. **Articles editorial section**
+   - Static long-form articles hub at `articles/index.html` ("The Journal")
+   - Shared editorial stylesheet `articles/articles.css` — serif publication design consuming the lesson theme tokens from `lessons/endgame-lesson.css`
+   - First series `articles/chess-training-top-countries/`: series landing page plus four `part-*/` article pages with in-article TOC, scroll-spy reading rail, stats treatment, and series navigation
+   - Linked from the SPA sidebar/drawer, About page, and lessons index; deployed automatically under `/articles/`
+
+10. **Vendored browser dependencies and data**
    - `vendor/chess.js`
    - `vendor/stockfish/`
    - `vendor/xlsx.full.min.js`
    - `assets/openings.tsv`
    - MPChess SVG pieces
 
-10. **Optional local services**
+11. **Optional local services**
    - `local_server.py`
    - `scanner_server.py`
    - `scanner_predict.py`
@@ -195,9 +201,9 @@ chess-study/
 │   └── assets/
 │
 ├── articles/
-│   ├── index.html
-│   ├── articles.css
-│   └── chess-training-top-countries/  (series index + part-*/ pages)
+│   ├── index.html                    (articles hub — "The Journal")
+│   ├── articles.css                  (shared editorial stylesheet; lesson-theme tokens)
+│   └── chess-training-top-countries/ (series landing + part-1..part-4 article pages)
 │
 ├── clock/
 │   ├── index.html / clock.css / clock-app.js

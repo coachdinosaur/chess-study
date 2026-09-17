@@ -22,6 +22,7 @@ It contains:
 - **3D Chess Position Studio** interactive Three.js board and Web Worker Stockfish bots
 - **Digital Chess Clock** customizable mobile fullscreen chess clock (`clock/`)
 - **Standalone Endgame Trainer site** (`endgame-trainer/`)
+- **Articles editorial section** (`articles/`) — long-form publication pages at `/articles/`
 - **Piece assets** (`assets/pieces/mpchess/` — 12 SVGs)
 - **Local servers** for HTTP hosting (`local_server.py`) and board scanning (`scanner_server.py`)
 
@@ -51,6 +52,7 @@ It contains:
 | **Digital Chess Clock** | `clock/index.html`, `clock/clock-app.js`, `clock/clock-engine.mjs`, `clock/clock-audio.mjs`, `clock/clock.css`, `tests/chess-clock.test.mjs` |
 | **Opening books** | `apps/opening-book/`, `apps/opening-book-sicilian/` |
 | **Endgame Trainer site** | `endgame-trainer/index.html`, `endgame-trainer/privacy-policy/index.html`, `endgame-trainer/delete-account/index.html` |
+| **Articles** | `articles/index.html`, `articles/articles.css` (mirrors lesson theme tokens), `articles/chess-training-top-countries/` series landing + `part-*/` pages |
 | **Piece assets** | `assets/pieces/mpchess/` (12 SVGs) |
 | **Local servers** | `local_server.py`, `scanner_server.py`, `scanner_predict.py`, `start-local.ps1` |
 | **Vendored dependencies** | `vendor/chess.js`, `vendor/stockfish/` (`stockfish-18-lite-single` bundle), `vendor/xlsx.full.min.js` |

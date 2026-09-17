@@ -9,6 +9,7 @@ https://cddigital.top/
 https://cddigital.top/lessons/
 https://cddigital.top/openings/
 https://cddigital.top/openings-sicilian/
+https://cddigital.top/articles/
 https://cddigital.top/3d/
 https://cddigital.top/endgame-trainer/
 https://cddigital.top/endgame-trainer/privacy-policy/
@@ -38,6 +39,7 @@ For local Windows setup, see [LOCAL_DEPLOYMENT.md](LOCAL_DEPLOYMENT.md).
 - Identify openings from the bundled ECO/opening database.
 - Use static Pawn, Advanced Pawn, Bishop, and numbered endgame lesson pages in `lessons/`.
 - Study the interactive opening courses: Catalan Atelier at `/openings/` and Sicilian Defense at `/openings-sicilian/`.
+- Read the Articles journal at `/articles/` — long-form editorial series on how strong players and chess countries train, opening with a four-part deep dive into national training systems.
 - Build 3D positions, play local games, and challenge AI bots (Casual, Club, Master Stockfish 18 Lite WASM) in the 3D Chess Position Studio at `/3d/`.
 - Open the standalone Digital Chess Clock at `/clock/` for over-the-board face-to-face play, supporting Fischer, USCF delay, Bronstein, and Handicap time controls with zero-latency Web Audio sound synthesis, haptics, portrait opponent rotation, and Screen Wake Lock.
 - Open the standalone Endgame Trainer landing page and Android privacy policy at `/endgame-trainer/`.
