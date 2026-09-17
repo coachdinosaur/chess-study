@@ -29,21 +29,28 @@
   font-display: swap;
 }
 
+/* Theme tokens mirror the CD Digital Chess lesson theme defined in
+   lessons/endgame-lesson.css (:root light tokens + [data-theme="dark"] dark
+   tokens), so Articles reads as the editorial expression of the same palette.
+   Light mode keeps the warm editorial paper tone, which sits comfortably
+   beside the lesson theme's cool neutrals. */
 :root {
   color-scheme: light dark;
   --paper: #f7f5f0;
   --paper-raised: #fffefb;
-  --ink: #1b1a16;
-  --ink-soft: #38352e;
-  --muted: #6b665a;
-  --hairline: #e2ddcf;
-  --accent: #5c2bbf;
-  --accent-strong: #43208f;
-  --hero-bg: #14121b;
-  --hero-ink: #f4f0e7;
-  --hero-muted: #b0a998;
-  --hero-dek: #d2ccbd;
-  --hero-rule: rgba(255, 255, 255, 0.16);
+  --ink: #172127;
+  --ink-soft: #52606a;
+  --muted: #7b8790;
+  --hairline: rgba(190, 202, 207, 0.78);
+  --accent: #1d6f78;
+  --accent-strong: #155e67;
+  --accent-soft: rgba(29, 111, 120, 0.11);
+  /* The hero is always a dark band, in both color schemes. */
+  --hero-bg: #0c1a1d;
+  --hero-ink: #f7faf5;
+  --hero-muted: #899695;
+  --hero-dek: #b9c6c3;
+  --hero-rule: rgba(52, 74, 78, 0.9);
   --font-ui: "Inter", system-ui, sans-serif;
   --font-label: "Manrope", "Inter", system-ui, sans-serif;
   --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
@@ -52,18 +59,20 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --paper: #131216;
-    --paper-raised: #1a191f;
-    --ink: #efece4;
-    --ink-soft: #d8d3c8;
-    --muted: #9d9789;
-    --hairline: #2d2b34;
-    --accent: #b394ff;
-    --accent-strong: #d0bcff;
-    --hero-bg: #0d0c12;
-    --hero-ink: #f3efe6;
-    --hero-muted: #b0a998;
-    --hero-dek: #cdc8ba;
+    --paper: #071012;
+    --paper-raised: #1a2b2f;
+    --ink: #f7faf5;
+    --ink-soft: #b9c6c3;
+    --muted: #899695;
+    --hairline: rgba(52, 74, 78, 0.9);
+    --accent: #8ad8b7;
+    --accent-strong: #b0e8cf;
+    --accent-soft: rgba(138, 216, 183, 0.16);
+    --hero-bg: #040d0e;
+    --hero-ink: #f7faf5;
+    --hero-muted: #899695;
+    --hero-dek: #b9c6c3;
+    --hero-rule: rgba(52, 74, 78, 0.9);
   }
 }
 
@@ -94,7 +103,7 @@ a {
 
 ::selection {
   background: var(--accent);
-  color: #fff;
+  color: var(--paper);
 }
 
 a:focus-visible,
@@ -200,6 +209,11 @@ button:focus-visible {
    -------------------------------------------------------------------------- */
 
 .hero {
+  /* The hero band is always dark, so it uses the dark-theme accent values
+     from the lesson theme regardless of the page's color scheme. */
+  --accent: #8ad8b7;
+  --accent-strong: #b0e8cf;
+  --accent-soft: rgba(138, 216, 183, 0.16);
   position: relative;
   background: var(--hero-bg);
   color: var(--hero-ink);
@@ -455,7 +469,8 @@ h1 {
   color: var(--accent);
 }
 
-.article-body a {
+.article-body a,
+.article-body a:visited {
   color: var(--accent-strong);
   text-decoration: underline;
   text-decoration-color: color-mix(in srgb, var(--accent-strong) 45%, transparent);
@@ -875,7 +890,8 @@ hr.article-rule {
   font-weight: 800;
 }
 
-.sources a {
+.sources a,
+.sources a:visited {
   color: var(--accent-strong);
   text-decoration: underline;
   text-decoration-color: color-mix(in srgb, var(--accent-strong) 40%, transparent);
