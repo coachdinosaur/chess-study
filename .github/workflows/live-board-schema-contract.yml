@@ -1,0 +1,53 @@
+name: Validate Live Board schema contract
+
+on:
+  pull_request:
+    paths:
+      - 'live-board-*.js'
+      - 'live-board.html'
+      - 'management/**'
+      - 'supabase/**'
+      - 'tests/live-board-rpc-contract.test.mjs'
+      - '.github/workflows/live-board-schema-contract.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'live-board-*.js'
+      - 'live-board.html'
+      - 'management/**'
+      - 'supabase/**'
+      - 'tests/live-board-rpc-contract.test.mjs'
+      - '.github/workflows/live-board-schema-contract.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check JavaScript syntax
+        run: |
+          for file in live-board-*.js; do node --check "$file"; done
+
+      - name: Run RPC contract tests
+        run: node --test tests/live-board-rpc-contract.test.mjs
+
+      - name: Run Live Board behavior tests
+        run: |
+          node --test \
+            tests/live-board-realtime.test.mjs \
+            tests/live-board-promotion.test.mjs \
+            tests/student-workspace-live-board.test.mjs
+
+      - name: Verify no service-role secrets in public clients
+        run: |
+          ! grep -R "service_role\|SUPABASE_SERVICE" live-board-*.js
+
+      - name: Check whitespace
+        run: git diff --check origin/main...HEAD

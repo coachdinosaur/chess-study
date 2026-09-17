@@ -63,6 +63,7 @@ Run the migrations in order:
 supabase/migrations/001_management_v1.sql
 supabase/migrations/002_management_v1_hardening.sql
 supabase/migrations/003_management_v1_rpc_shapes.sql
+supabase/migrations/004_management_v1_advisor_hardening.sql
 supabase/migrations/004_teacher_managed_students.sql
 supabase/migrations/005_coaching_sessions.sql
 supabase/migrations/006_teacher_account_controls.sql
@@ -73,7 +74,13 @@ supabase/migrations/010_teacher_puzzle_assignments.sql
 supabase/migrations/20260722151113_add_live_board_rooms.sql
 supabase/migrations/20260722152107_fix_live_board_pgcrypto_search_path.sql
 supabase/migrations/20260727054209_coach_controlled_student_workspace.sql
+supabase/migrations/20260728124500_student_workspace_live_board_sessions.sql
+supabase/migrations/20260811062832_admin_teacher_deletion.sql
+supabase/migrations/20260811074100_paginate_management_audit_events.sql
+supabase/migrations/20260917120000_live_board_v2_and_messages.sql
 ```
+
+Note: two migrations share the `004_` prefix (`004_management_v1_advisor_hardening` and `004_teacher_managed_students`); apply the advisor-hardening file first, matching the order above.
 
 Migrations 006 through 009 add the V2.1 hardening foundation:
 

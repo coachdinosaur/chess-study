@@ -1242,12 +1242,12 @@ Supabase provides authentication, PostgreSQL persistence, Row Level Security (RL
 
 - **Synchronized rooms**: Teachers create ephemeral or persistent rooms in `live_board_rooms`, which store FEN state, side to move, move history, and teacher lock flags.
 - **Realtime Broadcast and Postgres changes**: `live-board-realtime.js` establishes a Supabase Realtime channel (`supabase.channel(...)`) to broadcast board updates, piece drag states, and move confirmations to students with sub-100ms latency.
-- **Session messaging**: `live-board-messages-v2.js` synchronizes in-room chat messages and Lichess study links with automatic reconnection, heartbeat, and polling fallbacks.
+- **Session messaging**: `live-board-messages-v2.js` synchronizes in-room chat messages and Lichess study links with automatic reconnection, heartbeat, and polling fallbacks. Messages persist in `public.live_board_messages` (cascade-deleted with their room) and are read, posted, and cleared only through token-checked `SECURITY DEFINER` RPCs that derive `sender_role` from the credential hash server-side.
 - **Role-based credential separation**: Teacher access tokens and student join tokens are isolated. The student join link contains only student permissions, ensuring students cannot unlock their own boards or hijack room ownership.
 
 ### 27.3 Database migrations
 
-The database schema is versioned across 17 structured SQL migrations in `supabase/migrations/`, establishing tables, foreign key constraints, RLS policies, trigger-based audit logging, and RPC procedures.
+The database schema is versioned across 18 structured SQL migrations in `supabase/migrations/`, establishing tables, foreign key constraints, RLS policies, trigger-based audit logging, and RPC procedures. `tests/live-board-rpc-contract.test.mjs` asserts every RPC invoked by shipped client code has a migration definition, preventing client/schema drift.
 
 ---
 
