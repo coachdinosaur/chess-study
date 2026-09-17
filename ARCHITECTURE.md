@@ -203,6 +203,7 @@ chess-study/
 ├── articles/
 │   ├── index.html                    (articles hub — "The Journal")
 │   ├── articles.css                  (shared editorial stylesheet; lesson-theme tokens)
+│   ├── img/                          (generated editorial feature images + IMAGE_PROMPTS.md)
 │   └── chess-training-top-countries/ (series landing + part-1..part-4 article pages)
 │
 ├── clock/

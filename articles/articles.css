@@ -321,6 +321,56 @@ h1 {
   text-transform: uppercase;
 }
 
+/* Hero with editorial image (articles index) — text left, artwork right */
+.hero-inner.has-media {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: clamp(32px, 5vw, 72px);
+  align-items: center;
+}
+
+.hero-media {
+  margin: 0;
+}
+
+.hero-media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border: 1px solid var(--hero-rule);
+  border-radius: 6px;
+}
+
+/* Feature image between hero and article column (Parts 1–4) */
+.article-figure {
+  width: min(1150px, calc(100% - 48px));
+  margin: clamp(28px, 4.5vw, 48px) auto 0;
+}
+
+.article-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border: 1px solid var(--hairline);
+  border-radius: 6px;
+  background: var(--paper-raised);
+}
+
+.article-figure figcaption {
+  margin-top: 10px;
+  color: var(--muted);
+  font-family: var(--font-label);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-align: right;
+  text-transform: uppercase;
+}
+
 /* --------------------------------------------------------------------------
    Series navigation — editorial numbered row
    -------------------------------------------------------------------------- */
@@ -1210,6 +1260,13 @@ a.series-feature-head:focus-visible .series-feature-title {
 /* --------------------------------------------------------------------------
    Responsive
    -------------------------------------------------------------------------- */
+
+@media (max-width: 860px) {
+  .hero-inner.has-media {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+}
 
 @media (max-width: 720px) {
   .masthead-inner {
