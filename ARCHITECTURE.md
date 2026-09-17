@@ -75,6 +75,7 @@ The major subsystems are:
    - Static long-form articles hub at `articles/index.html` ("The Journal")
    - Shared editorial stylesheet `articles/articles.css` — serif publication design consuming the lesson theme tokens from `lessons/endgame-lesson.css`
    - First series `articles/chess-training-top-countries/`: series landing page plus four `part-*/` article pages with in-article TOC, scroll-spy reading rail, stats treatment, and series navigation
+   - Second series `articles/chess-engines-development/` ("The Silicon Coach"): landing page plus three `part-*/` pages covering the research on engine-assisted training — same editorial components
    - Linked from the SPA sidebar/drawer, About page, and lessons index; deployed automatically under `/articles/`
 
 10. **Vendored browser dependencies and data**
@@ -204,7 +205,8 @@ chess-study/
 │   ├── index.html                    (articles hub — "The Journal")
 │   ├── articles.css                  (shared editorial stylesheet; lesson-theme tokens)
 │   ├── img/                          (generated editorial feature images + IMAGE_PROMPTS.md)
-│   └── chess-training-top-countries/ (series landing + part-1..part-4 article pages)
+│   ├── chess-training-top-countries/ (series landing + part-1..part-4 article pages)
+│   └── chess-engines-development/    ("The Silicon Coach" — landing + part-1..part-3 pages)
 │
 ├── clock/
 │   ├── index.html / clock.css / clock-app.js

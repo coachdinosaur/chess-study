@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Evidence: Engines Made Us Stronger — With a Catch | CD Digital Chess</title>
+  <meta name="description" content="Part 1 of The Silicon Coach: the research on what chess engines did to human strength — a natural experiment across the Iron Curtain, 11.6 million elite decisions, controlled trials, and the side effects nobody measured.">
+  <link rel="canonical" href="https://cddigital.top/articles/chess-engines-development/part-1-evidence/">
+
+  <meta property="og:site_name" content="CD Digital Chess">
+  <meta property="og:title" content="The Evidence: Engines Made Us Stronger — With a Catch">
+  <meta property="og:description" content="What the studies actually found — Part 1 of The Silicon Coach, a research review on training with chess engines.">
+  <meta property="og:url" content="https://cddigital.top/articles/chess-engines-development/part-1-evidence/">
+  <meta property="og:type" content="article">
+  <meta property="og:image" content="https://cddigital.top/assets/social-preview.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="The Evidence: Engines Made Us Stronger — With a Catch">
+  <meta name="twitter:description" content="What the studies actually found — Part 1 of The Silicon Coach, a research review on training with chess engines.">
+  <meta name="twitter:image" content="https://cddigital.top/assets/social-preview.png">
+
+  <link rel="icon" type="image/png" href="/assets/pieces/app_icon.png">
+  <link rel="apple-touch-icon" href="/assets/pieces/app_icon.png">
+  <link rel="stylesheet" href="../../articles.css?v=20260917-articles-v5">
+</head>
+<body>
+  <div class="read-progress" aria-hidden="true"><div class="read-progress-bar" id="readProgressBar"></div></div>
+  <header class="masthead">
+    <div class="masthead-inner">
+      <a class="brand" href="/">
+        <img src="/assets/pieces/app_icon.png" alt="" width="30" height="30">
+        <span>CD Digital Chess</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a class="nav-link" href="/">Study board</a>
+        <a class="nav-link" href="/lessons/">Lessons</a>
+        <a class="nav-link" href="/openings/">Openings</a>
+        <a class="nav-link is-active" href="/articles/">Articles</a>
+      </nav>
+    </div>
+  </header>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <img class="hero-piece" src="/assets/pieces/mpchess/bR.svg" alt="" aria-hidden="true">
+      <p class="eyebrow">Training science · Part 1 of 3</p>
+      <h1>The Evidence: Engines Made Us Stronger — With a Catch</h1>
+      <p class="standfirst">
+        A natural experiment across the Iron Curtain, 11.6 million elite decisions scored move by move, and a controlled-trial literature thin enough to read in an afternoon. What the studies actually found about training with chess computers.
+      </p>
+      <div class="article-meta">
+        <span>CD Digital Chess</span>
+        <span class="meta-dot" aria-hidden="true"></span>
+        <span>September 17, 2026</span>
+        <span class="meta-dot" aria-hidden="true"></span>
+        <span>~9 min read</span>
+      </div>
+      <nav class="series-pills" aria-label="Series parts">
+        <span class="series-pill is-current" aria-current="page"><span class="pill-num">01</span> Evidence</span>
+        <a class="series-pill" href="../part-2-mechanism/"><span class="pill-num">02</span> Mechanism</a>
+        <a class="series-pill" href="../part-3-protocol/"><span class="pill-num">03</span> Protocol</a>
+      </nav>
+    </div>
+    <div class="hero-checkers" aria-hidden="true"></div>
+  </header>
+
+  <figure class="article-figure">
+    <img src="../../img/article-engines-part-1-evidence.webp" width="1024" height="576"
+         alt="Editorial illustration of a quiet study desk split between eras: a wooden chessboard beside a chunky 1980s dedicated chess computer."
+         fetchpriority="high" decoding="async"
+         onerror="this.closest('figure').style.display='none'">
+    <figcaption>Editorial illustration</figcaption>
+  </figure>
+
+  <div class="article-body">
+    <p class="lede">
+      For most of chess history, getting good meant finding someone better than you who was willing to sit down and play. That bottleneck shaped who could become strong and who couldn't — geography decided your ceiling. Then, in 1977, dedicated chess computers went on sale in Western Europe, and the bottleneck began to break. Economists eventually realized the timing had created something rare in social science: a natural experiment.
+    </p>
+
+    <nav class="part-toc" aria-label="In this part">
+      <p class="part-toc-series">Part 1 · The Evidence</p>
+      <p class="part-toc-title">In this part</p>
+      <ol>
+        <li><a href="#experiment">Two Europes, one experiment</a></li>
+        <li><a href="#scorekeeping">Keeping score of 11.6 million moves</a></li>
+        <li><a href="#trials">The thin shelf of controlled trials</a></li>
+        <li><a href="#side-effects">The side effects nobody set out to measure</a></li>
+      </ol>
+    </nav>
+
+    <div class="stat-grid" aria-label="The research by the numbers">
+      <div class="stat-card"><span class="stat-value">+11 Elo</span><span class="stat-label">Estimated annual rating gain associated with access to a chess computer (Gaessler &amp; Piezunka)</span></div>
+      <div class="stat-card"><span class="stat-value">11.6M</span><span class="stat-label">Individual elite decisions analysed against Stockfish, 1985–2021 (Bilalić, Graf &amp; Vaci)</span></div>
+      <div class="stat-card"><span class="stat-value">30 → 22.8</span><span class="stat-label">Average age of new grandmasters, 1975–79 vs. 2020–24 (Chess.com research)</span></div>
+    </div>
+
+    <h2 id="experiment"><span class="h2-kicker">The natural experiment</span>Two Europes, one experiment</h2>
+    <p>
+      The strongest causal evidence we have comes from a study that wasn't designed for chess at all. In <em>Training with AI: Evidence from Chess Computers</em> (Strategic Management Journal, 2023), Fabian Gaessler and Henning Piezunka treated the staggered arrival of chess computers as a trial of whether humans can learn from AI. Commercial machines reached Western Europe in 1977; behind the Iron Curtain they barely existed until after 1989. Two populations of tournament players, otherwise comparable, separated by twelve years of access — a difference-in-differences design waiting to happen.
+    </p>
+    <p>
+      Drawing on more than 19,000 players, roughly 171,000 player-year observations, and over half a million recorded games from 1970–2000, they estimated that access to a chess computer was associated with about <strong>11 extra Elo points of improvement per year</strong>. When players from the two regions met across the board, the computer-exposed side won measurably more often than ratings alone predicted — in one specification, a gain of about six percentage points in expected score.
+    </p>
+    <p>
+      Two details make the finding unusually informative. First, the benefit was largest when the machine was <em>stronger than the player using it</em> — early computers mainly helped club players precisely because grandmasters could still beat them. Second, the benefit was largest where <em>human training partners were scarce</em>. The machine, in other words, was substituting for the thing chess had always rationed: quality opposition.
+    </p>
+    <p>
+      But the study contains the catch its title hides. Players with computer access played in <strong>fewer human tournaments</strong> — they substituted machine practice for competitive practice — and when they did face humans, they became <em>less effective at exploiting the mistakes human opponents actually make</em>. A machine that never blunders is a poor rehearsal for punishing someone who does. The artificial training partner was a complement to human practice, not a perfect substitute for it.
+    </p>
+
+    <h2 id="scorekeeping"><span class="h2-kicker">The long record</span>Keeping score of 11.6 million moves</h2>
+    <p>
+      If the natural experiment tells us access mattered, the second landmark study tells us what changed on the board. Bilalić, Graf and Vaci's preregistered analysis (British Journal of Psychology, 2024) took the top twenty players overall, the top twenty juniors, and the top twenty seniors from each year between 1985 and 2021 — more than <strong>11.6 million individual decisions</strong> — and scored every one against Stockfish.
+    </p>
+    <p>
+      The headline is a slow curve, not a step change. Move quality among the elite improved substantially and fairly steadily across four decades. The clearest inflection belonged to the youngest group: leading juniors improved sharply around the late 1990s, exactly when powerful PCs, game databases, the internet, and strong engines all became ordinary equipment. Older elites adapted more gradually.
+    </p>
+    <p>
+      The surprise is what didn't happen. The late-2010s revolution — AlphaZero, neural-network engines, Stockfish's NNUE evaluation — produced no comparable jump in elite move quality. The authors are careful to say "at least, not yet": by then the top of the human distribution may simply be close to the ceiling of what unaided play can express. And the study is honest about attribution — PCs, databases, coaching and engines diffused together, so no single technology can claim the gains.
+    </p>
+    <p>
+      Read alongside each other, the two big studies bracket the truth: access to machines clearly <em>can</em> make players stronger, and generations raised with them clearly <em>did</em> get stronger — most sharply at the moment computers became everyday training partners rather than laboratory equipment.
+    </p>
+
+    <h2 id="trials"><span class="h2-kicker">The thin shelf</span>The controlled trials are surprisingly few</h2>
+    <p>
+      Given how central engines are to modern study, the direct experimental literature is startlingly small. Two recent controlled trials illustrate both the genre and its limits — and they point in opposite directions.
+    </p>
+    <p>
+      In one, fifty novice players aged 6–17 were split between a "human-centric" curriculum and a "Stockfish-oriented" curriculum for thirteen weeks; the human-centric group improved more across all game phases. It is a genuinely interesting result, but a low-confidence one — the sample was small, the curricula differed in more than engine access, and some of its reported statistics don't withstand recalculation. In the other, sixty Vietnamese university students trained openings with Stockfish against a control group on the standard syllabus; the Stockfish group scored significantly better on opening tests. Again, suggestive rather than decisive.
+    </p>
+    <p>
+      The contradiction dissolves once you notice the two trials tested different things. "Teaching with an engine" and "learning from an engine" are not the same intervention — and neither is "engine-first instruction" versus "engine-as-verification." The literature has barely begun to separate them. What it has established is the frame for everything that follows: <strong>tool capability and instructional design are different variables</strong>. A stronger machine does not automatically make a better teacher.
+    </p>
+
+    <div class="why-it-works">
+      <p class="why-it-works-title">What the evidence supports</p>
+      <ul>
+        <li><strong>Access works.</strong> The best causal evidence shows engine access raised real tournament performance — roughly +11 Elo a year — not just engine-assisted analysis.</li>
+        <li><strong>Scarcity is the mechanism.</strong> The gains were largest where strong human partners were hardest to find; engines substitute for missing opposition.</li>
+        <li><strong>Substitution has a price.</strong> Machine practice did not train the skill of exploiting human mistakes — and players traded away human games to get machine time.</li>
+        <li><strong>The biggest gains came early and young.</strong> Junior elites jumped in the late-1990s PC era; the neural-engine era has produced no equivalent leap — yet.</li>
+      </ul>
+    </div>
+
+    <h2 id="side-effects"><span class="h2-kicker">The side effects</span>What else changed while we weren't measuring</h2>
+    <p>
+      The engine era's clearest signature may be demographic. According to Chess.com research on title data, the average age of new grandmasters fell from about 30 in the late 1970s to <strong>22.8 in 2020–2024</strong>, with a record-low average of 20.9 in 2021. Abhimanyu Mishra became the youngest grandmaster in history at 12 years, 4 months — a record set, not coincidentally, by a generation that has never studied without an engine. Youth, databases, online play and engines matured together; no study can fully separate them, but the direction of the curve is unambiguous.
+    </p>
+    <p>
+      There is a darker ledger line too. The same accessibility that makes engines free teachers makes them free cheaters. Chess.com's Fair Play team reports closing on the order of <strong>100,000+ accounts per month</strong> for engine abuse — a fraction of one percent of users, but an industrial-scale policing problem that simply did not exist before. FIDE now maintains dedicated anti-cheating regulations, device rules, and supervised-online protocols; the engine created both the crime and the forensics.
+    </p>
+    <p>
+      And one honesty note for anyone who hopes chess study transfers elsewhere: Sala and Gobet's meta-analysis of school chess found only a modest average academic benefit (Hedges' <em>g</em> ≈ 0.34), and nearly every study lacked a proper active control. There is no serious evidence that training <em>with engines</em> makes people generally smarter — the documented gains stay stubbornly inside the sixty-four squares.
+    </p>
+    <p>
+      So the ledger after fifty years: engines made humans better at chess, fastest where human expertise was scarcest — while quietly under-training the very human skill of exploiting imperfection. Part 2 asks why that trade-off exists at all: what the machine's output actually is, cognitively speaking, and why an answer you didn't work for doesn't stick.
+    </p>
+
+    <a class="part-next" href="../part-2-mechanism/">
+      <span>
+        <span class="part-next-eyebrow">Continue the series</span>
+        <span class="part-next-part">Part 2 of 3</span>
+        <span class="part-next-title">The Mechanism: Why an Oracle Is Not a Teacher</span>
+        <span class="part-next-dek">Pattern libraries, deliberation, working memory, creativity, and the honest science of overreliance.</span>
+        <span class="part-next-meta">~9 min read</span>
+      </span>
+      <span class="part-next-arrow" aria-hidden="true">→</span>
+    </a>
+
+    <section class="sources" aria-labelledby="sourcesTitle">
+      <h2 id="sourcesTitle">Sources for this part</h2>
+      <ol>
+        <li>Gaessler, F., &amp; Piezunka, H. (2023) — <a href="https://doi.org/10.1002/smj.3512">"Training with AI: Evidence from chess computers," <em>Strategic Management Journal</em> 44(11)</a>.</li>
+        <li>Bilalić, M., Graf, M., &amp; Vaci, N. (2024) — <a href="https://doi.org/10.1111/bjop.12750">"Computers and chess masters: The role of AI in transforming elite human performance," <em>British Journal of Psychology</em> 117(2)</a>.</li>
+        <li>Kumar et al. (2024) — <a href="https://doi.org/10.47611/jsrhs.v13i4.7956">Novice study comparing human-centric vs. engine-oriented instruction, <em>Journal of Student Research</em></a>.</li>
+        <li>Minh, D. H., &amp; Nguyen Duc, T. (2025) — <a href="https://doi.org/10.13189/saj.2025.130113">"Stockfish Chess Engine Software Application to Enhance Opening Playing Skills," <em>Int. J. of Human Movement and Sports Sciences</em> 13(1)</a>.</li>
+        <li>Erilli, N. A., &amp; Dalar, A. Z. (2025) — <a href="https://doi.org/10.1038/s41598-025-10386-3">"Estimating the peak age of chess players," <em>Scientific Reports</em> 15</a>.</li>
+        <li>Chess.com — <a href="https://www.chess.com/news/view/pandemic-effect-grandmasters-keep-getting-younger">"Younger And Younger: How Young Will Grandmasters Become?"</a></li>
+        <li>Chess.com Fair Play — <a href="https://www.chess.com/cheating">closure statistics and detection methods</a>.</li>
+        <li>Sala, G., &amp; Gobet, F. (2016) — <a href="https://doi.org/10.1016/j.edurev.2016.02.002">"Do the benefits of chess instruction transfer to academic and cognitive skills?" <em>Educational Research Review</em></a>.</li>
+      </ol>
+    </section>
+
+    <nav class="article-nav" aria-label="Article navigation">
+      <a href="../">← Series overview</a>
+      <a href="/articles/">All articles →</a>
+    </nav>
+  </div>
+
+  <footer class="page-footer">
+    <div class="page-footer-inner">
+      <span>CD Digital Chess</span>
+      <span>Personal chess study and training web app</span>
+    </div>
+  </footer>
+  <script>
+    (() => {
+      const bar = document.getElementById('readProgressBar');
+      if (!bar) return;
+      const update = () => {
+        const el = document.documentElement;
+        const max = el.scrollHeight - el.clientHeight;
+        const p = max > 0 ? Math.min(1, el.scrollTop / max) : 0;
+        bar.style.transform = 'scaleX(' + p + ')';
+      };
+      window.addEventListener('scroll', update, { passive: true });
+      window.addEventListener('resize', update);
+      update();
+
+      const tocLinks = document.querySelectorAll('.part-toc a[href^="#"]');
+      if (tocLinks.length && 'IntersectionObserver' in window) {
+        const byId = new Map();
+        tocLinks.forEach(l => byId.set(l.getAttribute('href').slice(1), l));
+        const spy = new IntersectionObserver(entries => {
+          entries.forEach(e => {
+            if (!e.isIntersecting) return;
+            tocLinks.forEach(l => l.classList.remove('is-here'));
+            const link = byId.get(e.target.id);
+            if (link) link.classList.add('is-here');
+          });
+        }, { rootMargin: '-15% 0px -70% 0px' });
+        document.querySelectorAll('.article-body h2[id]').forEach(h => spy.observe(h));
+      }
+    })();
+  </script>
+</body>
+</html>

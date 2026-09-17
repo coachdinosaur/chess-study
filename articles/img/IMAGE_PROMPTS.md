@@ -1,14 +1,14 @@
 # Articles editorial image prompts
 
-Five coordinated feature images for the Articles section, to be produced by an
-external image model. All five must read as **one visual family** — same
+Coordinated feature images for the Articles section, to be produced by an
+external image model. All images must read as **one visual family** — same
 illustrator, same lighting logic, same palette.
 
 ## How to use this file
 
 For each image, combine the **shared style block** + the **subject prompt** +
 the **negative prompt**. If the tool supports a persistent style/system field,
-put the shared style block there once and reuse it for all five.
+put the shared style block there once and reuse it for all images.
 
 ## Shared style block (prepend to every prompt)
 
@@ -24,7 +24,7 @@ no letters, no numbers, no notation, no logos, no flags, no watermarks.
 16:9 landscape composition with generous negative space.
 ```
 
-## Negative prompt (use for all five)
+## Negative prompt (use for all images)
 
 ```text
 text, letters, numbers, words, typography, logos, watermarks, national flags,
@@ -40,13 +40,16 @@ cheesy chess fantasy, giant floating chess pieces, glassmorphism
   hub hero (~24 KB) — the markup uses `width="1024" height="576"`. If later
   images arrive at 1600 × 900, update the width/height attributes on that
   page's `<img>` to match.
-- **Status:** all five delivered (1024 × 576 WebP) and wired into the pages.
+- **Status:** all eight delivered (1024 × 576 WebP) and wired into the pages.
 - **Filenames** (save into `articles/img/`):
   - `articles-hero-world-chess-training.webp` — Articles hub hero
-  - `article-part-1-soviet-blueprint.webp` — Part 1
-  - `article-part-2-state-programs.webp` — Part 2
-  - `article-part-3-chess-ecosystems.webp` — Part 3
-  - `article-part-4-winning-formula.webp` — Part 4
+  - `article-part-1-soviet-blueprint.webp` — Series 1, Part 1
+  - `article-part-2-state-programs.webp` — Series 1, Part 2
+  - `article-part-3-chess-ecosystems.webp` — Series 1, Part 3
+  - `article-part-4-winning-formula.webp` — Series 1, Part 4
+  - `article-engines-part-1-evidence.webp` — Series 2 (The Silicon Coach), Part 1
+  - `article-engines-part-2-mechanism.webp` — Series 2, Part 2
+  - `article-engines-part-3-protocol.webp` — Series 2, Part 3
 - The pages reference these exact paths; the markup hides the figure cleanly
   until each file exists, so partial delivery is safe.
 
@@ -135,4 +138,60 @@ study books, and a small path of pieces suggesting progression from a lone
 pawn toward a crowned piece. Circular, resolved composition; the most
 minimal of the five images. A calm mint-green accent light settles on the
 central board. Mood: the distilled formula, everything in its place.
+```
+
+---
+
+## Series 2 — The Silicon Coach (chess engines and player development)
+
+Three images for `articles/chess-engines-development/` parts 1–3. Same shared
+style block and negative prompt as above. The series' visual theme is the
+study desk where human and machine meet — warm wood and paper against the
+cool glow of a screen.
+
+## 6. Part 1 — `article-engines-part-1-evidence.webp`
+
+Page: `/articles/chess-engines-development/part-1-evidence/`
+
+```text
+A study desk split quietly between two eras: on the left a hand-carved
+wooden chessboard mid-game beside an open scorebook (abstract marks only,
+no letters), on the right a chunky late-1970s dedicated chess computer — a
+small beige-brown box with a tiny recessed board and a row of unlabeled
+buttons, its display glowing faintly. A soft desk lamp throws warm light
+from one side; a faint cool green-grey glow from the machine answers it.
+Background of stacked books and papers dissolving into darkness. Archival,
+museum-quiet mood — the moment the machine entered the study room. No
+readable screens, no letters, no brand marks.
+```
+
+## 7. Part 2 — `article-engines-part-2-mechanism.webp`
+
+Page: `/articles/chess-engines-development/part-2-mechanism/`
+
+```text
+A chessboard seen in low profile at close range: the near rank of pieces is
+ordinary hand-carved wood, warmly lit, while the opposing far rank is
+rendered as abstract geometric forms — smooth faceted monoliths and
+crystalline shapes in cool desaturated tones, casting long precise shadows
+across the squares. Between the two sides, the empty middle of the board
+glows faintly, a contested no-man's-land of light. A single simplified
+human silhouette leans in at the frame's edge studying the far rank.
+Conceptual, quiet tension — two kinds of mind across one board. No text,
+no circuitry detail, no neon.
+```
+
+## 8. Part 3 — `article-engines-part-3-protocol.webp`
+
+Page: `/articles/chess-engines-development/part-3-protocol/`
+
+```text
+An organized modern training station seen from a slight overhead angle: a
+chessboard mid-position at center, an open analysis notebook filled with
+abstract diagrams and small board sketches (no letters or numbers), a
+pencil resting across it, and off to one side a slim laptop angled away,
+its screen a soft unreadable mint-green glow pushed to the edge of the
+composition — present but deliberately not dominant. Stacked reference
+books and a small chess clock complete the still-life. Disciplined,
+methodical mood: the machine kept in its proper place in the workflow.
 ```
