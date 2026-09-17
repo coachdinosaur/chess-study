@@ -7,6 +7,7 @@ from the Flutter app and the Node backend.
 
 - `index.html` — public landing page
 - `privacy-policy/index.html` — Android app privacy policy
+- `delete-account/index.html` — account deletion instructions page
 - `styles.css` — shared landing-page styles
 - `privacy.css` — privacy-page styles
 - `assets/` — local favicon and app preview images
@@ -18,6 +19,7 @@ are:
 
 - `https://cddigital.top/endgame-trainer/`
 - `https://cddigital.top/endgame-trainer/privacy-policy/`
+- `https://cddigital.top/endgame-trainer/delete-account/`
 
 All internal links and image paths are relative to those route directories.
 Keep the full `endgame-trainer/` tree together when moving or publishing the

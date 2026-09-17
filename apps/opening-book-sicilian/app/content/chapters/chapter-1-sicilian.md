@@ -30,7 +30,7 @@ Various 2nd Moves
 This chapter will concentrate on the rare moves: A) 2.Bc4, B) 2.c4, C) 2.Ne2, D) 2.Na3, E) 2.f4 and F) 2.a3.
 
 <!-- FEN: rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2 -->
-2.d4 cxd4 3.c3 gives us a choice: the solid 3...Nf6 4.e5 Nd5 enters the c3 Sicilian (see Chapters 5 to 9), while accepting the gambit with 3...dxc3 4.Nxc3 Nc6 5.Nf3 g6 transposes to variation A of Chapter 19 on page 343.
+2.d4 cxd4 3.c3 gives us a choice: the solid 3...Nf6 4.e5 Nd5 enters the c3 Sicilian (see Chapters 5–8 of this book), while accepting the gambit with 3...dxc3 4.Nxc3 Nc6 5.Nf3 g6 transposes to variation A of Chapter 19 on page 343 of the source book (outside this edition).
 <!-- FEN: rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2 -->
 2.Be2 is likely to transpose elsewhere, e.g. 2...Nc6 3.f4 d5 4.d3 is line B12 of Chapter 2.
 <!-- FEN: rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2 -->

@@ -76,7 +76,7 @@ Use these exact paths when you know what you want to do.
 - Open the 3D Chess Position Studio: open `/3d/` or click **Open 3D board** on the home page
 - Open a floating board while reading a supported lesson: click **Teacher Board** in the lesson header
 - Start a synchronized teacher/student room: open **Live Board** (`live-board.html`)
-- Open Lichess Position Training: **Tools → Puzzle → Lichess Position Training**
+- Open Position Study: **Tools → Puzzle → Position Study**
 - Open a teacher puzzle assignment: use the private assignment link sent by the teacher
 - Start engine analysis: click **Analyze** beside the three-dot menu
 - Stop engine analysis: click **Stop** in the same place
@@ -653,9 +653,9 @@ Possible objectives include checkmate, gaining a piece, and holding a draw. The 
 
 The free-plan daily limit and premium activation apply to this legacy endgame mode.
 
-## Lichess Position Training
+## Position Study
 
-> **Where to go:** **Tools → Puzzle → Lichess Position Training**
+> **Where to go:** **Tools → Puzzle → Position Study** (the UI label; internal files and storage keys keep the `lichess-position-training` name)
 
 The current production library contains **50,000 Lichess-derived positions**. The total shown in the launcher and trainer header comes from the live manifest, so it updates with future dataset expansions.
 

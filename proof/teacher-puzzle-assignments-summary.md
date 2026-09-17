@@ -1,8 +1,11 @@
 # Teacher Puzzle Assignments
 
+> **Historical snapshot** — written when the installed puzzle dataset was 500
+> positions. Production now ships 50,000 positions; see `proof/README.md`.
+
 ## Implemented
 
-- Approved teachers create fixed Lichess puzzle assignments from the existing 500-position dataset.
+- Approved teachers create fixed Lichess puzzle assignments from the existing 500-position dataset (at the time of writing; now 50,000).
 - Teachers choose a student level, rating range, theme, puzzle count, hint policy, retry policy, passing score, due date, and existing managed students.
 - Every generated position can be previewed on a board and replaced before publication.
 - Published assignments freeze exact puzzle snapshots and create one private bearer link per student.

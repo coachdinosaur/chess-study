@@ -29,7 +29,7 @@ The major subsystems are:
    - `lesson-model.mjs`, `lesson-migrations.mjs`, and `lesson-position-adapter.mjs`
    - `lesson-position-interoperability-core.mjs`, `lesson-position-interoperability-export-guard.mjs`, and `lesson-position-interoperability.mjs`
    - `lesson-variation-tree.mjs`
-   - `top-players.mjs` and `assets/top-players.json` for FIDE Top 10 leaderboards across 6 categories
+   - `top-players.mjs` and `assets/top-players.json` for top-player leaderboards across 6 categories (20 entries each: three FIDE world lists — standard, women, blitz — and three national lists for the Philippines and Singapore)
    - `text-normalization.mjs`
 
 3. **Static lesson sites**
@@ -101,91 +101,129 @@ chess-study/
 ├── lichess-position-training-data.mjs
 ├── lichess-position-training-engine.mjs
 ├── lichess-position-training-learning.mjs
-├── position-study-single-hint-patch.mjs
 ├── lichess-position-training-interactions.mjs
 ├── lichess-position-training-grid-layout.mjs
 ├── lichess-position-training-style-refresh.mjs
+├── lichess-position-training*.css
+├── position-study-single-hint-patch.mjs
 ├── lesson-position-builder.mjs
+├── lesson-position-export-validation.mjs
 ├── lesson-model.mjs
 ├── lesson-migrations.mjs
 ├── lesson-position-adapter.mjs
+├── lesson-position-interoperability.mjs
 ├── lesson-position-interoperability-core.mjs
 ├── lesson-position-interoperability-export-guard.mjs
-├── lesson-position-interoperability.mjs
 ├── lesson-variation-tree.mjs
+├── lesson-picker-search.mjs
+├── focus-analysis-popup.mjs / focus-analysis-popup-core.mjs / .css
+├── play-challenge-link.mjs / play-challenge-integration.mjs
+├── move-annotations.mjs
+├── top-players.mjs
 ├── text-normalization.mjs
+├── sw.js
 │
 ├── live-board.html
 ├── live-board.css
+├── live-board-display-fixes.css
+├── live-board-student-tablet.css
 ├── live-board.js
+├── live-board-3d.js
 ├── live-board-realtime.js
 ├── live-board-messages-v2.js
+├── live-board-messages.js / live-board-messages-v3.js (superseded, not loaded)
 ├── live-board-room-bootstrap.js
 ├── live-board-drag.js
-├── live-board.click-toggle.js
+├── live-board-click-toggle.js
+├── live-board-lesson-ux.js
+├── live-board-display-fixes.js
+├── live-board-channel-normalizer.js
+├── live-board-compact-link.js
+├── live-board-short-access.js
+├── live-board-copy-link-fix.js
+│
+├── management/
+│   ├── teacher.html / admin.html / account.html / assignment.html
+│   ├── student-workspace.html / index.html / login.html / pending.html
+│   ├── reset-password.html / privacy.html
+│   ├── js/ (dashboard, workspace, assignment lifecycle, supabase-client modules)
+│   └── *.css, README.md, PRODUCTION_CHECKLIST.md
 │
 ├── assets/
 │   ├── openings.tsv
+│   ├── top-players.json
 │   ├── social-preview.png
-│   └── pieces/
-│       ├── app_icon.png
-│       └── mpchess/
+│   ├── Inter/ / Manrope/ (self-hosted fonts)
+│   ├── models/ (3D piece assets used by live-board-3d.js)
+│   ├── pieces/
+│   │   ├── app_icon.png
+│   │   └── mpchess/ (12 piece SVGs)
+│   └── puzzles/lichess-position-training/ (manifest + 2,000 shards)
 │
 ├── vendor/
 │   ├── chess.js
-│   ├── stockfish/
+│   ├── stockfish/ (stockfish-18-lite-single.js/.wasm)
 │   └── xlsx.full.min.js
 │
 ├── lessons/
 │   ├── index.html
-│   ├── pawn-index.html
-│   ├── bishop-index.html
-│   ├── pawn-*.html
-│   ├── pawn-m*-lesson-*.html
-│   ├── bishop-m*-lesson-*.html
+│   ├── pawn-index.html / advanced-pawn-index.html / bishop-index.html
+│   ├── pawn-*.html / pawn-m*-lesson-*.html
+│   ├── advanced-pawn-m*-lesson-*.html / advanced-pawn-module-*-data.js
+│   ├── bishop-m*-lesson-*.html / bishop_m1/
 │   ├── 01-*.html ... 07-*.html
-│   ├── lesson-header.css
-│   ├── lesson-presentation.js
-│   ├── lesson-presentation.css
-│   ├── pawn-teacher-board.js
-│   ├── pawn-teacher-board.css
+│   ├── lesson-header.css / lesson-index.css / lesson-catalog-search.js
+│   ├── lesson-presentation.js / lesson-presentation.css
+│   ├── lesson-presentation-legacy.js
+│   ├── endgame-presentation.js / endgame-presentation.css
+│   ├── pawn-teacher-board.js / pawn-teacher-board.css
 │   ├── teacher-board-illegal-moves.mjs
-│   ├── endgame-lesson.js
-│   └── endgame-lesson.css
+│   ├── endgame-lesson.js / endgame-lesson.css
+│   ├── advanced-pawn-lesson.js / advanced-pawn-lesson.css
+│   └── assets/
+│
+├── apps/
+│   ├── opening-book/          (Catalan Atelier → /openings/)
+│   ├── opening-book-sicilian/ (Sicilian Defense → /openings-sicilian/)
+│   └── 3d-chess-studio/       (→ /3d/)
 │
 ├── endgame-trainer/
 │   ├── index.html
-│   ├── styles.css
-│   ├── privacy.css
-│   ├── privacy-policy/
-│   │   └── index.html
+│   ├── styles.css / privacy.css
+│   ├── privacy-policy/index.html
+│   ├── delete-account/index.html
 │   └── assets/
-│       ├── favicon.png
-│       ├── light-portrait.png
-│       └── puzzle-landscape.png
+│
+├── articles/
+│   ├── index.html
+│   ├── articles.css
+│   └── chess-training-top-countries/index.html
 │
 ├── clock/
-│   ├── index.html
-│   ├── clock.css
-│   ├── clock-engine.mjs
-│   ├── clock-audio.mjs
-│   └── clock-app.js
+│   ├── index.html / clock.css / clock-app.js
+│   └── clock-engine.mjs / clock-audio.mjs
+│
+├── supabase/migrations/  (18 structured SQL migrations)
+├── tests/                (node --test suites + browser smoke scripts)
+├── docs/                 (install notes, superseded early design docs)
+├── proof/                (historical validation snapshots)
+├── prototypes/
+├── tools/
+├── Endgame/
+├── pawn_m5/
 │
 ├── local_server.py
 ├── scanner_server.py
 ├── scanner_predict.py
 ├── start-local.ps1
-│
-├── tools/
-├── Endgame/
-├── mpchess-pieces/
-└── optimization-review/
+└── .github/workflows/
 ```
 
 The buildable opening-course and 3D-studio sources are kept under
-`apps/opening-book/` and `apps/3d-chess-studio/`. Their generated `dist/`
-directories are deliberately not committed or shown as source subtrees above;
-the Pages workflow mounts those outputs as `/openings/` and `/3d/` only in the
+`apps/opening-book/`, `apps/opening-book-sicilian/`, and
+`apps/3d-chess-studio/`. Their generated `dist/` directories are deliberately
+not committed or shown as source subtrees above; the Pages workflow mounts
+those outputs as `/openings/`, `/openings-sicilian/`, and `/3d/` only in the
 deployment artifact.
 
 The lesson inventory changes more frequently than the SPA architecture. The important boundary is that lesson pages are static documents, while the SPA is the interactive chess runtime.
@@ -955,6 +993,8 @@ teacher opens live-board.html
 
 Students should open the generated link rather than manually reusing the teacher URL. Teacher and student access tokens are role-specific and must not be logged, documented, or exposed in screenshots.
 
+Two student-link formats exist: the full `#room=…&role=student&access=<token>` URL and the compact `#j=ROOM.<first 16 token chars>` form produced by the copy button (`live-board-copy-link-fix.js`, expanded by `live-board-compact-link.js`). Compact tokens authenticate through `live_board_rooms.student_short_token_hash`; every room RPC accepts teacher, full student, and short student token hashes as appropriate. Room creation goes through `create_live_board_room_v2` (`live-board-short-access.js` redirects the legacy `create_live_board_room` call so both student hashes are stored).
+
 `live-board-messages-v2.js` cannot assume credentials exist at `DOMContentLoaded`. It:
 
 - reads room/role/access details from the current URL and teacher session storage;
@@ -971,7 +1011,7 @@ Students should open the generated link rather than manually reusing the teacher
 - `live-board-click-toggle.js` and `live-board-drag.js` keep tap/click and drag input compatible across desktop and touch devices.
 - `live-board-realtime.js` synchronizes room state and the teacher-controlled student lock.
 - `live-board-lesson-ux.js` handles CSV/XLSX prepared-position import and loading feedback.
-- `live-board-messages-v2.js` synchronizes short messages and Lichess links, using realtime updates with refresh/poll support.
+- `live-board-messages-v2.js` synchronizes short messages and Lichess links, using realtime updates with refresh/poll support. Messages persist in `public.live_board_messages` and are read/posted/cleared only through the token-checked `SECURITY DEFINER` RPCs (`get_live_board_messages`, `post_live_board_message`, `clear_live_board_messages`); `sender_role` is derived from the credential hash server-side, and clearing is teacher-token-only.
 - The teacher may move, load FENs, import prepared positions, undo/reset/flip, and lock student moves. A locked student board remains view-only while continuing to receive synchronized state.
 
 The Live Board must be tested with two pages or browser contexts because a single-page test cannot validate role separation, secure-link state, or teacher/student synchronization.
@@ -1039,6 +1079,15 @@ Vite's base is `/openings/`, so JavaScript, CSS, fonts, pieces, and engine
 workers resolve beneath that path. Chapter state uses URL fragments such as
 `/openings/#/chapters/1`; generated `chapters/<id>/index.html` files redirect
 direct chapter URLs to the corresponding fragment route.
+
+Chapter Markdown uses `## Page N` boundaries with **two pagination
+conventions**: chapters 1–8 keep the continuous source-book page numbers
+(`## Page 7` … `## Page 112`), while chapters 9–16 restart at `## Page 1`.
+The strict `chapters:audit` check requires the first boundary to be
+`## Page 1`, so it applies cleanly only to chapters 9–16 — that is intended,
+not a content error. Also note `npm run chapters:check` compares the generated
+catalog byte-for-byte; on Windows checkouts with `core.autocrlf=true` it can
+report a stale catalog when only line endings differ.
 
 The opening course does not import the main Study Board runtime. The sections
 are combined through same-origin navigation links, preserving the existing
@@ -1289,6 +1338,7 @@ The production deployment workflow (`.github/workflows/pages.yml`) executes on e
 - `https://cddigital.top/3d/` — 3D Chess Position Studio
 - `https://cddigital.top/endgame-trainer/` — Endgame Trainer landing page
 - `https://cddigital.top/endgame-trainer/privacy-policy/` — Android Privacy Policy (clean extensionless directory route)
+- `https://cddigital.top/endgame-trainer/delete-account/` — Account deletion instructions page
 
 ### 28.3 Local development and server environments
 

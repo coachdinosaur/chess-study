@@ -327,7 +327,16 @@ The repository deploys to GitHub Pages via `.github/workflows/pages.yml` on push
 - **Catalan Atelier (`/openings/`)**: Compiled React 19 + Vite application.
 - **Sicilian Defense (`/openings-sicilian/`)**: Compiled React 19 + Vite application.
 - **3D Chess Position Studio (`/3d/`)**: Compiled React 19 + Three.js + Vite application (`VITE_BASE_PATH=/3d/`).
-- **Endgame Trainer (`/endgame-trainer/`)**: Static landing page and clean `/endgame-trainer/privacy-policy/` directory route.
+- **Endgame Trainer (`/endgame-trainer/`)**: Static landing page plus clean `/endgame-trainer/privacy-policy/` and `/endgame-trainer/delete-account/` directory routes.
+
+Other workflows beyond `pages.yml`:
+
+- `.github/workflows/lesson-interoperability-tests.yml` — lesson import/export interoperability tests
+- `.github/workflows/position-training-smoke.yml` — Position Study dataset smoke check
+- `.github/workflows/prove-lichess-100.yml` — historical dataset proof workflow
+- `.github/workflows/sicilian-opening-book-ci.yml` — Sicilian book chapter CI
+- `.github/workflows/validate-student-puzzle-assignment-updates.yml` — student puzzle-assignment safeguards
+- `.github/workflows/live-board-schema-contract.yml` — asserts every client-invoked Supabase RPC exists in `supabase/migrations/`
 
 ## Mobile behavior
 
@@ -390,8 +399,10 @@ The floating Teacher Board also evaluates the embedded FEN after moves and posit
 | `text-normalization.mjs` | Unicode and punctuation normalization |
 | `live-board.html` | Teacher/student room shell, synchronized board, lesson/FEN controls, messages |
 | `live-board.js` | Live Board position state, legal interaction, move list, lesson/FEN loading |
+| `live-board-3d.js` | Optional Three.js 3D board view with camera presets |
 | `live-board-realtime.js` | Secure room bootstrap, credentials, Supabase state synchronization |
 | `live-board-messages-v2.js` | Session message lifecycle, realtime subscription, polling fallback |
+| `live-board-short-access.js`, `-compact-link.js`, `-channel-normalizer.js`, `-copy-link-fix.js`, `-display-fixes.*`, `-lesson-ux.js`, `-room-bootstrap.js`, `-student-tablet.css` | Live Board compatibility shims, compact student links, channel normalization, and layout fixes |
 | `lessons/lesson-header.css` | Shared Pawn-inspired header across lesson families |
 | `lessons/lesson-presentation.js` / `.css` | Classroom scene mode, reveals, navigation, fullscreen, click pulse |
 | `lessons/pawn-teacher-board.js` / `.css` | Floating lesson Teacher Board UI and parent-side protocol |
@@ -401,10 +412,13 @@ The floating Teacher Board also evaluates the embedded FEN after moves and posit
 | `assets/openings.tsv` | Opening identification database |
 | `lessons/` | Static published lesson pages and shared lesson helpers |
 | `apps/opening-book/` | React/Vite source, Markdown chapters, tests, and local Stockfish assets for Catalan Atelier |
+| `apps/opening-book-sicilian/` | React/Vite source and 8 Markdown chapters for the Sicilian Defense book at `/openings-sicilian/` |
+| `supabase/migrations/` | 18 versioned SQL migrations for the management and Live Board schema |
 | `apps/3d-chess-studio/` | React/Vite/Three.js 3D board, FEN setup, local play, AI bots (Casual, Club, Master Stockfish 18 Lite WASM), Staunton models, and Web Worker |
 | `clock/` | Standalone mobile-first fullscreen digital chess clock (Fischer, delay, Bronstein, handicap, Web Audio synth, screen wake lock) |
-| `endgame-trainer/` | Standalone Endgame Trainer landing page, privacy policy, styles, favicon, and app previews |
-| `.github/workflows/pages.yml` | Tests the combined routes, builds Catalan Atelier and 3D Studio, mounts their outputs at `/openings/` and `/3d/`, and deploys the combined Pages artifact |
+| `endgame-trainer/` | Standalone Endgame Trainer landing page, privacy policy, account-deletion page, styles, favicon, and app previews |
+| `tests/` | `node --test` suites for the SPA, Live Board, management, and app integration plus browser smoke scripts |
+| `.github/workflows/pages.yml` | Tests the combined routes, builds Catalan Atelier, Sicilian Defense, and 3D Studio, mounts their outputs at `/openings/`, `/openings-sicilian/`, and `/3d/`, and deploys the combined Pages artifact |
 
 A deeper implementation map is in [ARCHITECTURE.md](ARCHITECTURE.md).
 
@@ -492,6 +506,12 @@ The app prefers the strongest usable installed bundle:
 2. `stockfish-18-single.js` + `stockfish-18-single.wasm`
 3. `stockfish-18-lite.js` + `stockfish-18-lite.wasm`
 4. `stockfish-18-lite-single.js` + `stockfish-18-lite-single.wasm`
+
+Only `stockfish-18-lite-single.js` + `.wasm` are vendored under
+`vendor/stockfish/` today; the loader probes for the stronger bundles so they
+can be dropped in later without code changes. The 3D Chess Studio vendors its
+own independent lite-single pair under
+`apps/3d-chess-studio/public/stockfish/`.
 
 Multi-threaded bundles require cross-origin isolation. Mobile/coarse-pointer devices may prefer a compatible single-threaded bundle.
 

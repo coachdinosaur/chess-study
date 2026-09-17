@@ -1,5 +1,13 @@
 # Lichess Position Training
 
+> **Superseded early-design document.** The shipped feature is named
+> **Position Study** and now ships the full 50,000-position library in
+> 2,000 shards of 25 records. The regeneration command below
+> (`--shard-size 2000`) and the "tiny bundled seed shard" note describe
+> the pre-production layout and must not be followed. See
+> [LICHESS_POSITION_TRAINING.md](../LICHESS_POSITION_TRAINING.md) for the
+> current documentation.
+
 This is a separate puzzle mode launched from the existing Puzzle tab. It does not change the existing **Endgame vs Stockfish** trainer or reuse that trainer's queue, settings, history, or statistics.
 
 ## Training model

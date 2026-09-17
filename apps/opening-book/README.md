@@ -56,3 +56,13 @@ chapter workflow is available through:
 npm run chapters:status
 npm run chapters:check
 ```
+
+Pagination uses `## Page N` boundaries with two conventions: chapters 1–8
+keep the continuous source-book page numbers, while chapters 9–16 restart at
+`## Page 1`. The strict `chapters:audit` check requires a first boundary of
+`## Page 1`, so it applies cleanly only to chapters 9–16 — that is intended.
+
+Note for Windows checkouts: `chapters:check` compares the generated catalog
+byte-for-byte, so with `core.autocrlf=true` it can report "Chapter catalog is
+stale" when only CRLF/LF line endings differ. Run `npm run chapters:sync` and
+`git diff --ignore-cr-at-eol` to confirm whether the drift is real.

@@ -57,6 +57,7 @@ jobs:
           node --test tests/opening-book-integration.test.mjs
           node --test tests/endgame-trainer-integration.test.mjs
           node --test tests/3d-chess-studio-integration.test.mjs
+          node --test tests/chess-clock.test.mjs
 
       - name: Prepare Google Search favicon
         run: python tools/prepare_search_favicon.py

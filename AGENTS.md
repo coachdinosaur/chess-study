@@ -13,9 +13,16 @@ It contains:
 - **Numbered endgame lessons** (7 chapter pages with embedded SPA iframe)
 - **Shared lesson presentation and Teacher Board systems** used across course levels
 - **Live Board** secure teacher/student synchronized rooms backed by Supabase
+- **Coach management portal** (`management/`) — teacher dashboard, student
+  workspaces, puzzle assignments, admin review
+- **Supabase schema** (`supabase/migrations/`) — 18 SQL migrations backing
+  management and Live Board features
+- **Opening course apps** (`apps/opening-book/`, `apps/opening-book-sicilian/`)
+  — React/Vite books published at `/openings/` and `/openings-sicilian/`
 - **3D Chess Position Studio** interactive Three.js board and Web Worker Stockfish bots
 - **Digital Chess Clock** customizable mobile fullscreen chess clock (`clock/`)
-- **Piece asset pipeline** (MetaPost/LuaLaTeX font → 12 SVG pieces)
+- **Standalone Endgame Trainer site** (`endgame-trainer/`)
+- **Piece assets** (`assets/pieces/mpchess/` — 12 SVGs)
 - **Local servers** for HTTP hosting (`local_server.py`) and board scanning (`scanner_server.py`)
 
 ## Source-of-Truth Rules
@@ -37,16 +44,19 @@ It contains:
 | **Numbered endgame lessons** | `lessons/01-*.html` … `lessons/07-*.html`, `lessons/endgame-lesson.js`, `lessons/endgame-lesson.css` |
 | **Shared lesson header/presentation** | `lessons/lesson-header.css`, `lessons/lesson-presentation.js`, `lessons/lesson-presentation.css` |
 | **Shared Teacher Board** | `lessons/pawn-teacher-board.js`, `lessons/pawn-teacher-board.css`, `lessons/teacher-board-illegal-moves.mjs` |
-| **Live Board** | `live-board.html`, `live-board.js`, `live-board-realtime.js`, `live-board-room-bootstrap.js`, `live-board-messages-v2.js`, `live-board-drag.js`, `live-board-click-toggle.js` |
+| **Live Board** | `live-board.html`, `live-board.js`, `live-board-3d.js`, `live-board-realtime.js`, `live-board-room-bootstrap.js`, `live-board-messages-v2.js`, `live-board-drag.js`, `live-board-click-toggle.js`, plus compat/link helpers `live-board-{short-access,compact-link,channel-normalizer,copy-link-fix,display-fixes,lesson-ux}.*`, `live-board-student-tablet.css` |
+| **Coach management** | `management/` — teacher/admin/account/assignment/student-workspace pages and `management/js/` modules |
+| **Supabase schema** | `supabase/migrations/` — 18 SQL migrations |
 | **3D Chess Position Studio** | `apps/3d-chess-studio/`, `tests/3d-chess-studio-integration.test.mjs` |
 | **Digital Chess Clock** | `clock/index.html`, `clock/clock-app.js`, `clock/clock-engine.mjs`, `clock/clock-audio.mjs`, `clock/clock.css`, `tests/chess-clock.test.mjs` |
 | **Opening books** | `apps/opening-book/`, `apps/opening-book-sicilian/` |
-| **Endgame Trainer site** | `endgame-trainer/index.html`, `endgame-trainer/privacy-policy/index.html` |
-| **Lesson source manuscripts** | `lesson_source/` (Module 1), `lesson_source2/` (Module 2), `lesson_source3/` (Module 3) |
-| **Piece assets** | `assets/pieces/mpchess/` (12 SVGs), `mpchess-pieces/` (font sources) |
+| **Endgame Trainer site** | `endgame-trainer/index.html`, `endgame-trainer/privacy-policy/index.html`, `endgame-trainer/delete-account/index.html` |
+| **Piece assets** | `assets/pieces/mpchess/` (12 SVGs) |
 | **Local servers** | `local_server.py`, `scanner_server.py`, `scanner_predict.py`, `start-local.ps1` |
-| **Vendored dependencies** | `vendor/chess.js`, `vendor/stockfish/`, `vendor/xlsx.full.min.js` |
+| **Vendored dependencies** | `vendor/chess.js`, `vendor/stockfish/` (`stockfish-18-lite-single` bundle), `vendor/xlsx.full.min.js` |
 | **Tools** | `tools/test-puzzle-api.mjs`, `tools/fetch_openings.js`, `tools/generate_openings.mjs`, `tools/endgame_kb/`, `tools/wtharvey/` |
+| **Tests** | `tests/` — `node --test` suites + browser smoke scripts |
+| **Docs & audit snapshots** | `docs/`, `proof/` (historical validation snapshots) |
 | **Endgame KB** | `Endgame/` — PDFs, CSVs, PGN files |
 | **Module 5 images** | `pawn_m5/` — Pawn Module 5 lesson image assets |
 

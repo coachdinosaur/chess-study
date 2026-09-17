@@ -1,6 +1,8 @@
 /**
  * CD Digital Chess — Top Players Leaderboards Module
- * Manages category selection, data rendering, and modal interactions for FIDE Top 10 rankings.
+ * Manages category selection, data rendering, and modal interactions for the
+ * top-player leaderboards (20 entries per category across FIDE world and
+ * national lists).
  */
 
 const DATA_URL = './assets/top-players.json';

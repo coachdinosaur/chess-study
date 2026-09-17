@@ -72,7 +72,7 @@ Black is relying on solid developing moves and is preparing to castle. After he 
 
 We will consider **A) 9.Nc3**, **B) 9.Bxd5**, **C) 9.exd6!?**, **D) 9.Bd2** and **E) 9.a3**.
 
-The main line 9.Qe2 is the topic of Chapter 9.
+The main line 9.Qe2 is the topic of Chapter 9 of the source book (outside this edition).
 
 One last possibility is 9.Re1, which should normally transpose to other lines of our repertoire. A deviation that we should only consider as a gift is:
 

@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-22",
+  "updatedAt": "2026-09-17",
   "source": "FIDE (International Chess Federation)",
   "sourceUrl": "https://ratings.fide.com",
   "categories": {
@@ -25,18 +25,6 @@
         },
         {
           "rank": 2,
-          "name": "Fabiano Caruana",
-          "fideName": "Caruana, Fabiano",
-          "title": "GM",
-          "fed": "USA",
-          "flagEmoji": "🇺🇸",
-          "rating": 2792,
-          "birthYear": 1992,
-          "fideId": "2020009",
-          "profileUrl": "https://ratings.fide.com/profile/2020009"
-        },
-        {
-          "rank": 3,
           "name": "Hikaru Nakamura",
           "fideName": "Nakamura, Hikaru",
           "title": "GM",
@@ -48,55 +36,55 @@
           "profileUrl": "https://ratings.fide.com/profile/2016192"
         },
         {
+          "rank": 3,
+          "name": "Fabiano Caruana",
+          "fideName": "Caruana, Fabiano",
+          "title": "GM",
+          "fed": "USA",
+          "flagEmoji": "🇺🇸",
+          "rating": 2789,
+          "birthYear": 1992,
+          "fideId": "2020009",
+          "profileUrl": "https://ratings.fide.com/profile/2020009"
+        },
+        {
           "rank": 4,
           "name": "Javokhir Sindarov",
           "fideName": "Sindarov, Javokhir",
           "title": "GM",
           "fed": "UZB",
           "flagEmoji": "UZ",
-          "rating": 2777,
+          "rating": 2778,
           "birthYear": 2005,
           "fideId": "14205483",
           "profileUrl": "https://ratings.fide.com/profile/14205483"
         },
         {
           "rank": 5,
-          "name": "Vincent Keymer",
-          "fideName": "Keymer, Vincent",
-          "title": "GM",
-          "fed": "GER",
-          "flagEmoji": "🇩🇪",
-          "rating": 2767,
-          "birthYear": 2004,
-          "fideId": "12940690",
-          "profileUrl": "https://ratings.fide.com/profile/12940690"
-        },
-        {
-          "rank": 6,
           "name": "Wesley So",
           "fideName": "So, Wesley",
           "title": "GM",
           "fed": "USA",
           "flagEmoji": "🇺🇸",
-          "rating": 2765,
+          "rating": 2774,
           "birthYear": 1993,
           "fideId": "5202213",
           "profileUrl": "https://ratings.fide.com/profile/5202213"
         },
         {
-          "rank": 7,
-          "name": "Anish Giri",
-          "fideName": "Giri, Anish",
+          "rank": 6,
+          "name": "Vincent Keymer",
+          "fideName": "Keymer, Vincent",
           "title": "GM",
-          "fed": "NED",
-          "flagEmoji": "🇳🇱",
+          "fed": "GER",
+          "flagEmoji": "🇩🇪",
           "rating": 2764,
-          "birthYear": 1994,
-          "fideId": "24116068",
-          "profileUrl": "https://ratings.fide.com/profile/24116068"
+          "birthYear": 2004,
+          "fideId": "12940690",
+          "profileUrl": "https://ratings.fide.com/profile/12940690"
         },
         {
-          "rank": 8,
+          "rank": 7,
           "name": "Nodirbek Abdusattorov",
           "fideName": "Abdusattorov, Nodirbek",
           "title": "GM",
@@ -106,6 +94,18 @@
           "birthYear": 2004,
           "fideId": "14204118",
           "profileUrl": "https://ratings.fide.com/profile/14204118"
+        },
+        {
+          "rank": 8,
+          "name": "Praggnanandhaa R",
+          "fideName": "Praggnanandhaa R",
+          "title": "GM",
+          "fed": "IND",
+          "flagEmoji": "🇮🇳",
+          "rating": 2761,
+          "birthYear": 2005,
+          "fideId": "25059530",
+          "profileUrl": "https://ratings.fide.com/profile/25059530"
         },
         {
           "rank": 9,
@@ -121,6 +121,18 @@
         },
         {
           "rank": 10,
+          "name": "Anish Giri",
+          "fideName": "Giri, Anish",
+          "title": "GM",
+          "fed": "NED",
+          "flagEmoji": "🇳🇱",
+          "rating": 2757,
+          "birthYear": 1994,
+          "fideId": "24116068",
+          "profileUrl": "https://ratings.fide.com/profile/24116068"
+        },
+        {
+          "rank": 11,
           "name": "Alireza Firouzja",
           "fideName": "Firouzja, Alireza",
           "title": "GM",
@@ -132,7 +144,7 @@
           "profileUrl": "https://ratings.fide.com/profile/12573981"
         },
         {
-          "rank": 11,
+          "rank": 12,
           "name": "Yi Wei",
           "fideName": "Wei, Yi",
           "title": "GM",
@@ -142,18 +154,6 @@
           "birthYear": 1999,
           "fideId": "8603405",
           "profileUrl": "https://ratings.fide.com/profile/8603405"
-        },
-        {
-          "rank": 12,
-          "name": "Praggnanandhaa R",
-          "fideName": "Praggnanandhaa R",
-          "title": "GM",
-          "fed": "IND",
-          "flagEmoji": "🇮🇳",
-          "rating": 2750,
-          "birthYear": 2005,
-          "fideId": "25059530",
-          "profileUrl": "https://ratings.fide.com/profile/25059530"
         },
         {
           "rank": 13,
@@ -181,6 +181,18 @@
         },
         {
           "rank": 15,
+          "name": "M. Amin Tabatabaei",
+          "fideName": "Tabatabaei, M. Amin",
+          "title": "GM",
+          "fed": "IRI",
+          "flagEmoji": "🇮🇷",
+          "rating": 2737,
+          "birthYear": 2001,
+          "fideId": "12521213",
+          "profileUrl": "https://ratings.fide.com/profile/12521213"
+        },
+        {
+          "rank": 16,
           "name": "Liren Ding",
           "fideName": "Ding, Liren",
           "title": "GM",
@@ -190,18 +202,6 @@
           "birthYear": 1992,
           "fideId": "8603677",
           "profileUrl": "https://ratings.fide.com/profile/8603677"
-        },
-        {
-          "rank": 16,
-          "name": "Quang Liem Le",
-          "fideName": "Le, Quang Liem",
-          "title": "GM",
-          "fed": "VIE",
-          "flagEmoji": "🇻🇳",
-          "rating": 2732,
-          "birthYear": 1991,
-          "fideId": "12401137",
-          "profileUrl": "https://ratings.fide.com/profile/12401137"
         },
         {
           "rank": 17,
@@ -217,39 +217,39 @@
         },
         {
           "rank": 18,
+          "name": "Quang Liem Le",
+          "fideName": "Le, Quang Liem",
+          "title": "GM",
+          "fed": "VIE",
+          "flagEmoji": "🇻🇳",
+          "rating": 2732,
+          "birthYear": 1991,
+          "fideId": "12401137",
+          "profileUrl": "https://ratings.fide.com/profile/12401137"
+        },
+        {
+          "rank": 19,
           "name": "Richard Rapport",
           "fideName": "Rapport, Richard",
           "title": "GM",
           "fed": "HUN",
           "flagEmoji": "🇭🇺",
-          "rating": 2729,
+          "rating": 2726,
           "birthYear": 1996,
           "fideId": "738590",
           "profileUrl": "https://ratings.fide.com/profile/738590"
         },
         {
-          "rank": 19,
-          "name": "Jorden Van Foreest",
-          "fideName": "Van Foreest, Jorden",
-          "title": "GM",
-          "fed": "NED",
-          "flagEmoji": "🇳🇱",
-          "rating": 2728,
-          "birthYear": 1999,
-          "fideId": "1039784",
-          "profileUrl": "https://ratings.fide.com/profile/1039784"
-        },
-        {
           "rank": 20,
-          "name": "M. Amin Tabatabaei",
-          "fideName": "Tabatabaei, M. Amin",
+          "name": "Levon Aronian",
+          "fideName": "Aronian, Levon",
           "title": "GM",
-          "fed": "IRI",
-          "flagEmoji": "🇮🇷",
-          "rating": 2726,
-          "birthYear": 2001,
-          "fideId": "12521213",
-          "profileUrl": "https://ratings.fide.com/profile/12521213"
+          "fed": "USA",
+          "flagEmoji": "🇺🇸",
+          "rating": 2725,
+          "birthYear": 1982,
+          "fideId": "13300474",
+          "profileUrl": "https://ratings.fide.com/profile/13300474"
         }
       ]
     },
@@ -275,18 +275,6 @@
         },
         {
           "rank": 2,
-          "name": "Tingjie Lei",
-          "fideName": "Lei, Tingjie",
-          "title": "GM",
-          "fed": "CHN",
-          "flagEmoji": "🇨🇳",
-          "rating": 2561,
-          "birthYear": 1997,
-          "fideId": "8605114",
-          "profileUrl": "https://ratings.fide.com/profile/8605114"
-        },
-        {
-          "rank": 3,
           "name": "Wenjun Ju",
           "fideName": "Ju, Wenjun",
           "title": "GM",
@@ -296,6 +284,18 @@
           "birthYear": 1991,
           "fideId": "8603006",
           "profileUrl": "https://ratings.fide.com/profile/8603006"
+        },
+        {
+          "rank": 3,
+          "name": "Tingjie Lei",
+          "fideName": "Lei, Tingjie",
+          "title": "GM",
+          "fed": "CHN",
+          "flagEmoji": "🇨🇳",
+          "rating": 2552,
+          "birthYear": 1997,
+          "fideId": "8605114",
+          "profileUrl": "https://ratings.fide.com/profile/8605114"
         },
         {
           "rank": 4,
@@ -316,13 +316,25 @@
           "title": "IM",
           "fed": "KAZ",
           "flagEmoji": "🇰🇿",
-          "rating": 2538,
+          "rating": 2536,
           "birthYear": 2004,
           "fideId": "13708694",
           "profileUrl": "https://ratings.fide.com/profile/13708694"
         },
         {
           "rank": 6,
+          "name": "Zhongyi Tan",
+          "fideName": "Tan, Zhongyi",
+          "title": "GM",
+          "fed": "CHN",
+          "flagEmoji": "🇨🇳",
+          "rating": 2536,
+          "birthYear": 1991,
+          "fideId": "8603642",
+          "profileUrl": "https://ratings.fide.com/profile/8603642"
+        },
+        {
+          "rank": 7,
           "name": "Aleksandra Goryachkina",
           "fideName": "Goryachkina, Aleksandra",
           "title": "GM",
@@ -334,40 +346,28 @@
           "profileUrl": "https://ratings.fide.com/profile/4147103"
         },
         {
-          "rank": 7,
+          "rank": 8,
           "name": "Anna Muzychuk",
           "fideName": "Muzychuk, Anna",
           "title": "GM",
           "fed": "UKR",
           "flagEmoji": "🇺🇦",
-          "rating": 2529,
+          "rating": 2524,
           "birthYear": 1990,
           "fideId": "14111330",
           "profileUrl": "https://ratings.fide.com/profile/14111330"
         },
         {
-          "rank": 8,
+          "rank": 9,
           "name": "Humpy Koneru",
           "fideName": "Koneru, Humpy",
           "title": "GM",
           "fed": "IND",
           "flagEmoji": "🇮🇳",
-          "rating": 2524,
+          "rating": 2509,
           "birthYear": 1987,
           "fideId": "5008123",
           "profileUrl": "https://ratings.fide.com/profile/5008123"
-        },
-        {
-          "rank": 9,
-          "name": "Zhongyi Tan",
-          "fideName": "Tan, Zhongyi",
-          "title": "GM",
-          "fed": "CHN",
-          "flagEmoji": "🇨🇳",
-          "rating": 2520,
-          "birthYear": 1991,
-          "fideId": "8603642",
-          "profileUrl": "https://ratings.fide.com/profile/8603642"
         },
         {
           "rank": 10,
@@ -376,7 +376,7 @@
           "title": "IM",
           "fed": "FID",
           "flagEmoji": "🏳️",
-          "rating": 2507,
+          "rating": 2509,
           "birthYear": 2001,
           "fideId": "24171760",
           "profileUrl": "https://ratings.fide.com/profile/24171760"
@@ -400,7 +400,7 @@
           "title": "GM",
           "fed": "SUI",
           "flagEmoji": "🇨🇭",
-          "rating": 2504,
+          "rating": 2495,
           "birthYear": 1984,
           "fideId": "4128125",
           "profileUrl": "https://ratings.fide.com/profile/4128125"
@@ -419,18 +419,6 @@
         },
         {
           "rank": 14,
-          "name": "Rameshbabu Vaishali",
-          "fideName": "Vaishali, Rameshbabu",
-          "title": "GM",
-          "fed": "IND",
-          "flagEmoji": "🇮🇳",
-          "rating": 2489,
-          "birthYear": 2001,
-          "fideId": "5091756",
-          "profileUrl": "https://ratings.fide.com/profile/5091756"
-        },
-        {
-          "rank": 15,
           "name": "Nana Dzagnidze",
           "fideName": "Dzagnidze, Nana",
           "title": "GM",
@@ -442,7 +430,7 @@
           "profileUrl": "https://ratings.fide.com/profile/13601903"
         },
         {
-          "rank": 16,
+          "rank": 15,
           "name": "Alina Kashlinskaya",
           "fideName": "Kashlinskaya, Alina",
           "title": "GM",
@@ -454,19 +442,55 @@
           "profileUrl": "https://ratings.fide.com/profile/4198026"
         },
         {
+          "rank": 16,
+          "name": "Rameshbabu Vaishali",
+          "fideName": "Vaishali, Rameshbabu",
+          "title": "GM",
+          "fed": "IND",
+          "flagEmoji": "🇮🇳",
+          "rating": 2469,
+          "birthYear": 2001,
+          "fideId": "5091756",
+          "profileUrl": "https://ratings.fide.com/profile/5091756"
+        },
+        {
           "rank": 17,
+          "name": "Carissa Yip",
+          "fideName": "Yip, Carissa",
+          "title": "IM",
+          "fed": "USA",
+          "flagEmoji": "🇺🇸",
+          "rating": 2468,
+          "birthYear": 2003,
+          "fideId": "2090732",
+          "profileUrl": "https://ratings.fide.com/profile/2090732"
+        },
+        {
+          "rank": 18,
+          "name": "Nino Batsiashvili",
+          "fideName": "Batsiashvili, Nino",
+          "title": "GM",
+          "fed": "GEO",
+          "flagEmoji": "🇬🇪",
+          "rating": 2466,
+          "birthYear": 1987,
+          "fideId": "13602993",
+          "profileUrl": "https://ratings.fide.com/profile/13602993"
+        },
+        {
+          "rank": 19,
           "name": "Anastasiia Hnatyshyn",
           "fideName": "Hnatyshyn, Anastasiia",
           "title": "WFM",
           "fed": "UKR",
           "flagEmoji": "🇺🇦",
-          "rating": 2465,
+          "rating": 2463,
           "birthYear": 2010,
           "fideId": "14198339",
           "profileUrl": "https://ratings.fide.com/profile/14198339"
         },
         {
-          "rank": 18,
+          "rank": 20,
           "name": "Mariya Muzychuk",
           "fideName": "Muzychuk, Mariya",
           "title": "GM",
@@ -476,30 +500,6 @@
           "birthYear": 1992,
           "fideId": "14114550",
           "profileUrl": "https://ratings.fide.com/profile/14114550"
-        },
-        {
-          "rank": 19,
-          "name": "Nino Batsiashvili",
-          "fideName": "Batsiashvili, Nino",
-          "title": "GM",
-          "fed": "GEO",
-          "flagEmoji": "🇬🇪",
-          "rating": 2459,
-          "birthYear": 1987,
-          "fideId": "13602993",
-          "profileUrl": "https://ratings.fide.com/profile/13602993"
-        },
-        {
-          "rank": 20,
-          "name": "Carissa Yip",
-          "fideName": "Yip, Carissa",
-          "title": "IM",
-          "fed": "USA",
-          "flagEmoji": "🇺🇸",
-          "rating": 2459,
-          "birthYear": 2003,
-          "fideId": "2090732",
-          "profileUrl": "https://ratings.fide.com/profile/2090732"
         }
       ]
     },
@@ -566,7 +566,7 @@
           "title": "GM",
           "fed": "RUS",
           "flagEmoji": "🇷🇺",
-          "rating": 2792,
+          "rating": 2783,
           "birthYear": 1996,
           "fideId": "24126055",
           "profileUrl": "https://ratings.fide.com/profile/24126055"
@@ -602,7 +602,7 @@
           "title": "GM",
           "fed": "USA",
           "flagEmoji": "🇺🇸",
-          "rating": 2764,
+          "rating": 2745,
           "birthYear": 1993,
           "fideId": "5202213",
           "profileUrl": "https://ratings.fide.com/profile/5202213"
@@ -614,7 +614,7 @@
           "title": "GM",
           "fed": "USA",
           "flagEmoji": "🇺🇸",
-          "rating": 2741,
+          "rating": 2738,
           "birthYear": 1992,
           "fideId": "2020009",
           "profileUrl": "https://ratings.fide.com/profile/2020009"
@@ -657,6 +657,18 @@
         },
         {
           "rank": 13,
+          "name": "Javokhir Sindarov",
+          "fideName": "Sindarov, Javokhir",
+          "title": "GM",
+          "fed": "UZB",
+          "flagEmoji": "UZ",
+          "rating": 2725,
+          "birthYear": 2005,
+          "fideId": "14205483",
+          "profileUrl": "https://ratings.fide.com/profile/14205483"
+        },
+        {
+          "rank": 14,
           "name": "Yangyi Yu",
           "fideName": "Yu, Yangyi",
           "title": "GM",
@@ -668,7 +680,7 @@
           "profileUrl": "https://ratings.fide.com/profile/8603820"
         },
         {
-          "rank": 14,
+          "rank": 15,
           "name": "Nihal Sarin",
           "fideName": "Nihal Sarin",
           "title": "GM",
@@ -680,7 +692,7 @@
           "profileUrl": "https://ratings.fide.com/profile/25092340"
         },
         {
-          "rank": 15,
+          "rank": 16,
           "name": "Xiangzhi Bu",
           "fideName": "Bu, Xiangzhi",
           "title": "GM",
@@ -692,31 +704,31 @@
           "profileUrl": "https://ratings.fide.com/profile/8601445"
         },
         {
-          "rank": 16,
-          "name": "Javokhir Sindarov",
-          "fideName": "Sindarov, Javokhir",
-          "title": "GM",
-          "fed": "UZB",
-          "flagEmoji": "UZ",
-          "rating": 2716,
-          "birthYear": 2005,
-          "fideId": "14205483",
-          "profileUrl": "https://ratings.fide.com/profile/14205483"
-        },
-        {
           "rank": 17,
           "name": "Levon Aronian",
           "fideName": "Aronian, Levon",
           "title": "GM",
           "fed": "USA",
           "flagEmoji": "🇺🇸",
-          "rating": 2715,
+          "rating": 2714,
           "birthYear": 1982,
           "fideId": "13300474",
           "profileUrl": "https://ratings.fide.com/profile/13300474"
         },
         {
           "rank": 18,
+          "name": "Praggnanandhaa R",
+          "fideName": "Praggnanandhaa R",
+          "title": "GM",
+          "fed": "IND",
+          "flagEmoji": "🇮🇳",
+          "rating": 2712,
+          "birthYear": 2005,
+          "fideId": "25059530",
+          "profileUrl": "https://ratings.fide.com/profile/25059530"
+        },
+        {
+          "rank": 19,
           "name": "Vladislav Artemiev",
           "fideName": "Artemiev, Vladislav",
           "title": "GM",
@@ -728,7 +740,7 @@
           "profileUrl": "https://ratings.fide.com/profile/24101605"
         },
         {
-          "rank": 19,
+          "rank": 20,
           "name": "Hans Moke Niemann",
           "fideName": "Niemann, Hans Moke",
           "title": "GM",
@@ -738,18 +750,6 @@
           "birthYear": 2003,
           "fideId": "2093596",
           "profileUrl": "https://ratings.fide.com/profile/2093596"
-        },
-        {
-          "rank": 20,
-          "name": "Shanglei Lu",
-          "fideName": "Lu, Shanglei",
-          "title": "GM",
-          "fed": "CHN",
-          "flagEmoji": "🇨🇳",
-          "rating": 2710,
-          "birthYear": 1995,
-          "fideId": "8603332",
-          "profileUrl": "https://ratings.fide.com/profile/8603332"
         }
       ]
     },
@@ -780,25 +780,13 @@
           "title": "GM",
           "fed": "PHI",
           "flagEmoji": "🇵🇭",
-          "rating": 2436,
+          "rating": 2444,
           "birthYear": 1995,
           "fideId": "5200750",
           "profileUrl": "https://ratings.fide.com/profile/5200750"
         },
         {
           "rank": 3,
-          "name": "Daniel Quizon",
-          "fideName": "Quizon, Daniel",
-          "title": "GM",
-          "fed": "PHI",
-          "flagEmoji": "🇵🇭",
-          "rating": 2424,
-          "birthYear": 2004,
-          "fideId": "5217911",
-          "profileUrl": "https://ratings.fide.com/profile/5217911"
-        },
-        {
-          "rank": 4,
           "name": "Eugenio Torre",
           "fideName": "Torre, Eugenio",
           "title": "GM",
@@ -810,16 +798,28 @@
           "profileUrl": "https://ratings.fide.com/profile/5200016"
         },
         {
+          "rank": 4,
+          "name": "Daniel Quizon",
+          "fideName": "Quizon, Daniel",
+          "title": "GM",
+          "fed": "PHI",
+          "flagEmoji": "🇵🇭",
+          "rating": 2414,
+          "birthYear": 2004,
+          "fideId": "5217911",
+          "profileUrl": "https://ratings.fide.com/profile/5217911"
+        },
+        {
           "rank": 5,
-          "name": "Paulo Bersamina",
-          "fideName": "Bersamina, Paulo",
+          "name": "Michael Jr. Concio",
+          "fideName": "Concio, Michael Jr.",
           "title": "IM",
           "fed": "PHI",
           "flagEmoji": "🇵🇭",
-          "rating": 2407,
-          "birthYear": 1998,
-          "fideId": "5206995",
-          "profileUrl": "https://ratings.fide.com/profile/5206995"
+          "rating": 2405,
+          "birthYear": 2005,
+          "fideId": "5217873",
+          "profileUrl": "https://ratings.fide.com/profile/5217873"
         },
         {
           "rank": 6,
@@ -835,15 +835,15 @@
         },
         {
           "rank": 7,
-          "name": "Mark Jay Bacojo",
-          "fideName": "Bacojo, Mark Jay",
+          "name": "Paulo Bersamina",
+          "fideName": "Bersamina, Paulo",
           "title": "IM",
           "fed": "PHI",
           "flagEmoji": "🇵🇭",
-          "rating": 2395,
-          "birthYear": 2006,
-          "fideId": "5220394",
-          "profileUrl": "https://ratings.fide.com/profile/5220394"
+          "rating": 2398,
+          "birthYear": 1998,
+          "fideId": "5206995",
+          "profileUrl": "https://ratings.fide.com/profile/5206995"
         },
         {
           "rank": 8,
@@ -871,6 +871,18 @@
         },
         {
           "rank": 10,
+          "name": "Mark Jay Bacojo",
+          "fideName": "Bacojo, Mark Jay",
+          "title": "IM",
+          "fed": "PHI",
+          "flagEmoji": "🇵🇭",
+          "rating": 2384,
+          "birthYear": 2006,
+          "fideId": "5220394",
+          "profileUrl": "https://ratings.fide.com/profile/5220394"
+        },
+        {
+          "rank": 11,
           "name": "Oliver Barbosa",
           "fideName": "Barbosa, Oliver",
           "title": "GM",
@@ -882,31 +894,7 @@
           "profileUrl": "https://ratings.fide.com/profile/5201640"
         },
         {
-          "rank": 11,
-          "name": "Michael Jr. Concio",
-          "fideName": "Concio, Michael Jr.",
-          "title": "IM",
-          "fed": "PHI",
-          "flagEmoji": "🇵🇭",
-          "rating": 2375,
-          "birthYear": 2005,
-          "fideId": "5217873",
-          "profileUrl": "https://ratings.fide.com/profile/5217873"
-        },
-        {
           "rank": 12,
-          "name": "Darwin Laylo",
-          "fideName": "Laylo, Darwin",
-          "title": "GM",
-          "fed": "PHI",
-          "flagEmoji": "🇵🇭",
-          "rating": 2374,
-          "birthYear": 1980,
-          "fideId": "5201330",
-          "profileUrl": "https://ratings.fide.com/profile/5201330"
-        },
-        {
-          "rank": 13,
           "name": "Roland Salvador",
           "fideName": "Salvador, Roland",
           "title": "IM",
@@ -918,7 +906,7 @@
           "profileUrl": "https://ratings.fide.com/profile/5201047"
         },
         {
-          "rank": 14,
+          "rank": 13,
           "name": "Dino Ballecer",
           "fideName": "Ballecer, Dino",
           "title": "FM",
@@ -930,19 +918,19 @@
           "profileUrl": "https://ratings.fide.com/profile/5203597"
         },
         {
-          "rank": 15,
+          "rank": 14,
           "name": "Christian Gian Karlo Arca",
           "fideName": "Arca, Christian Gian Karlo",
           "title": "FM",
           "fed": "PHI",
           "flagEmoji": "🇵🇭",
-          "rating": 2358,
+          "rating": 2357,
           "birthYear": 2009,
           "fideId": "5258138",
           "profileUrl": "https://ratings.fide.com/profile/5258138"
         },
         {
-          "rank": 16,
+          "rank": 15,
           "name": "John Paul Gomez",
           "fideName": "Gomez, John Paul",
           "title": "GM",
@@ -952,6 +940,18 @@
           "birthYear": 1986,
           "fideId": "5201381",
           "profileUrl": "https://ratings.fide.com/profile/5201381"
+        },
+        {
+          "rank": 16,
+          "name": "Darwin Laylo",
+          "fideName": "Laylo, Darwin",
+          "title": "GM",
+          "fed": "PHI",
+          "flagEmoji": "🇵🇭",
+          "rating": 2347,
+          "birthYear": 1980,
+          "fideId": "5201330",
+          "profileUrl": "https://ratings.fide.com/profile/5201330"
         },
         {
           "rank": 17,
@@ -967,30 +967,6 @@
         },
         {
           "rank": 18,
-          "name": "Rogelio Jr Antonio",
-          "fideName": "Antonio, Rogelio Jr",
-          "title": "GM",
-          "fed": "PHI",
-          "flagEmoji": "🇵🇭",
-          "rating": 2323,
-          "birthYear": 1962,
-          "fideId": "5200032",
-          "profileUrl": "https://ratings.fide.com/profile/5200032"
-        },
-        {
-          "rank": 19,
-          "name": "Ivan Travis Cu",
-          "fideName": "Cu, Ivan Travis",
-          "title": "FM",
-          "fed": "PHI",
-          "flagEmoji": "🇵🇭",
-          "rating": 2321,
-          "birthYear": 2009,
-          "fideId": "5245010",
-          "profileUrl": "https://ratings.fide.com/profile/5245010"
-        },
-        {
-          "rank": 20,
           "name": "Joel Pimentel",
           "fideName": "Pimentel, Joel",
           "title": "IM",
@@ -1000,6 +976,30 @@
           "birthYear": null,
           "fideId": "5204860",
           "profileUrl": "https://ratings.fide.com/profile/5204860"
+        },
+        {
+          "rank": 19,
+          "name": "Rogelio Jr Antonio",
+          "fideName": "Antonio, Rogelio Jr",
+          "title": "GM",
+          "fed": "PHI",
+          "flagEmoji": "🇵🇭",
+          "rating": 2313,
+          "birthYear": 1962,
+          "fideId": "5200032",
+          "profileUrl": "https://ratings.fide.com/profile/5200032"
+        },
+        {
+          "rank": 20,
+          "name": "Richilieu III Salcedo",
+          "fideName": "Salcedo, Richilieu III",
+          "title": "FM",
+          "fed": "PHI",
+          "flagEmoji": "🇵🇭",
+          "rating": 2309,
+          "birthYear": 1991,
+          "fideId": "5204658",
+          "profileUrl": "https://ratings.fide.com/profile/5204658"
         }
       ]
     },
@@ -1018,7 +1018,7 @@
           "title": "WGM",
           "fed": "PHI",
           "flagEmoji": "🇵🇭",
-          "rating": 2241,
+          "rating": 2260,
           "birthYear": 1996,
           "fideId": "5212499",
           "profileUrl": "https://ratings.fide.com/profile/5212499"
@@ -1030,7 +1030,7 @@
           "title": "WIM",
           "fed": "PHI",
           "flagEmoji": "🇵🇭",
-          "rating": 2130,
+          "rating": 2160,
           "birthYear": 2008,
           "fideId": "5220416",
           "profileUrl": "https://ratings.fide.com/profile/5220416"
@@ -1042,34 +1042,34 @@
           "title": "WIM",
           "fed": "PHI",
           "flagEmoji": "🇵🇭",
-          "rating": 2125,
+          "rating": 2134,
           "birthYear": 1994,
           "fideId": "5204585",
           "profileUrl": "https://ratings.fide.com/profile/5204585"
         },
         {
           "rank": 4,
-          "name": "Jemaicah Yap Mendoza",
-          "fideName": "Mendoza, Jemaicah Yap",
-          "title": "WFM",
-          "fed": "PHI",
-          "flagEmoji": "🇵🇭",
-          "rating": 2099,
-          "birthYear": 2011,
-          "fideId": "5262062",
-          "profileUrl": "https://ratings.fide.com/profile/5262062"
-        },
-        {
-          "rank": 5,
           "name": "Shania Mae Mendoza",
           "fideName": "Mendoza, Shania Mae",
           "title": "WIM",
           "fed": "PHI",
           "flagEmoji": "🇵🇭",
-          "rating": 2040,
+          "rating": 2076,
           "birthYear": 1998,
           "fideId": "5211158",
           "profileUrl": "https://ratings.fide.com/profile/5211158"
+        },
+        {
+          "rank": 5,
+          "name": "Jemaicah Yap Mendoza",
+          "fideName": "Mendoza, Jemaicah Yap",
+          "title": "WFM",
+          "fed": "PHI",
+          "flagEmoji": "🇵🇭",
+          "rating": 2046,
+          "birthYear": 2011,
+          "fideId": "5262062",
+          "profileUrl": "https://ratings.fide.com/profile/5262062"
         },
         {
           "rank": 6,
@@ -1078,7 +1078,7 @@
           "title": "WIM",
           "fed": "PHI",
           "flagEmoji": "🇵🇭",
-          "rating": 2000,
+          "rating": 2035,
           "birthYear": 1996,
           "fideId": "5208912",
           "profileUrl": "https://ratings.fide.com/profile/5208912"
@@ -1109,18 +1109,30 @@
         },
         {
           "rank": 9,
+          "name": "Loreshyl Cuizon",
+          "fideName": "Cuizon, Loreshyl",
+          "title": "",
+          "fed": "PHI",
+          "flagEmoji": "🇵🇭",
+          "rating": 1980,
+          "birthYear": 1986,
+          "fideId": "5200580",
+          "profileUrl": "https://ratings.fide.com/profile/5200580"
+        },
+        {
+          "rank": 10,
           "name": "Mhage Gerriahlou Sebastian",
           "fideName": "Sebastian, Mhage Gerriahlou",
           "title": "WFM",
           "fed": "PHI",
           "flagEmoji": "🇵🇭",
-          "rating": 1973,
+          "rating": 1957,
           "birthYear": 2005,
           "fideId": "5217962",
           "profileUrl": "https://ratings.fide.com/profile/5217962"
         },
         {
-          "rank": 10,
+          "rank": 11,
           "name": "Allanney Jia Doroy",
           "fideName": "Doroy, Allanney Jia",
           "title": "WIM",
@@ -1132,7 +1144,7 @@
           "profileUrl": "https://ratings.fide.com/profile/5216729"
         },
         {
-          "rank": 11,
+          "rank": 12,
           "name": "Cristine Rose Isurina Mariano",
           "fideName": "Isurina Mariano, Cristine Rose",
           "title": "WIM",
@@ -1144,7 +1156,7 @@
           "profileUrl": "https://ratings.fide.com/profile/5201071"
         },
         {
-          "rank": 12,
+          "rank": 13,
           "name": "Lexie Grace Hernandez",
           "fideName": "Hernandez, Lexie Grace",
           "title": "WFM",
@@ -1156,7 +1168,7 @@
           "profileUrl": "https://ratings.fide.com/profile/5238480"
         },
         {
-          "rank": 13,
+          "rank": 14,
           "name": "Francois Marie Magpily",
           "fideName": "Magpily, Francois Marie",
           "title": "WFM",
@@ -1168,7 +1180,7 @@
           "profileUrl": "https://ratings.fide.com/profile/5216257"
         },
         {
-          "rank": 14,
+          "rank": 15,
           "name": "Cherry Ann Mejia",
           "fideName": "Mejia, Cherry Ann",
           "title": "WFM",
@@ -1180,31 +1192,31 @@
           "profileUrl": "https://ratings.fide.com/profile/5206880"
         },
         {
-          "rank": 15,
+          "rank": 16,
           "name": "Kylen Joy Mordido",
           "fideName": "Mordido, Kylen Joy",
           "title": "WIM",
           "fed": "PHI",
           "flagEmoji": "🇵🇭",
-          "rating": 1922,
+          "rating": 1924,
           "birthYear": 2002,
           "fideId": "5219086",
           "profileUrl": "https://ratings.fide.com/profile/5219086"
         },
         {
-          "rank": 16,
+          "rank": 17,
           "name": "Daren Dela Cruz",
           "fideName": "Dela Cruz, Daren",
           "title": "WFM",
           "fed": "PHI",
           "flagEmoji": "🇵🇭",
-          "rating": 1919,
+          "rating": 1918,
           "birthYear": 2008,
           "fideId": "5220424",
           "profileUrl": "https://ratings.fide.com/profile/5220424"
         },
         {
-          "rank": 17,
+          "rank": 18,
           "name": "Samantha Glo Revita",
           "fideName": "Revita, Samantha Glo",
           "title": "WFM",
@@ -1216,19 +1228,19 @@
           "profileUrl": "https://ratings.fide.com/profile/5205085"
         },
         {
-          "rank": 18,
+          "rank": 19,
           "name": "Kate Nicole Ordizo",
           "fideName": "Ordizo, Kate Nicole",
           "title": "WCM",
           "fed": "PHI",
           "flagEmoji": "🇵🇭",
-          "rating": 1892,
+          "rating": 1897,
           "birthYear": 2007,
           "fideId": "5264022",
           "profileUrl": "https://ratings.fide.com/profile/5264022"
         },
         {
-          "rank": 19,
+          "rank": 20,
           "name": "April Joy Claros",
           "fideName": "Claros, April Joy",
           "title": "WFM",
@@ -1238,18 +1250,6 @@
           "birthYear": 2007,
           "fideId": "5238447",
           "profileUrl": "https://ratings.fide.com/profile/5238447"
-        },
-        {
-          "rank": 20,
-          "name": "Kaye Lalaine Regidor",
-          "fideName": "Regidor, Kaye Lalaine",
-          "title": "WCM",
-          "fed": "PHI",
-          "flagEmoji": "🇵🇭",
-          "rating": 1879,
-          "birthYear": 2009,
-          "fideId": "5229820",
-          "profileUrl": "https://ratings.fide.com/profile/5229820"
         }
       ]
     },
@@ -1268,7 +1268,7 @@
           "title": "GM",
           "fed": "SGP",
           "flagEmoji": "🇸🇬",
-          "rating": 2578,
+          "rating": 2584,
           "birthYear": 2000,
           "fideId": "5804418",
           "profileUrl": "https://ratings.fide.com/profile/5804418"
@@ -1280,7 +1280,7 @@
           "title": "GM",
           "fed": "SGP",
           "flagEmoji": "🇸🇬",
-          "rating": 2513,
+          "rating": 2497,
           "birthYear": 2007,
           "fideId": "5818320",
           "profileUrl": "https://ratings.fide.com/profile/5818320"
@@ -1292,7 +1292,7 @@
           "title": "IM",
           "fed": "SGP",
           "flagEmoji": "🇸🇬",
-          "rating": 2392,
+          "rating": 2391,
           "birthYear": 2000,
           "fideId": "8605718",
           "profileUrl": "https://ratings.fide.com/profile/8605718"
@@ -1311,27 +1311,27 @@
         },
         {
           "rank": 5,
-          "name": "Zi Han Goh",
-          "fideName": "Goh, Zi Han",
-          "title": "IM",
-          "fed": "SGP",
-          "flagEmoji": "🇸🇬",
-          "rating": 2387,
-          "birthYear": 2009,
-          "fideId": "5819156",
-          "profileUrl": "https://ratings.fide.com/profile/5819156"
-        },
-        {
-          "rank": 6,
           "name": "Zhenyong Jayden Wong",
           "fideName": "Wong, Zhenyong Jayden",
           "title": "FM",
           "fed": "SGP",
           "flagEmoji": "🇸🇬",
-          "rating": 2361,
+          "rating": 2360,
           "birthYear": 2006,
           "fideId": "5821975",
           "profileUrl": "https://ratings.fide.com/profile/5821975"
+        },
+        {
+          "rank": 6,
+          "name": "Zi Han Goh",
+          "fideName": "Goh, Zi Han",
+          "title": "IM",
+          "fed": "SGP",
+          "flagEmoji": "🇸🇬",
+          "rating": 2347,
+          "birthYear": 2009,
+          "fideId": "5819156",
+          "profileUrl": "https://ratings.fide.com/profile/5819156"
         },
         {
           "rank": 7,
@@ -1340,7 +1340,7 @@
           "title": "CM",
           "fed": "SGP",
           "flagEmoji": "🇸🇬",
-          "rating": 2295,
+          "rating": 2303,
           "birthYear": 2015,
           "fideId": "33387230",
           "profileUrl": "https://ratings.fide.com/profile/33387230"
@@ -1364,7 +1364,7 @@
           "title": "IM",
           "fed": "SGP",
           "flagEmoji": "🇸🇬",
-          "rating": 2259,
+          "rating": 2257,
           "birthYear": 1967,
           "fideId": "5201322",
           "profileUrl": "https://ratings.fide.com/profile/5201322"
@@ -1383,18 +1383,6 @@
         },
         {
           "rank": 11,
-          "name": "Qianyun Gong",
-          "fideName": "Gong, Qianyun",
-          "title": "WGM",
-          "fed": "SGP",
-          "flagEmoji": "🇸🇬",
-          "rating": 2200,
-          "birthYear": 1985,
-          "fideId": "8602425",
-          "profileUrl": "https://ratings.fide.com/profile/8602425"
-        },
-        {
-          "rank": 12,
           "name": "Kwok Leong Pang",
           "fideName": "Pang, Kwok Leong",
           "title": "IM",
@@ -1406,19 +1394,19 @@
           "profileUrl": "https://ratings.fide.com/profile/5800196"
         },
         {
-          "rank": 13,
-          "name": "Sreekarthika Velmurugan",
-          "fideName": "Sreekarthika Velmurugan",
-          "title": "WCM",
+          "rank": 12,
+          "name": "Qianyun Gong",
+          "fideName": "Gong, Qianyun",
+          "title": "WGM",
           "fed": "SGP",
           "flagEmoji": "🇸🇬",
           "rating": 2182,
-          "birthYear": 2012,
-          "fideId": "25996045",
-          "profileUrl": "https://ratings.fide.com/profile/25996045"
+          "birthYear": 1985,
+          "fideId": "8602425",
+          "profileUrl": "https://ratings.fide.com/profile/8602425"
         },
         {
-          "rank": 14,
+          "rank": 13,
           "name": "Wang Sheng Lee",
           "fideName": "Lee, Wang Sheng",
           "title": "FM",
@@ -1430,31 +1418,31 @@
           "profileUrl": "https://ratings.fide.com/profile/5800358"
         },
         {
-          "rank": 15,
+          "rank": 14,
           "name": "Mei-En Emmanuelle Hng",
           "fideName": "Hng, Mei-En Emmanuelle",
           "title": "WFM",
           "fed": "SGP",
           "flagEmoji": "🇸🇬",
-          "rating": 2161,
+          "rating": 2177,
           "birthYear": 2001,
           "fideId": "5804566",
           "profileUrl": "https://ratings.fide.com/profile/5804566"
         },
         {
-          "rank": 16,
+          "rank": 15,
           "name": "Jinghan Cameron Goh",
           "fideName": "Goh, Jinghan Cameron",
           "title": "FM",
           "fed": "SGP",
           "flagEmoji": "🇸🇬",
-          "rating": 2157,
+          "rating": 2171,
           "birthYear": 2001,
           "fideId": "5804540",
           "profileUrl": "https://ratings.fide.com/profile/5804540"
         },
         {
-          "rank": 17,
+          "rank": 16,
           "name": "Yen-Hsiu Elliot Wong",
           "fideName": "Wong, Yen-Hsiu Elliot",
           "title": "CM",
@@ -1466,7 +1454,7 @@
           "profileUrl": "https://ratings.fide.com/profile/5827701"
         },
         {
-          "rank": 18,
+          "rank": 17,
           "name": "Yi Rui Ray Tan",
           "fideName": "Tan, Yi Rui Ray",
           "title": "CM",
@@ -1478,7 +1466,7 @@
           "profileUrl": "https://ratings.fide.com/profile/5826985"
         },
         {
-          "rank": 19,
+          "rank": 18,
           "name": "Jai Adithya Gnanasekar",
           "fideName": "Gnanasekar, Jai Adithya",
           "title": "CM",
@@ -1488,6 +1476,18 @@
           "birthYear": 2011,
           "fideId": "5833884",
           "profileUrl": "https://ratings.fide.com/profile/5833884"
+        },
+        {
+          "rank": 19,
+          "name": "Kok Siong Teo",
+          "fideName": "Teo, Kok Siong",
+          "title": "CM",
+          "fed": "SGP",
+          "flagEmoji": "🇸🇬",
+          "rating": 2127,
+          "birthYear": 1960,
+          "fideId": "5800056",
+          "profileUrl": "https://ratings.fide.com/profile/5800056"
         },
         {
           "rank": 20,
