@@ -21,7 +21,7 @@
 
   <link rel="icon" type="image/png" href="/assets/pieces/app_icon.png">
   <link rel="apple-touch-icon" href="/assets/pieces/app_icon.png">
-  <link rel="stylesheet" href="../../articles.css?v=20260917-articles-v3">
+  <link rel="stylesheet" href="../../articles.css?v=20260917-articles-v4">
 </head>
 <body>
   <div class="read-progress" aria-hidden="true"><div class="read-progress-bar" id="readProgressBar"></div></div>
@@ -71,6 +71,7 @@
     </p>
 
     <nav class="part-toc" aria-label="In this part">
+      <p class="part-toc-series">Part 3 · The Ecosystems</p>
       <p class="part-toc-title">In this part</p>
       <ol>
         <li><a href="#india">India — built around a role model</a></li>
@@ -80,7 +81,7 @@
       </ol>
     </nav>
 
-    <h2 id="india"><span class="h2-kicker">Model № 5 · The ecosystem</span>India: built around a role model</h2>
+    <h2 id="india"><span class="h2-kicker">The ecosystem</span>India: built around a role model</h2>
     <div class="stat-grid" aria-label="India by the numbers">
       <div class="stat-card"><span class="stat-value">1988</span><span class="stat-label">Anand becomes India's first grandmaster — the trigger event</span></div>
       <div class="stat-card"><span class="stat-value">~2,000</span><span class="stat-label">Students in chess classes at Chennai's Velammal schools alone</span></div>
@@ -109,7 +110,7 @@
       </ul>
     </div>
 
-    <h2 id="usa"><span class="h2-kicker">Model № 6 · The patron</span>USA: private capital plus migration</h2>
+    <h2 id="usa"><span class="h2-kicker">The patron</span>USA: private capital plus migration</h2>
     <div class="stat-grid" aria-label="USA by the numbers">
       <div class="stat-card"><span class="stat-value">2008</span><span class="stat-label">Sinquefield founds the St. Louis chess club — tens of millions follow</span></div>
       <div class="stat-card"><span class="stat-value">2016</span><span class="stat-label">Olympiad gold in Baku — the model's proof of concept</span></div>
@@ -131,7 +132,7 @@
       </ul>
     </div>
 
-    <h2 id="hungary"><span class="h2-kicker">Model № 7 · The laboratory</span>Hungary: the family experiment</h2>
+    <h2 id="hungary"><span class="h2-kicker">The laboratory</span>Hungary: the family experiment</h2>
     <div class="stat-grid" aria-label="The Polgár experiment by the numbers">
       <div class="stat-card"><span class="stat-value">3</span><span class="stat-label">Sisters, one hypothesis, one household laboratory</span></div>
       <div class="stat-card"><span class="stat-value">15y 4m</span><span class="stat-label">Judit's age at the GM title — breaking Fischer's record</span></div>
@@ -167,8 +168,11 @@
 
     <a class="part-next" href="../part-4-winning-formula/">
       <span>
-        <span class="part-next-label">Next · Part 4</span>
+        <span class="part-next-eyebrow">Continue the series</span>
+        <span class="part-next-part">Part 4 of 4</span>
         <span class="part-next-title">The Winning Formula: What Champions' Countries Share</span>
+        <span class="part-next-dek">The five elements every winning chess country shares — and what to steal for your own training.</span>
+        <span class="part-next-meta">~7 min read</span>
       </span>
       <span class="part-next-arrow" aria-hidden="true">→</span>
     </a>
@@ -189,8 +193,8 @@
     </section>
 
     <nav class="article-nav" aria-label="Article navigation">
-      <a href="../part-2-state-programs/">← Part 2: The State Programs</a>
-      <a href="../part-4-winning-formula/">Part 4: The Winning Formula →</a>
+      <a href="../">← Series overview</a>
+      <a href="/articles/">All articles →</a>
     </nav>
   </div>
 
@@ -213,6 +217,21 @@
       window.addEventListener('scroll', update, { passive: true });
       window.addEventListener('resize', update);
       update();
+
+      const tocLinks = document.querySelectorAll('.part-toc a[href^="#"]');
+      if (tocLinks.length && 'IntersectionObserver' in window) {
+        const byId = new Map();
+        tocLinks.forEach(l => byId.set(l.getAttribute('href').slice(1), l));
+        const spy = new IntersectionObserver(entries => {
+          entries.forEach(e => {
+            if (!e.isIntersecting) return;
+            tocLinks.forEach(l => l.classList.remove('is-here'));
+            const link = byId.get(e.target.id);
+            if (link) link.classList.add('is-here');
+          });
+        }, { rootMargin: '-15% 0px -70% 0px' });
+        document.querySelectorAll('.article-body h2[id]').forEach(h => spy.observe(h));
+      }
     })();
   </script>
 </body>

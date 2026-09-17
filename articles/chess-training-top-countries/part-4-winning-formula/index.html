@@ -21,7 +21,7 @@
 
   <link rel="icon" type="image/png" href="/assets/pieces/app_icon.png">
   <link rel="apple-touch-icon" href="/assets/pieces/app_icon.png">
-  <link rel="stylesheet" href="../../articles.css?v=20260917-articles-v3">
+  <link rel="stylesheet" href="../../articles.css?v=20260917-articles-v4">
 </head>
 <body>
   <div class="read-progress" aria-hidden="true"><div class="read-progress-bar" id="readProgressBar"></div></div>
@@ -71,6 +71,7 @@
     </p>
 
     <nav class="part-toc" aria-label="In this part">
+      <p class="part-toc-series">Part 4 · The Winning Formula</p>
       <p class="part-toc-title">In this part</p>
       <ol>
         <li><a href="#synthesis">Five elements every winner shares</a></li>
@@ -163,6 +164,21 @@
       window.addEventListener('scroll', update, { passive: true });
       window.addEventListener('resize', update);
       update();
+
+      const tocLinks = document.querySelectorAll('.part-toc a[href^="#"]');
+      if (tocLinks.length && 'IntersectionObserver' in window) {
+        const byId = new Map();
+        tocLinks.forEach(l => byId.set(l.getAttribute('href').slice(1), l));
+        const spy = new IntersectionObserver(entries => {
+          entries.forEach(e => {
+            if (!e.isIntersecting) return;
+            tocLinks.forEach(l => l.classList.remove('is-here'));
+            const link = byId.get(e.target.id);
+            if (link) link.classList.add('is-here');
+          });
+        }, { rootMargin: '-15% 0px -70% 0px' });
+        document.querySelectorAll('.article-body h2[id]').forEach(h => spy.observe(h));
+      }
     })();
   </script>
 </body>

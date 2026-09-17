@@ -21,7 +21,7 @@
 
   <link rel="icon" type="image/png" href="/assets/pieces/app_icon.png">
   <link rel="apple-touch-icon" href="/assets/pieces/app_icon.png">
-  <link rel="stylesheet" href="../../articles.css?v=20260917-articles-v3">
+  <link rel="stylesheet" href="../../articles.css?v=20260917-articles-v4">
 </head>
 <body>
   <div class="read-progress" aria-hidden="true"><div class="read-progress-bar" id="readProgressBar"></div></div>
@@ -71,6 +71,7 @@
     </p>
 
     <nav class="part-toc" aria-label="In this part">
+      <p class="part-toc-series">Part 1 · The Blueprint</p>
       <p class="part-toc-title">In this part</p>
       <ol>
         <li><a href="#masses">Chess to the masses — the state adopts the game</a></li>
@@ -110,6 +111,19 @@
       "Botvinnik's example and teaching established the modern approach to preparing for competitive chess: regular but moderate physical exercise; analysing very thoroughly a relatively narrow repertoire of openings; annotating one's own games… publishing one's annotations so that others can point out any errors; studying strong opponents… ruthless objectivity about one's own strengths and weaknesses."
       <cite>— Vladimir Kramnik, on the Botvinnik school</cite>
     </blockquote>
+
+    <div class="method-feature">
+      <p class="method-feature-title">Botvinnik's method</p>
+      <p class="method-feature-dek">The training habits the school codified — still the professional standard.</p>
+      <ol>
+        <li>Physical conditioning, kept regular but moderate</li>
+        <li>A narrow opening repertoire, analysed very deeply</li>
+        <li>Annotate your own games, thoroughly</li>
+        <li>Publish the annotations and invite criticism</li>
+        <li>Study opponents and their habits</li>
+        <li>Be ruthlessly objective about your own play</li>
+      </ol>
+    </div>
     <p>
       The Botvinnik school — later the Botvinnik-Kasparov school — trained Karpov, Kasparov, and Kramnik. Its habits (deep opening files, self-annotation, physical conditioning, opponent dossiers, elite seconds) became the professional standard everywhere. The payoff was staggering: Soviet players held the world championship almost without interruption from 1948 to 2000, and the USSR won 18 of the 19 Olympiads it entered between 1952 and 1990.
     </p>
@@ -134,8 +148,11 @@
 
     <a class="part-next" href="../part-2-state-programs/">
       <span>
-        <span class="part-next-label">Next · Part 2</span>
+        <span class="part-next-eyebrow">Continue the series</span>
+        <span class="part-next-part">Part 2 of 4</span>
         <span class="part-next-title">The State Programs: China, Armenia, Azerbaijan &amp; Uzbekistan</span>
+        <span class="part-next-dek">Four ways a government can manufacture grandmasters on purpose.</span>
+        <span class="part-next-meta">~11 min read</span>
       </span>
       <span class="part-next-arrow" aria-hidden="true">→</span>
     </a>
@@ -152,7 +169,7 @@
 
     <nav class="article-nav" aria-label="Article navigation">
       <a href="../">← Series overview</a>
-      <a href="../part-2-state-programs/">Part 2: The State Programs →</a>
+      <a href="/articles/">All articles →</a>
     </nav>
   </div>
 
@@ -175,6 +192,21 @@
       window.addEventListener('scroll', update, { passive: true });
       window.addEventListener('resize', update);
       update();
+
+      const tocLinks = document.querySelectorAll('.part-toc a[href^="#"]');
+      if (tocLinks.length && 'IntersectionObserver' in window) {
+        const byId = new Map();
+        tocLinks.forEach(l => byId.set(l.getAttribute('href').slice(1), l));
+        const spy = new IntersectionObserver(entries => {
+          entries.forEach(e => {
+            if (!e.isIntersecting) return;
+            tocLinks.forEach(l => l.classList.remove('is-here'));
+            const link = byId.get(e.target.id);
+            if (link) link.classList.add('is-here');
+          });
+        }, { rootMargin: '-15% 0px -70% 0px' });
+        document.querySelectorAll('.article-body h2[id]').forEach(h => spy.observe(h));
+      }
     })();
   </script>
 </body>
