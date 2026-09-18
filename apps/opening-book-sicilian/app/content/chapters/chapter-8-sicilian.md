@@ -785,9 +785,9 @@ Finally, 13.b4 has been the only try in practice so far, but it gives Black a ta
 Chapter 8 – 7.Bc4
 
 **FEN:**
-`r4rk1/p1qbbppp/2n5/1p1pP3/1P6/PN3N2/3N1PPP/R1BQR1K1 b - - 1 15`
+`r4rk1/p1qbbppp/2n5/1p1pP3/1P6/PN3N2/5PPP/R1BQR1K1 b - - 1 15`
 
-<!-- FEN: r4rk1/p1qbbppp/2n5/1p1pP3/1P6/PN3N2/3N1PPP/R1BQR1K1 b - - 1 15 -->
+<!-- FEN: r4rk1/p1qbbppp/2n5/1p1pP3/1P6/PN3N2/5PPP/R1BQR1K1 b - - 1 15 -->
 15...a5!? 16.Bg5! Bxg5 17.Nxg5 axb4 (17...h6 18.Nxf7!∞) 18.Qxd5 Qd8 19.Nc5 Bg4 20.Qxc6 Qxg5 21.axb4 Rxa1 22.Rxa1 Qxe5 23.Rf1 h6=
 
 **FEN:**
@@ -810,10 +810,10 @@ The most direct attempt to weaken our defences. In this way, White also finds ti
 Instead, 14.Bb1 Rfd8 does not offer White anything special now, for example: 15.h4 Be8 16.Qe2 g6 17.Qe4
 
 **FEN:**
-`2rrnbk1/ppq1bp1p/2n1p1p1/3nP3/4Q2P/P2B1N2/1P1N1PP1/R1B1R1K1 b - - 2 17`
+`2rrb1k1/ppq1bp1p/2n1p1p1/3nP3/4Q2P/P4N2/1P1N1PP1/RBB1R1K1 b - - 1 17`
 
-<!-- FEN: 2rrnbk1/ppq1bp1p/2n1p1p1/3nP3/4Q2P/P2B1N2/1P1N1PP1/R1B1R1K1 b - - 2 17 -->
-17...b6! 18.h5 (18.Nb3 Nd7 19.Bg5 Bxg5 20.hxg5 Qb6 21.Ba2 a5⇄) 18...Nd7 19.hxg6 hxg6 20.Nc4 Nd4! 21.Qxd4 Qxc4 22.Qe3 Nc5 23.Qh6 Qg4 24.Bg5 Bxg5 25.Nxg5 Qh5 26.Qxh5 gxh5=
+<!-- FEN: 2rrb1k1/ppq1bp1p/2n1p1p1/3nP3/4Q2P/P4N2/1P1N1PP1/RBB1R1K1 b - - 1 17 -->
+17...Nb6! 18.h5 (18.Nb3 Nd7 19.Bg5 Bxg5 20.hxg5 Qb6 21.Ba2 a5⇄) 18...Nd7 19.hxg6 hxg6 20.Nc4 Nd4! 21.Qxd4 Qxc4 22.Qe3 Nc5 23.Qh6 Qg4 24.Bg5 Bxg5 25.Nxg5 Qh5 26.Qxh5 gxh5=
 
 <!-- FEN: 2r2rk1/ppqbbppp/2n1p3/3nP3/8/P2B1N2/1P1N1PPP/R1BQR1K1 w - - 2 14 -->
 After 14.Nc4 b5! 15.Nd6 Bxd6 16.exd6 Qxd6 17.Bxb5 Nce7 18.Bd3 Rfd8 the position is certainly unbalanced, but Black's piece activity seems to outweigh the enemy bishops.
@@ -833,21 +833,21 @@ White would like to keep the bishop trained on the kingside with 17.Bb1, but aft
 c3 Sicilian
 
 **FEN:**
-`2rrbkb1/ppq2p2/2n1p1p1/3nP2p/7P/P4NQ1/BP1N1PP1/R1B1R1K1 b - - 4 19`
+`2rrbbk1/ppq2p2/2n1p1p1/3nP2p/8/P4NQ1/BP1N1PPP/R1B1R1K1 b - - 3 19`
 
-<!-- FEN: 2rrbkb1/ppq2p2/2n1p1p1/3nP2p/7P/P4NQ1/BP1N1PP1/R1B1R1K1 b - - 4 19 -->
-19...Nce7 20.Nd4 (20.Ne4 Nf5 21.Qh3 Be7∓) 20...Qb6 21.N2f3 b5 22.Bg5 Bc4∓ The advantage seems to lie with Black.
+<!-- FEN: 2rrbbk1/ppq2p2/2n1p1p1/3nP2p/8/P4NQ1/BP1N1PPP/R1B1R1K1 b - - 3 19 -->
+19...Nce7 20.Nd4 (20.Ne4 Nf5 21.Qh3 Be7∓) 20...Qb6 21.N2f3 Bb5 22.Bg5 Bc4∓ The advantage seems to lie with Black.
 
 **FEN:**
-`2rrnbk1/ppq2p2/2n1p1p1/3nP3/6Q1/P4N2/1P1N1PP1/R1B1RBK1 b - - 3 17`
+`2rrb1k1/ppq1bp1p/2n1p1p1/3nP3/6Q1/P4N2/1P1N1PP1/R1B1RBK1 b - - 5 17`
 
-<!-- FEN: 2rrnbk1/ppq2p2/2n1p1p1/3nP3/6Q1/P4N2/1P1N1PP1/R1B1RBK1 b - - 3 17 -->
-**17...Bf8 18.Qg3 Bg7 19.Nc4 b5 20.Nd6 Nxe5! 21.Nxe8 Nxg3 22.Nxc7 Nxc7 23.Bxb5 Na5 24.Bg5**
+<!-- FEN: 2rrb1k1/ppq1bp1p/2n1p1p1/3nP3/6Q1/P4N2/1P1N1PP1/R1B1RBK1 b - - 5 17 -->
+**17...Bf8 18.Qg3 Bg7 19.Nc4 b5 20.Nd6 Bxe5! 21.Nxe8 Bxg3 22.Nxc7 Bxc7 23.Bxb5 Na5 24.Bg5**
 
-<!-- FEN: 1r1rn1k1/p1N2pb1/4p1p1/NB1nP1B1/P7/5N2/1P3PP1/R3RBK1 b - - 2 24 -->
+<!-- FEN: 2rr2k1/p1b2p1p/4p1p1/nB1n4/8/P4N2/1P3PP1/R1B1R1K1 w - - 1 24 -->
 24.Ba4 Bd6 gives Black enough play, as the bishop is heading to f6.
 
-<!-- FEN: 1r1rn1k1/p1N2pb1/4p1p1/NB1nP1B1/P7/5N2/1P3PP1/R3RBK1 b - - 2 24 -->
+<!-- FEN: 2rr2k1/p1b2p1p/4p1p1/nB1n2B1/8/P4N2/1P3PP1/R3R1K1 b - - 2 24 -->
 **24...f6 25.Bh6 Rb8 26.a4 Nb3 27.Rad1 Kf7=**
 
 With a complicated ending, which I am tempted to describe as easier to play for Black. Objectively, however, it should be equal.
@@ -877,6 +877,7 @@ White is finally ready to develop the b1-knight.
 
 Black is trying to exploit the uncertainty along the d-file.
 
+<!-- FEN: 2rq1rk1/pp1bbppp/2npp3/3nP3/2BP4/P2Q1N2/1P1B1PPP/RN2R1K1 b - - 4 12 -->
 I think 12...a6 is too slow:
 
 ## Page 153
@@ -889,23 +890,23 @@ Chapter 8 – 7.Bc4
 <!-- FEN: 2rq1rk1/1p1bbppp/p1npp3/3nP3/2BP4/P2Q1N2/1P1B1PPP/RN2R1K1 w - - 0 13 -->
 13.Ba2! (13.Nc3 Nxc3 14.Bxc3 d5! 15.Ba2 Na5 16.Rac1 Nc4 17.Bb1 g6⇄ is our preferred position, but I think after the subtle 13.Ba2! it is impossible to reach it.) 13...dxe5 14.dxe5 Na7 (14...Be8 15.Qe4± is now better for White, as Black has wasted a tempo on the useless ...a6.) 15.Bxd5! Bb5 16.Qe3! exd5 17.Nc3± Black has an isolani in the centre and his men are somewhat awkwardly placed – granting White a slight plus.
 
-<!-- FEN: 2rq1rk1/pp1bbppp/2n1p3/3nP3/2BP4/P2Q1N2/1P1B1PPP/RN2R1K1 w - - 0 13 -->
+<!-- FEN: 2rq1rk1/pp1bbppp/2n1p3/3np3/2BP4/P2Q1N2/1P1B1PPP/RN2R1K1 w - - 0 13 -->
 **13.dxe5 Be8!**
 
 This is the point: Black tries to harass the enemy forces before they can reach an optimal configuration. The immediate threat is ...Nb6.
 
 **FEN:**
-`2rqbrk1/pp2bppp/2n1p3/3nP3/2BP4/P2Q1N2/1P1B1PPP/RN2R1K1 w - - 5 14`
+`2rqbrk1/pp2bppp/2n1p3/3nP3/2B5/P2Q1N2/1P1B1PPP/RN2R1K1 w - - 1 14`
 
-<!-- FEN: 2rqbrk1/pp2bppp/2n1p3/3nP3/2BP4/P2Q1N2/1P1B1PPP/RN2R1K1 w - - 5 14 -->
+<!-- FEN: 2rqbrk1/pp2bppp/2n1p3/3nP3/2B5/P2Q1N2/1P1B1PPP/RN2R1K1 w - - 1 14 -->
 **14.Qe4**
 
 A different way to configure the white pieces on the b1-h7 diagonal.
 
-<!-- FEN: 2rqbrk1/pp2bppp/2n1p3/3nP3/2BP4/P2Q1N2/1P1B1PPP/RN2R1K1 w - - 5 14 -->
+<!-- FEN: 2rqbrk1/pp2bppp/2n1p3/3nP3/2B5/P2Q1N2/1P1B1PPP/RN2R1K1 w - - 1 14 -->
 14.Bxd5 Qxd5 15.Qxd5 exd5 16.Nc3 Rd8= is pleasant for Black, as the d-pawn cannot be blockaded properly. Still, White should be able to draw by exercising some care.
 
-<!-- FEN: 2rqbrk1/pp2bppp/2n1p3/3nP3/2BP4/P2Q1N2/1P1B1PPP/RN2R1K1 w - - 5 14 -->
+<!-- FEN: 2rqbrk1/pp2bppp/2n1p3/3nP3/2B5/P2Q1N2/1P1B1PPP/RN2R1K1 w - - 1 14 -->
 14.Bb3 prepares to set up the battery. I found the following equalizing line of play for us: 14...Nc7! 15.Qe4
 
 **FEN:**
@@ -914,78 +915,81 @@ A different way to configure the white pieces on the b1-h7 diagonal.
 <!-- FEN: 2rqbrk1/ppn1bppp/2n1p3/4P3/4Q3/PB3N2/1P1B1PPP/RN2R1K1 b - - 6 15 -->
 15...Nb5! 16.Be3 (16.Bc2 g6 17.Bh6 Ncd4 18.Bxf8 Bxf8 19.Nxd4 Nxd4 20.Rd1 Rxc2 21.Qxc2 Bc6 22.Rxd4 Qxd4 23.Nc3 Qg4 24.f3 Bxf3 25.Rf1 Bc6∞ is a position with excellent compensation for Black, but probably no more.) 16...Na5 17.Bc2 g6 18.Nbd2 Bc6 19.Qd3 Bxf3 20.Nxf3 Nc4=
 
-<!-- FEN: 2rqbrk1/pp2bppp/2n1p3/3nP3/2BP4/P2Q1N2/1P1B1PPP/RN2R1K1 w - - 5 14 -->
+<!-- FEN: 2rqbrk1/pp2bppp/2n1p3/3nP3/2B5/P2Q1N2/1P1B1PPP/RN2R1K1 w - - 1 14 -->
 14.Ba2 is a more patient method of trying to set up the battery, yet after 14...h6 15.Qe4 Bc5 16.Qg4 Kh8 17.Qh3 (17.Nc3 Nxc3 18.Bxc3 Ne7= is perfectly okay for Black) 17...Kg8! White has to swallow his pride and play 18.Qg4=, drawing.
 
+<!-- FEN: 2rqbrk1/pp3pp1/2n1p2p/2bnP3/8/P4N1Q/BP1B1PPP/RN2R1K1 w - - 6 18 -->
 Instead, 18.Bxh6?! is met stunningly with:
 
 **FEN:**
-`2rqbrk1/pp3pp1/2n1p2B/2bnP3/4Q3/P6Q/BP3PPP/RN2R1K1 b - - 0 18`
+`2rqbrk1/pp3pp1/2n1p2B/2bnP3/8/P4N1Q/BP3PPP/RN2R1K1 b - - 0 18`
 
 ## Page 154
 
 c3 Sicilian
 
-<!-- FEN: 2rqbrk1/pp3pp1/2n1p2B/2bnP3/4Q3/P6Q/BP3PPP/RN2R1K1 b - - 0 18 -->
+<!-- FEN: 2rqbrk1/pp3pp1/2n1p2B/2bnP3/8/P4N1Q/BP3PPP/RN2R1K1 b - - 0 18 -->
 18...Bxf2†!! 19.Kxf2 Qb6† 20.Kf1 (20.Kg3 Nce7→) 20...Nce7! 21.g3 gxh6 22.Qxh6 f6! 23.Bxd5 Nxd5 24.Nbd2 Rc7 25.Re4 Rg7 26.Kg2 fxe5∓ Black has all the chances, due to his better pieces and the weaker enemy king.
 
 **FEN:**
-`2rqbrk1/pp2bppp/2n1p3/3nP3/2BPQ3/P4N2/1P1B1PPP/RN2R1K1 b - - 6 14`
+`2rqbrk1/pp2bppp/2n1p3/3nP3/2B1Q3/P4N2/1P1B1PPP/RN2R1K1 b - - 6 14`
 
-<!-- FEN: 2rqbrk1/pp2bppp/2n1p3/3nP3/2BPQ3/P4N2/1P1B1PPP/RN2R1K1 b - - 6 14 -->
+<!-- FEN: 2rqbrk1/pp2bppp/2n1p3/3nP3/2B1Q3/P4N2/1P1B1PPP/RN2R1K1 b - - 6 14 -->
 **14...Bc5**
 
 This somewhat startling move comes to Black's aid. Although the position is dangerous-looking, I couldn't find anything for White.
 
-<!-- FEN: 2rqbrk1/pp2bppp/2n1p3/2bnP3/2BPQ3/P4N2/1P1B1PPP/RN2R1K1 w - - 7 15 -->
+<!-- FEN: 2rqbrk1/pp2bppp/2n1p3/2bnP3/2B1Q3/P4N2/1P1B1PPP/RN2R1K1 w - - 7 15 -->
 **15.b4**
 
-<!-- FEN: 2rqbrk1/pp2bppp/2n1p3/2bnP3/2BPQ3/P4N2/1P1B1PPP/RN2R1K1 w - - 7 15 -->
+<!-- FEN: 2rqbrk1/pp2bppp/2n1p3/2bnP3/2B1Q3/P4N2/1P1B1PPP/RN2R1K1 w - - 7 15 -->
 The immediate 15.Bg5?! allows 15...Qb6∓, with a double attack on b2 and f2.
 
-<!-- FEN: 2rqbrk1/pp2bppp/2n1p3/2bnP3/2BPQ3/P4N2/1P1B1PPP/RN2R1K1 w - - 7 15 -->
+<!-- FEN: 2rqbrk1/pp2bppp/2n1p3/2bnP3/2B1Q3/P4N2/1P1B1PPP/RN2R1K1 w - - 7 15 -->
 After 15.Bd3?! f5! 16.exf6 Nxf6 17.Qxe6† Bf7∓, Black is at least guaranteed of regaining his pawn with the better position.
 
-<!-- FEN: 2rqbrk1/pp2bppp/2n1p3/2bnP3/2BPQ3/P4N2/1P1B1PPP/RN2R1K1 w - - 7 15 -->
-15.Ng5 g6 16.Qh4 h5 17.Bxd5 (17.g4? Nd4∓) 17...exd5 18.Nc3 Nd4!⇄ the weak light squares c2 and f5 provide Black with sufficient resources to equalize – if not more.
+<!-- FEN: 2rqbrk1/pp2bppp/2n1p3/2bnP3/2B1Q3/P4N2/1P1B1PPP/RN2R1K1 w - - 7 15 -->
+15.Ng5 g6 16.Qh4 h5 17.Bxd5 (17.g4? Nd4∓) 17...exd5 18.Nc3 Nd4!⇄
+the weak light squares c2 and f5 provide Black with sufficient resources to equalize – if not more.
 
-<!-- FEN: 2rqbrk1/pp2bppp/2n1p3/2bnP3/1P1PQ3/P4N2/3B1PPP/RN2R1K1 b - - 0 15 -->
+<!-- FEN: 2rqbrk1/pp2bppp/2n1p3/2bnP3/1PB1Q3/P4N2/3B1PPP/RN2R1K1 b - - 0 15 -->
 **15...Bb6**
 
 Now there is no pressure against b2, but White still has to organize his somewhat hanging position.
 
-<!-- FEN: 2rqbrk1/pp2bppp/1bn1p3/3nP3/1P2Q3/P4N2/3B1PPP/RN2R1K1 w - - 1 16 -->
+<!-- FEN: 2rqbrk1/pp2bppp/1bn1p3/3nP3/1PB1Q3/P4N2/3B1PPP/RN2R1K1 w - - 1 16 -->
 **16.Bg5**
 
-<!-- FEN: 2rqbrk1/pp2bppp/1bn1p3/3nP3/1P2Q3/P4N2/3B1PPP/RN2R1K1 w - - 1 16 -->
+<!-- FEN: 2rqbrk1/pp2bppp/1bn1p3/3nP3/1PB1Q3/P4N2/3B1PPP/RN2R1K1 w - - 1 16 -->
 After 16.Ng5 g6 17.Qh4 h5 18.Bxd5! exd5 19.Nc3 (19.Qg3 Nd4 20.Nc3 will transpose) 19...Nd4 20.Qg3! the position is wild-looking, but Black should be okay. For example:
 
 **FEN:**
-`2rqbrk1/pp3p2/1b2p1p1/3pP1Np/1P1n4/P1N3Q1/3B1PPP/R3R1K1 b - - 1 20`
+`2rqbrk1/pp3p2/1b4p1/3pP1Np/1P1n4/P1N3Q1/3B1PPP/R3R1K1 b - - 1 20`
 
-<!-- FEN: 2rqbrk1/pp3p2/1b2p1p1/3pP1Np/1P1n4/P1N3Q1/3B1PPP/R3R1K1 b - - 1 20 -->
+<!-- FEN: 2rqbrk1/pp3p2/1b4p1/3pP1Np/1P1n4/P1N3Q1/3B1PPP/R3R1K1 b - - 1 20 -->
 20...Nc2 (20...Ne6= is the safe way to play) 21.Rad1!? (21.e6 Nxe1 22.Rxe1 Rc7 23.Bf4 Re7∓) 21...Nxe1 22.Bxe1 Rc4 23.Nxd5 Rg4 24.Nf6† Qxf6 25.exf6 Rxg3 26.hxg3 Ba4 27.Rc1 Bc6 28.Nf3 Rd8∞
 
 **FEN:**
-`2rqbrk1/pp3ppp/1bn1p3/3nP1B1/1P2Q3/P4N2/3B1PPP/RN2R1K1 b - - 1 16`
+`2rqbrk1/pp3ppp/1bn1p3/3nP1B1/1PB1Q3/P4N2/5PPP/RN2R1K1 b - - 2 16`
 
-<!-- FEN: 2rqbrk1/pp3ppp/1bn1p3/3nP1B1/1P2Q3/P4N2/3B1PPP/RN2R1K1 b - - 1 16 -->
+<!-- FEN: 2rqbrk1/pp3ppp/1bn1p3/3nP1B1/1PB1Q3/P4N2/5PPP/RN2R1K1 b - - 2 16 -->
 **16...Qd7!**
 
 The black queen stands awkwardly on d7, but there is method in Black's madness: he prepares to shield his kingside by means of ...Nce7, after which he will have no problems.
 
-<!-- FEN: 2rqbrk1/pp1q1ppp/1bn1p3/3nP1B1/1P2Q3/P4N2/3B1PPP/RN2R1K1 w - - 2 17 -->
+<!-- FEN: 2r1brk1/pp1q1ppp/1bn1p3/3nP1B1/1PB1Q3/P4N2/5PPP/RN2R1K1 w - - 3 17 -->
 **17.Nbd2**
 
 The logical developing move.
 
+<!-- FEN: 2r1brk1/pp1q1ppp/1bn1p3/3nP1B1/1PB1Q3/P4N2/5PPP/RN2R1K1 w - - 3 17 -->
 Again, 17.Bd3?! fails to 17...f5 18.exf6 Bg6∓.
 
 ## Page 155
 
 Chapter 8 – 7.Bc4
 
-<!-- FEN: 2rqbrk1/pp1q1ppp/1bn1p3/3nP1B1/1P2Q3/P4N2/3N1PPP/R3R1K1 b - - 3 17 -->
+<!-- FEN: 2r1brk1/pp1q1ppp/1bn1p3/3nP1B1/1PB1Q3/P4N2/3N1PPP/R3R1K1 b - - 4 17 -->
 **17...Nce7!**
 
 Black is close to achieving complete coordination, while the g5-bishop is quite strangely placed. These two factors guarantee Black equality. Play could go on:
