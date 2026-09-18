@@ -9,7 +9,10 @@ runtime.
 It also serves the **Opening Courses hub**: opening `/openings/` without a
 chapter fragment renders `OpeningHubView` — a course picker linking this
 Catalan course and the Sicilian Defense course at `/openings-sicilian/`.
-Chapter routes use `#/chapters/<id>` fragments as before.
+Chapter routes use `#/chapters/<id>` fragments, with an optional
+`#/chapters/<id>/pages/<n>` fragment for a specific page. The last-read
+position is saved to `localStorage`, surfaced as a "Continue where you left
+off" banner on the hub and a "Resume" chip in the reader topbar.
 
 The source lives in `apps/opening-book/` inside `coachdinosaur/chess-study`.
 The GitHub Pages workflow tests and builds it, then publishes the generated

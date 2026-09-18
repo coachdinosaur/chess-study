@@ -25,11 +25,15 @@ test("all sixteen Markdown chapters are bundled as static source content", async
     access(new URL("dist/404.html", root)),
     access(new URL("dist/chapters/1/index.html", root)),
     access(new URL("dist/chapters/16/index.html", root)),
+    access(new URL("dist/chapters/1/pages/7/index.html", root)),
+    access(new URL("dist/chapters/16/pages/32/index.html", root)),
   ]);
   const indexHtml = await readFile(new URL("dist/index.html", root), "utf8");
   const chapterRedirect = await readFile(new URL("dist/chapters/1/index.html", root), "utf8");
+  const pageRedirect = await readFile(new URL("dist/chapters/1/pages/7/index.html", root), "utf8");
   assert.match(indexHtml, /(?:href|src)="\/openings\//);
   assert.match(chapterRedirect, /\.\.\/\.\.\/#\/chapters\/1/);
+  assert.match(pageRedirect, /\.\.\/\.\.\/\.\.\/#\/chapters\/1\/pages\/7/);
 });
 
 test("the static output contains the interactive board and local engine assets", async () => {

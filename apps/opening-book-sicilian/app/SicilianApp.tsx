@@ -1,6 +1,6 @@
 "use client";
 
-import { MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { MouseEvent, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Chess } from "chess.js";
 import LessonLoading from "./LessonLoading";
 import { Chessboard } from "./components/Chessboard";
@@ -16,6 +16,41 @@ import { scoreToWhiteFraction } from "./stockfish-client";
 import type { AnalysisUpdate, EnginePhase, EngineScore, StockfishClient, StockfishEvent } from "./stockfish-client";
 
 const CHAPTER_NAVIGATION_PAINT_DELAY_MS = 120;
+const LAST_POSITION_KEY = "opening-book:sicilian:last-position";
+
+interface LastReadPosition {
+  chapterId: string;
+  page: number;
+}
+
+function readLastPosition(): LastReadPosition | null {
+  try {
+    const raw = window.localStorage.getItem(LAST_POSITION_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<LastReadPosition> | null;
+    if (parsed && typeof parsed.chapterId === "string" && isChapterId(parsed.chapterId) && Number.isFinite(parsed.page)) {
+      return { chapterId: parsed.chapterId, page: parsed.page as number };
+    }
+  } catch {
+    // Ignore storage failures (private mode, disabled storage)
+  }
+  return null;
+}
+
+function saveLastPosition(position: LastReadPosition): void {
+  try {
+    window.localStorage.setItem(LAST_POSITION_KEY, JSON.stringify(position));
+  } catch {
+    // Ignore storage failures
+  }
+}
+
+function resolvePageIndex(chapter: MarkdownChapter, pageNumber: number | null): number {
+  if (pageNumber == null) return 0;
+  const byNumber = chapter.pages.findIndex((page) => page.number === pageNumber);
+  if (byNumber >= 0) return byNumber;
+  return Math.max(0, Math.min(pageNumber - 1, chapter.pages.length - 1));
+}
 
 function EvaluationRail({ score, flipped }: { score: EngineScore | null; flipped: boolean }) {
   const whitePercent = (scoreToWhiteFraction(score) ?? 0.5) * 100;
@@ -41,9 +76,14 @@ function PageControls({ page, pageNumber, pageCount, onChange }: { page: number;
   </nav>;
 }
 
-function LessonReader({ chapter }: { chapter: MarkdownChapter }) {
-  const start = useMemo(() => initialNavigation(chapter.pages[0]?.markdown ?? chapter.markdown), [chapter]);
-  const [pageIndex, setPageIndex] = useState(0);
+function LessonReader({ chapter, pageNumber, onSelectPageNumber }: {
+  chapter: MarkdownChapter;
+  pageNumber: number | null;
+  onSelectPageNumber: (pageNumber: number) => void;
+}) {
+  const pageIndex = useMemo(() => resolvePageIndex(chapter, pageNumber), [chapter, pageNumber]);
+  const currentPage = chapter.pages[pageIndex] ?? chapter.pages[0];
+  const start = useMemo(() => initialNavigation(currentPage?.markdown ?? chapter.markdown), [chapter, currentPage]);
   const [navigation, setNavigation] = useState<MoveNavigation>(start);
   const [flipped, setFlipped] = useState(false);
   const [analysisMoves, setAnalysisMoves] = useState<AnalysisMove[]>([]);
@@ -61,7 +101,6 @@ function LessonReader({ chapter }: { chapter: MarkdownChapter }) {
   const lastAnalysisMove = analysisMoves.at(-1) ?? null;
   const displayedFen = lastAnalysisMove?.fen ?? currentStep.fen;
   const visibleAnalysis = engineAnalysis?.fen === displayedFen ? engineAnalysis : null;
-  const currentPage = chapter.pages[pageIndex] ?? chapter.pages[0];
 
   const selectNavigation = useCallback((next: MoveNavigation) => {
     setNavigation(next);
@@ -78,11 +117,15 @@ function LessonReader({ chapter }: { chapter: MarkdownChapter }) {
   const pageColumnRef = useRef<HTMLElement>(null);
 
   const selectPage = useCallback((nextIndex: number) => {
-    const clamped = Math.max(0, Math.min(nextIndex, chapter.pages.length - 1));
-    const page = chapter.pages[clamped];
-    if (!page) return;
-    setPageIndex(clamped);
-    setNavigation(initialNavigation(page.markdown));
+    const page = chapter.pages[Math.max(0, Math.min(nextIndex, chapter.pages.length - 1))];
+    if (page) onSelectPageNumber(page.number);
+  }, [chapter.pages, onSelectPageNumber]);
+
+  const appliedPageRef = useRef(pageIndex);
+  useLayoutEffect(() => {
+    if (appliedPageRef.current === pageIndex) return;
+    appliedPageRef.current = pageIndex;
+    setNavigation(start);
     setAnalysisMoves([]);
     setEngineAnalysis(null);
     requestAnimationFrame(() => {
@@ -95,7 +138,11 @@ function LessonReader({ chapter }: { chapter: MarkdownChapter }) {
         window.scrollTo(0, y);
       });
     });
-  }, [chapter.pages]);
+  }, [pageIndex, start]);
+
+  useEffect(() => {
+    if (currentPage) saveLastPosition({ chapterId: chapter.id, page: currentPage.number });
+  }, [chapter.id, currentPage]);
 
   const applyAnalysisMove = useCallback((input: BoardMoveInput) => {
     const move = playAnalysisMove(displayedFen, input);
@@ -288,10 +335,11 @@ function FullscreenIcon({ isFullscreen }: { isFullscreen: boolean }) {
   </svg>;
 }
 
-function ChapterReader({ chapter, chapters, onNavigate }: {
+function ChapterReader({ chapter, chapters, pageNumber, onNavigate }: {
   chapter: MarkdownChapter;
   chapters: readonly ChapterSummary[];
-  onNavigate: (id: string) => void;
+  pageNumber: number | null;
+  onNavigate: (id: string, page?: number) => void;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -330,12 +378,35 @@ function ChapterReader({ chapter, chapters, onNavigate }: {
     window.setTimeout(() => onNavigate(target.id), CHAPTER_NAVIGATION_PAINT_DELAY_MS);
   };
 
+  const saved = readLastPosition();
+  const savedSummary = saved ? chapters.find((summary) => summary.id === saved.chapterId) : undefined;
+  const currentPageNumber = chapter.pages[resolvePageIndex(chapter, pageNumber)]?.number ?? 1;
+  const showResume = Boolean(saved && savedSummary && (saved.chapterId !== chapter.id || saved.page !== currentPageNumber));
+
+  const resumeSavedPosition = () => {
+    if (!saved || !savedSummary) return;
+    setMenuOpen(false);
+    if (saved.chapterId !== chapter.id) {
+      setChapterTarget(savedSummary);
+      window.setTimeout(() => onNavigate(saved.chapterId, saved.page), CHAPTER_NAVIGATION_PAINT_DELAY_MS);
+    } else {
+      onNavigate(saved.chapterId, saved.page);
+    }
+  };
+
   return <div className={`app-shell ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
     <header className="topbar">
       <button className="sidebar-toggle desktop-sidebar-toggle" onClick={() => setSidebarCollapsed((current) => !current)} aria-label={sidebarCollapsed ? "Show navigation" : "Hide navigation"}>☰</button>
       <button className="sidebar-toggle menu-button" onClick={() => setMenuOpen((current) => !current)} aria-label="Toggle navigation">☰</button>
       <a className="brand" href={`#/chapters/${chapter.id}`}><img className="brand-mark" src={assetUrl("app_icon_chess_study.png")} alt="" width={38} height={38} /><span><strong>Sicilian Defense: Beating the Anti-Sicilian</strong><small>Chapter {chapter.chapterNumber}</small></span></a>
       <div className="topbar-actions">
+        {showResume && saved && savedSummary && <button
+          type="button"
+          className="resume-chip"
+          onClick={resumeSavedPosition}
+          title={`Resume ${savedSummary.label}, page ${saved.page}`}
+          aria-label={`Resume ${savedSummary.label}, page ${saved.page}`}
+        >Resume Ch {saved.chapterId} · Pg {saved.page}</button>}
         <button
           type="button"
           className="topbar-button fullscreen-toggle-btn"
@@ -358,17 +429,27 @@ function ChapterReader({ chapter, chapters, onNavigate }: {
       </nav>
     </aside>
     {menuOpen && <button className="scrim" onClick={() => setMenuOpen(false)} aria-label="Close navigation" />}
-    <div className="content"><LessonReader chapter={chapter} key={chapter.id} /></div>
+    <div className="content"><LessonReader chapter={chapter} pageNumber={pageNumber} onSelectPageNumber={(page) => onNavigate(chapter.id, page)} key={chapter.id} /></div>
     {chapterTarget && chapterTarget.id !== chapter.id && <LessonLoading label={`Loading ${chapterTarget.label}…`} overlay />}
   </div>;
 }
 
-function chapterIdFromLocation(): string | null {
+interface RouteState {
+  chapterId: string | null;
+  pageNumber: number | null;
+}
+
+function routeFromLocation(): RouteState {
   const hashPath = window.location.hash.replace(/^#/, "");
   const route = hashPath || window.location.pathname;
-  const match = /(?:^|\/)chapters\/(\d+)\/?$/.exec(route);
-  if (match) return isChapterId(match[1]) ? match[1] : null;
-  return hashPath ? null : "1";
+  const match = /(?:^|\/)chapters\/(\d+)(?:\/pages\/(\d+))?\/?$/.exec(route);
+  if (match) {
+    return {
+      chapterId: isChapterId(match[1]) ? match[1] : null,
+      pageNumber: match[2] ? Number.parseInt(match[2], 10) : null,
+    };
+  }
+  return { chapterId: hashPath ? null : "1", pageNumber: null };
 }
 
 function MissingChapter() {
@@ -382,36 +463,42 @@ function MissingChapter() {
 
 export default function SicilianApp() {
   useMemo(() => loadAllChapters(), []);
-  const [chapterId, setChapterId] = useState<string | null>(() => chapterIdFromLocation());
+  const [route, setRouteState] = useState<RouteState>(() => routeFromLocation());
+  const routeRef = useRef(route);
+  const setRoute = useCallback((next: RouteState) => {
+    const chapterChanged = next.chapterId !== routeRef.current.chapterId;
+    routeRef.current = next;
+    setRouteState(next);
+    if (chapterChanged) window.scrollTo({ top: 0, behavior: "auto" });
+  }, []);
 
   useEffect(() => {
-    const updateRoute = () => {
-      setChapterId(chapterIdFromLocation());
-      window.scrollTo({ top: 0, behavior: "auto" });
-    };
+    const updateRoute = () => setRoute(routeFromLocation());
     window.addEventListener("hashchange", updateRoute);
     window.addEventListener("popstate", updateRoute);
     return () => {
       window.removeEventListener("hashchange", updateRoute);
       window.removeEventListener("popstate", updateRoute);
     };
-  }, []);
+  }, [setRoute]);
 
-  const navigate = useCallback((id: string) => {
-    const target = `/chapters/${id}`;
+  const navigate = useCallback((id: string, page?: number) => {
+    const target = page != null ? `/chapters/${id}/pages/${page}` : `/chapters/${id}`;
     if (window.location.hash === `#${target}`) {
-      setChapterId(id);
+      setRoute(routeFromLocation());
       return;
     }
     window.location.hash = target;
-  }, []);
+  }, [setRoute]);
 
+  const { chapterId, pageNumber } = route;
   const chapter = chapterId ? loadChapterById(chapterId) : undefined;
   if (!chapter) return <MissingChapter />;
 
   return <ChapterReader
     chapter={chapter}
     chapters={CHAPTER_SUMMARIES}
+    pageNumber={pageNumber}
     onNavigate={navigate}
     key={chapter.id}
   />;

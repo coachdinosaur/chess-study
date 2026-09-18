@@ -3,9 +3,10 @@ import { assetUrl } from "../lib/asset-url";
 
 interface OpeningHubViewProps {
   onOpenCatalan: () => void;
+  lastPosition?: { chapterId: string; page: number; label: string };
 }
 
-export function OpeningHubView({ onOpenCatalan }: OpeningHubViewProps) {
+export function OpeningHubView({ onOpenCatalan, lastPosition }: OpeningHubViewProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
@@ -114,6 +115,20 @@ export function OpeningHubView({ onOpenCatalan }: OpeningHubViewProps) {
               Study practical opening repertoires, key ideas, and important variations through interactive chess lessons.
             </p>
           </header>
+
+          {/* Resume reading banner */}
+          {lastPosition && (
+            <a
+              className="hub-resume"
+              href={`#/chapters/${lastPosition.chapterId}/pages/${lastPosition.page}`}
+            >
+              <span className="hub-resume-text">
+                <small>Continue where you left off</small>
+                <strong>{lastPosition.label} · Page {lastPosition.page}</strong>
+              </span>
+              <span className="hub-btn-arrow" aria-hidden="true">→</span>
+            </a>
+          )}
 
           {/* Section Heading & Cards */}
           <section className="hub-section" aria-labelledby="chooseCourseHeading">

@@ -48,6 +48,9 @@ h1, h2, h3, h4, h5 { font-family: Manrope, Inter, sans-serif; }
 .topbar-button { width: 38px; height: 38px; flex: 0 0 38px; display: grid; place-items: center; padding: 0; border: 1px solid var(--line); border-radius: 10px; color: var(--forest); background: var(--surface); transition: background .18s ease, border-color .18s ease; }
 .topbar-button:hover { border-color: #9eb4aa; background: white; }
 .topbar-button:active { background: var(--mint); }
+.resume-chip { height: 38px; display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; color: var(--forest); background: var(--surface); font: 750 11px Manrope, Inter, sans-serif; letter-spacing: .02em; white-space: nowrap; transition: background .18s ease, border-color .18s ease; }
+.resume-chip:hover { border-color: #9eb4aa; background: white; }
+.resume-chip:active { background: var(--mint); }
 
 .sidebar { position: fixed; z-index: 15; inset: var(--topbar) auto 0 0; width: var(--sidebar); display: flex; flex-direction: column; padding: 30px 18px 20px; color: white; background: var(--forest); transition: transform .22s ease, visibility 0s; }
 .sidebar nav { min-height: 0; flex: 1 1 auto; overflow-y: auto; overscroll-behavior: contain; scrollbar-color: rgba(255, 255, 255, .28) transparent; scrollbar-width: thin; }
@@ -382,6 +385,13 @@ h1, h2, h3, h4, h5 { font-family: Manrope, Inter, sans-serif; }
     height: 34px;
     flex: 0 0 34px;
     border-radius: 8px;
+  }
+
+  .resume-chip {
+    height: 34px;
+    padding: 0 9px;
+    border-radius: 8px;
+    font-size: 10px;
   }
 
   .lesson-page-column {
@@ -752,6 +762,66 @@ h1, h2, h3, h4, h5 { font-family: Manrope, Inter, sans-serif; }
 }
 
 .hub-card:hover .hub-btn-arrow {
+  transform: translateX(3px);
+}
+
+.hub-resume {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: -8px 0 30px;
+  padding: 15px 20px;
+  border: 1px solid var(--forest-2);
+  border-radius: 14px;
+  color: #ffffff;
+  background: var(--forest-2);
+  text-decoration: none;
+  box-shadow: var(--shadow);
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.hub-resume:hover {
+  transform: translateY(-2px);
+  background: var(--forest);
+  box-shadow: 0 22px 48px rgba(31, 48, 40, 0.15);
+}
+
+.hub-resume:focus-visible {
+  outline: 3px solid var(--forest-2);
+  outline-offset: 2px;
+}
+
+.hub-resume-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.hub-resume-text small {
+  font-size: 10.5px;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  opacity: 0.72;
+}
+
+.hub-resume-text strong {
+  font-family: Manrope, Inter, sans-serif;
+  font-size: 15px;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+}
+
+.hub-resume .hub-btn-arrow {
+  font-size: 18px;
+}
+
+.hub-resume:hover .hub-btn-arrow {
   transform: translateX(3px);
 }
 

@@ -34,6 +34,8 @@ test("all Markdown chapters are bundled as static source content", async () => {
     access(new URL("dist/chapters/6/index.html", root)),
     access(new URL("dist/chapters/7/index.html", root)),
     access(new URL("dist/chapters/8/index.html", root)),
+    access(new URL("dist/chapters/1/pages/7/index.html", root)),
+    access(new URL("dist/chapters/8/pages/155/index.html", root)),
   ]);
   const indexHtml = await readFile(new URL("dist/index.html", root), "utf8");
   const chapterOneRedirect = await readFile(new URL("dist/chapters/1/index.html", root), "utf8");
@@ -43,6 +45,7 @@ test("all Markdown chapters are bundled as static source content", async () => {
   const chapterFiveRedirect = await readFile(new URL("dist/chapters/5/index.html", root), "utf8");
   const chapterSixRedirect = await readFile(new URL("dist/chapters/6/index.html", root), "utf8");
   const chapterSevenRedirect = await readFile(new URL("dist/chapters/7/index.html", root), "utf8");
+  const pageRedirect = await readFile(new URL("dist/chapters/1/pages/7/index.html", root), "utf8");
   assert.match(indexHtml, /(?:href|src)="\/openings-sicilian\//);
   assert.match(chapterOneRedirect, /\.\.\/\.\.\/#\/chapters\/1/);
   assert.match(chapterTwoRedirect, /\.\.\/\.\.\/#\/chapters\/2/);
@@ -51,6 +54,7 @@ test("all Markdown chapters are bundled as static source content", async () => {
   assert.match(chapterFiveRedirect, /\.\.\/\.\.\/#\/chapters\/5/);
   assert.match(chapterSixRedirect, /\.\.\/\.\.\/#\/chapters\/6/);
   assert.match(chapterSevenRedirect, /\.\.\/\.\.\/#\/chapters\/7/);
+  assert.match(pageRedirect, /\.\.\/\.\.\/\.\.\/#\/chapters\/1\/pages\/7/);
 });
 
 test("the renderer replays preceding PDF pages and uses clean diagram labels", async () => {
