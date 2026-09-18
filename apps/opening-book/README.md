@@ -6,6 +6,11 @@ interactive chessboard, board flipping, keyboard move navigation, and
 browser-local Stockfish analysis. It has no application server or cloud
 runtime.
 
+It also serves the **Opening Courses hub**: opening `/openings/` without a
+chapter fragment renders `OpeningHubView` — a course picker linking this
+Catalan course and the Sicilian Defense course at `/openings-sicilian/`.
+Chapter routes use `#/chapters/<id>` fragments as before.
+
 The source lives in `apps/opening-book/` inside `coachdinosaur/chess-study`.
 The GitHub Pages workflow tests and builds it, then publishes the generated
 files at:
@@ -13,6 +18,13 @@ files at:
 ```text
 https://cddigital.top/openings/
 ```
+
+**Shared-asset contract:** the Sicilian app (`apps/opening-book-sicilian`)
+deliberately ships no pieces or engine — it loads
+`/openings/assets/pieces/mpchess/*.svg` and
+`/openings/stockfish/stockfish-18-lite-single.js` from this app's published
+output. Keep the `public/` layout for those paths stable; renaming them breaks
+the sibling course.
 
 ## Run locally
 

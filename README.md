@@ -1,6 +1,6 @@
 # Chess Lesson Study Board
 
-A browser-based chess teaching and study platform. It combines a framework-free position editor, lesson-tree authoring, Stockfish analysis, tablebase support, practice drills, Play vs Stockfish, separate Endgame Puzzle and Position Study modes, coach-controlled student workspaces and puzzle assignments, static course lessons with classroom presentation and Teacher Board tools, a synchronized teacher/student Live Board, a separately built Catalan opening course, a standalone Endgame Trainer site, and a client-side 3D Chess Position Studio.
+A browser-based chess teaching and study platform. It combines a framework-free position editor, lesson-tree authoring, Stockfish analysis, tablebase support, practice drills, Play vs Stockfish, separate Endgame Puzzle and Position Study modes, coach-controlled student workspaces and puzzle assignments, static course lessons with classroom presentation and Teacher Board tools, a synchronized teacher/student Live Board, separately built Catalan and Sicilian opening courses, a standalone Endgame Trainer site, and a client-side 3D Chess Position Studio.
 
 ## Live app
 
@@ -259,19 +259,33 @@ The floating **Teacher Board** is separate from the full SPA Setup tab. Its setu
 
 `Page` and imported positions resynchronize the side-to-move selector from their FEN. The setup commands are delivered through the embedded-board `postMessage()` protocol, while `teacher-board-illegal-moves.mjs` keeps demonstration history without swallowing those commands.
 
-## Catalan opening course
+## Opening courses
 
-The Catalan Atelier source lives in `apps/opening-book/`. It is a React/Vite
-static application with 16 Markdown-authored chapters, clickable variations,
-an interactive board, and a browser-local Stockfish worker.
+Two React/Vite static applications ship the interactive opening curriculum:
 
-The GitHub Pages workflow installs its locked dependencies, runs its full test
-suite, builds it with the `/openings/` base path, and places only the generated
-`dist/` output in the deployed site artifact. Generated bundles are not
-committed to the repository.
+- **Catalan Atelier** (`apps/opening-book/` → `/openings/`): 16
+  Markdown-authored chapters, clickable variations, an interactive board, and
+  a browser-local Stockfish worker. With no chapter fragment it renders the
+  **Opening Courses hub**, a course picker linking both repertoires.
+- **Sicilian Defense** (`apps/opening-book-sicilian/` →
+  `/openings-sicilian/`): "Beating the Anti-Sicilian", 8 Markdown-authored
+  chapters covering source-book pages 7–155. It deliberately ships no piece
+  or engine assets — at runtime it reuses the Catalan app's published
+  `/openings/` pieces and Stockfish bundle, so those asset paths are a
+  stability contract.
+
+Chapter Markdown files are **application inputs, not documentation** — the
+apps bundle and parse them (`## Page N` boundaries, `**FEN:**` diagrams,
+clickable bold move tokens). Author them through each app's chapter CLI and
+`AUTHORING.md` conventions, not as free-form prose.
+
+The GitHub Pages workflow installs each app's locked dependencies, runs its
+full test suite, builds with the mount base path, and places only the
+generated `dist/` output in the deployed site artifact. Generated bundles are
+not committed to the repository.
 
 Cross-navigation connects the main Study Board, the lesson index, and the
-opening course without coupling their runtimes.
+opening courses without coupling their runtimes.
 
 ## Endgame Trainer site
 
@@ -317,7 +331,7 @@ Supabase provides PostgreSQL persistence, Row Level Security (RLS), authenticati
 
 - **Coach Authentication & Approval**: Teachers authenticate with email/password; accounts start in a `pending` state until reviewed by a platform admin.
 - **Zero-Login Student Workspaces & Assignments**: Students access workspaces and assignments via unguessable bearer tokens in their URLs without creating accounts.
-- **SHA-256 Token Protection**: Plaintext student tokens never reach the database; Supabase stores only cryptographic SHA-256 hashes (`token_hash`), with access managed through `SECURITY DEFINER` RPCs.
+- **SHA-256 Token Protection**: Plaintext student tokens are never persisted; Supabase stores only cryptographic SHA-256 hashes (`access_token_hash`), with access managed through `SECURITY DEFINER` RPCs that hash the presented token server-side.
 - **Live Board Realtime**: Uses Supabase Realtime Broadcast and Postgres Changes to stream board moves and locks with sub-100ms latency.
 - **Zero Service-Role Exposure**: Public web clients use only the publishable anon key. The database `service_role` key is never exposed.
 
@@ -469,6 +483,15 @@ npm test
 npm run preview
 ```
 
+The Sicilian app shares the Catalan app's pieces and engine, so run the
+Catalan dev server first — its Vite config proxies `/openings/` to it:
+
+```powershell
+cd apps/opening-book-sicilian
+npm install
+npm run dev   # http://localhost:3001/openings-sicilian/
+```
+
 ### 3D Chess Studio development
 
 ```powershell
@@ -532,12 +555,13 @@ node tools/test-puzzle-api.mjs
 node --test tests/endgame-trainer-integration.test.mjs
 node --test tests/3d-chess-studio-integration.test.mjs
 npm --prefix apps/opening-book test
+npm --prefix apps/opening-book-sicilian test
 $env:VITE_BASE_PATH='/3d/'; npm --prefix apps/3d-chess-studio test
 git diff --check
 ```
 
-The main Study Board has no build step, while the opening course and 3D studio
-are compiled and tested independently. Browser testing remains important. Test at minimum:
+The main Study Board has no build step, while the opening courses and 3D
+studio are compiled and tested independently. Browser testing remains important. Test at minimum:
 
 - desktop click and drag moves
 - mobile tap and pointer drag moves

@@ -587,6 +587,32 @@ During a game, the panel shows clocks and provides controls such as Resign and O
 
 ---
 
+# Opening Courses
+
+> **Where to go:** open `/openings/` and pick a course — **Catalan Atelier** (16 chapters) or **Beating the Anti-Sicilian** (8 chapters). The Sicilian course also has a direct entry at `/openings-sicilian/`.
+
+The opening courses are interactive books: every printed variation is playable on the board beside the text.
+
+## Read a chapter
+
+1. Pick a chapter in the left sidebar. Chapters open at their first page.
+2. Turn pages with the **Previous / Next** controls above and below the text — the page numbers are the chapter's own sequence (the Sicilian book and early Catalan chapters follow the printed source book).
+3. Collapse the sidebar with the ☰ button when you want more reading room; the fullscreen button sits in the top bar.
+
+## Play through the moves
+
+- **Click any bold move** in the text — the board jumps to that position. Move numbers in parentheses are subvariations; they work the same way.
+- Step through the active line with the **‹ ›** buttons under the board, or the **Left/Right arrow keys**. **|‹** and **›|** jump to the line's start and end.
+- Click **Show on main board** on any diagram to load that exact position.
+- Make your own moves on the board to start an analysis branch — the panel counts your plies and offers **Undo** and **Reset** to return to the book line.
+
+## Analyze with Stockfish
+
+- Click **Analyze** under the board — a local engine evaluates the shown position and keeps re-evaluating as you navigate. The rail beside the board shows the evaluation split; the line above the board shows depth, score, and principal variation.
+- Click **↻ Flip** to view the board from the other side.
+
+---
+
 # 3D Chess Position Studio
 
 > **Where to go:** open `/3d/` or click **Open 3D board** on the home page

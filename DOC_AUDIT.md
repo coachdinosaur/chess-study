@@ -408,3 +408,71 @@ grep -rn "create or replace function" supabase/migrations
 # Deployment
 cat .github/workflows/pages.yml
 ```
+
+---
+
+## 12. Post-audit resolutions (2026-09-18)
+
+Status of the findings above as of the documentation refresh:
+
+| Finding | Status |
+|---|---|
+| E-1 stale directory entries | Resolved — `AGENTS.md`/`ARCHITECTURE.md` trees updated |
+| E-2 stale `docs/lichess-position-training.md` | Resolved — superseded banner added pointing to the root doc |
+| E-3 `chess-clock.test.mjs` in pages.yml | Resolved — workflow now runs it (§28.1 accurate) |
+| E-4 README workflow row | Resolved — row covers all three builds and mounts |
+| E-5 migration list | Resolved — `management/README.md` lists all 18 |
+| E-6 untracked Live Board RPCs | Resolved — `20260917120000_live_board_v2_and_messages.sql` |
+| E-7 delete-account | Resolved — `endgame-trainer/README.md` + docs updated |
+| E-8 source-book chapter references | **Open** — still present in shipped chapter text (application input files, not documentation; rewriting them is a content decision) |
+| I-1 repository tree | Resolved — tree covers all current areas |
+| I-2 "Lichess Position Training" label | Resolved — `USER_GUIDE.md` uses "Position Study" |
+| I-3 Catalan pagination conventions | Resolved — both app READMEs + `ARCHITECTURE.md` §21 |
+| I-4 Top-players wording | Resolved — 20 entries/category, mixed lists documented |
+| I-5 vendored Stockfish bundle | Resolved — README states lite-single is the shipped bundle |
+| I-6 CRLF sensitivity | Resolved — documented in `apps/opening-book/README.md` |
+| I-7 undocumented workflows | Resolved — README enumerates all workflows |
+| I-8 README table gaps | Resolved — `apps/opening-book-sicilian/` row present |
+| C-3 loose chapter-1 draft | Resolved — documented as source artifact in the Sicilian README |
+
+Opening-course documentation refreshed in the same pass: Sicilian README now
+reflects all 8 shipped chapters (was written for 3), `AUTHORING.md` documents
+the `SOURCE ERRATUM`/`NON-NAVIGATION` directives, `ARCHITECTURE.md` §21 covers
+both courses and the shared-asset contract, and `USER_GUIDE.md` gained an
+Opening Courses section. Chapter Markdown files under
+`apps/*/app/content/chapters/` are classified as **application inputs, not
+documentation** across the docs.
+
+---
+
+## 13. Second-pass audit (2026-09-18)
+
+A fresh verification sweep across all documentation after the opening-course
+refresh. Findings fixed in this pass:
+
+| Finding | Resolution |
+|---|---|
+| `ARCHITECTURE.md` §27.1 cited non-existent table `teacher_managed_students` | Corrected to `managed_students` (migration filename differs from table name) |
+| §27.1 cited non-existent table `student_puzzle_assignments` | Corrected to `puzzle_assignment_students`; added missing `puzzle_assignment_puzzles` |
+| §27.1 cited non-existent RPCs `get_student_workspace_by_token_hash` and `verify_assignment_token` | Corrected to `get_student_workspace_by_token`, `get_puzzle_assignment_by_token`, `save_workspace_puzzle_assignment_attempt` |
+| §27.1/README/AGENTS described client-side token hashing — inaccurate: student clients send the bearer token to `SECURITY DEFINER` RPCs, which compute the SHA-256 digest **server-side** and compare it to `access_token_hash` | Reworded in all three files; coach-side writes still hash client-side via `sha256Hex`. Invariant that holds: plaintext is never *persisted*, not "never reaches the database" |
+| §27.1 cited column `token_hash` | Corrected to `access_token_hash` (also `student_short_token_hash`, `teacher_token_hash`, `student_token_hash` for Live Board) |
+| AGENTS.md Teacher-RLS rule cited table `students` | Corrected to `managed_students` — no `students` table exists |
+| `about/` (linked "About the App" page) missing from repo map and AGENTS.md areas | Added to both |
+| `sw.js` unexplained in repo map | Annotated: it is a service-worker retirement stub (unregisters legacy workers, purges caches); `index.html` also unregisters defensively |
+
+Claims re-verified as accurate (no change needed): 18 migrations and the
+`management/README.md` migration list; 50,000 puzzles / 2,000×25 shards;
+118 lesson files with zero dead links; top-players 6×20 (3 world + 3
+national); `LOCAL_DEPLOYMENT.md` port 8000→8001 fallback; `PLAN.md`
+`set-play-start-position` and `PLAY_CHALLENGE_LINKS.md` "Copy student game
+link" features; Position Study loading chain
+(`index.html` → `focus-analysis-popup.mjs` → `lichess-position-training.mjs`,
+launcher injected into `#puzzlePanel`); SPA nav categories
+(Workspace/Explore/Tools/Coaching/Info); management plaintext-token
+localStorage contract.
+
+Environmental note (not repo drift): `chapters:check` in both opening apps
+fails on a CRLF checkout because it compares generated catalog text
+literally. `chapters:sync` rewrites the catalog LF; git then reports the
+file content-identical to HEAD. This affects Windows working copies only.

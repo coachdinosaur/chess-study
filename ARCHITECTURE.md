@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-Chess Lesson Study Board is a chess teaching platform served as static files. The repository combines a framework-free interactive single-page application, browser Stockfish, Lichess tablebase requests, separate legacy Endgame Puzzle and user-facing Position Study runtimes, coach-controlled student workspaces and puzzle assignments, static lesson sites with classroom presentation and a floating Teacher Board, a synchronized teacher/student Live Board, a customizable mobile fullscreen digital chess clock for face-to-face games, a separately built Catalan opening course, a standalone Endgame Trainer landing and privacy site, a client-side 3D Chess Position Studio, and optional local Python helpers.
+Chess Lesson Study Board is a chess teaching platform served as static files. The repository combines a framework-free interactive single-page application, browser Stockfish, Lichess tablebase requests, separate legacy Endgame Puzzle and user-facing Position Study runtimes, coach-controlled student workspaces and puzzle assignments, static lesson sites with classroom presentation and a floating Teacher Board, a synchronized teacher/student Live Board, a customizable mobile fullscreen digital chess clock for face-to-face games, separately built Catalan and Sicilian opening courses sharing one asset bundle, a standalone Endgame Trainer landing and privacy site, a client-side 3D Chess Position Studio, and optional local Python helpers.
 
 The main Study Board, lesson sites, and Endgame Trainer site have no bundler or
 application build step. Their production assets are committed directly.
@@ -39,11 +39,10 @@ The major subsystems are:
    - Classroom presentation mode
    - Floating Teacher Board and embedded-board protocol
 
-4. **Catalan Atelier opening course**
-   - React/Vite source in `apps/opening-book/`
-   - 16 Markdown-authored Catalan chapters
-   - Browser-local Stockfish and interactive board
-   - GitHub Pages build mounted at `/openings/`
+4. **Opening courses**
+   - Catalan Atelier: React/Vite source in `apps/opening-book/`, 16 Markdown-authored chapters, mounted at `/openings/` (also renders the Opening Courses hub)
+   - Sicilian Defense: React/Vite source in `apps/opening-book-sicilian/`, 8 Markdown-authored chapters, mounted at `/openings-sicilian/`
+   - Shared piece/Stockfish assets served by the Catalan build; browser-local engine and interactive board in both
 
 5. **3D Chess Position Studio**
    - React/Vite source in `apps/3d-chess-studio/`
@@ -128,7 +127,7 @@ chess-study/
 ├── move-annotations.mjs
 ├── top-players.mjs
 ├── text-normalization.mjs
-├── sw.js
+├── sw.js                              (service-worker retirement stub — unregisters legacy workers and purges caches on activate; index.html also unregisters defensively)
 │
 ├── live-board.html
 ├── live-board.css
@@ -207,6 +206,9 @@ chess-study/
 │   ├── img/                          (generated editorial feature images + IMAGE_PROMPTS.md)
 │   ├── chess-training-top-countries/ (series landing + part-1..part-4 article pages)
 │   └── chess-engines-development/    ("The Silicon Coach" — landing + part-1..part-3 pages)
+│
+├── about/
+│   └── index.html                    ("About the App" page — linked from the SPA Info group)
 │
 ├── clock/
 │   ├── index.html / clock.css / clock-app.js
@@ -312,7 +314,7 @@ live-board.html
 ### Opening-course build graph
 
 ```text
-apps/opening-book/
+apps/opening-book/               (Catalan Atelier + Opening Courses hub)
 ├── app/                         React UI and chapter runtime
 ├── app/content/chapters/        16 Markdown source chapters
 ├── public/                      fonts, pieces, icon, Stockfish JS/WASM
@@ -320,10 +322,20 @@ apps/opening-book/
 └── tests/                       build, workflow, and Stockfish tests
         │
         └── npm test
-              └── dist/
+              └── dist/ ── deployed as /openings/
                     │
-                    └── .github/workflows/pages.yml
-                          └── deployed as /openings/
+                    └── pieces + Stockfish reused at runtime by the
+                        Sicilian app (shared asset contract)
+
+apps/opening-book-sicilian/      (Sicilian Defense — no pieces/engine in dist)
+├── app/                         React UI and chapter runtime
+│   └── lib/chapter-*-corrections.ts   load-time chapter-1 normalization
+├── app/content/chapters/        8 Markdown source chapters (app inputs)
+├── scripts/                     chapter checks and static-route generation
+└── tests/                       anchor, content, workflow, Stockfish tests
+        │
+        └── npm test
+              └── dist/ ── deployed as /openings-sicilian/
 ```
 
 ### 3D-studio build graph
@@ -384,7 +396,8 @@ apps/3d-chess-studio/
 | `lessons/teacher-board-illegal-moves.mjs` | Illegal/out-of-turn demonstrations and Teacher Board take-back history in board-only mode |
 | `vendor/chess.js` | Legal moves, FEN, PGN, game termination, attack queries |
 | `vendor/stockfish/` | Browser Stockfish JavaScript and WASM variants |
-| `apps/opening-book/` | React/Vite Catalan Atelier source, Markdown chapters, local assets, and tests |
+| `apps/opening-book/` | React/Vite Catalan Atelier source, Markdown chapters, Opening Courses hub, local assets, and tests |
+| `apps/opening-book-sicilian/` | React/Vite Sicilian Defense source, 8 Markdown chapters (app inputs), load-time chapter-1 corrections; reuses `/openings/` pieces and Stockfish at runtime |
 | `apps/3d-chess-studio/` | React/Vite/Three.js 3D board, FEN setup, local play, AI bots (Casual, Club, Master Stockfish 18 Lite WASM), Staunton models, Web Audio synthesizer, and static-build tests |
 | `clock/` | Standalone mobile-first fullscreen digital chess clock (Fischer, delay, Bronstein, handicap, Web Audio synth, screen wake lock) |
 | `endgame-trainer/` | Self-contained Endgame Trainer landing page, clean-route privacy policy, styles, favicon, and app previews |
@@ -1065,12 +1078,21 @@ Identification prefers the longest matching UCI move prefix, with EPD and PGN-he
 
 ---
 
-## 21. Catalan Atelier opening course
+## 21. Opening courses
 
-Catalan Atelier is a self-contained React/Vite application whose source lives
-in `apps/opening-book/`. It owns 16 Markdown-authored Catalan chapters,
-clickable move variations, its own responsive chessboard, and a compatible
-single-threaded browser Stockfish bundle.
+Two self-contained React/Vite applications ship the interactive opening
+curriculum. Their chapter Markdown files are **application inputs, not
+documentation** — each app bundles `app/content/chapters/*.md` via
+`import.meta.glob`, splits pages on `## Page N` headings, and resolves every
+bold SAN token into clickable board navigation at render time.
+
+### Catalan Atelier (`apps/opening-book/`)
+
+Catalan Atelier owns 16 Markdown-authored chapters, clickable move
+variations, its own responsive chessboard, and a compatible single-threaded
+browser Stockfish bundle. With no chapter fragment in the URL it renders
+`OpeningHubView` — the Opening Courses hub that links both repertoires — so
+`/openings/` doubles as the courses landing page.
 
 Its deployment boundary is explicit:
 
@@ -1098,7 +1120,31 @@ not a content error. Also note `npm run chapters:check` compares the generated
 catalog byte-for-byte; on Windows checkouts with `core.autocrlf=true` it can
 report a stale catalog when only line endings differ.
 
-The opening course does not import the main Study Board runtime. The sections
+### Sicilian Defense (`apps/opening-book-sicilian/`)
+
+The Sicilian book ("Beating the Anti-Sicilian") ships 8 chapters covering
+source-book pages 7–155 (one contiguous `## Page N` sequence — no pagination
+convention split). It is a deliberate thin build: `dist/` contains no piece
+SVGs and no engine — at runtime it loads `/openings/assets/pieces/mpchess/`
+and `/openings/stockfish/stockfish-18-lite-single.js` from the Catalan app's
+published output (`sharedOpeningAssetUrl`). That coupling is a contract: the
+Catalan `public/` asset paths must stay stable. The dev and preview servers
+therefore proxy `/openings/` to the Catalan app (`:3000` dev, `:4173`
+preview); the app itself runs on `:3001` / `:4174`.
+
+`chapter-1-sicilian.md` is normalized at load by the
+`app/lib/chapter-*-corrections.ts` modules — idempotent, exact-match fixes
+that inject hidden FEN anchors and repair PDF-derived content. Unconverted
+authoring sources stay outside the repo (except the committed
+`apps/01_Rare_Options.pdf` and the draft `apps/Chapter_1_Rare_Options.md`,
+which the app never loads). `scripts/create-static-routes.mjs` discovers
+chapter IDs from the content directory rather than hardcoding a count.
+
+A dedicated CI (`sicilian-opening-book-ci.yml`) tests both books and runs the
+chapter audits (chapters 1–3, `--strict-moves` on chapter 3) on pushes
+touching either app.
+
+The opening courses do not import the main Study Board runtime. The sections
 are combined through same-origin navigation links, preserving the existing
 framework-free SPA and static lesson architecture.
 
@@ -1289,10 +1335,10 @@ Supabase provides authentication, PostgreSQL persistence, Row Level Security (RL
 ### 27.1 Coach and student management (`/management`)
 
 - **Authentication and account approval**: Teachers register with email/password through Supabase Auth. New teacher accounts enter a `pending` state until reviewed and approved by a platform administrator (`teacher_account_controls`).
-- **Student rosters and coaching sessions**: Approved teachers manage student records (`teacher_managed_students`) and record dated lessons, duration, homework, and next steps (`coaching_sessions`).
+- **Student rosters and coaching sessions**: Approved teachers manage student records (`managed_students`) and record dated lessons, duration, homework, and next steps (`coaching_sessions`).
 - **Zero-login student workspaces**: Each managed student is provisioned a permanent private workspace (`student_workspaces`). Students never register, create passwords, or log in. Access is granted via unguessable, high-entropy bearer tokens in the workspace URL.
-- **Cryptographic token hashing**: Workspace and puzzle-assignment bearer tokens are generated client-side in the coach browser; Supabase stores only SHA-256 hashes (`token_hash`). Plaintext tokens are never stored in the database, preventing token leakage from database reads. Token-scoped reads and submissions execute through `SECURITY DEFINER` RPCs (`get_student_workspace_by_token_hash`, `verify_assignment_token`).
-- **Teacher puzzle assignments**: Teachers select frozen puzzle subsets from the 50,000-puzzle Lichess library, creating immutable assignment records (`puzzle_assignments`, `student_puzzle_assignments`, `puzzle_assignment_attempts`).
+- **Cryptographic token hashing**: Workspace and puzzle-assignment bearer tokens are generated client-side in the coach browser; Supabase stores only SHA-256 hashes (`access_token_hash`). Plaintext tokens are never persisted in the database, preventing token leakage from database reads. Student clients present the bearer token to `SECURITY DEFINER` RPCs, which compute its SHA-256 digest server-side and compare against the stored hash (`get_student_workspace_by_token`, `get_puzzle_assignment_by_token`, `save_workspace_puzzle_assignment_attempt`).
+- **Teacher puzzle assignments**: Teachers select frozen puzzle subsets from the 50,000-puzzle Lichess library, creating immutable assignment records (`puzzle_assignments`, `puzzle_assignment_puzzles`, `puzzle_assignment_students`, `puzzle_assignment_attempts`).
 - **Management audit logging**: Administrative approvals, student profile modifications, coaching sessions, and account deletions are recorded in `management_audit_log` with paginated RPC access.
 - **Service-role key isolation**: Public client code uses only the publishable/anon key. The Supabase `service_role` key is never bundled in frontend scripts or public CI workflows (asserted by GitHub Actions).
 

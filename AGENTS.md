@@ -18,7 +18,10 @@ It contains:
 - **Supabase schema** (`supabase/migrations/`) — 18 SQL migrations backing
   management and Live Board features
 - **Opening course apps** (`apps/opening-book/`, `apps/opening-book-sicilian/`)
-  — React/Vite books published at `/openings/` and `/openings-sicilian/`
+  — React/Vite books published at `/openings/` and `/openings-sicilian/`.
+  Their `app/content/chapters/*.md` files (plus `apps/Chapter_1_Rare_Options.md`
+  and `apps/01_Rare_Options.pdf`) are application inputs/authoring sources,
+  not documentation — the apps parse them into interactive content
 - **3D Chess Position Studio** interactive Three.js board and Web Worker Stockfish bots
 - **Digital Chess Clock** customizable mobile fullscreen chess clock (`clock/`)
 - **Standalone Endgame Trainer site** (`endgame-trainer/`)
@@ -53,6 +56,7 @@ It contains:
 | **Opening books** | `apps/opening-book/`, `apps/opening-book-sicilian/` |
 | **Endgame Trainer site** | `endgame-trainer/index.html`, `endgame-trainer/privacy-policy/index.html`, `endgame-trainer/delete-account/index.html` |
 | **Articles** | `articles/index.html`, `articles/articles.css` (mirrors lesson theme tokens), `articles/chess-training-top-countries/` series landing + `part-*/` pages |
+| **About page** | `about/index.html` — static "About the App" page linked from the SPA Info group |
 | **Piece assets** | `assets/pieces/mpchess/` (12 SVGs) |
 | **Local servers** | `local_server.py`, `scanner_server.py`, `scanner_predict.py`, `start-local.ps1` |
 | **Vendored dependencies** | `vendor/chess.js`, `vendor/stockfish/` (`stockfish-18-lite-single` bundle), `vendor/xlsx.full.min.js` |
@@ -190,9 +194,9 @@ It contains:
 ## Supabase and Management Security Conventions
 
 - **Never expose `service_role` key**: Public browser code and workflows must use only the public/anon Supabase key.
-- **Zero-login student token protection**: Student workspace and assignment links use high-entropy bearer tokens. Plaintext tokens must never be written to Supabase; the client computes and sends SHA-256 hashes (`token_hash`).
+- **Zero-login student token protection**: Student workspace and assignment links use high-entropy bearer tokens. Plaintext tokens must never be persisted in Supabase — only SHA-256 hashes (`access_token_hash`) are stored. Student RPCs receive the bearer token and compare its server-side digest.
 - **RPC security**: Student operations must use `SECURITY DEFINER` Postgres functions with explicit validation, ensuring students can only access work explicitly provisioned by their coach.
-- **Teacher RLS**: Teacher-facing tables (`students`, `coaching_sessions`, `puzzle_assignments`) must remain guarded by Row Level Security linked to `auth.uid()`.
+- **Teacher RLS**: Teacher-facing tables (`managed_students`, `coaching_sessions`, `puzzle_assignments`) must remain guarded by Row Level Security linked to `auth.uid()`.
 
 ## Lesson Position Builder Conventions
 
