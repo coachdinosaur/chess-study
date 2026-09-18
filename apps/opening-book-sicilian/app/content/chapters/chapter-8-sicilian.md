@@ -1004,8 +1004,8 @@ The game should be drawn.
 
 ## Conclusion
 
-<!-- SOURCE MOVE REFERENCE: Chapter conclusion summary. -->
+<!-- FEN: rnbqkb1r/pp3ppp/3pp3/3nP3/3P4/5N2/PP3PPP/RNBQKB1R w KQkq - 0 7 -->
 Chapter 8 saw us begin our coverage of the critical 7.Bc4 variation. After 7...Nc6 8.0-0 Be7 9.exd6 I have given two options. I personally prefer 9...Bxd6, but there is nothing objectively wrong with 9...Qxd6, and I think it was instructive to present both options.
 
-<!-- SOURCE MOVE REFERENCE: Chapter conclusion summary. -->
-Another important branch of the chapter arose after the continuation 9.a3 0-0 10.Bd3 Bd7 11.Qe2 Rc8 12.Qe4 f5 13.exf6 Nxf6 14.Qe2 d5 15.Nc3 where I examined 15...Bd6 and 15...Ne8. Both options lead to rich tactical battles, and my analysis will leave the readers well-equipped to catch out an underprepared opponent.
+<!-- FEN: r1bqk2r/pp2bppp/2npp3/3nP3/2BP4/5N2/PP3PPP/RNBQ1RK1 w kq - 2 9 -->
+Another important branch of the chapter arose after the continuation 9.a3 0-0 10.Bd3 Bd7 11.Qe2 Rc8 12.Qe4 f5 13.exf6 Nxf6 14.Qe2 d5 15.Nc3 where I examined E11) 15...Bd6 and E12) 15...Ne8. Both options lead to rich tactical battles, and my analysis will leave the readers well-equipped to catch out an underprepared opponent.
