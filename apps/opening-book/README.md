@@ -74,6 +74,16 @@ keep the continuous source-book page numbers, while chapters 9–16 restart at
 `## Page 1`. The strict `chapters:audit` check requires a first boundary of
 `## Page 1`, so it applies cleanly only to chapters 9–16 — that is intended.
 
+For correcting content errors (moves that don't link, wrong diagrams, dead
+branches), follow the diagnostic method in
+`apps/opening-book-sicilian/AUTHORING.md` §6 — the resolver architecture and
+anchor conventions are shared. A per-page replay trace is available:
+
+```powershell
+node --import tsx scripts/chapter-trace.ts `
+  --markdown app/content/chapters/chapter-1-catalan.md --page 7
+```
+
 Note for Windows checkouts: `chapters:check` compares the generated catalog
 byte-for-byte, so with `core.autocrlf=true` it can report "Chapter catalog is
 stale" when only CRLF/LF line endings differ. Run `npm run chapters:sync` and

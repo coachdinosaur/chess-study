@@ -167,3 +167,111 @@ Performs a deep traversal of all move tokens, branch lookahead, anchor recovery,
 npm test
 ```
 Runs the entire Vite build, static route generation, anchor verification, and unit tests.
+
+---
+
+## 6. Auditing & Correcting Page Content
+
+Chapter Markdown is **application input**, not ordinary documentation: move tokens
+drive the interactive board and FEN anchors set parser state. When a page "has
+errors" (moves that don't link, wrong diagrams, dead branches), use the method
+below. It is a **diagnostic loop, not a rewrite checklist** — the same visible
+symptom (an unresolved move) has had a dozen different root causes, so never
+pattern-match a fix before proving the cause.
+
+### The two sources of truth
+
+Every correction must satisfy **both**:
+
+1. **The printed source PDF** (`apps/NN_*.pdf`, kept local and git-ignored) —
+   what the book actually says. Extract text with `pdftotext -f N -l N file.pdf -`,
+   but **render the page and read it visually** for anything important: the text
+   layer drops or garbles figurine glyphs (`♞`/`♝`/`♕`), and only the rendered
+   diagram settles which piece sits on which square.
+2. **Chess legality** — replay the line with `chess.js` from the governing
+   anchor. A move that is printed but illegal is almost always a transcription
+   slip (wrong piece letter), not a source error. A move that is legal but
+   contradicts the printed figurine is the wrong "fix".
+
+When they agree, the fix is proven. When they appear to conflict, keep digging —
+the real cause is upstream (see cascades below).
+
+### The diagnostic loop
+
+```powershell
+# 1. Locate: which tokens fail, and how does the audit classify them?
+npm run chapters:audit -- --markdown app/content/chapters/chapter-N-sicilian.md
+
+# 2. Trace: replay the page line-by-line with the real resolver.
+node --import tsx scripts/chapter-trace.ts `
+  --markdown app/content/chapters/chapter-N-sicilian.md --page 151
+```
+
+3. **Find the governing anchor.** Each failing line resolves against the most
+   recent visible `**FEN:**`/`<!-- FEN: -->` anchor *plus* accumulated move
+   history. Failures usually cascade: one corrupted anchor makes every token
+   after it fail. Fix the anchor, and the whole line heals — so always check the
+   anchor before touching the move text.
+4. **Hypothesize the corruption.** Compare the anchor/diagram against the
+   rendered PDF page and against the position that replaying the printed moves
+   *should* produce.
+5. **Verify both ways.** The corrected FEN must be reachable by replaying the
+   printed line from a known-good position, and the corrected SAN must be legal
+   from it and match the printed figurine.
+6. **Apply the minimal fix.** Only the corrupted element — don't "normalize"
+   nearby content, don't rewrite correct moves, don't restructure prose that
+   isn't broken.
+7. **Re-trace the page.** Cascades can mask deeper failures; repeat until the
+   page is clean, then re-run the audit for official classification.
+
+### Root-cause patterns seen in practice
+
+These are *diagnostic hints*, not templates — verify each case independently:
+
+| Symptom | Possible root cause | Fix type |
+|---|---|---|
+| Whole line of moves unresolved | Corrupted FEN anchor upstream (phantom/duplicated/missing piece, stale square) | Correct the anchor FEN |
+| One move illegal, rest of line fine | Transcription slip in SAN (`b6` printed `♞b6` → `Nb6`; `b5` blocked by own queen → `Bb5`; `Nxe5` → `Bxe5`) | Correct the SAN |
+| Move resolves to a wrong/lookalike position | History ambiguity: several same-ply positions accept the token | Add a hidden anchor before the line (don't change moves) |
+| Sibling branch (`17.Bd3?!`) dead | No local anchor for its branch point | Add a hidden anchor |
+| Legit prose flagged (`c3` Sicilian, square names, `(intending Rc4)`, `12...a6!` re-mention) | Classifier sees a move-shaped token in prose | Usually leave it — or split the physical line (render-identical, see below) |
+
+Concrete examples from the Chapter 8 audit: a phantom pawn left on `d4` after
+`13.dxe5` blocked `15.Qxd5` six anchors deep; the pawn move `b5` was illegal
+because Black's own queen sat on `b6` — the printed `♝b5` was a bishop; and
+`Nf3†` failed because the diagram's `3P2n1` dropped the recaptured g4 pawn and
+misplaced the knight on g4 instead of h4. Each looked like "a broken move"; each
+was a different root cause.
+
+### Judgment calls (where flexibility matters)
+
+- **Printed but illegal** → almost always a figurine misread. Replay the
+  position, see which piece can legally make the printed *destination* move, and
+  confirm that piece matches the rendered figurine. Fix the letter, not the idea.
+- **Anchor vs. printed diagram disagree** → trust the replayed line for hidden
+  anchors. Printed diagrams occasionally carry source quirks (a dropped
+  recapture); if the diagram contradicts its own continuation, prefer the
+  continuation and consider a `SOURCE ERRATUM` note rather than inventing a
+  position.
+- **Prose tokens** → don't force links. Re-mentioned moves (`12...a6!`),
+  intent phrases ("intending Rc4"), square names, and chapter cross-references
+  are legitimately unlinked. To move a stray token off an analysis line without
+  changing rendering, split the physical line — consecutive lines join into one
+  paragraph, so the split is invisible. `SOURCE MOVE REFERENCE` applies to a
+  whole line only; never use it on a line that mixes prose with real moves.
+- **Page boundaries** → a page may legitimately open mid-sentence continuing
+  from the previous page. Don't move or duplicate prose to "fix" the boundary.
+- **FEN fields** → side-to-move and halfmove clocks don't affect legality of the
+  next move but keep them honest when touching a FEN anyway.
+- **Fix scope** → identical corrupted FENs often repeat (use `replace_all` when
+  *every* occurrence is verified identical); similar-looking FENs may belong to
+  different positions — check each before bulk edits.
+
+### Before committing
+
+- Every FEN in the file validates (the audit reports `0 invalid`).
+- `unresolved-analysis` is `0` for the touched pages, or only accepted
+  prose-reference categories remain.
+- `npm test` passes (includes `chapters:check` + the full build).
+- `git diff` shows only the intended minimal edits.
+- Source PDFs stay local and git-ignored — never commit them.
