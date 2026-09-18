@@ -68,6 +68,17 @@ export interface VariationJson {
   chapterRefs?: number[];
   recommendedPlyRange?: [number, number];
   unlockLevel?: number;
+  /**
+   * Two-tier hierarchy (plan §4.8): depth-0 "branch" records are the
+   * selectable paths in the picker (grouped by chapterSystem); depth-1+
+   * "leaf" records exist for mastery granularity and hang under a branch
+   * via parentId. label is the source index label (A1, B21, ...).
+   * Absent on single-tier packages — treat as depth-0 ungrouped.
+   */
+  parentId?: string;
+  depth?: number;
+  chapterSystem?: string;
+  label?: string;
 }
 
 export interface VariationPolicyJson {
