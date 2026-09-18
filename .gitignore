@@ -19,3 +19,5 @@ worker/.wrangler/
 
 # Chapter 2's PDF is an external source of truth, not an app/repository asset.
 apps/02_2g3_and_2d3.pdf
+# Chapter 8's PDF is an external source of truth, not an app/repository asset.
+apps/08_7Bc4.pdf
