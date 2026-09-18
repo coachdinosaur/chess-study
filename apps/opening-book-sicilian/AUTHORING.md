@@ -232,8 +232,9 @@ These are *diagnostic hints*, not templates — verify each case independently:
 |---|---|---|
 | Whole line of moves unresolved | Corrupted FEN anchor upstream (phantom/duplicated/missing piece, stale square) | Correct the anchor FEN |
 | One move illegal, rest of line fine | Transcription slip in SAN (`b6` printed `♞b6` → `Nb6`; `b5` blocked by own queen → `Bb5`; `Nxe5` → `Bxe5`) | Correct the SAN |
-| Move resolves to a wrong/lookalike position | History ambiguity: several same-ply positions accept the token | Add a hidden anchor before the line (don't change moves) |
+| Move resolves to a wrong/lookalike position | History ambiguity: several same-ply positions accept the token | Add a hidden anchor before the line, or label the sibling (`E12) 15...Ne8`) |
 | Sibling branch (`17.Bd3?!`) dead | No local anchor for its branch point | Add a hidden anchor |
+| Token resolves but lands on the *wrong* root | A *newer* lookalike position exists in history (prose siblings search newest-first, deduped by FEN — re-traversing an older position does not refresh it) | Check the trace's before-FEN, not just ✓/✗; give the token its own anchor or label |
 | Legit prose flagged (`c3` Sicilian, square names, `(intending Rc4)`, `12...a6!` re-mention) | Classifier sees a move-shaped token in prose | Usually leave it — or split the physical line (render-identical, see below) |
 
 Concrete examples from the Chapter 8 audit: a phantom pawn left on `d4` after
@@ -259,6 +260,31 @@ was a different root cause.
   changing rendering, split the physical line — consecutive lines join into one
   paragraph, so the split is invisible. `SOURCE MOVE REFERENCE` applies to a
   whole line only; never use it on a line that mixes prose with real moves.
+- **Conclusion / recap paragraphs** → when a paragraph summarizes analyzed
+  branches ("I examined 15...Bd6 and 15...Ne8"), the logic of the discussion
+  usually wants the recap *navigable*, not `SOURCE MOVE REFERENCE` plain text.
+  Anchor the paragraph at the branch point it recaps — the moves then chain to
+  the same positions the body analyzed.
+- **Sibling mentions in prose** → only `or`, `while`, `whereas`, `instead`,
+  `alternatively` (and `;` inside parentheses) make the resolver return to the
+  shared branch point; `and` / `but` do not. A sibling mention after `and`/`but`
+  falls back to history candidates — fine when exactly one legal position exists
+  (`9...Qxd6`), wrong or unresolved when a lookalike exists. The deterministic
+  fix is the book's own variation label: `E12) 15...Ne8` resets to `lastBefore`
+  via the labeled-sibling rule and adds useful cross-reference info.
+- **A resolving token can still be wrong** → `15...Ne8` *resolved* — but onto
+  post-`15.Bf4`, a newer lookalike in history, not the E12 branch the sentence
+  meant. Always read the trace's **before-FEN** for the moves you touched; a ✓
+  with the wrong source position is a silent defect. Similarly, a mid-line jump
+  to a different position (before-FEN changes unexpectedly between consecutive
+  tokens) means the anchor upstream is corrupted and history "healed" it —
+  fix the anchor.
+- **Authoring anchors** → never hand-write a FEN from memory. Derive it by
+  replaying the printed line from a known-good position with `chess.js`, and
+  cross-check against the chapter's existing anchors for the same position —
+  chess.js tolerates impossible piece counts (promotion legality), so a
+  three-knight FEN still "works" while silently corrupting every navigation
+  path built on it.
 - **Page boundaries** → a page may legitimately open mid-sentence continuing
   from the previous page. Don't move or duplicate prose to "fix" the boundary.
 - **FEN fields** → side-to-move and halfmove clocks don't affect legality of the
