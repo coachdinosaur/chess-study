@@ -168,6 +168,13 @@ npm test
 ```
 Runs the entire Vite build, static route generation, anchor verification, and unit tests.
 
+> [!WARNING]
+> The scaffolding tests in `tests/chapter-workflow.test.mjs` create a real
+> `chapter-N-sicilian.md` in `app/content/chapters/` and remove it on
+> teardown. They compute `N` dynamically — never point a teardown path at a
+> committed chapter file, and restore the generated catalog from the
+> snapshot taken before the test ran.
+
 ---
 
 ## 6. Auditing & Correcting Page Content

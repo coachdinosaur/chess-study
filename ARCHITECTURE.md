@@ -1122,9 +1122,10 @@ report a stale catalog when only line endings differ.
 
 ### Sicilian Defense (`apps/opening-book-sicilian/`)
 
-The Sicilian book ("Beating the Anti-Sicilian") ships 8 chapters covering
-source-book pages 7–155 (one contiguous `## Page N` sequence — no pagination
-convention split). It is a deliberate thin build: `dist/` contains no piece
+The Sicilian book ("Beating the Anti-Sicilian") ships 8 complete chapters
+covering source-book pages 7–155 plus Chapter 9 in progress (pages 156–160
+of 156–174) — one contiguous `## Page N` sequence with no pagination
+convention split. It is a deliberate thin build: `dist/` contains no piece
 SVGs and no engine — at runtime it loads `/openings/assets/pieces/mpchess/`
 and `/openings/stockfish/stockfish-18-lite-single.js` from the Catalan app's
 published output (`sharedOpeningAssetUrl`). That coupling is a contract: the
