@@ -101,7 +101,7 @@
       letter-spacing: 0.02em;
     }
   </style>
-  <link rel="stylesheet" href="./styles.css?v=20260915-lesson-board-chrome-v2">
+  <link rel="stylesheet" href="./styles.css?v=20260919-theme-toggle-fix">
   <link rel="stylesheet" href="./site-home.css?v=20260827-board-loading-fix2">
   <link rel="stylesheet" href="./focus-analysis-popup.css?v=20260827-board-loading-fix2">
 </head>
@@ -240,7 +240,7 @@
     </nav>
 
     <div class="drawer-footer">
-      <button class="drawer-theme-toggle" type="button" data-action="toggle-app-theme" aria-label="Toggle dark theme" aria-checked="false">
+      <button class="drawer-theme-toggle" type="button" data-action="toggle-app-theme" role="switch" aria-label="Toggle dark theme" aria-checked="false">
         <span class="theme-toggle-label">Dark Theme</span>
         <span class="theme-toggle-switch" aria-hidden="true">
           <span class="theme-toggle-thumb"></span>
@@ -342,7 +342,7 @@
       </nav>
 
       <div class="sidebar-footer">
-        <button class="sidebar-theme-toggle" type="button" data-action="toggle-app-theme" aria-label="Toggle dark theme" aria-checked="false" title="Toggle dark theme">
+        <button class="sidebar-theme-toggle" type="button" data-action="toggle-app-theme" role="switch" aria-label="Toggle dark theme" aria-checked="false" title="Toggle dark theme">
           <span class="theme-toggle-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
@@ -881,9 +881,9 @@
     </div>
   </div>
 
-  <script type="module" src="./app.js?v=20260915-lesson-board-chrome-v2"></script>
+  <script type="module" src="./app.js?v=20260919-theme-toggle-fix"></script>
   <script type="module" src="./focus-analysis-popup.mjs?v=20260827-board-loading-fix2"></script>
-  <script type="module" src="./app-navigation.js?v=20260827-board-loading-fix2"></script>
+  <script type="module" src="./app-navigation.js?v=20260919-theme-toggle-fix"></script>
   <script type="module" src="./top-players.mjs?v=20260827-board-loading-fix2"></script>
 
 <script>

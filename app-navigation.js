@@ -172,6 +172,7 @@
   }
 
   function bindThemeToggles() {
+    updateThemeSwitches(document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
     document.addEventListener('click', (e) => {
       const themeToggle = e.target.closest('[data-action="toggle-app-theme"]');
       if (themeToggle) {
@@ -206,10 +207,6 @@
     const switches = document.querySelectorAll('[data-action="toggle-app-theme"]');
     switches.forEach((sw) => {
       sw.setAttribute('aria-checked', theme === 'dark' ? 'true' : 'false');
-      const label = sw.querySelector('.theme-toggle-label');
-      if (label) {
-        label.textContent = theme === 'dark' ? 'Dark Theme' : 'Light Theme';
-      }
     });
   }
 

@@ -2883,6 +2883,16 @@ function initializeColorTheme() {
   const bootTheme = dom.rootElement?.dataset.theme;
   const initialTheme = bootTheme ? normalizeColorTheme(bootTheme) : readStoredColorTheme();
   applyColorTheme(initialTheme);
+  if (dom.rootElement && typeof MutationObserver === 'function') {
+    const observer = new MutationObserver(() => {
+      const observedTheme = normalizeColorTheme(dom.rootElement.dataset.theme);
+      if (observedTheme !== state.colorTheme) {
+        state.colorTheme = observedTheme;
+        syncColorThemeMenuState();
+      }
+    });
+    observer.observe(dom.rootElement, { attributes: true, attributeFilter: ['data-theme'] });
+  }
 }
 
 const HEADER_MENU_NAMES = Object.freeze(['lesson-book', 'settings', 'lesson-select']);

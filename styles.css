@@ -1783,12 +1783,18 @@ html[data-active-tab="puzzle"] .lesson-title-input {
 }
 
 .lesson-overflow-item-toggle:hover .theme-toggle-switch,
-.lesson-overflow-item-toggle:focus-visible .theme-toggle-switch {
+.lesson-overflow-item-toggle:focus-visible .theme-toggle-switch,
+.sidebar-theme-toggle:hover .theme-toggle-switch,
+.sidebar-theme-toggle:focus-visible .theme-toggle-switch,
+.drawer-theme-toggle:hover .theme-toggle-switch,
+.drawer-theme-toggle:focus-visible .theme-toggle-switch {
   border-color: var(--focus-border);
   box-shadow: 0 0 0 2px var(--focus-ring);
 }
 
-.lesson-overflow-item-toggle[aria-checked="true"] .theme-toggle-switch {
+.lesson-overflow-item-toggle[aria-checked="true"] .theme-toggle-switch,
+.sidebar-theme-toggle[aria-checked="true"] .theme-toggle-switch,
+.drawer-theme-toggle[aria-checked="true"] .theme-toggle-switch {
   background-color: var(--overflow-check-fill);
 }
 
@@ -1804,7 +1810,9 @@ html[data-active-tab="puzzle"] .lesson-title-input {
   transition: transform var(--ease);
 }
 
-.lesson-overflow-item-toggle[aria-checked="true"] .theme-toggle-thumb {
+.lesson-overflow-item-toggle[aria-checked="true"] .theme-toggle-thumb,
+.sidebar-theme-toggle[aria-checked="true"] .theme-toggle-thumb,
+.drawer-theme-toggle[aria-checked="true"] .theme-toggle-thumb {
   transform: translateX(1rem);
 }
 
