@@ -3,7 +3,7 @@
 Sicilian Defense Opening Book ("Beating the Anti-Sicilian") is a fully static
 React/Vite opening course. It currently contains **8 complete chapters**
 covering source-book pages 7–155 plus **Chapter 9 in progress** (pages
-156–160 of 156–174), with PDF-authored page boundaries, clickable
+156–161 of 156–174), with PDF-authored page boundaries, clickable
 variations, page navigation, an interactive chessboard, board flipping,
 keyboard move navigation, and browser-local Stockfish analysis.
 
@@ -17,7 +17,7 @@ keyboard move navigation, and browser-local Stockfish analysis.
 | 6 | c3 Sicilian – Rare 5th Moves | 96–106 |
 | 7 | c3 Sicilian – Various 7th Moves | 107–135 |
 | 8 | c3 Sicilian – 7.Bc4 | 136–155 |
-| 9 | c3 Sicilian – 9.Qe2 | 156–174 (transcribed: 156–160) |
+| 9 | c3 Sicilian – 9.Qe2 | 156–174 (transcribed: 156–161) |
 
 Chapter 1's authoritative source is the committed PDF:
 
@@ -132,7 +132,7 @@ npm run chapters:audit -- --chapter 5 --markdown app/content/chapters/chapter-5-
 npm run chapters:audit -- --chapter 6 --markdown app/content/chapters/chapter-6-sicilian.md --expected-first-page 96 --expected-pages 11 --expected-diagrams 33
 npm run chapters:audit -- --chapter 7 --markdown app/content/chapters/chapter-7-sicilian.md --expected-first-page 107 --expected-pages 29 --expected-diagrams 92
 npm run chapters:audit -- --chapter 8 --markdown app/content/chapters/chapter-8-sicilian.md --expected-first-page 136 --expected-pages 20 --expected-diagrams 63
-npm run chapters:audit -- --chapter 9 --markdown app/content/chapters/chapter-9-sicilian.md --expected-first-page 156 --expected-pages 5 --expected-diagrams 16
+npm run chapters:audit -- --chapter 9 --markdown app/content/chapters/chapter-9-sicilian.md --expected-first-page 156 --expected-pages 6 --expected-diagrams 19
 ```
 
 Unresolved tokens are reported as warnings classified by kind

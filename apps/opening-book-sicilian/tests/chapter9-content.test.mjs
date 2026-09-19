@@ -10,13 +10,13 @@ async function readChapterNine() {
   return readFile(chapterUrl, "utf8");
 }
 
-test("Chapter 9 preserves the PDF page range 156 through 160", async () => {
+test("Chapter 9 preserves the PDF page range 156 through 161", async () => {
   const markdown = await readChapterNine();
   const pageNumbers = [...markdown.matchAll(/^## Page (\d+)\s*$/gm)].map((match) => Number(match[1]));
-  assert.deepEqual(pageNumbers, Array.from({ length: 5 }, (_, index) => index + 156));
+  assert.deepEqual(pageNumbers, Array.from({ length: 6 }, (_, index) => index + 156));
   const chapter = parseChapterMarkdown("chapter-9-sicilian.md", markdown);
-  assert.equal(chapter.pageCount, 5);
-  const audit = auditChapterMarkdown(markdown, { chapter: 9, expectedPages: 5, expectedFirstPage: 156 });
+  assert.equal(chapter.pageCount, 6);
+  const audit = auditChapterMarkdown(markdown, { chapter: 9, expectedPages: 6, expectedFirstPage: 156 });
   assert.deepEqual(audit.errors, []);
 });
 
@@ -102,7 +102,8 @@ test("Chapter 9 Page 159 contains variation B and B1", async () => {
 test("Chapter 9 Page 160 contains the B1 sacrifices and 11...Bb7!?N", async () => {
   const markdown = await readChapterNine();
   const start = markdown.indexOf("## Page 160");
-  const page160 = markdown.slice(start);
+  const end = markdown.indexOf("## Page 161", start);
+  const page160 = markdown.slice(start, end);
 
   assert.match(page160, /15\.Nd4!\? \(15\.Bf4 Qd5! 16\.Rad1 Qc6 17\.Qc2 g6⇄/);
   assert.match(page160, /11\.a3 dxe5 12\.dxe5 Bb7=/);
@@ -117,4 +118,20 @@ test("Chapter 9 Page 160 contains the B1 sacrifices and 11...Bb7!?N", async () =
   assert.match(page160, /16\.Bb5!/);
   assert.match(page160, /16\.\.\.Bb4! 17\.Nc3 Nd4 18\.Nxd4 Qxd4/);
   assert.match(page160, /12\.Bd3 g6 13\.Bh6 Ndb4!\?/);
+});
+
+test("Chapter 9 Page 161 contains the B1 exchange sacrifice and variation B2", async () => {
+  const markdown = await readChapterNine();
+  const start = markdown.indexOf("## Page 161");
+  const page161 = markdown.slice(start);
+
+  assert.match(page161, /Instead, 13\.\.\.Re8\?! 14\.Nbd2 Ndb4 15\.Bf1!→/);
+  assert.match(page161, /15\.Bb1\?! Nxe5! 16\.Qxb7 Nec6! 17\.a3 Rb8 18\.Qxb8 Qxb8 19\.axb4 Nxb4∞/);
+  assert.match(page161, /14\.exd6 Bxd6 15\.Bxf8 Bxf8 16\.Nc3 Nxd3 17\.Qxd3 Nb4 18\.Qd2 Bxf3 19\.gxf3 Nd5 20\.Nxd5 exd5!\?/);
+  assert.match(page161, /21\.Kg2 Bd6 22\.h4!/);
+  assert.match(page161, /22\.\.\.Qxh4 23\.Rh1 Bf4! 24\.Rxh4 Bxd2 25\.Rd1 Bg5 26\.Rg4 Bf6 27\.f4 Re8!/);
+  assert.match(page161, /#### B2\) 10\.\.\.Qb6!/);
+  assert.match(page161, /\*\*11\.Nc3!\?\*\*/);
+  assert.match(page161, /11\.Bxd5 exd5 12\.Nc3 Be6!= is harmless\./);
+  assert.match(page161, /11\.Rd1 dxe5 12\.dxe5 Rd8 13\.Bd3 Ndb4 14\.Be4 Rxd1† 15\.Qxd1 Bc5/);
 });

@@ -311,3 +311,55 @@ c3 Sicilian
 12.Bd3 g6 13.Bh6 Ndb4!?
 
   This is my conception, sacrificing the exchange before White gets organized.
+
+## Page 161
+
+Chapter 9 – 9.Qe2
+
+<!-- FEN: r2q1rk1/pb2bp1p/1pnpp1pB/3nP3/3PQ3/3B1N2/PP3PPP/RN2R1K1 b - - 1 13 -->
+  Instead, 13...Re8?! 14.Nbd2 Ndb4 15.Bf1!→ looks better for White: the idea is simply Rad1 followed by Qf4, when the attack plays itself.
+<!-- FEN: r2qr1k1/pb2bp1p/1pnpp1pB/4P3/1n1PQ3/3B1N2/PP1N1PPP/R3R1K1 w - - 4 15 -->
+  (The first player only needs to avoid 15.Bb1?! Nxe5! 16.Qxb7 Nec6! 17.a3 Rb8 18.Qxb8 Qxb8 19.axb4 Nxb4∞ with an unclear game.)
+
+**FEN:**
+`r2q1rk1/pb2bp1p/1pnpp1pB/4P3/1n1PQ3/3B1N2/PP3PPP/RN2R1K1 w - - 2 14`
+
+<!-- FEN: r2q1rk1/pb2bp1p/1pnpp1pB/4P3/1n1PQ3/3B1N2/PP3PPP/RN2R1K1 w - - 2 14 -->
+14.exd6 Bxd6 15.Bxf8 Bxf8 16.Nc3 Nxd3 17.Qxd3 Nb4 18.Qd2 Bxf3 19.gxf3 Nd5 20.Nxd5 exd5!?
+
+  Black seems to have good chances to equalize despite being a clear exchange down, for example:
+
+<!-- FEN: r2q1bk1/p4p1p/1p4p1/3p4/3P4/5P2/PP1Q1P1P/R3R1K1 w - - 0 21 -->
+21.Kg2 Bd6 22.h4!
+
+  Otherwise Black will play ...Qh4 and ...Bf4.
+
+**FEN:**
+`r2q2k1/p4p1p/1p1b2p1/3p4/3P3P/5P2/PP1Q1PK1/R3R3 b - - 0 22`
+
+<!-- FEN: r2q2k1/p4p1p/1p1b2p1/3p4/3P3P/5P2/PP1Q1PK1/R3R3 b - - 0 22 -->
+22...Qxh4 23.Rh1 Bf4! 24.Rxh4 Bxd2 25.Rd1 Bg5 26.Rg4 Bf6 27.f4 Re8! 28.Kf3 Rc8 29.Rd2 h5 30.Rg1 Kg7 31.Re1 a5 32.Re3 Rc4 33.b3 Rc1⇄
+
+<!-- FEN: r1bq1rk1/pp2bppp/2npp3/3nP3/2BP4/5N2/PP2QPPP/RNB1R1K1 b - - 7 10 -->
+  Black has decent counterplay. Still, in spite of all this analysis and the satisfactory conclusions, I find Black's task a bit laborious after 10...b6!?.
+<!-- FEN: r1bq1rk1/pp2bppp/2npp3/3nP3/2BP4/5N2/PP2QPPP/RNB1R1K1 b - - 7 10 -->
+  The same cannot be said of 10...Qb6!:
+
+<!-- FEN: r1bq1rk1/pp2bppp/2npp3/3nP3/2BP4/5N2/PP2QPPP/RNB1R1K1 b - - 7 10 -->
+#### B2) 10...Qb6!
+
+**FEN:**
+`r1b2rk1/pp2bppp/1qnpp3/3nP3/2BP4/5N2/PP2QPPP/RNB1R1K1 w - - 8 11`
+
+  A strong reply which hits White where it hurts him most: the d4-pawn is under attack, and if the white queen hurries to e4 in order to protect it, there is also some looming pressure against f2.
+
+<!-- FEN: r1b2rk1/pp2bppp/1qnpp3/3nP3/2BP4/5N2/PP2QPPP/RNB1R1K1 w - - 8 11 -->
+**11.Nc3!?**
+
+  This is probably the best move at White's disposal, but our main line will provide an excellent antidote.
+
+<!-- FEN: r1b2rk1/pp2bppp/1qnpp3/3nP3/2BP4/5N2/PP2QPPP/RNB1R1K1 w - - 8 11 -->
+  11.Bxd5 exd5 12.Nc3 Be6!= is harmless.
+
+<!-- FEN: r1b2rk1/pp2bppp/1qnpp3/3nP3/2BP4/5N2/PP2QPPP/RNB1R1K1 w - - 8 11 -->
+  11.Rd1 dxe5 12.dxe5 Rd8 13.Bd3 Ndb4 14.Be4 Rxd1† 15.Qxd1 Bc5 16.Qd2 Nd4 17.Nc3 Bd7 18.a3 Nd5! 19.Nxd5 exd5 20.Bxd5 Nxf3† 21.Bxf3 Bd4 22.Qe2 Re8 is equal too.
