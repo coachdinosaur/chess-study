@@ -49,6 +49,9 @@ const LAST_MOVE_ARROW_TIP_INSET = 30;
 const LAST_MOVE_ARROW_HEAD_LENGTH = 24;
 const LAST_MOVE_ARROW_HEAD_WIDTH = 34;
 const ENGINE_MULTI_PV_COUNT = 3;
+const PLAY_ENGINE_CANDIDATE_COUNT = 5;
+const PLAY_ENGINE_MIN_RATING = 800;
+const PLAY_ENGINE_UCI_ELO_MIN = 1320;
 const ENGINE_READY_TIMEOUT_MS = 35000;
 const ENGINE_RECHECK_TIMEOUT_MS = 10000;
 const GAME_RESULT_REVEAL_DELAY_MS = 650;
@@ -829,6 +832,7 @@ const state = {
     thinkingSpeed: 'normal',
     autoHiddenPgnComments: false,
     autoHiddenPvLines: false,
+    pvCandidates: new Map(),
   },
   puzzle: {
     premium: true,
@@ -5765,6 +5769,28 @@ function handleWorkerMessage(event) {
       }
     }
     if (state.play.active) {
+      if (
+        info
+        && state.play.engineThinking
+        && info.hasPv
+        && info.pv.length
+        && info.scoreType
+        && info.multipv >= 1
+        && info.multipv <= PLAY_ENGINE_CANDIDATE_COUNT
+      ) {
+        const uci = normalizeUciMove(info.pv[0]);
+        if (uci) {
+          if (!(state.play.pvCandidates instanceof Map)) {
+            state.play.pvCandidates = new Map();
+          }
+          state.play.pvCandidates.set(info.multipv, {
+            uci,
+            scoreType: info.scoreType,
+            scoreValue: info.scoreValue,
+            depth: info.depth,
+          });
+        }
+      }
       return;
     }
   }
@@ -10056,19 +10082,20 @@ function applyEngineSkillLevel(elo) {
     return;
   }
   const worker = state.engine.worker;
-  if (elo >= 1320) {
+  if (elo >= PLAY_ENGINE_UCI_ELO_MIN) {
     // Use UCI_LimitStrength + UCI_Elo for accurate ELO targeting (1320–3190).
-    const clampedElo = clamp(elo, 1320, 3190);
+    const clampedElo = clamp(elo, PLAY_ENGINE_UCI_ELO_MIN, 3190);
     worker.postMessage('setoption name UCI_LimitStrength value true');
     worker.postMessage(`setoption name UCI_Elo value ${clampedElo}`);
     console.log(`[Stockfish] Set UCI_Elo to ${clampedElo} (requested: ${elo})`);
   } else {
-    // Below 1320: UCI_Elo is unsupported. Use Skill Level (0–10) mapped from 800–1319.
-    // Skill Level 0 ≈ 800 Elo, Skill Level 10 ≈ 1319 Elo.
-    const skillLevel = Math.round(clamp((elo - 800) / (1319 - 800), 0, 1) * 10);
+    // Below 1320: UCI_Elo is unsupported, and Stockfish's own Skill Level
+    // scale is not linear in Elo (mid levels are far stronger than the label).
+    // Search at full strength instead and weaken the move choice in
+    // chooseBeginnerMove() so strength scales smoothly with the slider.
     worker.postMessage('setoption name UCI_LimitStrength value false');
-    worker.postMessage(`setoption name Skill Level value ${skillLevel}`);
-    console.log(`[Stockfish] Set Skill Level to ${skillLevel} for ~${elo} Elo (below UCI_Elo range)`);
+    worker.postMessage('setoption name Skill Level value 20');
+    console.log(`[Stockfish] Full-strength search with ~${elo} Elo move selection (below UCI_Elo range)`);
   }
 }
 
@@ -10136,6 +10163,7 @@ async function startPlayGame(options = {}) {
   // Increment play session and cancel any stale engine request from a previous game
   state.play.playSessionId += 1;
   cancelPlayEngineRequest('starting new play game');
+  state.play.pvCandidates = new Map();
   state.play.playEngineRetryCount = 0;
   debugPlayEngine('startPlayGame', { playSessionId: state.play.playSessionId });
 
@@ -10328,6 +10356,7 @@ function stopPlayGame(options = {}) {
   debugPlayEngine('stopPlayGame', { reason, playSessionId: state.play.playSessionId });
   state.play.playSessionId += 1;
   cancelPlayEngineRequest('stopping play game');
+  state.play.pvCandidates = new Map();
   state.play.active = false;
   state.play.gameReady = false;
   state.play.clockRunning = false;
@@ -10626,6 +10655,11 @@ async function triggerEngineMove() {
   renderActiveToolPanel();
 
   const cmd = (msg) => worker.postMessage(msg);
+  // Below UCI_Elo range, ask for ranked candidate lines so move selection can
+  // dial mistake size by rating. At calibrated ratings the bestmove is enough.
+  const multipvCount = state.play.skill < PLAY_ENGINE_UCI_ELO_MIN ? PLAY_ENGINE_CANDIDATE_COUNT : 1;
+  state.play.pvCandidates = new Map();
+  cmd(`setoption name MultiPV value ${multipvCount}`);
   cmd(`position fen ${state.analysis.currentFen}`);
 
   const isEngineWhite = state.play.assignedSide === 'black';
@@ -10668,214 +10702,113 @@ async function triggerEngineMove() {
   startPlayEngineWatchdog(sessionId);
 }
 
+// Convert an engine info-line score (cp or mate) to a centipawn number so
+// candidate moves can be compared by loss. Scores are from the side-to-move's
+// perspective. A forced mate counts as an overwhelming advantage.
+function playCandidateScoreCp(candidate) {
+  if (!candidate || !candidate.scoreType) {
+    return 0;
+  }
+  const value = Number.isFinite(candidate.scoreValue) ? candidate.scoreValue : 0;
+  if (candidate.scoreType === 'mate') {
+    const magnitude = 10000 - Math.min(Math.abs(value), 900) * 5;
+    return value >= 0 ? magnitude : -magnitude;
+  }
+  return value;
+}
+
+// Chance the engine ignores evaluation entirely and plays a random legal
+// move (beginner tunnel vision: hung pieces, missed mates, aimless play).
+// Strongest at the floor (800 -> 40%) and fades out by ~1150 so the lowest
+// levels stay genuinely beatable while higher levels stop making nonsense moves.
+function playRandomMoveChance(rating) {
+  const elo = clamp(rating, PLAY_ENGINE_MIN_RATING, 1150);
+  return 0.40 * (1 - (elo - PLAY_ENGINE_MIN_RATING) / 350);
+}
+
+// Softmax temperature over candidate centipawn loss. Larger tau -> bigger and
+// more frequent mistakes. Decays smoothly so every slider step is a visible
+// strength gain: ~300cp at 800, ~110 at 1000, ~50 by 1319.
+function playMistakeTemperature(rating) {
+  const elo = clamp(rating, PLAY_ENGINE_MIN_RATING, PLAY_ENGINE_UCI_ELO_MIN);
+  return clamp(300 * Math.exp(-(elo - PLAY_ENGINE_MIN_RATING) / 300), 45, 300);
+}
+
+// Pick the engine's move for ratings below the UCI_Elo range. Searches run at
+// full strength with MultiPV, then this scales the chosen move's quality by
+// rating: low levels blunder for real, higher levels slip by shrinking amounts.
 function chooseBeginnerMove(bestMoveUci) {
   if (!state.play.active || !state.analysis.game) {
     return bestMoveUci;
   }
 
   const rating = state.play.skill;
-  if (rating > 1100) {
+  if (rating >= PLAY_ENGINE_UCI_ELO_MIN) {
     return bestMoveUci;
   }
 
-  // 1. Get the legal move list
   const legalMoves = state.analysis.game.moves({ verbose: true });
-  const moveCount = legalMoves.length;
-  if (moveCount === 0) {
+  if (legalMoves.length <= 1) {
     return bestMoveUci;
   }
+  const legalUci = new Set(legalMoves.map(moveToUci).filter(Boolean));
+  const normBest = normalizeUciMove(bestMoveUci);
 
-  // 2. Compute mistake probability based on rating (800 -> 45%, 900 -> 30%, 1000 -> 18%, 1100 -> 8%)
-  const elo = clamp(rating, 800, 1100);
-  let pMistake = 0.45;
-  if (elo <= 900) {
-    pMistake = 0.45 - ((elo - 800) / 100) * (0.45 - 0.30);
-  } else if (elo <= 1000) {
-    pMistake = 0.30 - ((elo - 900) / 100) * (0.30 - 0.18);
-  } else {
-    pMistake = 0.18 - ((elo - 1000) / 100) * (0.18 - 0.08);
+  // Occasionally play a random non-best legal move at the lowest levels.
+  if (normBest && Math.random() < playRandomMoveChance(rating)) {
+    const randomPool = legalMoves.filter(move => moveToUci(move) !== normBest);
+    if (randomPool.length) {
+      const pick = randomPool[Math.floor(Math.random() * randomPool.length)];
+      const chosenUci = moveToUci(pick);
+      console.log(`[PlayEngine] ~${rating} random move ${bestMoveUci} -> ${chosenUci}`);
+      return chosenUci;
+    }
   }
 
-  // Safety adjustments
-  // - If side to move is in check: Reduce mistake probability by 75%
-  if (state.analysis.game.inCheck()) {
-    pMistake *= 0.25;
+  // Gather the ranked MultiPV candidates reported during this search.
+  const entries = state.play.pvCandidates instanceof Map
+    ? [...state.play.pvCandidates.entries()]
+    : [];
+  entries.sort((a, b) => a[0] - b[0]);
+  const seen = new Set();
+  const candidates = [];
+  for (const [, info] of entries) {
+    const uci = normalizeUciMove(info?.uci);
+    if (!uci || seen.has(uci) || !legalUci.has(uci)) {
+      continue;
+    }
+    seen.add(uci);
+    candidates.push({ uci, scoreCp: playCandidateScoreCp(info) });
   }
-
-  // - If legal move count <= 3: Reduce mistake probability significantly
-  if (moveCount <= 1) {
-    pMistake = 0;
-  } else if (moveCount === 2) {
-    pMistake *= 0.1;
-  } else if (moveCount === 3) {
-    pMistake *= 0.3;
-  }
-
-  // Probability check
-  if (Math.random() >= pMistake) {
+  if (candidates.length === 0) {
     return bestMoveUci;
   }
-
-  // 3. Remove Stockfish move from candidate alternatives
-  const normBest = bestMoveUci.toLowerCase();
-  const alternatives = legalMoves.filter(move => {
-    const moveUci = (move.from + move.to + (move.promotion || '')).toLowerCase();
-    return moveUci !== normBest;
-  });
-
-  if (alternatives.length === 0) {
-    return bestMoveUci;
+  if (normBest && legalUci.has(normBest) && !seen.has(normBest)) {
+    candidates.unshift({ uci: normBest, scoreCp: Math.max(...candidates.map(c => c.scoreCp)) });
+  }
+  if (candidates.length <= 1) {
+    return candidates[0].uci;
   }
 
-  // 4. Classify alternative moves into Safe (A), Imperfect (B), Weak (C)
-  const categoryA = [];
-  const categoryB = [];
-  const categoryC = [];
-
-  const opponentColor = state.analysis.game.turn() === 'w' ? 'b' : 'w';
-  const ourColor = state.analysis.game.turn();
-  const pieceValues = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 100 };
-
-  for (const move of alternatives) {
-    let givesCheck = false;
-    let deliversMate = false;
-    let allowsMateIn1 = false;
-    let hangsMaterial = false;
-
-    // We clone the game to inspect the position after the move is made
-    const tempGame = new Chess(state.analysis.game.fen());
-    try {
-      tempGame.move({
-        from: move.from,
-        to: move.to,
-        promotion: move.promotion,
-      });
-
-      givesCheck = tempGame.inCheck();
-      deliversMate = tempGame.isCheckmate();
-
-      // Check if opponent attacks the target square and if we defend it
-      const isAttacked = tempGame.isAttacked(move.to, opponentColor);
-      const isDefended = tempGame.isAttacked(move.to, ourColor);
-      const val = pieceValues[move.piece] || 0;
-
-      if (isAttacked) {
-        if (!isDefended) {
-          // If undefended and not a pawn, or any piece that is hanging
-          if (val >= 3) {
-            hangsMaterial = true;
-          }
-        } else {
-          // Defended, but moving a valuable piece (Rook, Queen) to a square attacked by opponent
-          if (val >= 5) {
-            hangsMaterial = true;
-          }
-        }
-      }
-
-      // Check if this move allows opponent checkmate in 1
-      const opponentMoves = tempGame.moves({ verbose: true });
-      for (const opMove of opponentMoves) {
-        const replyGame = new Chess(tempGame.fen());
-        try {
-          replyGame.move({
-            from: opMove.from,
-            to: opMove.to,
-            promotion: opMove.promotion,
-          });
-          if (replyGame.isCheckmate()) {
-            allowsMateIn1 = true;
-            break;
-          }
-        } catch (err) {}
-      }
-    } catch (err) {}
-
-    const isCapture = Boolean(move.captured);
-
-    // Classify into categories:
-    // C. Weak alternatives: hangs material or allows checkmate in 1
-    if (hangsMaterial || allowsMateIn1) {
-      categoryC.push({ ...move, allowsMateIn1, hangsMaterial });
-    }
-    // B. Imperfect alternatives: captures or checks, but safe
-    else if (isCapture || givesCheck || deliversMate) {
-      categoryB.push({ ...move, allowsMateIn1, hangsMaterial });
-    }
-    // A. Safe alternatives: quiet developing moves
-    else {
-      categoryA.push({ ...move, allowsMateIn1, hangsMaterial });
+  // Softmax over centipawn loss: better ratings play progressively smaller
+  // mistakes, which makes strength increase smoothly across the slider.
+  const bestScore = Math.max(...candidates.map(c => c.scoreCp));
+  const tau = playMistakeTemperature(rating);
+  const weights = candidates.map(c => Math.exp(-Math.max(0, bestScore - c.scoreCp) / tau));
+  const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+  let roll = Math.random() * totalWeight;
+  let chosen = candidates[0];
+  for (let i = 0; i < candidates.length; i += 1) {
+    roll -= weights[i];
+    if (roll <= 0) {
+      chosen = candidates[i];
+      break;
     }
   }
-
-  // 5. Select category based on rating weighting
-  // Weightings at key ratings:
-  // 1100: 80% A, 20% B, 0% C
-  // 1000: 60% A, 40% B, 0% C
-  // 900:  0% A,  40% B, 60% C
-  // 800:  0% A,  5% B,  95% C
-  let wA = 0;
-  let wB = 0;
-  let wC = 0;
-
-  if (elo <= 900) {
-    const t = (elo - 800) / 100;
-    wA = 0;
-    wB = 0.05 + t * (0.40 - 0.05);
-    wC = 0.95 - t * (0.95 - 0.60);
-  } else if (elo <= 1000) {
-    const t = (elo - 900) / 100;
-    wA = t * 0.60;
-    wB = 0.40;
-    wC = 0.60 - t * 0.60;
-  } else {
-    const t = (elo - 1000) / 100;
-    wA = 0.60 + t * (0.80 - 0.60);
-    wB = 0.40 - t * (0.40 - 0.20);
-    wC = 0;
+  if (chosen.uci !== normBest) {
+    console.log(`[PlayEngine] ~${rating} move ${bestMoveUci} -> ${chosen.uci} (tau=${Math.round(tau)})`);
   }
-
-  const roll = Math.random();
-  let targetCategory = 'C';
-  if (roll < wA) {
-    targetCategory = 'A';
-  } else if (roll < wA + wB) {
-    targetCategory = 'B';
-  } else {
-    targetCategory = 'C';
-  }
-
-  // Selection with fallback
-  let choices = [];
-  if (targetCategory === 'A') {
-    choices = categoryA;
-    if (choices.length === 0) choices = categoryB;
-    if (choices.length === 0) choices = categoryC;
-  } else if (targetCategory === 'B') {
-    choices = categoryB;
-    if (choices.length === 0) choices = categoryA;
-    if (choices.length === 0) choices = categoryC;
-  } else {
-    choices = categoryC;
-    // Prefer moves that don't allow checkmate in 1 if possible, even for weak moves
-    if (choices.length > 0) {
-      const nonMateC = choices.filter(m => !m.allowsMateIn1);
-      if (nonMateC.length > 0) {
-        choices = nonMateC;
-      }
-    }
-    if (choices.length === 0) choices = categoryB;
-    if (choices.length === 0) choices = categoryA;
-  }
-
-  if (choices.length > 0) {
-    const pick = choices[Math.floor(Math.random() * choices.length)];
-    const chosenUci = pick.from + pick.to + (pick.promotion || '');
-    console.log(`[Beginner Weakness] Intercepted Stockfish bestmove ${bestMoveUci} -> Played beginner alternative: ${chosenUci} (Rating: ${rating}, Category: ${targetCategory})`);
-    return chosenUci;
-  }
-
-  return bestMoveUci;
+  return chosen.uci;
 }
 
 function applyPlayEngineMove(bestMoveUci) {
