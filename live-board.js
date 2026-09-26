@@ -11,6 +11,12 @@ const PIECE_ASSETS = Object.freeze({
 });
 const LESSON_STORAGE_KEY = 'live-board-prepared-lessons-v1';
 const ROOM_STORAGE_PREFIX = 'live-board-room-v1:';
+const SQUARE_PATTERN = /^[a-h][1-8]$/;
+const ANNOTATION_CELL_SIZE = 100;
+const ANNOTATION_ARROW_HEAD_LENGTH = 30;
+const ANNOTATION_ARROW_HEAD_WIDTH = 40;
+const ANNOTATION_COLOR_GREEN = 'green';
+const ANNOTATION_COLORS = new Set(['green', 'orange', 'blue']);
 const clientId = crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
 
 const elements = {
@@ -48,6 +54,7 @@ const elements = {
   lessonPositionSelect: document.getElementById('lessonPositionSelect'),
   lessonNote: document.getElementById('lessonNote'),
   board3d: document.getElementById('liveBoard3D'),
+  annotationOverlay: document.getElementById('liveBoardAnnotationOverlay'),
   toggle3dButton: document.getElementById('toggle3dButton'),
   camera3dControls: document.getElementById('camera3dControls'),
   camAngleBtn: document.getElementById('camAngleBtn'),
@@ -71,6 +78,10 @@ let preparedLessons = [];
 let activeLessonId = '';
 let is3dMode = false;
 let liveBoard3DInstance = null;
+let annotations = createEmptyAnnotations();
+let annotationGesture = createEmptyAnnotationGesture();
+let suppressBoardClickUntil = 0;
+let suppressContextMenu = false;
 
 try {
   is3dMode = localStorage.getItem('live-board:3d-mode') === 'true';
@@ -125,6 +136,7 @@ function serializeState() {
     studentMovesAllowed,
     revision,
     activeLessonId,
+    annotations: serializeAnnotations(),
   };
 }
 
@@ -157,6 +169,9 @@ function applyRemoteState(state) {
     studentMovesAllowed = state.studentMovesAllowed !== false;
     revision = Number(state.revision) || 0;
     activeLessonId = String(state.activeLessonId || '');
+    if (state.annotations && typeof state.annotations === 'object') {
+      annotations = normalizeAnnotationState(state.annotations);
+    }
     selectedSquare = null;
     legalMoves = [];
     render();
@@ -194,6 +209,8 @@ function enterRoom(nextRole, nextCode) {
   role = nextRole;
   roomCode = normalizeRoomCode(nextCode);
   if (!roomCode) return;
+  annotations = createEmptyAnnotations();
+  annotationGesture = createEmptyAnnotationGesture();
   document.documentElement.dataset.role = role;
   elements.roomSetup.hidden = true;
   elements.sessionBar.hidden = false;
@@ -244,6 +261,8 @@ function renderBoard() {
       if (pieceAt(square)) button.classList.add('capture');
     }
 
+    appendAnnotationMarkup(button, square);
+
     const piece = pieceAt(square);
     if (piece) {
       const image = document.createElement('img');
@@ -270,6 +289,7 @@ function renderBoard() {
     button.addEventListener('click', () => handleSquareClick(square));
     elements.board.appendChild(button);
   });
+  renderAnnotationOverlay();
 }
 
 function renderMoveList() {
@@ -469,6 +489,7 @@ function closePromotionChooser() {
 }
 
 function handleSquareClick(square) {
+  if (Date.now() < suppressBoardClickUntil) return;
   if (!canMovePieces()) return;
   const clickedPiece = pieceAt(square);
   if (selectedSquare) {
@@ -497,12 +518,374 @@ function handleSquareClick(square) {
   }
 }
 
+function createEmptyAnnotations() {
+  return {
+    paintedSquares: new Map(),
+    circledSquares: new Map(),
+    starredSquares: new Map(),
+    arrows: [],
+  };
+}
+
+function createEmptyAnnotationGesture() {
+  return {
+    active: false,
+    mode: '',
+    color: ANNOTATION_COLOR_GREEN,
+    startSquare: '',
+    lastSquare: '',
+    dragged: false,
+  };
+}
+
+function normalizeAnnotationColor(value) {
+  const color = String(value || '').trim().toLowerCase();
+  return ANNOTATION_COLORS.has(color) ? color : ANNOTATION_COLOR_GREEN;
+}
+
+function annotationColorFromEvent(event) {
+  if (event.shiftKey) return 'blue';
+  if (event.ctrlKey) return 'orange';
+  return ANNOTATION_COLOR_GREEN;
+}
+
+function annotationGestureModeFromEvent(event) {
+  if (event.ctrlKey && event.shiftKey) return 'star';
+  if (event.altKey) return 'arrow';
+  return 'paint';
+}
+
+function normalizeAnnotationSquares(value) {
+  const entries = value instanceof Map
+    ? Array.from(value.entries()).map(([square, color]) => ({ square, color }))
+    : value instanceof Set
+      ? Array.from(value)
+      : Array.isArray(value) ? value : [];
+  const squares = new Map();
+  entries.forEach((entry) => {
+    const square = String(typeof entry === 'string' ? entry : entry?.square || '').trim().toLowerCase();
+    if (!SQUARE_PATTERN.test(square)) return;
+    squares.set(square, normalizeAnnotationColor(entry?.color));
+  });
+  return squares;
+}
+
+function normalizeAnnotationArrows(value) {
+  if (!Array.isArray(value)) return [];
+  const seen = new Set();
+  const arrows = [];
+  value.forEach((entry) => {
+    const from = String(entry?.from || '').trim().toLowerCase();
+    const to = String(entry?.to || '').trim().toLowerCase();
+    if (!SQUARE_PATTERN.test(from) || !SQUARE_PATTERN.test(to) || from === to) return;
+    const key = `${from}:${to}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    arrows.push({ from, to, color: normalizeAnnotationColor(entry?.color) });
+  });
+  return arrows;
+}
+
+function normalizeAnnotationState(value) {
+  return {
+    paintedSquares: normalizeAnnotationSquares(value?.paintedSquares),
+    circledSquares: normalizeAnnotationSquares(value?.circledSquares),
+    starredSquares: normalizeAnnotationSquares(value?.starredSquares),
+    arrows: normalizeAnnotationArrows(value?.arrows),
+  };
+}
+
+function serializeAnnotations() {
+  const serializeSquares = (squares) => Array.from(squares.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([square, color]) => (
+      color === ANNOTATION_COLOR_GREEN ? square : { square, color }
+    ));
+  return {
+    paintedSquares: serializeSquares(annotations.paintedSquares),
+    circledSquares: serializeSquares(annotations.circledSquares),
+    starredSquares: serializeSquares(annotations.starredSquares),
+    arrows: annotations.arrows.map((arrow) => (
+      arrow.color && arrow.color !== ANNOTATION_COLOR_GREEN
+        ? { from: arrow.from, to: arrow.to, color: arrow.color }
+        : { from: arrow.from, to: arrow.to }
+    )),
+  };
+}
+
+function hasAnyAnnotations() {
+  return annotations.paintedSquares.size > 0
+    || annotations.circledSquares.size > 0
+    || annotations.starredSquares.size > 0
+    || annotations.arrows.length > 0;
+}
+
+function canAnnotate() {
+  return role === 'teacher';
+}
+
+function paintAnnotationSquare(square, color = ANNOTATION_COLOR_GREEN) {
+  const normalizedColor = normalizeAnnotationColor(color);
+  if (!SQUARE_PATTERN.test(square) || annotations.paintedSquares.get(square) === normalizedColor) {
+    return false;
+  }
+  annotations.paintedSquares.set(square, normalizedColor);
+  return true;
+}
+
+function toggleAnnotationCircle(square, color = ANNOTATION_COLOR_GREEN) {
+  if (!SQUARE_PATTERN.test(square)) return false;
+  const normalizedColor = normalizeAnnotationColor(color);
+  if (annotations.circledSquares.get(square) === normalizedColor) {
+    annotations.circledSquares.delete(square);
+  } else {
+    annotations.circledSquares.set(square, normalizedColor);
+  }
+  return true;
+}
+
+function toggleAnnotationStar(square, color = ANNOTATION_COLOR_GREEN) {
+  if (!SQUARE_PATTERN.test(square)) return false;
+  const normalizedColor = normalizeAnnotationColor(color);
+  if (annotations.starredSquares.get(square) === normalizedColor) {
+    annotations.starredSquares.delete(square);
+  } else {
+    annotations.starredSquares.set(square, normalizedColor);
+  }
+  return true;
+}
+
+function addAnnotationArrow(from, to, color = ANNOTATION_COLOR_GREEN) {
+  if (!SQUARE_PATTERN.test(from) || !SQUARE_PATTERN.test(to) || from === to) return false;
+  const normalizedColor = normalizeAnnotationColor(color);
+  const key = `${from}:${to}`;
+  const existing = annotations.arrows.find((arrow) => `${arrow.from}:${arrow.to}` === key);
+  if (existing?.color === normalizedColor) return false;
+  if (existing) {
+    existing.color = normalizedColor;
+  } else {
+    annotations.arrows.push({ from, to, color: normalizedColor });
+  }
+  return true;
+}
+
+function clearAllAnnotations() {
+  if (!hasAnyAnnotations()) return false;
+  annotations.paintedSquares.clear();
+  annotations.circledSquares.clear();
+  annotations.starredSquares.clear();
+  annotations.arrows = [];
+  return true;
+}
+
+function cancelAnnotationGesture() {
+  const hadPreview = annotationGesture.active && annotationGesture.mode === 'arrow';
+  annotationGesture = createEmptyAnnotationGesture();
+  suppressContextMenu = false;
+  if (hadPreview) renderAnnotationOverlay();
+}
+
+function commitAnnotations(changed) {
+  if (!changed) return;
+  revision += 1;
+  renderBoard();
+  publish('state');
+}
+
+function annotationSquareCenter(square) {
+  if (!SQUARE_PATTERN.test(square)) return null;
+  const fileIndex = square.charCodeAt(0) - 97;
+  const rankIndex = Number.parseInt(square[1], 10) - 1;
+  const col = orientation === 'black' ? 7 - fileIndex : fileIndex;
+  const row = orientation === 'black' ? rankIndex : 7 - rankIndex;
+  return {
+    x: (col * ANNOTATION_CELL_SIZE) + (ANNOTATION_CELL_SIZE / 2),
+    y: (row * ANNOTATION_CELL_SIZE) + (ANNOTATION_CELL_SIZE / 2),
+  };
+}
+
+function buildAnnotationArrowMarkup(from, to, { preview = false, color = ANNOTATION_COLOR_GREEN } = {}) {
+  const start = annotationSquareCenter(from);
+  const end = annotationSquareCenter(to);
+  if (!start || !end || (start.x === end.x && start.y === end.y)) return '';
+
+  const deltaX = end.x - start.x;
+  const deltaY = end.y - start.y;
+  const distance = Math.hypot(deltaX, deltaY);
+  if (distance <= ANNOTATION_ARROW_HEAD_LENGTH) return '';
+
+  const unitX = deltaX / distance;
+  const unitY = deltaY / distance;
+  const headBaseX = end.x - (unitX * ANNOTATION_ARROW_HEAD_LENGTH);
+  const headBaseY = end.y - (unitY * ANNOTATION_ARROW_HEAD_LENGTH);
+  const perpendicularX = -unitY;
+  const perpendicularY = unitX;
+  const headHalfWidth = ANNOTATION_ARROW_HEAD_WIDTH / 2;
+  const leftX = headBaseX + (perpendicularX * headHalfWidth);
+  const leftY = headBaseY + (perpendicularY * headHalfWidth);
+  const rightX = headBaseX - (perpendicularX * headHalfWidth);
+  const rightY = headBaseY - (perpendicularY * headHalfWidth);
+  const colorClass = `is-${normalizeAnnotationColor(color)}`;
+  const previewClass = preview ? ' is-preview' : '';
+
+  return `<g>`
+    + `<line class="board-annotation-arrow ${colorClass}${previewClass}" x1="${start.x}" y1="${start.y}" x2="${headBaseX}" y2="${headBaseY}"></line>`
+    + `<polygon class="board-annotation-arrow-head ${colorClass}${previewClass}" points="${end.x},${end.y} ${leftX},${leftY} ${rightX},${rightY}"></polygon>`
+    + `</g>`;
+}
+
+function currentAnnotationPreviewArrow() {
+  if (!annotationGesture.active || annotationGesture.mode !== 'arrow') return null;
+  const { startSquare, lastSquare, color } = annotationGesture;
+  if (!SQUARE_PATTERN.test(startSquare) || !SQUARE_PATTERN.test(lastSquare) || startSquare === lastSquare) {
+    return null;
+  }
+  return { from: startSquare, to: lastSquare, color };
+}
+
+function renderAnnotationOverlay() {
+  if (!elements.annotationOverlay) return;
+  const savedArrows = annotations.arrows
+    .map((arrow) => buildAnnotationArrowMarkup(arrow.from, arrow.to, { color: arrow.color }))
+    .join('');
+  const preview = currentAnnotationPreviewArrow();
+  const previewMarkup = preview
+    ? buildAnnotationArrowMarkup(preview.from, preview.to, { preview: true, color: preview.color })
+    : '';
+  elements.annotationOverlay.innerHTML = savedArrows || previewMarkup
+    ? `${savedArrows}${previewMarkup}`
+    : '';
+}
+
+function appendAnnotationMarkup(squareEl, square) {
+  const layers = [
+    ['paintedSquares', 'board-annotation-paint'],
+    ['circledSquares', 'board-annotation-circle'],
+    ['starredSquares', 'board-annotation-star'],
+  ];
+  layers.forEach(([key, className]) => {
+    const color = annotations[key].get(square);
+    if (color === undefined) return;
+    const span = document.createElement('span');
+    span.className = `board-annotation ${className} is-${normalizeAnnotationColor(color)}`;
+    span.setAttribute('aria-hidden', 'true');
+    squareEl.appendChild(span);
+  });
+}
+
+function squareFromClientPoint(clientX, clientY) {
+  if (!Number.isFinite(clientX) || !Number.isFinite(clientY) || typeof document.elementFromPoint !== 'function') return '';
+  const target = document.elementFromPoint(clientX, clientY);
+  const squareEl = target instanceof Element ? target.closest('.square') : null;
+  if (!squareEl || !elements.board.contains(squareEl)) return '';
+  return squareEl.dataset.square || '';
+}
+
+function applyAnnotationGestureSquare(square) {
+  if (!annotationGesture.active || !SQUARE_PATTERN.test(square) || square === annotationGesture.lastSquare) {
+    return;
+  }
+
+  let changed = false;
+  if (annotationGesture.mode === 'paint') {
+    if (!annotationGesture.dragged) {
+      annotationGesture.dragged = true;
+      changed = paintAnnotationSquare(annotationGesture.startSquare, annotationGesture.color);
+    }
+    changed = paintAnnotationSquare(square, annotationGesture.color) || changed;
+  } else {
+    annotationGesture.dragged = true;
+  }
+
+  annotationGesture.lastSquare = square;
+  if (annotationGesture.mode === 'arrow') {
+    renderAnnotationOverlay();
+  } else if (changed) {
+    renderBoard();
+  }
+}
+
+elements.board.addEventListener('mousedown', (event) => {
+  if (event.button === 0) {
+    if (canAnnotate() && hasAnyAnnotations()) {
+      event.preventDefault();
+      suppressBoardClickUntil = Date.now() + 400;
+      commitAnnotations(clearAllAnnotations());
+    }
+    return;
+  }
+  if (event.button !== 2 || !canAnnotate()) return;
+  const squareEl = event.target instanceof Element ? event.target.closest('.square') : null;
+  const square = squareEl && elements.board.contains(squareEl) ? squareEl.dataset.square || '' : '';
+  if (!SQUARE_PATTERN.test(square)) return;
+
+  event.preventDefault();
+  annotationGesture = {
+    active: true,
+    mode: annotationGestureModeFromEvent(event),
+    color: annotationColorFromEvent(event),
+    startSquare: square,
+    lastSquare: square,
+    dragged: false,
+  };
+  suppressContextMenu = true;
+});
+
+document.addEventListener('mousemove', (event) => {
+  if (!annotationGesture.active) return;
+  if (event.buttons === 0) {
+    cancelAnnotationGesture();
+    return;
+  }
+  applyAnnotationGestureSquare(squareFromClientPoint(event.clientX, event.clientY));
+});
+
+document.addEventListener('mouseup', (event) => {
+  if (!annotationGesture.active) return;
+
+  const releaseSquare = squareFromClientPoint(event.clientX, event.clientY);
+  let changed = false;
+  if (annotationGesture.mode === 'paint' && !annotationGesture.dragged && releaseSquare === annotationGesture.startSquare) {
+    changed = toggleAnnotationCircle(annotationGesture.startSquare, annotationGesture.color);
+  } else if (annotationGesture.mode === 'star' && !annotationGesture.dragged && releaseSquare === annotationGesture.startSquare) {
+    changed = toggleAnnotationStar(annotationGesture.startSquare, annotationGesture.color);
+  } else if (annotationGesture.mode === 'arrow' && releaseSquare && releaseSquare !== annotationGesture.startSquare) {
+    changed = addAnnotationArrow(annotationGesture.startSquare, releaseSquare, annotationGesture.color);
+  }
+
+  const hadPreview = annotationGesture.mode === 'arrow';
+  annotationGesture = createEmptyAnnotationGesture();
+  if (changed) {
+    commitAnnotations(true);
+  } else if (hadPreview) {
+    renderAnnotationOverlay();
+  }
+  window.setTimeout(() => { suppressContextMenu = false; }, 250);
+});
+
+elements.board.addEventListener('contextmenu', (event) => {
+  event.preventDefault();
+});
+
+document.addEventListener('contextmenu', (event) => {
+  if (!suppressContextMenu) return;
+  event.preventDefault();
+  suppressContextMenu = false;
+});
+
+window.addEventListener('blur', cancelAnnotationGesture);
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && annotationGesture.active) cancelAnnotationGesture();
+});
+
 function replacePosition(fen, nextOrientation = orientation, lessonId = '') {
   const nextGame = new Chess();
   if (nextGame.load(fen) === false) throw new Error('Invalid FEN');
   game = nextGame;
   orientation = nextOrientation === 'black' ? 'black' : 'white';
   activeLessonId = lessonId;
+  annotations = createEmptyAnnotations();
+  cancelAnnotationGesture();
   selectedSquare = null;
   legalMoves = [];
   lastMove = null;

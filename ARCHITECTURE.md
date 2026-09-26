@@ -1029,7 +1029,7 @@ Two student-link formats exist: the full `#room=…&role=student&access=<token>`
 
 ### Interaction and synchronization
 
-- `live-board.js` owns the board position, side to move, move list, FEN loading, lesson-position selection, undo, and reset.
+- `live-board.js` owns the board position, side to move, move list, FEN loading, lesson-position selection, undo, and reset. It also implements the teacher-only 2D board annotations (right-click circle toggle, right-drag square paint, Alt+right-drag arrows, Ctrl+Shift+right-click stars; Shift blue / Ctrl orange / default green; left-click clears all marks). Marks live in `live_board_rooms.annotations`, ride inside the room state JSON through `update_live_board_teacher`/`get_live_board_room`, render read-only for students, persist across moves/undo/flip, and clear when the position is replaced.
 - `live-board-click-toggle.js` and `live-board-drag.js` keep tap/click and drag input compatible across desktop and touch devices.
 - `live-board-realtime.js` synchronizes room state and the teacher-controlled student lock.
 - `live-board-lesson-ux.js` handles CSV/XLSX prepared-position import and loading feedback.
@@ -1352,7 +1352,7 @@ Supabase provides authentication, PostgreSQL persistence, Row Level Security (RL
 
 ### 27.3 Database migrations
 
-The database schema is versioned across 18 structured SQL migrations in `supabase/migrations/`, establishing tables, foreign key constraints, RLS policies, trigger-based audit logging, and RPC procedures. `tests/live-board-rpc-contract.test.mjs` asserts every RPC invoked by shipped client code has a migration definition, preventing client/schema drift.
+The database schema is versioned across 19 structured SQL migrations in `supabase/migrations/`, establishing tables, foreign key constraints, RLS policies, trigger-based audit logging, and RPC procedures. `tests/live-board-rpc-contract.test.mjs` asserts every RPC invoked by shipped client code has a migration definition, preventing client/schema drift.
 
 ---
 

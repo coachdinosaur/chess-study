@@ -22,7 +22,7 @@
       }
     }
   </script>
-  <link rel="stylesheet" href="./live-board.css?v=20260913-promotion-chooser">
+  <link rel="stylesheet" href="./live-board.css?v=20260926-teacher-annotations">
   <link rel="stylesheet" href="./live-board-display-fixes.css?v=20260813-main-board-theme1">
   <link rel="stylesheet" href="./live-board-student-tablet.css?v=20260723-portrait70-tablet10">
 </head>
@@ -75,7 +75,10 @@
         </div>
 
         <div class="board-frame">
-          <div id="liveBoard" class="chess-board" role="grid" aria-label="Chess board"></div>
+          <div class="board-surface">
+            <div id="liveBoard" class="chess-board" role="grid" aria-label="Chess board"></div>
+            <svg id="liveBoardAnnotationOverlay" class="board-annotation-overlay" viewBox="0 0 800 800" aria-hidden="true" focusable="false"></svg>
+          </div>
           <div id="liveBoard3D" class="chess-board-3d" hidden aria-label="3D Chess board"></div>
         </div>
 
@@ -162,7 +165,7 @@
   <script src="./live-board-room-bootstrap.js?v=20260723-secure-room1"></script>
   <script src="./vendor/xlsx.full.min.js"></script>
   <script src="./live-board-click-toggle.js?v=20260723-touch-tap3"></script>
-  <script type="module" src="./live-board.js?v=20260913-promotion-chooser"></script>
+  <script type="module" src="./live-board.js?v=20260926-teacher-annotations"></script>
   <script src="./live-board-lesson-ux.js?v=20260723-lesson-loading"></script>
   <script type="module" src="./live-board-drag.js?v=20260723-click-drag3"></script>
   <script type="module" src="./live-board-display-fixes.js?v=20260723-initial-board3"></script>

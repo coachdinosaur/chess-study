@@ -52,7 +52,8 @@
       lastMove: row.last_move || null,
       studentMovesAllowed: row.student_moves_allowed !== false,
       revision: Number(row.revision) || 0,
-      activeLessonId: row.active_lesson_id || ''
+      activeLessonId: row.active_lesson_id || '',
+      annotations: row.annotations
     };
   }
 
@@ -205,8 +206,13 @@
     return stateFromRow(response.data);
   }
 
+  function isUnknownParamError(error) {
+    var text = String((error && (error.code || '')) + ' ' + (error && error.message || ''));
+    return /PGRST202|could not find the function|p_annotations/i.test(text);
+  }
+
   async function updateTeacher(adapter, state) {
-    var response = await client.rpc('update_live_board_teacher', {
+    var params = {
       p_room_code: adapter.roomCode,
       p_teacher_token: adapter.credentials.accessToken,
       p_expected_revision: adapter.serverRevision,
@@ -215,8 +221,19 @@
       p_orientation: state.orientation || 'white',
       p_last_move: state.lastMove || null,
       p_student_moves_allowed: state.studentMovesAllowed !== false,
-      p_active_lesson_id: state.activeLessonId || ''
-    });
+      p_active_lesson_id: state.activeLessonId || '',
+      p_annotations: state.annotations || null
+    };
+    if (adapter.annotationsUnsupported) delete params.p_annotations;
+
+    var response = await client.rpc('update_live_board_teacher', params);
+    // Older databases lack the p_annotations signature; retry once without it
+    // and skip the doomed parameter on every later update in this session.
+    if (response.error && params.p_annotations !== undefined && isUnknownParamError(response.error)) {
+      adapter.annotationsUnsupported = true;
+      delete params.p_annotations;
+      response = await client.rpc('update_live_board_teacher', params);
+    }
     if (response.error) throw response.error;
     adapter.serverRevision = Number(response.data.revision) || 0;
     adapter.hasFetchedState = true;

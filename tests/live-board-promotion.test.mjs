@@ -128,6 +128,15 @@ class FakeElement extends FakeNode {
     return this.children.some((child) => child.contains?.(node));
   }
 
+  closest(selector) {
+    let node = this;
+    while (node) {
+      if (node.matches?.(selector)) return node;
+      node = node.parent;
+    }
+    return null;
+  }
+
   focus() {}
 }
 
@@ -217,6 +226,7 @@ function createSandbox({ search = '' } = {}) {
   const url = `https://chess.example/live-board.html${search}`;
   const context = {
     Node: FakeNode,
+    Element: FakeElement,
     document: documentStub,
     localStorage: storage,
     crypto,
@@ -233,6 +243,8 @@ function createSandbox({ search = '' } = {}) {
     setTimeout,
     clearTimeout,
     requestAnimationFrame: (fn) => fn(),
+    addEventListener() {},
+    removeEventListener() {},
   };
   context.window = context;
   vm.createContext(context);

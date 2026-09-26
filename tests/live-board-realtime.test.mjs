@@ -59,6 +59,7 @@ class FakeRoomDatabase {
       student_moves_allowed: true,
       revision: 0,
       active_lesson_id: '',
+      annotations: overrides.annotations ?? null,
     });
   }
 
@@ -111,6 +112,7 @@ class FakeRoomDatabase {
         last_move: args.p_last_move,
         student_moves_allowed: args.p_student_moves_allowed,
         active_lesson_id: args.p_active_lesson_id,
+        annotations: args.p_annotations ?? room.annotations,
         revision: room.revision + 1,
       });
       return { data: this.publicRow(room), error: null };
@@ -419,6 +421,42 @@ test('pre-created workspace room exchanges student then teacher revisions bidire
     (call) => call.clientId === 'teacher' && call.name === 'get_live_board_room',
   ).length;
   assert.equal(teacherReadsAfterDuplicate, teacherReadsBeforeDuplicate, 'duplicate signals do not refetch');
+});
+
+test('teacher annotations sync to students and survive student moves', async () => {
+  const database = new FakeRoomDatabase();
+  const hub = new FakeRealtimeHub();
+  database.addRoom('ANN123');
+
+  const teacherPage = createPage({ id: 'teacher', url: secureUrl('ANN123', 'teacher'), database, hub });
+  const studentPage = createPage({ id: 'student', url: secureUrl('ANN123', 'student'), database, hub });
+  const teacher = new teacherPage.window.BroadcastChannel('cd-live-board:ANN123');
+  const student = new studentPage.window.BroadcastChannel('cd-live-board:ANN123');
+  const studentStates = [];
+  student.addEventListener('message', (event) => studentStates.push(event.data.state));
+
+  const marks = {
+    paintedSquares: ['e4'],
+    circledSquares: [{ square: 'd4', color: 'orange' }],
+    starredSquares: [],
+    arrows: [{ from: 'e2', to: 'e4' }],
+  };
+
+  teacher.postMessage({ type: 'state', state: boardState('8/8/8/8/8/8/4K3/7k w - - 0 1') });
+  teacherPage.channels[0].emitStatus('SUBSCRIBED');
+  studentPage.channels[0].emitStatus('SUBSCRIBED');
+  await drain(teacher, student);
+
+  teacher.postMessage({
+    type: 'state',
+    state: { ...boardState('8/8/8/8/8/8/4K3/7k w - - 0 1'), annotations: marks },
+  });
+  await drain(teacher, student);
+  assert.deepEqual(studentStates.at(-1).annotations, marks, 'teacher annotations reach the student');
+
+  student.postMessage({ type: 'student-move', state: boardState('8/8/8/8/8/8/4K3/7k b - - 1 1') });
+  await drain(teacher, student);
+  assert.deepEqual(studentStates.at(-1).annotations, marks, 'student moves preserve teacher annotations');
 });
 
 test('an unacknowledged revision signal retries after the realtime channel reconnects', async () => {

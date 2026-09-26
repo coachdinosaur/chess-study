@@ -13,6 +13,11 @@
   --selected: #f6d365;
   --legal: rgba(18, 75, 46, 0.28);
   --last: rgba(242, 204, 96, 0.52);
+  --annotation-accent-rgb: 31, 111, 74;
+  --annotation-paint: rgba(var(--annotation-accent-rgb), 0.78);
+  --annotation-ring: rgba(var(--annotation-accent-rgb), 0.96);
+  --annotation-star: rgba(var(--annotation-accent-rgb), 0.96);
+  --annotation-arrow: rgba(var(--annotation-accent-rgb), 0.96);
   --shadow: 0 22px 60px rgba(31, 54, 40, 0.14);
 }
 html[data-theme="dark"] {
@@ -30,6 +35,11 @@ html[data-theme="dark"] {
   --selected: #d9b94d;
   --legal: rgba(238, 248, 240, 0.28);
   --last: rgba(239, 202, 86, 0.42);
+  --annotation-accent-rgb: 119, 189, 145;
+  --annotation-paint: rgba(var(--annotation-accent-rgb), 0.72);
+  --annotation-ring: rgba(var(--annotation-accent-rgb), 0.96);
+  --annotation-star: rgba(var(--annotation-accent-rgb), 0.96);
+  --annotation-arrow: rgba(var(--annotation-accent-rgb), 0.96);
   --shadow: 0 24px 72px rgba(0, 0, 0, 0.34);
 }
 * { box-sizing: border-box; }
@@ -105,6 +115,27 @@ select { min-height: 44px; }
 .coordinate.rank { left: 4px; top: 2px; }
 .square.dark .coordinate { color: var(--light-square); }
 .square:not(.dark) .coordinate { color: var(--dark-square); }
+.board-surface { position: relative; }
+.board-annotation-overlay { position: absolute; inset: 0; z-index: 4; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.board-annotation { position: absolute; display: block; pointer-events: none; z-index: 1; }
+.square .piece { position: relative; z-index: 2; }
+.board-annotation-paint { inset: 0; background: var(--annotation-paint); }
+.board-annotation-paint.is-orange { background: rgba(226, 126, 49, 0.78); }
+.board-annotation-paint.is-blue { background: rgba(51, 122, 220, 0.72); }
+.board-annotation-circle { inset: 0; width: 100%; height: 100%; box-sizing: border-box; border: 4px solid var(--annotation-ring); border-radius: 50%; }
+.board-annotation-circle.is-orange { border-color: rgba(226, 126, 49, 0.96); }
+.board-annotation-circle.is-blue { border-color: rgba(51, 122, 220, 0.96); }
+.board-annotation-star { inset: 7%; width: 86%; height: 86%; background: var(--annotation-star); clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
+.board-annotation-star.is-orange { background: rgba(226, 126, 49, 0.96); }
+.board-annotation-star.is-blue { background: rgba(51, 122, 220, 0.96); }
+.board-annotation-arrow { fill: none; stroke: var(--annotation-arrow); stroke-width: 12; stroke-linecap: round; stroke-linejoin: round; }
+.board-annotation-arrow.is-preview { opacity: 0.72; }
+.board-annotation-arrow.is-orange { stroke: rgba(226, 126, 49, 0.96); }
+.board-annotation-arrow.is-blue { stroke: rgba(51, 122, 220, 0.96); }
+.board-annotation-arrow-head { fill: var(--annotation-arrow); }
+.board-annotation-arrow-head.is-preview { opacity: 0.72; }
+.board-annotation-arrow-head.is-orange { fill: rgba(226, 126, 49, 0.96); }
+.board-annotation-arrow-head.is-blue { fill: rgba(51, 122, 220, 0.96); }
 .board-frame:has(.chess-board-3d:not([hidden])),
 .board-frame.is-3d-active {
   padding: 0;
