@@ -943,6 +943,20 @@ h3 {
   color: var(--emerald);
 }
 
+/* A single trainer preview keeps the hero balanced until a new launch capture is ready. */
+.hero-visual.app-showcase-single {
+  min-height: 0;
+  display: grid;
+  align-content: center;
+}
+
+.app-showcase-single .mockup-frame-primary {
+  position: relative;
+  top: auto;
+  right: auto;
+  margin-inline: auto;
+}
+
 /* ============ RESPONSIVE ============ */
 
 @media (max-width: 1040px) {

@@ -24,7 +24,7 @@ It contains:
   not documentation — the apps parse them into interactive content
 - **3D Chess Position Studio** interactive Three.js board and Web Worker Stockfish bots
 - **Digital Chess Clock** customizable mobile fullscreen chess clock (`clock/`)
-- **Standalone Endgame Trainer site** (`endgame-trainer/`)
+- **Standalone ChessPeak site** (`endgame-trainer/`)
 - **Articles editorial section** (`articles/`) — long-form publication pages at `/articles/`
 - **Piece assets** (`assets/pieces/mpchess/` — 12 SVGs)
 - **Local servers** for HTTP hosting (`local_server.py`) and board scanning (`scanner_server.py`)
@@ -54,7 +54,7 @@ It contains:
 | **3D Chess Position Studio** | `apps/3d-chess-studio/`, `tests/3d-chess-studio-integration.test.mjs` |
 | **Digital Chess Clock** | `clock/index.html`, `clock/clock-app.js`, `clock/clock-engine.mjs`, `clock/clock-audio.mjs`, `clock/clock.css`, `tests/chess-clock.test.mjs` |
 | **Opening books** | `apps/opening-book/`, `apps/opening-book-sicilian/` |
-| **Endgame Trainer site** | `endgame-trainer/index.html`, `endgame-trainer/privacy-policy/index.html`, `endgame-trainer/delete-account/index.html` |
+| **ChessPeak site** | `endgame-trainer/index.html`, `endgame-trainer/privacy-policy/index.html`, `endgame-trainer/delete-account/index.html` |
 | **Articles** | `articles/index.html`, `articles/articles.css` (mirrors lesson theme tokens), `articles/chess-training-top-countries/` series landing + `part-*/` pages |
 | **About page** | `about/index.html` — static "About the App" page linked from the SPA Info group |
 | **Piece assets** | `assets/pieces/mpchess/` (12 SVGs) |

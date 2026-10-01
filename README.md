@@ -1,6 +1,6 @@
 # Chess Lesson Study Board
 
-A browser-based chess teaching and study platform. It combines a framework-free position editor, lesson-tree authoring, Stockfish analysis, tablebase support, practice drills, Play vs Stockfish, separate Endgame Puzzle and Position Study modes, coach-controlled student workspaces and puzzle assignments, static course lessons with classroom presentation and Teacher Board tools, a synchronized teacher/student Live Board, separately built Catalan and Sicilian opening courses, a standalone Endgame Trainer site, and a client-side 3D Chess Position Studio.
+A browser-based chess teaching and study platform. It combines a framework-free position editor, lesson-tree authoring, Stockfish analysis, tablebase support, practice drills, Play vs Stockfish, separate Endgame Puzzle and Position Study modes, coach-controlled student workspaces and puzzle assignments, static course lessons with classroom presentation and Teacher Board tools, a synchronized teacher/student Live Board, separately built Catalan and Sicilian opening courses, a standalone ChessPeak site, and a client-side 3D Chess Position Studio.
 
 ## Live app
 
@@ -42,7 +42,7 @@ For local Windows setup, see [LOCAL_DEPLOYMENT.md](LOCAL_DEPLOYMENT.md).
 - Read the Articles journal at `/articles/` — long-form editorial series on how strong players and chess countries train, opening with a four-part deep dive into national training systems.
 - Build 3D positions, play local games, and challenge AI bots (Casual, Club, Master Stockfish 18 Lite WASM) in the 3D Chess Position Studio at `/3d/`.
 - Open the standalone Digital Chess Clock at `/clock/` for over-the-board face-to-face play, supporting Fischer, USCF delay, Bronstein, and Handicap time controls with zero-latency Web Audio sound synthesis, haptics, portrait opponent rotation, and Screen Wake Lock.
-- Open the standalone Endgame Trainer landing page and Android privacy policy at `/endgame-trainer/`.
+- Open the standalone ChessPeak landing page and Android privacy policy at `/endgame-trainer/`.
 - Present supported lessons scene by scene with Previous, Reveal, Reset, Next, Exit, keyboard shortcuts, fullscreen support, and a visible click pulse for classroom projection.
 - Open the floating Teacher Board from supported lesson pages to load Page, Start, Empty, or prepared CSV positions; set the side to move; place pieces; annotate; take back; flip; and reset.
 - Create a secure synchronized Live Board room for a teacher and student, including student-move locking, FEN and lesson-position loading, move history, and session messages.
@@ -287,10 +287,10 @@ not committed to the repository.
 Cross-navigation connects the main Study Board, the lesson index, and the
 opening courses without coupling their runtimes.
 
-## Endgame Trainer site
+## ChessPeak site
 
-`endgame-trainer/` is a self-contained static landing page for Coach Dinosaur
-Endgame Trainer. Its Android privacy policy uses the directory route
+`endgame-trainer/` is a self-contained static landing page for ChessPeak.
+Its Android privacy policy uses the directory route
 `endgame-trainer/privacy-policy/index.html`, so GitHub Pages serves the clean
 public URL `/endgame-trainer/privacy-policy/` without a rewrite rule or build
 step.
@@ -343,7 +343,7 @@ The repository deploys to GitHub Pages via `.github/workflows/pages.yml` on push
 - **Catalan Atelier (`/openings/`)**: Compiled React 19 + Vite application.
 - **Sicilian Defense (`/openings-sicilian/`)**: Compiled React 19 + Vite application.
 - **3D Chess Position Studio (`/3d/`)**: Compiled React 19 + Three.js + Vite application (`VITE_BASE_PATH=/3d/`).
-- **Endgame Trainer (`/endgame-trainer/`)**: Static landing page plus clean `/endgame-trainer/privacy-policy/` and `/endgame-trainer/delete-account/` directory routes.
+- **ChessPeak (`/endgame-trainer/`)**: Static landing page plus clean `/endgame-trainer/privacy-policy/` and `/endgame-trainer/delete-account/` directory routes.
 
 Other workflows beyond `pages.yml`:
 
@@ -432,7 +432,7 @@ The floating Teacher Board also evaluates the embedded FEN after moves and posit
 | `supabase/migrations/` | 18 versioned SQL migrations for the management and Live Board schema |
 | `apps/3d-chess-studio/` | React/Vite/Three.js 3D board, FEN setup, local play, AI bots (Casual, Club, Master Stockfish 18 Lite WASM), Staunton models, and Web Worker |
 | `clock/` | Standalone mobile-first fullscreen digital chess clock (Fischer, delay, Bronstein, handicap, Web Audio synth, screen wake lock) |
-| `endgame-trainer/` | Standalone Endgame Trainer landing page, privacy policy, account-deletion page, styles, favicon, and app previews |
+| `endgame-trainer/` | Standalone ChessPeak landing page, privacy policy, account-deletion page, styles, favicon, and app previews |
 | `tests/` | `node --test` suites for the SPA, Live Board, management, and app integration plus browser smoke scripts |
 | `.github/workflows/pages.yml` | Tests the combined routes, builds Catalan Atelier, Sicilian Defense, and 3D Studio, mounts their outputs at `/openings/`, `/openings-sicilian/`, and `/3d/`, and deploys the combined Pages artifact |
 

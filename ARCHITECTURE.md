@@ -2,9 +2,9 @@
 
 ## 1. Overview
 
-Chess Lesson Study Board is a chess teaching platform served as static files. The repository combines a framework-free interactive single-page application, browser Stockfish, Lichess tablebase requests, separate legacy Endgame Puzzle and user-facing Position Study runtimes, coach-controlled student workspaces and puzzle assignments, static lesson sites with classroom presentation and a floating Teacher Board, a synchronized teacher/student Live Board, a customizable mobile fullscreen digital chess clock for face-to-face games, separately built Catalan and Sicilian opening courses sharing one asset bundle, a standalone Endgame Trainer landing and privacy site, a client-side 3D Chess Position Studio, and optional local Python helpers.
+Chess Lesson Study Board is a chess teaching platform served as static files. The repository combines a framework-free interactive single-page application, browser Stockfish, Lichess tablebase requests, separate legacy Endgame Puzzle and user-facing Position Study runtimes, coach-controlled student workspaces and puzzle assignments, static lesson sites with classroom presentation and a floating Teacher Board, a synchronized teacher/student Live Board, a customizable mobile fullscreen digital chess clock for face-to-face games, separately built Catalan and Sicilian opening courses sharing one asset bundle, a standalone ChessPeak landing and privacy site, a client-side 3D Chess Position Studio, and optional local Python helpers.
 
-The main Study Board, lesson sites, and Endgame Trainer site have no bundler or
+The main Study Board, lesson sites, and ChessPeak site have no bundler or
 application build step. Their production assets are committed directly.
 Catalan Atelier and the 3D Chess Position Studio are isolated build boundaries:
 GitHub Pages compiles their React/Vite sources under `apps/`, mounts the outputs
@@ -52,7 +52,7 @@ The major subsystems are:
    - Synthesized Web Audio acoustics and four visual themes
    - GitHub Pages build mounted at `/3d/`
 
-6. **Standalone Endgame Trainer site**
+6. **Standalone ChessPeak site**
    - Static landing page in `endgame-trainer/index.html`
    - Android privacy policy in `endgame-trainer/privacy-policy/index.html`
    - Local styles, favicon, and app preview images
@@ -400,7 +400,7 @@ apps/3d-chess-studio/
 | `apps/opening-book-sicilian/` | React/Vite Sicilian Defense source, 8 Markdown chapters (app inputs), load-time chapter-1 corrections; reuses `/openings/` pieces and Stockfish at runtime |
 | `apps/3d-chess-studio/` | React/Vite/Three.js 3D board, FEN setup, local play, AI bots (Casual, Club, Master Stockfish 18 Lite WASM), Staunton models, Web Audio synthesizer, and static-build tests |
 | `clock/` | Standalone mobile-first fullscreen digital chess clock (Fischer, delay, Bronstein, handicap, Web Audio synth, screen wake lock) |
-| `endgame-trainer/` | Self-contained Endgame Trainer landing page, clean-route privacy policy, styles, favicon, and app previews |
+| `endgame-trainer/` | Self-contained ChessPeak landing page, clean-route privacy policy, styles, favicon, and app previews |
 | `.github/workflows/pages.yml` | Tests combined-site routes, builds the React/Vite apps, mounts their outputs at `/openings/`, `/openings-sicilian/`, and `/3d/`, and uploads the combined static artifact |
 
 ---
@@ -1210,7 +1210,7 @@ browser only.
 
 ---
 
-## 23. Standalone Endgame Trainer site
+## 23. Standalone ChessPeak site
 
 `endgame-trainer/` is a self-contained static site with no build step and no
 dependency on the Study Board runtime. GitHub Pages publishes the committed
@@ -1370,7 +1370,7 @@ The repository deploys as a cohesive static platform via GitHub Actions and GitH
 ├── Catalan Atelier (/openings/ - React 19 + Vite compiled build)
 ├── Sicilian Defense (/openings-sicilian/ - React 19 + Vite compiled build)
 ├── 3D Chess Position Studio (/3d/ - React 19 + Three.js + Vite compiled build)
-└── Standalone Endgame Trainer (/endgame-trainer/ & /endgame-trainer/privacy-policy/)
+└── Standalone ChessPeak (/endgame-trainer/ & /endgame-trainer/privacy-policy/)
 ```
 
 ### 28.1 Multi-app build pipeline
@@ -1392,7 +1392,7 @@ The production deployment workflow (`.github/workflows/pages.yml`) executes on e
 - `https://cddigital.top/openings/` — Catalan Atelier Opening Course
 - `https://cddigital.top/openings-sicilian/` — Sicilian Defense Opening Course
 - `https://cddigital.top/3d/` — 3D Chess Position Studio
-- `https://cddigital.top/endgame-trainer/` — Endgame Trainer landing page
+- `https://cddigital.top/endgame-trainer/` — ChessPeak landing page
 - `https://cddigital.top/endgame-trainer/privacy-policy/` — Android Privacy Policy (clean extensionless directory route)
 - `https://cddigital.top/endgame-trainer/delete-account/` — Account deletion instructions page
 
@@ -1408,7 +1408,7 @@ The production deployment workflow (`.github/workflows/pages.yml`) executes on e
 ## 29. Validation and testing
 
 The main Study Board has no compile step. Its validation combines syntax
-checks, targeted tests, and browser testing; the Endgame Trainer adds a static
+checks, targeted tests, and browser testing; the ChessPeak site adds a static
 route-integrity test, and each React/Vite app adds its own compiled test suite.
 
 ```powershell
