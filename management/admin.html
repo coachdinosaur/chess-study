@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="./management.css?v=20260723-hardening1">
   <link rel="stylesheet" href="./teacher-search.css?v=20260723-hardening1">
   <link rel="stylesheet" href="./hardening.css?v=20260811-audit-pagination1">
+  <link rel="stylesheet" href="./site-traffic.css?v=20261018-visits1">
 </head>
 <body>
   <div class="portal-shell">
@@ -25,6 +26,43 @@
 
     <main class="stack">
       <div id="adminStatus" class="status" aria-live="polite" hidden></div>
+      <section class="panel site-traffic-panel" aria-labelledby="siteTrafficTitle">
+        <div class="section-head">
+          <div>
+            <h2 id="siteTrafficTitle">Site visits</h2>
+            <p class="panel-copy">Anonymous counts from the public site, lessons, articles, tools, and student links. A visit starts after 30 minutes without activity; a new visitor is a browser seen for the first time. No IP addresses or personal identifiers are stored.</p>
+            <p id="trafficTrackingSince" class="panel-copy traffic-since"></p>
+          </div>
+          <button id="refreshTrafficButton" class="button-secondary" type="button" aria-label="Refresh visit counts">Refresh</button>
+        </div>
+        <div id="trafficStatus" class="status" aria-live="polite" hidden></div>
+        <div id="trafficTiles" class="traffic-tiles"><div class="empty">Loading visit counts…</div></div>
+        <figure class="traffic-chart">
+          <figcaption>Visits per day, last 30 days</figcaption>
+          <div id="trafficChart" class="traffic-chart-body" role="img" aria-label="Visits per day"></div>
+        </figure>
+        <div class="traffic-lists">
+          <div>
+            <h3>Most viewed pages, last 30 days</h3>
+            <ol id="trafficTopPages" class="traffic-list"></ol>
+          </div>
+          <div>
+            <h3>Where visits came from, last 30 days</h3>
+            <ol id="trafficReferrers" class="traffic-list"></ol>
+          </div>
+        </div>
+        <details class="traffic-table-details">
+          <summary>Show daily numbers</summary>
+          <div class="traffic-table-wrap">
+            <table id="trafficDailyTable" class="traffic-table"></table>
+          </div>
+        </details>
+        <label class="traffic-opt-out">
+          <input id="trafficOptOut" type="checkbox">
+          <span>Don't count my own visits from this browser</span>
+        </label>
+      </section>
+
       <section class="panel">
         <div class="section-head">
           <div>
@@ -85,6 +123,6 @@
   </dialog>
 
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  <script type="module" src="./js/admin-dashboard.mjs?v=20260811-audit-pagination1"></script>
+  <script type="module" src="./js/admin-dashboard.mjs?v=20261018-visits1"></script>
 </body>
 </html>

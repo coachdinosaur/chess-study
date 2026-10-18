@@ -127,6 +127,7 @@ chess-study/
 ├── move-annotations.mjs
 ├── top-players.mjs
 ├── text-normalization.mjs
+├── site-visits.mjs                    (anonymous visit counter loaded by public pages; counts only on cddigital.top)
 ├── sw.js                              (service-worker retirement stub — unregisters legacy workers and purges caches on activate; index.html also unregisters defensively)
 │
 ├── live-board.html
@@ -214,7 +215,7 @@ chess-study/
 │   ├── index.html / clock.css / clock-app.js
 │   └── clock-engine.mjs / clock-audio.mjs
 │
-├── supabase/migrations/  (18 structured SQL migrations)
+├── supabase/migrations/  (20 structured SQL migrations)
 ├── tests/                (node --test suites + browser smoke scripts)
 ├── docs/                 (install notes, superseded early design docs)
 ├── proof/                (historical validation snapshots)
@@ -378,6 +379,8 @@ apps/3d-chess-studio/
 | `management/js/coach-session-command.mjs` | Pure lesson recommendation, elapsed-time, and sessionStorage validation helpers for an active coaching session |
 | `management/js/puzzle-assignment-*.mjs` | Teacher assignment selection/lifecycle and token-scoped student assignment runtime |
 | `management/js/student-workspace*.mjs` | Coach-only workspace editing, permanent-link generation, token-scoped student rendering, and assignment-link authorization |
+| `site-visits.mjs` | Anonymous page-view counter for public pages, lessons, articles, tools, and student links. Sends only the path, the referring host on a visit's first page, and visit/new-visitor flags to the `record_site_visit` RPC. Skips local hosts, iframes, bots, and opted-out browsers |
+| `management/js/site-traffic.mjs` | Platform-admin Site visits panel: totals, daily chart, top pages and referrers from `admin_site_traffic_summary`, plus the per-browser counting opt-out |
 | `lesson-picker-search.mjs` | Lesson search filter input, real-time title matching, and coarse/mobile auto-focus suppression |
 | `lesson-position-builder.mjs` | CSV/XLSX import, field normalization, position-set CRUD, persistence, and builder UI |
 | `lesson-model.mjs` / `lesson-migrations.mjs` | Versioned lesson contracts, normalization, stable IDs, compatibility detection, and non-destructive migration |
@@ -1054,6 +1057,9 @@ The Live Board must be tested with two pages or browser contexts because a singl
 | `endgame-puzzle-queue-v1` | Puzzle queue |
 | `endgame-puzzle-history-v1` | Puzzle history and results |
 | `lesson-position-builder-v1:*` | Builder state per saved position set |
+| `cd-site-visits-last-seen-v1` | Timestamp of the last counted page view (starts a new visit after 30 idle minutes); never sent |
+| `cd-site-visits-seen-v1` | Marks a browser already counted as a new visitor; never sent |
+| `cd-site-visits-opt-out-v1` | Set from the admin Site visits panel to stop counting this browser |
 
 Draft persistence is debounced during normal work and forced on `beforeunload` outside embed mode.
 

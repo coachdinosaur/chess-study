@@ -1,0 +1,274 @@
+.site-traffic-panel {
+  display: grid;
+  gap: 18px;
+}
+
+.site-traffic-panel .section-head {
+  margin-bottom: 0;
+}
+
+.traffic-since {
+  margin: 6px 0 0;
+  font-size: .9rem;
+}
+
+.traffic-tiles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.traffic-tile {
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel-strong);
+  min-width: 0;
+}
+
+.traffic-tile h3 {
+  margin: 0;
+  color: var(--muted);
+  font-size: .86rem;
+  font-weight: 700;
+}
+
+.traffic-tile-value {
+  margin: 6px 0 0;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.1;
+  font-variant-numeric: proportional-nums;
+}
+
+.traffic-tile-unit {
+  margin: 0;
+  color: var(--muted);
+  font-size: .86rem;
+}
+
+.traffic-tile-detail {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: .82rem;
+  overflow-wrap: anywhere;
+}
+
+.traffic-chart {
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.traffic-chart figcaption {
+  font-weight: 700;
+  font-size: .95rem;
+}
+
+.traffic-chart-body {
+  display: grid;
+  gap: 6px;
+}
+
+.traffic-plot {
+  position: relative;
+  height: 180px;
+  margin-left: 36px;
+}
+
+.traffic-gridline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+}
+
+.traffic-gridline span {
+  position: absolute;
+  right: calc(100% + 8px);
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: .75rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.traffic-baseline {
+  border-top-color: var(--line);
+}
+
+.traffic-columns {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.traffic-column {
+  flex: 1 1 0;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-width: 0;
+  border-radius: 4px 4px 0 0;
+}
+
+.traffic-column:hover,
+.traffic-column[data-active="true"] {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.traffic-bar {
+  display: block;
+  width: min(24px, 100%);
+  border-radius: 4px 4px 0 0;
+  background: var(--accent);
+}
+
+.traffic-tooltip {
+  position: absolute;
+  top: 0;
+  z-index: 2;
+  max-width: min(260px, 100%);
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: .82rem;
+  line-height: 1.35;
+  pointer-events: none;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .35);
+}
+
+.traffic-axis-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 36px;
+  color: var(--muted);
+  font-size: .75rem;
+}
+
+.traffic-lists {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.traffic-lists h3 {
+  margin: 0 0 8px;
+  font-size: .95rem;
+}
+
+.traffic-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 2px;
+}
+
+.traffic-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+  font-size: .9rem;
+}
+
+.traffic-list li > :first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.traffic-list li > :last-child {
+  flex: none;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.traffic-list .traffic-list-empty {
+  color: var(--muted);
+  border-bottom: 0;
+}
+
+.traffic-table-details summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--accent-strong);
+}
+
+.traffic-table-wrap {
+  margin-top: 10px;
+  max-height: 320px;
+  overflow: auto;
+}
+
+.traffic-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .88rem;
+}
+
+.traffic-table th,
+.traffic-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.traffic-table th:first-child {
+  text-align: left;
+  font-weight: 600;
+}
+
+.traffic-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--panel);
+  color: var(--muted);
+}
+
+.traffic-opt-out {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-self: start;
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+.traffic-opt-out input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
+
+@media (max-width: 900px) {
+  .traffic-tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .traffic-lists {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 420px) {
+  .traffic-tile {
+    padding: 12px;
+  }
+
+  .traffic-tile-value {
+    font-size: 1.6rem;
+  }
+
+  .traffic-plot {
+    height: 150px;
+  }
+}

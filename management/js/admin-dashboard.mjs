@@ -5,6 +5,20 @@ import {
   buildAuditPageParams,
   mergeAuditPage,
 } from './admin-audit-pagination.mjs';
+import {
+  TRAFFIC_DAYS,
+  browserTimeZone,
+  chartSummaryLabel,
+  describeTrafficDay,
+  isVisitCountingDisabled,
+  renderDailyTable,
+  renderReferrers,
+  renderTopPages,
+  renderTrafficChart,
+  renderTrafficTiles,
+  setVisitCountingDisabled,
+  trackingSinceText,
+} from './site-traffic.mjs';
 
 const elements = {
   profileName: document.querySelector('#profileName'),
@@ -24,8 +38,18 @@ const elements = {
   deleteError: document.querySelector('#teacherDeleteError'),
   cancelDelete: document.querySelector('#cancelTeacherDeleteButton'),
   confirmDelete: document.querySelector('#confirmTeacherDeleteButton'),
+  trafficStatus: document.querySelector('#trafficStatus'),
+  trafficSince: document.querySelector('#trafficTrackingSince'),
+  trafficTiles: document.querySelector('#trafficTiles'),
+  trafficChart: document.querySelector('#trafficChart'),
+  trafficTopPages: document.querySelector('#trafficTopPages'),
+  trafficReferrers: document.querySelector('#trafficReferrers'),
+  trafficDailyTable: document.querySelector('#trafficDailyTable'),
+  refreshTraffic: document.querySelector('#refreshTrafficButton'),
+  trafficOptOut: document.querySelector('#trafficOptOut'),
 };
 
+let trafficDaily = [];
 let teachers = [];
 let auditRows = [];
 let auditCursor = null;
@@ -130,6 +154,72 @@ function renderAudit() {
         : ''}
     </article>`).join('');
   renderAuditPagination();
+}
+
+function renderSiteTraffic(summary) {
+  trafficDaily = Array.isArray(summary?.daily) ? summary.daily : [];
+  elements.trafficSince.textContent = trackingSinceText(summary, formatDate);
+  elements.trafficTiles.innerHTML = renderTrafficTiles(summary);
+  elements.trafficChart.innerHTML = renderTrafficChart(trafficDaily);
+  elements.trafficChart.setAttribute('aria-label', chartSummaryLabel(trafficDaily));
+  elements.trafficTopPages.innerHTML = renderTopPages(summary?.top_pages);
+  elements.trafficReferrers.innerHTML = renderReferrers(summary?.top_referrers, summary?.direct_visits);
+  elements.trafficDailyTable.innerHTML = renderDailyTable(trafficDaily);
+}
+
+function hideTrafficTooltip() {
+  elements.trafficChart.querySelector('.traffic-tooltip')?.setAttribute('hidden', '');
+  elements.trafficChart.querySelectorAll('.traffic-column[data-active]').forEach((column) => column.removeAttribute('data-active'));
+}
+
+function showTrafficTooltip(event) {
+  const column = event.target.closest('.traffic-column');
+  const day = trafficDaily[Number(column?.dataset.index)];
+  const plot = column?.closest('.traffic-plot');
+  const tooltip = plot?.querySelector('.traffic-tooltip');
+  if (!day || !tooltip) {
+    hideTrafficTooltip();
+    return;
+  }
+
+  elements.trafficChart.querySelectorAll('.traffic-column[data-active]').forEach((item) => item.removeAttribute('data-active'));
+  column.dataset.active = 'true';
+  tooltip.textContent = describeTrafficDay(day);
+  tooltip.hidden = false;
+  const plotBox = plot.getBoundingClientRect();
+  const columnBox = column.getBoundingClientRect();
+  const barBox = column.querySelector('.traffic-bar')?.getBoundingClientRect() || columnBox;
+  const center = columnBox.left - plotBox.left + columnBox.width / 2;
+  const left = Math.min(Math.max(0, center - tooltip.offsetWidth / 2), plotBox.width - tooltip.offsetWidth);
+  tooltip.style.left = `${left}px`;
+  tooltip.style.top = `${Math.min(barBox.top, columnBox.bottom) - plotBox.top}px`;
+  tooltip.style.transform = 'translateY(calc(-100% - 8px))';
+}
+
+async function loadSiteTraffic() {
+  setBusy(elements.refreshTraffic, true, 'Refreshing…');
+  setStatus(elements.trafficStatus, '');
+  try {
+    const supabase = getSupabase();
+    const { data, error } = await supabase.rpc('admin_site_traffic_summary', {
+      p_time_zone: browserTimeZone(),
+      p_days: TRAFFIC_DAYS,
+    });
+    if (error) throw error;
+    renderSiteTraffic(data);
+  } catch (error) {
+    const missingMigration = error?.code === 'PGRST202' || /admin_site_traffic_summary/.test(String(error?.message || ''));
+    elements.trafficTiles.innerHTML = '';
+    setStatus(
+      elements.trafficStatus,
+      missingMigration
+        ? 'The visit counter database update has not been applied yet. Run supabase/migrations/20261018120000_site_visit_counter.sql in Supabase, then refresh.'
+        : readableError(error),
+      'error',
+    );
+  } finally {
+    setBusy(elements.refreshTraffic, false);
+  }
 }
 
 async function loadAdminData() {
@@ -337,14 +427,41 @@ async function initialize() {
     const profile = await requireProfile('teacher', { requireAdmin: true });
     if (!profile) return;
     elements.profileName.textContent = profile.display_name;
-    await loadAdminData();
+    await Promise.all([loadAdminData(), loadSiteTraffic()]);
   } catch (error) {
     setStatus(elements.status, readableError(error), 'error');
   }
 }
 
+function browserStorage() {
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
+  }
+}
+
+function syncTrafficOptOut() {
+  elements.trafficOptOut.checked = isVisitCountingDisabled(browserStorage());
+}
+
 elements.search?.addEventListener('input', renderTeachers);
 elements.refresh?.addEventListener('click', loadAdminData);
+elements.refreshTraffic?.addEventListener('click', loadSiteTraffic);
+elements.trafficChart?.addEventListener('pointermove', showTrafficTooltip);
+elements.trafficChart?.addEventListener('pointerdown', showTrafficTooltip);
+elements.trafficChart?.addEventListener('pointerleave', hideTrafficTooltip);
+elements.trafficOptOut?.addEventListener('change', () => {
+  const saved = setVisitCountingDisabled(browserStorage(), elements.trafficOptOut.checked);
+  setStatus(
+    elements.trafficStatus,
+    saved
+      ? (elements.trafficOptOut.checked ? 'Visits from this browser will no longer be counted.' : 'Visits from this browser will be counted again.')
+      : 'This browser blocked local storage, so the setting could not be saved.',
+    saved ? 'success' : 'error',
+  );
+  syncTrafficOptOut();
+});
 elements.loadMoreAudit?.addEventListener('click', loadMoreAuditEvents);
 elements.signOut?.addEventListener('click', () => signOut().catch((error) => setStatus(elements.status, readableError(error), 'error')));
 elements.teacherList?.addEventListener('click', (event) => {
@@ -375,4 +492,5 @@ elements.deleteDialog?.addEventListener('cancel', (event) => {
   syncDeleteConfirmation();
 });
 
+if (elements.trafficOptOut) syncTrafficOptOut();
 initialize();
