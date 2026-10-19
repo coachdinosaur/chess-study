@@ -188,6 +188,7 @@ test('public pages load the tracker once and private teacher pages do not', asyn
     'index.html',
     'live-board.html',
     'about/index.html',
+    'chesspeak/index.html',
     'clock/index.html',
     'articles/index.html',
     'management/student-workspace.html',

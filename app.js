@@ -12563,6 +12563,31 @@ function applyEmbedDeepLink() {
   }
 }
 
+// Outside links (e.g. the /chesspeak/ start page) open a tool directly with
+// ?tab=play|puzzle|analysis|study|setup. Applied after the saved draft so the
+// link wins, then removed from the URL so later reloads keep the user's own tab.
+// The Lessons tab is the coach Position Builder and is not linkable.
+const START_TAB_ALIASES = Object.freeze({ analyze: TAB_ANALYSIS, puzzles: TAB_PUZZLE });
+
+function applyStartTabDeepLink() {
+  if (state.embedMode) return;
+  try {
+    const url = new URL(window.location.href);
+    const requested = (url.searchParams.get('tab') || '').trim().toLowerCase();
+    if (!requested) return;
+    url.searchParams.delete('tab');
+    window.history.replaceState(window.history.state, '', url.pathname + url.search + url.hash);
+    const tab = normalizeActiveTab(START_TAB_ALIASES[requested] || requested, '');
+    if (!tab || tab === TAB_LESSONS) return;
+    state.activeTab = tab;
+    state.previousNonLessonTab = tab;
+    state.toolsExpanded = tab !== TAB_STUDY;
+    state.lessonPositionBuilder.active = false;
+  } catch (error) {
+    console.warn('[Tab deep-link] failed to apply', error);
+  }
+}
+
 function applyEmbedSyncSize(data, isSameOriginParent) {
   if (isSameOriginParent && window.parent !== window && (data.sizing === 'width-driven' || data.sizing === 'legacy')) {
     state.embedSizeMode = data.sizing;
@@ -12748,6 +12773,7 @@ if (!state.embedMode) {
   hydrateDraft();
 }
 hydratePuzzleState();
+applyStartTabDeepLink();
 // Developer helper for issuing premium activation keys from the console.
 window.__endgamePuzzlePremium = Object.freeze({ generateKey: generatePremiumKey });
 syncAnalysisGameFromTree();

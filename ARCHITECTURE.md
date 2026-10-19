@@ -211,6 +211,9 @@ chess-study/
 ├── about/
 │   └── index.html                    ("About the App" page — linked from the SPA Info group)
 │
+├── chesspeak/
+│   └── index.html                    (touch-first start page opened from ChessPeak's Saved Links)
+│
 ├── clock/
 │   ├── index.html / clock.css / clock-app.js
 │   └── clock-engine.mjs / clock-audio.mjs
@@ -402,6 +405,7 @@ apps/3d-chess-studio/
 | `apps/opening-book/` | React/Vite Catalan Atelier source, Markdown chapters, Opening Courses hub, local assets, and tests |
 | `apps/opening-book-sicilian/` | React/Vite Sicilian Defense source, 8 Markdown chapters (app inputs), load-time chapter-1 corrections; reuses `/openings/` pieces and Stockfish at runtime |
 | `apps/3d-chess-studio/` | React/Vite/Three.js 3D board, FEN setup, local play, AI bots (Casual, Club, Master Stockfish 18 Lite WASM), Staunton models, Web Audio synthesizer, and static-build tests |
+| `chesspeak/` | Start page for the ChessPeak Android app's Saved Links: large tiles to Lessons, Openings, Articles, Play, Puzzles, Analysis, Clock, and 3D; shares `color-theme-v1`; `noindex` |
 | `clock/` | Standalone mobile-first fullscreen digital chess clock (Fischer, delay, Bronstein, handicap, Web Audio synth, screen wake lock) |
 | `endgame-trainer/` | Self-contained ChessPeak landing page, clean-route privacy policy, styles, favicon, and app previews |
 | `.github/workflows/pages.yml` | Tests combined-site routes, builds the React/Vite apps, mounts their outputs at `/openings/`, `/openings-sicilian/`, and `/3d/`, and uploads the combined static artifact |
@@ -461,6 +465,7 @@ if (!state.embedMode) {
 }
 
 hydratePuzzleState();
+applyStartTabDeepLink();
 window.__endgamePuzzlePremium = Object.freeze({
   generateKey: generatePremiumKey,
 });
@@ -483,6 +488,8 @@ if (state.lessonPositionBuilder.active) {
 - detects `embed`, `boardOnly`, and setup-panel query parameters
 
 This prevents a light-theme flash and reduces incorrect initial rendering inside lesson iframes.
+
+`applyStartTabDeepLink()` opens a tool from an outside link such as `/?tab=play` (`play`, `puzzle`, `analysis`/`analyze`, `study`, `setup`). It runs after the saved draft so the link wins, closes the Position Set Builder, and removes `tab` from the URL so reloads keep the user's own tab. It is ignored in embed mode, and `lessons` is not linkable.
 
 ---
 

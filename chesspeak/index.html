@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Chess Study for ChessPeak | CD Digital Chess</title>
+  <meta name="description" content="Start page for ChessPeak players: lessons, opening courses, play against Stockfish, puzzles, and a chess clock in your phone or tablet browser.">
+  <!-- Opened from the ChessPeak app's Saved Links; the main site is what search engines should list. -->
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#edf1f3">
+  <link rel="icon" type="image/png" href="../assets/pieces/app_icon.png">
+  <link rel="apple-touch-icon" href="../assets/pieces/app_icon.png">
+  <script>
+    /* Same theme key as the study board (index.html), so a choice made here
+       carries over. With no saved choice, follow the device setting. */
+    (() => {
+      const storageKey = 'color-theme-v1';
+      const root = document.documentElement;
+      const darkQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+      const readStored = () => {
+        try {
+          const value = window.localStorage.getItem(storageKey);
+          return value === 'light' || value === 'dark' ? value : '';
+        } catch {
+          return '';
+        }
+      };
+      const apply = (theme) => {
+        root.dataset.theme = theme;
+        const meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.content = theme === 'dark' ? '#0b1517' : '#edf1f3';
+      };
+      apply(readStored() || (darkQuery && darkQuery.matches ? 'dark' : 'light'));
+      darkQuery?.addEventListener?.('change', (event) => {
+        if (!readStored()) apply(event.matches ? 'dark' : 'light');
+      });
+      window.__chesspeakTheme = {
+        toggle() {
+          const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+          try {
+            window.localStorage.setItem(storageKey, next);
+          } catch {}
+          apply(next);
+          return next;
+        },
+      };
+    })();
+  </script>
+  <style>
+    @font-face {
+      font-family: "Manrope";
+      src: url("../assets/Manrope/Manrope-VariableFont_wght.ttf") format("truetype");
+      font-weight: 200 800;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    /* Tokens mirror the study board's palette in styles.css. */
+    :root {
+      color-scheme: light;
+      --bg: #edf1f3;
+      --bg-glow: rgba(127, 175, 155, 0.18);
+      --surface: #ffffff;
+      --surface-pressed: #f3f6f7;
+      --border: rgba(190, 202, 207, 0.9);
+      --text: #172127;
+      --muted: #52606a;
+      --accent: #1d6f78;
+      --accent-strong: #155e67;
+      --accent-soft: rgba(29, 111, 120, 0.11);
+      --focus-ring: rgba(29, 111, 120, 0.35);
+      --shadow: 0 1px 2px rgba(17, 28, 35, 0.06), 0 6px 18px rgba(17, 28, 35, 0.06);
+    }
+
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #0b1517;
+      --bg-glow: rgba(138, 216, 183, 0.1);
+      --surface: #111d20;
+      --surface-pressed: #1c2b30;
+      --border: rgba(52, 74, 78, 0.92);
+      --text: #f7faf5;
+      --muted: #b9c6c3;
+      --accent: #8ad8b7;
+      --accent-strong: #b0e8cf;
+      --accent-soft: rgba(138, 216, 183, 0.14);
+      --focus-ring: rgba(138, 216, 183, 0.45);
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 18px rgba(0, 0, 0, 0.22);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100dvh;
+      background:
+        radial-gradient(120% 60% at 100% 0%, var(--bg-glow), transparent 60%),
+        var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      font-size: 1rem;
+      line-height: 1.5;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      width: min(1040px, 100%);
+      margin: 0 auto;
+      padding:
+        max(12px, env(safe-area-inset-top))
+        max(16px, env(safe-area-inset-right))
+        12px
+        max(16px, env(safe-area-inset-left));
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 48px;
+      text-decoration: none;
+      font-family: "Manrope", system-ui, sans-serif;
+      font-weight: 800;
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
+    }
+
+    .brand img {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+    }
+
+    .icon-button {
+      display: inline-grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .icon-button svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    :root[data-theme="dark"] .icon-sun,
+    :root:not([data-theme="dark"]) .icon-moon {
+      display: none;
+    }
+
+    main {
+      width: min(1040px, 100%);
+      margin: 0 auto;
+      padding:
+        8px
+        max(16px, env(safe-area-inset-right))
+        max(32px, env(safe-area-inset-bottom))
+        max(16px, env(safe-area-inset-left));
+    }
+
+    .intro {
+      margin: 4px 0 28px;
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2 {
+      font-family: "Manrope", system-ui, sans-serif;
+      letter-spacing: -0.02em;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.6rem, 6vw, 2.4rem);
+      line-height: 1.15;
+      font-weight: 800;
+      text-wrap: balance;
+    }
+
+    .lead {
+      max-width: 40rem;
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    section + section {
+      margin-top: 28px;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+
+    .tiles {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .tile {
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr) 20px;
+      align-items: center;
+      gap: 14px;
+      min-height: 80px;
+      height: 100%;
+      padding: 14px 14px 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      text-decoration: none;
+      transition: background-color 120ms ease, border-color 120ms ease, transform 120ms ease;
+    }
+
+    .tile:active {
+      background: var(--surface-pressed);
+      transform: scale(0.99);
+    }
+
+    .tile:focus-visible,
+    .icon-button:focus-visible,
+    .footnote a:focus-visible {
+      outline: 3px solid var(--focus-ring);
+      outline-offset: 2px;
+    }
+
+    .tile-icon {
+      display: grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .tile-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .tile-text {
+      display: grid;
+      gap: 2px;
+    }
+
+    .tile-title {
+      font-weight: 700;
+      font-size: 1.05rem;
+      line-height: 1.3;
+    }
+
+    .tile-desc {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.4;
+    }
+
+    .tile-chevron {
+      width: 20px;
+      height: 20px;
+      color: var(--muted);
+    }
+
+    .footnote {
+      margin: 36px 0 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+      text-align: center;
+    }
+
+    .footnote a {
+      display: inline-block;
+      padding: 8px 4px;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    @media (hover: hover) {
+      .tile:hover {
+        border-color: var(--accent);
+      }
+    }
+
+    /* Tablet portrait and small landscape phones */
+    @media (min-width: 600px) {
+      .tiles {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    /* Tablet landscape */
+    @media (min-width: 1000px) {
+      .tiles {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .tile {
+        transition: none;
+      }
+
+      .tile:active {
+        transform: none;
+      }
+    }
+  </style>
+  <script type="module" src="../site-visits.mjs?v=20261018-visits1"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="../">
+      <img src="../assets/pieces/app_icon.png" alt="" width="36" height="36">
+      <span>CD Digital Chess</span>
+    </a>
+    <button class="icon-button" id="themeToggle" type="button" aria-label="Switch between light and dark theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 1.5v2.5M12 20v2.5M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M1.5 12H4M20 12h2.5M4.6 19.4l1.8-1.8M17.6 6.4l1.8-1.8"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
+  </header>
+
+  <main>
+    <div class="intro">
+      <p class="eyebrow">For ChessPeak players</p>
+      <h1>Keep training on the full study board</h1>
+      <p class="lead">Lessons, openings, and practice tools that run in your phone or tablet browser. No sign-in needed. Use your device's Back button to return to ChessPeak.</p>
+    </div>
+
+    <section aria-labelledby="learnTitle">
+      <h2 id="learnTitle">Learn</h2>
+      <ul class="tiles">
+        <li>
+          <a class="tile" href="../lessons/">
+            <span class="tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg></span>
+            <span class="tile-text">
+              <span class="tile-title">Lessons</span>
+              <span class="tile-desc">Pawn, Advanced Pawn, and Bishop courses, plus endgame chapters.</span>
+            </span>
+            <svg class="tile-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+          </a>
+        </li>
+        <li>
+          <a class="tile" href="../openings/">
+            <span class="tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3v12"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+            <span class="tile-text">
+              <span class="tile-title">Opening courses</span>
+              <span class="tile-desc">Interactive opening books you can step through move by move.</span>
+            </span>
+            <svg class="tile-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+          </a>
+        </li>
+        <li>
+          <a class="tile" href="../articles/">
+            <span class="tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg></span>
+            <span class="tile-text">
+              <span class="tile-title">Articles</span>
+              <span class="tile-desc">Long reads on how players train and how chess engines work.</span>
+            </span>
+            <svg class="tile-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="practiceTitle">
+      <h2 id="practiceTitle">Practice</h2>
+      <ul class="tiles">
+        <li>
+          <a class="tile" href="../?tab=play">
+            <span class="tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></svg></span>
+            <span class="tile-text">
+              <span class="tile-title">Play vs Stockfish</span>
+              <span class="tile-desc">Pick the engine's strength and your color, then play a full game.</span>
+            </span>
+            <svg class="tile-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+          </a>
+        </li>
+        <li>
+          <a class="tile" href="../?tab=puzzle">
+            <span class="tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span>
+            <span class="tile-text">
+              <span class="tile-title">Puzzles</span>
+              <span class="tile-desc">Solve endgame puzzles on the interactive board.</span>
+            </span>
+            <svg class="tile-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+          </a>
+        </li>
+        <li>
+          <a class="tile" href="../?tab=analysis">
+            <span class="tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></span>
+            <span class="tile-text">
+              <span class="tile-title">Analysis board</span>
+              <span class="tile-desc">Explore any position and check your ideas with the engine.</span>
+            </span>
+            <svg class="tile-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="toolsTitle">
+      <h2 id="toolsTitle">Tools</h2>
+      <ul class="tiles">
+        <li>
+          <a class="tile" href="../clock/">
+            <span class="tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span>
+            <span class="tile-text">
+              <span class="tile-title">Chess clock</span>
+              <span class="tile-desc">Full-screen clock for over-the-board games.</span>
+            </span>
+            <svg class="tile-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+          </a>
+        </li>
+        <li>
+          <a class="tile" href="../3d/">
+            <span class="tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/></svg></span>
+            <span class="tile-text">
+              <span class="tile-title">3D board</span>
+              <span class="tile-desc">Set up positions and play bots on a 3D board.</span>
+            </span>
+            <svg class="tile-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <p class="footnote">CD Digital Chess is an independent chess study web app · <a href="../about/">About</a></p>
+  </main>
+
+  <script>
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      window.__chesspeakTheme.toggle();
+    });
+  </script>
+</body>
+</html>
