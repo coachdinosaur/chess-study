@@ -6350,6 +6350,11 @@ async function toggleAnalysis() {
     return;
   }
 
+  // Starting or continuing analysis should always reveal its results.
+  state.pvLinesVisible = true;
+  syncLessonVisibilityMenuState();
+  schedulePersist();
+
   const currentFen = state.analysis.currentFen;
   if (isTablebaseEligibleFen(currentFen)) {
     await startTablebaseAnalysisForFen(currentFen, { fallbackToEngine: true });
